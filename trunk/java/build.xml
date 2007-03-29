@@ -136,11 +136,11 @@ Then save it under:
   ${mail.jar}
     </fail>
     <fail unless="has.sunactivation">missing jar file: ${activation.jar}
-The GData client requires Sun's javamail API (version 1.4), which
+The GData client requires Sun's Activation Framework 1.1, which
 is not included in this distribution.
 
 You can download it from: 
- http://java.sun.com/products/javamail/download.html
+ http://java.sun.com/products/javabeans/jaf/downloads/index.html
  
 Then save it under: 
   ${activation.jar}
