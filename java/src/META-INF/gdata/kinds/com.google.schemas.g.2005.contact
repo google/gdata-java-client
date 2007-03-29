@@ -1,0 +1,3 @@
+# GData Kind Adaptors for http://schemas.google.com/g/2005#contact
+com.google.gdata.data.extensions.ContactFeed
+com.google.gdata.data.extensions.ContactEntry

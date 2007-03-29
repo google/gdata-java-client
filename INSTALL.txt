@@ -1,0 +1,52 @@
+Installing GData Java Client API library
+========================================
+
+Table of Contents
+------------------
+  1. Package Contents
+  2. Requirements
+  3. Installation
+  4. Executing Samples
+
+PACKAGE CONTENTS:
+-----------------
+Google Data APIs ("GData" for short) Java client provides source code and 
+libraries for interacting with GData-enabled services.  This package includes
+  1. GData Java client source under "gdata/java/src".
+  2. GData Java client libraries under "gdata/java/lib".
+  3. Ant build configuration to compile the source code.
+  4. GData API documentation under "gdata/doc".
+  5. Javadoc for client source under "gdata/java/doc".
+  6. GData-enabled service specific samples under "gdata/java/sample".
+
+REQUIREMENTS:
+-------------
+GData Java Client depends on following external libraries on top of standard 
+Java installation.
+1. activation.jar, mail.jar in Sun's JavaMail API (version 1.4 or greater).
+   Sun's JavaMail package available for download from 
+   "http://java.sun.com/products/javamail/"
+2. servlet.jar in Sun's Servlet API (version 2.3 or greater)
+   Sun's Servlet API package can be downloaded from
+   "http://java.sun.com/products/servlet/download.html"
+
+INSTALLATION:
+-------------
+Update ant build configuration to point to right path for dependency jars.
+1. Unpack gdata.java.zip package to local folder.
+2. Edit the following lines in "gdata/java/build.properties" to point to 
+   correct path for dependency jar files
+    activation.jar=<path to activation.jar file>
+    mail.jar=<path to mail.jar file>
+    servlet.jar=<path to servlet.jar file>
+    
+EXECUTING SAMPLES:
+------------------
+GData-enabled service specific samples can be executed through ant build targets.
+1. Edit "gdata/java/build.properties" file to specify input data
+   for samples. This step is required only for samples that use user data
+   from build.properties file.
+2. To run a specific sample execute the ant run target corresponding to the sample.
+   For example to execute calendar sample, run command "ant sample.calendar.run"
+   from folder "gdata/java".
+

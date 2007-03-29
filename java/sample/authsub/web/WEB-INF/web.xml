@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+    <display-name>AuthSub Demo Application</display-name>
+    <description>
+	This is a simple web application that demonstrates AuthSub
+        usage.
+    </description>
+
+
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>sample.authsub.src.LoginServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>HandleTokenServlet</servlet-name>
+        <servlet-class>sample.authsub.src.HandleTokenServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>HandleTokenServlet</servlet-name>
+        <url-pattern>/HandleTokenServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RetrieveFeedServlet</servlet-name>
+        <servlet-class>sample.authsub.src.RetrieveFeedServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RetrieveFeedServlet</servlet-name>
+        <url-pattern>/RetrieveFeedServlet</url-pattern>
+    </servlet-mapping>
+
+</web-app>

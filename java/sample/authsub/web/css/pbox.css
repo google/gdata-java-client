@@ -1,0 +1,188 @@
+.pbox {
+/*  position:    relative; */
+  top:         1px;
+  width:       15em;
+/*  height:      18em; */
+  line-height: 1.2em;
+  margin:0 10px 10px 0;
+  font-size: 85%;
+}
+
+
+/* =Menu borders (top and bottom) creates rounded corners
+----------------------------------------------- */
+.pbox .t2, .pbox .b2, .pbox .sb2 {
+  background-color:#BBBBBB; /* D */
+  position:relative;
+  top:-1px;
+  height:1px;
+  margin:0 1px;
+  font-size:1px;
+  line-height:1px;
+  }
+
+.pbox .offset, .pbox .b2 {
+  border-right:1px solid #666666; /* A */
+  }
+.pbox .t2 {
+  margin-right:2px;
+  }
+.pbox .b2 {
+  background-color:#BBBBBB; /* D */
+  }
+.pbox .sb2 {
+  display:block;
+  background-color:#666666;/* A */
+  margin-left:2px;
+  }
+
+.boxbody {
+  background-color:#DDDDDD; /* E */
+  position:relative;
+  top:-1px;
+  border:solid #BBBBBB; /* D */
+  border-width:0 1px;
+  }
+.boxbody ul, .boxbody li {
+  margin:0;
+  padding:0;
+  list-style:none;
+  }
+
+
+/* =QuickAdd
+----------------------------------------------- */
+.quick {
+  width:30em;
+  font-size:100%;
+  color:#fff;
+  z-Index: 42;
+  }
+.quick .t2 {
+  background-color:#8ac;
+  }
+.quick .b2 {
+  background-color:#468;
+  }
+.quick .sb2 {
+  background-color:#246;
+  }
+.quick .offset, .pbox .quick .b2 {
+  border-right:1px solid #246; /* A */
+  }
+.quick .boxbody {
+  background-color:#68a;
+  border-left-color:#8ac;
+  border-right-color:#468;
+  padding-left: 6px;
+  }
+.quick form {
+  margin:0;
+  padding:2px 0px;
+  }
+.quick label {
+  display:block;
+  padding:1px 1px 2px;
+  }
+.quick .txt {
+  width:27em;
+  border:1px solid;
+  border-color:#468 #8ac #8ac #468;
+  font:100% Arial,Sans-serif;
+  }
+.quick .imgbtn {
+  vertical-align:middle;
+  }
+.quick p {
+  margin:0;
+  padding:2px;
+  font-size:85%;
+  line-height:1.2em;
+  }
+
+
+/* =Options
+----------------------------------------------- */
+ul.caloptions {
+  border-bottom:1px solid #BBBBBB; /* D */
+  }
+.caloptions li {
+  width:100%;
+  }
+.caloptions li a {
+  display:block;
+  padding:3px 8px;
+  color:#222;
+  text-decoration:none;
+  }
+* html .caloptions li a {
+  height:1.2em;
+  }
+.caloptions li a:hover {
+  background-color:#BBBBBB; /* D */
+  /*bolinfest*/
+  text-decoration:underline;
+  color:#222;
+  }
+/*bolinfest*/
+.caloptions li a:visited {
+  color:#222;
+}
+
+/* =CalColor
+----------------------------------------------- */
+.calcolor {
+  padding:7px 8px 0;
+  }
+.calcolor ul {
+  position:relative;
+  float:left;
+  width:100%;
+  padding-bottom:3px;
+  }
+* html .calcolor ul {
+  padding-bottom:7px;
+  }
+.calcolor li {
+  display:inline;
+  font-size:1px;
+  line-height:1px;
+  }
+.calcolor li a {
+  float:left;
+  display:block;
+  width:13px;
+  height:13px;
+  margin:0 4px 4px 0;
+  border:1px solid #fff;
+  text-decoration:none;
+  }
+.calcolor li a:hover {
+  border-color:#000;
+  }
+.cal1 a.cal1-b, .cal1 a.cal1-b:hover,
+.cal2 a.cal2-b, .cal2 a.cal2-b:hover,
+.cal3 a.cal3-b, .cal3 a.cal3-b:hover,
+.cal4 a.cal4-b, .cal4 a.cal4-b:hover,
+.cal5 a.cal5-b, .cal5 a.cal5-b:hover,
+.cal6 a.cal6-b, .cal6 a.cal6-b:hover,
+.cal7 a.cal7-b, .cal7 a.cal7-b:hover,
+.cal8 a.cal8-b, .cal8 a.cal8-b:hover,
+.cal9 a.cal9-b, .cal9 a.cal9-b:hover,
+.cal10 a.cal10-b, .cal10 a.cal10-b:hover,
+.cal11 a.cal11-b, .cal11 a.cal11-b:hover,
+.cal12 a.cal12-b, .cal12 a.cal12-b:hover,
+.cal13 a.cal13-b, .cal13 a.cal13-b:hover,
+.cal14 a.cal14-b, .cal14 a.cal14-b:hover,
+.cal15 a.cal15-b, .cal15 a.cal15-b:hover,
+.cal16 a.cal16-b, .cal16 a.cal16-b:hover,
+.cal17 a.cal17-b, .cal17 a.cal17-b:hover,
+.cal18 a.cal18-b, .cal18 a.cal18-b:hover,
+.cal19 a.cal19-b, .cal19 a.cal19-b:hover,
+.cal20 a.cal20-b, .cal20 a.cal20-b:hover,
+.cal21 a.cal21-b, .cal21 a.cal21-b:hover {
+  background-image:url("images/icon_check3.gif");
+  background-position:-13px 0;
+  background-repeat:no-repeat;
+  cursor:default;
+  }

@@ -1,0 +1,4 @@
+This directory contains some XML files for uploading
+sample data to Google Base via the API. For instance,
+the customer tool which is part of the Java client
+library examples can be used for submitting the data.

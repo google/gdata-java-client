@@ -1,0 +1,178 @@
+body {
+	font-family: arial, sans-serif;
+	font-size: 83%;
+	}
+
+.leftcontent {
+	float:left;
+	width:175px;
+	background:#fff;
+	}
+
+.topimage {
+	margin-left:13px;
+	margin-top:0px;
+	padding:0px;
+	}
+
+.footerimage {
+	margin-left:15px;
+	margin-top:20px;
+	padding:0px;
+	}
+
+.toc {
+	color: #ddad08;
+	font-weight:bold;
+	}
+
+.rightcontent {
+	background:#fff;
+	margin-left: 199px;
+	}
+
+p {
+	margin-right: 5%;
+	margin-left:3%;
+	}
+
+ol, ul {
+	margin-right: 5%;
+	margin-left:3%;
+	}
+
+h1 {
+	font-size:130%;
+	font-weight:bold;
+	margin-left:3%;
+	margin-top:2em;
+	}
+
+h2 {
+	font-size:120%;
+	font-weight:bold;
+	margin-left:3%;
+	margin-top:2em;
+	}
+
+h3 {
+	font-size:100%;
+	font-weight:bold;
+	margin-left:3%;
+	margin-top:2em;
+	}
+
+h4 {
+	font-size:90%;
+	font-weight:bold;
+	margin-left:3%;
+	margin-top:1.5em;
+	}
+
+.title {
+	background-color: #FEFADE;
+	border-top:1px solid #ddad08;
+	font-weight:bold;
+	font-size:120%;
+	text-align:left;
+	margin-left:0;
+	}
+
+.subtitle {
+	background-color: #FEFADE;
+	border-top:1px solid #ddad08;
+	font-weight:bold;
+	font-size:120%;
+	text-align:left;
+	}
+
+.toclinks, ul {
+	margin-bottom:0px;
+	margin-top:0px;
+	}
+
+
+.footer {
+	text-align: center;
+	}
+
+code {
+	font-family:Courier, monospace;
+	}
+
+pre {
+	font-family:Courier, monospace;
+	margin-left:3%;
+	text-align:left;
+	}
+
+.content {
+	border-left:thin dotted #000;
+	}
+
+table {
+	margin-left:3%;
+	border: 1px solid #c3d9ff;
+	border-spacing:0;
+	}
+
+th {
+	font-weight:bold;
+	text-align:left;
+	margin-left:3%;
+	border-right: 1px solid #C3d9ff;
+	border-bottom: 1px solid #C3d9ff;
+	border-top: 1px solid #C3d9ff;
+	text-align: left;
+	padding: 6px 6px 6px 12px;
+	background: #aac8f6;
+	}
+
+td {
+	border-right: 1px solid #C3d9ff;
+	border-bottom: 1px solid #C3d9ff;
+	text-align:left;
+	margin-left:3%;
+	padding: 6px 6px 6px 12px;
+	vertical-align:top;
+	}
+
+td.alt {
+	background: #e8eefa;
+	vertical-align:top;
+	}
+
+font  {
+	margin-right: 5%;
+	vertical-align:bottom;
+	margin-left:3%;
+	}
+
+.tdfooter {
+	margin-right: 5%;
+	text-align:right;
+	}
+
+.i {
+	margin-left: 1em;
+	margin-right: 2em;
+	}
+
+.q {
+	margin: 0 10px 0 5px;
+	padding: 10px 0 0 10px;
+	color: #000;
+	background: url("../../images/quote.gif") no-repeat top left;
+	}
+
+.d {
+	color:#999999;
+	text-decoration:italics;
+	font-size:83%;
+	}
+
+.tdheading {
+	font-weight:bold;
+	font-size:120%;
+	margin-left:3%;
+	}

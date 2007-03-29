@@ -1,0 +1,3 @@
+# GData Kind Adaptors for http://schemas.google.com/apps/2006#emailList
+com.google.gdata.data.appsforyourdomain.provisioning.EmailListFeed
+com.google.gdata.data.appsforyourdomain.provisioning.EmailListEntry

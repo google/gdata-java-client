@@ -1,0 +1,3 @@
+# GData Kind Adaptors for http://schemas.google.com/apps/2006#user
+com.google.gdata.data.appsforyourdomain.provisioning.UserEntry
+com.google.gdata.data.appsforyourdomain.provisioning.UserFeed
