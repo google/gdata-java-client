@@ -1,0 +1,96 @@
+Google Calendar data API v1.0 (Java) - Release Notes
+March 21, 2006
+
+Notes for v1.0.9
+----------------
+March 21, 2006
+o  Added Java client support and extensions for GData Picasa Web Album API.
+o  Added Java client support and extensions for GData Apps For Your Domain API.
+o  Added "method" attribute to <gd:reminder>.  The "method" attribute can be 
+   used to specify notification method for Calendar event related reminders.  
+   The "method" value can be one of ALERT, EMAIL, SMS, ALL or NONE.
+o  Introduced dependency on Sun's JavaMail API.  To use client package,
+   download and install activation.jar, mail.jar libraries from Sun's JavaMail 
+   API package version 1.4 or later.
+
+Notes for v1.0.8
+----------------
+February 22, 2006
+o  Added Java client support and extensions for GData Google Base API.
+o  Added Java client support and extensions for GData Notebook API.
+
+Notes for v1.0.7
+----------------
+February 06, 2006
+o  Added "return-empty" query parameter to the Spreadsheet Cells feed.
+   When present, empty cells are included in query results.
+o  Spreadsheets data API: Modified the Spreadsheet Cells feed to allow
+   Update (ie. HTTP PUT) on all cells, even empty ones, to change their
+   contents.  The use of INSERT on cells is deprecated.  DELETE is
+   synonymous with updating the gs:cell@inputValue to the empty string.
+o  Fixed the issue of Calendar API sending never-ending series
+   of sharding redirects.
+o  Modified default configuration of the METHOD_OVERRIDE_PROPERTY
+   system property to false.  The Update and Delete methods now use
+   HTTP PUT and DELETE, respectively.  To continue with old behavior:
+   Using Java command line argument:
+      -Dcom.google.gdata.UseMethodOverride=true
+   In client code:
+      System.setProperty(HttpGDataRequest.METHOD_OVERRIDE_PROPERTY, "true");
+
+Notes for v1.0.6
+----------------
+November 30, 2006
+o  Added Java client support and extensions for GData Spreadsheets
+   API.
+
+Notes for v1.0.5
+----------------
+October 05, 2006
+o  Added Java client support and extensions for GData CodeSearch
+   API.
+
+Notes for v1.0.4
+----------------
+September 27, 2006
+o  Support Calendar events with web content of different MIME
+   types.
+o  Support two new data model classes, ValueConstruct and
+   EnumConstruct in the Java client library.
+o  Change to introspection document collection representation
+   (Collection.java) in response to changes in APP draft-10. The
+   title information is no longer contained in an attribute of
+   <app:collection> but is instead a nested <atom:title> element.
+
+Notes for v1.0.3
+----------------
+August 29, 2006
+o  Added Batch support in GData library for the Google Base API.
+o  Added introspection support to the client library.  This
+   feature will be supported in the future.
+o  Added ability for calendar API to send notifications to users
+   when events are added.
+o  Added the 'web content' field to Calendar feeds which accepts
+   MIME types.
+o  Fixed 'pub:draft'.  It was a part of an incorrect namespace and
+   has been moved to the Atom Publishing Control namespace.
+
+Notes for v1.0.2
+----------------
+July 27, 2006
+o  Included the AuthSub utility classes
+o  Included samples for the Calendar client and AuthSub
+
+Notes for v1.0.1
+----------------
+April 28, 2006
+o  Introduce System property "com.google.gdata.UseMethodOverride"
+   to toggle method override functionality.  Currently defaults
+   to use the method override.  (The method override is used to
+   workaround proxies that do not handle the HTTP methods PUT and
+   DELETE properly)
+
+Notes for v1.0.0
+----------------
+April 19, 2006
+o  Initial release

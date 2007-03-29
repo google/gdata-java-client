@@ -1,0 +1,641 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 1st November 2003), see www.w3.org" />
+
+  <title>Google Base data API: Sample Applications</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+</head>
+
+<body>
+  <P>Sample standalone applications accessing Google Base data API feeds</P>
+
+  <h2><a name="intro" id="intro"></a>Introduction</h2>The Google Base data Java
+  <a href='http://code.google.com/apis/base/sample-apps.html'>Client
+  Library</a> offers a nice object oriented abstraction for accessing the
+  Google Base data API. However, if you prefer to interact with the Google Base
+  data API servers directly, here are a few examples that will start you up.
+
+  <p>This document assumes you know Java programming (including some basic
+  knowledge of Http connections and SAX parsers) and that you are familiar with
+  <a href="http://code.google.com/apis/base/concepts.html">Google Base
+  concepts</a>. You need to understand the following concepts before you can
+  take full advantage of the sample applications:</p>
+
+  <ul>
+    <li><a href=
+    "http://code.google.com/apis/base/attrs-queries.html#queries">queries</a></li>
+
+    <li><a href=
+    "http://code.google.com/apis/base/attrs-queries.html#gbItemTypes">item
+    types</a></li>
+
+    <li><a href=
+    "http://code.google.com/apis/base/attrs-queries.html#gbAttrs">attributes</a></li>
+  </ul>
+
+  <p>This tutorial consists of stepping through 5 examples. The first example
+  shows how to connect to a Google Base data API feed and query data. The
+  second example extends this by showing how to parse the result and extract
+  data of interest from the feed. The third example introduces authentication
+  and demonstrates how to display your own items, rather than querying
+  snippets. The fourth example demonstrates how to insert your own item into
+  Google Base, while the last example shows how to update a previously inserted
+  item.</p>
+
+  <h2><a name="queryExample1" id="queryExample1"></a>Query Example 1 - query
+  the Google Base data API and display the result</h2>
+
+  <p><code>QueryExample1</code> is a simple Java application that runs from the
+  command line. It performs an unauthenticated query on the public <a href=
+  'http://code.google.com/apis/base/snippets-feed.html'>snippets feed</a>
+  (<code>/feeds/snippets</code>) and it dumps the query response to the console
+  (it won't look pretty!).</p>
+
+  <h3><a name="QE1run" id="QE1run"></a>Running
+  <code>QueryExample1</code></h3>Edit QueryExample1.java and fill in the
+
+Compile and run the example using your favorite editor, or using the
+command line:
+  <pre>
+    javac sample.gbase/basic/QueryExample1.java
+    java sample.gbase/basic/QueryExample1
+  
+</pre>The output (conveniently formatted) will look like:
+  <pre>
+    &lt;feed&gt;
+      &lt;id&gt;http://0.baseapitest.googlebase-api.jc.borg.google.com.:31911/base/feeds/snippets&lt;/id&gt;
+      &lt;updated&gt;2006-08-22T14:14:11.984Z&lt;/updated&gt;
+      &lt;title type="text"&gt;Items matching query: cars [item type : products]&lt;/title&gt;
+      &lt;link rel="alternate" type="text/html" href="http://base.google.com"/&gt;
+      &lt;link rel="http://schemas.google.com/g/2005#feed" type="application/atom+xml" href="http://0.baseapitest.googlebase-api.jc.borg.google.com.:31911/base/feeds/snippets"/&gt;
+      &lt;link rel="self" type="application/atom+xml" href="http://0.baseapitest.googlebase-api.jc.borg.google.com.:31911/base/feeds/snippets?key=ABQ...9P2Y4A&amp;bq=cars+%5Bitem+type+%3A+products%5D"/&gt;
+      &lt;link rel="next" type="application/atom+xml" href="http://0.baseapitest.googlebase-api.jc.borg.google.com.:31911/base/feeds/snippets?start-index=26&amp;max-results=25&amp;key=ABQ...9P2Y4A&amp;bq=cars+%5Bitem+type+%3A+products%5D"/&gt;
+      &lt;generator version="1.0" uri="http://base.google.com"&gt;GoogleBase&lt;/generator&gt;
+      &lt;openSearch:totalResults&gt;278120&lt;/openSearch:totalResults&gt;
+      &lt;openSearch:itemsPerPage&gt;25&lt;/openSearch:itemsPerPage&gt;
+      &lt;entry&gt;
+        &lt;id&gt;http://0.baseapitest.googlebase-api.jc.borg.google.com.:31911/base/feeds/snippets/10062394959501653657&lt;/id&gt;
+        &lt;published&gt;2006-06-30T21:45:12.000Z&lt;/published&gt;
+        &lt;updated&gt;2006-07-28T00:58:14.000Z&lt;/updated&gt;  
+        ...
+  
+</pre>
+
+  <h3><a name="QE1stepThru" id="QE1stepThru"></a>Stepping through the
+  <code>QueryExample1</code> code</h3>
+
+  <p>At the very beginning we define the url of the feed we are connecting to
+  and the query that we are going to run:</p>
+  <pre>
+  private static final String SNIPPETS_FEED = "http://base.google.com/base/feeds/snippets";
+
+  private static final String QUERY = "cars [item type : products]";
+  
+</pre>Feel free to change the query to a more relevant or interesting one. Take
+a look at the <a href=
+'http://code.google.com/apis/base/query-lang-spec.htm'>Google Base Query
+Language</a> description if you need some inspiration.
+
+  <p>After opening a connection on the snippets feed, we grab the connection's
+  input stream, and dump its content to the output, character by character:</p>
+  <pre>
+   HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
+   InputStream inputStream = httpConnection.getInputStream();
+    
+    int ch;
+    while ((ch=inputStream.read()) &gt; 0) {
+      System.out.print((char)ch);
+    }
+ 
+</pre>In the <code>main</code> method, all we do is create a
+<code>QueryExample1</code> instance, and invoke its <code>displayItems</code>
+method:
+  <pre>
+ public static void main(String[] args) throws IOException, SAXException,
+          ParserConfigurationException {
+    new QueryExample1().displayItems();
+  }
+</pre>
+
+  <h2><a name="queryExample2" id="queryExample2"></a>Query Example 2 - query
+  the Google Base data API, parse the result and display the titles of returned
+  data items</h2>
+
+  <p>One major problem with <code>QueryExample1</code> is that it simply dumps
+  the items returned for the query to the console, and the result is barely
+  readable. In any real life application the query result would need to be
+  parsed, interpreted and relevant information should be extracted and
+  displayed to the user. In <code>QueryExample2</code> we demonstrate a
+  possible way of doing this by using a SAX parser to extract each data item's
+  title from the result, and display it to the console. Some very basic
+  understanding of how SAX parsers work is necessary in order to fully
+  understand this example.</p>
+
+  <p>One might argue that for this task we don't even need a SAX parser. We
+  could just search for all <code>&lt;title&gt;</code> tags in the result and
+  display the characters that they enclose. Unfortunately, that wouldn't work,
+  as the Atom response also has a <code>&lt;title&gt;</code> tag, which is the
+  title of the feed:</p>
+  <pre>
+    &lt;feed&gt;
+       ...
+       &lt;title type="text"&gt;Items matching query: cars [item type : products]&lt;/title&gt;
+      ...
+      &lt;entry&gt;
+        ...
+        &lt;title type='text'&gt;Great care for sale&lt;/title&gt;
+        ...  
+  
+</pre>Atom does not mandate that the feed's <code>&lt;title&gt;</code> tag
+should appear at a specific position inside the feed, so we need to make sure
+we only display the <code>&lt;title&gt;</code> tags which are sub-elements of
+an <code>&lt;entry&gt;</code> tag.<br />
+  <br />
+
+  <h3><a name="QE2run" id=
+  "QE2run"></a>Running<code>QueryExample2</code></h3>
+Compile and run the example using your favorite editor, or using the
+command line:
+  <pre>
+    javac sample.gbase/basic/QueryExample2.java
+    java sample.gbase/basic/QueryExample2
+  
+</pre>The output will look like:
+  <pre>
+    Item 1: Johnny Lightning MUSCLE CARS R8 1967 Chevelle SS
+    Item 2: Johnny Lightning MUSCLE CARS USA 2005 Ford GT
+    ...
+    Item 25: The Cars movie Hinged tool Box Toy Organize lunch RARE
+  
+</pre>
+
+  <ul class="noindent"></ul>
+
+  <h3><a name="QE2stepThru" id="QE2stepThru"></a>Stepping through the
+  <code>QueryExample2</code> code</h3>
+
+  <p>Just as in the previous example, we first send the query to the Google
+  Base data API server, and obtain an <code>inputStream</code> containing the
+  response:</p>
+  <pre>
+    URL url = new URL(SNIPPETS_FEED + "?bq=" + 
+        URLEncoder.encode(QUERY, "UTF-8"));
+    HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+    InputStream inputStream = httpConnection.getInputStream();
+</pre>
+
+  <p>We then use a standard SAX parser to parse the result. We obtain a
+  SAXParser instance using a SAXParserFactory:</p>
+  <pre>
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    SAXParser parser = factory.newSAXParser();
+</pre>We then parse the result <code>inputStream</code> using
+<code>DisplayTitlesHandler</code>, our custom SAX event handler:
+  <pre>
+    parser.parse(inputStream, new DisplayTitlesHandler());
+</pre>
+
+  <p><code>DisplayTitlesHandler</code> is derived from the no-op SAX parser,
+  <code>org.xml.sax.helpers.DefaultHandler</code>. The logic inside
+  <code>DisplayTitlesHandler</code> is pretty simple: we keep a stack of the
+  currently open XML tags and print all character data when we are inside a
+  <code>&lt;title&gt;</code> tag with a <code>&lt;entry&gt;</code> parent. The
+  <code>insideEntryTitle</code> flag is turned on each time we are inside a
+  <code>&lt;entry&gt;&lt;title&gt;</code> pair:</p>
+  <pre>
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+      if (qName.equals("title") &amp;&amp; xmlTags.peek().equals("entry")) {
+        insideEntryTitle = true;
+        System.out.print("Item " + ++itemNo + ": ");
+      } 
+      xmlTags.push(qName);
+    }
+</pre>Since <code>startElement</code> is invoked each time the SAX parser
+encounters an opening XML tag, we switch on <code>insideEntryTitle</code> only
+if the currently parsed opening tag is <code>&lt;title&gt;</code> and the tag
+on the top of the stack is <code>&lt;entry&gt;</code> . We are also printing
+here the "Item no: " messages, rather than in the <code>characters</code>
+method, as <code>characters</code> can be called multiple times for different
+chunks of the title's character data.<br />
+  <br />
+  The <code>endElement</code> method is invoked each time an XML tag closes.
+  All we need to do here is to remove the closing XML tag from the stack and,
+  in case the removed XML tag was an entry's title, flip
+  <code>insideEntryTitle</code> to false and go to a new line in the console,
+  in preparation for printing out the next title:
+  <pre>
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+      xmlTags.pop();
+      if (insideEntryTitle) {
+        insideEntryTitle = false;
+        System.out.println();
+      }
+    }
+</pre>The <code>characters</code> method is invoked when the parser encounters
+character data inside an XML element. If we are inside the
+<code>&lt;title&gt;</code> tag, that is, if the <code>insideEntryTitle</code>
+flag is on, we display the current characters: <code>length</code> characters
+from the <code>ch</code> array, starting with <code>start</code>. As noted
+earlier, we can't use <code>println</code> here to get to a new line, as <code>
+  characters</code> can be invoked multiple times for different chunks of the
+  same title:
+  <pre>
+   public void characters(char[] ch, int start, int length) throws SAXException {
+      if (insideEntryTitle) {
+        System.out.print(new String(ch, start, length));
+      }
+    }
+</pre>In the <code>main</code> method, all we do is create a
+<code>QueryExample2</code> instance, and invoke its <code>displayItems</code>
+method:
+  <pre>
+ public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
+    new QueryExample2().displayItems();
+  }
+</pre>
+
+  <h2><a name="queryExample3" id="queryExample3"></a>Query Example 3 -
+  Introducing authentication. Querying your own items using the items
+  feed.</h2>
+
+  <p>The previous two examples demonstrated how to query the Google Base data
+  API public feeds, also known as snippets. Snippets are accessible to anyone
+  without authentication. The downside is that snippets are the "indexable"
+  version of the items and can slightly differ from the original items. It can
+  also take a while for a newly inserted or updated item to show up in the
+  snippets feed. Therefore, if you need to change your own items, the Google
+  Base data API server exposes the customer-specific "items" feed. This feed is
+  very similar to the "snippets" feed, except that:</p>
+
+  <ul>
+    <li>it only allows you to query your own items, and thus you need to
+    authenticate in order to access it</li>
+
+    <li>there is no delay between updating an item and being able to display it
+    in the "items" feed</li>
+  </ul>Read <a href='http://code.google.com/apis/base/items-feed.html'>here</a>
+  more about the characteristics of the "items" feed. You will need a Google
+  Account email and password in order to run this example. If you don't have a
+  Google Account, sign up for one <a href=
+  'https://www.google.com/accounts/NewAccount'>here</a>.
+
+  <p>QueryExample3 connects to your "items" feed, and dumps your items to the
+  console, just as in <code>QueryExample1</code>. If you don't have any items
+  in Google Base yet, use <a href='#insertRun'>InsertExample</a> to insert one,
+  or go to the <a href='http://base.google.com/base/step1offer?hl=en_US'>Google
+  Base Provider Frontenac</a> and insert one.</p>
+
+  <h3><a name="QE3run" id="QE3run"></a>Running <code>QueryExample3</code></h3>
+
+  <ol>
+    <li>Edit QueryExample3.java and make the following changes:
+
+      <ul>
+        <li>Enter your Google Accounts email address and your password in the
+        <code>EMAIL</code> and <code>PASSWORD</code> static strings:
+          <pre>
+        private static final String EMAIL = "";
+        private static final String PASSWORD = "";    
+      
+</pre>
+        </li>
+      </ul>
+    </li>
+
+    <li>Compile and run the example using your favorite editor, or the command
+    line:
+      <pre>
+    javac sample.gbase/basic/QueryExample3.java
+    java sample.gbase/basic/QueryExample3
+  
+</pre>
+    </li>
+
+    <li>The output will look like:
+      <pre>
+    &lt;?xml version='1.0' encoding='UTF-8'?&gt;
+    &lt;feed&gt;
+      &lt;id&gt;http://base.google.com/base/feeds/items&lt;/id&gt;
+      &lt;updated&gt;2006-08-22T12:00:00.000Z&lt;/updated&gt;
+      &lt;title type="text"&gt;Items matching query: [customer id(int):1870031]&lt;/title&gt;
+      ...
+  
+</pre>
+    </li>
+  </ol>
+
+  <h3><a name="QE3stepThru" id="QE3stepThru"></a>Stepping through the
+  <code>QueryExample3</code> code</h3>
+
+  <p>As opposed to the previous examples, here we need to obtain an
+  authorization token by authenticating with the Google Accounts server. We
+  then use this authorization token to invoke <code>displayMyItems</code>:</p>
+  <pre>
+ public static void main(String[] args) throws IOException {
+    QueryExample3 queryExample = new QueryExample3();
+    String token = queryExample.authenticate();
+    new QueryExample3().displayMyItems(token);
+  }
+</pre>
+
+  <p>We authenticate using <a href=
+  'http://code.google.com/apis/accounts/AuthForInstalledApps.html'>authentication
+  for installed applications</a>. The authentication procedure is simple. We
+  make a POST request to <code>AUTHENTICATION_URL</code>:</p>
+  <pre>
+  private static final String AUTHENTICATION_URL = "https://www.google.com/accounts/ClientLogin";
+</pre>The POST request is constructed in <code>makeLoginRequest</code>, and it
+looks like this:
+  <pre>
+    // POST /accounts/ClientLogin HTTP/1.0
+    // Content-type: application/x-www-form-urlencoded
+    // Email=johndoe@gmail.com&amp;Passwd=north23AZ&amp;service=gbase&amp;source=Insert Example
+</pre><code>makeLoginRequest</code> sends the request to the Google Accounts
+server and returns the response as a <code>String</code>. A successful response
+will have the following structure:
+  <pre>
+    //      HTTP/1.0 200 OK
+    //      Server: GFE/1.3
+    //      Content-Type: text/plain 
+    //      SID=DQAAAGgA...7Zg8CTN
+    //      LSID=DQAAAGsA...lk8BBbG
+    //      Auth=DQAAAGgA...dk3fA5N
+</pre><code>authenticate</code> first obtains the authentication response from
+<code>makeLoginRequest</code> and stores it in <code>postOutput</code>:
+  <pre>
+   String postOutput = null;
+    try {
+      URL url = new URL(AUTHENTICATION_URL);
+      postOutput = makeLoginRequest(url);
+    } catch (IOException e) {
+      System.out.println("Authentication error: " + e.toString());
+    }
+</pre>It then tokenizes <code>postOutput</code>, and returns the next token
+after "Auth", or <code>null</code> if the token is not found:
+  <pre>
+   StringTokenizer tokenizer = new StringTokenizer(postOutput, "=\n ");
+    String token = null;
+    
+    while (tokenizer.hasMoreElements()) {
+      if (tokenizer.nextToken().equals("Auth")) {
+        if (tokenizer.hasMoreElements()) {
+          token = tokenizer.nextToken(); 
+        }
+        break;
+      }
+    }
+</pre><br />
+  <br />
+
+  <p>The items are displayed in <code>displayMyItems</code>, which is very
+  similar to <code>displayItems</code> in QueryExample1, except that it injects
+  the authorization token in the Http header (as in this example):</p>
+  <pre>
+   connection.setRequestProperty("Authorization", "GoogleLogin auth=" + token);
+</pre>
+
+  <h2><a name="insertExample" id="insertExample"></a>Insert Example - Adding
+  your own item to Google Base.</h2>
+
+  <p>The previous examples demonstrated how to query the Google Base data API
+  server, both for snippets (unauthenticated feeds) and for items
+  (authenticated feeds, containing a specific customer's items). Let's
+  demonstrate now how to add to Google Base all the cool stuff you have, so
+  that the world can see it. Again, you will need a Google Account email and
+  password in order to run this example. If you don't have a Google Account,
+  sign up for one <a href=
+  'https://www.google.com/accounts/NewAccount'>here</a>.</p>
+
+  <p>In this example we will connect to your "items" feed, and do an Http POST
+  operation (as opposed to GET, used for querying) to add a new item. The item
+  to be added is encoded in Atom format, and is defined a <code>String</code>
+  constant:</p>
+  <pre>
+  private static final String DATA_ITEM = 
+        "&lt;?xml version=\'1.0\'?&gt;\n" + 
+        "&lt;entry xmlns=\'http://www.w3.org/2005/Atom\' xmlns:g=\'http://base.google.com/ns/1.0\'&gt;\n" + 
+        "  &lt;category scheme=\'http://base.google.com/categories/itemtypes\' term=\'Products\'/&gt;\n" + 
+        "  &lt;g:item_type type=\'text\'&gt;Products&lt;/g:item_type&gt;\n" + 
+        "  &lt;title type=\'text\'&gt;My cool car is for sale&lt;/title&gt;" +
+        "  &lt;content type=\'xhtml\'&gt;Light pink, yellow seats.&lt;/content&gt;" +
+        "&lt;/entry&gt;";
+</pre>It's a very simple item, consisting only of an item type ("products", in
+our case), a title and a content (description). Feel free to change these
+fields to contain your personalized items or to add new attributes and labels
+(use the responses dumped by <code>QueryExample1</code> and
+<code>QueryExample3</code> as an inspiration for adding new attributes).
+
+  <h3><a name="insertRun" id="insertRun"></a>Running
+  <code>InsertExample</code></h3>
+
+  <ol>
+    <li>Edit InsertExample.java and make the following changes:
+
+      <ul>
+        <li>Enter your Google Accounts email address and your password in the
+        <code>EMAIL</code> and <code>PASSWORD</code> static strings:
+          <pre>
+        private static final String EMAIL = "";
+        private static final String PASSWORD = "";    
+      
+</pre>
+        </li>
+      </ul>
+    </li>
+
+    <li>Compile and run the example using your favorite editor, or the command
+    line:
+      <pre>
+    javac sample.gbase/basic/InsertExample.java
+    java sample.gbase/basic/InsertExample
+  
+</pre>
+    </li>
+
+    <li>The output will look like:
+      <pre>
+    Obtained authorization token: DQAAAGgA...dk3fA5N
+    &lt;?xml version='1.0' encoding='UTF-8'?&gt;
+    &lt;entry&gt;
+    &lt;id&gt;http://base.google.com/base/feeds/items/16024998325761524417&lt;/id&gt;
+    &lt;published&gt;2006-08-23T15:18:55.184Z&lt;/published&gt;
+    &lt;updated&gt;2006-08-23T15:18:55.184Z&lt;/updated&gt;
+    &lt;category scheme="http://base.google.com/categories/itemtypes" term="Products"/&gt;
+    &lt;title type="text"&gt;My cool car is for sale&lt;/title&gt;
+    &lt;content type="xhtml"&gt;Light pink, yellow seats.&lt;/content&gt;
+    &lt;link rel="self" type="application/atom+xml" href="http://base.google.com/base/feeds/items/16024998325761524417"/&gt;
+    &lt;link rel="edit" type="application/atom+xml" href="http://base.google.com/base/feeds/items/16024998325761524417"/&gt;
+    &lt;g:item_type type="text"&gt;Products&lt;/g:item_type&gt;
+    &lt;/entry&gt; 
+  
+</pre>
+    </li>
+  </ol>
+
+  <h3><a name="InsertStepThru" id="InsertStepThru"></a>Stepping through the
+  <code>InsertExample</code> code</h3>
+
+  <p>We use the same feed as in QueryExample3.java to insert the item:</p>
+  <pre>
+  private static final String ITEMS_FEED = "http://base.google.com/base/feeds/items";
+</pre>Authentication is also performed as in <a href=
+'#QE3stepThru'>QueryExample3</a>, using <code>makeLoginRequest</code> to
+request an authorization token and <code>authenticate</code> to parse the
+authentication response. The insertion of the new data item is done in
+<code>postItem</code>, which connects to the items feed:
+  <pre>
+    HttpURLConnection connection = (HttpURLConnection)(new URL(ITEMS_FEED)).openConnection();
+</pre>Once the connection is created, we need to set its properties: the Http
+request method, the content type of the information that is being posted, the
+authorization header:
+  <pre>
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Content-Type", "application/atom+xml");
+    connection.setRequestProperty("Authorization", "GoogleLogin auth=" + token);
+</pre>We then obtain the output stream of the connection and dump
+<code>DATA_ITEM</code> into it:
+  <pre>
+    OutputStream outputStream = connection.getOutputStream();
+    outputStream.write(DATA_ITEM.getBytes());
+    outputStream.close();
+</pre>The rest of the method is already familiar: we obtain the response code
+and print out to the console the contents of the input stream corresponding to
+the response code.<br />
+  <br />
+
+  <h2><a name="updateExample" id="updateExample"></a>Update Example - Modifying
+  your Google Base items.</h2>
+
+  <p>The previous examples demonstrated how to query the Google Base data API
+  server both for authenticated and unauthenticated feeds and how to insert a
+  new item. We will combine this knowledge in order to demonstrate how to
+  update an already existing item. Again, you will need a Google Account email
+  and password in order to run this example. If you don't have a Google
+  Account, sign up for one <a href=
+  'https://www.google.com/accounts/NewAccount'>here</a>. This example does not
+  introduce important new concepts, but rather uses all the essentials that
+  have been presented in the previous examples: we will authenticate, insert an
+  item, and then update the inserted item by adding a new label to it.</p>
+
+  <h3><a name="updateRun" id="updateRun"></a>Running
+  <code>UpdateExample</code></h3>
+
+  <ol>
+    <li>Edit UpdateExample.java and make the following changes:
+
+      <ul>
+        <li>Enter your Google Accounts email address and your password in the
+        <code>EMAIL</code> and <code>PASSWORD</code> static strings:
+          <pre>
+        private static final String EMAIL = "";
+        private static final String PASSWORD = "";    
+      
+</pre>
+        </li>
+      </ul>
+    </li>
+
+    <li>Compile and run the example using your favorite editor, or the command
+    line:
+      <pre>
+    javac sample.gbase/basic/UpdateExample.java
+    java sample.gbase/basic/UpdateExample
+  
+</pre>
+    </li>
+
+    <li>The output will look like:
+      <pre>
+    Obtained authorization token: DQAAAGgA...dk3fA5N
+    Posting item:
+    &lt;?xml version='1.0'?&gt;
+    &lt;entry xmlns='http://www.w3.org/2005/Atom' xmlns:g='http://base.google.com/ns/1.0'&gt;
+      &lt;category scheme='http://base.google.com/categories/itemtypes' term='Products'/&gt;
+      &lt;g:item_type type='text'&gt;Products&lt;/g:item_type&gt;
+      &lt;title type='text'&gt;My cool car is for sale&lt;/title&gt;
+      &lt;content type='xhtml'&gt;Light pink, yellow seats.&lt;/content&gt;
+    &lt;/entry&gt;
+
+    Updating item: http://base.google.com/base/feeds/items/18020038538902937385  
+
+    &lt;?xml version='1.0' encoding='UTF-8'?&gt;
+    &lt;entry&gt;
+      &lt;id&gt;http://base.google.com/base/feeds/items/18020038538902937385&lt;/id&gt;
+      &lt;updated&gt;2006-08-23T16:20:21.601Z&lt;/updated&gt;
+      &lt;category scheme="http://base.google.com/categories/itemtypes" term="Products"/&gt;
+      &lt;title type="text"&gt;My cool car is for sale&lt;/title&gt;
+      &lt;content type="xhtml"&gt;Light pink, yellow seats.&lt;/content&gt;
+      &lt;link rel="self" type="application/atom+xml" href="http://base.google.com/base/feeds/items/18020038538902937385"/&gt;
+      &lt;link rel="edit" type="application/atom+xml" href="http://base.google.com/base/feeds/items/18020038538902937385"/&gt;
+      &lt;g:item_type type="text"&gt;Products&lt;/g:item_type&gt;
+    &lt;/entry&gt;
+</pre>
+    </li>
+  </ol>
+
+  <h3><a name="UpdateStepThru" id="UpdateStepThru"></a>Stepping through the
+  <code>UpdateExample</code> code</h3>
+
+  <p>The <code>main</code> method of <code>UpdateExample</code> provides a good
+  outline of the example's structure:</p>
+  <pre>
+ public static void main(String[] args) throws MalformedURLException, IOException {
+    UpdateExample updateExample = new UpdateExample();
+    String token = updateExample.authenticate();
+    System.out.println("Obtained authorization token: " + token);
+  
+    System.out.println("Posting item:\n" + DATA_ITEM);
+    String itemUrl = updateExample.extractItemUrlFromResponse(
+        updateExample.postItem(token));
+    
+    System.out.println("Updating item: " + itemUrl);
+    String updateResponse = updateExample.updateItem(token, itemUrl);
+    System.out.println(updateResponse);
+  }
+</pre>Just like in the previous examples, we start by authenticating and
+obtaining an authorization token using the <code>authenticate</code> method:
+  <pre>
+    String token = updateExample.authenticate();
+</pre>We then insert <code>DATA_ITEM</code> using <code>postItem</code>:
+  <pre>
+   String itemUrl = updateExample.extractItemUrlFromResponse(
+        updateExample.postItem(token));
+</pre>In the line above, we pass the output of the post operation
+to<code>extractItemUrlFromResponse</code> (rather than dumping it out to the
+console), which extracts the inserted item's id:
+  <pre>
+      &lt;id&gt;http://base.google.com/base/feeds/items/18020038538902937385&lt;/id&gt;
+</pre>We assume that the item's id is surrounded by the first
+&lt;id&gt;&lt;/id&gt; tags; this is true for the Google Base data API servers,
+but it's not enforced by the Atom protocol. See how the title gets parsed in
+<a href='#QE2stepThru'>Query Example 2</a>, for a superior approach on parsing
+the item's title.
+
+  <p>Once <code>DATA_ITEM</code> is successfully inserted, we replace it with
+  <code>NEW_DATA_ITEM</code> using <code>updateItem</code>. Updating an item is
+  very similar to inserting a new one - in fact so similar that both operations
+  can be performed by the same method: <code>makeHttpRequest</code>.
+  <code>makeHttpRequest</code> receives as parameters the authorization token,
+  the url to connect to, the item to be inserted or posted, the http method to
+  use (this will be POST for inserting, and PUT for deleting) and the response
+  code to expect in case of a successful operation (HTTP_CREATED in case of
+  insert, HTTP_OK in case of update). Thus, <code>postItem</code> will contain
+  a simple invocation to <code>makeHttpRequest</code>:</p>
+  <pre>
+    public String postItem(String token) throws IOException {
+      return makeHttpRequest(token, ITEMS_FEED, NEW_DATA_ITEM, "POST", HttpURLConnection.HTTP_CREATED);
+    }
+  
+</pre>Similarly, <code>updateItem</code> invokes <code>makeHttpRequest</code>
+with slightly different parameters:
+  <pre>
+    public String updateItem(String token, String itemUrl) throws MalformedURLException, IOException {
+      return makeHttpRequest(token, itemUrl, NEW_DATA_ITEM, "PUT", HttpURLConnection.HTTP_OK);
+    }
+</pre>
+</body>
+</html>

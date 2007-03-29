@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+  <display-name>Google Base Recipe Search</display-name>
+  <description>Search Recipes on Google Base</description>
+  <context-param>
+    <param-name>baseUrl</param-name>
+    <param-value>http://www.google.com/base/</param-value>
+    <description>URL of the google base server to connect to.</description>
+  </context-param>
+  <context-param>
+    <param-name>applicationName</param-name>
+    <param-value>Google-RecipeDemo-1.0</param-value>
+    <description>Application name used when authenticating.</description>
+  </context-param>
+  <context-param>
+    <param-name>key</param-name>
+    <param-value></param-value>
+    <description>Developer key used to authenticate against the Google Base data API servers.</description>
+  </context-param>
+  <filter>
+    <filter-name>AuthenticationFilter</filter-name>
+    <filter-class>sample.gbase.recipe.AuthenticationFilter</filter-class>
+    <init-param>
+      <param-name>authsubProtocol</param-name>
+      <param-value>https</param-value>
+      <description>Protocol to be used when connecting to AuthSub.</description>
+    </init-param>
+    <init-param>
+      <param-name>authsubHostname</param-name>
+      <param-value>www.google.com</param-value>
+      <description>Hostname of the authentication server.</description>
+    </init-param>
+  </filter>
+  <listener>
+    <listener-class>sample.gbase.recipe.RecipeListener</listener-class>
+  </listener>
+  <filter-mapping>
+    <filter-name>AuthenticationFilter</filter-name>
+    <servlet-name>OwnRecipeSearchServlet</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AuthenticationFilter</filter-name>
+    <servlet-name>RecipeAddServlet</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AuthenticationFilter</filter-name>
+    <servlet-name>RecipeUpdateServlet</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AuthenticationFilter</filter-name>
+    <servlet-name>RecipeDeleteServlet</servlet-name>
+  </filter-mapping>
+  <servlet>
+    <servlet-name>AllRecipeSearchServlet</servlet-name>
+    <servlet-class>sample.gbase.recipe.RecipeSearchServlet</servlet-class>
+    <init-param>
+      <param-name>scope</param-name>
+      <param-value>all</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>OwnRecipeSearchServlet</servlet-name>
+    <servlet-class>sample.gbase.recipe.RecipeSearchServlet</servlet-class>
+    <init-param>
+      <param-name>scope</param-name>
+      <param-value>own</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>RecipeAddServlet</servlet-name>
+    <servlet-class>sample.gbase.recipe.RecipeActionServlet</servlet-class>
+    <init-param>
+      <param-name>action</param-name>
+      <param-value>add</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>RecipeUpdateServlet</servlet-name>
+    <servlet-class>sample.gbase.recipe.RecipeActionServlet</servlet-class>
+    <init-param>
+      <param-name>action</param-name>
+      <param-value>update</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>RecipeDeleteServlet</servlet-name>
+    <servlet-class>sample.gbase.recipe.RecipeActionServlet</servlet-class>
+    <init-param>
+      <param-name>action</param-name>
+      <param-value>delete</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>RecipeDisplayServlet</servlet-name>
+    <servlet-class>sample.gbase.recipe.RecipeDisplayServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AllRecipeSearchServlet</servlet-name>
+    <url-pattern>/recipeSearch</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>OwnRecipeSearchServlet</servlet-name>
+    <url-pattern>/recipeList</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RecipeAddServlet</servlet-name>
+    <url-pattern>/recipeAdd</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RecipeUpdateServlet</servlet-name>
+    <url-pattern>/recipeUpdate</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RecipeDeleteServlet</servlet-name>
+    <url-pattern>/recipeDelete</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RecipeDisplayServlet</servlet-name>
+    <url-pattern>/recipeDisplay</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

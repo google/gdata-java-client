@@ -1,0 +1,256 @@
+/* Copyright (c) 2006 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package com.google.gdata.client.appsforyourdomain;
+
+import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.Query;
+import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.DateTime;
+import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
+import com.google.gdata.util.ServiceException;
+
+import java.io.IOException;
+import java.net.URL;
+
+/**
+ * The AppsForYourDomainService class extends the basic {@link GoogleService}
+ * abstraction to define a service that is preconfigured for access to the
+ * Google Apps for Your Domain GData API.
+ */
+public abstract class AppsForYourDomainService extends GoogleService {
+
+  /**
+   * The domain which hosts the the authentication.
+   */
+  protected static final String DOMAIN_NAME = "www.google.com";
+
+  /**
+   * The protocol used to obtain authentication tokens.
+   */
+  protected static final String HTTPS_PROTOCOL = "https";
+
+
+  /**
+   * The abbreviated name of Apps for Your Domain recognized by Google.
+   * The service name is used while requesting an authentication token.
+   */
+  public static final String APPS_SERVICE = "apps";
+
+  /**
+   * Constructs a AppsForYourDomainService instance for an application with
+   * the name {@code applicationName}.
+   *
+   * @param applicationName the name of the client application accessing the
+   *                        service. Application names should preferably have
+   *                        the format [company-id]-[app-name]-[app-version].
+   *                        The name will be used by the Google servers to
+   *                        monitor the source of authentication.
+   */
+  public AppsForYourDomainService(String applicationName) {
+    this(applicationName, HTTPS_PROTOCOL, DOMAIN_NAME);
+  }
+
+  /**
+   * Constructs a GoogleService instance connecting to the service with name
+   * {@code serviceName} for an application with the name
+   * {@code applicationName}.  The service will authenticate at the provided
+   * {@code domainName}.
+   *
+   * @param applicationName the name of the client application accessing the
+   *                        service. Application names should preferably have
+   *                        the format [company-id]-[app-name]-[app-version].
+   *                        The name will be used by the Google servers to
+   *                        monitor the source of authentication.
+   * @param protocol        name of protocol to use for authentication
+   *                        ("http"/"https")
+   * @param domainName      the name of the domain hosting the login handler
+   */
+  public AppsForYourDomainService(String applicationName,
+      String protocol,
+      String domainName) {
+    super(APPS_SERVICE, applicationName, protocol, domainName);
+  }
+
+  /**
+   * @throws AppsForYourDomainException If an Apps for Your Domain API error
+   * occurred.
+   */
+  @Override
+  public <E extends BaseEntry> E insert(URL feedUrl, E entry)
+      throws IOException, ServiceException, AppsForYourDomainException {
+    try {
+      return super.insert(feedUrl, entry);
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae
+	  = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
+  }
+
+  /**
+   * The call to super.getEntry should fall through to Service and the
+   * behaviour is unknown if this method is overloaded in GoogleService.
+   *
+   * @throws AppsForYourDomainException If an Apps for Your Domain API error
+   * occurred.
+   */
+  @Override
+  public <E extends BaseEntry> E getEntry(URL entryUrl,
+                                          Class<E> entryClass)
+      throws IOException, ServiceException, AppsForYourDomainException {
+    try {
+      return super.getEntry(entryUrl, entryClass);
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae
+          = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
+  }
+
+  /**
+   * The call to super.getEntry should fall through to Service and the
+   * behaviour is unknown if this method is overloaded in GoogleService.
+   *
+   * @throws AppsForYourDomainException If an Apps for Your Domain API error
+   * occurred.
+   */
+  @Override
+  public <F extends BaseFeed> F getFeed(URL feedUrl, Class<F> feedClass)
+      throws IOException, ServiceException, AppsForYourDomainException {
+    try {
+      return super.getFeed(feedUrl, feedClass);
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae
+          = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
+  }
+
+  /**
+   * The call to super.getEntry should fall through to Service and the
+   * behaviour is unknown if this method is overloaded in GoogleService.
+   *
+   * @throws AppsForYourDomainException If an Apps for Your Domain API error
+   * occurred.
+   */
+  @Override
+  public <F extends BaseFeed> F query(Query query, Class<F> feedClass)
+      throws IOException, ServiceException, AppsForYourDomainException {
+    try {
+      return super.query(query, feedClass);
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae
+          = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
+  }
+
+  /**
+   * @throws AppsForYourDomainException If an Apps for Your Domain API error
+   * occurred.
+   */
+  @Override
+  public <E extends BaseEntry> E update(URL entryUrl, E entry)
+      throws IOException, ServiceException, AppsForYourDomainException {
+    try {
+      return super.update(entryUrl, entry);
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae
+          = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
+  }
+
+  /**
+   * @throws AppsForYourDomainException If an Apps for Your Domain API error
+   * occurred.
+   */
+  @Override
+  public void delete(URL entryUrl) throws IOException, ServiceException,
+      AppsForYourDomainException {
+    try {
+      super.delete(entryUrl);
+      return;
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae
+          = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
+  }
+
+  /**
+   * Returns an Atom entry instance, given the URL of the entry and an
+   * if-modified-since date.  Note that this method is overriden to prevent the
+   * usage of a non-null if-modified-since value.  The Google Apps for Your
+   * Domain Provisioning API does not support the use of the if-modified-since
+   * value. 
+   *
+   * @param entryUrl resource URL for the entry.
+   * @param entryClass class used to represent service entries.
+   * @param ifModifiedSince used to set a precondition date that indicates the
+   *          entry should be returned only if it has been modified after the
+   *          specified date. A value of {@code null} indicates no
+   *          precondition.
+   * @return the entry referenced by the URL parameter.
+   * @throws IOException error communicating with the GData service.
+   * @throws NotModifiedException if the entry resource has not been modified
+   *          after the specified precondition date.
+   * @throws ParseException error parsing the returned entry.
+   * @throws ResourceNotFoundException if the entry URL is not valid.
+   * @throws ServiceForbiddenException if the GData service cannot
+   *          get the entry resource due to access constraints.
+   * @throws ServiceException if a system error occurred when retrieving
+   *          the entry.
+   */
+  public <E extends BaseEntry> E getEntry(URL entryUrl,
+                                          Class<E> entryClass,
+                                          DateTime ifModifiedSince)
+      throws IOException, ServiceException {
+    return super.getEntry(entryUrl, entryClass, null);
+  }
+
+  /**
+   * Executes a GData query against the target service and returns the
+   * {@link Feed} containing entries that match the query result, if
+   * it's been modified since the specified date.  Note that this method is
+   * overriden to prevent the usage of a non-null if-modified-since value.  The
+   * Google Apps for Your Domain Provisioning API does not support the use of
+   * the if-modified-since value.
+   *
+   * @param query Query instance defining target feed and query parameters.
+   * @param feedClass the Class used to represent a service Feed.
+   * @param ifModifiedSince used to set a precondition date that indicates the
+   *          query result feed should be returned only if contains entries
+   *          that have been modified after the specified date.  A value of
+   *          {@code null} indicates no precondition.
+   * @throws IOException error communicating with the GData service.
+   * @throws NotModifiedException if the query resource does not contain
+   *          entries modified since the specified precondition date.
+   * @throws ServiceForbiddenException feed does not support the query.
+   * @throws ParseException error parsing the returned feed data.
+   * @throws ServiceException query request failed.
+   */
+  public <F extends BaseFeed> F getFeed(URL feedUrl,
+                                        Class<F> feedClass,
+                                        DateTime ifModifiedSince)
+      throws IOException, ServiceException {
+    return super.getFeed(feedUrl, feedClass, null);
+  }
+
+
+}

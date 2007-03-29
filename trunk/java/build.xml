@@ -1,0 +1,1419 @@
+<!--
+
+    Ant script to generate the GData java libraries and samples.
+    To build, run 'ant -f <path-to-this-file>'.
+
+-->
+
+
+<project name="GData" default="build" basedir=".">
+
+
+<!-- ==================== File and Directory Names ======================== -->
+
+<!--
+
+  These properties generally define file and directory names (or paths) that
+  affect where the build process stores its outputs.
+
+-->
+
+  <property file="build.properties"/>
+
+  <property name="build" value="."/>
+  <property name="build.classes" value="${build}/classes"/>
+  <property name="build.jars" value="${build}/lib"/>
+
+  <property name="version" value="1.0"/>
+
+  <property name="gdata-client.jar"
+            value="${build.jars}/gdata-client-${version}.jar"/>
+  <property name="gdata-appsforyourdomain.jar"
+            value="${build.jars}/gdata-appsforyourdomain-${version}.jar"/>          
+  <property name="gdata-base.jar"
+            value="${build.jars}/gdata-base-${version}.jar"/>
+  <property name="gdata-calendar.jar"
+            value="${build.jars}/gdata-calendar-${version}.jar"/>
+  <property name="gdata-codesearch.jar"
+            value="${build.jars}/gdata-codesearch-${version}.jar"/>
+  <property name="gdata-photos.jar"
+            value="${build.jars}/gdata-photos-${version}.jar"/>                     
+  <property name="gdata-spreadsheet.jar"
+            value="${build.jars}/gdata-spreadsheet-${version}.jar"/>
+
+  <property name="gdata-client.manifest"
+            value="${build}/client.manifest"/>
+  <property name="gdata-appsforyourdomain.manifest"
+            value="${build}/appsforyourdomain.manifest"/>
+  <property name="gdata-base.manifest"
+            value="${build}/base.manifest"/>
+  <property name="gdata-calendar.manifest"
+            value="${build}/calendar.manifest"/>
+  <property name="gdata-codesearch.manifest"
+            value="${build}/codesearch.manifest"/>
+  <property name="gdata-photos.manifest"
+            value="${build}/photos.manifest"/>                     
+  <property name="gdata-spreadsheet.manifest"
+            value="${build}/spreadsheet.manifest"/>
+   
+  <property name="build.src" value="${build}/src"/>
+
+  <property name="build.classes" value="${build}/classes"/>
+  <property name="build.classes.client" value="${build.classes}/client"/>
+  <property name="build.classes.appsforyourdomain"
+            value="${build.classes}/appsforyourdomain"/>          
+  <property name="build.classes.base" value="${build.classes}/base"/>
+  <property name="build.classes.calendar" value="${build.classes}/calendar"/>
+  <property name="build.classes.codesearch"
+            value="${build.classes}/codesearch"/>
+  <property name="build.classes.photos" value="${build.classes}/photos"/>
+  <property name="build.classes.spreadsheet"
+            value="${build.classes}/spreadsheet"/>
+
+
+<!-- ==================== All Target ====================================== -->
+
+
+  <target name="all" depends="clean,build"
+   description="Clean build and dist directories, then build dist"/>
+
+
+
+<!-- ==================== Dist Target ===================================== -->
+
+<!--
+
+  Creates the build output directories.
+
+-->
+
+  <target name="dirs">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build.jars}"/>
+    <mkdir dir="${build.classes}"/>
+    <mkdir dir="${build.classes.client}"/>
+    <mkdir dir="${build.classes.appsforyourdomain}"/>
+    <mkdir dir="${build.classes.base}"/>
+    <mkdir dir="${build.classes.calendar}"/>
+    <mkdir dir="${build.classes.codesearch}"/>
+    <mkdir dir="${build.classes.photos}"/>
+    <mkdir dir="${build.classes.spreadsheet}"/>
+  </target>
+
+
+<!-- ==================== Build Target ===================================== -->
+
+<!--
+
+  Builds the main project.
+
+-->
+
+  <target name="build" depends="dirs">
+    <antcall target="build.jars"/>
+  </target>
+
+<!-- ==================== Build Client Target ============================= -->
+
+<!--
+
+  Builds the GData client library.
+
+-->
+
+  <!--  Dependencies for build.client -->
+  <target name="require.client.dependencies">
+    <available file="${mail.jar}" property="has.sunmail"/>
+    <available file="${activation.jar}" property="has.sunactivation"/>
+    <fail unless="has.sunmail">missing jar file: ${mail.jar}
+The GData client requires Sun's javamail API (version 1.4), which
+is not included in this distribution.
+
+You can download it from: 
+ http://java.sun.com/products/javamail/download.html
+ 
+Then save it under: 
+  ${mail.jar}
+    </fail>
+    <fail unless="has.sunactivation">missing jar file: ${activation.jar}
+The GData client requires Sun's javamail API (version 1.4), which
+is not included in this distribution.
+
+You can download it from: 
+ http://java.sun.com/products/javamail/download.html
+ 
+Then save it under: 
+  ${activation.jar}
+    </fail>
+  </target>
+
+  <!-- classpath for build.client dependencies -->
+  <path id="build.client.classpath">
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${activation.jar}"/>
+  </path> 
+
+  <!-- Target: build.client -->
+  <!-- Builds the GData client library -->
+  <target name="build.client" depends="require.client.dependencies">
+    <javac debug="false" sourcepath=""
+                         srcdir="${build.src}"
+                         destdir="${build.classes.client}">
+      <classpath refid="build.client.classpath"/>
+      <include name="**/*.java"/>
+      <exclude name="**/appsforyourdomain/**"/>
+      <exclude name="**/AppsForYourDomain/**"/>
+      <exclude name="**/gbase/**"/>
+      <exclude name="**/calendar/**"/>
+      <exclude name="**/Calendar**"/>
+      <exclude name="**/codesearch/**"/>
+      <exclude name="**/CodeSearch**"/>
+      <exclude name="**/photos/**"/>
+      <exclude name="**/Photos/**"/>
+      <exclude name="**/spreadsheet/**"/>
+      <exclude name="**/Spreadsheet/**"/>
+    </javac>
+    <jar destfile="${gdata-client.jar}"
+         basedir="${build.classes.client}"
+         manifest="${gdata-client.manifest}">
+         <fileset dir="${build.src}">
+            <include name="META-INF/**"/>
+         </fileset>
+    </jar>
+  </target>
+
+
+<!-- ==================== Build Services ================================= -->
+
+  <!-- Target: build.services -->
+  <!-- Builds each of the services as a separate jar -->
+  <target name="build.services">
+    <antcall target="build.vertical.appsforyourdomain"/>
+    <antcall target="build.vertical.base"/>
+    <antcall target="build.vertical.calendar"/>
+    <antcall target="build.vertical.codesearch"/>
+    <antcall target="build.vertical.photos"/>
+    <antcall target="build.vertical.spreadsheet"/>
+  </target>
+
+
+<!--
+  Build the GData AppsForYourDomain library.
+-->
+
+  <!-- Target: build.vertical.appsforyourdomain -->
+  <!-- Builds the GData AppsForYourDomain client library -->
+  <target name="build.vertical.appsforyourdomain">
+    <javac debug="false" sourcepath=""
+                         srcdir="${build.src}"
+                         destdir="${build.classes.appsforyourdomain}"
+                         classpath="${gdata-client.jar}">
+      <include name="**/appsforyourdomain/**"/>
+    </javac>
+    <jar destfile="${gdata-appsforyourdomain.jar}"
+         basedir="${build.classes.appsforyourdomain}"
+         manifest="${gdata-appsforyourdomain.manifest}" />
+  </target>
+  
+<!--
+  Build the GData Base library.
+-->
+
+  <!-- Target: build.vertical.base -->
+  <!-- Builds the GData Base client library -->
+  <target name="build.vertical.base" description="build the client library ${gdata-base.jar}">
+    <javac debug="false" sourcepath=""
+                         srcdir="${build.src}"
+                         destdir="${build.classes.base}"
+                         classpath="${gdata-client.jar}">
+      <include name="**/gbase/client/*.java"/>
+    </javac>
+    <jar destfile="${gdata-base.jar}"
+         basedir="${build.classes.base}"
+         manifest="${gdata-base.manifest}" />
+  </target>
+
+
+<!--
+  Build the GData Calendar library.
+-->
+
+  <!-- Target: build.vertical.calendar -->
+  <!-- Builds the GData Calendar client library -->
+  <target name="build.vertical.calendar">
+    <javac debug="false" sourcepath=""
+                         srcdir="${build.src}"
+                         destdir="${build.classes.calendar}"
+                         classpath="${gdata-client.jar}">
+      <include name="**/calendar/**"/>
+    </javac>
+    <jar destfile="${gdata-calendar.jar}"
+         basedir="${build.classes.calendar}"
+         manifest="${gdata-calendar.manifest}" />
+  </target>
+
+
+<!--
+  Build the GData CodeSearch library.
+-->
+
+  <!-- Target: build.vertical.codesearch -->
+  <!-- Builds the GData CodeSearch client library -->
+  <target name="build.vertical.codesearch">
+    <javac debug="false" sourcepath=""
+                         srcdir="${build.src}"
+                         destdir="${build.classes.codesearch}"
+                         classpath="${gdata-client.jar}">
+      <include name="**/codesearch/**"/>
+    </javac>
+    <jar destfile="${gdata-codesearch.jar}"
+         basedir="${build.classes.codesearch}"
+         manifest="${gdata-codesearch.manifest}" />
+  </target>
+
+ <!--
+  Build the GData photos library.
+-->
+
+  <!-- Target: build.vertical.photos -->
+  <!-- Builds the GData photos client library -->
+  <target name="build.vertical.photos">
+    <javac debug="false" sourcepath=""
+                         srcdir="${build.src}"
+                         destdir="${build.classes.photos}"
+                         classpath="${gdata-client.jar}">
+      <include name="**/photos/**"/>
+    </javac>
+    <jar destfile="${gdata-photos.jar}"
+         basedir="${build.classes.photos}"
+         manifest="${gdata-photos.manifest}" />
+  </target> 
+
+<!--
+  Build the GData Spreadsheet library.
+-->
+
+  <!-- Target: build.vertical.spreadsheet -->
+  <!-- Builds the GData Spreadsheet client library -->
+  <target name="build.vertical.spreadsheet">
+    <javac debug="false" sourcepath=""
+                         srcdir="${build.src}"
+                         destdir="${build.classes.spreadsheet}"
+                         classpath="${gdata-client.jar}">
+      <include name="**/spreadsheet/**"/>
+    </javac>
+    <jar destfile="${gdata-spreadsheet.jar}"
+         basedir="${build.classes.spreadsheet}"
+         manifest="${gdata-spreadsheet.manifest}" />
+  </target>
+
+
+<!-- ==================== Build All Jars ================================== -->
+
+  <target name="build.jars">
+    <antcall target="build.client"/>
+    <antcall target="build.services"/>
+  </target>
+
+
+<!-- ==================== Clean Target ==================================== -->
+
+  <target name="clean">
+    <delete dir="${build.classes}"/>
+  </target>
+
+
+
+<!--  ===================================================================== -->
+<!--                      Drivers For Samples                               -->
+<!--  ===================================================================== -->
+
+  <target name="samples.build">
+    <antcall target="sample.authsub.build"/>
+    <antcall target="sample.util.build"/>
+    <antcall target="sample.appsforyourdomain.build"/>
+    <antcall target="sample.gbase.build"/>
+    <antcall target="sample.calendar.build"/>
+    <antcall target="sample.codesearch.build"/>
+    <antcall target="sample.photos.build"/>
+    <antcall target="sample.spreadsheet.build"/>
+    <antcall target="sample.tester.build"/>
+  </target>
+
+  <target name="samples.clean">
+    <antcall target="sample.authsub.clean"/>
+    <antcall target="sample.util.clean"/>
+    <antcall target="sample.appsforyourdomain.clean"/>
+    <antcall target="sample.gbase.clean"/>
+    <antcall target="sample.calendar.clean"/>
+    <antcall target="sample.codesearch.clean"/>
+    <antcall target="sample.photos.clean"/>
+    <antcall target="sample.spreadsheet.clean"/>
+    <antcall target="sample.tester.clean"/>
+  </target>
+
+  <!--  ====== Core client libraries required to execute samples =========  -->
+  <path id="samples.run.classpath">
+    
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${activation.jar}"/>
+    <pathelement location="${gdata-client.jar}"/>
+
+  </path>  
+
+
+<!--  ==================== Dependencies =================================== -->
+  <target name="require.servlet-api">
+    <available file="${servlet.jar}" property="has.servlet-api"/>
+    <fail unless="has.servlet-api">missing jar file: ${servlet-api.jar}
+The recipe example requires Sun's Servlet API (version 2.3 or 2.4), which
+is not included in this distribution.
+
+You can download it from: 
+ http://java.sun.com/products/servlet/download.html
+ Under SPECIFICATIONS/Java Servlet, download 'class files 2.3' from "2.3 - Final Release"
+ 
+Then save it under: 
+  ${servlet-api.jar}
+    </fail>
+  </target>
+
+
+<!--  ===================================================================== -->
+<!--                      Util For Sample Targets                           -->
+<!--  ===================================================================== -->
+
+<!-- ==================== Util Property Names ============================= -->
+
+  <property name="sample.util.basedir"       value="${basedir}/sample/util"/>
+  <property name="sample.util.build.classes" value="${sample.util.basedir}/classes"/>
+  <property name="sample.util.build.lib"     value="${sample.util.basedir}/lib"/>
+  <property name="sample-util.jar"           value="${sample.util.build.lib}/sample-util.jar"/>
+
+
+<!-- ==================== Util Clean Target ============================ -->
+
+
+  <target name="sample.util.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.util.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.util.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>    
+
+  </path>
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+
+-->
+
+  <target name="sample.util.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.util.build.classes}"/>
+    <javac srcdir="${sample.util.basedir}"
+           destdir="${sample.util.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.util.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== Util Build Target =========================== -->
+
+  <target name="sample.util.build" depends="sample.util.compile"
+   description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.util.build.lib}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample-util.jar}"
+         basedir="${sample.util.build.classes}">
+    </jar>
+
+  </target>
+
+
+<!--  ===================================================================== -->
+<!--                      AppsForYourDomain Sample Targets                  -->
+<!--  ===================================================================== -->
+
+<!-- ==================== AppsForYourDomain property names ================ -->
+
+  <property name="sample.appsforyourdomain.basedir"
+            value="${basedir}/sample/appsforyourdomain"/>
+  <property name="sample.appsforyourdomain.src.home"
+            value="${sample.appsforyourdomain.basedir}"/>
+  <property name="sample.appsforyourdomain.build.classes"
+            value="${sample.appsforyourdomain.basedir}/classes"/>
+  <property name="sample.appsforyourdomain.build.lib"
+            value="${sample.appsforyourdomain.basedir}/lib"/>
+  <property name="sample.appsforyourdomain.jar"
+            value="${sample.appsforyourdomain.build.lib}/AppsForYourDomainClient.jar"/>
+  <property name="sample.appsforyourdomain.main"
+            value="sample.appsforyourdomain.AppsForYourDomainClient"/>
+
+
+<!-- ==================== AppsForYourDomain Clean Target ================== -->
+
+
+  <target name="sample.appsforyourdomain.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.appsforyourdomain.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.appsforyourdomain.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>
+    <pathelement location="${gdata-appsforyourdomain.jar}"/>
+    <pathelement location="${sample-util.jar}"/>
+
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+
+-->
+
+  <target name="sample.appsforyourdomain.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.appsforyourdomain.build.classes}"/>
+    <javac srcdir="${sample.appsforyourdomain.src.home}"
+           destdir="${sample.appsforyourdomain.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.appsforyourdomain.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== AppsForYourDomain Build Target ================== -->
+
+  <target name="sample.appsforyourdomain.build"
+          depends="sample.appsforyourdomain.compile"
+          description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.appsforyourdomain.build.lib}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample.appsforyourdomain.jar}"
+         basedir="${sample.appsforyourdomain.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.appsforyourdomain.main}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+
+<!-- ==================== AppsForYourDomain Run Target ==================== -->
+
+  <target name="sample.appsforyourdomain.run"
+          depends="sample.appsforyourdomain.build"
+          description="Runs the AppsForYourDomain sample">
+
+    <java fork="true" classname="${sample.appsforyourdomain.main}">
+      <arg line="--admin_email ${sample.appsforyourdomain.admin_email} --admin_password ${sample.appsforyourdomain.admin_password} --domain ${sample.appsforyourdomain.domain}"/>
+      <classpath>
+        <path refid="sample.appsforyourdomain.compile.classpath"/>
+        <path location="${sample.appsforyourdomain.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+
+<!--  ===================================================================== -->
+<!--                      GBase Sample Targets                              -->
+<!--  ===================================================================== -->
+
+<!-- ==================== GBase Property Names ============================ -->
+
+  <property name="sample.gbase.basedir"       value="${basedir}/sample/gbase"/>
+  <property name="sample.gbase.cmdlinedir"    value="${sample.gbase.basedir}/cmdline"/>
+  <property name="sample.gbase.recipe"        value="${sample.gbase.basedir}/recipe"/>
+  <property name="sample.gbase.build.classes" value="${sample.gbase.basedir}/classes"/>
+  <property name="sample.gbase.build.lib"     value="${sample.gbase.basedir}/lib"/>
+  <property name="sample.gbase.cmdline.jar"   value="${sample.gbase.build.lib}/gdata-base-cmdline.jar"/>
+  <property name="sample.gbase.recipe.war"    value="${sample.gbase.build.lib}/gdata-base-recipe.war"/>
+
+  <target name="sample.gbase.dirs">
+    <mkdir dir="${sample.gbase.build.classes}"/>
+    <mkdir dir="${sample.gbase.build.lib}"/>
+  </target>
+
+<!-- ==================== GBase Clean Target ============================== -->
+  <target name="sample.gbase.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.gbase.build.classes}"/>
+  </target>
+
+<!-- ==================== GBase Compile Target ============================ -->
+  <target name="sample.gbase.compile">
+    <antcall target="sample.gbase.cmdline.compile"/>
+    <antcall target="sample.gbase.recipe.compile"/>
+  </target>
+
+  <target name="sample.gbase.cmdline.compile" depends="sample.gbase.dirs"
+   description="Compile Java sources">
+    <javac srcdir="${sample.gbase.cmdlinedir}"
+           destdir="${sample.gbase.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.gbase.cmdline.compile.classpath"/>
+    </javac>
+  </target>
+
+  <target name="sample.gbase.recipe.compile" depends="sample.gbase.dirs,require.servlet-api"
+   description="Compile Java sources">
+    <javac srcdir="${sample.gbase.recipe}"
+           destdir="${sample.gbase.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.gbase.recipe.compile.classpath"/>
+    </javac>
+  </target>
+
+<!-- ==================== Compilation class path ========================== -->
+  <path id="sample.gbase.cmdline.compile.classpath">
+    <path refid="samples.run.classpath"/>
+    <pathelement location="${gdata-base.jar}"/>
+  </path>
+
+  <path id="sample.gbase.recipe.compile.classpath">
+    <path refid="samples.run.classpath"/>
+    <pathelement location="${servlet.jar}"/>
+    <pathelement location="${gdata-base.jar}"/>
+  </path>
+
+
+<!-- ==================== GBase Build Target ============================== -->
+  <target name="sample.gbase.build" depends="sample.gbase.compile">
+    <antcall target="sample.gbase.cmdline.build" />
+      <antcall target="sample.gbase.recipe.build" />
+  </target>
+
+  <target name="sample.gbase.cmdline.build" depends="sample.gbase.cmdline.compile"
+    description="build the command-line tools ${gdata-base-cmdline.jar}">
+    <jar destfile="${sample.gbase.cmdline.jar}"
+      basedir="${sample.gbase.build.classes}" >
+      <manifest>
+        <attribute name="Class-Path" value="../../../${gdata-base.jar}"/>
+        <attribute name="Main-Class"
+                   value="sample/gbase/cmdline/CustomerTool"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="sample.gbase.recipe.build" depends="sample.gbase.recipe.compile"
+    description="build the example web application ${gdata-base-recipe.war}" >
+    <war destfile="${sample.gbase.recipe.war}"
+      webxml="${sample.gbase.recipe}/WEB-INF/web.xml">
+      <classes dir="${sample.gbase.build.classes}">
+        <include name="**/sample/gbase/recipe/**"/>
+      </classes>
+      <lib dir="${build.jars}" >
+        <include name="${gdata-client.jar}"/>
+        <include name="${gdata-base.jar}"/>
+      </lib>
+      <webinf dir="${sample.gbase.recipe}/WEB-INF">
+        <include name="*.jsp"/>
+        <include name="*.inc"/>
+      </webinf>
+      <zipfileset dir="${sample.gbase.recipe}">
+        <include name="*.gif"/>
+        <include name="*.css"/>
+        <include name="index.jsp"/>
+      </zipfileset>
+    </war>
+  </target>
+
+<!-- ==================== Base Run Target ================================= -->
+
+  <target name="sample.gbase.cmdline.run" description="Runs the Google Base commandline samples">
+
+    <antcall target="sample.gbase.cmdline.customertool.query"/>
+    <antcall target="sample.gbase.cmdline.queryexample"/>
+  </target>
+
+  <target name="sample.gbase.cmdline.customertool.query" depends="sample.gbase.cmdline.build"
+    description="Runs the Google Base commandline query sample">
+
+    <java fork="true" classname="sample.gbase.cmdline.CustomerTool">
+      <arg line="query --user ${sample.credentials.username} --password ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.gbase.cmdline.compile.classpath"/>
+        <path location="${sample.gbase.cmdline.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+  <target name="sample.gbase.cmdline.queryexample" depends="sample.gbase.cmdline.build"
+    description="Runs the Google Base commandline query sample">
+
+    <java fork="true" classname="sample.gbase.cmdline.QueryExample">
+      <arg line="${sample.gbase.cmdline.queryexample.querystring}"/>
+      <classpath>
+        <path refid="sample.gbase.cmdline.compile.classpath"/>
+        <path location="${sample.gbase.cmdline.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+
+
+<!--  ===================================================================== -->
+<!--                      Calendar Sample Targets                           -->
+<!--  ===================================================================== -->
+
+<!-- ==================== Calendar property names ========================== -->
+
+  <property name="sample.calendar.basedir"       value="${basedir}/sample/calendar"/>
+  <property name="sample.calendar.src.home"      value="${sample.calendar.basedir}"/>
+  <property name="sample.calendar.build.classes" value="${sample.calendar.basedir}/classes"/>
+  <property name="sample.calendar.build.lib"     value="${sample.calendar.basedir}/lib"/>
+  <property name="sample.calendar.jar"           value="${sample.calendar.build.lib}/CalendarClient.jar"/>
+  <property name="sample.calendar.main"          value="sample.calendar.CalendarClient"/>
+
+
+<!-- ==================== Calendar Clean Target ============================ -->
+
+
+  <target name="sample.calendar.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.calendar.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.calendar.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>
+    <pathelement location="${gdata-calendar.jar}"/>
+    <pathelement location="${sample-util.jar}"/>
+
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+
+-->
+
+  <target name="sample.calendar.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.calendar.build.classes}"/>
+    <javac srcdir="${sample.calendar.src.home}"
+           destdir="${sample.calendar.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.calendar.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== Calendar Build Target =========================== -->
+
+  <target name="sample.calendar.build" depends="sample.calendar.compile"
+   description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.calendar.build.lib}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample.calendar.jar}"
+         basedir="${sample.calendar.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.calendar.main}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+
+<!-- ==================== Calendar Run Target ============================= -->
+
+  <target name="sample.calendar.run" depends="sample.calendar.build"
+   description="Runs the Calendar sample">
+
+    <java fork="true" classname="${sample.calendar.main}">
+      <arg line="${sample.credentials.username} ${sample.credentials.password} ${sample.calendar.feedUrl}"/>
+      <classpath>
+        <path refid="sample.calendar.compile.classpath"/>
+        <path location="${sample.calendar.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+
+<!--  ===================================================================== -->
+<!--                      CodeSearch Sample Targets                         -->
+<!--  ===================================================================== -->
+
+<!-- ==================== CodeSearch property names ======================= -->
+
+  <property name="sample.codesearch.basedir"       value="${basedir}/sample/codesearch"/>
+  <property name="sample.codesearch.src.home"      value="${sample.codesearch.basedir}"/>
+  <property name="sample.codesearch.build.classes" value="${sample.codesearch.basedir}/classes"/>
+  <property name="sample.codesearch.build.lib"     value="${sample.codesearch.basedir}/lib"/>
+  <property name="sample.codesearch.jar"           value="${sample.codesearch.build.lib}/CodeSearchClient.jar"/>
+  <property name="sample.codesearch.main"          value="sample.codesearch.CodeSearchClient"/>
+
+
+<!-- ==================== CodeSearch Clean Target ========================= -->
+
+
+  <target name="sample.codesearch.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.codesearch.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.codesearch.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>
+    <pathelement location="${gdata-codesearch.jar}"/>
+    <pathelement location="${sample-util.jar}"/>
+
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+
+-->
+
+  <target name="sample.codesearch.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.codesearch.build.classes}"/>
+    <javac srcdir="${sample.codesearch.src.home}"
+           destdir="${sample.codesearch.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.codesearch.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== CodeSearch Build Target ========================= -->
+
+  <target name="sample.codesearch.build" depends="sample.codesearch.compile"
+   description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.codesearch.build.lib}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample.codesearch.jar}"
+         basedir="${sample.codesearch.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.codesearch.main}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+
+<!-- ==================== CodeSearch Run Target =========================== -->
+
+  <target name="sample.codesearch.run" depends="sample.codesearch.build"
+   description="Runs the CodeSearch sample">
+
+    <java fork="true" classname="${sample.codesearch.main}">
+      <arg line="--query ${sample.codesearch.querystring}"/>
+      <classpath>
+        <path refid="sample.codesearch.compile.classpath"/>
+        <path location="${sample.codesearch.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+
+<!--  ===================================================================== -->
+<!--                      Photos Sample Targets                  -->
+<!--  ===================================================================== -->
+
+<!-- ==================== Photos property names ================ -->
+
+  <property name="sample.photos.basedir"
+            value="${basedir}/sample/photos"/>
+  <property name="sample.photos.src.home"
+            value="${sample.photos.basedir}"/>
+  <property name="sample.photos.build.classes"
+            value="${sample.photos.basedir}/classes"/>
+  <property name="sample.photos.build.lib"
+            value="${sample.photos.basedir}/lib"/>
+  <property name="sample.photos.jar"
+            value="${sample.photos.build.lib}/PhotosClient.jar"/>
+  <property name="sample.photos.main"
+            value="sample.photos.PicasawebCommandLine"/>
+
+
+<!-- ==================== Photos Clean Target ================== -->
+
+
+  <target name="sample.photos.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.photos.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.photos.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>   
+    <pathelement location="${gdata-photos.jar}"/>
+    <pathelement location="${sample-util.jar}"/>
+
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+
+-->
+
+  <target name="sample.photos.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.photos.build.classes}"/>
+    <javac srcdir="${sample.photos.src.home}"
+           destdir="${sample.photos.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.photos.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== Photos Build Target ================== -->
+
+  <target name="sample.photos.build"
+          depends="sample.photos.compile"
+          description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.photos.build.lib}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample.photos.jar}"
+         basedir="${sample.photos.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.photos.main}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+
+<!-- ==================== Photos Run Target ==================== -->
+
+  <target name="sample.photos.run"
+          depends="sample.photos.build"
+          description="Runs the Photos sample">
+
+    <java fork="true" classname="${sample.photos.main}">
+      <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.photos.compile.classpath"/>
+        <path location="${sample.photos.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  
+<!--  ===================================================================== -->
+<!--                      Spreadsheet Sample Targets                        -->
+<!--  ===================================================================== -->
+
+<!-- ==================== Spreadsheet property names ====================== -->
+
+  <property name="sample.spreadsheet.basedir"       value="${basedir}/sample/spreadsheet"/>
+  <property name="sample.spreadsheet.src.home"      value="${sample.spreadsheet.basedir}"/>
+  <property name="sample.spreadsheet.build.classes" value="${sample.spreadsheet.basedir}/classes"/>
+  <property name="sample.spreadsheet.build.lib"     value="${sample.spreadsheet.basedir}/lib"/>
+  <property name="sample.spreadsheet.celldemo.jar"
+            value="${sample.spreadsheet.build.lib}/CellDemo.jar"/>
+  <property name="sample.spreadsheet.celldemo.main"
+            value="sample.spreadsheet.cell.CellDemo"/>
+  <property name="sample.spreadsheet.listdemo.jar"
+            value="${sample.spreadsheet.build.lib}/ListDemo.jar"/>
+  <property name="sample.spreadsheet.listdemo.main"
+            value="sample.spreadsheet.list.ListDemo"/>
+  <property name="sample.spreadsheet.guidemo.jar"
+            value="${sample.spreadsheet.build.lib}/GUIDemo.jar"/>
+  <property name="sample.spreadsheet.guidemo.main"
+            value="sample.spreadsheet.gui.SpreadsheetApiDemo"/>
+  <property name="sample.spreadsheet.indexclient.jar"
+            value="${sample.spreadsheet.build.lib}/IndexClient.jar"/>
+  <property name="sample.spreadsheet.indexclient.main"
+            value="sample.spreadsheet.IndexClient"/>
+  <property name="sample.spreadsheet.importclient.jar"
+            value="${sample.spreadsheet.build.lib}/ImportClient.jar"/>
+  <property name="sample.spreadsheet.importclient.main"
+            value="sample.spreadsheet.ImportClient"/>
+
+
+<!-- ==================== Spreadsheet Clean Target ======================== -->
+
+
+  <target name="sample.spreadsheet.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.spreadsheet.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.spreadsheet.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>    
+    <pathelement location="${gdata-spreadsheet.jar}"/>
+    <pathelement location="${sample-util.jar}"/>
+
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+
+-->
+
+  <target name="sample.spreadsheet.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.spreadsheet.build.classes}"/>
+    <javac srcdir="${sample.spreadsheet.src.home}"
+           destdir="${sample.spreadsheet.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.spreadsheet.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== Spreadsheet Build Target ======================== -->
+
+  <target name="sample.spreadsheet.build" depends="sample.spreadsheet.compile"
+   description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.spreadsheet.build.lib}"/>
+
+    <!-- Create CellDemo JAR file -->
+    <jar jarfile="${sample.spreadsheet.celldemo.jar}"
+         basedir="${sample.spreadsheet.build.classes}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="${sample.spreadsheet.celldemo.main}"/>
+      </manifest>
+    </jar>
+
+    <!-- Create ListDemo JAR file -->
+    <jar jarfile="${sample.spreadsheet.listdemo.jar}"
+         basedir="${sample.spreadsheet.build.classes}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="${sample.spreadsheet.listdemo.main}"/>
+      </manifest>
+    </jar>
+
+    <!-- Create GUIDemo JAR file -->
+    <jar jarfile="${sample.spreadsheet.guidemo.jar}"
+         basedir="${sample.spreadsheet.build.classes}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="${sample.spreadsheet.guidemo.main}"/>
+      </manifest>
+    </jar>
+
+    <!-- Create IndexClient JAR file -->
+    <jar jarfile="${sample.spreadsheet.indexclient.jar}"
+         basedir="${sample.spreadsheet.build.classes}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="${sample.spreadsheet.indexclient.main}"/>
+      </manifest>
+    </jar>
+
+    <!-- Create ImportClient JAR file -->
+    <jar jarfile="${sample.spreadsheet.importclient.jar}"
+         basedir="${sample.spreadsheet.build.classes}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="${sample.spreadsheet.importclient.main}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+<!-- ==================== Spreadsheet Run Target ========================== -->
+
+  <target name="sample.spreadsheet.celldemo.run"
+          depends="sample.spreadsheet.build"
+   description="Runs the Spreadsheet CellDemo sample">
+    <java fork="true" classname="${sample.spreadsheet.celldemo.main}">
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password} -s ${sample.spreadsheet.url}"/>
+      <classpath>
+        <path refid="sample.spreadsheet.compile.classpath"/>
+        <path location="${sample.spreadsheet.celldemo.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.spreadsheet.listdemo.run"
+          depends="sample.spreadsheet.build"
+   description="Runs the Spreadsheet ListDemo sample">
+    <java fork="true" classname="${sample.spreadsheet.listdemo.main}">
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password} -s ${sample.spreadsheet.url}"/>
+      <classpath>
+        <path refid="sample.spreadsheet.compile.classpath"/>
+        <path location="${sample.spreadsheet.listdemo.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.spreadsheet.guidemo.run"
+          depends="sample.spreadsheet.build"
+   description="Runs the Spreadsheet GUIDemo sample">
+    <java fork="true" classname="${sample.spreadsheet.guidemo.main}">
+      <classpath>
+        <path refid="sample.spreadsheet.compile.classpath"/>
+        <path location="${sample.spreadsheet.guidemo.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.spreadsheet.indexclient.run"
+          depends="sample.spreadsheet.build"
+   description="Runs the Spreadsheet IndexClient sample">
+    <java fork="true" classname="${sample.spreadsheet.indexclient.main}">
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password} --author --worksheets --headers"/>
+      <classpath>
+        <path refid="sample.spreadsheet.compile.classpath"/>
+        <path location="${sample.spreadsheet.celldemo.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.spreadsheet.importclient.run"
+          depends="sample.spreadsheet.build"
+   description="Runs the Spreadsheet ImportClient sample">
+    <java fork="true" classname="${sample.spreadsheet.importclient.main}">
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password} --filename ${sample.spreadsheet.importclient.filename} --spreadsheet ${sample.spreadsheet.importclient.spreadsheet} --worksheet ${sample.spreadsheet.importclient.worksheet} --delimiter ,"/>
+      <classpath>
+        <path refid="sample.spreadsheet.compile.classpath"/>
+        <path location="${sample.spreadsheet.celldemo.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+<!--  ===================================================================== -->
+<!--                      Tester Sample Targets                             -->
+<!--  ===================================================================== -->
+
+<!-- ==================== Tester property names =========================== -->
+
+  <property name="sample.tester.basedir"       value="${basedir}/sample/tester"/>
+  <property name="sample.tester.src.home"      value="${sample.tester.basedir}"/>
+  <property name="sample.tester.build.classes" value="${sample.tester.basedir}/classes"/>
+  <property name="sample.tester.build.lib"     value="${sample.tester.basedir}/lib"/>
+  <property name="sample.tester.jar"           value="${sample.tester.build.lib}/TesterClient.jar"/>
+  <property name="sample.tester.main"          value="sample.tester.Tester"/>
+
+
+<!-- ==================== Tester Clean Target ============================ -->
+
+
+  <target name="sample.tester.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.tester.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.tester.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>    
+    <pathelement location="${sample-util.jar}"/>
+
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+
+-->
+
+  <target name="sample.tester.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.tester.build.classes}"/>
+    <javac srcdir="${sample.tester.src.home}"
+           destdir="${sample.tester.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.tester.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== Tester Build Target =========================== -->
+
+  <target name="sample.tester.build" depends="sample.tester.compile"
+   description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.tester.build.lib}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample.tester.jar}"
+         basedir="${sample.tester.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.tester.main}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+
+<!-- ==================== Tester Run Target ============================= -->
+
+  <target name="sample.tester.run" depends="sample.tester.build"
+   description="Runs the Tester sample">
+
+    <java fork="true" classname="${sample.tester.main}">
+      <arg line="-s ${sample.tester.serviceName} -a ${sample.tester.appName} -f ${sample.tester.feedUrl} -u ${sample.credentials.username} -p ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.tester.compile.classpath"/>
+        <path location="${sample.tester.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+
+<!--  ===================================================================== -->
+<!--                      AuthSub Sample Targets                            -->
+<!--  ===================================================================== -->
+
+
+<!-- ==================== AuthSub property names ========================== -->
+
+  <property name="sample.authsub.app.name"      value="authsub_sample"/>
+  <property name="sample.authsub.app.path"      value="/${sample.authsub.app.name}"/>
+  <property name="sample.authsub.app.version"   value="1.0"/>
+  <property name="sample.authsub.basedir"       value="${basedir}/sample/authsub"/>
+  <property name="sample.authsub.build.home"    value="${sample.authsub.basedir}/build"/>
+  <property name="sample.authsub.dist.home"     value="${sample.authsub.basedir}/dist"/>
+  <property name="sample.authsub.src.home"      value="${sample.authsub.basedir}/src"/>
+  <property name="sample.authsub.web.home"      value="${sample.authsub.basedir}/web"/>
+
+
+<!-- ==================== AuthSub Clean Target ============================ -->
+
+
+  <target name="sample.authsub.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.authsub.build.home}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.authsub.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>    
+    <pathelement location="${servlet.jar}"/>
+    <pathelement location="${gdata-calendar.jar}"/>
+    <pathelement location="${gdata-codesearch.jar}"/>
+    <pathelement location="${gdata-spreadsheet.jar}"/>
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+  This example assumes that you will be including your classes in an
+  unpacked directory hierarchy under "/WEB-INF/classes".
+
+-->
+
+  <target name="sample.authsub.compile" depends="sample.authsub.prepare,require.servlet-api"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.authsub.build.home}/WEB-INF/classes"/>
+    <javac srcdir="${sample.authsub.src.home}"
+           destdir="${sample.authsub.build.home}/WEB-INF/classes"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.authsub.compile.classpath"/>
+    </javac>
+
+    <!-- Copy application resources -->
+    <copy  todir="${sample.authsub.build.home}/WEB-INF/classes">
+      <fileset dir="${sample.authsub.src.home}" excludes="**/*.java"/>
+    </copy>
+
+  </target>
+
+
+<!-- ==================== AuthSub Build Target ============================ -->
+
+  <target name="sample.authsub.build" depends="sample.authsub.compile"
+   description="Create binary distribution">
+
+    <!-- Copy dependency resources to create a single deploy jar -->
+    <unjar src="${gdata-calendar.jar}"
+           dest="${sample.authsub.build.home}/WEB-INF/classes"/>
+    <unjar src="${gdata-client.jar}"
+           dest="${sample.authsub.build.home}/WEB-INF/classes"/>
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.authsub.dist.home}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample.authsub.dist.home}/${sample.authsub.app.name}.war"
+         basedir="${sample.authsub.build.home}"/>
+
+  </target>
+
+
+<!-- ==================== AuthSub Prepare Target ========================== -->
+
+<!--
+
+  The "prepare" target is used to create the "build" destination directory,
+  and copy the static contents of your web application to it.  If you need
+  to copy static files from external dependencies, you can customize the
+  contents of this task.
+
+-->
+
+  <target name="sample.authsub.prepare">
+
+    <!-- Create build directories as needed -->
+    <mkdir  dir="${sample.authsub.build.home}"/>
+    <mkdir  dir="${sample.authsub.build.home}/WEB-INF"/>
+    <mkdir  dir="${sample.authsub.build.home}/WEB-INF/classes"/>
+
+
+    <!-- Copy static content of this web application -->
+    <copy todir="${sample.authsub.build.home}">
+      <fileset dir="${sample.authsub.web.home}"/>
+    </copy>
+
+    <mkdir  dir="${sample.authsub.build.home}/WEB-INF/lib"/>
+
+  </target>
+
+</project>

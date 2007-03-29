@@ -1,0 +1,7 @@
+#
+# Define mailcap entries that enable the Java Activation Framework to parse
+# Atom and generate Atom, RSS, and JSON.
+#
+application/atom+xml; ; x-java-content-handler=com.google.gdata.data.media.GDataContentHandler
+application/rss+xml; ; x-java-content-handler=com.google.gdata.data.media.GDataContentHandler
+application/json; ; x-java-content-handler=com.google.gdata.data.media.GDataContentHandler

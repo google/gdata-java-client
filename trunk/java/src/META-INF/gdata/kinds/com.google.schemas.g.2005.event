@@ -1,0 +1,3 @@
+# GData Kind Adaptors for http://schemas.google.com/g/2005#event
+com.google.gdata.data.extensions.EventFeed
+com.google.gdata.data.extensions.EventEntry

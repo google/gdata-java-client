@@ -1,0 +1,3 @@
+# GData Kind Adaptors for http://schemas.google.com/searchhistory/2007#subscription
+com.google.gdata.data.searchhistory.SubscriptionEntry
+com.google.gdata.data.searchhistory.SubscriptionFeed
