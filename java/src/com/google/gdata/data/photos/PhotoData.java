@@ -22,6 +22,7 @@ import com.google.gdata.data.media.mediarss.MediaKeywords;
 import com.google.gdata.util.ServiceException;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Base data object for photo feeds and entries, this interface contains the
@@ -34,8 +35,11 @@ import java.util.Date;
  */
 public interface PhotoData extends GphotoData, PointData {
 
-  /** The category name for photos. */
-  public static final String PHOTO_KIND = Namespaces.PHOTOS_PREFIX + "photo";
+  /** The unqualified kind for a photo. */
+  public static final String KIND = "photo";
+
+  /** The fully qualified kind term for photos. */
+  public static final String PHOTO_KIND = Namespaces.PHOTOS_PREFIX + KIND;
 
   /** A category object for photos.  All photo objects will have this set. */
   public static final Category PHOTO_CATEGORY
@@ -213,5 +217,14 @@ public interface PhotoData extends GphotoData, PointData {
    * element if it exists, or creating one if it doesn't.
    */
   public void setKeywords(MediaKeywords keywords);
-    
+
+  /**
+   * @return a list of streamIds associated with this photo.
+   */
+  public List<String> getStreamIds();
+
+  /**
+   * Add an individual streamId to the photo.
+   */
+  public void addStreamId(String streamId);
 }

@@ -55,16 +55,20 @@ public class CalendarEntry extends BaseEntry<CalendarEntry> {
    * by an EventEntry.
    */
   public void declareExtensions(ExtensionProfile extProfile) {
-    extProfile.declareEntryExtension(
+    extProfile.declare(CalendarEntry.class,
       AccessLevelProperty.getDefaultDescription());
-    extProfile.declareEntryExtension(ColorProperty.getDefaultDescription());
-    extProfile.declareEntryExtension(HiddenProperty.getDefaultDescription());
-    extProfile.declareEntryExtension(
+    extProfile.declare(CalendarEntry.class,
+        ColorProperty.getDefaultDescription());
+    extProfile.declare(CalendarEntry.class,
+        HiddenProperty.getDefaultDescription());
+    extProfile.declare(CalendarEntry.class,
       OverrideNameProperty.getDefaultDescription());
-    extProfile.declareEntryExtension(SelectedProperty.getDefaultDescription());
-    extProfile.declareEntryExtension(TimeZoneProperty.getDefaultDescription());
-    extProfile.declareEntryExtension(When.getDefaultDescription());
-    extProfile.declareEntryExtension(Where.getDefaultDescription());
+    extProfile.declare(CalendarEntry.class,
+        SelectedProperty.getDefaultDescription());
+    extProfile.declare(CalendarEntry.class,
+        TimeZoneProperty.getDefaultDescription());
+    extProfile.declare(CalendarEntry.class, When.getDefaultDescription());
+    extProfile.declare(CalendarEntry.class, Where.getDefaultDescription());
   }
 
 
@@ -129,7 +133,7 @@ public class CalendarEntry extends BaseEntry<CalendarEntry> {
   }
 
   /**
-   * Returns the calendar hidden property.
+   * Returns the override name property.
    */
   public OverrideNameProperty getOverrideName() {
     return getExtension(OverrideNameProperty.class);
@@ -137,7 +141,7 @@ public class CalendarEntry extends BaseEntry<CalendarEntry> {
 
 
   /**
-   * Sets the calendar hidden property.
+   * Sets the override name property.
    */
   public void setOverrideName(OverrideNameProperty name) {
     setExtension(name);

@@ -279,7 +279,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
   }
 
   /**
-   * @return {@link Boolean.TRUE} if the flash was used.
+   * @return {@link Boolean#TRUE} if the flash was used.
    */
   public Boolean getFlashUsed() {
     String flash = getExifTagValue("flash");
@@ -292,6 +292,21 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
   public void setFlashUsed(Boolean flash) {
     setExifTagValue("flash", flash == null ? null : flash.toString());
   }
+
+  /**
+   * @return the unique image id for the photo.
+   */
+  public String getImageUniqueID() {
+    return getExifTagValue("imageUniqueID");
+  }
+
+  /**
+   * Set the unique image id for the photo.
+   */
+  public void setImageUniqueID(String imageUniqueID) {
+    setExifTagValue("imageUniqueID", imageUniqueID);
+  }
+
 
   /*
    * Generate the xml for this element.  This is hacked to support including
@@ -311,8 +326,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
    * Get a handler for parsing this element.
    */
   public ElementHandler getHandler(final ExtensionProfile extProfile,
-      String namespace, String localName, Attributes attrs)
-      throws ParseException, IOException {
+      String namespace, String localName, Attributes attrs) {
     return new XmlParser.ElementHandler() {
       @Override
       public XmlParser.ElementHandler getChildHandler(String namespace,

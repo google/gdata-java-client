@@ -1,3 +1,0 @@
-# GData Kind Adaptors for http://schemas.google.com/searchhistory/2007#browser
-com.google.gdata.data.searchhistory.BrowserHistoryFeed
-com.google.gdata.data.searchhistory.BrowserHistoryEntry

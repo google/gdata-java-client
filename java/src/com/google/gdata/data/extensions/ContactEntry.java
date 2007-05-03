@@ -68,11 +68,12 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
    * by an ContactEntry.
    */
   public void declareExtensions(ExtensionProfile extProfile) {
-    extProfile.declareEntryExtension(Email.getDefaultDescription());
-    extProfile.declareEntryExtension(Im.getDefaultDescription());
-    extProfile.declareEntryExtension(PhoneNumber.getDefaultDescription());
-    extProfile.declareEntryExtension(PostalAddress.getDefaultDescription());
-    extProfile.declareEntryExtension(GeoPt.getDefaultDescription());
+    extProfile.declare(ContactEntry.class, Email.getDefaultDescription());
+    extProfile.declare(ContactEntry.class, Im.getDefaultDescription());
+    extProfile.declare(ContactEntry.class, PhoneNumber.getDefaultDescription());
+    extProfile.declare(ContactEntry.class,
+        PostalAddress.getDefaultDescription());
+    extProfile.declare(ContactEntry.class, GeoPt.getDefaultDescription());
   }
 
   public List<Email> getEmailAddresses() {

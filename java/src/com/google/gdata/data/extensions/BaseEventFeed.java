@@ -26,7 +26,7 @@ import com.google.gdata.data.ExtensionProfile;
  * @param <E> event entry class
  */
 public abstract class BaseEventFeed
-    <F extends BaseEventFeed, E extends EventEntry>
+    <F extends BaseEventFeed, E extends BaseEventEntry>
     extends BaseFeed<F, E> {
 
   /**
@@ -56,7 +56,7 @@ public abstract class BaseEventFeed
   public void declareExtensions(ExtensionProfile extProfile) {
 
     // Feed level declarations
-    extProfile.declareFeedExtension(Where.getDefaultDescription());
+    extProfile.declare(BaseEventFeed.class, Where.getDefaultDescription());
 
     // Adds entry level declarations
     super.declareExtensions(extProfile);

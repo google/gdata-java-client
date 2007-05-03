@@ -37,12 +37,14 @@ import com.google.gdata.data.photos.pheed.PheedThumbnail;
 import com.google.gdata.data.photos.pheed.PheedVideoUrl;
 import com.google.gdata.util.ParseException;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Implementation class for photo data objects.  This class takes an
  * {@link ExtensionPoint} and uses it to provide all of the methods that
- * {@link PhotoGphotoData} specifies.  These methods are handled by using
+ * {@link PhotoData} specifies.  These methods are handled by using
  * extension classes to retrieve or set extensions of the appropriate type.
  *
  * 
@@ -80,6 +82,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
     declare(extProfile, GphotoChecksum.getDefaultDescription());
     declare(extProfile, GphotoTimestamp.getDefaultDescription());
     declare(extProfile, GphotoExifTime.getDefaultDescription());
+    declare(extProfile, GphotoStreamId.getDefaultDescription());
 
     declare(extProfile, ExifTags.getDefaultDescription());
     new ExifTags().declareExtensions(extProfile);
@@ -347,7 +350,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   /**
    * @return true if comments are enabled in the photo the item represents.
    */
-  public Boolean getCommentsEnabled() throws ParseException {
+  public Boolean getCommentsEnabled() {
     return getBooleanValue(GphotoCommentsEnabled.class);
   }
 
@@ -405,6 +408,19 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
       addExtension(group);
     }
     group.setKeywords(keywords);
+  }
+
+  public List<String> getStreamIds() {
+    List<GphotoStreamId> exts = getRepeatingExtension(GphotoStreamId.class);
+    List<String> streamIds = new ArrayList<String>(exts.size());
+    for (GphotoStreamId streamId : exts) {
+      streamIds.add(streamId.getValue());
+    }
+    return streamIds;
+  }
+
+  public void addStreamId(String streamId) {
+    addRepeatingExtension(new GphotoStreamId(streamId));
   }
 
   /**
@@ -597,6 +613,21 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
     public static ExtensionDescription getDefaultDescription() {
       return new ExtensionDescription(GphotoVideoUrl.class,
           Namespaces.PHOTOS_NAMESPACE, "videosrc");
+    }
+  }
+
+  public static class GphotoStreamId extends GphotoConstruct {
+    public GphotoStreamId() {
+      this(null);
+    }
+
+    public GphotoStreamId(String streamId) {
+      super("streamId", streamId);
+    }
+
+    public static ExtensionDescription getDefaultDescription() {
+      return new ExtensionDescription(GphotoStreamId.class,
+          Namespaces.PHOTOS_NAMESPACE, "streamId", false, true, false);
     }
   }
 }

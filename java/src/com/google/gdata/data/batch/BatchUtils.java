@@ -48,7 +48,9 @@ public class BatchUtils {
    * @param extProfile
    */
   public static void declareFeedExtensions(ExtensionProfile extProfile) {
-    extProfile.declareFeedExtension(BatchOperation.getDefaultDescription());
+    // Since batch support is a mix-in, declare at the base feed level
+    // so it can be used with any feed type
+    extProfile.declare(BaseFeed.class, BatchOperation.getDefaultDescription());
   }
 
   /**
@@ -57,10 +59,13 @@ public class BatchUtils {
    * @param extProfile
    */
   public static void declareEntryExtensions(ExtensionProfile extProfile) {
-    extProfile.declareEntryExtension(BatchId.getDefaultDescription());
-    extProfile.declareEntryExtension(BatchOperation.getDefaultDescription());
-    extProfile.declareEntryExtension(BatchInterrupted.getDefaultDescription());
-    extProfile.declareEntryExtension(BatchStatus.getDefaultDescription());
+    // Since batch support is a mix-in, declare at the base entry level
+    // so it can be used with any entry type
+    extProfile.declare(BaseEntry.class, BatchId.getDefaultDescription());
+    extProfile.declare(BaseEntry.class, BatchOperation.getDefaultDescription());
+    extProfile.declare(BaseEntry.class,
+        BatchInterrupted.getDefaultDescription());
+    extProfile.declare(BaseEntry.class, BatchStatus.getDefaultDescription());
   }
 
   /**

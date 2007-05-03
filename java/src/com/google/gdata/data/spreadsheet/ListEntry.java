@@ -164,7 +164,7 @@ public class ListEntry
    * Declares the extensions used by the XML parser in the given profile object.
    */
   public void declareExtensions(ExtensionProfile extProfile) {
-    extProfile.declareEntryExtension(
+    extProfile.declare(ListEntry.class,
         CustomElementCollection.getDefaultDescription());
   }
 }

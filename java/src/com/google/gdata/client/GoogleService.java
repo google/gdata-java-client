@@ -341,7 +341,7 @@ public class GoogleService extends Service {
    * Sets the AuthToken that should be used to authenticate requests to the
    * server. This is useful if the caller has some other way of accessing the
    * AuthToken, versus calling getAuthToken with credentials to request the
-   * AuthToken from Gaia.
+   * AuthToken using ClientLogin.
    *
    * @param token the AuthToken in ascii form
    */

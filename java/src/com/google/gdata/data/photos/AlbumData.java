@@ -31,10 +31,13 @@ import java.util.Date;
  */
 public interface AlbumData extends GphotoData, PointData {
 
-  /** The category name for albums. */
-  public static final String ALBUM_KIND = Namespaces.PHOTOS_PREFIX + "album";
+  /** The unqualified kind for an album. */
+  public static final String KIND = "album";
 
-  /** A category object for albums.  All album objects will have this. */
+  /** The fully qualified king term for albums. */
+  public static final String ALBUM_KIND = Namespaces.PHOTOS_PREFIX + KIND;
+
+  /** A category object for albums.  All album objects will have this set. */
   public static final Category ALBUM_CATEGORY
       = new Category(com.google.gdata.util.Namespaces.gKind, ALBUM_KIND);
 

@@ -73,12 +73,12 @@ public class EmailListEntry extends BaseEntry<EmailListEntry> {
     // An EmailList extension is required for each entry
     ExtensionDescription desc = EmailList.getDefaultDescription();
     desc.setRequired(true);
-    extensionProfile.declareEntryExtension(desc);
+    extensionProfile.declare(EmailListEntry.class, desc);
 
     // FeedLink extension is not repeatable by default.
     desc = FeedLink.getDefaultDescription();
     desc.setRepeatable(true);
-    extensionProfile.declareEntryExtension(desc);
+    extensionProfile.declare(EmailListEntry.class, desc);
 
     // Declare our "apps" namespace
     extensionProfile.declareAdditionalNamespace(

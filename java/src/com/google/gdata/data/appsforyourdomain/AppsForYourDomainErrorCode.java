@@ -50,6 +50,8 @@ public enum AppsForYourDomainErrorCode {
   InvalidFamilyName(1401),
   InvalidPassword(1402),
   InvalidUsername(1403),
+  InvalidHashFunctionName(1404),
+  InvalidHashDigestLength(1405),
 
   TooManyRecipientsOnEmailList(1500);
 
@@ -58,7 +60,7 @@ public enum AppsForYourDomainErrorCode {
   private static Map<Integer, AppsForYourDomainErrorCode> errorMap
       = makeErrorMap();
   
-  private static Map makeErrorMap() {
+  private static Map<Integer, AppsForYourDomainErrorCode> makeErrorMap() {
     Map<Integer, AppsForYourDomainErrorCode> m
         = new HashMap<Integer, AppsForYourDomainErrorCode>();
     for (AppsForYourDomainErrorCode c : AppsForYourDomainErrorCode.values()) {

@@ -27,8 +27,11 @@ import com.google.gdata.data.Category;
  */
 public interface UserData extends GphotoData {
 
-  /** The category name for users. */
-  public static final String USER_KIND = Namespaces.PHOTOS_PREFIX + "user";
+  /** The unqualified kind for a user. */
+  public static final String KIND = "user";
+
+  /** The fully qualified kind term for users. */
+  public static final String USER_KIND = Namespaces.PHOTOS_PREFIX + KIND;
 
   /** A category object for users.  All user objects will have this set. */
   public static final Category USER_CATEGORY

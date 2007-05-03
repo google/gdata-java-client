@@ -19,11 +19,14 @@ package com.google.gdata.data.photos;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.data.Kind.AdaptorException;
 import com.google.gdata.data.photos.impl.GphotoDataImpl;
+import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * The base entry class for Picasaweb data.  This class provides access to the
@@ -63,6 +66,48 @@ public class GphotoEntry<E extends GphotoEntry<E>> extends BaseEntry<E>
   public void declareExtensions(ExtensionProfile extProfile) {
     delegate.declareExtensions(extProfile);
     super.declareExtensions(extProfile);
+  }
+
+  /**
+   * Retrieves the feed link.  This is a link to the entry-as-feed, if this
+   * entry has associated data.
+   */
+  public Link getFeedLink() {
+    Link feedLink = getLink(Link.Rel.FEED, Link.Type.ATOM);
+    return feedLink;
+  }
+
+  /**
+   * Get the feed of entries related to this entry. The kinds parameter is
+   * a vararg array of associated kinds to return as entries.  If the
+   * kinds parameter is empty, the default kind associated with this feed class
+   * will be used.
+   */
+  public <F extends GphotoFeed> F getFeed(Class<F> feedClass, String... kinds)
+      throws IOException, ServiceException {
+    if (state.service == null) {
+      throw new ServiceException(
+          "Entry is not associated with a GData service.");
+    }
+    Link feedLink = getFeedLink();
+    if (feedLink == null) {
+      throw new UnsupportedOperationException("Missing feed link.");
+    }
+    String feedHref = feedLink.getHref();
+    if (kinds != null && kinds.length > 0) {
+      StringBuilder kindBuilder = new StringBuilder();
+      for (int i = 0; i < kinds.length; i++) {
+        if (i > 0) kindBuilder.append(',');
+        kindBuilder.append(kinds[i]);
+      }
+      if (feedHref.indexOf('?') == -1) {
+        feedHref += "?kind=" + kindBuilder;
+      } else {
+        feedHref += "&kind=" + kindBuilder;
+      }
+    }
+    URL feedUrl = new URL(feedHref);
+    return state.service.getFeed(feedUrl, feedClass);
   }
 
   /**
@@ -121,13 +166,7 @@ public class GphotoEntry<E extends GphotoEntry<E>> extends BaseEntry<E>
   }
 
   /**
-   * Copied from {@link com.google.gdata.data.Entry}. We may want to consider
-   * moving this to a base "AdaptableEntry" class somewhere so it can be used
-   * without having to copy it.  I don't think it belongs in BaseEntry though.
-   *
-   * Locates and returns the most specific {@link Kind.Adaptor} BaseEntry
-   * subtype for this entry.  If none can be found for the current class,
-   * {@code null} will be returned.
+   * Returns an adapted entry that is a subclass of GphotoEntry.
    */
   public GphotoEntry<?> getAdaptedEntry() throws AdaptorException {
     return (GphotoEntry<?>) super.getAdaptedEntry();

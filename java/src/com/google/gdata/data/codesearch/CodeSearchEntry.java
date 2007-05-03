@@ -68,9 +68,9 @@ public class CodeSearchEntry extends BaseEntry<CodeSearchEntry> {
    */
 
   public void declareExtensions(ExtensionProfile extProfile) {
-    extProfile.declareEntryExtension(File.getDefaultDescription());
-    extProfile.declareEntryExtension(Package.getDefaultDescription());
-    extProfile.declareEntryExtension(Match.getDefaultDescription());
+    extProfile.declare(CodeSearchEntry.class, File.getDefaultDescription());
+    extProfile.declare(CodeSearchEntry.class, Package.getDefaultDescription());
+    extProfile.declare(CodeSearchEntry.class, Match.getDefaultDescription());
   }
 
   /**

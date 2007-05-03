@@ -85,23 +85,35 @@ public class RecipeSearchServlet extends HttpServlet  {
         recipeSearch = createRecipeSearch(service, request);
       }
       recipeSearch.runQuery();
-    } catch (ServiceException e) {
-      RecipeUtil.logServiceException(this, e);
-      throw new ServletException(e);
-    }
+    } catch (RecipeValidationException rve) {
+      // internal exception in the argument handling (possibly incorrect args)
+      RecipeUtil.forwardToErrorPage(request, response, rve.getMessage());
+      return;
+    } catch (ServiceException se) {
+      // exception comming from Google Base
+      RecipeUtil.logServiceException(this, se);
+      RecipeUtil.forwardToErrorPage(request, response, se);
+      return;
+    } 
+    
     RecipeUtil.setRecipeSearch(request, recipeSearch);
     // Forward to the JSP
     request.getRequestDispatcher(DISPLAY_JSP).forward(request, response);
   }
 
   /**
-   * Creates and fill in a {@link RecipeSearch} object.
+   * Creates and fills in a {@link RecipeSearch} object based on the content 
+   * of the {@code request}.
    *
-   * @param service
-   * @param request
+   * @param service the object used to connect to the Google Base service
+   * @param request the representation of the Http request
+   * @throws RecipeValidationException if a parameter from the request has an
+   *    invalid value (cooking time, start index, max results are not valid
+   *    numbers).
    */
   private RecipeSearch createRecipeSearch(GoogleBaseService service,
-                                          HttpServletRequest request) {
+                                          HttpServletRequest request) 
+      throws RecipeValidationException {
     RecipeSearch search = new RecipeSearch(service, urlFactory, ownItems);
 
     String query = request.getParameter(QUERY_PARAMETER);
@@ -124,17 +136,32 @@ public class RecipeSearchServlet extends HttpServlet  {
     String cookingTime = request.getParameter(
         RecipeUtil.COOKING_TIME_PARAMETER);
     if (isSet(cookingTime)) {
-      search.setCookingTime(new Integer(cookingTime));
+      try {
+        search.setCookingTime(new Integer(cookingTime));
+      } catch (NumberFormatException e) {
+        throw new RecipeValidationException(String.format(
+            "Cooking time is not a number (%s).", cookingTime));
+      }
     }
 
     String startIndex = request.getParameter(START_INDEX_PARAMETER);
     if (isSet(startIndex)) {
-      search.setStartIndex(Integer.parseInt(startIndex));
+      try {
+        search.setStartIndex(Integer.parseInt(startIndex));
+      } catch (NumberFormatException e) {
+        throw new RecipeValidationException(String.format(
+            "Start index is not a number (%s).", startIndex));
+      }
     }
 
     String maxResults = request.getParameter(MAX_RESULTS_PARAMETER);
     if (isSet(maxResults)) {
-      search.setMaxResults(Integer.parseInt(maxResults));
+      try {
+        search.setMaxResults(Integer.parseInt(maxResults));
+      } catch (NumberFormatException e) {
+        throw new RecipeValidationException(String.format(
+            "Max results is not a number (%s).", maxResults));
+      }
     }
 
     search.setOwnItems(ownItems);

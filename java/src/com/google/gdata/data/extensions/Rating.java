@@ -36,7 +36,7 @@ import java.util.List;
  *
  * 
  */
-public class Rating extends ExtensionPoint implements Extension {
+public class Rating extends ExtensionPoint {
 
 
   /**
@@ -66,11 +66,11 @@ public class Rating extends ExtensionPoint implements Extension {
   /** Rating value (required). */
   protected Integer rating;
 
-  public int getValue() {
+  public Integer getValue() {
     return rating;
   }
 
-  public void setValue(int r) {
+  public void setValue(Integer r) {
     rating = r;
   }
 
@@ -101,12 +101,23 @@ public class Rating extends ExtensionPoint implements Extension {
   /** Number of ratings that was taken into account (for average ratings). */
   protected Integer numRaters;
 
-  public int getNumRaters() {
+  public Integer getNumRaters() {
     return numRaters;
   }
 
-  public void setNumRaters(int r) {
+  public void setNumRaters(Integer r) {
     numRaters = r;
+  }
+
+  /** Average ratings, output with a fixed a 2 digit precision. */
+  protected Float average;
+
+  public Float getAverage() {
+    return average;
+  }
+
+  public void setAverage(Float r) {
+    average = r;
   }
 
   /**
@@ -150,6 +161,11 @@ public class Rating extends ExtensionPoint implements Extension {
 
     if (numRaters != null) {
       attrs.add(new XmlWriter.Attribute("numRaters", numRaters.toString()));
+    }
+
+    if (average != null) {
+      attrs.add(
+          new XmlWriter.Attribute("average", String.format("%2.2f", average)));
     }
 
     generateStartElement(w, Namespaces.gNs, "rating", attrs, null);
@@ -197,6 +213,8 @@ public class Rating extends ExtensionPoint implements Extension {
           rel = value;
         } else if (localName.equals("numRaters")) {
           numRaters = Integer.parseInt(value);
+        } else if (localName.equals("average")) {
+          average = Float.valueOf(value);
         }
       }
     }
@@ -204,21 +222,27 @@ public class Rating extends ExtensionPoint implements Extension {
 
     public void processEndElement() throws ParseException {
 
-      if (rating == null) {
-        throw new ParseException("g:rating/@value is required.");
+      if (rating == null && average == null) {
+        throw new ParseException("at least one of g:rating/@value or "
+            + "gd:rating/@average is required.");
       }
 
       if (max == null) {
-        throw new ParseException("g:rating/@max is required.");
+        throw new ParseException("gd:rating/@max is required.");
       }
 
       if (min == null) {
-        throw new ParseException("g:rating/@min is required.");
+        throw new ParseException("gd:rating/@min is required.");
       }
 
-      if (rating > max || rating < min) {
-        throw new ParseException("g:rating/@value should lie in between "
-          + "g:rating/@min and g:rating/@max.");
+      if (rating != null && (rating > max || rating < min)) {
+        throw new ParseException("gd:rating/@value should lie in between "
+          + "gd:rating/@min and gd:rating/@max.");
+      }
+
+      if (average != null && (average > max || average < min)) {
+        throw new ParseException("gd:rating/@average should lie in between "
+          + "gd:rating/@min and gd:rating/@max.");
       }
     }
   }

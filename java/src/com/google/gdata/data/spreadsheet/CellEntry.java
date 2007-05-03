@@ -56,7 +56,7 @@ public class CellEntry
    *
    * @param row the row location of the cell
    * @param col the column location of the cell
-   * @param mewInputValue the string to write the cell with; if it starts with
+   * @param newInputValue the string to write the cell with; if it starts with
    *        an "=" sign it is a formula, otherwise it is a literal value
    */
   public CellEntry(int row, int col, String newInputValue) {
@@ -131,7 +131,7 @@ public class CellEntry
    * Declares the extensions used by the XML parser in the given profile object.
    */
   public void declareExtensions(ExtensionProfile extProfile) {
-    extProfile.declareEntryExtension(Cell.getDefaultDescription(false));
+    extProfile.declare(CellEntry.class, Cell.getDefaultDescription(false));
   }
 
   /**

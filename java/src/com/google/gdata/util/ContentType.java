@@ -17,6 +17,7 @@
 package com.google.gdata.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -120,6 +121,92 @@ public final class ContentType {
    */
   public static final ContentType MULTIPART_RELATED =
     new ContentType("multipart/related");
+
+  /**
+   * Determines the best "Content-Type" header to use in a servlet response
+   * based on the "Accept" header from a servlet request.
+   *
+   * @param acceptHeader       "Accept" header value from a servlet request (not
+   *                           <code>null</code>)
+   * @param actualContentTypes actual content types in descending order of
+   *                           preference (non-empty, and each entry is of the
+   *                           form "type/subtype" without the wildcard char
+   *                           '*') or <code>null</code> if no "Accept" header
+   *                           was specified
+   * @return the best content type to use (or <code>null</code> on no match).
+   */
+  public static ContentType getBestContentType(String acceptHeader,
+      List<ContentType> actualContentTypes) {
+
+    // If not accept header is specified, return the first actual type
+    if (acceptHeader == null) {
+      return actualContentTypes.get(0);
+    }
+
+    // iterate over all of the accepted content types to find the best match
+    float bestQ = 0;
+    ContentType bestContentType = null;
+    String[] acceptedTypes = acceptHeader.split(",");
+    for (String acceptedTypeString : acceptedTypes) {
+
+      // create the content type object
+      ContentType acceptedContentType;
+      try {
+        acceptedContentType = new ContentType(acceptedTypeString.trim());
+      } catch (IllegalArgumentException ex) {
+        // ignore exception
+        continue;
+      }
+
+      // parse the "q" value (default of 1)
+      float curQ = 1;
+      try {
+        String qAttr = acceptedContentType.getAttribute("q");
+        if (qAttr != null) {
+          float qValue = Float.valueOf(qAttr);
+          if (qValue <= 0 || qValue > 1) {
+            continue;
+          }
+          curQ = qValue;
+        }
+      } catch (NumberFormatException ex) {
+        // ignore exception
+        continue;
+      }
+
+      // only check it if it's at least as good ("q") as the best one so far
+      if (curQ < bestQ) {
+        continue;
+      }
+
+      /* iterate over the actual content types in order to find the best match
+      to the current accepted content type */
+      for (ContentType actualContentType : actualContentTypes) {
+
+        /* if the "q" value is the same as the current best, only check for
+        better content types */
+        if (curQ == bestQ && bestContentType == actualContentType) {
+          break;
+        }
+
+        /* check if the accepted content type matches the current actual
+        content type */
+        if (actualContentType.match(acceptedContentType)) {
+          bestContentType = actualContentType;
+          bestQ = curQ;
+          break;
+        }
+      }
+    }
+
+    // if found an acceptable content type, return the best one
+    if (bestQ != 0) {
+      return bestContentType;
+    }
+
+    // Return null if no match
+    return null;
+  }
 
  /**
    * Constructs a new instance with default media type

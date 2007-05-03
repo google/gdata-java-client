@@ -37,9 +37,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.TreeSet;
 
-import org.xml.sax.Attributes;
 
 /**
  * Specifies a complete extension profile for an extended GData schema.
@@ -56,8 +56,8 @@ import org.xml.sax.Attributes;
 public class ExtensionProfile {
 
   /** Set of previously declared Kind.Adaptor classes. */
-  private HashSet<Class<Kind.Adaptor>> declared =
-      new HashSet<Class<Kind.Adaptor>>();
+  private HashSet<Class<? extends Kind.Adaptor>> declared =
+      new HashSet<Class<? extends Kind.Adaptor>>();
 
   /**
    * Adds the extension declarations associated with an {@link Kind.Adaptor}
@@ -66,11 +66,17 @@ public class ExtensionProfile {
    * the same adaptor type multiple times within the same profile.
    */
   public void addDeclarations(Kind.Adaptor adaptor) {
-    Class adaptorClass = adaptor.getClass();
-    if (!declared.contains(adaptorClass)) {
+    Class<? extends Kind.Adaptor> adaptorClass = adaptor.getClass();
+    if (declared.add(adaptorClass)) {
       adaptor.declareExtensions(this);
-      declared.add(adaptorClass);
     }
+  }
+
+  // Simple helper method to avoid cast warnings in very specific cases
+  // where we know the cast is safe.
+  @SuppressWarnings("unchecked")
+  private Class<? extends ExtensionPoint> extensionPointClass(Class clazz) {
+    return (Class<? extends ExtensionPoint>)clazz;
   }
 
   /**
@@ -80,13 +86,28 @@ public class ExtensionProfile {
   public synchronized void declare(Class<? extends ExtensionPoint> extendedType,
                                    ExtensionDescription extDescription) {
 
-    ExtensionPoint.Manifest manifest = getOrCreateManifest(extendedType);
+    // When configuring an extension profile that is auto-extensible, remap
+    // th extension point assocations from the specific type down to any
+    // base adaptable type.  This ensures that extensions will be parseable
+    // on a more generic base type.   As an example, this would map extensions
+    // that are normally associated with EventEntry "up" to BaseEntry.
+    while (isAutoExtending &&
+        Kind.Adaptable.class.isAssignableFrom(extendedType.getSuperclass())) {
+        extendedType = extensionPointClass(extendedType.getSuperclass());
+    }
+
+    ExtensionManifest manifest = getOrCreateManifest(extendedType);
 
     Pair<String, String> extensionQName =
-      new Pair(extDescription.getNamespace().getUri(),
-               extDescription.getLocalName());
+        new Pair<String,String>(extDescription.getNamespace().getUri(),
+            extDescription.getLocalName());
 
     manifest.supportedExtensions.put(extensionQName, extDescription);
+
+    // Propagate the declarations down to any profiled subtypes.
+    for(ExtensionManifest subclassManifest : manifest.subclassManifests) {
+      subclassManifest.supportedExtensions.put(extensionQName, extDescription);
+    }
 
     profile.put(extendedType, manifest);
 
@@ -95,45 +116,103 @@ public class ExtensionProfile {
 
 
   /**
-   * Declares that {@code extDesc} defines a feed extension.
+   * Specifies that type {@code extendedType} can contain an extension described
+   * by {@code extClass}, as determined by
+   * {@link ExtensionDescription#getDefaultDescription(Class)}.
    */
+  public synchronized void declare(Class<? extends ExtensionPoint> extendedType,
+      Class<? extends Extension> extClass) {
+    declare(extendedType, ExtensionDescription.getDefaultDescription(extClass));
+  }
+
+
+  /**
+   * Declares that {@code extDesc} defines a feed extension.
+   *
+   * @deprecated Calls to this API should be replaced with calls to
+   * {@link ExtensionProfile#declare(Class,ExtensionDescription)} where
+   * the first argument is a specific {@link BaseFeed} subtype. The
+   * {@link BaseFeed} class should only be used for mix-in types that
+   * might appear in multiple feed types.  Its use for all feed declarations
+   * can result in conflicts when mutiple feed types are declared into a
+   * single extension profile, a common practice in client library service
+   * initialization for services that return multiple feed types.
+   */
+  @Deprecated
   public synchronized void declareFeedExtension(ExtensionDescription extDesc) {
     declare(BaseFeed.class, extDesc);
   }
 
+
   /**
-   * Declares that {@code extClass} defines an entry extension.
+   * Declares that {@code extClass} defines a feed extension.
+   *
+   * @deprecated Calls to this API should be replaced with calls to
+   * {@link ExtensionProfile#declare(Class,ExtensionDescription)} where
+   * the first argument is a specific {@link BaseFeed} subtype. The
+   * {@link BaseFeed} class should only be used for mix-in types that
+   * might appear in multiple feed types.  Its use for all feed declarations
+   * can result in conflicts when mutiple feed types are declared into a
+   * single extension profile, a common practice in client library service
+   * initialization for services that return multiple feed types.
    */
+  @Deprecated
   public synchronized void declareFeedExtension(
       Class<? extends Extension> extClass) {
-    declare(BaseFeed.class,
-        ExtensionDescription.getDefaultDescription(extClass));
+    declare(BaseFeed.class, extClass);
   }
+
 
   /**
    * Declares that {@code extDesc} defines an entry extension.
+   *
+   * @deprecated Calls to this API should be replaced with calls to
+   * {@link ExtensionProfile#declare(Class,ExtensionDescription)} where
+   * the first argument is a specific {@link BaseEntry} subtype. The
+   * {@link BaseEntry} class should only be used for mix-in types that
+   * might appear in multiple entry types.  Its use for all entry declarations
+   * can result in conflicts when mutiple feed types are declared into a
+   * single extension profile, a common practice in client library service
+   * initialization for services that return multiple entry types.
    */
+  @Deprecated
   public synchronized void declareEntryExtension(ExtensionDescription extDesc) {
     declare(BaseEntry.class, extDesc);
   }
 
+
   /**
    * Declares that {@code extClass} defines an entry extension.
+   *
+   * @deprecated Calls to this API should be replaced with calls to
+   * {@link ExtensionProfile#declare(Class,ExtensionDescription)} where
+   * the first argument is a specific {@link BaseEntry} subtype. The
+   * {@link BaseEntry} class should only be used for mix-in types that
+   * might appear in multiple entry types.  Its use for all entry declarations
+   * can result in conflicts when mutiple feed types are declared into a
+   * single extension profile, a common practice in client library service
+   * initialization for services that return multiple entry types.
    */
+  @Deprecated
   public synchronized void declareEntryExtension(
       Class<? extends Extension> extClass) {
-    declare(BaseEntry.class,
-        ExtensionDescription.getDefaultDescription(extClass));
+    declare(BaseEntry.class, extClass);
   }
+
 
   /** Specifies that type {@code extendedType} can contain arbitrary XML. */
   public synchronized void declareArbitraryXmlExtension(
-      Class extendedType) {
+      Class<? extends ExtensionPoint> extendedType) {
 
-    ExtensionPoint.Manifest manifest = getOrCreateManifest(extendedType);
+    ExtensionManifest manifest = getOrCreateManifest(extendedType);
     manifest.arbitraryXml = true;
-    profile.put(extendedType, manifest);
 
+    // Propagate the arbitrary xml declaration to any profiled subtypes.
+    for(ExtensionManifest subclassManifest : manifest.subclassManifests) {
+      subclassManifest.arbitraryXml = true;
+    }
+
+    profile.put(extendedType, manifest);
     nsDecls = null;
   }
 
@@ -174,8 +253,8 @@ public class ExtensionProfile {
    * Retrieves an extension manifest for a specific class (or one of
    * its superclasses) or {@code null} if not specified.
    */
-  public ExtensionPoint.Manifest getManifest(Class extendedType) {
-    ExtensionPoint.Manifest manifest = null;
+  public ExtensionManifest getManifest(Class extendedType) {
+    ExtensionManifest manifest = null;
     while (extendedType != null) {
       manifest = profile.get(extendedType);
       if (manifest != null)
@@ -198,8 +277,8 @@ public class ExtensionProfile {
 
 
   /** Internal storage for the profile. */
-  private final Map<Class, ExtensionPoint.Manifest> profile =
-    new HashMap<Class, ExtensionPoint.Manifest>();
+  private final Map<Class, ExtensionManifest> profile =
+    new HashMap<Class, ExtensionManifest>();
 
 
   /** Additional namespaces. */
@@ -225,14 +304,52 @@ public class ExtensionProfile {
   public void setAutoExtending(boolean v) { isAutoExtending = v; }
   public boolean isAutoExtending() { return isAutoExtending; }
 
+
   /** Internal helper routine. */
-  private ExtensionPoint.Manifest getOrCreateManifest(Class extendedType) {
-    ExtensionPoint.Manifest manifest = getManifest(extendedType);
-    if (manifest != null) {
-      return manifest;
-    } else {
-      return new ExtensionPoint.Manifest();
+  private ExtensionManifest getOrCreateManifest(
+      Class<? extends ExtensionPoint> extendedType) {
+
+    // Look for a manifest associated with the extend type, and if it is
+    // a precise match then return it.
+    ExtensionManifest manifest = getManifest(extendedType);
+    if (manifest != null && manifest.extendedType == extendedType) {
+        return manifest;
     }
+
+    ExtensionManifest newManifest = new ExtensionManifest(extendedType);
+
+    // Compute the list of manifests for supertypes.  Do this using a stack,
+    // so we can process them in reverse order (from the deepest superclass
+    // to the closest).
+    Stack<ExtensionManifest> superManifests = new Stack<ExtensionManifest>();
+    while (manifest != null) {
+      superManifests.push(manifest);
+      manifest = getManifest(manifest.extendedType.getSuperclass());
+    }
+
+    // Propagate declarations from any superclass that is already in the
+    // extension profile, and set up an association from the super manifest
+    // to the subclass one so future declarations will propagate.
+    while (!superManifests.empty()) {
+      ExtensionManifest superManifest = superManifests.pop();
+      newManifest.supportedExtensions.putAll(
+          superManifest.supportedExtensions);
+      newManifest.arbitraryXml = superManifest.arbitraryXml;
+      superManifest.subclassManifests.add(newManifest);
+    }
+
+    // Look for any existing profile types that extend the newly added
+    // one and set up a relationship mapping so future declarations on this
+    // manifest will be propagated
+    for(Map.Entry<Class, ExtensionManifest> profileMapping :
+        profile.entrySet()) {
+
+      if (extendedType.isAssignableFrom(profileMapping.getKey())) {
+        newManifest.subclassManifests.add(profileMapping.getValue());
+      }
+    }
+
+    return newManifest;
   }
 
 
@@ -242,7 +359,7 @@ public class ExtensionProfile {
 
     result.addAll(additionalNamespaces);
 
-    for (ExtensionPoint.Manifest manifest: profile.values()) {
+    for (ExtensionManifest manifest: profile.values()) {
       result.addAll(manifest.getNamespaceDecls());
     }
 
@@ -331,7 +448,7 @@ public class ExtensionProfile {
     private ExtensionProfile configProfile;
     private ClassLoader configLoader;
 
-    private Class extensionPoint;
+    private Class<? extends ExtensionPoint> extensionPoint;
     private boolean arbitraryXml;
     private List<ExtensionDescription> extDescriptions =
       new ArrayList<ExtensionDescription>();
@@ -353,15 +470,17 @@ public class ExtensionProfile {
                     "ExtensionPoint extendedClass attribute is missing");
       }
 
+      Class loadedClass;
       try {
-        extensionPoint = configLoader.loadClass(extendedClassName);
+        loadedClass = configLoader.loadClass(extendedClassName);
       } catch (ClassNotFoundException e) {
         throw new ParseException("Unable to load ExtensionPoint class", e);
       }
-      if (!ExtensionPoint.class.isAssignableFrom(extensionPoint)) {
+      if (!ExtensionPoint.class.isAssignableFrom(loadedClass)) {
         throw new ParseException(
                     "Extended classes must extend ExtensionPoint");
       }
+      extensionPoint = extensionPointClass(loadedClass);
 
       String arbitraryXmlAttr = attrs.getValue("", "arbitraryXml");
       if (arbitraryXmlAttr != null) {
@@ -460,7 +579,7 @@ public class ExtensionProfile {
     //
     // Get a list of the extended classes sorted by class name
     //
-    TreeSet<Class> extensionSet = new TreeSet<Class>( 
+    TreeSet<Class> extensionSet = new TreeSet<Class>(
         new Comparator<Class>() {
           public int compare(Class c1, Class c2) {
             return c1.getName().compareTo(c2.getName());
@@ -475,7 +594,7 @@ public class ExtensionProfile {
 
     for (Class extensionPoint : extensionSet) {
 
-      ExtensionPoint.Manifest  manifest = profile.get(extensionPoint);
+      ExtensionManifest  manifest = profile.get(extensionPoint);
 
       List<Attribute> ptAttrs = new ArrayList<Attribute>();
       ptAttrs.add(new Attribute("extendedClass", extensionPoint.getName()));
@@ -483,10 +602,10 @@ public class ExtensionProfile {
       w.startElement(Namespaces.gdataConfigNs, "extensionPoint", ptAttrs, null);
 
       // Create an ordered list of the descriptions in this profile
-      TreeSet<ExtensionDescription> descSet = 
+      TreeSet<ExtensionDescription> descSet =
         new TreeSet<ExtensionDescription>();
 
-      for (ExtensionDescription extDescription : 
+      for (ExtensionDescription extDescription :
            manifest.getSupportedExtensions().values()) {
         descSet.add(extDescription);
       }

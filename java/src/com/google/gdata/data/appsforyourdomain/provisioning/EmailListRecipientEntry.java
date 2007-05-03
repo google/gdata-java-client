@@ -90,7 +90,7 @@ public class EmailListRecipientEntry
 
     // The Who extension is required for EmailListRecipientEntry
     desc.setRequired(true);
-    extensionProfile.declareEntryExtension(desc);
+    extensionProfile.declare(EmailListRecipientEntry.class, desc);
 
     // Declare our "apps" namespace
     extensionProfile.declareAdditionalNamespace(

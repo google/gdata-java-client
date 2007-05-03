@@ -72,14 +72,14 @@ public class UserEntry extends BaseEntry<UserEntry> {
      * We do not set Login and Name as required since the update operation
      * may not specify these.
      */
-    extensionProfile.declareEntryExtension(Login.getDefaultDescription());
-    extensionProfile.declareEntryExtension(Name.getDefaultDescription());
-    extensionProfile.declareEntryExtension(Quota.getDefaultDescription());
+    extensionProfile.declare(UserEntry.class, Login.getDefaultDescription());
+    extensionProfile.declare(UserEntry.class, Name.getDefaultDescription());
+    extensionProfile.declare(UserEntry.class, Quota.getDefaultDescription());
     
     // FeedLink extension is not repeatable by default.
     ExtensionDescription desc = FeedLink.getDefaultDescription();
     desc.setRepeatable(true);
-    extensionProfile.declareEntryExtension(desc);
+    extensionProfile.declare(UserEntry.class, desc);
     
     // Declare our "apps" namespace
     extensionProfile.declareAdditionalNamespace(

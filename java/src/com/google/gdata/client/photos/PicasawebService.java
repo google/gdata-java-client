@@ -70,14 +70,14 @@ public class PicasawebService extends GoogleService {
       String domainName) {
     super(PWA_SERVICE, applicationName, protocol, domainName);
 
+    // Turn on auto-extensions.
+    extProfile.setAutoExtending(true);
+
     extProfile.addDeclarations(new UserFeed());
     extProfile.addDeclarations(new AlbumFeed());
     extProfile.addDeclarations(new PhotoFeed());
     extProfile.addDeclarations(new CommentEntry());
     extProfile.addDeclarations(new TagEntry());
-
-    // Turn on auto-extensions.
-    extProfile.setAutoExtending(true);
   }
 
   @Override

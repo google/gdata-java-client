@@ -70,12 +70,12 @@ public class NicknameEntry extends BaseEntry<NicknameEntry> {
     // A Nickname extension is required for each entry
     ExtensionDescription description = Nickname.getDefaultDescription();
     description.setRequired(true);
-    extensionProfile.declareEntryExtension(description);
+    extensionProfile.declare(NicknameEntry.class, description);
 
     // A Login extension is required for each entry
     description = Login.getDefaultDescription();
     description.setRequired(true);
-    extensionProfile.declareEntryExtension(description);
+    extensionProfile.declare(NicknameEntry.class, description);
 
     // Declare our "apps" namespace
     extensionProfile.declareAdditionalNamespace(

@@ -86,3 +86,4 @@ h5 { margin:0; font-weight: normal; display:inline; font-size: 100%;}
 .instructions i { font-style: normal; color:#008000; }
 
 .errormessage { font-weight: bold; color: #CC1100; margin-bottom: 0.5em; } 
+.errordiv { padding-top: 35px; }

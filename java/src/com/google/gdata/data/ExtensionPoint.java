@@ -32,8 +32,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,59 +43,12 @@ import java.util.Map;
  * For example, a calendar {@code <atom:entry>} supports hosting
  * {@code <gd:when>}.
  * <p>
- * The set of accepted extensions is defined within {@link Manifest}.
+ * The set of accepted extensions is defined within {@link ExtensionManifest}.
  *
  * 
  * 
  */
-public class ExtensionPoint {
-
-
-
-  /** A specification of acceptable extensions within an extension point. */
-  static public class Manifest {
-
-
-    /** Maps (Namespace URI, local name) to corresponding extension data. */
-    final Map<Pair<String, String>, ExtensionDescription> supportedExtensions =
-      new HashMap<Pair<String, String>, ExtensionDescription>();
-
-
-    /**
-     * Specifies whether the extension point supports arbitrary XML
-     * ({code xs:any}). If it does, it is available through
-     * {@link ExtensionPoint#xmlBlob}.
-     */
-    boolean arbitraryXml = false;
-
-
-    /**
-     * Returns the Map from namespace/localname String pairs to supporting
-     * Extension class and manifest information.
-     */
-    public Map<Pair<String, String>, ExtensionDescription>
-        getSupportedExtensions() {
-
-      return Collections.unmodifiableMap(supportedExtensions);
-    }
-
-
-    /**
-     * Retrieves a collection of namespace declarations for all possible
-     * extensions based on this manifest.
-     */
-    Collection<XmlWriter.Namespace> getNamespaceDecls() {
-
-      Collection<XmlWriter.Namespace> nsDecls =
-        new HashSet<XmlWriter.Namespace>();
-
-      for (ExtensionDescription extDescription: supportedExtensions.values()) {
-        nsDecls.add(extDescription.getNamespace());
-      }
-
-      return nsDecls;
-    }
-  }
+public class ExtensionPoint extends AbstractExtension {
 
 
   /** Collection of non-repeating extensions.  Uses {@link LinkedHashMap} in
@@ -119,7 +70,7 @@ public class ExtensionPoint {
 
 
   /** Manifest for this instance. Filled on-demand. */
-  private Manifest manifest;
+  private ExtensionManifest manifest;
 
 
   /**
@@ -163,7 +114,7 @@ public class ExtensionPoint {
   }
 
   /**
-   * Returns an unmodifiable collection of non-repeating extensions in this 
+   * Returns an unmodifiable collection of non-repeating extensions in this
    * ExtensionPoint.
    * 
    * @return Collection of non-repeating extensions.
@@ -186,7 +137,7 @@ public class ExtensionPoint {
   }
 
   /**
-   * Returns an unmodifiable collection of lists of  repeating extensions in 
+   * Returns an unmodifiable collection of lists of  repeating extensions in
    * this ExtensionPoint. The Extensions that are of the same type
    * are grouped together in lists within the collection.
    * 
@@ -196,7 +147,7 @@ public class ExtensionPoint {
     return Collections.unmodifiableCollection(
         repeatingExtensionMap.values());
   }
-  
+ 
   /** Internal helper method. */
   protected boolean addExtension(Extension ext, Class extClass) {
 
@@ -391,7 +342,7 @@ public class ExtensionPoint {
 
 
   /** Retrieves the manifest for the specified class. */
-  protected Manifest getManifest(
+  protected ExtensionManifest getManifest(
       ExtensionProfile extProfile,
       Class<? extends ExtensionPoint> extendedClass) {
 
@@ -402,6 +353,38 @@ public class ExtensionPoint {
     return manifest;
   }
 
+  @Override
+  protected void generate(XmlWriter w, ExtensionProfile p,
+      XmlWriter.Namespace namespace, String localName,
+      List<XmlWriter.Attribute> attrs, AttributeGenerator generator)
+      throws IOException {
+
+    // validate
+    if (generator.getContent() != null) {
+      throw new IllegalStateException(
+          "No content allowed on an extension point");
+    }
+    try {
+      ExtensionManifest manifest = p.getManifest(this.getClass());
+      if (manifest != null) {
+        checkRequiredExtensions(manifest);
+      }
+    } catch (ParseException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+
+    // generate XML
+    generateStartElement(w, namespace, localName, attrs, null);
+    generateExtensions(w, p);
+    w.endElement(namespace, localName);
+  }
+
+  @Override
+  public XmlParser.ElementHandler getHandler(ExtensionProfile p,
+      String namespace, String localName, Attributes attrs)
+      throws ParseException, IOException {
+    return new ExtensionHandler(p, this.getClass(), attrs);
+  }
 
  /**
    * Generates XML corresponding to the type implementing {@link
@@ -467,7 +450,7 @@ public class ExtensionPoint {
                                         ElementHandler handler)
       throws IOException {
 
-    Manifest manifest = getManifest(profile, extPoint);
+    ExtensionManifest manifest = getManifest(profile, extPoint);
     if (manifest != null && manifest.arbitraryXml) {
       handler.initializeXmlBlob(xmlBlob,
                                 /* mixedContent */ false,
@@ -519,7 +502,7 @@ public class ExtensionPoint {
                                                Attributes attrs)
       throws ParseException, IOException {
 
-    Manifest manifest = getManifest(extProfile, extPoint);
+    ExtensionManifest manifest = getManifest(extProfile, extPoint);
     if (manifest == null) {
       return null;
     }
@@ -588,7 +571,7 @@ public class ExtensionPoint {
 
 
   /** Checks whether all required extensions are present. */
-  protected void checkRequiredExtensions(Manifest manifest)
+  protected void checkRequiredExtensions(ExtensionManifest manifest)
       throws ParseException {
 
     for (ExtensionDescription extDescription:
@@ -615,26 +598,41 @@ public class ExtensionPoint {
    * code for looking up handlers defined within the ExtensionProfile
    * associated with the ExtensionPoint.
    */
-  public class ExtensionHandler extends XmlParser.ElementHandler {
+  public class ExtensionHandler extends AbstractExtension.AttributesHandler {
 
     protected ExtensionProfile extProfile;
     protected Class extendedClass;
     protected boolean hasExtensions;
-    protected Manifest manifest;
+    protected ExtensionManifest manifest;
 
 
     /**
-     * Constructs a new Handler instance that process extensions on
-     * a class associated with the ExtensionPoint
+     * Constructs a new Handler instance that process extensions on a class
+     * associated with the ExtensionPoint.
      *
-     * @param   profile
-     *            The extension profile associatd with the Handler.
-     *
-     * @param   extendedClass
-     *            The extended class within the profile for this handler
+     * @param profile       The extension profile associatd with the Handler.
+     * @param extendedClass The extended class within the profile for this
+     *                      handler
      */
     public ExtensionHandler(ExtensionProfile profile, Class extendedClass)
-        throws java.io.IOException {
+        throws IOException {
+      this(profile, extendedClass, null);
+    }
+
+    /**
+     * Constructs a new Handler instance that process extensions on a class
+     * associated with the ExtensionPoint, and consumes the attributes.
+     *
+     * @param profile       The extension profile associatd with the Handler.
+     * @param extendedClass The extended class within the profile for this
+     *                      handler
+     * @param attrs         XML attributes or <code>null</code> to suppress the
+     *                      use of {@link AttributeHelper}
+     */
+    public ExtensionHandler(ExtensionProfile profile, Class extendedClass,
+        Attributes attrs)
+        throws IOException {
+      super(attrs);
 
       this.extProfile = profile;
       this.extendedClass = extendedClass;

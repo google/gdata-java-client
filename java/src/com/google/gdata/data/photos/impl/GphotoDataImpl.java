@@ -35,6 +35,7 @@ import com.google.gdata.data.photos.impl.Extensions.GphotoConstruct;
 import com.google.gdata.util.ParseException;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Basic implementation class for all of the {@link GphotoData} objects.  This
@@ -225,6 +226,15 @@ public class GphotoDataImpl implements GphotoData {
   }
 
   /**
+   * Get a repeating extension by class.
+   * @see ExtensionPoint#getRepeatingExtension(Class)
+   */
+  protected <T extends Extension> List<T> getRepeatingExtension(
+      Class<T> extClass) {
+    return extPoint.getRepeatingExtension(extClass);
+  }
+
+  /**
    * Set an extension.
    * @see ExtensionPoint#setExtension(Extension)
    */
@@ -238,6 +248,14 @@ public class GphotoDataImpl implements GphotoData {
    */
   public void addExtension(Extension extension) {
     extPoint.addExtension(extension);
+  }
+
+  /**
+   * Add a repeating extension.
+   * @see ExtensionPoint#addRepeatingExtension(Extension)
+   */
+  public void addRepeatingExtension(Extension extension) {
+    extPoint.addRepeatingExtension(extension);
   }
 
   /**

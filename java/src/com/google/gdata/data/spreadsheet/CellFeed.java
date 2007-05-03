@@ -43,8 +43,8 @@ public class CellFeed
 
   /** Declares relevant extensions into the extension profile. */
   public void declareExtensions(ExtensionProfile extProfile) {
-    extProfile.declareFeedExtension(RowCount.getDefaultDescription());
-    extProfile.declareFeedExtension(ColCount.getDefaultDescription());
+    extProfile.declare(CellFeed.class, RowCount.getDefaultDescription());
+    extProfile.declare(CellFeed.class, ColCount.getDefaultDescription());
     super.declareExtensions(extProfile);
   }
 

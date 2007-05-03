@@ -25,13 +25,13 @@ import com.google.gdata.data.geo.PointData;
  * Implementation of the PointData interface.  Currently only supports
  * a non-repeating Point extension.  This class uses an {@link ExtensionPoint}
  * that is passed in to store the Point extension.
- * 
+ *
  * 
  */
 public class PointDataImpl implements PointData {
 
   private ExtensionPoint extPoint;
-  
+
   /**
    * Construct a new implementation of PointData with the given
    * extension point as the backing storage for data.
@@ -39,39 +39,44 @@ public class PointDataImpl implements PointData {
   public PointDataImpl(ExtensionPoint extensionPoint) {
     this.extPoint = extensionPoint;
   }
-  
+
   /**
    * Sets the geo-location of the entity based on the lat and long coordinates
    * passed in.
-   * 
+   *
    * @param lat The latitude coordinate, between -90 and 90 degrees.
    * @param lon The longitude coordinate, between -180 and 180 degrees.
    * @throws IllegalArgumentException if the latitude and longitude coordinates
    *        are invalid.
    */
-  public void setGeoLocation(Double lat, Double lon) 
+  public void setGeoLocation(Double lat, Double lon)
       throws IllegalArgumentException {
-    removePointExtension();
-    if (lat != null && lon != null) {
-      setGeoLocation(new W3CPoint(lat, lon));
-    } else if (lat != null || lon != null) {
-      throw new IllegalArgumentException(
-          "'lat' and 'lon' must either both be null or non-null.");
+    Point existing = getGeoLocation();
+    if (existing != null) {
+      existing.setGeoLocation(lat, lon);
+    } else {
+      extPoint.setExtension(new GeoRssWhere(lat, lon));
     }
   }
-  
+
   /**
    * Sets the geo-location of the entity based on the Point extension.
-   * 
+   *
    * @param point A point containing the latitude and longitude coordinates.
    */
   public void setGeoLocation(Point point) {
-    removePointExtension();
-    if (point != null) {
+    Point existing = getGeoLocation();
+
+    if (existing != null) {
+      Double lat = point == null ? null : point.getLatitude();
+      Double lon = point == null ? null : point.getLongitude();
+      existing.setGeoLocation(lat, lon);
+
+    } else if (point != null) {
       extPoint.setExtension(point);
     }
   }
-  
+
   /**
    * Gets the geo-location of the entity.
    * @return a Point that contains the geo-coordinates (latitude and longitude).
@@ -79,20 +84,24 @@ public class PointDataImpl implements PointData {
   public Point getGeoLocation() {
     return getPointExtension();
   }
-  
+
   /*
    * Declare the extensions that are used for storing Point information.
    */
   public void declareExtensions(ExtensionProfile extProfile) {
     Class<? extends ExtensionPoint> extClass = extPoint.getClass();
-    
+
     // Declare all all Point implementations here so they are parsable
     // in the context of extClass.
-    
-    // Declare the W3C's geo:Point extension as non-repeatable.
+
+    // Declare our various point extensions, none are repeatable.
     extProfile.declare(extClass, W3CPoint.getDefaultDescription(false));
+    new W3CPoint().declareExtensions(extProfile);
+    extProfile.declare(extClass, GeoRssPoint.getDefaultDescription(false));
+    extProfile.declare(extClass, GeoRssWhere.getDefaultDescription(false));
+    new GeoRssWhere().declareExtensions(extProfile);
   }
-  
+
   /**
    * Helper method that iterates through all extensions in the ExtensionPoint
    * and returns an instance of the Point extension if it exists.
@@ -104,15 +113,5 @@ public class PointDataImpl implements PointData {
       }
     }
     return null;
-  }
-  
-  /**
-   * Removes the Point extension from the ExtensionPoint.
-   */
-  private void removePointExtension() {
-    Point p = getPointExtension();
-    if (p != null) {
-      extPoint.removeExtension(p);
-    }
   }
 }

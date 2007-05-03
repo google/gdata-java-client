@@ -25,13 +25,15 @@ GData Java Client depends on following external libraries on top of standard
 Java installation.
 1. mail.jar in Sun's JavaMail API (version 1.4 or greater).
    Sun's JavaMail package available for download from 
-   "http://java.sun.com/products/javamail/"
-2. If using JDK version < 1.6, activation.jar in Sun's JavaBeans Activation 
-   Framework 1.1. Sun's JavaBeeans Activation Framework available for download 
-   from "http://java.sun.com/products/javabeans/jaf/downloads/index.html"
-3. servlet.jar in Sun's Servlet API (version 2.3 or greater)
-   Sun's Servlet API package can be downloaded from
-   "http://java.sun.com/products/servlet/download.html"
+   "http://java.sun.com/products/javamail/".
+2. activation.jar in Sun's JavaBeansActivationFramewrok.
+   This is required only if using JDK version 1.5 or less.
+   Sun's JavaBeansActivationFramework is available for download from 
+   "http://java.sun.com/products/javabeans/jaf/downloads/index.html".
+3. servlet.jar in Sun's Servlet API (version 2.3 or greater).
+   This is required only if executing code samples in 'sample.authsub' or
+   'sample.gbase.recipe' packages.  Sun's Servlet API package can be
+   downloaded from "http://java.sun.com/products/servlet/download.html".
 
 INSTALLATION:
 -------------

@@ -23,8 +23,8 @@ import com.google.gdata.util.XmlParser;
 import org.xml.sax.Attributes;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,14 +40,10 @@ import java.util.Map;
  */
 public abstract class AbstractExtension implements Extension {
 
-  /**
-   * The XML namespace for this extension.
-   */
+  /** XML namespace for this extension or <code>null</code> if not defined */
   protected final XmlWriter.Namespace namespace;
 
-  /**
-   * The XML local name for this extension.
-   */
+  /** XML local name for this extension or <code>null</code> if not defined */
   protected final String localName;
 
   /**
@@ -69,15 +65,14 @@ public abstract class AbstractExtension implements Extension {
     Class<? extends AbstractExtension> extensionClass = this.getClass();
     ExtensionDescription.Default defAnnot = extensionClass
         .getAnnotation(ExtensionDescription.Default.class);
-    if (defAnnot == null) {
-      String name = extensionClass.getName();
-      throw new IllegalArgumentException(
-          "No @ExtensionDescription.Default annotation found on subclass "
-          + name.substring(name.lastIndexOf('.') + 1));
+    if (defAnnot != null) {
+      this.namespace = new XmlWriter.Namespace(defAnnot.nsAlias(),
+          defAnnot.nsUri());
+      this.localName = defAnnot.localName();
+    } else {
+      this.namespace = null;
+      this.localName = null;
     }
-    this.namespace = new XmlWriter.Namespace(defAnnot.nsAlias(),
-        defAnnot.nsUri());
-    this.localName = defAnnot.localName();
   }
 
   /**
@@ -94,38 +89,75 @@ public abstract class AbstractExtension implements Extension {
   }
 
   /**
-   * Checks the internal state of this extension, including the attribute values
-   * to see if there are any problems.  Default implementation does nothing,
-   * though generally this is discouraged unless there really are no
-   * restrictions.
+   * Checks the attributes to see if there are any problems.  Default
+   * implementation does nothing, though generally this is discouraged unless
+   * there really are no restrictions.
    *
-   * @throws IllegalStateException if any problems are found with the internal
-   *                               state of the fields
+   * @throws IllegalStateException if any problems are found with the
+   *                                       attributes
    */
-  protected void validate() {
+  protected void validate() throws IllegalStateException {
   }
 
   /**
    * Puts attributes into the attribute generator.  May also use
-   * {@link#setContent(String)} to set the element's text content.
+   * {@link#setContent(String)} to set the element's text content.  Called from
+   * {@link #generate(XmlWriter,ExtensionProfile)}.  Default implementation
+   * does nothing, though generally this is discouraged unless there really are
+   * no attributes.
    *
    * @param generator attribute generator
    */
-  protected abstract void putAttributes(AttributeGenerator generator);
+  protected void putAttributes(AttributeGenerator generator) {
+  }
 
   /**
    * Consumes attributes from the attribute helper.  May also use
-   * {@link#getContent()} to consume the element's text content.
+   * {@link AttributeHelper#consumeContent} to consume the element's text
+   * content.  Called from {@link #getHandler}.  Default implementation does
+   * nothing, though generally this is discouraged unless there really are no
+   * attributes.
    *
    * @param helper attribute helper
    * @throws ParseException any parsing exception
    */
-  protected abstract void consumeAttributes(AttributeHelper helper)
-      throws ParseException;
+  protected void consumeAttributes(AttributeHelper helper)
+      throws ParseException {
+  }
+
+  /**
+   * Generates the XML into the XML writer.  Default implementation generates a
+   * "simple" element with the attributes and content found in the attribute
+   * generator.
+   *
+   * @param w         XML writer
+   * @param p         extension profile
+   * @param namespace XML namespace for this extension
+   * @param localName XML local name for this extension
+   * @param attrs     list of XML attributes
+   * @param generator attribute generator
+   * @throws IOException any I/O exception
+   */
+  protected void generate(XmlWriter w, ExtensionProfile p,
+      XmlWriter.Namespace namespace, String localName,
+      List<XmlWriter.Attribute> attrs, AttributeGenerator generator)
+      throws IOException {
+    w.simpleElement(namespace, localName, attrs, generator.getContent());
+  }
 
   public void generate(XmlWriter w, ExtensionProfile p)
       throws IOException {
+
+    // validate
+    if (namespace == null) {
+      String name = this.getClass().getName();
+      throw new IllegalStateException(
+          "No @ExtensionDescription.Default annotation found on subclass "
+              + name.substring(name.lastIndexOf('.') + 1));
+    }
     validate();
+
+    // generate attributes
     AttributeGenerator generator = new AttributeGenerator();
     putAttributes(generator);
     List<XmlWriter.Attribute> attrs = new ArrayList<XmlWriter.Attribute>();
@@ -135,28 +167,59 @@ public abstract class AbstractExtension implements Extension {
         attrs.add(new XmlWriter.Attribute(entry.getKey(), value));
       }
     }
-    w.simpleElement(namespace, localName, attrs, generator.getContent());
+
+    // generate XML
+    generate(w, p, namespace, localName, attrs, generator);
   }
 
   public XmlParser.ElementHandler getHandler(ExtensionProfile p,
-      String namespace, String localName, final Attributes attrs)
+      String namespace, String localName, Attributes attrs)
       throws ParseException, IOException {
-    if (immutable) {
-      throw new IllegalStateException("Cannot parse into immutable instance");
-    }
-    return new XmlParser.ElementHandler() {
+    return new AttributesHandler(attrs);
+  }
 
-      public void processEndElement() throws ParseException {
-        final AttributeHelper attrsHelper = new AttributeHelper(attrs, value);
-        consumeAttributes(attrsHelper);
-        attrsHelper.assertAllConsumed();
-        try {
-          validate();
-        } catch (IllegalStateException e) {
-          throw new ParseException(e.getMessage(), e);
-        }
+  /**
+   * Base class for custom element handlers that uses {@link AttributeHelper}
+   * to consume the attributes and the element's text content.
+   *
+   * 
+   */
+  protected class AttributesHandler extends XmlParser.ElementHandler {
+
+    /** attribute helper or <code>null</code> to suppress its use */
+    private final AttributeHelper helper;
+
+    /**
+     * Constructor.
+     *
+     * @param attrs XML attributes or <code>null</code> to suppress the use of
+     *              {@link AttributeHelper}
+     */
+    public AttributesHandler(Attributes attrs) {
+      helper = attrs == null ? null : new AttributeHelper(attrs);
+      if (immutable) {
+        throw new IllegalStateException("Cannot parse into immutable instance");
       }
-    };
+    }
+
+    public void processEndElement() throws ParseException {
+      /* don't call super.processEndElement() because it doesn't allow text()
+      data */
+
+      // consume attributes
+      if (helper != null) {
+        helper.setContent(value);
+        consumeAttributes(helper);
+        helper.assertAllConsumed();
+      }
+
+      // validate
+      try {
+        validate();
+      } catch (IllegalStateException e) {
+        throw new ParseException(e.getMessage(), e);
+      }
+    }
   }
 
   /**
@@ -170,26 +233,31 @@ public abstract class AbstractExtension implements Extension {
   }
 
   /**
-   * Throws an {@link IllegalStateException} if the value is required and it is
-   * missing.
+   * Throws an {@link IllegalStateException} if the value is required
+   * and it is missing.
    *
    * @param attrName attribute name
+   * @throws IllegalStateException to indicate that there are problems with the
+   *                                       attributes
    */
   protected static final void throwExceptionForMissingAttribute(
       String attrName) {
-      throw new IllegalStateException("Missing attribute: " + attrName);
+    throw new IllegalStateException("Missing attribute: " + attrName);
   }
 
   /**
-   * Returns true if the given object is not null and is the same concrete class
-   * as this one.
+   * @param o given object
+   * @return true if the given object is not null and is the same concrete class
+   *         as this one
    */
   protected boolean sameClassAs(Object o) {
     return o != null && getClass().equals(o.getClass());
   }
 
   /**
-   * Returns true if the specified arguments are equal, or both null.
+   * @param o1 object 1 or <code>null</code>
+   * @param o2 object 2 or <code>null</code>
+   * @return true if the specified arguments are equal, or both null
    */
   protected static boolean eq(Object o1, Object o2) {
     return o1 == null ? o2 == null : o1.equals(o2);
