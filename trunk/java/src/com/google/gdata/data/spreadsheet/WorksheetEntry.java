@@ -67,8 +67,8 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
    * Declares any extensions.
    */
   public void declareExtensions(ExtensionProfile extProfile) {
-    extProfile.declareEntryExtension(RowCount.getDefaultDescription());
-    extProfile.declareEntryExtension(ColCount.getDefaultDescription());
+    extProfile.declare(WorksheetEntry.class, RowCount.getDefaultDescription());
+    extProfile.declare(WorksheetEntry.class, ColCount.getDefaultDescription());
   }
   
   

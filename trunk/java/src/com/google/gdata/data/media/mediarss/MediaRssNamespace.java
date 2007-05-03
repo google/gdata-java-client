@@ -17,6 +17,8 @@
 package com.google.gdata.data.media.mediarss;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.ExtensionDescription;
 
@@ -65,15 +67,15 @@ public class MediaRssNamespace {
     profile.declareAdditionalNamespace(NS);
 
     // Register some extensions that require special treatment
-    profile.declareEntryExtension(MediaGroup.getDefaultDescription());
-    profile.declareEntryExtension(MediaContent.getDefaultDescription(false));
+    profile.declare(BaseEntry.class, MediaGroup.getDefaultDescription());
+    profile.declare(BaseEntry.class, MediaContent.getDefaultDescription(false));
     profile.declare(MediaGroup.class, MediaContent.getDefaultDescription(true));
 
     // Register all standard extension everywhere, including in the aggregators
     // declared above (MediaGroup and MediaContent)
     for (ExtensionDescription desc : STANDARD_EXTENSIONS) {
-      profile.declareEntryExtension(desc);
-      profile.declareFeedExtension(desc);
+      profile.declare(BaseEntry.class, desc);
+      profile.declare(BaseFeed.class, desc);
       profile.declare(MediaGroup.class, desc);
       profile.declare(MediaContent.class, desc);
     }

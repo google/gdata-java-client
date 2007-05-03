@@ -27,8 +27,11 @@ import com.google.gdata.util.ParseException;
  */
 public interface TagData extends GphotoData {
 
-  /** The category name for tags. */
-  public static final String TAG_KIND = Namespaces.PHOTOS_PREFIX + "tag";
+  /** The unqualified kind for a tag. */
+  public static final String KIND = "tag";
+
+  /** The fully qualified kind term for tags. */
+  public static final String TAG_KIND = Namespaces.PHOTOS_PREFIX + KIND;
 
   /** A category object for tags.  All tag objects will have this set. */
   public static final Category TAG_CATEGORY

@@ -25,7 +25,7 @@ import com.google.gdata.util.common.xml.XmlWriter;
  */
 public final class Namespaces {
 
-  /** Google data (GD) namespace */
+  /** Google Calendar (GCAL) namespace */
   public static final String gCal = "http://schemas.google.com/gCal/2005";
   public static final String gCalPrefix = gCal + "#";
   public static final String gCalAlias = "gCal";

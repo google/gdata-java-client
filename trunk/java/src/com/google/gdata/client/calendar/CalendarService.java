@@ -17,8 +17,10 @@
 package com.google.gdata.client.calendar;
 
 import com.google.gdata.client.GoogleService;
-import com.google.gdata.data.extensions.EventFeed;
+import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.calendar.CalendarEventFeed;
+import com.google.gdata.data.calendar.CalendarFeed;
+import com.google.gdata.data.extensions.EventFeed;
 
 
 /**
@@ -85,9 +87,12 @@ public class CalendarService extends GoogleService {
 
     super(CALENDAR_SERVICE, applicationName, protocol, domainName);
 
-    // Configure the extension profile to expect EventFeed formatted entries.
+    // Configure the extension profile to expect EventFeed formatted entries
+    // or Acl entries.
+    new CalendarFeed().declareExtensions(getExtensionProfile());
     new EventFeed().declareExtensions(getExtensionProfile());
     new CalendarEventFeed().declareExtensions(getExtensionProfile());
+    new AclFeed().declareExtensions(getExtensionProfile());
   }
 
   public String getServiceVersion() {

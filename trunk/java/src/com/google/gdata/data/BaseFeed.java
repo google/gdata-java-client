@@ -700,12 +700,30 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   }
 
 
+  /**
+   * Parses XML in the Atom format from a parser-defined content source.
+   *
+   * @param   extProfile
+   *            Extension profile.
+   *            
+   * @param   parser
+   *            XML parser.
+   */
+  public void parseAtom(ExtensionProfile extProfile,
+                        XmlParser parser) throws IOException,
+                                                        ParseException {
+
+    FeedHandler handler = new FeedHandler(extProfile);
+    parser.parse(handler, Namespaces.atom, "feed");
+  }
+
+
   /** {@code <atom:feed>} parser. */
   public class FeedHandler extends SourceHandler {
 
 
     public FeedHandler(ExtensionProfile extProfile) throws IOException {
-      super(extProfile, Feed.class);
+      super(extProfile, BaseFeed.this.getClass());
     }
 
 

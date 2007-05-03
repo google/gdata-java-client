@@ -215,7 +215,7 @@ public class DisplayUtils {
     if (raw == null) {
       return "";
     }
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     int length = raw.length();
     boolean shortened = false;
     if (maxLength != -1 && length > maxLength) {

@@ -58,12 +58,8 @@ public class AttributeHelper {
    * Creates a helper tied to a specific set of SAX attributes.
    *
    * @param attrs the SAX attributes to be processed
-   * @param content element's text content
    */
-  public AttributeHelper(Attributes attrs, String content) {
-    // text content
-    this.content = content == null ? null : content.trim();
-
+  public AttributeHelper(Attributes attrs) {
     // attributes
     for (int i = 0; i < attrs.getLength(); i++) {
       if (attrs.getURI(i).length() != 0) {
@@ -80,6 +76,7 @@ public class AttributeHelper {
   /**
    * Gets the element's text content and removes it from the list.
    *
+   * @param required indicates attributes is required
    * @return element's text content or {@code null} for no text content
    * @exception ParseException if required is set and the text content
    *   is not defined
@@ -90,15 +87,6 @@ public class AttributeHelper {
     }
     contentConsumed = true;
     return content;
-  }
-
-  /**
-   * Creates a helper tied to a specific set of SAX attributes.
-   *
-   * @param attrs the SAX attributes to be processed
-   */
-  public AttributeHelper(Attributes attrs) {
-    this(attrs, null);
   }
 
   /**
@@ -249,6 +237,28 @@ public class AttributeHelper {
   }
 
   /**
+   * Gets the value of a {@link DateTime} attribute and remove it from the list.
+   *
+   * @param name attribute name
+   * @param required indicates attribute is required
+   * @return the date-time value of this attribute, {@code null} by default
+   * @exception ParseException if required is set and the attribute
+   *   is not defined, or if the date-time attribute cannot be parsed
+   */
+  public DateTime consumeDateTime(String name, boolean required)
+      throws ParseException {
+    String value = consume(name, required);
+    if (value == null) {
+      return null;
+    }
+    try {
+      return DateTime.parseDateTimeChoice(value);
+    } catch (NumberFormatException e) {
+      throw new ParseException("Invalid date/time value.", e);
+    }
+  }
+
+  /**
    * Defines a custom mapping of an enum value to an attribute value (similar to
    * a closure).
    */
@@ -391,4 +401,15 @@ public class AttributeHelper {
       throw new ParseException(message.toString());
     }
   }
+
+  /**
+   * Sets the content.
+   *
+   * @param content element's text content
+   */
+  void setContent(String content) {
+    // text content
+    this.content = content == null ? null : content.trim();
+  }
+
 }

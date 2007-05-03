@@ -84,10 +84,10 @@ public class MessageEntry extends BaseEntry<MessageEntry> {
    * by an MessageEntry.
    */
   public void declareExtensions(ExtensionProfile extProfile) {
-    extProfile.declareEntryExtension(Rating.getDefaultDescription(false));
-    extProfile.declareEntryExtension(When.getDefaultDescription(false));
-    extProfile.declareEntryExtension(GeoPt.getDefaultDescription(false));
-    extProfile.declareEntryExtension(Who.getDefaultDescription());
+    extProfile.declare(MessageEntry.class, Rating.getDefaultDescription(false));
+    extProfile.declare(MessageEntry.class, When.getDefaultDescription(false));
+    extProfile.declare(MessageEntry.class, GeoPt.getDefaultDescription(false));
+    extProfile.declare(MessageEntry.class, Who.getDefaultDescription());
   }
 
   public Rating getRating() {

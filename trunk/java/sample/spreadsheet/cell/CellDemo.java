@@ -16,62 +16,58 @@
 
 package sample.spreadsheet.cell;
 
+import sample.util.SimpleCommandLineParser;
 import com.google.gdata.client.spreadsheet.CellQuery;
 import com.google.gdata.client.spreadsheet.FeedURLFactory;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
-
-import sample.util.SimpleCommandLineParser;
+import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
+import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
+import com.google.gdata.data.spreadsheet.WorksheetEntry;
+import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ServiceException;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Very minimalist demo of the cell feed.
- *
- * Using this demo, you can see how GData can read and write to individual
- * cells based on their position.
- *
- * Usage: java ListDemo username http://spreadsheets.google.com/ccc?id=.....
- *
+ * 
+ * Using this demo, you can see how GData can read and write to individual cells
+ * based on their position.
+ * 
+ * Usage: java CellDemo username http://spreadsheets.google.com/ccc?id=.....
+ * 
  * 
  */
 public class CellDemo {
 
-  /**
-   * The message for displaying the usage parameters.
-   */
+  /** The message for displaying the usage parameters. */
   private static final String[] USAGE_MESSAGE = {
-      "Usage: java CellDemo --username [user] --password [pass] ",
-      "       --spreadsheet http://....spreadsheets.google.com/ccc?id=...",
-      ""
-  };
+      "Usage: java CellDemo --username [user] --password [pass] ", ""};
 
-  /**
-   * Welcome message, introducing the program.
-   */
+  /** Welcome message, introducing the program. */
   private static final String[] WELCOME_MESSAGE = {
-    "This is a demo of the cells feed!",
-    "",
-    "Using this interface, you can read/write to your spreadsheet's cells.",
-    ""
-  };
+      "This is a demo of the cells feed!", "",
+      "Using this interface, you can read/write to your spreadsheet's cells.",
+      ""};
 
-  /**
-   * Help on all available commands.
-   */
+  /** Help on all available commands. */
   private static final String[] COMMAND_HELP_MESSAGE = {
-    "Commands:",
-    " list                              [[shows all cells]]",
-    " range minRow maxRow minCol maxCol [[rectangle]]",
-    " set row# col# formula             [[sets a cell]]",
-    "   example: set 1 3 =R1C2+1",
-    " search adam                       [[full text query]]"
-  };
+      "Commands:",
+      " load                              "
+          + "[[select a spreadsheet and worksheet]]",
+      " list                              [[shows all cells]]",
+      " range minRow maxRow minCol maxCol [[rectangle]]",
+      " set row# col# formula             [[sets a cell]]",
+      "   example: set 1 3 =R1C2+1",
+      " search adam                       [[full text query]]"};
 
 
   /** Our view of Google Spreadsheets as an authenticated Google user. */
@@ -83,57 +79,124 @@ public class CellDemo {
   /** The output stream. */
   private PrintStream out;
 
+  /** A factory that generates the appropriate feed URLs. */
+  private FeedURLFactory factory;
+
 
   /**
-   * Constructs a cell demo from the specified spreadsheet service,
-   * which is used to authenticate to and access Google Spreadsheets.
+   * Constructs a cell demo from the specified spreadsheet service, which is
+   * used to authenticate to and access Google Spreadsheets.
+   * 
+   * @param service the connection to the Google Spradsheets service.
+   * @param outputStream a handle for stdout.
    */
   public CellDemo(SpreadsheetService service, PrintStream outputStream) {
     this.service = service;
     this.out = outputStream;
+    this.factory = FeedURLFactory.getDefault();
   }
-
 
   /**
    * Log in to Google, under the Google Spreadsheets account.
+   * 
+   * @param username name of user to authenticate (e.g. yourname@gmail.com)
+   * @param password password to use for authentication
+   * @throws AuthenticationException if the service is unable to validate the
+   *         username and password.
    */
   public void login(String username, String password)
-      throws Exception {
+      throws AuthenticationException {
 
     // Authenticate
     service.setUserCredentials(username, password);
   }
 
   /**
-   * Computes the URL of the cells feed for the spreadsheet.
+   * Displays the given list of entries and prompts the user to select the index
+   * of one of the entries. NOTE: The displayed index is 1-based and is
+   * converted to 0-based before being returned.
+   * 
+   * @param reader to read input from the keyboard
+   * @param entries the list of entries to display
+   * @param type describes the tyoe of things the list contains
+   * @return the 0-based index of the user's selection
+   * @throws IOException if an I/O error occurs while getting input from user
    */
-  public void computeCellFeedLocation(String spreadsheetUrl) 
-      throws MalformedURLException {
+  private int getIndexFromUser(BufferedReader reader, List entries, String type)
+      throws IOException {
+    for (int i = 0; i < entries.size(); i++) {
+      BaseEntry entry = (BaseEntry) entries.get(i);
+      System.out.println("\t(" + (i + 1) + ") "
+          + entry.getTitle().getPlainText());
+    }
+    int index = -1;
+    while (true) {
+      out.print("Enter the number of the spreadsheet to load: ");
+      String userInput = reader.readLine();
+      try {
+        index = Integer.parseInt(userInput);
+        if (index < 1 || index > entries.size()) {
+          throw new NumberFormatException();
+        }
+        break;
+      } catch (NumberFormatException e) {
+        System.out.println("Please enter a valid number for your selection.");
+      }
+    }
+    return index - 1;
+  }
 
-    URL url = new URL(spreadsheetUrl);
-    FeedURLFactory factory = new FeedURLFactory("http://" + url.getHost());
+  /**
+   * Uses the user's creadentials to get a list of spreadsheets. Then asks the
+   * user which spreadsheet to load. If the selected spreadsheet has multiple
+   * worksheets then the user will also be prompted to select what sheet to use.
+   * 
+   * @param reader to read input from the keyboard
+   * @throws ServiceException when the request causes an error in the Google
+   *         Spreadsheets service.
+   * @throws IOException when an error occurs in communication with the Google
+   *         Spreadsheets service.
+   * 
+   */
+  public void loadSheet(BufferedReader reader) throws IOException,
+      ServiceException {
+    // Get the spreadsheet to load
+    SpreadsheetFeed feed = service.getFeed(factory.getSpreadsheetsFeedUrl(),
+        SpreadsheetFeed.class);
+    List spreadsheets = feed.getEntries();
+    int spreadsheetIndex = getIndexFromUser(reader, spreadsheets, 
+        "spreadsheet");
+    SpreadsheetEntry spreadsheet = feed.getEntries().get(spreadsheetIndex);
 
-    // Parses the entire URL to find the spreadsheet key.
-    String spreadsheetKey 
-      = FeedURLFactory.getSpreadsheetKeyFromUrl(spreadsheetUrl);
-
-    // Gets the default (first) worksheet's list feed for this spreadsheet
-    cellFeedUrl = factory.getCellFeedUrl(spreadsheetKey, "default", "private", 
-        "full");
+    // Get the worksheet to load
+    if (spreadsheet.getWorksheets().size() == 1) {
+      cellFeedUrl = spreadsheet.getWorksheets().get(0).getCellFeedUrl();
+    } else {
+      List worksheets = spreadsheet.getWorksheets();
+      int worksheetIndex = getIndexFromUser(reader, worksheets, "worksheet");
+      WorksheetEntry worksheet = (WorksheetEntry) worksheets
+          .get(worksheetIndex);
+      cellFeedUrl = worksheet.getCellFeedUrl();
+    }
+    System.out.println("Sheet loaded.");
   }
 
   /**
    * Sets the particular cell at row, col to the specified formula or value.
-   *
+   * 
    * @param row the row number, starting with 1
    * @param col the column number, starting with 1
-   * @param formulaOrValue the value if it doesn't start with an '=' sign;
-   *        if it is a formula, be careful that cells are specified in R1C1
-   *        format instead of A1 format.
+   * @param formulaOrValue the value if it doesn't start with an '=' sign; if it
+   *        is a formula, be careful that cells are specified in R1C1 format
+   *        instead of A1 format.
+   * @throws ServiceException when the request causes an error in the Google
+   *         Spreadsheets service.
+   * @throws IOException when an error occurs in communication with the Google
+   *         Spreadsheets service.
    */
   public void setCell(int row, int col, String formulaOrValue)
-      throws Exception {
-      
+      throws IOException, ServiceException {
+
     CellEntry newEntry = new CellEntry(row, col, formulaOrValue);
     service.insert(cellFeedUrl, newEntry);
     out.println("Added!");
@@ -141,22 +204,26 @@ public class CellDemo {
 
   /**
    * Prints out the specified cell.
-   *
+   * 
    * @param cell the cell to print
    */
   public void printCell(CellEntry cell) {
     String shortId = cell.getId().substring(cell.getId().lastIndexOf('/') + 1);
     out.println(" -- Cell(" + shortId + "/" + cell.getTitle().getPlainText()
-        + ") formula(" + cell.getCell().getInputValue()
-        + ") numeric(" + cell.getCell().getNumericValue()
-        + ") value(" + cell.getCell().getValue()
-        + ")");
+        + ") formula(" + cell.getCell().getInputValue() + ") numeric("
+        + cell.getCell().getNumericValue() + ") value("
+        + cell.getCell().getValue() + ")");
   }
 
   /**
    * Shows all cells that are in the spreadsheet.
+   * 
+   * @throws ServiceException when the request causes an error in the Google
+   *         Spreadsheets service.
+   * @throws IOException when an error occurs in communication with the Google
+   *         Spreadsheets service.
    */
-  public void showAllCells() throws Exception {
+  public void showAllCells() throws IOException, ServiceException {
     CellFeed feed = service.getFeed(cellFeedUrl, CellFeed.class);
 
     for (CellEntry entry : feed.getEntries()) {
@@ -165,16 +232,20 @@ public class CellDemo {
   }
 
   /**
-   * Shows a particular range of cells, limited by minimum/maximum rows
-   * and columns.
-   *
+   * Shows a particular range of cells, limited by minimum/maximum rows and
+   * columns.
+   * 
    * @param minRow the minimum row, inclusive, 1-based
    * @param maxRow the maximum row, inclusive, 1-based
    * @param minCol the minimum column, inclusive, 1-based
    * @param maxCol the maximum column, inclusive, 1-based
+   * @throws ServiceException when the request causes an error in the Google
+   *         Spreadsheets service.
+   * @throws IOException when an error occurs in communication with the Google
+   *         Spreadsheets service.
    */
   public void showRange(int minRow, int maxRow, int minCol, int maxCol)
-      throws Exception {
+      throws IOException, ServiceException {
     CellQuery query = new CellQuery(cellFeedUrl);
     query.setMinimumRow(minRow);
     query.setMaximumRow(maxRow);
@@ -189,10 +260,16 @@ public class CellDemo {
 
   /**
    * Performs a full-text search on cells.
-   * @param fullTextSearchString a full text search string, with
-   *        space-separated keywords
+   * 
+   * @param fullTextSearchString a full text search string, with space-separated
+   *        keywords
+   * @throws ServiceException when the request causes an error in the Google
+   *         Spreadsheets service.
+   * @throws IOException when an error occurs in communication with the Google
+   *         Spreadsheets service.
    */
-  public void search(String fullTextSearchString) throws Exception {
+  public void search(String fullTextSearchString) throws IOException,
+      ServiceException {
     CellQuery query = new CellQuery(cellFeedUrl);
     query.setFullTextQuery(fullTextSearchString);
     CellFeed feed = service.query(query, CellFeed.class);
@@ -206,11 +283,11 @@ public class CellDemo {
 
   /**
    * Reads and executes one command.
-   *
+   * 
    * @param reader to read input from the keyboard
+   * @return false if the user quits, true on exception
    */
-  public boolean executeCommand(BufferedReader reader)
-      throws Exception {
+  public boolean executeCommand(BufferedReader reader) {
     for (String s : COMMAND_HELP_MESSAGE) {
       out.println(s);
     }
@@ -225,12 +302,14 @@ public class CellDemo {
 
       if (name.equals("list")) {
         showAllCells();
+      } else if (name.equals("load")) {
+        loadSheet(reader);
       } else if (name.equals("search")) {
         search(parameters);
       } else if (name.equals("range")) {
         String[] s = parameters.split(" ", 4);
-        showRange(Integer.parseInt(s[0]), Integer.parseInt(s[1]),
-            Integer.parseInt(s[2]), Integer.parseInt(s[3]));
+        showRange(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer
+            .parseInt(s[2]), Integer.parseInt(s[3]));
       } else if (name.equals("set")) {
         String[] s = parameters.split(" ", 3);
         setCell(Integer.parseInt(s[0]), Integer.parseInt(s[1]), s[2]);
@@ -249,9 +328,14 @@ public class CellDemo {
 
   /**
    * Starts up the demo and prompts for commands.
+   * 
+   * @param username name of user to authenticate (e.g. yourname@gmail.com)
+   * @param password password to use for authentication
+   * @throws AuthenticationException if the service is unable to validate the
+   *         username and password.
    */
-  public void run(String username, String password, String spreadsheetUrl)
-      throws Exception {
+  public void run(String username, String password)
+      throws AuthenticationException {
     for (String s : WELCOME_MESSAGE) {
       out.println(s);
     }
@@ -259,37 +343,43 @@ public class CellDemo {
     BufferedReader reader = new BufferedReader(
         new InputStreamReader(System.in));
 
+    // Login and prompt the user to pick a sheet to use.
     login(username, password);
-    computeCellFeedLocation(spreadsheetUrl);
+    try {
+      loadSheet(reader);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (ServiceException e) {
+      e.printStackTrace();
+    }
 
-    while (executeCommand(reader)) {}
+    while (executeCommand(reader)) {
+    }
   }
 
   /**
    * Runs the demo.
-   *
+   * 
    * @param args the command-line arguments
-   * @throws Exception
+   * @throws AuthenticationException if the service is unable to validate the
+   *         username and password.
    */
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) throws AuthenticationException {
     SimpleCommandLineParser parser = new SimpleCommandLineParser(args);
     String username = parser.getValue("username", "user", "u");
     String password = parser.getValue("password", "pass", "p");
-    String spreadsheetUrl = parser.getValue("spreadsheet", "url", "s");
     boolean help = parser.containsKey("help", "h");
-    
-    if (help || username == null
-        || password == null || spreadsheetUrl == null) {
+
+    if (help || username == null || password == null) {
       usage();
       System.exit(1);
     }
-    
-    CellDemo demo = new CellDemo(new SpreadsheetService("List Demo"), 
+
+    CellDemo demo = new CellDemo(new SpreadsheetService("Cell Demo"),
         System.out);
 
-    demo.run(username, password, spreadsheetUrl);
+    demo.run(username, password);
   }
-
 
   /**
    * Prints out the usage.

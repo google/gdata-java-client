@@ -16,6 +16,7 @@
 
 package com.google.gdata.data.appsforyourdomain;
 
+import com.google.gdata.util.common.base.StringUtil;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
@@ -31,8 +32,8 @@ import java.util.ArrayList;
 
 /**
  * A name space element: "apps:login".  Used to model a user account in Google
- * Apps for Your Domain.  Has attributes "userName", "password, and
- * "suspended".
+ * Apps for Your Domain.  Has attributes "userName", "password", "suspended",
+ * "ipWhitelisted" and "hashFunctionName".
  *
  * 
  * 
@@ -45,8 +46,12 @@ public class Login extends ExtensionPoint implements Extension {
   public static final String ATTRIBUTE_PASSWORD = "password";
   public static final String ATTRIBUTE_SUSPENDED = "suspended";
   public static final String ATTRIBUTE_IPWHITELISTED = "ipWhitelisted";
+  public static final String ATTRIBUTE_HASH_FUNCTION_NAME = "hashFunctionName";
 
-  // property "userName"
+  /*
+   * property "userName"
+   * Required.
+   */
   protected String userName;
   public String getUserName() {
     return userName;
@@ -55,7 +60,10 @@ public class Login extends ExtensionPoint implements Extension {
     this.userName = userName;
   }
 
-  // property "password"
+  /*
+   * property "password"
+   * Required.
+   */
   protected String password;
   public String getPassword() {
     return password;
@@ -64,16 +72,16 @@ public class Login extends ExtensionPoint implements Extension {
     this.password = password;
   }
 
-  /* 
+  /*
    * property "suspended"
    * The suspended attribute is optional and set to null when unspecified by
    * client.
    */
   protected Boolean suspended = null;
   public Boolean getSuspended() { return suspended; }
-  public void setSuspended(Boolean b) { suspended = b; } 
+  public void setSuspended(Boolean b) { suspended = b; }
 
-  /* 
+  /*
    * property "ipWhitelisted"
    * The ipWhitelisted attribute is optional and set to null when unspecified by
    * client.
@@ -81,6 +89,16 @@ public class Login extends ExtensionPoint implements Extension {
   protected Boolean ipWhitelisted = null;
   public Boolean getIpWhitelisted() { return ipWhitelisted; }
   public void setIpWhitelisted(Boolean b) { ipWhitelisted = b; }
+
+  /*
+   * property "hashFunctionName"
+   * Optional.  Specifies name of hash function used to hash the password
+   * value.  When unspecified, no hash function was used and password is
+   * plain text.  Only supported value right now is "SHA-1".
+   */
+  protected String hashFunctionName = null;
+  public String getHashFunctionName() { return hashFunctionName; }
+  public void setHashFunctionName(String h) { hashFunctionName = h; }
 
   /**
    * @return Description of this extension
@@ -120,6 +138,11 @@ public class Login extends ExtensionPoint implements Extension {
           ipWhitelisted));
     }
 
+    if (!StringUtil.isEmptyOrWhitespace(hashFunctionName)) {
+      attributes.add(new XmlWriter.Attribute(ATTRIBUTE_HASH_FUNCTION_NAME,
+          hashFunctionName));
+    }
+
     generateStartElement(
         w, Namespaces.APPS_NAMESPACE, EXTENSION_LOCAL_NAME, attributes, null);
 
@@ -145,19 +168,20 @@ public class Login extends ExtensionPoint implements Extension {
     }
 
     public void processAttribute(
-        String namespace, String localName, String value)
-        throws ParseException {
+        String namespace, String localName, String value) {
       if ("".equals(namespace)) {
         if (ATTRIBUTE_USER_NAME.equals(localName)) {
           userName = value;
         } else if (ATTRIBUTE_PASSWORD.equals(localName)) {
           password = value;
+        } else if (ATTRIBUTE_HASH_FUNCTION_NAME.equals(localName)) {
+          hashFunctionName = value;
         } else if (ATTRIBUTE_SUSPENDED.equals(localName)) {
-	  if (value.trim().equalsIgnoreCase("true")) {
-	    suspended = true;
-	  } else if (value.trim().equalsIgnoreCase("false")) {
-	    suspended = false;
-	  }
+          if (value.trim().equalsIgnoreCase("true")) {
+            suspended = true;
+          } else if (value.trim().equalsIgnoreCase("false")) {
+            suspended = false;
+          }
         }
       }
     }

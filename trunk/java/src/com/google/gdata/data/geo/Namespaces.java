@@ -20,22 +20,45 @@ import com.google.gdata.util.common.xml.XmlWriter;
 
 /**
  * Geo namespaces for the various schemas available to geo-information.
- * 
+ *
  * 
  */
 public class Namespaces {
 
-  /** 
-   * Namespace for W3C's proposal for specifying geo-information.
-   * Please see the W3C document {@linkplain http://www.w3.org/2003/01/geo 
-   * http://www.w3.org/2003/01/geo} for more information.
+  /**
+   * Namespace for W3C's proposal for specifying geo-information. Please see the
+   * W3C document <a
+   * href="http://www.w3.org/2003/01/geo">http://www.w3.org/2003/01/geo</a>
+   * for more information.
    */
   public static final String W3C_GEO
       = "http://www.w3.org/2003/01/geo/wgs84_pos#";
   public static final String W3C_GEO_ALIAS = "geo";
-  
+
   public static final XmlWriter.Namespace W3C_GEO_NAMESPACE
       = new XmlWriter.Namespace(W3C_GEO_ALIAS, W3C_GEO);
-  
-  private Namespaces() {};
+
+  /**
+   * Namespace for the Geo RSS proposal for encoding geo information.  Please
+   * see <a href="http://www.georss.org/">http://www.georss.org/</a>
+   * for more information.
+   */
+  public static final String GEO_RSS = "http://www.georss.org/georss";
+  public static final String GEO_RSS_ALIAS = "georss";
+
+  public static final XmlWriter.Namespace GEO_RSS_NAMESPACE
+      = new XmlWriter.Namespace(GEO_RSS_ALIAS, GEO_RSS);
+
+  /**
+   * Namespace for the GML Geography markup language.  Please see the document
+   * <a href="http://georss.org/gml.html">http://georss.org/gml.html</a> for
+   * more information on the georss-supported version of GML.
+   */
+  public static final String GML = "http://www.opengis.net/gml";
+  public static final String GML_ALIAS = "gml";
+
+  public static final XmlWriter.Namespace GML_NAMESPACE
+      = new XmlWriter.Namespace(GML_ALIAS, GML);
+
+  private Namespaces() {}
 }

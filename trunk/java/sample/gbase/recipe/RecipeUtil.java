@@ -16,8 +16,10 @@
 package sample.gbase.recipe;
 
 import com.google.api.gbase.client.GoogleBaseService;
+import com.google.api.gbase.client.ServiceErrors;
 import com.google.gdata.util.ServiceException;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -27,6 +29,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Contains the names of the HTML input fields used to edit a recipe.
@@ -51,6 +54,11 @@ public class RecipeUtil {
 
   public static final String RECIPE_ATTRIBUTE = "recipe";
   public static final String RECIPESEARCH_ATTRIBUTE = "recipeSearch";
+  public static final String RECIPESEARCH_ERROR = "recipeSearchError";
+  public static final String RECIPESEARCH_ERROR_DESCRIPTION = 
+      "recipeSearchErrorDescription";
+  public static final String RECIPESEARCH_ERROR_OBJECT = 
+      "recipeSearchErrorService";
   public static final String MESSAGE_ATTRIBUTE = "message";
 
   public static final String RECIPE_ITEMTYPE_QUERY = 
@@ -60,6 +68,8 @@ public class RecipeUtil {
   private static final Pattern QUERY_REPLACE_PATTERN = 
       Pattern.compile("\\p{Punct}");
 
+  public static final String ERROR_JSP = "/WEB-INF/recipeError.jsp";
+  
   /**
    * Builds a HashSet containing the specified values,
    * filtering the null and empty ones.
@@ -139,6 +149,79 @@ public class RecipeUtil {
   }
 
   /**
+   * Gets the error message, or {@code null} if no error message was set in the
+   * request.
+   * 
+   * @param request the request in which the method will locate the error
+   * @return the error message, or {@code null} if no message was set
+   */
+  public static String getRecipeError(HttpServletRequest request) {
+    return (String)request.getAttribute(RECIPESEARCH_ERROR);
+  }
+    
+  /**
+   * Gets the error message, or {@code null} if no error message was set in the
+   * request.
+   * 
+   * @param request the request in which the method will locate the error
+   * @return the error message, or {@code null} if no message was set
+   */
+  public static String getRecipeErrorDescription(HttpServletRequest request) {
+    return (String)request.getAttribute(RECIPESEARCH_ERROR_DESCRIPTION);
+  }
+  
+  /**
+   * Gets the errors obtained from Google Base, or {@code null} if no service
+   * error was set in the request.
+   * 
+   * @param request the request in which the method will locate the error
+   * @return the service errors, or {@code null} if no service errors were set
+   */
+  public static ServiceErrors getRecipeErrorObject(HttpServletRequest request) {
+    return (ServiceErrors)request.getAttribute(RECIPESEARCH_ERROR_OBJECT);    
+  }
+  
+  /**
+   * Forwards the request to the error page, for displaying the specified 
+   * {@code errorMessage} and the {@code description}. No service errors will
+   * be displayed.
+   * 
+   * @param request the request object
+   * @param response the response object
+   * @param errorMessage the error message to be displayed
+   * @param description the description of the error message, {@code null} if 
+   *    no description should be displayed.
+   * @throws ServletException
+   * @throws IOException
+   */
+  public static void forwardToErrorPage(HttpServletRequest request,
+          HttpServletResponse response, String errorMessage) 
+          throws ServletException, IOException {
+    request.setAttribute(RECIPESEARCH_ERROR, errorMessage);
+    request.getRequestDispatcher(ERROR_JSP).forward(request, response);
+  }
+  
+  /**
+   * Forwards the request to the error page, for displaying the information 
+   * contained by the {@code se} parameter. This method registers the service
+   * errors too, using a {@link ServiceErrors} object.
+   * 
+   * @param request the request object
+   * @param response the response object
+   * @param se the service error containing the information for the error page
+   * @throws ServletException
+   * @throws IOException
+   */
+  public static void forwardToErrorPage(HttpServletRequest request,
+      HttpServletResponse response, ServiceException se) 
+      throws ServletException, IOException {
+    request.setAttribute(RECIPESEARCH_ERROR, se.getMessage());
+    request.setAttribute(RECIPESEARCH_ERROR_DESCRIPTION, se.getResponseBody());
+    request.setAttribute(RECIPESEARCH_ERROR_OBJECT, new ServiceErrors(se));
+    request.getRequestDispatcher(ERROR_JSP).forward(request, response);
+  }
+
+  /**
    * Gets the GoogleBaseService object created by {@link AuthenticationFilter}
    * or creates a new one if <code>AuthenticationFilter</code> has not been 
    * applied yet.
@@ -182,5 +265,5 @@ public class RecipeUtil {
                                        MostUsedValues mostUsedValues) {
     servletContext.setAttribute(RecipeListener.MOST_USED_VALUES_ATTRIBUTE, 
                                 mostUsedValues);
-  }
+  }  
 }

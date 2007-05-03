@@ -156,6 +156,7 @@ public abstract class ValueConstruct extends AbstractExtension {
     value = v;
   }
 
+  @Override
   public void putAttributes(AttributeGenerator generator) {
     if (attrName != null) {
       generator.put(attrName, value);
@@ -164,6 +165,7 @@ public abstract class ValueConstruct extends AbstractExtension {
     }
   }
 
+  @Override
   protected void consumeAttributes(AttributeHelper helper)
       throws ParseException {
     String actualValue;

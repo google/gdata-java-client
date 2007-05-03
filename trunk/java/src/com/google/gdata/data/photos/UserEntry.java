@@ -20,6 +20,9 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.photos.impl.UserDataImpl;
+import com.google.gdata.util.ServiceException;
+
+import java.io.IOException;
 
 /**
  * Entry class specific to the user kind.  Contains setters and getters for
@@ -59,6 +62,23 @@ public class UserEntry extends GphotoEntry<UserEntry> implements UserData,
   public void declareExtensions(ExtensionProfile extProfile) {
     delegate.declareExtensions(extProfile);
     super.declareExtensions(extProfile);
+  }
+
+  /**
+   * Retrieve the user feed and associated entries.  The kinds parameter is a
+   * list of the associated entries to return.  For example
+   * <code>UserFeed userAndAlbums = userEntry.getFeed(AlbumData.KIND,
+   *     TagData.KIND);</code>  If no kind parameters are passed, the default of
+   * {@link AlbumData#KIND} will be used.
+   *
+   * @see AlbumData#KIND
+   * @see TagData#KIND
+   * @param kinds the kinds of entries to retrieve, or empty to use the default.
+   * @return a feed of the user and the requested kinds.
+   */
+  public UserFeed getFeed(String... kinds)
+      throws IOException, ServiceException {
+    return getFeed(UserFeed.class, kinds);
   }
 
   // Delegating methods.

@@ -221,7 +221,13 @@ public abstract class AppsForYourDomainService extends GoogleService {
                                           Class<E> entryClass,
                                           DateTime ifModifiedSince)
       throws IOException, ServiceException {
-    return super.getEntry(entryUrl, entryClass, null);
+    try {
+      return super.getEntry(entryUrl, entryClass, null);
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae
+          = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
   }
 
   /**
@@ -249,7 +255,13 @@ public abstract class AppsForYourDomainService extends GoogleService {
                                         Class<F> feedClass,
                                         DateTime ifModifiedSince)
       throws IOException, ServiceException {
-    return super.getFeed(feedUrl, feedClass, null);
+    try {
+      return super.getFeed(feedUrl, feedClass, null);
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae
+          = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
   }
 
 

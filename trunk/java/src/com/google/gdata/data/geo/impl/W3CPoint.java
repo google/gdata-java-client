@@ -33,39 +33,44 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 
 /**
- * Extension for a W3C geo:Point element.  It contains the getter/setter for 
+ * Extension for a W3C geo:Point element.  It contains the getter/setter for
  * specifying the longitude and latitude of a geo-coordinate.
- * Please see the W3C document {@linkplain http://www.w3.org/2003/01/geo 
- * http://www.w3.org/2003/01/geo} for more information.
- * 
+ * Please see the W3C document
+ * <a href="http://www.w3.org/2003/01/geo">http://www.w3.org/2003/01/geo</a> for
+ * more information.
+ *
  * 
  */
 public class W3CPoint extends ExtensionPoint implements Point {
-   
-  private static final String NAME = "Point";
-  
+
+  static final String NAME = "Point";
+
   /**
    * Constructs an empty geo:Point element.
    */
-  public W3CPoint() {};
-  
+  public W3CPoint() {}
+
   /**
    * Constructs a geo:Point element with child geo:lat and geo:long
    * elements based on the parameters passed in.
-   * 
+   *
    * @param lat The latitude coordinate of this point.
    * @param lon The longitude coordinate of this point.
    */
   public W3CPoint(Double lat, Double lon) {
-    if (lat != null && lon != null) {
-      setExtension(new GeoLat(lat));
-      setExtension(new GeoLong(lon));
-    } else if (lat != null || lon != null) {
-      throw new IllegalArgumentException(
-          "'lat' and 'lon' must either both be null or non-null.");
-    }
+    setGeoLocation(lat, lon);
   }
-  
+
+  /**
+   * Constructs a geo:Point element copying the lat and lon values from the
+   * given point.  If the given point is null an empty geo:Point element will
+   * be created.
+   */
+  public W3CPoint(Point copyFrom) {
+    this(copyFrom == null ? null : copyFrom.getLatitude(),
+        copyFrom == null ? null : copyFrom.getLongitude());
+  }
+
   /**
    * Returns the suggested extension description with configurable
    * repeatability.
@@ -79,13 +84,13 @@ public class W3CPoint extends ExtensionPoint implements Point {
     return desc;
   }
 
-  /** 
+  /**
    * Returns the suggested extension description and is repeatable.
    */
   public static ExtensionDescription getDefaultDescription() {
     return getDefaultDescription(true);
   }
-  
+
   /*
    * Declare the extensions for geo point.  This contains elements for
    * latitude and longitude.  In the future, it will also include other geo
@@ -94,13 +99,13 @@ public class W3CPoint extends ExtensionPoint implements Point {
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     // Declare the latitude and longitude extensions.
-    extProfile.declare(W3CPoint.class, 
+    extProfile.declare(W3CPoint.class,
         ExtensionDescription.getDefaultDescription(GeoLat.class));
-    extProfile.declare(W3CPoint.class, 
+    extProfile.declare(W3CPoint.class,
         ExtensionDescription.getDefaultDescription(GeoLong.class));
     super.declareExtensions(extProfile);
   }
-  
+
   /**
    * @return the value of the geo:lat element within this Point.
    */
@@ -108,21 +113,7 @@ public class W3CPoint extends ExtensionPoint implements Point {
     GeoLat lat = getExtension(GeoLat.class);
     return lat != null ? lat.getLatitude() : null;
   }
-  
-  /**
-   * Sets the geo:lat element of this Point to the latitude coordinate
-   * specified.
-   * 
-   * @param lat The latitude coordinate of this point.
-   */
-  public void setLatitude(Double lat) {
-    if (lat != null) {
-      setExtension(new GeoLat(lat));
-    } else {
-      removeExtension(GeoLat.class);
-    }
-  }
-  
+
   /**
    * @return the value of the geo:long element within this Point.
    */
@@ -130,42 +121,46 @@ public class W3CPoint extends ExtensionPoint implements Point {
     GeoLong lon = getExtension(GeoLong.class);
     return lon != null ? lon.getLongitude() : null;
   }
-  
+
   /**
-   * Sets the geo:long element of this Point to the longitude coordinate
-   * specified.
-   * 
-   * @param lon The longitude coordinate of this point.
+   * Sets the geo location based on the passed in lat and lon values.  Both
+   * must be null or non null, and the lat must be between -90 and 90, and the
+   * lon between -180 and 180.
    */
-  public void setLongitude(Double lon) {
-    if (lon != null) {
+  public void setGeoLocation(Double lat, Double lon) {
+    if (lat != null && lon != null) {
+      setExtension(new GeoLat(lat));
       setExtension(new GeoLong(lon));
+    } else if (lat != null || lon != null) {
+      throw new IllegalArgumentException(
+          "'lat' and 'lon' must either both be null or non-null.");
     } else {
+      removeExtension(GeoLat.class);
       removeExtension(GeoLong.class);
     }
   }
-  
+
   /**
    * Generates the XML corresponding to this GeoPoint.
    */
-  public void generate(XmlWriter w, ExtensionProfile extProfile) 
+  public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
-    
+
     generateStartElement(w, Namespaces.W3C_GEO_NAMESPACE, NAME, null, null);
 
     // Generate the inner extensions (lat, long).
     generateExtensions(w, extProfile);
- 
+
     w.endElement(Namespaces.W3C_GEO_NAMESPACE, NAME);
   }
 
   /**
-   * @returns a handler for processing a W3C geo:Point element.  All 
+   * @returns a handler for processing a W3C geo:Point element.  All
    * points must have a latitude and longitude element.
    */
-  public ElementHandler getHandler(ExtensionProfile extProfile, 
-      String namespace, String localName, Attributes attrs) 
-      throws ParseException, IOException {
+  public ElementHandler getHandler(ExtensionProfile extProfile,
+      String namespace, String localName, Attributes attrs)
+      throws IOException {
     return new Handler(extProfile);
   }
 
@@ -177,10 +172,10 @@ public class W3CPoint extends ExtensionPoint implements Point {
   protected class Handler extends ExtensionPoint.ExtensionHandler {
 
     public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
+        throws IOException {
       super(extProfile, W3CPoint.class);
     }
-    
+
     /**
      * Overrides the base implementation by adding checks to make sure
      * the point has a latitude and longitude.

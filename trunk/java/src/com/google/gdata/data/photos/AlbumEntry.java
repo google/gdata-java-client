@@ -23,6 +23,7 @@ import com.google.gdata.data.geo.Point;
 import com.google.gdata.data.photos.impl.AlbumDataImpl;
 import com.google.gdata.util.ServiceException;
 
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -63,6 +64,23 @@ public class AlbumEntry extends GphotoEntry<AlbumEntry>
   public void declareExtensions(ExtensionProfile extProfile) {
     delegate.declareExtensions(extProfile);
     super.declareExtensions(extProfile);
+  }
+
+  /**
+   * Retrieve the album feed and associated entries.  The kinds parameter is a
+   * list of the associated entries to return.  For example
+   * <code>AlbumFeed albumAndPhotos = albumEntry.getFeed(PhotoData.KIND,
+   *     TagData.KIND);</code>  If no kind parameters are passed, the default of
+   * {@link PhotoData#KIND} will be used.
+   *
+   * @see PhotoData#KIND
+   * @see TagData#KIND
+   * @param kinds the kinds of entries to retrieve, or empty to use the default.
+   * @return a feed of the album and the requested kinds.
+   */
+  public AlbumFeed getFeed(String... kinds)
+      throws IOException, ServiceException {
+    return getFeed(AlbumFeed.class, kinds);
   }
 
   // Delegating methods.
@@ -154,12 +172,12 @@ public class AlbumEntry extends GphotoEntry<AlbumEntry>
   public void setUsername(String username) {
     delegate.setUsername(username);
   }
-  
-  public void setGeoLocation(Double lat, Double lon) 
+
+  public void setGeoLocation(Double lat, Double lon)
       throws IllegalArgumentException {
     delegate.setGeoLocation(lat, lon);
   }
-  
+
   public void setGeoLocation(Point point) {
     delegate.setGeoLocation(point);
   }

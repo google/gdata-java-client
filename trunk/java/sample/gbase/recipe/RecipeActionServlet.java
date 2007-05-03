@@ -101,7 +101,8 @@ public class RecipeActionServlet extends HttpServlet {
         }
       } catch (ServiceException e) {
         RecipeUtil.logServiceException(this, e);
-        throw new ServletException(e);
+        RecipeUtil.forwardToErrorPage(request, response, e);
+        return;
       }
       listOwnRecipes(response);
     }
@@ -234,7 +235,8 @@ public class RecipeActionServlet extends HttpServlet {
       }
     } catch (ServiceException e) {
       RecipeUtil.logServiceException(this, e);
-      throw new ServletException(e);
+      RecipeUtil.forwardToErrorPage(request, response, e);
+      return;
     }
   }
 

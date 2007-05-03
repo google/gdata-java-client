@@ -22,33 +22,33 @@ import com.google.gdata.data.ValueConstruct;
 import java.text.NumberFormat;
 
 /**
- * Extension for a W3C geo:long element.  It contains the getter/setter for 
+ * Extension for a W3C geo:long element.  It contains the getter/setter for
  * specifying the longitude of a geo-coordinate.  The coordinate is contained
- * within the long element as: {@literal <geo:long>coordinate</geo:long>}.  
- * Note that the longitude element does not need to be a child of the geo:Point 
- * element. Please see the W3C document 
- * {@linkplain http://www.w3.org/2003/01/geo 
- * http://www.w3.org/2003/01/geo} for more information.
- * 
+ * within the long element as: {@literal <geo:long>coordinate</geo:long>}.
+ * Note that the longitude element does not need to be a child of the geo:Point
+ * element. Please see the W3C document
+ * <a href="http://www.w3.org/2003/01/geo">http://www.w3.org/2003/01/geo</a> for
+ * more information.
+ *
  * @see com.google.gdata.data.geo.impl.W3CPoint
  * 
  */
 @ExtensionDescription.Default(
     nsAlias=Namespaces.W3C_GEO_ALIAS,
     nsUri=Namespaces.W3C_GEO,
-    localName="long")  
+    localName="long")
 public class GeoLong extends ValueConstruct {
 
   /**
    * The maximmum acceptable value of a longitude coordinate in degrees.
    */
-  private static final double MAX_LONG = 180.0d;
-  
+  public static final double MAX_LONG = 180.0d;
+
   /**
    * The minimum acceptable value of a longitude coordinate in degrees.
    */
-  private static final double MIN_LONG = -180.0d;
-  
+  public static final double MIN_LONG = -180.0d;
+
   /**
    * This denotes the number of significant digits after the decimal point
    * for a coordinate when represented by a string.
@@ -61,11 +61,11 @@ public class GeoLong extends ValueConstruct {
     NUM_FORMAT.setMaximumFractionDigits(COORDINATE_PRECISION);
     NUM_FORMAT.setMinimumFractionDigits(COORDINATE_PRECISION);
   }
-  
+
   private Double lon = null;
-  
+
   /**
-   * Creates an instance of the GeoLong extension without a 
+   * Creates an instance of the GeoLong extension without a
    * longitude value set.
    */
   public GeoLong() {
@@ -75,7 +75,7 @@ public class GeoLong extends ValueConstruct {
   /**
    * Creates an immutable instance of GeoLong extension with the coordinate
    * set to the value passed in.
-   * 
+   *
    * @param lon The longitude coordinate reprensented by this element.
    * @throws IllegalArgumentException if the longitude is not between
    *        -180 and 180 degrees.
@@ -88,42 +88,42 @@ public class GeoLong extends ValueConstruct {
       setImmutable(true);
     }
   }
-  
+
   /**
    * Returns the actual double coordinate for longitude.  Note this value
    * is not rounded unlike the value returned by getValue().
-   * 
+   *
    * @return the longitude represented by this element.
    */
   public Double getLongitude() {
     return lon;
   }
-  
+
   /**
    * Sets the longitude represented by this element.
-   * 
+   *
    * @param longitude the longitude of this element.
    */
   public void setLongitude(Double longitude) {
     // Note longitude might be null.
     lon = longitude;
     String value = null;
-    
+
     if (longitude != null) {
-      if (longitude.compareTo(MIN_LONG) < 0 || 
+      if (longitude.compareTo(MIN_LONG) < 0 ||
           longitude.compareTo(MAX_LONG) > 0) {
         throw new IllegalArgumentException("Longitude must be between " +
             "-180 and 180 degrees.");
       }
-        
+
       // Format the string so that it has a consistent number of digits
       // after the decimal place.
-      value = NUM_FORMAT.format(longitude);      
+      value = NUM_FORMAT.format(longitude);
     }
-    
+
     super.setValue(value);
   }
-  
+
   /**
    * Overrides base implementation by validating that the string represents
    * a longitude coordinate between -180 and 180 degrees.  Also formats the
@@ -141,7 +141,7 @@ public class GeoLong extends ValueConstruct {
         throw new IllegalArgumentException("'value' must be a double.");
       }
     }
-    
+
     setLongitude(d);
   }
 }

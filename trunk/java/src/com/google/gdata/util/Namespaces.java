@@ -91,10 +91,11 @@ public final class Namespaces {
   /** Google data (GD) namespace */
   static final public String g = "http://schemas.google.com/g/2005";
   static final public String gPrefix = g + "#";
+  public static final String gAlias = "gd";
 
   /** Google data XML writer namespace. */
   static final public XmlWriter.Namespace gNs =
-    new XmlWriter.Namespace("gd", g);
+    new XmlWriter.Namespace(gAlias, g);
 
 
   /** Google data runtime namespace. */
@@ -110,6 +111,7 @@ public final class Namespaces {
 
   /** Google data batch feeds namespace. */
   static final public String batch = "http://schemas.google.com/gdata/batch";
-  static final public XmlWriter.Namespace batchNs = 
-      new XmlWriter.Namespace("batch", batch);
+  static final public String batchAlias = "batch";
+  static final public XmlWriter.Namespace batchNs =
+      new XmlWriter.Namespace(batchAlias, batch);
 }

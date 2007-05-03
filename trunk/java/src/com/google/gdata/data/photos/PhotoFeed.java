@@ -202,17 +202,25 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
   public void setWidth(Long width) {
     delegate.setWidth(width);
   }
-  
-  public void setGeoLocation(Double lat, Double lon) 
+
+  public void setGeoLocation(Double lat, Double lon)
       throws IllegalArgumentException {
     delegate.setGeoLocation(lat, lon);
   }
-  
+
   public void setGeoLocation(Point point) {
     delegate.setGeoLocation(point);
   }
 
   public Point getGeoLocation() {
     return delegate.getGeoLocation();
+  }
+
+  public void addStreamId(String streamId) {
+    delegate.addStreamId(streamId);
+  }
+
+  public List<String> getStreamIds() {
+    return delegate.getStreamIds();
   }
 }

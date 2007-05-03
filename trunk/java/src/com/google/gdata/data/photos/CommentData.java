@@ -26,9 +26,12 @@ import com.google.gdata.data.Category;
  */
 public interface CommentData extends GphotoData {
 
-  /** The category name for comments. */
+  /** The unqualified kind for a comment. */
+  public static final String KIND = "comment";
+
+  /** The fully qualified kind term for comments. */
   public static final String COMMENT_KIND
-      = Namespaces.PHOTOS_PREFIX + "comment";
+      = Namespaces.PHOTOS_PREFIX + KIND;
 
   /** A category object for comments.  All comments will have this set. */
   public static final Category COMMENT_CATEGORY

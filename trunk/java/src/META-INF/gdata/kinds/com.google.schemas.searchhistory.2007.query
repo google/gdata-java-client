@@ -1,3 +1,0 @@
-# GData Kind Adaptors for http://schemas.google.com/searchhistory/2007#query
-com.google.gdata.data.searchhistory.QueryFeed
-com.google.gdata.data.searchhistory.QueryEntry

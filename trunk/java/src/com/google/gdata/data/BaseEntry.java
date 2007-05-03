@@ -803,12 +803,30 @@ abstract public class BaseEntry<E extends BaseEntry>
   }
 
 
+  /**
+   * Parses XML in the Atom format from a parser-defined content source.
+   *
+   * @param   extProfile
+   *            Extension profile.
+   *            
+   * @param   parser
+   *            XML parser.
+   */
+  public void parseAtom(ExtensionProfile extProfile,
+                        XmlParser parser) throws IOException,
+                                              ParseException {
+
+    AtomHandler handler = new AtomHandler(extProfile);
+    parser.parse(handler, Namespaces.atom, "entry");
+  }
+
+
   /** {@code <atom:entry>} parser. */
   public class AtomHandler extends ExtensionPoint.ExtensionHandler {
 
 
     public AtomHandler(ExtensionProfile extProfile) throws IOException {
-      super(extProfile, Entry.class);
+      super(extProfile, BaseEntry.this.getClass());
     }
 
 

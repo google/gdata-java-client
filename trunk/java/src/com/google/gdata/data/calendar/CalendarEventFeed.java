@@ -44,7 +44,8 @@ public class CalendarEventFeed
     super.declareExtensions(extProfile);
     // extProfile.declareFeedExtension(
     //      AccessLevelProperty.getDefaultDescription());
-    extProfile.declareFeedExtension(TimeZoneProperty.getDefaultDescription());
+    extProfile.declare(CalendarEventFeed.class,
+        TimeZoneProperty.getDefaultDescription());
     // extProfile.declareFeedExtension(When.getDefaultDescription());
   }
 

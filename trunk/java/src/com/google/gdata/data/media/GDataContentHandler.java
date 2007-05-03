@@ -26,7 +26,7 @@ import com.google.gdata.data.Kind;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
-import com.google.io.base.UnicodeReader;
+import com.google.gdata.util.io.base.UnicodeReader;
 
 import javax.activation.DataContentHandler;
 import javax.activation.DataSource;

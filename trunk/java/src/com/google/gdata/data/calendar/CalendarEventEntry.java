@@ -16,11 +16,10 @@
 
 package com.google.gdata.data.calendar;
 
-import com.google.gdata.data.Link;
-import com.google.gdata.data.extensions.EventEntry;
-import com.google.gdata.data.extensions.ExtendedProperty;
-import com.google.gdata.data.extensions.Who;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
+import com.google.gdata.data.extensions.BaseEventEntry;
+import com.google.gdata.data.extensions.ExtendedProperty;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ import java.util.List;
  *
  * 
  */
-public class CalendarEventEntry extends EventEntry {
+public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
 
   /**
    * Constructs a new {@code CalendarEventEntry} instance .
@@ -40,19 +39,36 @@ public class CalendarEventEntry extends EventEntry {
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
-    extProfile.declareEntryExtension(QuickAddProperty.getDefaultDescription());
-    extProfile.declareEntryExtension(ExtendedProperty.getDefaultDescription());
-    extProfile.declareEntryExtension(
+    extProfile.declare(CalendarEventEntry.class,
+        QuickAddProperty.getDefaultDescription());
+    extProfile.declare(CalendarEventEntry.class,
+        ExtendedProperty.getDefaultDescription());
+    extProfile.declare(CalendarEventEntry.class,
         SendEventNotificationsProperty.getDefaultDescription());
 
     // Override gd:who processing for calender events to handle extended
     // semantics
-    extProfile.declareEntryExtension(EventWho.getDefaultDescription());
+    extProfile.declare(CalendarEventEntry.class,
+        EventWho.getDefaultDescription());
     extProfile.declare(EventWho.class,
         ResourceProperty.getDefaultDescription());
 
     // Extend Link semantics for WebContent
     extProfile.declare(Link.class, WebContent.getDefaultDescription());
+  }
+
+  /**
+   * Returns the list of event participants.
+   */
+  public List<EventWho> getParticipants() {
+    return getRepeatingExtension(EventWho.class);
+  }
+
+  /**
+   * Adds a new event participant.
+   */
+  public void addParticipant(EventWho participant) {
+    getParticipants().add(participant);
   }
 
   /**

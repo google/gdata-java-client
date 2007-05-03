@@ -56,6 +56,19 @@ public class AttributeGenerator extends LinkedHashMap<String, String> {
   }
 
   /**
+   * Associates the specified Object's {@link #toString()} value with the
+   * specified key in this map. If the map previously contained a mapping for
+   * this key, the old value is replaced.
+   *
+   * @param key   key with which the specified value is to be associated
+   * @param value Object whose {@link #toString()} value is to be associated
+   *              with the specified key or <code>null</code>
+   */
+  public void put(String key, Object value) {
+    put(key, value == null ? null : value.toString());
+  }
+
+  /**
    * Associates the specified enum value with the specified key in this map. If
    * the map previously contained a mapping for this key, the old value is
    * replaced.

@@ -387,15 +387,15 @@ public class XmlParser extends DefaultHandler {
 
 
   /** Root element handler. */
-  ElementHandler rootHandler;
+  protected ElementHandler rootHandler;
 
 
   /** Root element namespace URI. */
-  String rootNamespace;
+  protected String rootNamespace;
 
 
   /** Root element name. */
-  String rootElementName;
+  protected String rootElementName;
 
 
   /** Top of the element handler stack. */
@@ -414,7 +414,7 @@ public class XmlParser extends DefaultHandler {
    * Set of all namespace declarations valid at the current location.
    * Includes namespace declarations from all ancestor elements.
    */
-  HashMap<String, Stack<XmlWriter.Namespace>> namespaceMap =
+  protected HashMap<String, Stack<XmlWriter.Namespace>> namespaceMap =
     new HashMap<String, Stack<XmlWriter.Namespace>>();
 
 
@@ -468,7 +468,7 @@ public class XmlParser extends DefaultHandler {
   }
 
 
-
+  
   /**
    * Parses XML.
    *
@@ -505,6 +505,38 @@ public class XmlParser extends DefaultHandler {
     this.rootNamespace = rootNamespace;
     this.rootElementName = rootElementName;
     parse(is);
+  }
+
+
+  /**
+   * Parses XML from a content source provided to the parser at
+   * construction time.
+   *
+   * @param   rootHandler
+   *            The root element handler corresponding to the expected document
+   *            type.
+   *
+   * @param   rootNamespace
+   *            Root element namespace URI.
+   *
+   * @param   rootElementName
+   *            Root element name.
+   *
+   * @throws  IOException
+   *            Thrown by {@code reader}.
+   *
+   * @throws  ParseException
+   *            XML failed to validate against the schema implemented by
+   *            {@code rootHandler}.
+   */
+  public void parse(ElementHandler rootHandler,
+                    String rootNamespace,
+                    String rootElementName)
+      throws IOException,
+             ParseException {
+
+    throw new IllegalStateException("No content source defined");
+
   }
 
 
@@ -572,7 +604,7 @@ public class XmlParser extends DefaultHandler {
 
 
   /** Throws a parse exception with line/column information. */
-  private void throwParseException(ParseException e) throws ParseException {
+  protected void throwParseException(ParseException e) throws ParseException {
 
     if (locator != null) {
 

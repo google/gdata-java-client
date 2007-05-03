@@ -71,12 +71,14 @@ public class ResourceProperty extends AbstractExtension {
   public void setValue(String value) {
     this.value = value;
   }
-  
+
+  @Override
   protected void putAttributes(AttributeGenerator generator) {
     generator.put(ATTRIBUTE_ID, id);
     generator.put(ATTRIBUTE_VALUE, value);
   }
 
+  @Override
   protected void consumeAttributes(AttributeHelper helper)
       throws ParseException {
     id = helper.consume(ATTRIBUTE_ID, false);

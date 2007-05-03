@@ -40,24 +40,27 @@
             value="${build.jars}/gdata-photos-${version}.jar"/>                     
   <property name="gdata-spreadsheet.jar"
             value="${build.jars}/gdata-spreadsheet-${version}.jar"/>
-
+          
+  <property name="build.manifest"
+            value="${build}/manifest"/>
   <property name="gdata-client.manifest"
-            value="${build}/client.manifest"/>
+            value="${build.manifest}/client.manifest"/>
   <property name="gdata-appsforyourdomain.manifest"
-            value="${build}/appsforyourdomain.manifest"/>
+            value="${build.manifest}/appsforyourdomain.manifest"/>
   <property name="gdata-base.manifest"
-            value="${build}/base.manifest"/>
+            value="${build.manifest}/base.manifest"/>
   <property name="gdata-calendar.manifest"
-            value="${build}/calendar.manifest"/>
+            value="${build.manifest}/calendar.manifest"/>
   <property name="gdata-codesearch.manifest"
-            value="${build}/codesearch.manifest"/>
+            value="${build.manifest}/codesearch.manifest"/>
   <property name="gdata-photos.manifest"
-            value="${build}/photos.manifest"/>                     
+            value="${build.manifest}/photos.manifest"/>                     
   <property name="gdata-spreadsheet.manifest"
-            value="${build}/spreadsheet.manifest"/>
+            value="${build.manifest}/spreadsheet.manifest"/>
    
   <property name="build.src" value="${build}/src"/>
-
+  <property name="build.src.metadata.kinds" 
+            value="${build.src}/META-INF/gdata/kinds"/>
   <property name="build.classes" value="${build}/classes"/>
   <property name="build.classes.client" value="${build.classes}/client"/>
   <property name="build.classes.appsforyourdomain"
@@ -119,6 +122,11 @@
 
   Builds the GData client library.
 
+  This is a three step process
+  - Build client library without GData extension data classes from annotations.
+  - Generate META-INF for extension data classes from annotations.
+  - Add the META-INF for data classes to client library.
+
 -->
 
   <!--  Dependencies for build.client -->
@@ -144,7 +152,7 @@ You can download it from:
  
 Then save it under: 
   ${activation.jar}
-    </fail>
+    </fail>    
   </target>
 
   <!-- classpath for build.client dependencies -->
@@ -153,9 +161,9 @@ Then save it under:
     <pathelement location="${activation.jar}"/>
   </path> 
 
-  <!-- Target: build.client -->
-  <!-- Builds the GData client library -->
-  <target name="build.client" depends="require.client.dependencies">
+  <!-- Target: build.client.base -->
+  <!-- Builds the GData client library without Kinds meta data -->
+  <target name="build.client.base" depends="require.client.dependencies">
     <javac debug="false" sourcepath=""
                          srcdir="${build.src}"
                          destdir="${build.classes.client}">
@@ -164,6 +172,8 @@ Then save it under:
       <exclude name="**/appsforyourdomain/**"/>
       <exclude name="**/AppsForYourDomain/**"/>
       <exclude name="**/gbase/**"/>
+      <exclude name="**/blogger/**"/>
+      <exclude name="**/Blogger**"/>
       <exclude name="**/calendar/**"/>
       <exclude name="**/Calendar**"/>
       <exclude name="**/codesearch/**"/>
@@ -182,6 +192,49 @@ Then save it under:
     </jar>
   </target>
 
+  <!-- Kinds metadata for gdata-client -->
+  <!--
+    Generate Kinds meta data from annotations in data classes.
+    This rule is not chained to build.client rule.  If need to 
+    regenerate meta data explicitly call this rule.
+  -->
+  <target name="build.client.metadata.kinds" depends="dirs,build.client.base">
+    <mkdir dir="${build.src.metadata.kinds}"/>
+    <apt srcdir="${build.src}" debug="false"
+            destdir="${build.src.metadata.kinds}"
+            compile="false"
+            factory="com.google.gdata.data.apt.DataAnnotationProcessorFactory">
+        <classpath> 
+          <path refid="build.client.classpath"/>
+          <pathelement location="${gdata-client.jar}"/>
+        </classpath>
+        <include name="**/*.java"/>
+        <exclude name="**/apt/**"/>
+    </apt>    
+  </target> 
+
+  <target name="clean.client.metadata">
+    <delete dir="${build.src.metadata.kinds}"/>
+  </target>
+
+  <!-- Add Kinds metadata to gdata-client library -->
+  <target name="build.client.metadata.add" depends="build.client.base">
+    <jar update="true" destfile="${gdata-client.jar}">
+      <fileset dir="${build.src}">
+        <include name="META-INF/**"/>
+      </fileset>
+      <fileset dir="${build.src}/com/google/gdata/data/media">
+        <include name="META-INF/**"/>
+      </fileset>       
+    </jar>
+  </target>
+  
+  <!-- Target: build.client -->
+  <!-- Builds the GData client library -->
+  <target name="build.client">
+    <antcall target="build.client.base"/>
+    <antcall target="build.client.metadata.add"/>
+  </target>
 
 <!-- ==================== Build Services ================================= -->
 
@@ -333,6 +386,7 @@ Then save it under:
     <antcall target="sample.util.build"/>
     <antcall target="sample.appsforyourdomain.build"/>
     <antcall target="sample.gbase.build"/>
+    <antcall target="sample.blogger.build"/>
     <antcall target="sample.calendar.build"/>
     <antcall target="sample.codesearch.build"/>
     <antcall target="sample.photos.build"/>
@@ -345,6 +399,7 @@ Then save it under:
     <antcall target="sample.util.clean"/>
     <antcall target="sample.appsforyourdomain.clean"/>
     <antcall target="sample.gbase.clean"/>
+    <antcall target="sample.blogger.clean"/>
     <antcall target="sample.calendar.clean"/>
     <antcall target="sample.codesearch.clean"/>
     <antcall target="sample.photos.clean"/>
@@ -699,6 +754,103 @@ Then save it under:
 
 
 <!--  ===================================================================== -->
+<!--                      Blogger Sample Targets                            -->
+<!--  ===================================================================== -->
+
+<!-- ==================== Blogger property names ========================== -->
+
+  <property name="sample.blogger.basedir"       value="${basedir}/sample/blogger"/>
+  <property name="sample.blogger.src.home"      value="${sample.blogger.basedir}"/>
+  <property name="sample.blogger.build.classes" value="${sample.blogger.basedir}/classes"/>
+  <property name="sample.blogger.build.lib"     value="${sample.blogger.basedir}/lib"/>
+  <property name="sample.blogger.jar"           value="${sample.blogger.build.lib}/BloggerClient.jar"/>
+  <property name="sample.blogger.main"          value="sample.blogger.BloggerClient"/>
+
+
+<!-- ==================== Blogger Clean Target ============================ -->
+
+
+  <target name="sample.blogger.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.blogger.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.blogger.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>
+    <pathelement location="${sample-util.jar}"/>
+
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+
+-->
+
+  <target name="sample.blogger.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.blogger.build.classes}"/>
+    <javac srcdir="${sample.blogger.src.home}"
+           destdir="${sample.blogger.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.blogger.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== Blogger Build Target ============================ -->
+
+  <target name="sample.blogger.build" depends="sample.blogger.compile"
+   description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.blogger.build.lib}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample.blogger.jar}"
+         basedir="${sample.blogger.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.blogger.main}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+
+<!-- ==================== Blogger Run Target ============================== -->
+
+  <target name="sample.blogger.run" depends="sample.blogger.build"
+   description="Runs the Blogger sample">
+
+    <java fork="true" classname="${sample.blogger.main}">
+      <arg line="--username ${sample.credentials.username} --password ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.blogger.compile.classpath"/>
+        <path location="${sample.blogger.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+
+
+<!--  ===================================================================== -->
 <!--                      Calendar Sample Targets                           -->
 <!--  ===================================================================== -->
 
@@ -785,7 +937,7 @@ Then save it under:
    description="Runs the Calendar sample">
 
     <java fork="true" classname="${sample.calendar.main}">
-      <arg line="${sample.credentials.username} ${sample.credentials.password} ${sample.calendar.feedUrl}"/>
+      <arg line="${sample.credentials.username} ${sample.credentials.password} ${sample.calendar.feedUrl} ${sample.calendar.aclFeedUrl}"/>
       <classpath>
         <path refid="sample.calendar.compile.classpath"/>
         <path location="${sample.calendar.jar}"/>
@@ -1138,7 +1290,7 @@ Then save it under:
           depends="sample.spreadsheet.build"
    description="Runs the Spreadsheet CellDemo sample">
     <java fork="true" classname="${sample.spreadsheet.celldemo.main}">
-      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password} -s ${sample.spreadsheet.url}"/>
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password}"/>
       <classpath>
         <path refid="sample.spreadsheet.compile.classpath"/>
         <path location="${sample.spreadsheet.celldemo.jar}"/>
@@ -1151,7 +1303,7 @@ Then save it under:
           depends="sample.spreadsheet.build"
    description="Runs the Spreadsheet ListDemo sample">
     <java fork="true" classname="${sample.spreadsheet.listdemo.main}">
-      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password} -s ${sample.spreadsheet.url}"/>
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password}"/>
       <classpath>
         <path refid="sample.spreadsheet.compile.classpath"/>
         <path location="${sample.spreadsheet.listdemo.jar}"/>

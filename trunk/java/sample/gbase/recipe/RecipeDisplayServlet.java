@@ -92,7 +92,8 @@ public class RecipeDisplayServlet extends HttpServlet {
       entry = service.getEntry(feedUrl, GoogleBaseEntry.class);
     } catch (ServiceException e) {
       RecipeUtil.logServiceException(this, e);
-      throw new ServletException(e);
+      RecipeUtil.forwardToErrorPage(request, response, e);
+      return;
     }
     Recipe recipe = new Recipe(entry);
     request.setAttribute(RecipeUtil.RECIPE_ATTRIBUTE, recipe);

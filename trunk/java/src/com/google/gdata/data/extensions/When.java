@@ -16,20 +16,14 @@
 
 package com.google.gdata.data.extensions;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.data.AttributeGenerator;
+import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
-import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
-import com.google.gdata.util.XmlParser;
-
-import org.xml.sax.Attributes;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 /**
@@ -37,8 +31,24 @@ import java.util.ArrayList;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = Namespaces.gAlias,
+    nsUri = Namespaces.g,
+    localName = When.WHEN,
+    isRepeatable = true)
 public class When extends ExtensionPoint implements Extension {
 
+  /** XML "when" element name */
+  static final String WHEN = "when";
+
+  /** XML "startTime" attribute name */
+  private static final String START_TIME = "startTime";
+
+  /** XML "endTime" attribute name */
+  private static final String END_TIME = "endTime";
+
+  /** XML "valueString" attribute name */
+  private static final String VALUE_STRING = "valueString";
 
   /** Event start time (required). */
   protected DateTime startTime;
@@ -63,10 +73,8 @@ public class When extends ExtensionPoint implements Extension {
    * repeatabilty.
    */
   public static ExtensionDescription getDefaultDescription(boolean repeatable) {
-    ExtensionDescription desc = new ExtensionDescription();
-    desc.setExtensionClass(When.class);
-    desc.setNamespace(Namespaces.gNs);
-    desc.setLocalName("when");
+    ExtensionDescription desc = ExtensionDescription
+        .getDefaultDescription(When.class);
     desc.setRepeatable(repeatable);
     return desc;
   }
@@ -76,115 +84,37 @@ public class When extends ExtensionPoint implements Extension {
     return getDefaultDescription(true);
   }
 
-
-  public void generate(XmlWriter w, ExtensionProfile extProfile)
-      throws IOException {
-
-    ArrayList<XmlWriter.Attribute> attrs = new ArrayList<XmlWriter.Attribute>();
-
-    if (startTime != null) {
-      attrs.add(new XmlWriter.Attribute("startTime", startTime.toString()));
+  @Override
+  protected void validate() throws IllegalStateException {
+    if (startTime == null) {
+      throwExceptionForMissingAttribute(START_TIME);
     }
-
     if (endTime != null) {
-      attrs.add(new XmlWriter.Attribute("endTime", endTime.toString()));
+      if (startTime.compareTo(endTime) > 0) {
+        throw new IllegalStateException(
+            "g:when/@startTime must be less than or equal to g:when/@endTime.");
+      }
+      if (startTime.isDateOnly() != endTime.isDateOnly()) {
+        throw new IllegalStateException(
+            (startTime.isDateOnly() ? "Date" : "Date/time")
+            + " value expected.");
+      }
     }
-
-    if (valueString != null) {
-      attrs.add(new XmlWriter.Attribute("valueString", valueString));
-    }
-
-    generateStartElement(w, Namespaces.gNs, "when", attrs, null);
-
-    // Invoke ExtensionPoint.
-    generateExtensions(w, extProfile);
-
-    w.endElement(Namespaces.gNs, "when");
   }
 
-
-  public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
-                                             String namespace,
-                                             String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
-    return new Handler(extProfile);
+  @Override
+  protected void putAttributes(AttributeGenerator generator) {
+    generator.put(START_TIME, startTime);
+    generator.put(END_TIME, endTime);
+    generator.put(VALUE_STRING, valueString);
   }
 
-
-  /** <g:when> parser. */
-  private class Handler extends ExtensionPoint.ExtensionHandler {
-
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
-
-      super(extProfile, When.class);
-    }
-
-
-    /** Keeps track of the startTime/endTime format. */
-    private boolean wholeDays = false;
-    private boolean wholeDaysKnown = false;
-
-
-    public void processAttribute(String namespace,
-                                 String localName,
-                                 String value)
-        throws ParseException {
-
-      if (namespace.equals("")) {
-        if (localName.equals("startTime")) {
-          startTime = parseDateTime(value);
-        } else if (localName.equals("endTime")) {
-          endTime = parseDateTime(value);
-        } else if (localName.equals("valueString")) {
-          valueString = value;
-        }
-      }
-    }
-
-
-    private DateTime parseDateTime(String value) throws ParseException {
-
-      DateTime dateTime;
-
-      try {
-        dateTime = DateTime.parseDateTimeChoice(value);
-      } catch (NumberFormatException e) {
-        throw new ParseException("Invalid date/time value.", e);
-      }
-
-      if (wholeDaysKnown && dateTime.isDateOnly() != wholeDays) {
-        if (wholeDays) {
-          throw new ParseException("Date value expected.");
-        } else {
-          throw new ParseException("Date/time value expected.");
-        }
-      }
-
-      wholeDaysKnown = true;
-      wholeDays = dateTime.isDateOnly();
-
-      return dateTime;
-    }
-
-
-    public void processEndElement() throws ParseException {
-
-      if (startTime == null) {
-        throw new ParseException("g:when/@startTime is required.");
-      }
-
-      if (startTime != null && endTime != null &&
-          startTime.compareTo(endTime) > 0) {
-
-        throw new ParseException(
-          "g:when/@startTime must be less than or equal to g:when/@endTime.");
-      }
-
-      super.processEndElement();
-    }
+  @Override
+  protected void consumeAttributes(AttributeHelper helper)
+      throws ParseException {
+    startTime = helper.consumeDateTime(START_TIME, true);
+    endTime = helper.consumeDateTime(END_TIME, false);
+    valueString = helper.consume(VALUE_STRING, false);
   }
+
 }
