@@ -1,0 +1,175 @@
+<project name="EventPublisher" default="all">
+  <property environment="env"/>
+  <property file="build.properties"/>
+  <path id="classpath">
+    <pathelement path="${env.classpath}"/>
+    <fileset dir="./lib">
+      <include name="**/*.jar"/>
+    </fileset>
+    <pathelement location="${servlet.jar}"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="build"/>
+    <delete dir="deploy"/>
+  </target>
+
+  <target name="cleanbuild">
+    <delete dir="build"/>
+  </target>
+
+  <target name="checkdeps">
+    <available file="${gdata_java_client_lib_client.jar}" property="has.gdata"/>
+    <fail unless="has.gdata">missing GData client lib: ${gdata_java_client_lib_client.jar}/
+The example requires the GData Java Client Library.
+
+You can download it from:
+  http://code.google.com/apis/gdata/
+    </fail>
+    <available file="${servlet.jar}" property="has.servlet"/>
+    <fail unless="has.servlet">missing jar file: ${servlet.jar}
+The example requires Sun's Servlet API (version 2.3 or 2.4), which
+is not included in this distribution.
+
+You can download it from:
+ http://java.sun.com/products/servlet/download.html
+ Under SPECIFICATIONS/Java Servlet, download 'class files 2.3' from "2.3 - Final Release"
+    </fail>
+    <available file="${mail.jar}" property="has.mail"/>
+    <fail unless="has.mail">missing jar file: ${mail.jar}
+The GData client requires Sun's javamail API (version 1.4), which
+is not included in this distribution.
+
+You can download it from:
+ http://java.sun.com/products/javamail/download.html
+
+Then save it under:
+  ${mail.jar}
+    </fail>
+    <available file="${activation.jar}" property="has.activation"/>
+    <fail unless="has.activation">missing jar file: ${activation.jar}
+The GData client requires Sun's Activation Framework 1.1, which
+is not included in this distribution.
+  
+You can download it from:
+ http://java.sun.com/products/javabeans/jaf/downloads/index.html
+
+Then save it under: 
+  ${activation.jar}
+    </fail>
+    <available file="${commons-collections.jar}" property="has.commons-collections"/>
+    <fail unless="has.commons-collections">missing jar file: ${commons-collections.jar}
+The EventPublisher sample requires some Jakarta Commons components, which are 
+not included in this distribution.
+
+You can download it from:
+http://jakarta.apache.org/commons/
+
+Then save it under:
+  ${commons-collections.jar}
+    </fail>
+    <available file="${commons-configuration.jar}" property="has.commons-configuration"/>
+    <fail unless="has.commons-configuration">missing jar file: ${commons-configuration.jar}
+The EventPublisher sample requires some Jakarta Commons components, which are 
+not included in this distribution.
+
+You can download it from:
+http://jakarta.apache.org/commons/
+
+Then save it under:
+  ${commons-configuration.jar}
+    </fail>
+    <available file="${commons-lang.jar}" property="has.commons-lang"/>
+    <fail unless="has.commons-lang">missing jar file: ${commons-lang.jar}
+The EventPublisher sample requires some Jakarta Commons components, which are 
+not included in this distribution.
+
+You can download it from:
+http://jakarta.apache.org/commons/
+
+Then save it under:
+  ${commons-lang.jar}
+    </fail>
+    <available file="${jstl.jar}" property="has.jstl"/>
+    <fail unless="has.jstl">missing jar file: ${jstl.jar}
+The EventPublisher sample requires the Jakarta Standard 1.1 Taglib's 
+API and implementation jars, which are not included in this distribution.
+
+You can download it from:
+http://jakarta.apache.org/site/downloads/downloads_taglibs-standard.cgi
+
+Then save it under:
+  ${jstl.jar}
+    </fail>
+    <available file="${standard.jar}" property="has.standard"/>
+    <fail unless="has.standard">missing jar file: ${standard.jar}
+The EventPublisher sample requires the Jakarta Standard 1.1 Taglib's 
+API and implementation jars, which are not included in this distribution.
+
+You can download it from:
+http://jakarta.apache.org/site/downloads/downloads_taglibs-standard.cgi
+
+Then save it under:
+  ${standard.jar}
+    </fail>
+  </target>
+
+  <target name="copydeps" depends="checkdeps">
+    <mkdir dir="lib"/>
+    <copy todir="lib">
+      <fileset file="${gdata_java_client_lib_client.jar}"/>
+      <fileset file="${gdata_java_client_lib_spreadsheet.jar}"/>
+      <fileset file="${gdata_java_client_lib_calendar.jar}"/>
+      <fileset file="${gdata_java_client_lib_base.jar}"/>
+      <fileset file="${activation.jar}"/>
+      <fileset file="${mail.jar}"/>
+      <fileset file="${commons-collections.jar}"/>
+      <fileset file="${commons-configuration.jar}"/>
+      <fileset file="${commons-lang.jar}"/>
+      <fileset file="${jstl.jar}"/>
+      <fileset file="${standard.jar}"/>
+    </copy>
+  </target>
+
+  <target name="build" depends="copydeps">
+    <mkdir dir="build"/>
+    <javac classpathref="classpath" srcdir="src" destdir="build">
+      <compilerarg value="-Xlint:unchecked"/>
+    </javac>
+  </target>
+
+  <target name="deploy" depends="build">
+    <mkdir dir="deploy"/>
+    <mkdir dir="deploy/content"/>
+    <mkdir dir="deploy/content/WEB-INF"/>
+    <mkdir dir="deploy/content/WEB-INF/lib"/>
+    <copy todir="deploy/content/WEB-INF">
+      <fileset file="resources/web.xml"/>
+    </copy>
+    <copy todir="deploy/content/WEB-INF/lib">
+      <fileset dir="lib/"/>
+    </copy>
+    <copy todir="deploy/content/WEB-INF/classes">
+      <fileset dir="build/"/>
+      <fileset file="resources/*.properties"/>
+    </copy>
+    <copy todir="deploy/content/WEB-INF/jsp">
+      <fileset dir="jsp/"/>
+    </copy>
+    <copy todir="deploy/content/">
+      <fileset dir="resources/web/"/>
+    </copy>
+    <jar destfile="deploy/EventPublisher.war" basedir="deploy/content/"/>
+  </target>
+
+  <target name="install" depends="deploy">
+    <available file="${install_war_dir}" type="dir" property="has.installdir"/>
+    <fail unless="has.installdir">Installation dir 'install_war_dir' 
+property not defined.  No install was made</fail>
+    <copy todir="${install_war_dir}">
+      <fileset file="deploy/EventPublisher.war"/>
+    </copy>
+  </target>
+
+  <target name="all" depends="clean,checkdeps,copydeps,build,deploy,cleanbuild"/>
+</project>

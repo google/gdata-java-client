@@ -1,0 +1,28 @@
+#summary The current release notes
+#labels Featured
+
+= Introduction =
+
+The release notes show bugfixes and feature additions over the course of the project.
+The wiki page shows the release notes for the current binary download, the subversion project contains a text version with the most recent changes.
+
+= Details =
+
+== 1.0.11 ==
+  * Added event publisher mashup sample that publishes list of events stored in a Google Spreadsheet to other Google services.  This sample shows how to retrieve the event data from Google Spreadsheet and publish those events to Google Calendar and Google Base.
+
+== 1.0.10 ==
+  * Added Java client support and extenstions for Google Calendar access control lists (ACLs).
+  * Added Blogger GData API sample.
+  * Changed inheritance hierarchy for CalendarEventFeed.  As a side effect, getEntries() method for Calendar event feed will return list of objects of type CalendarEventEntry instead of EventEntry.
+  * Changed participant types for CalendarEventEntry.  As a side effect, getParticipants() method for Calendar event entry will return list of objects of type EventWho instead of Who.
+
+== 1.0.9 ==
+  * Added Java client support and extensions for GData Picasa Web Album API.
+  * Added Java client support and extensions for GData Apps For Your Domain API.
+  * Added "method" attribute to <gd:reminder>.  The "method" attribute can be used to specify notification method for Calendar event related reminders. The "method" value can be one of ALERT, EMAIL, SMS, ALL or NONE.
+  * Introduced dependency on Sun's JavaMail API.  To use client package, download and install activation.jar, mail.jar libraries from Sun's JavaMail API package version 1.4 or later.
+
+== 1.0.8 ==
+  * Added Java client support and extensions for GData Google Base API.
+  * Added Java client support and extensions for GData Notebook API.
