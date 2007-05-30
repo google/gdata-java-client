@@ -8,6 +8,9 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.0.11a ==
+  * Fixed bug related to Calendar sample when retrieving ACL feed for public calendar.
+
 == 1.0.11 ==
   * Added event publisher mashup sample that publishes list of events stored in a Google Spreadsheet to other Google services.  This sample shows how to retrieve the event data from Google Spreadsheet and publish those events to Google Calendar and Google Base.
 
