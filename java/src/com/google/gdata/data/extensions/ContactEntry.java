@@ -74,6 +74,7 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     extProfile.declare(ContactEntry.class,
         PostalAddress.getDefaultDescription());
     extProfile.declare(ContactEntry.class, GeoPt.getDefaultDescription());
+    extProfile.declare(ContactEntry.class, Deleted.class);
   }
 
   public List<Email> getEmailAddresses() {
@@ -114,5 +115,15 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
 
   public void addLocation(GeoPt geoPt) {
     getLocations().add(geoPt);
+  }
+
+  public void setDeleted() {
+    addExtension(new Deleted());
+    // Deleted entries cannot be edited further.
+    setCanEdit(false);
+  }
+
+  public boolean isDeleted() {
+    return getExtension(Deleted.class) != null;
   }
 }

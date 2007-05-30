@@ -426,6 +426,11 @@ abstract public class BaseEntry<E extends BaseEntry>
   /** Retrieves the media resource edit link. */
   public Link getMediaEditLink() {
     Link mediaLink = getLink(Link.Rel.MEDIA_EDIT, null);
+    if (mediaLink == null) {
+      // Temporary back compat support for old incorrect media link value.
+      // to the new value.
+      mediaLink = getLink(Link.Rel.MEDIA_EDIT_BACKCOMPAT, null);
+    }
     return mediaLink;
   }
 

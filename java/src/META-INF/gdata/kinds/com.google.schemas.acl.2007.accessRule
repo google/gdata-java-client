@@ -1,3 +1,3 @@
 # GData Kind Adaptors for http://schemas.google.com/acl/2007#accessRule
-com.google.gdata.data.acl.AclFeed
 com.google.gdata.data.acl.AclEntry
+com.google.gdata.data.acl.AclFeed

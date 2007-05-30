@@ -19,7 +19,6 @@ package com.google.gdata.data.photos;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.geo.Point;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.photos.impl.AlbumDataImpl;
 import com.google.gdata.util.ServiceException;
@@ -185,16 +184,4 @@ public class AlbumFeed extends GphotoFeed<AlbumFeed>
     delegate.setUsername(username);
   }
   
-  public void setGeoLocation(Double lat, Double lon)
-      throws IllegalArgumentException {
-    delegate.setGeoLocation(lat, lon);
-  }
-
-  public void setGeoLocation(Point point) {
-    delegate.setGeoLocation(point);
-  }
-  
-  public Point getGeoLocation() {
-    return delegate.getGeoLocation();
-  }
 }

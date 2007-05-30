@@ -158,8 +158,7 @@ public class CalendarClient {
         + endTime.toString() + ":");
     System.out.println();
     for (int i = 0; i < resultFeed.getEntries().size(); i++) {
-      CalendarEventEntry entry = (CalendarEventEntry)
-          resultFeed.getEntries().get(i);
+      CalendarEventEntry entry = resultFeed.getEntries().get(i);
       System.out.println("\t" + entry.getTitle().getPlainText());
     }
     System.out.println();
@@ -378,17 +377,22 @@ public class CalendarClient {
     // After accessing the meta-feed, get the ACL link for each calendar.
     System.out.println("Access control lists for your calendars:");
     for (CalendarEntry calEntry : calendarFeed.getEntries()) {
-      System.out.println("\tCalendar \"" + calEntry.getTitle().getPlainText() +
-          "\":");
       Link link = calEntry.getLink(AclNamespace.LINK_REL_ACCESS_CONTROL_LIST,
           Link.Type.ATOM);
 
-      // For each calendar, retrieve its ACL feed.
-      AclFeed aclFeed = service.getFeed(new URL(link.getHref()), AclFeed.class);
-      for (AclEntry aclEntry : aclFeed.getEntries()) {
-        System.out.println("\t\tScope: Type=" + aclEntry.getScope().getType() +
-            " (" + aclEntry.getScope().getValue() + ")");
-        System.out.println("\t\tRole: " + aclEntry.getRole().getValue());
+      // For each calendar that exposes an access control list, retrieve its ACL
+      // feed.  If link is null, then we are not the owner of that calendar
+      // (e.g., it is a public calendar) and its ACL feed cannot be accessed.
+      if (link != null) {
+        AclFeed aclFeed = service.getFeed(new URL(link.getHref()),
+            AclFeed.class);
+        System.out.println("\tCalendar \"" + calEntry.getTitle().getPlainText()
+            + "\":");
+        for (AclEntry aclEntry : aclFeed.getEntries()) {
+          System.out.println("\t\tScope: Type=" + aclEntry.getScope().getType()
+              + " (" + aclEntry.getScope().getValue() + ")");
+          System.out.println("\t\tRole: " + aclEntry.getRole().getValue());
+        }
       }
     }
   }

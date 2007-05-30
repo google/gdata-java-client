@@ -15,8 +15,10 @@
 
 package com.google.api.gbase.client;
 
+import com.google.api.gbase.client.GmAttributes.GmAttribute;
 import com.google.gdata.data.BaseEntry;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -59,14 +61,34 @@ public class ItemTypeDescription {
   /**
    * Get the list of attribute ids defined for this item type.
    *
-   * @return modifiable list of attribute ids
+   * @return unmodifiable list of attribute ids
+   * @deprecated use {@link #getAttributes()} instead
    */
   public List<? extends GoogleBaseAttributeId> getAttributeIds() {
-    GmAttributes attrs = owner.getExtension(GmAttributes.class);
-    if (attrs == null) {
-      attrs = new GmAttributes();
-      owner.setExtension(attrs);
+    return getGmAttributesExtension().getAttributeIds();
+  }
+  
+  /**
+   * Get the list of attribute ids with extra information as defined for this 
+   * item type.
+   *
+   * @return unmodifiable list of GmAttribute objects
+   */
+  public Collection<GmAttribute> getAttributes() {
+    return getGmAttributesExtension().getAttributes();
+  }
+
+  /**
+   * Returns the GmAttributes instance associated to the owner of the 
+   * description. If the owner has no GmAttributes defined, a new instance
+   * is created, assigned to the owner and returned.
+   */
+  private GmAttributes getGmAttributesExtension() {
+    GmAttributes attributes = owner.getExtension(GmAttributes.class);
+    if (attributes == null) {
+      attributes = new GmAttributes();
+      owner.setExtension(attributes);
     }
-    return attrs.getAttributeIds();
+    return attributes;
   }
 }

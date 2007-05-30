@@ -38,6 +38,18 @@ import java.util.ArrayList;
  */
 public class Email extends ExtensionPoint implements Extension {
 
+  /** The email type. */
+  public static final class Rel {
+    public static final String GENERAL = null;
+    public static final String HOME = Namespaces.gPrefix + "home";
+    public static final String WORK = Namespaces.gPrefix + "work";
+    public static final String OTHER = Namespaces.gPrefix + "other";
+  }
+
+  /** The email type. */
+  protected String rel;
+  public String getRel() { return rel; }
+  public void setRel(String v) { rel = v; }
 
   /** Label. */
   protected String label;
@@ -73,6 +85,10 @@ public class Email extends ExtensionPoint implements Extension {
 
     ArrayList<XmlWriter.Attribute> attrs = new ArrayList<XmlWriter.Attribute>();
 
+    if (rel != null) {
+      attrs.add(new XmlWriter.Attribute("rel", rel));
+    }
+
     if (label != null) {
       attrs.add(new XmlWriter.Attribute("label", label));
     }
@@ -80,7 +96,7 @@ public class Email extends ExtensionPoint implements Extension {
     if (address != null) {
       attrs.add(new XmlWriter.Attribute("address", address));
     }
-    
+
     if (quota != null) {
       attrs.add(new XmlWriter.Attribute("quota", quota));
     }
@@ -119,7 +135,9 @@ public class Email extends ExtensionPoint implements Extension {
         throws ParseException {
 
       if (namespace.equals("")) {
-        if (localName.equals("label")) {
+        if (localName.equals("rel")) {
+          rel = value;
+        } else if (localName.equals("label")) {
           label = value;
         } else if (localName.equals("address")) {
           address = value;

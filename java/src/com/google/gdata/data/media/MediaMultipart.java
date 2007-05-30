@@ -43,14 +43,26 @@ public class MediaMultipart extends MimeMultipart {
   private static final Logger LOGGER
       = Logger.getLogger(MediaMultipart.class.getName());
 
-  private static final String[] CONTENT_TYPES = new String[] {
-    "application/atom+xml", "application/rss+xml", "application/json"
-  };
-
-  private static final String CONTENT_HANDLER = "; ; x-java-content-handler"
-          + "=com.google.gdata.data.media.GDataContentHandler";
-
   static {
+    loadMimeMappings();
+  }
+
+  private MediaBodyPart atomPart;
+  private MediaBodyPart mediaPart;
+
+  /**
+   * Loads the default set of Java activation MIME mappings required by
+   * the GData library.  Extends the basic set configured by the JavaMail
+   * library to add mappings for Atom, RSS, and JSON application types.
+   */
+  public static void loadMimeMappings() {
+    final String[] CONTENT_TYPES = new String[] {
+        "application/atom+xml", "application/rss+xml", "application/json"
+    };
+
+    final String CONTENT_HANDLER = ";; x-java-content-handler"
+        + "=com.google.gdata.data.media.GDataContentHandler";
+
     CommandMap commandMap = CommandMap.getDefaultCommandMap();
     if (commandMap instanceof MailcapCommandMap) {
       MailcapCommandMap mailcapMap = (MailcapCommandMap) commandMap;
@@ -66,8 +78,6 @@ public class MediaMultipart extends MimeMultipart {
     }
   }
 
-  private MediaBodyPart atomPart;
-  private MediaBodyPart mediaPart;
 
   /**
    * Constructs a new MediaMultipart instance by parsing MIME content from

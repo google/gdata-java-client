@@ -87,10 +87,19 @@ public class Link extends ExtensionPoint {
 
     /**
      * Link provides the URI that can be used to edit the media
-     * associated with an entry.  This relation does not exist if 
+     * associated with an entry.  This relation does not exist if
      * there is no associated media or the media is read-only.
      */
-    public static final String MEDIA_EDIT = "media-edit";
+    public static final String MEDIA_EDIT = "edit-media";
+
+    /**
+     * Previous media edit link relation value that will temporarily be
+     * supported to enable back compatibility for Picasa Web.  This rel
+     * will be deleted after all usage has been migrated to use
+     * {@link #MEDIA_EDIT}.
+     */
+    @Deprecated
+    public static final String MEDIA_EDIT_BACKCOMPAT = "media-edit";
 
     /**
      * Link provides the URI that can be used to insert, update
