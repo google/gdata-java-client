@@ -19,8 +19,6 @@ package com.google.gdata.data.photos.impl;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.geo.Point;
-import com.google.gdata.data.geo.impl.PointDataImpl;
 import com.google.gdata.data.photos.AlbumData;
 import com.google.gdata.data.photos.Namespaces;
 import com.google.gdata.data.photos.impl.Extensions.GphotoCommentCount;
@@ -46,15 +44,12 @@ import java.util.Date;
  */
 public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
 
-  private PointDataImpl geoData;
-  
   /**
    * Construct a new implementation of AlbumGphotoData with the given
    * extension point as the backing storage for data.
    */
   public AlbumDataImpl(ExtensionPoint extensionPoint) {
     super(extensionPoint);
-    geoData = new PointDataImpl(extensionPoint);
   }
 
   /*
@@ -82,7 +77,6 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
     
     declareMediaExtensions(extProfile);
     
-    geoData.declareExtensions(extProfile);
   }
 
   /**
@@ -343,33 +337,6 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
     }
   }
   
-  /**
-   * Sets the geo-location of the album.
-   * 
-   * @param lat The latitude coordinate, between -90 and 90 degrees.
-   * @param lon The longitude coordinate, between -180 and 180 degrees.
-   */
-  public void setGeoLocation(Double lat, Double lon) {
-    geoData.setGeoLocation(lat, lon);
-  }
-  
-  /**
-   * Sets the geo-location of the album.
-   * 
-   * @param point A point containing the latitude and longitude coordinates.
-   */
-  public void setGeoLocation(Point point) {
-    geoData.setGeoLocation(point);
-  }
-  
-  /**
-   * Gets the geo-location of the album.
-   * @return a Point that contains the geo-coordinates (latitude and longitude).
-   */
-  public Point getGeoLocation() {
-    return geoData.getGeoLocation();
-  }
-
   /**
    * The gphoto:name element.
    */

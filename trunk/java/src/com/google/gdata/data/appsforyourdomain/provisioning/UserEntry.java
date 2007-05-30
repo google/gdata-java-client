@@ -21,6 +21,7 @@ import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.appsforyourdomain.Email;
 import com.google.gdata.data.appsforyourdomain.Login;
 import com.google.gdata.data.appsforyourdomain.Name;
 import com.google.gdata.data.appsforyourdomain.Quota;
@@ -73,6 +74,7 @@ public class UserEntry extends BaseEntry<UserEntry> {
      * may not specify these.
      */
     extensionProfile.declare(UserEntry.class, Login.getDefaultDescription());
+    extensionProfile.declare(UserEntry.class, Email.getDefaultDescription());
     extensionProfile.declare(UserEntry.class, Name.getDefaultDescription());
     extensionProfile.declare(UserEntry.class, Quota.getDefaultDescription());
     
@@ -97,4 +99,9 @@ public class UserEntry extends BaseEntry<UserEntry> {
   public Quota getQuota() {
     return getExtension(Quota.class);
   }
+  
+  public Email getEmail() {
+    return getExtension(Email.class);
+  }
+  
 }

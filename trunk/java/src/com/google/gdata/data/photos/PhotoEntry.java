@@ -19,14 +19,11 @@ package com.google.gdata.data.photos;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.geo.Point;
 import com.google.gdata.data.media.mediarss.MediaKeywords;
 import com.google.gdata.data.photos.impl.PhotoDataImpl;
 import com.google.gdata.util.ServiceException;
 
-import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Entry class for photos.  Contains getters and setters for all of the fields
@@ -66,23 +63,6 @@ public class PhotoEntry extends GphotoEntry<PhotoEntry> implements PhotoData,
   public void declareExtensions(ExtensionProfile extProfile) {
     delegate.declareExtensions(extProfile);
     super.declareExtensions(extProfile);
-  }
-
-  /**
-   * Retrieve the photo feed and associated entries.  The kinds parameter is a
-   * list of the associated entries to return.  For example
-   * <code>PhotoFeed photoTagsAndComments = photoEntry.getFeed(CommentData.KIND,
-   *     TagData.KIND);</code>  If no kind parameters are passed, the default of
-   * {@link CommentData#KIND} will be used.
-   *
-   * @see CommentData#KIND
-   * @see TagData#KIND
-   * @param kinds the kinds of entries to retrieve, or empty to use the default.
-   * @return a feed of the photo and the requested kinds.
-   */
-  public PhotoFeed getFeed(String... kinds)
-      throws IOException, ServiceException {
-    return getFeed(PhotoFeed.class, kinds);
   }
 
   // Delegating methods.
@@ -202,25 +182,5 @@ public class PhotoEntry extends GphotoEntry<PhotoEntry> implements PhotoData,
   public void setWidth(Long width) {
     delegate.setWidth(width);
   }
-
-  public void setGeoLocation(Double lat, Double lon)
-      throws IllegalArgumentException {
-    delegate.setGeoLocation(lat, lon);
-  }
-
-  public void setGeoLocation(Point point) {
-    delegate.setGeoLocation(point);
-  }
-
-  public Point getGeoLocation() {
-    return delegate.getGeoLocation();
-  }
-
-  public void addStreamId(String streamId) {
-    delegate.addStreamId(streamId);
-  }
-
-  public List<String> getStreamIds() {
-    return delegate.getStreamIds();
-  }
+  
 }

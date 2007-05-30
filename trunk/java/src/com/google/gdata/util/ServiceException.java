@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * The ServiceException class is the base exception class used to
@@ -57,6 +58,9 @@ public class ServiceException extends Exception {
   public ServiceException(HttpURLConnection httpConn) throws IOException {
     super(httpConn.getResponseMessage());
 
+    // Save response code
+    httpErrorCodeOverride = httpConn.getResponseCode();
+
     // Save the HTTP headers in the exception.
     httpHeaders = Collections.unmodifiableMap(httpConn.getHeaderFields());
 
@@ -73,15 +77,19 @@ public class ServiceException extends Exception {
       return;
     }
 
-    InputStream errorStream = httpConn.getErrorStream();
-    if (errorStream != null) {
+    InputStream responseStream = (httpErrorCodeOverride >= 400) ?
+        httpConn.getErrorStream() : httpConn.getInputStream();
+    if (responseStream != null) {
+      if ("gzip".equalsIgnoreCase(httpConn.getContentEncoding())) {
+        responseStream = new GZIPInputStream(responseStream);
+      }
       try {
         String charset = responseContentType.getAttributes().get("charset");
         if (charset == null) {
           charset = "iso8859-1";  // http default encoding
         }
         BufferedReader reader =
-          new BufferedReader(new InputStreamReader(errorStream, charset));
+          new BufferedReader(new InputStreamReader(responseStream, charset));
         String responseLine;
         while ((responseLine = reader.readLine()) != null) {
           sb.append(responseLine);
@@ -89,7 +97,7 @@ public class ServiceException extends Exception {
         }
         responseBody = sb.toString();
       } finally {
-        errorStream.close();
+        responseStream.close();
       }
     }
   }

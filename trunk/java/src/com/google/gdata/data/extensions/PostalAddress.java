@@ -37,6 +37,18 @@ import java.util.ArrayList;
  */
 public class PostalAddress implements Extension {
 
+  /** The postal address type. */
+  public static final class Rel {
+    public static final String GENERAL = null;
+    public static final String HOME = Namespaces.gPrefix + "home";
+    public static final String WORK = Namespaces.gPrefix + "work";
+    public static final String OTHER = Namespaces.gPrefix + "other";
+  }
+
+  /** The postal address type. */
+  protected String rel;
+  public String getRel() { return rel; }
+  public void setRel(String v) { rel = v; }
 
   /** Label. */
   protected String label;
@@ -66,6 +78,10 @@ public class PostalAddress implements Extension {
 
     ArrayList<XmlWriter.Attribute> attrs = new ArrayList<XmlWriter.Attribute>();
 
+    if (rel != null) {
+      attrs.add(new XmlWriter.Attribute("rel", rel));
+    }
+
     if (label != null) {
       attrs.add(new XmlWriter.Attribute("label", label));
     }
@@ -94,7 +110,9 @@ public class PostalAddress implements Extension {
         throws ParseException {
 
       if (namespace.equals("")) {
-        if (localName.equals("label")) {
+        if (localName.equals("rel")) {
+          rel = value;
+        } else if (localName.equals("label")) {
           label = value;
         }
       }

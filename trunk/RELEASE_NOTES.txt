@@ -4,10 +4,10 @@ May 15, 2007
 Notes for v1.0.11
 -----------------
 May 15, 2007
-o  Added event publisher mashup sample that publishes list of events stored in
-   a Google Spreadsheet to other Google services.  This sample shows
-   how to retrieve the event data from Google Spreadsheet and publish those
-   events to Google Calendar and Google Base.
+o  Added event publisher mashup sample that demonstrates how to retrieve and 
+   publish structured data from one google service to another google service. 
+   This sample retrieves list of events stored in a Google Spreadsheet and 
+   publish those events to Google Calendar and Google Base. 
 
 Notes for v1.0.10
 -----------------

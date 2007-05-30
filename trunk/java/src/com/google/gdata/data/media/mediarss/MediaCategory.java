@@ -47,6 +47,16 @@ public class MediaCategory extends AbstractElementWithContent {
   private String scheme;
   private String label;
 
+  /** Creates an empty category tag. */
+  public MediaCategory() {
+  }
+
+  /** Creates an initializes a category tag. */
+  public MediaCategory(String scheme, String content) {
+    this.scheme = scheme;
+    setContent(content);
+  }
+
   public String getLabel() {
     return label;
   }

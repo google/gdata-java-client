@@ -38,6 +38,10 @@ import java.io.IOException;
 public abstract class AbstractTextElement extends AbstractExtension {
   private TextConstruct content;
 
+  public boolean isEmpty() {
+    return content.isEmpty();
+  }
+
   public TextConstruct getContent() {
     return content;
   }

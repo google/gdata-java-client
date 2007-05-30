@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Class-Path: gdata-client-1.0.jar
+
+Name: com/google/gdata/client/photos/
+Specification-Title: Google Data Protocol
+Specification-Version: 1.0
+Specification-Vendor: Google Inc.
+Implementation-Title: Photos GData client extensions for Java
+Implementation-Version: 1.0.1
+Implementation-Vendor: Google Inc.

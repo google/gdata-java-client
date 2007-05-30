@@ -76,7 +76,8 @@ public class Service {
 
 
   private static final String SERVICE_VERSION =
-    "GData-Java/" + Service.class.getPackage().getImplementationVersion();
+      "GData-Java/" + Service.class.getPackage().getImplementationVersion() +
+      "(gzip)";         // Necessary to get GZIP encoded responses
 
   /**
    * The GDataRequest interface represents a streaming connection to a

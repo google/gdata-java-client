@@ -46,6 +46,8 @@ public class PhoneNumber implements Extension {
     public static final String WORK = Namespaces.gPrefix + "work";
     public static final String INTERNAL_EXTENSION = Namespaces.gPrefix + "internal-extension";
     public static final String FAX = Namespaces.gPrefix + "fax";
+    public static final String HOME_FAX = Namespaces.gPrefix + "home_fax";
+    public static final String WORK_FAX = Namespaces.gPrefix + "work_fax";
     public static final String PAGER = Namespaces.gPrefix + "pager";
     public static final String CAR = Namespaces.gPrefix + "car";
     public static final String SATELLITE = Namespaces.gPrefix + "satellite";
