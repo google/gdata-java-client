@@ -1,6 +1,0 @@
-/*This style sheet is only for Internet Explorer version 7.0 only*/
-
-#pagecontent{
-    width: expression(document.body.offsetWidth - 172); /*fixes float drop in IE7 by telling the page content to offset 172 pixes from the left, which is the width of the sidenav*/
-	}
-
