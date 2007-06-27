@@ -1,0 +1,474 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Blogger Data API Developer's Guide</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+  <link rel="stylesheet" type="text/css" href="../css/dev_docs.css"/>
+  <link rel="stylesheet" type="text/css" href="css/local_extensions.css"/>
+  <!--[if IE 7]>
+    <link rel="stylesheet" type="text/css" 
+          href="../css/ie7only.css" />
+  <![endif]-->
+  <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" 
+          href="../css/ie6only.css" />
+  <![endif]-->
+  <!--[if IE]>
+    <link rel="stylesheet" type="text/css" 
+          href="../css/ieonly.css" />
+  <![endif]-->
+  <style type="text/css">
+    <!--
+    h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+      color: #000000;
+    }
+
+    -->
+  </style>
+  <script type="text/javascript">
+    <!--
+    var cancelBubble = false;
+
+    function goTo(url) {
+      window.location = url;
+    }
+    //-->
+  </script>
+</head>
+<body class="t2" id="developers_guide_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo">
+    <a href="/">
+      <img src="/images/code_sm.png" border="0" alt="Return to Google Code homepage"/>
+    </a>
+  </div>
+  <h1 id="doc_title">Blogger Data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+<!-- ########## SIDE NAVIGATION ########## -->
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Blogger</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="developers_guide_protocol.html" id="developers_guide_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.blogger.com/terms.g">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Google Data Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://groups.google.com/group/bloggerDev">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<!-- ########## END SIDE NAVIGATION ########## -->
+<!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+<h1 id="page_title">Blogger Data API Developer's Guide: Java</h1>
+
+<div id="topnav">
+<table id="mt" cellspacing="0" cellpadding="0" width="100%" border="0">
+<tr>
+<th class="int1" onclick="if (!cancelBubble) goTo('developers_guide_protocol.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_protocol.html">Protocol</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int2" onclick="if (!cancelBubble) goTo('developers_guide_java.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_java.html">Java</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int3" onclick="if (!cancelBubble) goTo('developers_guide_dotnet.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_dotnet.html">.NET</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<!--
+<th class="int4" onclick="if (!cancelBubble) goTo('developers_guide_php.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_php.html">PHP</a></div>
+</th><td>&nbsp;&nbsp;</td>
+-->
+<th class="int5" onclick="if (!cancelBubble) goTo('developers_guide_python.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_python.html">Python</a></div>
+<td width="100%">&nbsp;</td>
+</tr>
+</table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+<tr>
+<td height="4" align="right" style="padding:0px; vertical-align:top">
+<div class="stur"></div>
+</td>
+</tr>
+</table>
+</div>
+
+
+<p>The Blogger data API allows client applications to view and update Blogger content by using Google data API feeds. Your client application can use the Blogger data API feeds to create new blog posts, edit or delete existing blog posts, and query for posts that match particular criteria.</p>
+
+<p>In addition to providing some background on the capabilities of the Blogger data API, this document provides examples for interacting with the API using the <a href="http://code.google.com/p/gdata-java-client/">Java client library</a>. If you're interested in understanding more about the underlying protocol used by the Java Client Library to interact with the Blogger data API, please see the <a href="developers_guide_protocol.html">protocol tab</a>.</p>
+
+<h1>Contents</h1>
+
+<div class="toc">
+  <ol>
+    <li><a href="#Audience">Audience</a></li>
+    <li><a href="#GettingStarted">Getting started</a>
+      <ol>
+        <li><a href="#create_blogger_account">Create a Blogger account</a></li>
+        <li><a href="#sample_code">Running the sample code</a></li>
+      </ol>
+    </li>
+    <li><a href="#Auth">Authenticating to the Blogger service</a> 
+        <ol class="toc">
+          <li><a href="#auth_sub">AuthSub proxy authentication</a></li>
+          <li><a href="#client_login">ClientLogin username/password authentication</a></li>
+        </ol>
+      </li>
+    <li><a href="#GettingBlogs">Retrieving a list of blogs</a></li>
+    <li><a href="#CreatingPosts">Creating posts</a>
+      <ol class="toc">
+        <li><a href="#create_public_post">Publishing a blog post</a></li>
+        <li><a href="#create_draft_post">Creating a draft blog post</a></li>
+      </ol>
+    </li>
+    <li><a href="#RetrievingPosts">Retrieving posts</a>
+      <ol class="toc">
+        <li><a href="#retrieving_without_query">Retrieving all blog posts</a></li>
+        <li><a href="#retrieving_with_query">Retrieving posts using query parameters</a></li>
+      </ol>
+    </li>
+    <li><a href="#UpdatingPosts">Updating posts</a></li>
+    <li><a href="#DeletingPosts">Deleting posts</a></li>
+    <li><a href="#Comments">Comments</a>
+      <ol class="toc">
+        <li><a href="#CreatingComments">Creating comments</a></li>
+        <li><a href="#RetrievingComments">Retrieving comments</a></li>
+        <li><a href="#DeletingComments">Deleting comments</a></li>
+      </ol>
+    </li>
+  </ol>
+</div>
+
+<h1><a name="Audience" id="Audience">Audience</a></h1>
+
+<p>This document is intended for programmers who want to write client applications that can interact with Blogger. It provides a series of examples of basic data API interactions using the <a href="http://code.google.com/p/gdata-java-client/">Java client library</a>.</p>
+
+<p>For Blogger data API reference information, see the <a href="reference.html">reference guide</a>. This document assumes that you understand the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>.</p>
+
+<h1><a name="GettingStarted" id="GettingStarted">Getting started</a></h1>
+<p>To use the Java client library, you must be running Java 1.5. After <a href="http://code.google.com/p/gdata-java-client/downloads/list">downloading the client library</a>, you'll find the classes you need to get started in the <code>java/lib/gdataclient-1.0.jar</code> file.</p>
+
+<h2><a name="create_blogger_account" id="create_blogger_account">Create a Blogger account</a></h2>
+<p> Blogger uses Google Accounts, so if you already have a Google account you're all set.  If you don't have a Google account, or want to create a new one just for trying out the Blogger data API, sign up <a href="http://www.blogger.com/signup.g">here</a>.</p>
+
+<h2><a name="sample_code" id="sample_code">Running the sample code</a></h2>
+<p>A full working copy of this sample is available in the distribution, under the directory <code>gdata/java/sample/blogger/BloggerClient.java</code>.  Build and execution instructions are included in the same directory in the <code>README.txt</code>.  The sample performs a number of operations on the default blog to demonstrate the use of the Blogger data API. Please see the main method of the code for a listing of the operations performed.</p>
+<p>To compile the examples in this document into your own code, you'll need to use the following import statements:</p>
+<pre>
+import com.google.gdata.client.*;
+import com.google.gdata.data.*;
+import com.google.gdata.util.*;
+import java.io.IOException;
+import java.net.URL;
+</pre>
+
+<h1><a name="Auth" id="Auth">Authenticating to the Blogger service</a></h1>
+<p>You can access both public and private feeds using the Blogger data API. Public feeds do not require any authentication, but they are read-only.  If you want to modify blogs then you'll need to authenticate your client before requesting private feeds.  This can be done via <a href="#AuthClientLogin">ClientLogin</a> username/password authentication or <a href="#AuthAuthSub">AuthSub</a> proxy authentication.</p>
+<p>For more information about authentication with Google data APIs in general, please see the <a href="../gdata/auth.html">authentication documentation</a>.</p>
+
+<h2><a name="auth_sub" id="auth_sub">AuthSub proxy authentication</a></h2>
+<p>AuthSub proxy authentication is used by web applications which need to authenticate their users to Google accounts.  The website operator does not need access to the username and password for the Blogger user - only special AuthSub tokens are required.  Please see the <a href="/apis/accounts/AuthForWebApps.html">AuthSub documentation</a> for more detailed information.</p>
+
+<p>When a user first visits your application, they have not yet been authenticated. In this case, you need to print some text and a link directing the user to Google to authenticate your request for access to their blogs. The Java client library provides a function to generate this URL from the AuthSubUtil class. The code below retrieves the URL of the AuthSubRequest page:</p>
+<pre>
+String next = "http://www.coolbloggersite.com/welcome.html";
+String scope = "http://www.blogger.com/feeds/";
+boolean secure = false;
+boolean session = true;
+String authSubLogin = AuthSubUtil.getRequestUrl(next, scope, secure, session);
+</pre>
+
+<p>The AuthSubRequest URL might look like this:</p>
+<pre>
+https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.blogger.com%2Ffeeds%2F&amp;session=1&amp;secure=0&amp;next=http%3A%2F%2Fwww.coolbloggersite.com%2Fwelcome.pyc
+</pre> 
+<p>Notice the query parameters sent to the AuthSubRequest URL:</p>
+  <ul>
+    <li><b>scope</b>, indicating that the application will only access Blogger feeds.</li>
+    <li><b>session</b>, indicating whether the token returned can be exchanged for a multi-use (session) token.</li>
+    <li><b>secure</b>, indicating whether the token returned will be a secure token.</li>
+    <li><b>next</b>, the URL of the page that Google should redirect the user to after authentication.</li>
+  </ul>
+<p>After the user logs in, the AuthSub system redirects them to the URL you specified in the next query parameter of the AuthSubRequest URL. The AuthSub system appends an authentication token to that URL, as the value of the token query parameter like this:</p>
+<pre>
+http://www.coolbloggersite.com/welcome.pyc?token=<i>yourAuthToken</i>
+</pre>
+<p>This token value represents a single-use AuthSub token.  Since <code>session = True</code> was specified above, this token can be exchanged for an AuthSub session token by calling the <a href="/apis/accounts/AuthForWebApps.html#AuthSubSessionToken"><code>AuthSubSessionToken</code></a> service with the single-use token in an Authorization header as follows, where <code>urlFromAuthSub</code> is the URL that AuthSub appended the token to:</p>
+<pre>
+String token = AuthSubUtil.getTokenFromReply(urlFromAuthSub);
+String sessionToken = AuthSubUtil.exchangeForSessionToken(token, null);
+</pre>
+<p>Your application can then use the session token value in subsequent interactions with Blogger.
+
+<h2><a name="client_login" id="client_login">ClientLogin username/password authentication</a></h2>
+<p>ClientLogin authentication is used if your client is a standalone, single-user &quot;installed&quot; client (such as a desktop application). Just call the <code>setUserCredentials</code> method on your <code>GoogleService</code> object and all subsequent interactions with the Blogger service will be authenticated:</p>
+<pre>
+GoogleService myService = new GoogleService("blogger", "exampleCo-exampleApp-1");
+myService.setUserCredentials("user@domain.com", "secretPassword");
+</pre>
+<p>In the snippet above we pass two parameters to the <code>GoogleService</code> constructor.  The first parameter is the name of the service we want to interact with, in this case <strong>blogger</strong>.  The second parameter is the name of our application in the form &lt;companyName&gt;-&lt;applicationName&gt;-&lt;versionNumber&gt;.
+<p>For more information about ClientLogin authentication, including sample requests and responses, see the <a href="/apis/accounts/AuthForInstalledApps.html">Account Authentication for Installed Applications</a> documentation.</p>
+<p class="note"><strong>Note</strong>: As described in the ClientLogin documentation, the authentication request may fail and request a CAPTCHA challenge. If you want Google to issue and handle the CAPTCHA challenge, then send the user to <code>https://www.google.com/accounts/DisplayUnlockCaptcha?service=blogger</code> (rather than to the CAPTCHA-handling URL given in the ClientLogin documentation).</p>
+
+<h1><a name="GettingBlogs" id="GettingBlogs">Retrieving a list of blogs</a></h1>
+<p>The Blogger data API provides a feed for retrieving the list of blogs for a particular user.  The following sample code uses an authenticated <code>GoogleService</code> object to retrieve this list of blog feeds and then prints each blog's title.</p>
+<pre>
+  public static void printUserBlogs(GoogleService myService)
+      throws ServiceException, IOException {
+
+    // Request the feed
+    final URL feedUrl = new URL("http://www.blogger.com/feeds/<i>default</i>/blogs");
+    Feed resultFeed = myService.getFeed(feedUrl, Feed.class);
+
+    // Print the results
+    System.out.println(resultFeed.getTitle().getPlainText());
+    for (int i = 0; i < resultFeed.getEntries().size(); i++) {
+      Entry entry = resultFeed.getEntries().get(i);
+      System.out.println("\t" + entry.getTitle().getPlainText());
+    }
+  }
+</pre>
+<p>Note the URL used by the <code>getFeed</code> method.  This is the default metafeed URL and will return a list of blogs for the user currently authenticated.  To access a feed for a different user you can put the user's ID in place of 'default' in the metafeed URL.  The user's ID is the string of digits at the end of the user's profile URL (e.g. http://www.blogger.com/profile/<i>userID</i>)</p>
+
+<h1><a name="CreatingPosts" id="CreatingPosts">Creating posts</a></h1>
+<h2><a name="create_public_post" id="create_public_post">Publishing a blog post</a></h2>
+<p>You can use the Java client library to publish new blog entries.  First, create an <code>Entry</code> object to represent the blog post.  Then you can set the title, content and other attributes of the blog post.  Finally, use the <code>GoogleService</code> object to insert the post.  Here's an example of how to publish a new blog post:</p>
+<pre>
+  public static Entry createPost(GoogleService myService, String blogID, String title,
+      String content, String authorName, String userName)
+      throws ServiceException, IOException {
+    // Create the entry to insert
+    Entry myEntry = new Entry();
+    myEntry.setTitle(new PlainTextConstruct(title));
+    myEntry.setContent(new PlainTextConstruct(content));
+    Person author = new Person(authorName, null, userName);
+    myEntry.getAuthors().add(author);
+
+    // Ask the service to insert the new entry
+    URL postUrl = new URL("http://www.blogger.com/feeds/" + blogID + "/posts/default");
+    return myService.insert(postUrl, myEntry);
+  }
+</pre>
+<p>The <code>insert</code> method used above takes the post feed URL as a parameter.  You'll need to substitute your blog's ID in the URL shown above.  Then the method returns the entry as it was stored by the Blogger service.  The entry returned is the same one you sent, but it also contains various elements added by Blogger, such as a post ID.</p>
+<p>If your request fails for some reason, Blogger may return a different status code.  For information about the status codes, see the <a href="../gdata/reference.html">protocol reference document</a>.</p>
+
+<h2><a name="create_draft_post" id="create_draft_post">Creating a draft blog post</a></h2>
+<p>Draft posts are created in the same way as public posts, but you need to set the draft attribute if the <code>Entry</code> object.  The blog post above could be created as a draft by adding the highlighted line:</p>
+<pre>
+  public static Entry createPost(GoogleService myService, String blogId, String title,
+      String content, String authorName, String userName, boolean isDraft)
+      throws ServiceException, IOException {
+    // Create the entry to insert
+    Entry myEntry = new Entry();
+    myEntry.setTitle(new PlainTextConstruct(title));
+    myEntry.setContent(new PlainTextConstruct(content));
+    Person author = new Person(authorName, null, userName);
+    myEntry.getAuthors().add(author);
+    <b>myEntry.setDraft(isDraft);</b>
+
+    // Ask the service to insert the new entry
+    URL postUrl = new URL("http://www.blogger.com/feeds/" + blogID + "/posts/default");
+    return myService.insert(postUrl, myEntry);
+  }
+</pre>
+<p>You can turn an existing draft blog post into a published post by retrieving the draft post, setting the draft attribute to false and then updating the post.  We'll cover retrieving and updating posts in the next two sections.</p>
+
+<h1><a name="RetrievingPosts" id="RetrievingPosts">Retrieving posts</a></h1>
+<h2><a name="retrieving_without_query" id="retrieving_without_query">
+  Retrieving all blog posts</a></h2>
+<p>To retrieve all the posts on a blog, call the same <code>getFeed</code> method used to retrieve the blogs metafeed, but this time send the post feed URL:</p>
+<pre>
+  public static void printAllPosts(GoogleService myService, String blogId)
+      throws ServiceException, IOException {
+    // Request the feed
+    URL feedUrl = new URL("http://www.blogger.com/feeds/" + blogID + "/posts/default");
+    Feed resultFeed = myService.getFeed(feedUrl, Feed.class);
+
+    // Print the results
+    System.out.println(resultFeed.getTitle().getPlainText());
+    for (int i = 0; i < resultFeed.getEntries().size(); i++) {
+      Entry entry = resultFeed.getEntries().get(i);
+      System.out.println("\t" + entry.getTitle().getPlainText());
+    }
+  }
+</pre>
+<p>Blogger feeds are public in the sense that querying them does not require authentication. Therefore, you don't need to call the <code>setUserCredentials</code> method before retrieving posts on a blog.</p>
+
+<h2><a name="retrieving_with_query" id="retrieving_with_query">Retrieving posts using query parameters</a></h2>
+
+<p>The Google data API lets you request a set of entries that match specified criteria, such as requesting blog posts created or updated in a given date range, or published by a particular author.  To do this you create a <code>Query</code> object and pass it to the <code>GoogleService.getQuery()</code> method.  For example, to send a date-range query use the <code>setUpdatedMin</code> and the <code>setUpdatedMax</code> methods of the <code>Query</code> object.  The following code snippet prints the title of each blog post updated between the given startTime and endTime:</p>
+<pre>
+  public static void printDateRangeQueryResults(GoogleService myService, String blogId,
+      DateTime startTime, DateTime endTime) throws ServiceException,
+      IOException {
+    // Create query and submit a request
+    URL feedUrl = new URL("http://www.blogger.com/feeds/" + blogID + "/posts/default");
+    Query myQuery = new Query(feedUrl);
+    myQuery.setUpdatedMin(startTime);
+    myQuery.setUpdatedMax(endTime);
+    Feed resultFeed = myService.query(myQuery, Feed.class);
+
+    // Print the results
+    System.out.println(resultFeed.getTitle().getPlainText() + " posts between "
+        + startTime + " and " + endTime);
+    for (int i = 0; i < resultFeed.getEntries().size(); i++) {
+      Entry entry = resultFeed.getEntries().get(i);
+      System.out.println("\t" + entry.getTitle().getPlainText());
+      System.out.println("\t" + entry.getUpdated().toStringRfc822());
+    }
+  }
+</pre>
+<p>Notice that the <code>Query</code> object is constructed using the same post feed URL used to retrieve posts.</p>
+<p>The Blogger data API supports the following <code>Query</code> methods:</p>
+<ul>
+  <li><strong>setAuthor</strong> - the author of the entry.</li>
+  <li><strong>setMaxResults</strong> - the maximum number of entries to return.</li>
+  <li><strong>addCategoryFilter</strong> - specifies categories (i.e. labels) to filter the feed results.  For example, <code>http://www.blogger.com/feeds/<i>blogID</i>/posts/default/-/Fritz/Laurie</code> will return entries labeled with Fritz AND Laurie.</li>
+  <li><strong>setUpdatedMin, setUpdatedMax</strong> - the bounds on entry update dates.</li> 
+  <li><strong>setPublishedMin, setPublishedMax</strong> - the bounds on entry publication dates.</li> 
+  <li><strong>setStartIndex</strong> - 1-based index of the first result to be retrieved (for paging).</li>
+</ul>
+<p>Please see the <a href="/apis/blogger/reference.html#Query_Params">Blogger Data API Reference Guide</a> and the <a href="/apis/gdata/reference.html#Queries">Google Data APIs Reference Guide</a> for more information about query parameters.</p>
+
+<h1><a name="UpdatingPosts" id="UpdatingPosts">Updating posts</a></h1>
+<p>To update an existing blog post you first modify the entry you want to update and then send it to the Blogger service using the <code>update</code> method.  The following code snippet modifies the tile of a blog entry:</p>
+<pre>
+  public static Entry updatePostTitle(GoogleService myService,
+      Entry entryToUpdate, String newTitle) throws ServiceException,
+      IOException {
+    entryToUpdate.setTitle(new PlainTextConstruct(newTitle));
+    URL editUrl = new URL(entryToUpdate.getEditLink().getHref());
+    return myService.update(editUrl, entryToUpdate);
+  }
+</pre>
+
+<h1><a name="DeletingPosts" id="DeletingPosts">Deleting posts</a></h1>
+<p>Posts can be deleted by passing the post's edit URL to the <code>delete</code> method on your <code>GoogleService</code> object like this:</p>
+<pre>
+  public static void deletePost(GoogleService myService, Entry entryToDelete)
+      throws ServiceException, IOException {
+    URL deleteUrl = new URL(entryToDelete.getEditLink().getHref());
+    myService.delete(deleteUrl);
+  }
+</pre>
+
+<h1><a name="Comments" id="Comments">Comments</a></h1>
+<p> The Blogger data API allows for creating, retrieving, and deleting comments. Updating comments is not supported (nor is it available in the web interface).
+.</p>
+
+<h2><a name="CreatingComments">Creating comments</a></h2>
+<p>To post a comment, create an <code>Entry</code> object and insert it as follows:</p>
+<pre>
+  public static Entry createComment(GoogleService myService, String blogID,
+      String postId, String commentText) throws ServiceException, IOException {
+    // Create a new entry for the comment and submit it to the GoogleService
+    Entry myEntry = new Entry();
+    myEntry.setContent(new PlainTextConstruct(commentText));
+
+    // Build the comment feed URI
+    String commentsFeedUri = "http://www.blogger.com/feeds/" + blogID + "/" + postId + "/comments/default";
+    URL feedUrl = new URL(commentsFeedUri);
+
+    return myService.insert(feedUrl, myEntry);
+  }
+</pre>
+<p class="note"><strong>Note:</strong> Currently, you can only post comments to a blog owned by the authenticated user.</p>
+
+<h2><a name="RetrievingComments">Retrieving comments</a></h2>
+<p>You can retrieve the comments for a particular post from the post comments feed URL:</p>
+<pre>
+  public static void printAllComments(GoogleService myService, String blogID, 
+      String postId) throws ServiceException, IOException {
+    // Build comment feed URI and request comments on the specified post
+    String commentsFeedUri = "http://www.blogger.com/feeds/" + blogID + "/" + postId + "/comments/default";
+    URL feedUrl = new URL(commentsFeedUri);
+    Feed resultFeed = myService.getFeed(feedUrl, Feed.class);
+
+    // Display the results
+    System.out.println(resultFeed.getTitle().getPlainText());
+    for (int i = 0; i < resultFeed.getEntries().size(); i++) {
+      Entry entry = resultFeed.getEntries().get(i);
+      System.out.println("\t" + entry.getTitle().getPlainText());
+      System.out.println("\t" + entry.getUpdated().toStringRfc822());
+    }
+    System.out.println();
+  }
+</pre>
+<p>Or you can get the comments from all posts by using the blog comments feed URL:</p>
+<pre>
+http://www.blogger.com/feeds/<i>blogID</i>/comments/default
+</pre>
+
+<h2><a name="DeletingComments">Deleting comments</a></h2>
+<p>Comments can be deleted by passing the comment's edit URL to the <code>delete</code> method on your <code>GoogleService</code> object like this:</p>
+<pre>
+  public static void deleteComment(GoogleService myService, Entry entryToDelete)
+      throws ServiceException, IOException {
+    URL deleteUrl = new URL(entryToDelete.getEditLink().getHref());
+    myService.delete(deleteUrl);
+  }
+</pre>
+
+</div>
+<!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt=""/>
+  </div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2006 - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+  <script type="text/javascript">
+    <!--
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+    //-->
+  </script>
+</p>
+</body>
+</html>

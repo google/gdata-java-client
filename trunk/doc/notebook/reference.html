@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Notebook Data API Reference Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+     color: #000000;
+}
+-->
+</style>
+</head>
+<body id="reference_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Notebook Data API </h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Notebook </h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="gdata.html" id="gdata_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.google.com/googlenotebook/terms.html">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>GData Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://groups.google.com/group/Google-Labs-Notebook">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+  <h1 id="page_title">Google Notebook Data API Reference Guide </h1>
+    <p>This document provides detailed reference documentation for the Google Notebook data API.</p>
+    <h1>Contents</h1>
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#Feeds">Google Notebook feed types</a></li>
+      <li><a href="#Parameters">Google Notebook query parameters reference</a></li>
+      <li><a href="#Elements">Google Notebook elements reference</a></li>
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications that can interact with Google Notebook.</p>
+    <p>It's a reference document; it assumes that you understand the concepts presented in the <a href="gdata.html">developer's guide</a>, and  the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>.</p>
+    <h1><a name="Feeds" id="Feeds">Google Notebook feed types</a></h1>
+    <p>Google Notebook provides two different types of feeds to access public notebook data: user-based feeds and notebook-based feeds.</p>
+    <p>A user-based feed is a  &quot;metafeed&quot; listing all of the notebooks published by the specified user. Each entry corresponds to a  notebook. The URI of a user-based feed takes the following form:</p>
+    <pre>GET http://www.google.com/notebook/feeds/<i>userID</i></pre>
+    <p>A notebook-based feed contains entries that represent the notes in a given notebook, including all the metadata associated with that note (the URL of the note attribution, the time that the note was made, and so on). The URI of a notebook-based feed takes the following form:</p>
+    <pre>GET http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>   </pre>
+    <h1><a name="Parameters" id="Parameters">Google Notebook query parameters reference</a></h1>
+    <p>Google Notebook supports the following standard GData query parameters in both metafeeds and notebook-based feeds:</p>
+      <ul>
+        <li><code>updated-min</code>, <code>updated-max</code></li>
+        <li><code>alt</code></li>
+        <li><code>start-index</code></li>
+        <li><code>max-results</code></li>
+        <li><code>entryID</code></li>
+      </ul>
+    <p>In addition, notebook-based feeds support standard GData category queries, using the  syntax described in the <a href="../gdata/reference.html#Queries">GData Protocol Reference</a> document. The Google Notebook equivalent of a category is a section heading in a notebook. For example, you might use the following URL to request the notes from a notebook section titled &quot;Netherfield Park&quot;:</p>
+    <pre>http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>/-/Netherfield%20Park</pre>
+    <p>Notebook does not support entry author (<code>author</code>) queries or full-text search queries (<code>q</code>).  Although notebooks can be shared with other users, only the owner's name is associated with the published notebook, so an entry author query wouldn't make sense; all the entries in a given notebook have the same author.</p>
+    <p>For more information about the standard parameters, see the <a href="../gdata/reference.html#Queries">GData Protocol Reference</a> document.</p>
+    <p>In addition to the standard GData query parameters, the Notebook data API uses one other parameter:</p>
+    <table>
+      <tr>
+        <th>Parameter</th>
+        <th>Meaning</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td><code>orderby</code></td>
+        <td>Sort order</td>
+        <td>
+<p>This query parameter  applies only to  notebook-based feeds, not user-based feeds.</p>
+
+<p>By default, the entries in a feed are sorted with the most recently updated note first. To sort entries in the same order as the corresponding notes in the notebook, set the value of the <code>orderby</code> parameter to <code>position</code>.</p>
+</td>
+      </tr>
+    </table>
+    <h1><a name="Elements" id="Elements">Google Notebook elements reference</a></h1>
+    <p>The Google Notebook data API uses only standard GData elements.  For information about the standard GData elements, see  the Atom specification and the <a href="../gdata/elements.html">Common Elements document</a>.</p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2006 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

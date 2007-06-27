@@ -1,0 +1,633 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Data APIs (Beta) Developer's Guide - Google Data APIs Protocol Reference</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+-->
+</style>
+</head>
+<body id="reference_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Data APIs (Beta) Developer's Guide</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>GData documentation</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="index.html" id="index_link">Main</a></li>
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="basics.html" id="basics_link">Protocol Basics</a></li>
+        <li><a href="reference.html" id="reference_link">Protocol Reference</a></li>
+        <li><a href="auth.html" id="auth_link">Authentication</a></li>
+        <li><a href="elements.html" id="elements_link">Common Elements</a></li>
+        <li><a href="clientlibs.html" id="clientlibs_link">Client Libraries</a></li>
+        <li><a href="batch.html" id="batch_link">Batch Processing</a></li>
+        <li><a href="samples.html" id="samples_link">Samples</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Service-specific documents</h1>
+      <ul>
+	
+        <li><a href="http://code.google.com/apis/base/">Base Data API</a></li>
+	
+	
+        <li><a href="../blogger/overview.html" id="blogger_link">Blogger Data API</a></li>
+	
+        <li><a href="../calendar/overview.html" id="calendar_link">Calendar Data API</a></li>
+        <li><a href="../codesearch/overview.html" id="codesearch_link">Code Search Data API</a></li>
+	
+	<li><a href="http://code.google.com/apis/apps/gdata_provisioning_api_v2.0_reference.html">Google Apps Provisioning API</a></li>
+	
+	
+        <li><a href="../notebook/overview.html" id="notebook_link">Notebook Data API</a></li>
+	
+        <li><a href="../spreadsheets/overview.html" id="spreadsheets_link">Spreadsheets Data API</a></li>
+        <li><a href="../picasaweb/overview.html" id="picasaweb_link">Picasa Web Albums Data API</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Related links</h1>
+      <ul><li><a href="http://groups.google.com/group/google-help-dataapi">Discussion Group</a></li>
+        <li><a href="http://googledataapis.blogspot.com/">GData Blog</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+    <h1 id="page_title">Google Data APIs Protocol Reference</h1> 
+    <p>This document describes the protocol used by the Google data APIs (&quot;GData&quot;), including information about what a query looks like, what results look like, and so on.</p> 
+    <p>For more information about the Google data APIs, see the <a href="overview.html">Google Data APIs Overview</a> document and the <a href="basics.html">Protocol Basics</a> document.</p> 
+    <h1>Contents</h1> 
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li> 
+      <li><a href="#Protocol-details">Protocol details</a> 
+	<ol>
+          <li><a href="#Document-format">Document format</a></li> 
+          <li><a href="#Queries">Queries</a></li> 
+          <li><a href="#Optimistic-concurrency">Optimistic concurrency (versioning)</a></li> 
+          <li><a href="#Authentication">Authentication</a></li> 
+          <li><a href="#Session-state">Session state</a></li> 
+        </ol> 
+      </li> 
+      <li><a href="#Additional-resources">Additional resources</a></li> 
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1> 
+    <p>This document is intended for anyone wanting to understand the details of the XML format and protocol used by the Google data APIs.</p> 
+    <p>If you just want to write code that uses the GData client APIs, then you don't need to know these details; instead, you can use the language-specific <a href="clientlibs.html">client libraries</a>.</p> 
+    <p>But if you want to understand the protocol, read this document. For example, you may want to read this document to help you with any of the following tasks:</p> 
+    <ul>
+      <li>evaluating the GData architecture</li> 
+      <li>coding using the protocol without using the provided GData libraries</li> 
+      <li>writing a client library in a new language</li> 
+    </ul> 
+    <p>This document assumes that you understand the basics of XML, namespaces, syndicated feeds, and the <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code> requests in HTTP, as well as HTTP's concept of a &quot;resource.&quot; For more information about those things, see the <a href="#Additional-resources">Additional resources</a> section of this document.</p> 
+    <p>This document doesn't rely on any particular programming language; you can send and receive GData messages using any programming language that lets you issue HTTP requests and parse XML-based responses.</p> 
+    <h1><a name="Protocol-details" id="Protocol-details">Protocol details</a></h1> 
+    <p>This section describes the GData document format and query syntax.</p> 
+    <h2><a name="Document-format" id="Document-format">Document format</a></h2> 
+    <p>GData, Atom, and RSS 2.0 all share the same basic data model: a container that holds both some global data and any number of entries. For each protocol, the format is defined by a base schema, but it can be extended using foreign namespaces.</p> 
+    <p>GData can use either the Atom syndication format (for both reads and writes) or the RSS format (for reads only).</p> 
+    <p>Atom is GData's default format. To request a response in RSS format, use the <code>/alt=rss/</code> parameter; for more information, see <a href="#query-requests">Query requests</a>.</p> 
+    <p>When you request data in RSS format, GData supplies a feed (or other representation of the resource) in RSS format. If there's no equivalent RSS property for a given GData property, GData uses the Atom property, labeling it with an appropriate namespace to indicate that it's an extension to RSS.</p> 
+    <p class="note"><strong>Note</strong>: Most GData feeds in Atom format use the Atom namespace as the default namespace by specifying an <code>xmlns</code> attribute on the feed element; see the examples section for examples of how to do that. Thus, the examples in this document don't explicitly specify <code>atom:</code> for elements in an Atom-format feed.</p> 
+    <p>The following tables show the Atom and RSS representations of the elements of the schema. All data not mentioned in these tables is treated as plain XML and shows up the same in both representations. Unless indicated otherwise, the XML elements in a given column are in the namespace corresponding to that column. This summary uses standard XPath notation: in particular, slashes show the element hierarchy, and an @ sign indicates an attribute of an element.</p> 
+    <p>In each of the following tables, the highlighted items are required.</p> 
+    <p>The following table shows the elements of a GData feed:</p> 
+    <table>
+      <tr>
+        <th>Feed Schema Item</th> 
+        <th>Atom Representation</th> 
+        <th>RSS Representation</th> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Title</td> 
+        <td class="required"><code>/feed/title</code></td> 
+        <td class="required"><code>/rss/channel/title</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed ID</td> 
+        <td class="required"><code>/feed/id</code></td> 
+        <td class="required"><code>/rss/channel/atom:id</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed HTML Link</td> 
+        <td><code>/feed/link[@rel="alternate"]</code>\<br/> 
+          <code>[@type="text/html"]/@href</code></td> 
+        <td><code>/rss/channel/link</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Description</td> 
+        <td><code>/feed/subtitle</code></td> 
+        <td><code>/rss/channel/description</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Language</td> 
+        <td><code>/feed/@xml:lang</code></td> 
+        <td><code>/rss/channel/language</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Copyright</td> 
+        <td><code>/feed/rights</code></td> 
+        <td><code>/rss/channel/copyright</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Author</td> 
+        <td><p><code>/feed/author/name</code><br/> 
+            <code>/feed/author/email</code></p> 
+          <p>(Required in certain cases; see Atom specification.)</p></td> 
+        <td><code>/rss/channel/managingEditor</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Last Update Date</td> 
+        <td class="required"><code>/feed/updated</code><br/> 
+          (RFC 3339 format)</td> 
+        <td class="required"><code>/rss/channel/lastBuildDate</code><br/> 
+          (RFC 822 format)</td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Category</td> 
+        <td><code>/feed/category/@term</code></td> 
+        <td><code>/rss/channel/category</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Category Scheme</td> 
+        <td><code>/feed/category/@scheme</code></td> 
+        <td><code>/rss/channel/category/@domain</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Generator</td> 
+        <td><code>/feed/generator</code><br/> 
+          <code>/feed/generator/@uri</code></td> 
+        <td><code>/rss/channel/generator</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Icon</td> 
+        <td><code>/feed/icon</code></td> 
+        <td><code>/rss/channel/image/url</code> (unless there's also a logo, in which case the icon isn't included in the feed)</td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Feed Logo</td> 
+        <td><code>/feed/logo</code></td> 
+        <td><code>/rss/channel/image/url</code></td> 
+      </tr> 
+    </table> 
+    <p>The following table shows the elements of a GData search-results feed. Note that GData exposes some of the <a href="http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_response_elements">OpenSearch 1.1 Response elements</a> in its search-results feeds.</p> 
+    <table>
+      <tr>
+        <th>Search Result Feed Schema Item</th> 
+        <th>Atom Representation</th> 
+        <th>RSS/OpenSearch Representation</th> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Number of Search Results</td> 
+        <td><code>/feed/openSearch:totalResults</code></td> 
+        <td><code>/rss/channel/openSearch:totalResults</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Search Result Start Index</td> 
+        <td><code>/feed/openSearch:startIndex</code></td> 
+        <td><code>/rss/channel/openSearch:startIndex</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Number of Search Results Per Page</td> 
+        <td><code>/feed/openSearch:itemsPerPage</code></td> 
+        <td><code>/rss/channel/openSearch:itemsPerPage</code></td> 
+      </tr> 
+    </table> 
+    <p>The following table shows the elements of a GData entry:</p> 
+    <table>
+      <tr>
+        <th>Entry Schema Item</th> 
+        <th>Atom Representation</th> 
+        <th>RSS Representation</th> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry ID</td> 
+        <td class="required"><code>/feed/entry/id</code></td> 
+        <td><code>/rss/channel/item/guid</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Version ID</td> 
+        <td>Optionally embedded in EditURI (see the <a href="#Optimistic-concurrency">Optimistic concurrency</a> section of this document).</td> 
+        <td>&mdash;</td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Title</td> 
+        <td class="required"><code>/feed/entry/title</code></td> 
+        <td><code>/rss/channel/item/title</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Link</td> 
+        <td><code>/feed/entry/link</code></td> 
+        <td><code>/rss/channel/item/link</code><br/> 
+          <code>/rss/channel/item/enclosure</code><br/> 
+          <code>/rss/channel/item/comments</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Summary</td> 
+        <td><p><code>/feed/entry/summary</code></p> 
+          <p>(Required in certain cases; see Atom specification.)</p></td> 
+        <td><code>/rss/channel/item/atom:summary</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Content</td> 
+        <td><p><code>/feed/entry/content</code></p> 
+          <p>(If no content element, then entry must contain at least one <code>&lt;link rel="alternate"&gt;</code> element.)</p></td> 
+        <td><code>/rss/channel/item/description</code></td> 
+      </tr> 
+      <tr>
+        <td height="96" class="row-heading">Entry Author</td> 
+        <td><p><code>/feed/entry/author/name</code><br/> 
+            <code>/feed/entry/author/email</code></p> 
+          <p>(Required in certain cases; see Atom specification.)</p></td> 
+        <td><code>/rss/channel/item/author</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Category</td> 
+        <td><code>/feed/entry/category/@term</code></td> 
+        <td><code>/rss/channel/item/category</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Category Scheme</td> 
+        <td><code>/feed/entry/category/@scheme</code></td> 
+        <td><code>/rss/channel/item/category/@domain</code></td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Publication Date</td> 
+        <td><code>/feed/entry/published</code><br/> 
+          (RFC 3339)</td> 
+        <td><code>/rss/channel/item/pubDate</code><br/> 
+          (RFC 822)</td> 
+      </tr> 
+      <tr>
+        <td class="row-heading">Entry Update Date</td> 
+        <td class="required"><code>/feed/entry/updated</code><br/> 
+          (RFC 3339)</td> 
+        <td class="required"><code>/rss/channel/item/atom:updated</code><br/> 
+          (RFC 3339)</td> 
+      </tr> 
+    </table> 
+    <h2><a name="Queries" id="Queries">Queries</a></h2> 
+    <p>This section describes how to use the query system.</p> 
+    <h3>Query model design tenets</h3> 
+    <p>The query model is intentionally very simple. The basic tenets are:</p> 
+    <ul>
+      <li>Queries are expressed as HTTP URIs, rather than as HTTP headers or as part of the payload. One benefit of this approach is that you can link to a query.</li> 
+      <li>Predicates are scoped to a single item. Thus, there's no way to send a correlation query such as "find all emails from people who sent me at least 10 emails today."</li> 
+      <li>The set of properties that queries can predicate on is very limited; most queries are simply full text search queries.</li> 
+      <li>Result ordering is up to the implementation.</li> 
+      <li>The protocol is naturally extensible. If you want to expose additional predicates or sorting in your service, you can do so easily through the introduction of new parameters.</li> 
+    </ul> 
+    <h3><a name="query-requests" id="query-requests">Query requests</a></h3> 
+    <p>A client queries a GData service by issuing an HTTP <code>GET</code> request. The query URI consists of the resource's URI (called <em>FeedURI</em> in Atom) followed by query parameters. Most query parameters are represented as traditional <code>?name=value[&amp;...]</code> URL parameters. Category parameters are handled differently; see below.</p> 
+    <p>For example, if the FeedURI is <code>http://www.example.com/feeds/jo</code>, then you might send a query with the following URI:</p> 
+    <pre>http://www.example.com/feeds/jo?q=Darcy&amp;updated-min=2005-04-19T15:30:00
+</pre> 
+    <p>GData services support HTTP Conditional <code>GET</code>. They  set the Last-Modified response header based upon the value of the <code>&lt;atom:updated&gt;</code> element in the returned feed or entry. A client can send this value back as the value of the If-Modified-Since request header to avoid retrieving the content again if it hasn't changed. If the content hasn't changed since the If-Modified-Since time, then the GData service returns a 304 (Not Modified) HTTP response.</p>
+    <p>A GData service must support category queries and <code>alt</code> queries; support for other parameters is optional. Passing a standard parameter not understood by a given service results in a <code>403 Forbidden</code> response. Passing an unsupported nonstandard parameter results in a <code>400 Bad Request</code> response. For information on other status codes, see the <a href="#http-status-codes">HTTP status codes</a> section of this document.</p>
+    <p>The standard query parameters are summarized in the following table. All parameter values need to be URL encoded.</p> 
+    <table>
+      <tr>
+        <th>Parameter</th> 
+        <th>Meaning</th> 
+        <th>Notes</th> 
+      </tr> 
+      <tr>
+        <td><code>q</code></td> 
+        <td>Full-text query string</td> 
+        <td><ul>
+            <li>When creating a query, list search terms separated by spaces, in the form <code>q=term1 term2 term3</code>. (As with all of the query parameter values, the spaces must be URL encoded.) The GData service returns all entries that match all of the search terms (like using <code>AND</code> between terms). Like Google's web search, a GData service searches on complete words (and related words with the same stem), not substrings.</li> 
+            <li>To search for an exact phrase, enclose the phrase in quotation marks: <code>q=&quot;exact&nbsp;phrase&quot;.</code></li> 
+            <li>To exclude entries that match a given term, use the form <code>q=-term</code>.</li> 
+            <li>The search is case-insensitive.</li> 
+            <li>Example: to search for all entries that contain the exact phrase &quot;Elizabeth Bennet&quot; and the word &quot;Darcy&quot; but don't contain the word &quot;Austen&quot;, use the following query: <code>?q=&quot;Elizabeth Bennet&quot; Darcy -Austen</code></li> 
+          </ul></td> 
+      </tr> 
+      <tr>
+        <td><code>/</code><em>category</em></td> 
+        <td>Category filter</td> 
+        <td><ul>
+            <li>List each category as if it were part of the resource's URI, in the form <code>/categoryname/</code>&mdash;this is an exception to the usual <code>name=value</code> form.</li> 
+            <li>List all categories before any other query parameters.</li> 
+            <li>Precede the first category with <code>/-/</code> to make clear that it's a category. For example, if Jo's feed has a category for entries about Fritz, you could request those entries like this: <code>http://www.example.com/feeds/jo/-/Fritz</code>. This allows the implementation to distinguish category-predicated query URIs from resource URIs.</li> 
+            <li>You can query on multiple categories by listing multiple category parameters, separated by slashes. The GData service returns all entries that match all of the categories (like using <code>AND</code> between terms). For example: <code>http://www.example.com/feeds/jo/-/Fritz/Laurie</code> returns entries that match both categories.</li> 
+            <li>To do an <code>OR</code> between terms, use a pipe character (<code>|</code>), URL-encoded as <code>%7C</code>. For example: <code>http://www.example.com/feeds/jo/-/Fritz%7CLaurie</code> returns entries that match either category.</li>
+            <li>An entry matches a specified category if the entry is in a category that has a matching term or label, as defined in the Atom specification. (Roughly, the &quot;term&quot; is the internal string used by the software to identify the category, while the &quot;label&quot; is the human-readable string presented to a user in a user interface.)</li> 
+            <li>To exclude entries that match a given category, use the form <code>/-categoryname/</code>.</li> 
+            <li>To query for a category that has a scheme&mdash;such as <code>&lt;category scheme="urn:google.com" term="public"/&gt;</code>&mdash;you must place the scheme in curly braces before the category name. For example: <code>/{urn:google.com}public</code>. To match a category that has no scheme, use an empty pair of curly braces. If you don't specify curly braces, then categories in any scheme will match.</li> 
+            <li>The above features can be combined. For example: <code>/A%7C-{urn:google.com}B/-C</code> means <code>(A OR (NOT B)) AND (NOT C)</code>.</li> 
+        </ul></td> 
+      </tr> 
+      <tr>
+        <td><code>author</code></td> 
+        <td>Entry author</td> 
+        <td><ul>
+            <li>The service returns entries where the author name and/or email address match your query string.</li> 
+          </ul></td> 
+      </tr> 
+      <tr>
+        <td><code>alt</code></td> 
+        <td>Alternative representation type</td> 
+        <td><ul>
+            <li>If you don't specify an <code>alt</code> parameter, the service returns an Atom feed. This is equivalent to <code>alt=atom</code>.</li> 
+            <li><code>alt=rss</code> returns an RSS 2.0 result feed.</li> 
+          </ul></td> 
+      </tr> 
+      <tr>
+        <td><code>updated-min</code>, <code>updated-max</code></td> 
+        <td>Bounds on the entry update date</td> 
+        <td><ul>
+            <li>Use the RFC 3339 timestamp format. For example: <code>2005-08-09T10:57:00-08:00</code>.</li> 
+            <li>The lower bound is inclusive, whereas the upper bound is exclusive.</li> 
+          </ul></td> 
+      </tr>
+      <tr>
+        <td><code>published-min</code>, <code>published-max</code></td>
+        <td>Bounds on the entry publication date </td>
+        <td><ul>
+          <li>Use the RFC 3339 timestamp format. For example: <code>2005-08-09T10:57:00-08:00</code>.</li>
+          <li>The lower bound is inclusive, whereas the upper bound is exclusive.</li>
+        </ul></td>
+      </tr> 
+      <tr>
+        <td><code>start-index</code></td> 
+        <td>1-based index of the first result to be retrieved</td> 
+        <td><ul>
+            <li>Note that this isn't a general cursoring mechanism. If you first send a query with <code>?start-index=1&amp;max-results=10</code> and then send another query with <code>?start-index=11&amp;max-results=10</code>, the service cannot guarantee that the results are equivalent to <code>?start-index=1&amp;max-results=20</code>, because insertions and deletions could have taken place in between the two queries.</li> 
+          </ul></td> 
+      </tr> 
+      <tr>
+        <td><code>max-results</code></td> 
+        <td>Maximum number of results to be retrieved</td> 
+        <td>For any service that has a default <code>max-results</code> value (to limit default feed size), you can specify a very large number if you want to receive the entire feed.</td> 
+      </tr> 
+      <tr>
+        <td><em>entryID</em></td> 
+        <td>ID of a specific entry to be retrieved</td> 
+        <td><ul>
+            <li>If you specify an entry ID, you can't specify any other parameters.</li> 
+            <li>The form of the entry ID is determined by the GData service.</li> 
+            <li>Unlike most of the other query parameters, entry ID is specified as part of the URI, not as a name=value pair.</li> 
+            <li>Example: <code>http://www.example.com/feeds/jo/entry1</code>.</li> 
+          </ul></td> 
+      </tr> 
+    </table> 
+    <h3>About category queries</h3> 
+    <p>We decided to specify a slightly unusual format for category queries. Instead of a query like the following:</p> 
+    <pre>http://example.com/jo?category=Fritz&amp;category=2006</pre> 
+    <p>we use:</p> 
+    <pre>http://example.com/jo/-/Fritz/2006</pre> 
+    <p>This approach identifies a resource without using query parameters, and it produces cleaner URIs. We chose this approach for categories because we think that category queries will be the most common queries.</p> 
+    <p>The drawback to this approach is that we require you to use <code>/-/</code> in category queries, so that GData services can distinguish category queries from other resource URIs, such as <code>http://example.com/jo/MyPost/comments</code>.</p> 
+    <h3>Query responses</h3> 
+    <p>Queries return an Atom feed, an Atom entry, or an RSS feed, depending on the request parameters.</p> 
+    <p>Query results contain the following OpenSearch elements directly under the <code>&lt;feed&gt;</code> element or the <code>&lt;channel&gt;</code> element (depending on whether results are Atom or RSS):</p> 
+    <dl>
+      <dt><code>openSearch:totalResults</code></dt> 
+      <dd>The total number of search results for the query (not necessarily all present in the results feed).</dd> 
+      <dt><code>openSearch:startIndex</code></dt> 
+      <dd>The 1-based index of the first result.</dd> 
+      <dt><code>openSearch:itemsPerPage</code></dt> 
+      <dd>The maximum number of items that appear on one page. This allows clients to generate direct links to any set of subsequent pages. However, for a possible pitfall in using this number, see the note regarding <code>start-index</code> in the table in the <a href="#query-requests">Query requests</a> section.</dd> 
+    </dl> 
+    <p>The Atom response feed and entries may also include any of the following Atom and GData elements (as well as others listed in the Atom specification):</p> 
+    <dl>
+      <dt><code>&lt;link rel="http://schemas.google.com/g/2005#feed" type="application/atom+xml" href="..."/></code></dt> 
+      <dd>Specifies the URI where the complete Atom feed can be retrieved.</dd> 
+      <dt><code>&lt;link rel="http://schemas.google.com/g/2005#post" type="application/atom+xml" href="..."/></code></dt> 
+      <dd>Specifies the Atom feed's PostURI (where new entries can be posted).</dd> 
+      <dt><code>&lt;link rel="self" type="..." href="..."/></code></dt> 
+      <dd>Contains the URI of this resource. The value of the <code>type</code> attribute depends on the requested format. If no data changes in the interim, sending another GET to this URI returns the same response.</dd> 
+      <dt><code>&lt;link rel="previous" type="application/atom+xml" href="..."/></code></dt> 
+      <dd>Specifies the URI of the previous chunk of this query result set, if it is chunked.</dd> 
+      <dt><code>&lt;link rel="next" type="application/atom+xml" href="..."/></code></dt> 
+      <dd>Specifies the URI of the next chunk of this query result set, if it is chunked.</dd> 
+      <dt><code>&lt;link rel="edit" type="application/atom+xml" href="..."/></code></dt> 
+      <dd>Specifies the Atom entry's EditURI (where you send an updated entry).</dd> 
+    </dl> 
+    <p>Here's a sample response body, in response to a search query:</p> 
+    <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;
+        xmlns:openSearch=&quot;http://a9.com/-/spec/opensearchrss/1.0/&quot;&gt;
+  &lt;id&gt;http://www.example.com/feed/1234.1/posts/full&lt;/id&gt; 
+  &lt;updated&gt;2005-09-16T00:42:06Z&lt;/updated&gt; 
+  &lt;title type=&quot;text&quot;&gt;Books and Romance with Jo and Liz&lt;/title&gt; 
+  &lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot; href=&quot;http://www.example.net/&quot;/&gt; 
+  &lt;link rel=&quot;http://schemas.google.com/g/2005#feed&quot;
+    type=&quot;application/atom+xml&quot;
+    href=&quot;http://www.example.com/feed/1234.1/posts/full&quot;/&gt; 
+  &lt;link rel=&quot;http://schemas.google.com/g/2005#post&quot;
+    type=&quot;application/atom+xml&quot;
+    href=&quot;http://www.example.com/feed/1234.1/posts/full&quot;/&gt; 
+  &lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot;
+    href=&quot;http://www.example.com/feed/1234.1/posts/full&quot;/&gt; 
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+    &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+  &lt;/author&gt;
+  &lt;generator version=&quot;1.0&quot;
+    uri=&quot;http://www.example.com&quot;&gt;Example Generator Engine&lt;/generator&gt; 
+  &lt;openSearch:totalResults&gt;2&lt;/openSearch:totalResults&gt; 
+  &lt;openSearch:startIndex&gt;0&lt;/openSearch:startIndex&gt; 
+  &lt;entry&gt;
+    &lt;id&gt;http://www.example.com/feed/1234.1/posts/full/4521614025009481151&lt;/id&gt; 
+    &lt;published&gt;2005-01-09T08:00:00Z&lt;/published&gt; 
+    &lt;updated&gt;2005-01-09T08:00:00Z&lt;/updated&gt; 
+    &lt;category scheme=&quot;http://www.example.com/type&quot; term=&quot;blog.post&quot;/&gt; 
+    &lt;title type=&quot;text&quot;&gt;This is the title of entry 1009&lt;/title&gt; 
+    &lt;content type=&quot;xhtml&quot;&gt;
+      &lt;div
+        xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;This is the entry body of entry 1009&lt;/div&gt; 
+    &lt;/content&gt;
+    &lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot;
+      href=&quot;http://www.example.com/posturl&quot;/&gt; 
+    &lt;link rel=&quot;edit&quot; type=&quot;application/atom+xml&quot;
+      href=&quot;http://www.example.com/feed/1234.1/posts/full/4521614025009481151&quot;/&gt; 
+    &lt;author&gt;
+      &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+      &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+    &lt;/author&gt;
+  &lt;/entry&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://www.example.com/feed/1234.1/posts/full/3067545004648931569&lt;/id&gt; 
+    &lt;published&gt;2005-01-07T08:00:00Z&lt;/published&gt; 
+    &lt;updated&gt;2005-01-07T08:02:00Z&lt;/updated&gt; 
+    &lt;category scheme=&quot;http://www.example.com/type&quot; term=&quot;blog.post&quot;/&gt; 
+    &lt;title type=&quot;text&quot;&gt;This is the title of entry 1007&lt;/title&gt; 
+    &lt;content type=&quot;xhtml&quot;&gt;
+      &lt;div
+        xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;This is the entry body of entry 1007&lt;/div&gt; 
+    &lt;/content&gt;
+    &lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot;
+      href=&quot;http://www.example.com/posturl&quot;/&gt; 
+    &lt;link rel=&quot;edit&quot; type=&quot;application/atom+xml&quot;
+      href=&quot;http://www.example.com/feed/1234.1/posts/full/3067545004648931569&quot;/&gt; 
+    &lt;author&gt;
+      &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+      &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+    &lt;/author&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;</pre> 
+    <p>If the requested feed is in the Atom format, if no query parameters are specified, and if the result doesn't contain all the entries, the following element is inserted into the top-level feed: <code>&lt;link rel="next" type="application/atom+xml" href="..."/></code>. It points to a feed containing the next set of entries. Subsequent sets contain a corresponding <code>&lt;link rel="previous" type="application/atom+xml" href="..."/></code> element. By following all the <em>next</em> links, a client can retrieve all entries from a feed.</p> 
+    <h3><a name="http-status-codes" id="http-status-codes">HTTP status codes</a></h3> 
+    <p>The following table describes what various HTTP status codes mean in the context of GData.</p> 
+    <table>
+      <tr>
+        <th>Code</th> 
+        <th>Explanation</th> 
+      </tr> 
+      <tr>
+        <td>200 OK</td> 
+        <td>No error.</td> 
+      </tr> 
+      <tr>
+        <td>201 CREATED</td> 
+        <td>Creation of a resource was successful.</td> 
+      </tr>
+      <tr>
+        <td>304 NOT MODIFIED</td>
+        <td>The resource hasn't changed since the time specified in the request's If-Modified-Since header.</td>
+      </tr> 
+      <tr>
+        <td>400 BAD REQUEST</td> 
+        <td>Invalid request URI or header, or unsupported nonstandard parameter.</td> 
+      </tr> 
+      <tr>
+        <td>401 UNAUTHORIZED</td> 
+        <td>Authorization required.</td> 
+      </tr> 
+      <tr>
+        <td>403 FORBIDDEN</td> 
+        <td>Unsupported standard parameter, or authentication or authorization failed.</td> 
+      </tr> 
+      <tr>
+        <td>404 NOT FOUND</td> 
+        <td>Resource (such as a feed or entry) not found.</td> 
+      </tr> 
+      <tr>
+        <td>409 CONFLICT</td> 
+        <td>Specified version number doesn't match resource's latest version number.</td> 
+      </tr> 
+      <tr>
+        <td>500 INTERNAL SERVER ERROR</td> 
+        <td>Internal error. This is the default code that is used for all unrecognized errors.</td> 
+      </tr> 
+    </table> 
+    <h2><a name="Optimistic-concurrency" id="Optimistic-concurrency">Optimistic concurrency (versioning)</a></h2> 
+    <p>Sometimes it is important to ensure that multiple clients don't inadvertently overwrite one another's changes. This is most easily accomplished by ensuring that the current version of an entry that a client is modifying is the same as the version that the client is basing its modifications on. If a second client makes an update before the first client does, then the first client's update is denied, because the first client is no longer basing its modifications on the latest version.</p> 
+    <p>In GData feeds that support versioning, we achieve these semantics by appending a version ID to each entry's EditURI. Note that only the EditURI is affected, not the entry ID. In this scheme, each update changes the entry's EditURI, thus guaranteeing that subsequent updates based on the original version fail. Deletes, of course, are identical to updates with respect to this feature; if you send a delete with an old version number, the delete fails.</p> 
+    <p>Not all GData feeds support optimistic concurrency. In a feed that does support it, if the server detects a version conflict  on PUT or DELETE, the server responds with <code>409 Conflict</code>. The body of the response contains the current state of the entry (an Atom entry document). The client is advised to resolve the conflict and resubmit the request, using the EditURI from the 409 response.</p> 
+    <h3>Motivation and design notes</h3> 
+    <p>This approach to optimistic concurrency allows us to implement the semantics we want without requiring new markup for version IDs, which makes GData's responses compatible with non-GData Atom endpoints.</p> 
+    <p>Instead of specifying version IDs, we could have chosen to look at the update timestamp on each entry (<code>/atom:entry/atom:updated</code>). However, there are two problems with using the update timestamp:</p> 
+    <ul>
+      <li>It only works for updates and not deletions.</li> 
+      <li>It forces applications to use date/time values as version IDs, which would make it harder to retrofit GData on top of many existing data stores.</li> 
+    </ul> 
+    <h2><a name="Authentication" id="Authentication">Authentication</a></h2> 
+    <p>When a client tries to access a service, it may need to provide the user's credentials to the service, to demonstrate that the user has the authority to perform the action in question.</p> 
+    <p>The approach that a client should use for authentication depends on the type of client:</p> 
+    <ul>
+      <li>A desktop application should use a Google-specific authentication system called <a href="http://code.google.com/apis/accounts/AuthForInstalledApps.html">Account Authentication for Installed Applications</a> (also known as &quot;ClientLogin&quot;). (Web-based clients should not use this system.)</li> 
+      <li>A web-based client, such as a third-party front end to a GData
+          service, should use a Google-specific authentication system called
+          <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">Account Authentication Proxy for Web-Based Applications</a> (also known as &quot;AuthSub&quot;).</li> 
+    </ul> 
+    <p>In the ClientLogin system, the desktop client asks the user for their credentials, and then sends those credentials to the Google authentication system.</p> 
+    <p>If authentication succeeds, then the authentication system returns a token that the client subsequently uses (in an HTTP Authorization header) when it sends GData requests.</p> 
+    <p>If authentication fails, then the server returns a 403 Forbidden status code, along with a WWW-Authenticate header containing a challenge applicable to the authentication.</p> 
+    <p>The AuthSub system works similarly, except that instead of asking the user for their credentials, it connects the user to a Google service that requests credentials. The service then returns a token that the web application can use; the advantage of this approach is that Google (rather than the web front end) securely handles and stores the user's credentials.</p> 
+    <p>For details about these authentication systems, see the <a href="auth.html">GData authentication overview</a> or the <a href="http://code.google.com/apis/accounts/Authentication.html">Google Account Authentication</a> documentation.</p> 
+    <h2><a name="Session-state" id="Session-state">Session state</a></h2> 
+    <p>Many business logic implementations require session stickiness&mdash;keeping track of the state of a user's session.</p> 
+    <p>Google tracks session state in two ways: using cookies, and using a token that can be sent as a query parameter. Both methods achieve the same effect. We recommend that clients support  one of these session-state tracking methods (either one is sufficient). If a client doesn't support either of these methods, then that client will still work with GData services, but performance may suffer  compared to clients that do support these methods. Specifically, if a client doesn't support these methods, then every request results in a redirect, and therefore every request (and any associated data) is sent to the server twice, which affects the performance of both the client and the server.</p> 
+    <p>The Google client libraries handle session state for you, so if you use our libraries, you don't have to do anything to get session state support.</p> 
+    <h1><a name="Additional-resources" id="Additional-resources"></a>Additional resources</h1> 
+    <p>You may find the following third-party documents useful:</p> 
+    <ul>
+      <li><a href="http://www.intertwingly.net/wiki/pie/Rss20AndAtom10Compared">Comparison of Atom and RSS</a> from intertwingly</li> 
+      <li><a href="http://www-128.ibm.com/developerworks/xml/library/x-atom10.html">Overview of Atom</a> from IBM</li> 
+      <li><a href="http://dublincore.org/">Dublin Core</a> extensions to RSS</li> 
+      <li>HTTP 1.1 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">method definitions</a>; specification for <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code></li> 
+      <li>HTTP 1.1 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">status code definitions</a></li> 
+      <li><a href="http://www.xml.com/lpt/a/2004/12/01/restful-web.html">How to Create a REST Protocol</a></li> 
+      <li><a href="http://www.xfront.com/REST-Web-Services.html">Building Web Services the REST Way</a></li> 
+      <li><a href="http://www.xml.com/pub/a/98/10/guide0.html">A Technical Introduction to XML</a></li> 
+      <li><a href="http://www.xml.com/pub/a/1999/01/namespaces.html">XML Namespaces by Example</a></li> 
+    </ul> 
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

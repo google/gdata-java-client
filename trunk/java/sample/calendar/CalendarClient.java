@@ -193,9 +193,6 @@ public class CalendarClient {
     myEntry.setQuickAdd(isQuickAdd);
     myEntry.setWebContent(wc);
 
-    Person author = new Person("Jo March", null, "jo@gmail.com");
-    myEntry.getAuthors().add(author);
-
     // If a recurrence was requested, add it. Otherwise, set the
     // time (the current date and time) and duration (30 minutes)
     // of the event.

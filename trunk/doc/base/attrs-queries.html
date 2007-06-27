@@ -1,0 +1,735 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<title>Google Base data API- Attributes and Queries</title>
+</head>
+<body id="attsquer_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <div id="sidenav"><!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="signup.html" id="signup_link">API Key</a></li>
+      <li><a href="terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+    </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+</form>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <div id="pagecontent">
+    <!-- ########## PAGE CONTENT ########## -->
+    <h2 id="page_title">Attributes and Queries</h2>
+    <p>This document describes how to query for data items and obtain metadata. </p>
+<h3>Contents</h3>
+    <ol class="toc">
+    <li><a href="#queries">Querying for data items </a>
+    <ol class="toc">
+        <li><a href="#fullTextQueries">Full-text queries</a>          </li>
+        <li><a href="#StructuredQueries">Structured queries</a> 
+          <ol>
+            <li><a href="#Combining">Combining structured and unstructured queries</a> </li>
+              <li><a href="#PathComponents">Standard path components</a></li>
+              <li><a href="#QueryParams">Standard query parameters</a></li>
+            </ol>
+        </li>
+        <li><a href="#fullTextQueries"></a></li>
+        <li><a href="#complexQs">Attribute queries</a></li>
+        <li><a href="#attTypes">Attribute types</a></li>
+        <li><a href="#LocDatQuer">Location and date queries </a></li>
+        <li><a href="#URLQuer">URL queries</a></li>
+        <li><a href="#sorting">Sorting query results</a></li>
+        <li><a href="#crowding">Crowding query results</a></li>
+        <li><a href="#adjusted">Interpreting adjusted query results</a>
+          <ol>
+            <li><a href="#adjustedAttValue">Adjusted attribute values</a></li>
+            <li><a href="#adjustedVertName">Adjusted item types </a></li>
+            <li><a href="#adjustedAttName">Adjusted attribute names</a>   </li>
+          </ol>
+        </li>
+        <li><a href="#sampleQueries">Sample queries</a></li>
+        <li><a href="#custDataQueries">Customer data queries</a></li>
+        </ol>
+	</li>
+    <li><a href="#getMetadata">Obtaining metadata</a>
+	    <ol class="toc">
+        <li><a href="#itemTypes">Item types metadata</a></li>
+        <li><a href="#attrFeed">Attribute value data</a></li>
+        <li><a href="#Reporting">Access statistics </a></li>
+    </ol>
+	</li>
+	</ol>
+    <h1><a name="queries" id="queries"></a>Querying for data items </h1>
+    <p>You can query on:</p>
+    <ul>
+      <li>text, by specifying a term or a phrase</li>
+      <li>the type of an item</li>
+      <li>attributes of an item, by constraining the value of an attribute </li>
+    </ul>
+    <p>When you search for Google Base data, your query goes against a data item
+      feed. There are two data item feeds: the public snippets feed and the
+      customer-specific items feed. </p>
+    <ul>
+      <li> <code> http://www.google.com/base/feeds/snippets</code>:  The snippets feed contains all Google Base
+        data and is available to anyone to query against without a need for authentication.
+        This feed is read-only. The snippets feed provides access to all content in Google
+        Base, but may return items with a shortened description, and missing
+        private attributes.</li>
+      <li> <code> http://www.google.com/base/feeds/items</code>: The items feed contains a customer-specific subset
+        of Google Base data. Only the customer can access this feed to insert,
+        update,  delete and query his own data. The items feed requires authentication. </li>
+    </ul>
+    <p>Queries are constructed the same way against both types of feeds. The
+      response is also the same: a feed containing the data items that match the
+      search criteria. </p>
+    <p><strong>Note: </strong>Queries executed on the  snippets and items feeds
+      in the Google Base data API may return anywhere from 0 to all matching
+      results. There is no guarantee that a query will return all of the matching
+      results in Google Base. </p>
+    <p>Google Base queries use a combination of a full-text search query,
+      plus one or more specific attribute queries restricting, for instance,
+      the price of an item, or the text of an attribute such as title, to narrow
+      down the search. You query a Google data API feed by issuing an HTTP
+      GET request. The query URI consists of the resource's URI (called <em>FeedURI</em> in
+      Atom) followed by query parameters. Google Base queries use REST-style
+    URLs with one or more parameters, all of which must be URL encoded. </p>
+    <p>The response is a feed that contains a list of items that match the query
+      string. Each item has a unique URL (provided in the <code>&lt;id&gt;</code> tag.)
+      When you want to update or delete a particular item, you can retrieve
+      just that item by using its URL.</p>
+    <p>This chapter contains several example queries. As a reminder, if you send a query as part of an HTTP request, any non-alphanumeric characters must be URL-encoded. To make the examples easier to read, we have omitted the URL encoding in the text. </p>
+    <p>The example queries in this chapter are hyperlinked so that you can execute them in a browser. If you are using Mozilla Firefox, the title and content of each result will display in the browser window. To see the entire XML result, right-click in the browser window and select <b>View Page Source</b>. If you are using Internet Explorer, you will first have to save the result as an XML file, which you can then open in the browser.</p>
+    <p>Google Base supports both full-text and structured queries. </p>
+    <h2><a name="fullTextQueries" id="fullTextQueries"></a> Full-text queries</h2>
+    <p>Full-text queries are executed using the <code>q</code> parameter in query URIs,
+    as follows:</p>
+    <pre>q=text query</pre>
+    <p>For instance, the following query would yield data items which both contain
+      the terms &quot;'mp3&quot;' and &quot;player&quot; in an arbitrary, non consecutive order. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=mp3+player">mp3 player</a></pre>
+    <p>If we want to restrict our attention only to items that contain the term
+      &quot;mp3&quot; immediately followed by &quot;player&quot;, we would have to use a phrase
+      query instead: </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=%22mp3+player%22">&quot;mp3 player&quot;</a></pre>
+    <p>If we are interested in items that contain either the phrase 
+      &quot;mp3 player&quot; or the term &quot;ipod&quot;, then we would have to compose
+      the query above using the OR operator | with term &quot;ipod&quot;. 
+      
+      &nbsp;&nbsp;</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=%22mp3+player%22%7Cipod">&quot;mp3 player&quot; | ipod</a></pre>
+    <p>If we do not want the term &quot;accessory&quot; to appear in items that
+      match this query, we can express this using the - operator: 
+      
+      &nbsp;</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=(%22mp3+player%22%7Cipod)+-accessory">(&quot;mp3 player&quot; | ipod) -accessory</a></pre>
+    <p>Since | has a lower precedence than the implicit AND operation, we have
+      to enclose the previous query in parenthesis when composing it with <code>-accessory</code>. </p>
+    <p>Full-text queries are automatically spell-checked. If the spell checker identifies a potential spelling error, the query response will return a link to a suggested corrected query. For example, executing the query:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=flwers">q=flwers</a></pre>
+    <p>returns the following spell correction link: </p>
+    <pre>&lt;link rel='http://schemas.google.com/g/2006#spellcorrection' type='application/atom+xml' href='http://code.google.com/base/feeds/base/feeds/snippets?q=flower&amp;amp;start-index=1&amp;amp;max-results=25&amp;amp;oi=spell&amp;amp;spell=1'&gt; &lt;/link&gt;</pre>
+    <p>Refer to the <a href="http://code.google.com/apis/gdata/reference.html#query-requests">GData documentation</a> for more information about executing full-text queries. </p>
+    <h2><a name="StructuredQueries" id="StructuredQueries"></a>Structured queries </h2>
+    <p>Structured queries are provided using the <code>bq</code> parameter in query URIs,
+      as follows:</p>
+    <pre>bq=text query  [attribute name: attribute value]  [attribute name: attribute value]......</pre>
+    <p><em>Note: </em>This syntax uses square brackets to indicate attribute
+      name-value pairings. That is, when constructing queries, square brackets
+      do not mean that something is optional. </p>
+    <h3><a name="Combining" id="Combining"></a>Combining structured and unstructured queries </h3>
+    <p>You can combine the <code>q</code> and <code>bq</code> parameters in a single query, using <code>bq</code> to express any structured components, and <code>q</code> to express the rest. This lets you maximize your benefit from spell correction.</p>
+    <p>For example, the following query is valid:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=digital+camera&amp;bq=[brand%3Acanon]">snippets?q=digital+camera&amp;bq=[brand:canon]</a></pre>
+    <h3><a name="PathComponents" id="PathComponents"></a>Standard path components </h3>
+    <p>The <em><code>itemtype</code></em> path component may be used in the items, snippets and attributes feeds to search for entries that correspond
+      to a specific category, based on the item type. <br />
+                <br />
+      The syntax is <code> http://www.google.com/base/feeds/snippets/-/<em>itemtype</em> </code>.<br />
+      <br />
+      You can query on multiple categories by listing multiple
+      category parameters, separated by slashes. <br />
+                <br />
+      To query on a union of categories (<code>OR </code>queries), use a pipe
+      character ( <code> | </code> ), URL-encoded as <code> %7C</code>.
+      For example: <code> http://www.google.com/base/feeds/snippets/-/products%7Cservices </code> returns
+      entries that match either the products category or the services category.</p>
+    <p>Since every item
+      belongs to exactly one item type, queries on an intersection of categories (<code>AND</code> queries) will not yield
+      any results.<br />
+                <br />
+      To exclude entries that match a given category, use the form <code> /-categoryname/ </code> </p>
+    <h3><a name="QueryParams" id="QueryParams"></a>Standard query parameters </h3>
+    <p>The following URL parameters are supported for Google Base queries on all feeds. Refer to the reference chapters for the individual feeds for additional feed-specific parameters. </p>
+    <p>The list of parameters is separated from the URL by the <code>?</code> character. The <code>&amp;</code> character is used to separate each subsequent parameter in the list.</p>
+    <table>
+      <tbody>
+        <tr>
+          <th width="99">Parameter</th>
+          <th width="86">Meaning</th>
+          <th width="549">Notes</th>
+        </tr>
+        <tr>
+          <td><code>alt</code>
+              <p></p></td>
+          <td>requests results in an alternative format </td>
+          <td>If you don't specify an <code> alt </code> parameter, the
+            service returns an Atom feed. The other alternative is <code> alt=rss</code>,
+            which returns a feed in RSS 2.0 format.
+            <p></p></td>
+        </tr>
+        <tr>
+          <td><code> max-results </code></td>
+          <td> maximum number of entries to return per page</td>
+          <td>The default is 25 entries. The maximum value is 250.</td>
+        </tr>
+        <tr>
+          <td><code>start-index</code></td>
+          <td> where to start retrieving the search results. </td>
+          <td>This is a 1-based index of the first result to be retrieved. <code>start-index</code> must
+            be greater than or equal to 1 and less than 1000. <br />
+                      <br />
+            Note that this isn't a general cursoring mechanism. <br />
+            <br />
+            If you first send a query with <code> ?start-index=1&amp;max-results=10</code> and
+            then send another query with <code> ?start-index=11&amp;max-results=10</code>,
+            the service cannot guarantee &nbsp;that the last 10 results
+            are equivalent to <code> ?start-index=1&amp;max-results=20</code>,
+            because insertions and deletions could have taken place in
+            between.
+            <p></p>
+            <p></p></td>
+        </tr>
+		<tr>
+          <td><code>key</code></td>
+          <td>API key </td>
+          <td>Every request you send must be authenticated using an API key. Refer to the <a href="starting-out.html#authDev">Getting Started chapter</a> for more information. </td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h2><a name="complexQs" id="complexQs"></a>Attribute queries</h2>
+    <p> You can combine a text search with a search on one or more attributes
+      to constrain your search to a smaller set of matching data items.</p>
+    <p> Imagine we are interested in finding items related to digital music
+      players. The previous query is very likely to return items that are not
+      product offers, but, for instance, product reviews. In order to constrain
+      the search to products only, we have to express that the type of our
+      items should be products. Each data item in Google Base has an <code>item
+        type</code> text attribute, so we just have to state that the value of
+      this attribute should match the term <code>products</code>. Such an attribute
+      query is expressed using the syntax <code> [&lt;attribute name&gt;: &lt;attribute
+        value&gt;]</code>. Thus, we can refine the previous query:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Aproducts%5D(ipod%7C%22mp3+player%22)">[item type: products] (ipod | &quot;mp3 player&quot;)</a></pre>
+    <p> Let's imagine we want to spend at most $150 on a digital music player
+      or equipment. In Google Base, the numeric attribute <code>price</code> refers
+      to the price of a product. For numeric attributes, we can use the operators <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>,
+      and <code>==</code> to specify constraints on their values, so a constraint
+      on the attribute <code>price</code> looks like this: <code> [price &lt;= 150.0]</code>.</p>
+    <p> Numbers can be associated with units. The given query does not specify
+      a unit, so all prices below 150.0 match, no matter what currency is used.
+      We can add the unit <code>USD</code> to make sure that we only get offers
+      in U.S. dollars. We append this price restrict to the previous query
+      and get:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Aproducts%5D(ipod%7C%22mp3+player%22)%5Bprice%3C%3D150.0+USD%5D">[item type:products] (ipod | &quot;mp3 player&quot;)  [price &lt;= 150.0 USD]</a></pre>
+    <p> If we are not interested in  products below $50, we could match
+      the value of the price attribute against the number range 50.0..200.0
+      with the query: <code> [price: 50.0..150.0 USD]</code> </p>
+    <h2> <a name="attTypes" id="attTypes"></a>Attribute Types </h2>
+    <p>Google Base supports attributes of various types. The following attribute types are supported in Google Base: </p>
+    <table>
+      <tbody>
+        <tr>
+          <th width="70"><strong>Type (Atom Feed) </strong></th>
+          <th width="70">Type (Queries) </th>
+          <th width="431"><strong>Description</strong></th>
+          <th width="437"><strong>Examples</strong></th>
+        </tr>
+        <tr>
+          <td>text</td>
+          <td>text</td>
+          <td>Any string or text value </td>
+          <td>Blue</td>
+        </tr>
+        <tr>
+          <td>int</td>
+          <td>int</td>
+          <td>Integer</td>
+          <td>1000</td>
+        </tr>
+        <tr>
+          <td>float</td>
+          <td>float</td>
+          <td>Floating-point numbers </td>
+          <td>3.5</td>
+        </tr>
+        <tr>
+          <td>number</td>
+          <td>number</td>
+          <td>Either an int or a float </td>
+          <td>1000<br />
+            or<br />
+            3.5 </td>
+        </tr>
+        <tr>
+          <td>intUnit</td>
+          <td>int * </td>
+          <td>Integer with a unit consisting of at least one term </td>
+          <td>10 km</td>
+        </tr>
+        <tr>
+          <td>floatUnit</td>
+          <td>float * </td>
+          <td>Floating-point number with a unit consisting of at least
+            one term </td>
+          <td>1.5 km</td>
+        </tr>
+        <tr>
+          <td>numberUnit</td>
+          <td>number * </td>
+          <td>A number (either int or float) with a unit consisting of
+            at least one term</td>
+          <td>10 km <br />
+            or<br />
+            1.5 km </td>
+        </tr>
+        <tr>
+          <td>boolean</td>
+          <td>bool</td>
+          <td>Value may be either true or false</td>
+          <td>true</td>
+        </tr>
+        <tr>
+          <td>date</td>
+          <td>date</td>
+          <td>A date in the form YYYY-MM-DD</td>
+          <td>2005-12-12 (see note below on date formats) </td>
+        </tr>
+        <tr>
+          <td>dateTime</td>
+          <td>date</td>
+          <td>Date and time in the format YYYY-MM-DDThh:mm:ss</td>
+          <td>2005-12-12T12:00:00 <br />
+              <br />
+            Dates are specified in the international format defined by
+            ISO 8601. The standard defines several alternatives, but only
+            the following format is supported: <code> yyyy-mm-ddThh:mm:ssZ </code> (the <code> Z</code> is
+            optional). Only times in UTC are supported. </td>
+        </tr>
+        <tr>
+          <td>dateTimeRange</td>
+          <td>daterange</td>
+          <td>Range of dateTime values. In queries date ranges have
+            the syntax <br />
+            YYYY-MM-DDThh:mm:ss..YYYY-MM-DDThh:mm:ss<br />
+            In the Atom entries, a date range simply consists of two
+            consecutive date time values denoting the start and end
+            date/time. </td>
+          <td>2005-12-12..2005-12-19 (see previous note on date formats) <br />          </td>
+        </tr>
+        <tr>
+          <td>location</td>
+          <td>location</td>
+          <td>Location</td>
+          <td>a full address such as <em>1600 Amphitheatre Parkway, Mountain View, CA, 94043, USA</em>, 
+            or a partial address such as <em>Mountain View, CA, 94043</em><br />
+            Note that you must enter a valid address which can be geocoded
+            by Google.<br />
+            In the query language, location strings are prefixed with
+            an @ character; i.e. the above address would be written
+            as: <code> @&quot;1600 Amphitheatre Parkway, Mountain View, CA</code>. </td>
+        </tr>
+        <tr>
+          <td>url</td>
+          <td>url</td>
+          <td> URL </td>
+          <td>http://www.google.com</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>In the previous examples, we did not specify the type of an attribute
+      explicitly. In such cases, the type gets derived from the attribute operator
+      and value pattern. It is possible to denote attribute types explicitly
+    in parenthesis after the attribute name, as in <code> [item type(text):products]</code>.</p>
+    <p> Numeric types can be parameterized with a unit, which just gets  appended
+      to the type as in the following price query</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Aproducts%5D(ipod%7c%22mp3+player%22)%5Bprice(float%20USD)%3C%3d150.0+USD%5D">[price(float USD) &lt;= 150.0 USD]</a></pre>
+    <p> In this case, the second USD is optional and can be omitted.</p>
+    <p> To express that a certain attribute is present in a data item without
+      constraining its value, it is possible to omit the operator and value
+      pattern in an attribute query. For instance: <code> [listing type]</code> matches
+      items that define an attribute &quot;listing type&quot; of an arbitrary
+      type and value. The query <code> [bedrooms(int)]</code> matches only those
+      items that define an attribute <code>bedrooms</code> of type <code>int</code> with
+      an arbitrary value.</p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h2> Location and date queries <a name="LocDatQuer" id="LocDatQuer"></a></h2>
+    <p> The following query matches all data items that have a <code>location</code> attribute
+      of type <code>location</code> whose value refers to an address that is
+      at most 3 miles away from the address &quot;10 Market St, San Francisco, CA, USA&quot;:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=[item%20type:products]%5Blocation%3A%40%2210%20Market%20St%2C%20San%20Francisco%2C%20CA%2C%20USA%22%20%2B%203mi%5D">[location: @&quot;10 Market St, San Francisco, CA, USA&quot; + 3mi]</a></pre>
+    <p> <code>@&quot;...&quot;</code> is a location literal that gets geocoded
+      by the API server into a latitude/longitude. The radius specified by
+      suffix <code>+ 3mi</code> defines the area in which locations are expected
+      to lie. If the latitude/longitude was specified when an item was added to Google Base, you can specify
+      it directly as in this query:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem%20type:products%5D%20%5blocation:%40%22+37.795-122.395%22%2b3mi%5d">[location: @+37.795-122.395 + 3mi]</a></pre>
+    <p> The following query shows how to constrain the value of a daterange
+      attribute <code>publish date</code>. This query matches all data items that have a <code>publish date</code> attribute
+      of type <code>daterange</code> whose start and end dates are both on May
+      3, 2007. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Aproducts%5D(ipod|%22mp3+player%22)%5Bpublish+date%3A2007-05-03Z%5D">[publish date: 2007-05-03Z]</a></pre>
+    <p>The following query shows how to constrain the value of a daterange
+      attribute <code>event date</code>. This query matches all data items that have a <code>publish date</code> attribute
+      of type <code>daterange</code> whose start and end dates are both on May
+    3, 2007. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Aevents%5D%5Bevent+date+range%3A2007-05-20..2007-05-25%5D">[event date range:2007-05-20..2007-05-25]</a></pre>
+    <p>Dates have the form <code>YYYY-MM-DD</code>, where <code>YYYY</code> is
+      the year, <code>MM</code> the month, and <code>DD</code> the day. A date can be followed by a <code>Z</code> to express that all dates/times
+    are based on the UTC timezone, as defined by ISO 8601. </p>
+    <p>You can specify
+      prefixes of a date to denote larger dateranges, such as &quot;2005-02&quot; to refer
+      to the whole month of February 2005. The following attribute
+      query matches <code>publish date</code> attributes with a value in the
+      year 2007:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Aproducts%5D(ipod%7C%22mp3+player%22)%5Bpublish+date%3A2007Z%5D">[publish date: 2007Z]</a></pre>
+    <p> It is also possible to use the operators <code>&lt;</code>, <code>&lt;=</code>,
+      etc in combination with <code>daterange</code> attributes. Queries of
+      the form <code> [&lt;<em>daterange</em> attrib&gt; &lt;&lt; &lt;<em>daterange</em>&gt;]</code> are
+      allowed; they match if the right-hand side <em><code>daterange</code></em> value
+      is fully contained in the <em><code>daterange</code></em> value of the
+      given attribute.</p>
+    <h2> <a name="URLQuer" id="URLQuer"></a>URL Queries </h2>
+    <p> One of the supported attribute types is <code>url</code>. Google Base
+      does not index the protocol of a URL, so a prefix like <code>http://</code> has
+      to be omitted when querying for an attribute of type <code>url</code>.
+      Here are two examples:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Arecipes%5D(chicken)%5Blink%3Acooking.com%5D">[link: cooking.com]</a>         
+<a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Arecipes%5D(chicken)%5Blink%3A%22cooking+com%22%5D">[link: &quot;cooking com&quot;]</a></pre>
+    <p> Either of these will find all items which have a <code>link</code> attribute
+      (standard Atom element) to pages on &quot;cooking.com&quot;. You can also include
+      additional path components like this:</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem+type%3Arecipes%5D(chicken)%5Blink%3Awww.cooking.com/recipes%5D">[link: www.cooking.com/recipes]</a></pre>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h2><a name="sorting" id="sorting"></a>Sorting query results </h2>
+    <p>By default, query results are sorted in order of relevancy; the most relevant responses being returned first.</p>
+    <p>You can change the sorting criteria by  querying the items or snippets feed and assigning a value to the <code>orderby</code> parameter. You can sort by relevancy, modification time, a specified attribute, or define advanced sorting criteria using the <a href="ranking-lang-spec.html">Expression Language</a>. Refer to the <a href="items-feed.html">Customer Items Feed Reference</a> and <a href="snippets-feed.html">Snippets Feed Reference</a> for more information. </p>
+    <p>You can reverse the sort order by querying the items or snippets feed and setting the <code>sortorder</code> parameter to <code>ascending</code>. </p>
+    <p>The following query searches for sailboats, and sorts query  orders results by price in US dollars.  Lowest priced items are displayed first.</p>      
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=sailboats&amp;orderby=price(float%20USD)&amp;sortorder=ascending">snippets?q=sailboats&amp;orderby=price(float USD)&amp;sortorder=ascending</a></pre>
+    <p>The following query searches for software engineering jobs and orders by salary. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=software+engineer&amp;bq=%5Bitem+type%3Ajobs%5D&amp;orderby=salary(int)">snippets?q=software+engineer&amp;bq=[item+type:jobs]&amp;orderby=salary(int)</a></pre>
+    <p>The following query searches for vehicle listings, and orders results by those that are geographically closest to the town of Cupertino, California. Note that this example, like all queries, must be properly URL-encoded. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?q=sale&bq=%5bitem+type%3avehicles%5d+%5Blocation%28location%29%5D&orderby=%5Bx%3Dlocation%28location%29%3Aneg%28min%28dist%28x%2C%40%22Cupertino%2C+CA%22%29%29%29%5D">snippets?q=sale&amp;bq=[item type:vehicles][location(location)]
+	&amp;orderby=[x=location(location):neg(min(dist(x,@'Cupertino,CA')))]</a></pre>
+    <h2><a name="crowding" id="crowding"></a>Crowding query results</h2>
+    <p>By crowding query results, you can limit repetitive results by placing a cap on similar items. To do this, you use the crowding parameter. </p>
+    <p>In its most basic form, crowding imposes a filter on attribute values. You choose an attribute for which you want to limit results; for example, the <code>location</code> attribute or the <code>title</code> attribute. You also choose the maximum number of items that you want to see for each attribute value. For example, you might only want to see a maximum of two items with the same value for the location attribute. This would result in two items with a location of New York, two with a location of Boston, and so on for every unique value of the <code>location</code> attribute. </p>
+    <p>In addition to attributes, crowding also works on the <code>url</code>, <code>customerid</code>, and <code>content</code>.</p>
+    <p>The crowding parameter is called <code>crowdby</code>. <code>crowdby</code> is supported on the items feed and on the snippets feed.</p>
+    <p><code>crowdby=<em>crowding</em>:<em>maxvalue</em>,<em>crowding</em>:<em>maxvalue</em></code></p>
+    <p><em><code>crowding</code></em>: is the crowding criteria. You can use any of the following criteria:</p>
+    <blockquote>
+      <p><em><code>attribute</code></em> filters results based on the specified attribute.</p>
+      <p><code>url</code> filters results based on the URL. There is a cap on the number of items with the same URL.</p>
+      <p><code> customerid</code> filters results based on the customer ID. Multiple items that have the same associated customer ID are excluded.</p>
+      <p><code> content</code> filters results based on the content of the <code>title</code> and <code>description</code> attributes  in the item. Duplicate items, as determined by the content of these attributes, are excluded. </p>
+      <p>[<em><code>crowding expression</code></em>] uses an expression for crowding.</p>
+    </blockquote>
+    <p><em><code>maxvalue</code></em> is an integer number greater than or equal to 1. If you do not specify a value for <code>maxvalue</code>, 1 is used by default. </p>
+    <p>Crowding expressions must evaluate to type text or one of the numerical types, including int, float or number. </p>
+    <p>Upon query execution, only the specified number of results are returned for each unique value. The rest of the items that match the query are dropped. </p>
+    <p><strong>Note:</strong> When you use crowding, the total number of matching items is incorrect.  It reflects the number of results that would have been available had crowding not been imposed. </p>
+    <p>You can combine more than one crowding expression. For example, you might want to see a list of restaurants by location. You could use crowding to ensure a diverse mix of cuisine (Italian food, hamburgers, Thai food) located in several different cities. Multiple crowding expressions have an &quot;and&quot; relationship. If an item would exceed any of the crowding restrictions, it is eliminated from the query results. Each query may contain a maximum of two crowding expressions. </p>
+    <p>The following example shows crowding by <code>content</code>. It specifies that you only want to see two items for each cuisine type. It shows each type a maximum of 2 times. You might use this to locate restaurants. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets/-/recipes?bq=[course(text):dessert]&crowdby=cuisine(text):2">crowdby=cuisine(text):2</a></pre>
+    <p>The following example shows crowding by <code>content</code>. It searches for cars, and crowds by color. It shows each color car a maximum of two times.</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets/-/vehicles?crowdby=color(text):2">snippets/-/vehicles?crowdby=color(text):2 </a></pre>
+    <p>The following example shows crowding by <code>customerid</code>. It only shows two items per customer. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets/-/housing?bq=%5Blocation%3A%40%22100%20Wall%20St%2C%20New%20York%2C%20NY%2C%20USA%22%20%2B%203mi%5D&crowdby=customerid:2">snippets/-/housing?bq=[location:@&quot;100 Wall Street St, New York, NY, USA&quot; + 3mi]&amp;crowdby=customerid:2</a></pre>
+    <p>The following example shows crowding by <code>url</code>. It searches for recipes, and shows only 2 recipes originating from each URL. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets/-/recipes?crowdby=url:2">http://www.google.com/base/feeds/snippets/-/recipes?crowdby=url:2</a></pre>
+    <p>The following example combines two crowding expressions: <code>url</code> and <code>customerid</code>. Since there is no value specified for the maximum number of results, 1 is used by default. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets/-/recipes?crowdby=url,customerid">http://www.google.com/base/feeds/snippets/-/recipes?crowdby=url,customerid</a> </pre>
+    <p>The following example uses the <code>join</code> operator to concatenate the <code>cuisine</code> and <code>main ingredient</code> fields of a recipe. It then crowds based on this joined value. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets/-/recipes?crowdby=%5bx%3dcuisine(text)%2cy%3dmain%20ingredient(text)%3ajoin(x)%2b%22%2c%22%2bjoin(y)%5d%3a2">http://www.google.com/base/feeds/snippets/-/recipes?crowdby=[x=cuisine(text),y=main+ingredient(text):join(x)+&quot;,&quot;+join(y)]:2</a></pre>
+    <p>The following URL-encoded example  searches for items with <code>digital</code> and <code>camera</code> that have a <code>price</code> attribute of type <code>float</code> and unit <code>USD</code>. For each result: </p>
+    <ul>
+      <li>if the <code>price</code> is lower than <code>200</code> , it internally assigns the string <code>group1</code> to the result </li>
+      <li>if the <code>price</code> is between <code>200</code> and <code>500</code>, it assigns the string <code>group2</code> to the result </li>
+      <li>if the <code>price</code> is above <code>500</code>, it assigns the string <code>group3</code> to the result </li>
+    </ul>
+    <p> After it sorts all of the results, it selects the first result from each group, since the query specifies that we only want 1 of each, as specified by <code>:1</code> at the end of the query. </p>
+    <p>Since there are three groups, and we want one result from each group, this query  returns three results. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=[title:digital+camera][price(float%20USD)]&amp;crowdby=[x%3dprice(float%20USD)%20:%20if%20(max(x)%20%3c%2010.0)%20then%20%22group1%22%20else%20(if%20max(x)%20%3c%20100.0%20then%20%22group2%22%20else%20%22group3.0%22)]:1">snippets?bq=digital+camera[price(float USD)]&amp;crowdby=[x=price(float USD):<br />   if (max(x) &lt; 500.0) then 
+      (if (max(x) &lt; 200.0) then &quot;group1&quot; else &quot;group2&quot;) 
+   else &quot;group3&quot;]:1</a></pre>
+    <p>The following example  shows crowding by location. It queries for <code>housing</code> in a <code>100 mile</code> radius around <code>Mountain View, California</code>. It defines two groups (<code>group1</code> and <code>group2</code>) and allow two items per group (<code>:2</code>) in the final result. One group encompasses housing listings less than <code>50 </code>miles from <code>Mountain View</code>, and the other group encompasses items more than <code>50</code> miles away (but still closer than <code>100</code> miles due to the base query.)</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets/-/housing?bq=[location(location)%20:%20@%221600%20Amphitheatre%20Parkway,%20Mountain%20View,%20California,%20USA%22%20%2B100mi]&amp;crowdby=[x%3dlocation(location):%20if%20(min(dist(x,@%221600%20Amphitheatre%20Parkway,%20Mountain%20View,%20California,%20USA%22))%20%3c%2050)%20then%20%22bucket1%22%20else%20%22bucket2%22]:2">snippets/-/housing?bq=[location(location) : @&quot;1600 Amphitheatre Parkway, Mountain View, California, USA&quot; +100mi]
+   &amp;crowdby=[x=location(location): 
+   if (min(dist(x,@&quot;1600 Amphitheatre Parkway, Mountain View, California, USA&quot;)) &lt;  50) then &quot;group1&quot; else &quot;group2&quot;]:2 </a></pre>
+    <p>Refer to the <a href="ranking-lang-spec.html">Expression Language</a> page for more complex examples of  <code>crowdby</code> expressions. </p>
+    <h2><a name="adjusted" id="adjusted"></a>Interpreting adjusted query results</h2>
+    <p>You can use the optional query adjustment engine to standardize query results so that they show the canonical form of attributes and attribute values. </p>
+    <p>Case, underscores, and spaces are always ignored. With query adjustments enabled, Google Base further analyzes its data and identifies instances in which the same type of data is represented differently. For example, we know that <code>gender:f</code> and <code>gender:female</code> probably mean the same thing. In these cases, we consider both values to match the query <code>gender:female</code>.</p>
+    <p>You may find any of the following in your query results:</p>
+    <ul>
+      <li>adjusted attribute values  </li>
+      <li>adjusted item types </li>
+      <li>adjusted attribute names</li>
+    </ul>
+    <p>Query adjustments are disabled by default. You can enable query adjustments, and control the output, using the <code>content</code> and <code>adjust</code> query parameters on the <a href="items-feed.html#Parameters">items</a> and <a href="snippets-feed.html#Parameters">snippets</a> feeds. </p>
+    <p>Note: as these values are automatically adjusted to reflect the data in Google Base, they are not guaranteed to be consistent over time. </p>
+    <p>You should always express queries using the canonical form of attribute values, item types, and attribute names, as listed on the <a href="http://base.google.com/base/api/itemTypeDocs">Recommended Attributes</a> page. When query adjustments are enabled, the entire returned item (as opposed to just the attribute on which the query matched) is normalized to match the canonical forms of the item components. </p>
+    <p>For example, the query <code><a href="http://www.google.com/base/feeds/snippets?bq=%5Bgender:female%5D">snippets?bq=[gender:female]</a></code> returns an item with the following adjusted value. This adjustment attribute shows that this item was returned because <code>female</code> is considered to be equivalent to <code>F</code>. </p>
+    <pre>&lt;g:gender type='text'&gt; 
+   &lt;gm:adjusted_value&gt;female&lt;/gm:adjusted_value&gt;
+   F
+&lt;/g:gender&gt;</pre>
+    <h3><a name="adjustedAttValue" id="adjustedAttValue"></a>Adjusted attribute values </h3>
+    <p>The simplest case of adjusted query results is for attribute values.  </p>
+    <p>If the tag <code>gm:adjusted_value</code> appears in an attribute tag in search results, it indicates an adjusted attribute value. It contains the adjusted value for the current attribute. </p>
+    <p>For example, the query <code><a href="http://www.google.com/base/feeds/snippets?bq=%5Bjob%20industry:healthcare%5D">snippets?bq=[job industry:healthcare]</a></code> also returns items with the attribute <code>&lt;g:job_industry&gt;Health Care&lt;/g:job_industry&gt;</code>:</p>
+    <pre>&lt;g:job_industry type='text'&gt; 
+   &lt;gm:adjusted_value&gt;healthcare&lt;/gm:adjusted_value&gt;
+   Health Care
+&lt;/g:job_industry&gt;
+</pre>
+    <p>In this case, the <code>gm:adjusted_value</code> element means that the values <code>Health Care </code> and <code>healthcare</code> are considered equivalent for query purposes.</p>
+    <h3><a name="adjustedVertName" id="adjustedVertName"></a>Adjusted item types </h3>
+    <p>Although Google Base provides a list of <a href="http://base.google.com/base/api/itemTypeDocs">suggested item types</a>,  we do not require users to adhere to those item types. We can, however, improve query results if we can guess that a custom-defined item type maps to a standard item type. For example, we can assume that <code>Business Location </code>has the same meaning as <code>business locations</code>.</p>
+    <p>For example, the query <code><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem%20type:%20business%20locations%5D">snippets?bq=[item type: business locations]</a> </code> might retrieve an item with the attribute <code>&lt;g:item_type&gt;Business Location&lt;/g:item_type&gt;</code>:</p>
+    <pre>&lt;g:item_type type='text'&gt;
+   &lt;gm:adjusted_value&gt;business location&lt;/gm:adjusted_value&gt;
+   Business Locations
+&lt;/g:item_type&gt;</pre>
+    <h3><a name="adjustedAttName" id="adjustedAttName"></a>Adjusted attribute names</h3>
+    <p>As with item types, Google Base provides a list of <a href="http://base.google.com/base/api/itemTypeDocs">suggested attribute names</a>. We can make educated guesses that map the attribute names in a Base item with our canonical attribute names, in order to improve search results. </p>
+    <p>The query <code><a href="http://www.google.com/base/feeds/snippets?bq=%5Bcook%20time%5D">snippets?bq=[cook time]</a> </code> might retrieve an item with the attribute name<code> cooking time</code>, as follows: </p>
+    <pre>&lt;g:cook_time type='text'&gt; 
+   &lt;gm:adjusted_name&gt;cooking time&lt;/gm:adjusted_name&gt;
+   3 hr 5 min
+&lt;/g:cook_time&gt;</pre>
+<h2><a name="sampleQueries" id="sampleQueries"></a>Sample queries </h2>
+    <p>Here are some complex sample queries. All of these queries are for public
+      data and go against the <code> /feeds/snippets </code> feed. </p>
+    <p>Note that these examples are not correctly URL-encoded, in order to make
+      them easier to read.</p>
+    <p>This query searches on multiple attributes to find a specific job. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bemployer:%20Google%5D%5Bjob%20type:full-time%5D%5Bjob%20function:Marketing%5D">http://www.google.com/base/feeds/snippets?bq= [employer: Google]  [job type:full-time]<br />	  [job function:Marketing]</a></pre>
+    <p>This query searches for all digital cameras that have 4+ megapixels, cost less than
+      $200, and are new.</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=digital+camera%5Bmegapixels%3E%3d4%5D%5Bprice%3C%3d200%2e0%5D%5Bcondition%3anew%5D">http://www.google.com/base/feeds/snippets?bq=digital camera  [megapixels &gt;= 4]  [price &lt; 200.0]
+	 [condition:new] </a></pre>
+    <p> This query searches for all red convertible Volkswagens manufactured in the past 3 years.</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=convertible%20%5Bbrand%3aVolkswagen%5D%20%5Byear%20%3E%3d2003%5D%5Bcolor%3ared%5D%20%5Bvehicle%20type%3acar%5D">http://www.google.com/base/feeds/snippets?bq=convertible  [brand:Volkswagen]  [year &gt;=2003]<br />	 [color:red]  [vehicle type:car]</a> 
+</pre>
+    <p>This query searches for items of type &quot;recipes&quot; whose &quot;cuisine&quot; attribute contains
+      the word &quot;chinese&quot; and whose &quot;course&quot; attribute contains the word &quot;main&quot;. It only returns items whose &quot;main ingredient&quot; is
+      chicken.</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%5Bitem%20type:recipes%5D%5Bcuisine:chinese%5D%20%5Bcourse:main%5D%20%5Bmain%20ingredient:chicken%5D">http://www.google.com/base/feeds/snippets?bq=[item type:recipes]
+	 [cuisine:chinese] [course:main]  [main ingredient:chicken]</a></pre>
+    <p>This query searches for all &quot;for sale&quot; items of type &quot;housing&quot; whose
+      location is up to 15 miles away from San Jose, California and whose price is below
+      $700k. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=%20%5Bitem%20type%3ahousing%5D%20%5Blisting%20type%3afor%20sale%5D%5Blocation%3a%40%22San%20Jose%2c%20CA%2c%20USA%22%2b15mi%5D%20%5Bprice%20%3C%20700000%20USD%5D">http://www.google.com/base/feeds/snippets?bq= [item type:housing]  [listing type:for sale]<br />     [location:@&quot;San Jose, CA, USA&quot;+15mi]  [price &lt; 700000 USD]</a> </pre>
+    <p> You can query across an entire item type, such as asking for all jobs
+      items. Notice that this uses a different syntax. </p>
+    <pre><a href="http://www.google.com/base/feeds/snippets/-/jobs">http://www.google.com/base/feeds/snippets/-/jobs</a></pre>
+    <p>You can also indicate how many results to provide. This example requests only 5 items.</p>
+    <pre><a href="http://www.google.com/base/feeds/snippets?bq=digital+camera&amp;max-results=5">http://www.google.com/base/feeds/snippets?bq=digital+camera&amp;max-results=5</a></pre>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h2><a name="custDataQueries" id="custDataQueries"></a>Customer data queries </h2>
+    <p>You can use the same query syntax for items in the customer-specific
+      feed ( <code> /feeds/items</code>). This feed returns a list of only your own data items that match the query. Consequently you may get different results than you would for queries run on the snippets feed. </p>
+    <p>Here's a sample query. Note the same syntax but a different URL: </p>
+    <pre>http://www.google.com/base/feeds/items?bq=digital+camera</pre>
+    <h1><a name="getMetadata" id="getMetadata"></a>Obtaining metadata </h1>
+    <p>For Google Base queries to be really useful, it is best if everyone uses
+      a common set of item types and attributes. You can create your own, but
+      your data is more likely to be accessible if you use the standard sets.
+      The metadata feeds (item types and attributes) provide lists of common
+      item types and attributes. </p>
+    <p>There are two metadata feeds: <a href="#itemTypes">itemtypes</a> and <a href="#attrFeed">attributes</a>.
+      The itemtypes feed contains a complete description of Google Base structures
+      and allows you to query for different types of metadata. The attributes
+      feed provides statistics about how an item type has been used and lists
+      what values have been used frequently for its attributes. Here are some
+      sample queries:</p>
+    <ul>
+      <li><a href="http://www.google.com/base/feeds/itemtypes/en_US">attribute
+        associations for all item types</a>, which includes a list of
+        associated attributes for each item type</li>
+      <li><a href="http://www.google.com/base/feeds/itemtypes/en_US/jobs">a
+        list of the attributes for a single item type</a></li>
+      <li><a href="http://www.google.com/base/feeds/attributes?bq=jobs&amp;max-values=10">attributes
+        and high frequency values for a specific itemtype, such as <code>jobs</code></a></li>
+    </ul>
+    <h2><a name="itemTypes" id="itemTypes"></a>Item types metadata </h2>
+    <p>The itemtypes feed contains a complete description of Google Base structures.
+      See the <a href="itemtypes-feed.html">Item Types Feed</a> document for
+      more details. This feed allows you to query for different types of attribute
+      data:</p>
+    <ul>
+      <li><a href="http://www.google.com/base/feeds/itemtypes/en_US">a list
+        of all item types</a>, which identifies which attributes go with
+        each item type</li>
+      <li><a href="http://www.google.com/base/feeds/itemtypes/en_US/housing">a
+        list of the attributes for a specific item type</a></li>
+    </ul>
+    <p>These lists are useful when you are creating new data items and need to
+      know how to structure the data you add to Google Base.</p>
+    <p>This URL provides a list of all attributes for the US locale: </p>
+    <pre><a href="http://www.google.com/base/feeds/itemtypes/en_US">http://www.google.com/base/feeds/itemtypes/en_US</a></pre>
+    <p>Here is a sample of  a query for the housing item type:</p>
+    <pre>Request:
+
+
+curl &quot;http://www.google.com/base/feeds/itemtypes/en_US/housing&quot; | xmllint --format -<br />
+Response:
+<br />&lt;entry xmlns=&quot;http://www.w3.org/2005/Atom&quot; xmlns:gm=&quot;http://base.google.com/ns-metadata/1.0&quot;&gt;<br />  &lt;id&gt;http://www.google.com/base/feeds/itemtypes/en_US/housing&lt;/id&gt;<br />  &lt;updated&gt;2006-11-30T01:48:44.271Z&lt;/updated&gt;<br />  &lt;category scheme=&quot;http://base.google.com/categories/itemtypes&quot; term=&quot;housing&quot;/&gt;<br />  &lt;title type=&quot;text&quot;&gt;housing&lt;/title&gt;<br />  &lt;content type=&quot;text&quot;&gt;housing&lt;/content&gt;<br />  &lt;link rel=&quot;related&quot; type=&quot;application/atom+xml&quot; href=&quot;http://www.google.com/base/feeds/snippets/-/housing&quot; title=&quot;Items of type 'housing'&quot;/&gt;<br />  &lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot; href=&quot;http://www.google.com/base/feeds/itemtypes/en_US/housing&quot;/&gt;<br />  &lt;gm:item_type&gt;housing&lt;/gm:item_type&gt;<br />  &lt;gm:attributes&gt;<br />    &lt;gm:attribute name=&quot;listing type&quot; type=&quot;text&quot;/&gt;<br />    &lt;gm:attribute name=&quot;property type&quot; type=&quot;text&quot;/&gt;<br />    &lt;gm:attribute name=&quot;bedrooms&quot; type=&quot;number&quot;/&gt;<br />    &lt;gm:attribute name=&quot;square footage&quot; type=&quot;numberUnit&quot;/&gt;<br />    &lt;gm:attribute name=&quot;agent&quot; type=&quot;text&quot;/&gt;<br />    &lt;gm:attribute name=&quot;year&quot; type=&quot;number&quot;/&gt;<br />    &lt;gm:attribute name=&quot;bathrooms&quot; type=&quot;number&quot;/&gt;<br />    &lt;gm:attribute name=&quot;school district&quot; type=&quot;text&quot;/&gt;<br />    &lt;gm:attribute name=&quot;hoa dues&quot; type=&quot;number&quot;/&gt;<br />    &lt;gm:attribute name=&quot;location&quot; type=&quot;location&quot;/&gt;<br />    &lt;gm:attribute name=&quot;price units&quot; type=&quot;text&quot;/&gt;<br />    &lt;gm:attribute name=&quot;expiration date&quot; type=&quot;dateTime&quot;/&gt;<br />    &lt;gm:attribute name=&quot;price&quot; type=&quot;floatUnit&quot;/&gt;<br />  &lt;/gm:attributes&gt;<br />&lt;/entry&gt;    </pre>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h2><a name="attrFeed" id="attrFeed"></a>Attribute value metadata</h2>
+    <p>The attributes feed allows you to get attribute statistics for Google
+      Base data. See the <a href="attributes-feed.html">Attributes Feed</a> document
+      for more details. </p>
+    <pre><a href="http://www.google.com/base/feeds/attributes">http://www.google.com/base/feeds/attributes</a></pre>
+    <p>Here is part of the response for the label values for the jobs item
+      type:</p>
+    <pre>
+Request:
+curl &quot;http://www.google.com/base/feeds/attributes/job+industry%28text%29Njobs&quot; | xmllint --format -<br />
+Truncated response:
+
+&lt;entry xmlns=&quot;http://www.w3.org/2005/Atom&quot; xmlns:gm=&quot;http://base.google.com/ns-metadata/1.0&quot;&gt;<br />  &lt;id&gt;http://www.google.com/base/feeds/attributes/job+industry%28text%29Njobs&lt;/id&gt;<br />  &lt;updated&gt;2006-11-30T01:50:48.317Z&lt;/updated&gt;<br />  &lt;title type=&quot;text&quot;&gt;job industry(text)&lt;/title&gt;<br />  &lt;content type=&quot;text&quot;&gt;Attribute &quot;job industry&quot; of type text.&lt;/content&gt;<br />  &lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot; href=&quot;http://www.google.com/base/feeds/attributes/job+industry%28text%29Njobs&quot;/&gt;<br />  &lt;gm:attribute name=&quot;job industry&quot; type=&quot;text&quot; count=&quot;192271&quot;&gt;<br />    &lt;gm:value count=&quot;23140&quot;&gt;healthcare&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;23108&quot;&gt;it internet&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;20303&quot;&gt;government&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;7611&quot;&gt;construction&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;7225&quot;&gt;accounting&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;6112&quot;&gt;sales&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;3564&quot;&gt;other&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;2913&quot;&gt;financial services&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;2899&quot;&gt;clerical &amp;amp; administrative&lt;/gm:value&gt;<br />    &lt;gm:value count=&quot;2690&quot;&gt;legal&lt;/gm:value&gt;<br />  &lt;/gm:attribute&gt;<br />&lt;/entry&gt;</pre>
+    <h2><a name="Reporting" id="Reporting"></a>Access statistics </h2>
+    <p>Google Base automatically keeps track of the number of clicks, impressions, and page views for each item. This information is stored, respectively, in the <code>gm:impressions</code>, <code>gm:clicks</code>, and <code>gm:page views</code> elements. You can display this information by querying the items or snippets feed, setting the <code>content</code> parameter to <code>attributes,meta</code>. </p>
+    <p>Statistics are only available for your own items. Thus, you can only get them by querying the items feed. Refer to the <a href="items-feed.html">Customer Items Feed Reference</a> for more information. </p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  _utcp="/apis/base/";
+  _uanchor=1;
+  urchinTracker();
+</script>
+</body>
+</html>

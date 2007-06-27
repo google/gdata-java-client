@@ -38,7 +38,6 @@ public class GoogleBaseAttributeType {
   private static final Map<String, GoogleBaseAttributeType> KNOWN_TYPES =
       new HashMap<String, GoogleBaseAttributeType>();
 
-
   /** Text values. */
   public static final GoogleBaseAttributeType TEXT =
       createAndRegister("text");
@@ -89,7 +88,6 @@ public class GoogleBaseAttributeType {
   public static final GoogleBaseAttributeType DATE_TIME_RANGE =
       createAndRegister("dateTimeRange");
 
-
   /** Date  for an event, in format YYYY-MM-DD (RFC3339). */
   public static final GoogleBaseAttributeType DATE =
       createAndRegister(DATE_TIME_RANGE, "date");
@@ -124,6 +122,12 @@ public class GoogleBaseAttributeType {
   public static final GoogleBaseAttributeType LOCATION =
       createAndRegister("location");
 
+  /**
+   * A reference to another Google Base Item.
+   */
+  public static final GoogleBaseAttributeType REFERENCE = 
+      createAndRegister("reference");
+  
   /** Type name */
   private final String name;
 

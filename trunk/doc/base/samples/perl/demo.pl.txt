@@ -1,0 +1,633 @@
+#!/usr/bin/perl -w
+use strict;
+
+use WWW::Curl::Easy;    # Needed for HTTP transactions.
+use URI::Escape;        # Needed for uri_escape().
+use CGI qw(:standard);  # Needed for parsing GET/POST params.
+use XML::Parser;        # Needed for parsing XML.
+
+# Our Google Base API developer key.
+my $developerKey = "REPLACE WITH YOUR DEVELOPER KEY";
+
+# Parsed recipe entries from a query.
+my @parsedEntries;
+
+# Are we currently parsing an XML ENTRY tag?
+my $foundEntry;
+
+# Current XML element being processed.
+my $curElement;
+
+# Types of cuisine the user may select when inserting a recipe.
+my @cuisines = ('African', 'American', 'Asian', 'Caribbean', 'Chinese',
+  'French', 'Greek', 'Indian', 'Italian', 'Japanese', 'Jewish', 
+  'Mediterranean', 'Mexican', 'Middle Eastern', 'Moroccan', 
+  'North American', 'Spanish', 'Thai', 'Vietnamese', 'Other'
+);
+
+# Returns the URI of this script.
+sub getSelfURI {
+  return 'http://' . $ENV{"SERVER_NAME"} . $ENV{"SCRIPT_NAME"};
+}
+
+# Removes whitespace from the start and end of a string.
+sub trim {
+  my($string) = @_;
+
+  $string =~ s/^\s+//;
+  $string =~ s/\s+$//;
+
+  return $string;
+}
+
+# Creates the XML content used to insert a new recipe.
+sub buildInsertXML {
+  my $result = "<?xml version='1.0'?>" . "\n";
+  $result .= "<entry xmlns='http://www.w3.org/2005/Atom'" .
+    " xmlns:g='http://base.google.com/ns/1.0'>" . "\n";
+  $result .= "<category scheme='http://base.google.com/categories/itemtypes'" .
+    " term='Recipes'/>" . "\n";
+  $result .= "<title type='text'>" . param('recipe_title') . "</title>" . "\n";
+  $result .= "<g:cuisine>" . param('cuisine') . "</g:cuisine>" . "\n";
+  $result .= "<g:item_type type='text'>Recipes</g:item_type>" . "\n";
+  $result .= "<g:cooking_time type='intUnit'>" . param('cooking_time_val') .
+             " " . param('cooking_time_units') . "</g:cooking_time>" . "\n";
+  $result .= "<g:main_ingredient type='text'>" . param('main_ingredient') .
+    "</g:main_ingredient>" . "\n";
+  $result .= "<g:serving_count type='number'>" . param('serves') .
+    "</g:serving_count>" . "\n";
+  $result .= "<content>" . param('recipe_text') . "</content>" . "\n";
+  $result .= "</entry>" . "\n";
+
+  return $result;
+}
+
+# Creates the XML content used to perform a batch delete.
+sub buildBatchDeleteXML {
+  my $counter = 0;
+
+  my $result = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+  $result .= '<feed xmlns="http://www.w3.org/2005/Atom"' . "\n";
+  $result .= ' xmlns:g="http://base.google.com/ns/1.0"' . "\n";
+  $result .= ' xmlns:batch="http://schemas.google.com/gdata/batch">"' . "\n";
+  for my $key (param()) {
+    if (index($key, "link_") == 0) {
+      $counter++;
+
+      $result .= '<entry>' . "\n";
+      $result .= '<id>' . param($key) . '</id>' . "\n";
+      $result .= '<batch:operation type="delete"/>' . "\n";
+      $result .= '<batch:id>' . $counter . '</batch:id>' . "\n";
+      $result .= '</entry>' . "\n";
+    }
+  }
+  $result .= '</feed>' . "\n";
+
+  return $result;
+}
+
+# Callback function that's fired as cURL objects receive chunks of
+# content data from the server.
+sub writeCallback {
+    my ($data, $pointer) = @_;
+
+    push @{$pointer}, $data;
+    return length($data);
+}
+
+# Callback function that's fired as cURL objects receive chunks of
+# header data from the server.  Since we don't need to do anything
+# with the headers for this application, this callback function
+# just returns the length of the data it received.
+sub headerCallback {
+  my($data, $pointer) = @_;
+
+  return length($data);
+}
+
+# Exchanges the given single-use token for a session
+# token using AuthSubSessionToken, and returns the result.
+sub exchangeToken {
+  my $token = shift;
+  my $curl = new WWW::Curl::Easy;
+  my @body;
+
+  my @authHeader = ("Authorization: AuthSub token=\"" . $token . "\"");
+
+  $curl->setopt(CURLOPT_URL,
+    "https://www.google.com/accounts/AuthSubSessionToken");
+  $curl->setopt(CURLOPT_FAILONERROR, 1); 
+
+  $curl->setopt(CURLOPT_WRITEFUNCTION, \&writeCallback );
+  $curl->setopt(CURLOPT_HEADERFUNCTION, \&headerCallback );
+  $curl->setopt(CURLOPT_FILE, \@body);
+
+  $curl->setopt(CURLOPT_FOLLOWLOCATION, 1);
+  $curl->setopt(CURLOPT_HTTPHEADER, \@authHeader);
+
+  my $result = $curl->perform();
+
+  if ($result > 0) {
+    return 0;
+  } else {
+    # Extract everything to the right of the equals sign in
+    # the response "Token=..."
+    my @splitStr = split(/=/, $body[0]);
+    return trim($splitStr[1]);
+  }
+}
+
+# Performs a query for all of the user's items using the
+# items feed, then parses the resulting XML with the
+# startElement, endElement and characterData functions
+# (below).
+sub getItems {
+  my $token = shift;
+  my $curl = new WWW::Curl::Easy;
+  my @body;
+
+  my @authHeader = (
+    'Content-Type: application/atom+xml',
+    'Authorization: AuthSub token="' . trim($token) . '"',
+    'X-Google-Key: key=' . $developerKey
+  );
+
+  $curl->setopt(CURLOPT_URL, "http://www.google.com/base/feeds/items?");
+  $curl->setopt(CURLOPT_FAILONERROR, 1); 
+
+  $curl->setopt(CURLOPT_WRITEFUNCTION, \&writeCallback );
+  $curl->setopt(CURLOPT_HEADERFUNCTION, \&headerCallback );
+  $curl->setopt(CURLOPT_FILE, \@body);
+
+  $curl->setopt(CURLOPT_FOLLOWLOCATION, 1);
+  $curl->setopt(CURLOPT_HTTPHEADER, \@authHeader);
+
+  my $result = $curl->perform();
+  if (!$result) {
+    my $parser = new XML::Parser(Handlers => {Start => \&handleXMLstart,
+                                              End   => \&handleXMLend,
+                                              Char  => \&handleXMLchar});
+    $parser->parse(join("", @body));
+  }
+}
+
+# Inserts a new recipe by performing an HTTP POST to the
+# items feed.
+sub postItem {
+  my $curl = new WWW::Curl::Easy;
+  my @body;
+
+  my @authHeader = (
+    'Content-Type: application/atom+xml',
+    'Authorization: AuthSub token="' . param('session_token') . '"',
+    'X-Google-Key: key=' . $developerKey
+  );
+
+  $curl->setopt(CURLOPT_URL, "http://www.google.com/base/feeds/items");
+  $curl->setopt(CURLOPT_READFUNCTION, \&buildInsertXML);
+  $curl->setopt(CURLOPT_INFILESIZE, length(buildInsertXML()));
+  $curl->setopt(CURLOPT_UPLOAD, 1);
+  $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
+  $curl->setopt(CURLOPT_FAILONERROR, 1);
+  
+  $curl->setopt(CURLOPT_WRITEFUNCTION, \&writeCallback );
+  $curl->setopt(CURLOPT_HEADERFUNCTION, \&headerCallback );
+  $curl->setopt(CURLOPT_FILE, \@body);
+  
+  $curl->setopt(CURLOPT_FOLLOWLOCATION, 1);  
+  $curl->setopt(CURLOPT_HTTPHEADER, \@authHeader);
+    
+  my $result = $curl->perform();
+
+  return $result;
+}
+
+# Updates an existing recipe by performing an HTTP
+# PUT on its feed URI.
+sub updateItem {
+  my $curl = new WWW::Curl::Easy;
+  my @body;
+
+  my @authHeader = (
+    'Authorization: AuthSub token="' . param('session_token') . '"',
+    'X-Google-Key: key=' . $developerKey,
+    'Content-Type: application/atom+xml'
+  );
+
+  my $feedURL = param('link');
+  chomp $feedURL;
+
+  $curl->setopt(CURLOPT_URL, $feedURL);
+  $curl->setopt(CURLOPT_READFUNCTION, \&buildInsertXML);
+  $curl->setopt(CURLOPT_INFILESIZE, length(buildInsertXML()));
+  $curl->setopt(CURLOPT_UPLOAD, 1);
+  $curl->setopt(CURLOPT_CUSTOMREQUEST, "PUT");
+  $curl->setopt(CURLOPT_FAILONERROR, 1);
+  
+  $curl->setopt(CURLOPT_WRITEFUNCTION, \&writeCallback );
+  $curl->setopt(CURLOPT_HEADERFUNCTION, \&headerCallback );
+  $curl->setopt(CURLOPT_FILE, \@body);
+  
+  $curl->setopt(CURLOPT_VERBOSE, 1);
+  $curl->setopt(CURLOPT_FOLLOWLOCATION, 1);  
+  $curl->setopt(CURLOPT_HTTPHEADER, \@authHeader);
+    
+  my $result = $curl->perform();
+
+  return $result;
+}
+
+# Deletes a recipe by performing an HTTP DELETE
+# on its feed URI.
+sub deleteItem {
+  my $curl = new WWW::Curl::Easy;
+  my $feedURL = param('link');
+  my @body;
+
+  my @authHeader = (
+    'Authorization: AuthSub token="' . param('session_token') . '"',
+    'X-Google-Key: key=' . $developerKey
+  );
+
+  chomp $feedURL;
+  $curl->setopt(CURLOPT_URL, $feedURL);
+  $curl->setopt(CURLOPT_CUSTOMREQUEST, "DELETE");
+  $curl->setopt(CURLOPT_FAILONERROR, 1);
+  
+  $curl->setopt(CURLOPT_WRITEFUNCTION, \&writeCallback );
+  $curl->setopt(CURLOPT_HEADERFUNCTION, \&headerCallback );
+  $curl->setopt(CURLOPT_FILE, \@body);
+  
+  $curl->setopt(CURLOPT_FOLLOWLOCATION, 1);  
+  $curl->setopt(CURLOPT_HTTPHEADER, \@authHeader);
+    
+  my $result = $curl->perform();
+
+  return $result;
+}
+
+# Deletes all recipes by performing an HTTP POST to the
+# batch URI.
+sub batchDelete {
+  my $curl = new WWW::Curl::Easy;
+  my @body;
+
+  my @authHeader = (
+    'Content-Type: application/atom+xml',
+    'Authorization: AuthSub token="' . param('session_token') . '"',
+    'X-Google-Key: key=' . $developerKey
+  );
+
+  $curl->setopt(CURLOPT_URL, "http://www.google.com/base/feeds/items/batch");
+  $curl->setopt(CURLOPT_READFUNCTION, \&buildBatchDeleteXML);
+  $curl->setopt(CURLOPT_INFILESIZE, length(buildBatchDeleteXML()));
+  $curl->setopt(CURLOPT_UPLOAD, 1);
+  $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
+  $curl->setopt(CURLOPT_FAILONERROR, 1);
+  
+  $curl->setopt(CURLOPT_WRITEFUNCTION, \&writeCallback );
+  $curl->setopt(CURLOPT_HEADERFUNCTION, \&headerCallback );
+  $curl->setopt(CURLOPT_FILE, \@body);
+  
+  $curl->setopt(CURLOPT_FOLLOWLOCATION, 1);  
+  $curl->setopt(CURLOPT_HTTPHEADER, \@authHeader);
+    
+  my $result = $curl->perform();
+
+  return $result;
+}
+
+# Callback function that's fired by the Expat XML parser on parsing
+# a start tag.
+sub handleXMLstart {
+  my($parser, $elem, %attrs) = @_;
+
+  $curElement = lc($elem);
+  if ($curElement eq "entry") {
+    $foundEntry = 1;
+    push(@parsedEntries, {});
+  } elsif ($foundEntry && $curElement eq "link") {
+    $parsedEntries[$#parsedEntries]{$attrs{"rel"}} = $attrs{"href"};
+  }
+}
+
+# Callback function that's fired by the Expat XML parser on parsing
+# an end tag.
+sub handleXMLend {
+  my($parser, $elem) = @_;
+
+  if (lc($elem) eq "entry") {
+    $foundEntry = 0;
+  }
+}
+
+# Callback function that's fired by the Expat XML parser on parsing
+# a sequence of characters.
+sub handleXMLchar {
+  my($parser, $chars) = @_;
+
+  if ($foundEntry) {
+    $parsedEntries[$#parsedEntries]{lc($curElement)} = $chars;
+  }
+}
+
+# We arrive here when the user first comes to the form. The first step is
+# to have them get a single-use token.
+sub showIntroPage {
+  my $redirect_url =
+    'https://www.google.com/accounts/AuthSubRequest?session=1';
+  $redirect_url .= '&next=';
+  $redirect_url .= uri_escape(getSelfURI());
+  $redirect_url .= "&scope=";
+  $redirect_url .= uri_escape("http://www.google.com/base/feeds");
+
+  print '<html>' . "\n";
+  print '<head><title>Perl Demo: Google Base API</title>' . "\n";
+  print '<link rel="stylesheet" type="text/css" href="../../../css/dev_docs.css">' . "\n";
+  print '</head>' . "\n";
+  print '<body><center>' . "\n";
+  print '<table style="width:50%;">' . "\n";
+  print '<tr>' . "\n";
+  print '<th colspan="2" style="text-align:center;">Perl Demo: Google Base API</th>' . "\n";
+  print '</tr>' . "\n";
+  print '<tr><td>Before you get started, please <a href="' . $redirect_url . 
+      '">sign in</a> to your personal Google Base account.</td></tr>' . "\n";
+  print '</table>' . "\n";
+  print '</center></body></html>' . "\n";
+}
+
+# Prints the table of recipes the user has already entered
+# on the left-hand side of the page.
+sub showRecipeListPane {
+  my $token = shift;
+
+  print '<td style="width:50%; text-align:center; vertical-align:top">' . "\n";
+  print '<table>' . "\n";
+  print '<tr><th colspan="5" style="text-align:center">Recipes you have added</th></tr>' . "\n";
+
+  getItems($token);
+
+  if (@parsedEntries) {
+    print '<tr>' . "\n";
+    print '<td style="text-align:center"><i>Name</i></td>' . "\n";
+    print '<td style="text-align:center"><i>Cuisine</i></td>' . "\n";
+    print '<td style="text-align:center"><i>Serves</i></td>' . "\n";
+    print '<td colspan="2" style="text-align:center"><i>Actions</i></td>' . "\n";
+    print '</tr>' . "\n";
+
+    foreach my $entry (@parsedEntries) {
+      print '<tr>' . "\n";
+      print '<td align="left" valign="top"><b><a href="' . 
+        $entry->{'alternate'} . '">' .
+        $entry->{'title'} . '</a></b></td>' . "\n";
+      print '<td style="text-align:center;vertical-align:top">' .
+        $entry->{'g:cuisine'} . '</td>' . "\n";
+      print '<td style="text-align:center;vertical-align:top">' .
+        $entry->{'g:serving_count'} . '</td>' . "\n";
+
+      # Create an Edit button for each existing recipe.
+      print '<td style="text-align:center;vertical-align:top">' . "\n";
+      print '<form method="post" action="' . getSelfURI() .
+        '" style="margin-top:0;margin-bottom:0;">' . "\n";
+      print '<input type="hidden" name="action" value="edit">' . "\n";
+      print '<input type="hidden" name="session_token" value="' .
+        $token . '">' . "\n";
+      foreach my $key (keys %{$entry}) {
+        print '<input type="hidden" name="' . $key . '" value="' .
+          $entry->{$key} . '">' . "\n";
+      }
+      print '<input type="submit" value="Edit">' . "\n";
+      print '</form>' . "\n";
+      print '</td>' . "\n";
+
+      # Create a Delete button for each existing recipe.
+      print '<td style="text-align:center; vertical-align:top">' . "\n";
+      print '<form method="post" action="' . getSelfURI() .
+        '" style="margin-top:0;margin-bottom:0;">' . "\n";
+      print '<input type="hidden" name="action" value="delete">' . "\n";
+      print '<input type="hidden" name="session_token" value="' .
+        $token . '">' . "\n";
+      print '<input type="hidden" name="link" value="' .
+        $entry->{'id'} . '">' . "\n";
+      print '<input type="submit" value="Delete">' . "\n";
+      print '</form>' . "\n";
+      print '</td>' . "\n";
+      print '</tr>' . "\n";
+    }
+  } else {
+    print '<tr><td colspan="5" style="text-align:center;"><i>(none)</i></td></tr>' . "\n";
+  }
+
+  # Create a "Delete all" button to demonstrate batch requests.
+  print '<tr><td colspan="5" style="text-align:center;">' . "\n";
+  print '<form method="post" action="' . getSelfURI() .
+    '" style="margin-top:0;margin-bottom:0;">' . "\n";
+  print '<input type="hidden" name="action" value="delete_all">' . "\n";
+  print '<input type="hidden" name="session_token" value="' .
+    $token . '">' . "\n";
+  for(my $i = 0; $i < @parsedEntries; $i++) {
+    print '<input type="hidden" name="link_' . $i . '" value="' .
+      $parsedEntries[$i]{'id'} . '">' . "\n";
+  }
+  print '<input type="submit" value="Delete All"';
+  if (!@parsedEntries) {
+    print ' disabled="true"';
+  }
+  print '></form></td></tr>' . "\n";
+  print '</table>' . "\n";
+  print '</td>' . "\n";
+}
+
+sub showRecipeInsertPane {
+  my $token = shift;
+
+  print '<td valign="top" width="50%"><table width="100%">' .
+    "\n";
+  print '<tr><th colspan="2" style="text-align:center;">Insert a new recipe:</th></tr>' . "\n";
+  print '<form method="post" action="' . getSelfURI() . '">' . "\n";
+  print '<input type="hidden" name="action" value="insert">' . "\n";
+  print '<input type="hidden" name="session_token" value="' . $token .
+    '">' . "\n";
+  print '<tr><td align="right">Title:</td><td>' .
+    '<input type="text" name="recipe_title" class="half"></td></tr>' .
+    "\n";
+  print '<tr><td align="right">Main ingredient:</td><td>' .
+    '<input type="text" name="main_ingredient" class="half"></td></tr>' .
+    "\n";
+  print '<tr><td align="right">Cuisine:</td><td>' .
+    '<select name="cuisine" class="half">' . "\n";
+
+  foreach my $curCuisine (@cuisines) {
+    print '<option value=' . $curCuisine . '>' . $curCuisine . "\n";
+  }
+
+  print '</select></td></tr>' . "\n";
+  print '<tr><td align="right">Cooking Time:</td>' .
+    '<td><input type="text" name="cooking_time_val" size=2 maxlength=2>' .
+    '&nbsp;<select name="cooking_time_units"><option value="minutes">' .
+    'minutes<option value="hours">hours</select></td></tr>' . "\n";
+  print '<tr><td align="right">Serves:</td><td><input type="text"' .
+    ' name="serves" size=2 maxlength=3></td></tr>' . "\n";
+  print '<tr><td align="right">Recipe:</td><td><textarea class="full"' .
+    ' name="recipe_text"></textarea></td></tr>' . "\n";
+  print '<td>&nbsp;</td><td><input type="submit" value="Submit"></td>' . "\n";
+  print '</form></tr></table>' . "\n";
+  print '</td>' . "\n";
+}
+
+sub showEditMenu {
+  my @splitCookingTime = split(/\s+/, param('g:cooking_time'));
+
+  print '<html>' . "\n";
+  print '<head><title>Perl Demo: Google Base API</title>' . "\n";
+  print '<link rel="stylesheet" type="text/css" href="../../../css/dev_docs.css">' . "\n";
+  print '</head>' . "\n";
+  print '<body><center>' . "\n";
+  print '<table style="width:50%;">' . "\n";
+  print '<tr><th colspan="2" style="text-align:center;">Edit recipe:</th></tr>' . "\n";
+
+  print '<form method="post" action="' . getSelfURI() . '">' . "\n";
+  print '<input type="hidden" name="action" value="update">' . "\n";
+  print '<input type="hidden" name="link" value="' .
+    param('edit') . '">' . "\n";
+  print '<input type="hidden" name="session_token" value="' .
+    param('session_token') . '">' . "\n";
+
+  print '<tr><td align="right">Title:</td>' . "\n";
+  print '<td><input type="text" name="recipe_title" class="half" value="'
+    . param('title') . '"></td></tr>' . "\n";
+
+  print '<tr><td align="right">Main ingredient:</td>' . "\n";
+  print '<td><input type="text" name="main_ingredient" value="'
+    . param('g:main_ingredient') . '" class="half"></td></tr>' . "\n";
+
+  print '<tr><td align="right">Cuisine:</td>' . "\n";
+  print '<td><select name="cuisine" class="half">' . "\n";
+
+  foreach my $curCuisine (@cuisines) {
+    print '<option value="' . $curCuisine . '"';
+    if ($curCuisine eq param('g:cuisine')) {
+      print ' selected="selected"';
+    }
+    print '>' . $curCuisine . "</option>\n";
+  }
+
+  print '</select></td></tr>' . "\n";
+  print '<tr><td align="right">Cooking Time:</td>' .
+    '<td><input type="text" name="time_val" size=2 maxlength=2 value="' .
+    $splitCookingTime[0] . '">&nbsp;' . "\n";
+  print '<select name="time_units">' . "\n";
+  if ($splitCookingTime[1] eq "minutes") {
+    print '<option value="minutes" selected="selected">minutes</option>' .
+      "\n";
+    print '<option value="hours">hours</option>' . "\n";
+  } else {
+    print '<option value="minutes">minutes</option>' . "\n";
+    print '<option value="hours" selected="selected">hours</option>' .
+      "\n";
+  }
+
+  print '</select></td></tr>' . "\n";
+  print '<tr><td align="right">Serves:</td>' . "\n";
+  print '<td><input type="text" name="serves" value="' .
+    param('g:serving_count') . '" size=2 maxlength=3></td></tr>' . "\n";
+
+  print '<tr><td align="right">Recipe:</td>' . "\n";
+  print '<td><textarea class="full" name="recipe_text">' .
+    param('content') . '</textarea></td></tr>' . "\n";
+  print '<td>&nbsp;</td><td><input type="submit" value="Update"></td>' . "\n";
+  print '</form></tr></table>' . "\n";
+  print '</body></html>' . "\n";
+}
+
+# Displays both the "List of current recipes" and
+# "Insert a new recipe" panels in a single table.
+sub showMainMenu {
+  my($tableTitle, $sessionToken) = @_;
+
+  print '<html>' . "\n";
+  print '<head><title>Perl Demo: Google Base API</title>' . "\n";
+  print '<link rel="stylesheet" type="text/css" href="../../../css/dev_docs.css">' . "\n";
+  print '</head>' . "\n";
+  print '<body><center>' . "\n";
+  print '<table style="width:75%;text-align:center;">' . "\n";
+  print '<tr>' . "\n";
+  print '<th colspan="2" style="text-align:center">Perl Demo: Google Base API' . "\n";
+  print '</tr>' . "\n";
+  print '<tr><td colspan="2" align="center">' . $tableTitle . '</td></tr>' .
+    "\n";
+  print '<tr>' . "\n";
+
+  # Create the two sub-tables.
+  showRecipeListPane($sessionToken);
+  showRecipeInsertPane($sessionToken);
+
+  # Add a "Sign out" link.
+  print '<tr><th colspan="2" style="text-align:center;">Or click here to ' . 
+    ' <a href="http://www.google.com/accounts/Logout">' .
+    'sign out</a> of your Google account.</th></tr>' . "\n";
+
+  # Close the master table.
+  print '</table>' . "\n";
+  print '</center></body></html>' . "\n";
+}
+
+
+# We arrive here after the user first authenticates and we get back
+# a single-use token.
+sub showFirstAuthScreen {
+  my $singleUseToken = param('token');
+  my $sessionToken = exchangeToken($singleUseToken);
+
+  if (!$sessionToken) {
+    showIntroPage();
+  } else {
+    my $tableTitle =
+      'Here\'s your <b>single use token:</b> <code>' . $singleUseToken .
+      '</code>' . "\n" . '<br>And here\'s the <b>session token:</b> <code>' .
+      $sessionToken . '</code>';
+    
+      showMainMenu($tableTitle, $sessionToken);
+  }
+}
+
+# Main logic. Take action based on the GET and POST
+# parameters, which reflect whether the user has
+# authenticated and which action they want to perform.
+
+print "Content-type: text/html\n\n";
+if (defined param('token')) {
+  showFirstAuthScreen();
+} elsif (defined param('session_token')) {
+  if (param('action') eq "insert") {
+    if (postItem()) {
+      showMainMenu('Recipe inserted!', param('session_token'));
+    } else {
+      showMainMenu('Recipe insertion failed.', param('session_token'));
+    }
+  } elsif (param('action') eq "delete") {
+    if (!deleteItem()) {
+      showMainMenu('Item deleted.', param('session_token'));
+    } else {
+      showMainMenu('Item deletion failed.', param('session_token'));
+    }
+  } elsif (param('action') eq "delete_all") {
+    if (batchDelete()) {
+      showMainMenu('All items deleted.', param('session_token'));
+    } else {
+      showMainMenu('Batch deletion failed.', param('session_token'));
+    }
+  } elsif (param('action') eq "edit") {
+    showEditMenu();
+  } elsif (param('action') eq "update") {
+    if (updateItem()) {
+      showMainMenu('Item successfully updated.', param('session_token'));
+    } else {
+      showMainMenu('Item update failed.', param('session_token'));
+    }
+  } else {
+    showIntroPage();
+  }
+} else {
+  showIntroPage();  
+}

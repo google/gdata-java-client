@@ -1,0 +1,1961 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Data APIs (Beta) Developer's Guide - Common Elements: &quot;Kinds&quot;</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+-->
+</style>
+</head>
+<body id="elements_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Data APIs (Beta) Developer's Guide</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>GData documentation</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="index.html" id="index_link">Main</a></li>
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="basics.html" id="basics_link">Protocol Basics</a></li>
+        <li><a href="reference.html" id="reference_link">Protocol Reference</a></li>
+        <li><a href="auth.html" id="auth_link">Authentication</a></li>
+        <li><a href="elements.html" id="elements_link">Common Elements</a></li>
+        <li><a href="clientlibs.html" id="clientlibs_link">Client Libraries</a></li>
+        <li><a href="batch.html" id="batch_link">Batch Processing</a></li>
+        <li><a href="samples.html" id="samples_link">Samples</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Service-specific documents</h1>
+      <ul>
+	
+        <li><a href="http://code.google.com/apis/base/">Base Data API</a></li>
+	
+	
+        <li><a href="../blogger/overview.html" id="blogger_link">Blogger Data API</a></li>
+	
+        <li><a href="../calendar/overview.html" id="calendar_link">Calendar Data API</a></li>
+        <li><a href="../codesearch/overview.html" id="codesearch_link">Code Search Data API</a></li>
+	
+	<li><a href="http://code.google.com/apis/apps/gdata_provisioning_api_v2.0_reference.html">Google Apps Provisioning API</a></li>
+	
+	
+        <li><a href="../notebook/overview.html" id="notebook_link">Notebook Data API</a></li>
+	
+        <li><a href="../spreadsheets/overview.html" id="spreadsheets_link">Spreadsheets Data API</a></li>
+        <li><a href="../picasaweb/overview.html" id="picasaweb_link">Picasa Web Albums Data API</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Related links</h1>
+      <ul><li><a href="http://groups.google.com/group/google-help-dataapi">Discussion Group</a></li>
+        <li><a href="http://googledataapis.blogspot.com/">GData Blog</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+    <h1 id="page_title">Common Elements: &quot;Kinds&quot;</h1> 
+    <h1>Contents</h1> 
+    <div class="toc">
+    <ol>
+      <li><a href="#Introduction">Introduction</a></li> 
+      <li><a href="#gdContactKind">Contact kind</a></li> 
+      <li><a href="#gdEventKind">Event kind</a></li> 
+      <li><a href="#gdMessageKind">Message kind</a></li> 
+      <li><a href="#gdReference">Google data namespace element reference</a> 
+        <ol>
+          <li><a href="#gdEnums">Enums</a></li> 
+          <li><a href="#gdCommonProperties">gdCommonProperties</a></li> 
+          <li><a href="#gdComments">gd:comments</a></li> 
+          <li><a href="#gdContactSection">gd:contactSection</a></li> 
+          <li><a href="#gdEmail">gd:email</a></li> 
+          <li><a href="#gdEntryLink">gd:entryLink</a></li> 
+          <li><a href="#gdFeedLink">gd:feedLink</a></li> 
+          <li><a href="#gdExtendedProperty">gd:extendedProperty</a></li>
+          <li><a href="#gdGeoPt">gd:geoPt</a></li> 
+          <li><a href="#gdIm">gd:im</a></li> 
+          <li><a href="#gdOriginalEvent">gd:originalEvent</a></li> 
+          <li><a href="#gdPhoneNumber">gd:phoneNumber</a></li> 
+          <li><a href="#gdPostalAddress">gd:postalAddress</a></li> 
+          <li><a href="#gdRating">gd:rating</a></li> 
+          <li><a href="#gdRecurrence">gd:recurrence</a></li> 
+          <li><a href="#gdRecurrenceException">gd:recurrenceException</a></li> 
+          <li><a href="#gdReminder">gd:reminder</a></li> 
+          <li><a href="#gdWhen">gd:when</a></li> 
+          <li><a href="#gdWhere">gd:where</a></li> 
+          <li><a href="#gdWho">gd:who</a></li> 
+        </ol> 
+      </li> 
+    </ol> 
+    </div>
+    <h1><a name="Introduction">Introduction</a></h1> 
+    <p>It's often useful for services that use the Google data APIs to be able to provide a consistent set of information about a particular kind of item.</p> 
+    <p>For example, various Google data API (or &quot;GData&quot;) services might provide contact information for a person or an organization; it makes sense for all such services to use the same set of contact-information elements.</p> 
+    <p>The collection of elements that together describe a contact is called the Contact &quot;kind.&quot; Some of the elements in the Contact kind are ordinary Atom or RSS elements; others are defined by Google in a namespace called the &quot;Google data namespace.&quot; By convention, the Google data namespace is usually referred to in XML code using the <code>gd:</code> alias; for example, the element that contains a telephone or fax number is <code>&lt;gd:phoneNumber&gt;</code>. The schema URL for the Google data namespace is http://schemas.google.com/g/2005.</p> 
+    <p>Google defines other kinds as well: Event (a collection of standardized elements that together represent a calendar event) and Message (a collection of elements representing an email message, discussion group posting, or other message).</p> 
+    <p>Some elements from the Google data namespace are used by multiple kinds. For example, the <code>&lt;gd:who&gt;</code> element associates a person (described in the <code>&lt;gd:who&gt;</code>) with the entry that contains the <code>&lt;gd:who&gt;</code> element. This element is used in the Event kind to specify organizers, attendees, and so on. It's also used in the Message kind to specify senders and recipients.</p> 
+    <p>When an entry in a Google data API feed uses a given kind, it contains an <code>&lt;atom:category&gt;</code> element with its <code>scheme</code> attribute set to <code>&quot;http://schemas.google.com/g/2005#kind&quot;</code> and its <code>term</code> attribute set to the name of the schema URL followed by the name of the kind. For example, a Contact entry includes the following element:</p> 
+    <pre>&lt;atom:category scheme=&quot;http://schemas.google.com/g/2005#kind&quot;
+  term=&quot;http://schemas.google.com/g/2005#contact&quot;/&gt;</pre> 
+    <p>This allows clients to quickly and easily determine what kind of data the entry contains&mdash;that is, to determine the semantics of the entry. (You can use RSS instead of Atom if you prefer; see the <a href="reference.html">protocol reference</a> document for the RSS elements corresponding to Atom elements.)</p> 
+    <p>This document is a reference for some common kinds and the elements they contain.</p> 
+    <h2>Undocumented elements</h2> 
+    <p>We don't include information about the standard elements of <code>&lt;atom:entry&gt;</code> in kinds where those elements have their standard meanings. For example, <code>&lt;atom:id&gt;</code>, <code>&lt;atom:published&gt;</code>, and <code>&lt;atom:updated&gt;</code> all have their standard meanings when they appear in kinds.</p> 
+    <p>We also don't include information about standard Atom elements that would be meaningless in the given context; for example, <code>&lt;atom:summary&gt;</code> isn't used in the Contact kind, and although <code>&lt;atom:author&gt;</code> is a required element in an entry (unless it's specified in the parent feed), it doesn't have a useful meaning in the Contact kind.</p>
+    <h2>Creating kinds</h2>
+    <p>It may be hard to figure out exactly what information you need to include when creating an entry of a particular kind, especially because some elements in the kinds contain other kinds.</p>
+    <p>One approach that might help is to use the client libraries we provide rather than to try to construct kinds by hand. The client libraries provide various methods for adding and changing data in an entry of a given kind; see the client library documentation for details.</p>
+    <h2>Extensibility</h2>
+    <p>The information in this document doesn't cover all possible properties and attribute values for kinds. Services may extend kinds, so a particular service may use properties and values not included in this document.</p>
+    <h2>Typographical conventions</h2> 
+    <p>In the tables in this document, we use the following conventions for required and optional elements:</p> 
+    <table width="320" border="1">
+      <tr>
+        <td width="95">elementName</td> 
+        <td width="209">Required element</td> 
+      </tr> 
+      <tr>
+        <td>elementName?</td> 
+        <td>Optional element</td> 
+      </tr> 
+      <tr>
+        <td>elementName*</td> 
+        <td>Optional element, multiple instances allowed</td> 
+      </tr> 
+    </table> 
+    <p>Elements and attributes are presented in standard XPath notation.</p>
+    <h1><a name="gdContactKind" id="gdContactKind">Contact kind</a></h1> 
+    <p>Represents a contact: a person, a venue such as a club or a restaurant, or an organization.</p> 
+    <p>Category element: <code>&lt;atom:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#contact"/></code></p> 
+    <p>Note that most of the information about the contact is in the <code>&lt;gd:contactSection&gt;</code> element; see the reference section for that element for details.</p> 
+    <h2>Properties</h2> 
+    <table>
+      <tr>
+        <th>Property</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>atom:category</code>*</td> 
+        <td>Categories. Instances with the <code>@label</code> attribute are treated as tags. For information on using the <code>@scheme</code> attribute, see note at beginning of this section.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:content</code></td> 
+        <td>Notes about the contact.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:link</code>*</td> 
+        <td>Links to more information. Specifically, <code>atom:link[@rel='alternate']</code> provides a link to an HTML page describing the contact. See the table below for other rel values.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:title</code></td> 
+        <td>Contact's name.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdContactSection">contactSection</a></code>*</td> 
+        <td>Collection of contact information entries grouped under a common label. Some properties, such as a mobile phone number or an IM address, may appear in a contact section entry without a label.</td> 
+      </tr> 
+    </table> 
+    <h2>rel values for atom:link</h2> 
+    <table>  
+      <tr>
+        <th>rel value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#image</code></td> 
+        <td>Specifies a URL of an image of the contact.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#onlineLocation</code></td> 
+        <td>Specifies a URL of a contact. If this contact is used within <code>&lt;gd:where&gt;</code> of an event entry, it indicates that an event takes place online at the specified URL.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <pre>&lt;entry xmlns:gd=&quot;http://schemas.google.com/g/2005&quot;&gt;
+  &lt;category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#contact"/&gt;
+  &lt;category term="user-tag" label="Colleague"/&gt;
+  &lt;id&gt;http://contacts.example.com/jo/Jo&lt;/id&gt;
+  &lt;published&gt;2005-01-18T21:00:00Z&lt;/published&gt;
+  &lt;updated&gt;2006-01-01T00:00:00Z&lt;/updated&gt;
+  &lt;title&gt;Jo March&lt;/title&gt;
+  &lt;content/&gt;
+  &lt;gd:contactSection&gt;
+    &lt;gd:im protocol=&quot;AIM&quot; address=&quot;hcc@example.com&quot;/&gt;
+    &lt;gd:phoneNumber rel=&quot;http://schemas.google.com/g/2005#mobile&quot;&gt;(206) 555-1212&lt;/gd:phoneNumber&gt;
+    &lt;gd:phoneNumber rel=&quot;http://schemas.google.com/g/2005#car&quot;&gt;(206) 555-1213&lt;/gd:phoneNumber&gt;
+  &lt;/gd:contactSection&gt;
+  &lt;gd:contactSection label=&quot;Work&quot;&gt;
+    &lt;gd:email address=&quot;jo@example.com&quot;/&gt;
+    &lt;gd:phoneNumber rel=&quot;http://schemas.google.com/g/2005#work&quot;&gt;(650) 555-1212&lt;/gd:phoneNumber&gt;
+    &lt;gd:phoneNumber rel=&quot;http://schemas.google.com/g/2005#pager&quot;&gt;(650) 555-1214&lt;/gd:phoneNumber&gt;
+    &lt;gd:postalAddress&gt;
+      1600 Amphitheatre Pkwy
+      Mountain View, CA 94043
+    &lt;/gd:postalAddress&gt;
+    &lt;gd:geoPt lat=&quot;37.423269&quot; lon=&quot;-122.082667&quot;/&gt;
+  &lt;/gd:contactSection&gt;
+  &lt;gd:contactSection label=&quot;Home&quot;&gt;
+    &lt;gd:email address=&quot;estor@example.org&quot;/&gt;
+    &lt;gd:phoneNumber&gt;(206) 555-1212&lt;/gd:phoneNumber&gt;
+    &lt;gd:postalAddress&gt;
+      800 Main Street
+      Mountain View, CA 94041
+    &lt;/gd:postalAddress&gt;
+  &lt;/gd:contactSection&gt;
+&lt;/entry&gt;
+</pre> 
+    <h1><a name="gdEventKind" id="gdEventKind">Event kind</a></h1> 
+    <p>Represents a calendar event. The event location is represented by a Contact kind embedded in (or linked from) a <code>&lt;gd:where&gt;</code> element; the event planners and attendees are represented as Contact kinds embedded in (or linked from) <code>&lt;gd:who&gt;</code> elements.</p> 
+    <p>Category element: <code>&lt;category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#event"/></code></p> 
+    <h2>Properties</h2> 
+    <table>
+      <tr>
+        <th>Property</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>atom:author</code></td> 
+        <td>Person who created this event.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:category</code>*</td> 
+        <td>Categories. Instances with the <code>@label</code> attribute are treated as tags. For information on using the <code>@scheme</code> attribute, see note at beginning of this section.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:content</code></td> 
+        <td>Longer description of the event.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:link</code>*</td> 
+        <td>Links. Specifically, <code>atom:link[@rel='alternate']</code> provides a link to an HTML page describing the event.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:title</code></td> 
+        <td>Brief title for the event.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdComments">comments</a></code>?</td> 
+        <td>Comments feed.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdEventStatus">eventStatus</a></code>?</td> 
+        <td>Extensible enum documented below.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdRecurrence">recurrence</a></code>?</td> 
+        <td>Recurrence rule.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdTransparency">transparency</a></code>?</td> 
+        <td>Extensible enum documented below, corresponding to the TRANSP property defined in RFC 2445.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdVisibility">visibility</a></code>?</td> 
+        <td>Extensible enum documented below.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdWhen">when</a></code>*</td> 
+        <td>Event time. The <code>startTime</code> and <code>endTime</code> attributes must both be set, although for all-day events those attributes are only dates, with no times.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdWhen">when</a>/gd:reminder</code>*</td> 
+        <td>Reminders for the event.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdWhere">where</a></code>*</td> 
+        <td>Location of the event or nearby necessities such as parking. If a <code>&lt;gd:where&gt;</code> element is specified at the feed level, but there's no <code>&lt;gd:where&gt;</code> element at the entry level, then the entries inherit the feed-level <code>&lt;gd:where&gt;</code> value.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdWho">who</a></code>*</td> 
+        <td>People associated with the event: organizer, attendees, speakers, performers, etc.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdWho">who</a>/gd:attendeeStatus</code>?</td> 
+        <td>Acceptance status.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdWho">who</a>/gd:attendeeType</code>?</td> 
+        <td>Attendee type: <code>required</code> or <code>optional</code>.</td> 
+      </tr> 
+    </table> 
+    <h2>rel values for gd:where</h2> 
+    <table>  
+      <tr>
+        <th>rel value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event</code> or not specified.</td> 
+        <td>Place where the event takes place.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.alternate</code></td> 
+        <td>A secondary location. For example, a remote site with a videoconference link to the main site.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.parking</code></td> 
+        <td>Nearby parking lot.</td> 
+      </tr> 
+    </table> 
+    <h2><a name="gdEventStatus" id="gdEventStatus">gd:eventStatus values</a></h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.canceled</code></td> 
+        <td>The event has been canceled.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.confirmed</code></td> 
+        <td>The event is planned.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.tentative</code></td> 
+        <td>The event is only tentatively scheduled.</td> 
+      </tr> 
+    </table> 
+    <h2><a name="gdVisibility" id="gdVisibility">gd:visibility values</a></h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.confidential</code></td> 
+        <td>Allow some readers to see the event.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.default</code></td> 
+        <td>Inherit the behavior from the preferences of the owner of the calendar on which the event appears.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.private</code></td> 
+        <td>Allow fewest readers to see the event.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.public</code></td> 
+        <td>Allow most readers to see the event.</td> 
+      </tr> 
+    </table> 
+    <h2><a name="gdTransparency" id="gdTransparency">gd:transparency values</a></h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.opaque</code></td> 
+        <td>Indicates event consumes time on calendar; event time will be marked as busy in a free/busy search.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.transparent</code></td> 
+        <td>Indicates event doesn't consume any time on calendar; event time will not be marked as busy in a free/busy search.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <p>Meeting:</p> 
+    <pre>&lt;entry xmlns:gd=&quot;http://schemas.google.com/g/2005&quot;&gt;
+  &lt;category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#event"/&gt;
+  &lt;id&gt;http://mycal.example.com/feeds/jo/home/full/e1a2af06df8a563edf9d32ec9fd61e03f7f3b67b&lt;/id&gt;
+  &lt;published&gt;2005-01-18T21:00:00Z&lt;/published&gt;
+  &lt;updated&gt;2006-01-01T00:00:00Z&lt;/updated&gt;
+  &lt;title&gt;Discuss BazMat API&lt;/title&gt;
+  &lt;content&gt;We will discuss integrating GData with BazMat.&lt;/content&gt;
+  &lt;author&gt;
+    &lt;name&gt;Jo March&lt;/name&gt;
+    &lt;email&gt;jo@example.com&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;gd:when startTime='2005-01-18T21:00:00Z' endTime='2005-01-18T22:00:00Z'&gt;
+    &lt;gd:reminder minutes='15'/&gt;
+  &lt;/gd:when&gt;
+  &lt;gd:where valueString='Building 41, Room X'/&gt;
+  &lt;gd:eventStatus value="http://schemas.google.com/g/2005#event.confirmed"/&gt;
+  &lt;gd:visibility value="http://schemas.google.com/g/2005#event.public"/&gt;
+  &lt;gd:transparency value="http://schemas.google.com/g/2005#event.transparent"/&gt;
+&lt;/entry&gt;</pre> 
+    <p>Online event:</p> 
+    <pre>&lt;entry xmlns:gd=&quot;http://schemas.google.com/g/2005&quot;&gt;
+  &lt;category scheme=&quot;http://schemas.google.com/g/2005#kind&quot; term=&quot;http://schemas.google.com/g/2005#event&quot;/&gt;
+  &lt;id&gt;http://mycal.example.com/feeds/jo/home/full/982307e797979879a&lt;/id&gt;
+  &lt;published&gt;2005-01-18T21:00:00Z&lt;/published&gt;
+  &lt;updated&gt;2006-01-01T00:00:00Z&lt;/updated&gt;
+  &lt;title&gt;Online Chess Tournament&lt;/title&gt;
+  &lt;content/&gt;
+  &lt;author&gt;
+    &lt;name&gt;Jo March&lt;/name&gt;
+    &lt;email&gt;jo@example.com&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;gd:when startTime='2006-01-24T19:00:00-08:00' endTime='2006-01-24T20:00:00-08:00'&gt;
+    &lt;gd:reminder minutes='15'/&gt;
+  &lt;/gd:when&gt;
+  &lt;gd:where&gt;
+    &lt;gd:entryLink&gt;
+      &lt;entry&gt;
+        &lt;category scheme=&quot;http://schemas.google.com/g/2005#kind&quot; term=&quot;http://schemas.google.com/g/2005#contact&quot;/&gt;
+        &lt;id&gt;http://contacts.example.com/jo/GamePhannz&lt;/id&gt;
+        &lt;published&gt;2005-01-18T21:00:00Z&lt;/published&gt;
+        &lt;updated&gt;2006-01-01T00:00:00Z&lt;/updated&gt;
+        &lt;title&gt;GamePhannz Online Game Server&lt;/title&gt;
+        &lt;link rel=&quot;http://schemas.google.com/g/2005#onlineLocation&quot; type=&quot;text/html&quot; href=&quot;http://gamephannz.example.com/chess/138fd87e&quot;/&gt;
+        &lt;content/&gt;
+      &lt;/entry&gt;
+    &lt;/gd:entryLink&gt;
+  &lt;/gd:where&gt;
+  &lt;gd:eventStatus value=&quot;http://schemas.google.com/g/2005#event.confirmed&quot;/&gt;
+  &lt;gd:visibility value=&quot;http://schemas.google.com/g/2005#event.public&quot;/&gt;
+  &lt;gd:transparency value=&quot;http://schemas.google.com/g/2005#event.transparent&quot;/&gt;
+&lt;/entry&gt;</pre> 
+    <h1><a name="gdMessageKind" id="gdMessageKind">Message kind</a></h1> 
+    <p>Represents a message, such as an email, a discussion group posting, or a comment.</p> 
+    <p>Category element: <code>&lt;atom:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#message"/></code></p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>atom:category</code>*</td> 
+        <td>Categories. Instances with the <code>@label</code> attribute are treated as tags. For information on using the <code>@scheme</code> attribute, see note at beginning of this section. For information on using the <code>@term</code> attribute, see table below.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:content</code></td> 
+        <td>Message body.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:link</code>*</td> 
+        <td>Message attachments. Specifically, to upload an attachment, use <code>&lt;link rel=&quot;enclosure&quot;&gt;</code> and put the attachment's content in an Atom media collection.</td> 
+      </tr> 
+      <tr>
+        <td><code>atom:title</code></td> 
+        <td>Message subject.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdGeoPt">geoPt</a></code>?</td> 
+        <td>Geographic location the message was posted from.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdRating">rating</a></code>?</td> 
+        <td>Quality rating (as defined by the application).</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdWho">who</a></code>*</td> 
+        <td>People associated with this message. The exact semantics depends on the <code>@rel</code> value. See table below.</td> 
+      </tr> 
+    </table> 
+    <h2>Category @term values</h2> 
+    <p>All categories below are in the <code>http://schemas.google.com/g/2005</code> scheme.</p> 
+    <table>  
+      <tr>
+        <th>Term</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.chat</code></td> 
+        <td>The message is a transcript of a chat session.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.inbox</code></td> 
+        <td>The message is marked as belonging to the inbox.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.sent</code></td> 
+        <td>The message is marked as sent.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.spam</code></td> 
+        <td>The message is considered spam.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.starred</code></td> 
+        <td>The message is marked as starred.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.unread</code></td> 
+        <td>The message is unread.</td> 
+      </tr> 
+    </table> 
+    <h2>rel values for gd:who</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.bcc</code></td> 
+        <td>Message BCC recipient.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.cc</code></td> 
+        <td>Message CC recipient.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.from</code></td> 
+        <td>Message (email or IM) sender.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.reply-to</code></td> 
+        <td>Intended recipient of a reply message.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.to</code></td> 
+        <td>Message primary recipient.</td> 
+      </tr> 
+    </table> 
+    <h2>Example</h2> 
+    <p>Email message:</p> 
+    <pre>&lt;entry xmlns:gd=&quot;http://schemas.google.com/g/2005&quot;&gt;
+  &lt;category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#message"/&gt;
+  &lt;category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#message.sent"/&gt;
+  &lt;author&gt;
+    &lt;name&gt;Jo March&lt;/name&gt;
+    &lt;email&gt;jo@example.com&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;id&gt;http://mymail.example.com/feeds/jo/home/full/e1a2af06df8a563edf9d32ec9fd61e03f7f3b67b&lt;/id&gt;
+  &lt;published&gt;2006-01-18T21:00:00Z&lt;/published&gt;
+  &lt;updated&gt;2006-01-18T21:00:00Z&lt;/updated&gt;
+  &lt;title&gt;Re: Info?&lt;/title&gt;
+  &lt;content&gt;Hi, Fritz -- The information you're looking for is on p. 47.&lt;/content&gt;
+  &lt;gd:who rel=&quot;http://schemas.google.com/g/2005#message.from&quot;&gt;
+    &lt;gd:entryLink href=&quot;http://contacts.example.com/jo/Jo&quot;/&gt;
+  &lt;/gd:who&gt;
+  &lt;gd:who rel=&quot;http://schemas.google.com/g/2005#message.to&quot;&gt;
+    &lt;gd:entryLink href=&quot;http://contacts.example.com/fritzb/FritzB&quot;/&gt;
+  &lt;/gd:who&gt;
+&lt;/entry&gt;</pre> 
+    <h1><a name="gdReference" id="gdReference">Google data namespace element reference</a></h1> 
+    <p>The rest of this document consists of reference material for the elements used by the kinds.</p> 
+    <ul>
+      <li><a href="#gdEnums">Enums</a></li> 
+      <li><a href="#gdCommonProperties">gdCommonProperties</a></li> 
+      <li><a href="#gdComments">gd:comments</a></li> 
+      <li><a href="#gdContactSection">gd:contactSection</a></li> 
+      <li><a href="#gdEmail">gd:email</a></li> 
+      <li><a href="#gdEntryLink">gd:entryLink</a></li> 
+      <li><a href="#gdExtendedProperty">gd:extendedProperty</a></li>
+      <li><a href="#gdFeedLink">gd:feedLink</a></li> 
+      <li><a href="#gdGeoPt">gd:geoPt</a></li> 
+      <li><a href="#gdIm">gd:im</a></li> 
+      <li><a href="#gdOriginalEvent">gd:originalEvent</a></li> 
+      <li><a href="#gdPhoneNumber">gd:phoneNumber</a></li> 
+      <li><a href="#gdPostalAddress">gd:postalAddress</a></li> 
+      <li><a href="#gdRating">gd:rating</a></li> 
+      <li><a href="#gdRecurrence">gd:recurrence</a></li> 
+      <li><a href="#gdRecurrenceException">gd:recurrenceException</a></li> 
+      <li><a href="#gdReminder">gd:reminder</a></li> 
+      <li><a href="#gdWhen">gd:when</a></li> 
+      <li><a href="#gdWhere">gd:where</a></li> 
+      <li><a href="#gdWho">gd:who</a></li> 
+    </ul> 
+    <h2><a name="gdEnums" id="gdEnums">Enums</a></h2> 
+    <p>Some extension elements need to specify properties whose values come from an enumerated set. The general form of such properties is:</p> 
+    <pre>&lt;gd:propertyName value=&quot;propertyValue&quot;&gt;</pre> 
+    <p>If the property value comes from the Google data namespace, it takes the form <code>http://schemas.google.com/g/2005#</code>{kind}<code>.</code>{value}. For example: <code>http://schemas.google.com/g/2005#event.tentative</code>. If the value space is extensible, values may also be in the form of a URI. The recommended form for extended value URIs is {schema URI}<code>#</code>{value}. For example: <code>http://www.example.com/attendeeStatus#AudioConference</code>.</p> 
+    <pre>gEnumConstruct =
+   attribute value { text },
+   anyAttribute*</pre> 
+    <h2><a name="gdCommonProperties" id="gdCommonProperties">gdCommonProperties</a></h2> 
+    <p>Common properties used for all Google types. Note that the presence of <code>anyAttribute</code> and <code>anyElement</code> in the schema allows all Google data namespace elements using common properties to be further extended in any namespace. In particular it's legal to nest any gd element or any Atom/RSS element within any other gd element. This should be done judiciously, and in most cases such use should be documented as an explicit property of the containing gd element type.</p> 
+    <h3>Properties</h3> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@xml:base</code></td> 
+        <td><code>uri</code></td> 
+        <td>Standard XML construct for describing base of nested relative URIs.</td> 
+      </tr> 
+      <tr>
+        <td><code>@xml:lang</code></td> 
+        <td><code>text</code></td> 
+        <td>Language of nested strings.</td> 
+      </tr> 
+    </table> 
+    <h3>Schema</h3> 
+    <pre>namespace gd = "http://schemas.google.com/g/2005"
+
+gdCommonProperties = {
+   atomCommonAttributes,
+   anyAttribute*,
+   (anyElement*)
+}
+</pre> 
+    <h1><a name="gdComments" id="gdComments">gd:comments</a></h1> 
+    <p>Contains a comments feed for the enclosing entry (such as a  calendar event.).</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@rel</code>?</td> 
+        <td><code>string</code></td> 
+        <td>Type of comments contained within. Currently, there's a distinction between regular comments and reviews.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdFeedLink">feedLink</a></code>?</td> 
+        <td><code>feedLink</code></td> 
+        <td>Comments feed. This feed should implement the <a href="#gdMessageKind">Message</a> kind.</td> 
+      </tr> 
+    </table> 
+    <h2>rel values</h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#regular</code> or not specified</td> 
+        <td>Regular comments (from users).</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#reviews</code></td> 
+        <td>Professional reviews.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <p>Comments feed:</p> 
+    <pre>&lt;gd:comments&gt;
+  &lt;gd:feedLink href=&quot;http://example.com/Jo/posts/MyFirstPost/comments&quot; countHint=&quot;10&quot;&gt;
+    &lt;feed&gt;
+      &lt;id&gt;http://example.com/Jo/posts/MyFirstPost/comments&lt;/id&gt;
+      &lt;title&gt;My first post: comments&lt;/title&gt;
+      ...
+      &lt;entry&gt;
+         ...
+         &lt;content&gt;Good post.&lt;/content&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+         ...
+      &lt;/entry&gt;
+      ...
+    &lt;/feed&gt;
+  &lt;/gd:feedLink&gt;
+&lt;/gd:comments&gt;</pre> 
+    <p>Reviews feed:</p> 
+    <pre>&lt;gd:comments rel=&quot;http://schemas.google.com/g/2005#reviews&quot;&gt;
+  &lt;gd:feedLink href=&quot;http://example.com/restaurants/SanFrancisco/432432/reviews&quot; countHint=&quot;25&quot;&gt;
+    &lt;feed&gt;
+      &lt;id&gt;http://example.com/restaurants/SanFrancisco/432432/reviews&lt;/id&gt;
+      &lt;title&gt;La Folie reviews&lt;/title&gt;
+      ...
+      &lt;entry&gt;
+         ...
+         &lt;content&gt;Good food.&lt;/content&gt;
+         &lt;gd:rating value=&quot;5&quot; min=&quot;1&quot; max=&quot;5&quot;/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+         ...
+      &lt;/entry&gt;
+      ...
+    &lt;/feed&gt;
+  &lt;/gd:feedLink&gt;
+&lt;/gd:comments&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = comments
+
+comments =
+   element gd:comments {
+      gdCommonProperties,
+      attribute rel { xs:string }?,
+      (feedLink?)
+   }</pre> 
+    <h1><a name="gdContactSection" id="gdContactSection">gd:contactSection</a></h1> 
+    <p>Collection of contact information entries grouped under a common label.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr> 
+      <tr>
+        <td><code>@label</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td><p>Label for a kind of contact information, such as "Home", "Work", "New York Office", "Vacation Home", or "Other". Some properties, such as a mobile phone number or an IM address, may appear in a contact section entry without a label.</p></td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdEmail">email</a></code>*</td> 
+        <td><code>email</code></td> 
+        <td>Email addresses.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdGeoPt">geoPt</a></code>*</td> 
+        <td><code>geoPt</code></td> 
+        <td>Geographic locations.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdIm">im</a></code>*</td> 
+        <td><code>im</code></td> 
+        <td>IM addresses.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdPhoneNumber">phoneNumber</a></code>*</td> 
+        <td><code>phoneNumber</code></td> 
+        <td>Phone and fax numbers.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdPostalAddress">postalAddress</a></code>*</td> 
+        <td><code>postalAddress</code></td> 
+        <td>Postal addresses.</td> 
+      </tr> 
+    </table> 
+    <h2>Example</h2> 
+    <pre>  &lt;gd:contactSection label=&quot;Work&quot;&gt;
+    &lt;gd:email address=&quot;jo@example.com&quot;/&gt;
+    &lt;gd:phoneNumber rel=&quot;http://schemas.google.com/g/2005#work&quot;&gt;(650) 555-1212&lt;/gd:phoneNumber&gt;
+    &lt;gd:phoneNumber rel=&quot;http://schemas.google.com/g/2005#pager&quot;&gt;(650) 555-1214&lt;/gd:phoneNumber&gt;
+    &lt;gd:postalAddress&gt;
+      1600 Amphitheatre Pkwy
+      Mountain View, CA 94043
+    &lt;/gd:postalAddress&gt;
+    &lt;gd:geoPt lat=&quot;37.423269&quot; lon=&quot;-122.082667&quot;/&gt;
+  &lt;/gd:contactSection&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = contactSection
+
+contactSection =
+   element gd:contactSection {
+      gdCommonProperties,
+      attribute label { xs:string }?,
+      (email*
+      &amp; im*
+      &amp; phoneNumber*
+      &amp; postalAddress*
+      &amp; geoPt*)
+   }
+</pre> 
+    <h1><a name="gdEmail" id="gdEmail">gd:email</a></h1> 
+    <p>An email address associated with the containing entity (which is usually an entity representing a person or a location).</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr> 
+      <tr>
+        <td><code>@address</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>Email address.</td> 
+      </tr> 
+      <tr>
+        <td><code>@label</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A simple string value used to name this email address. It allows UIs to display a label such as "Work", "Personal", "Preferred", etc.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <pre>&lt;gd:email address=&quot;foo@bar.example.com&quot;/&gt;
+&lt;gd:email label=&quot;Personal&quot; address=&quot;fubar@gmail.com&quot;/&gt;</pre> 
+    <h2>Schema</h2> 
+    <pre>start = email
+
+email =
+   element gd:email {
+      attribute label { xs:string }?,
+      attribute address { xs:string }
+   }
+</pre> 
+    <h1><a name="gdEntryLink" id="gdEntryLink">gd:entryLink</a></h1> 
+    <p>Represents a logically nested entry. For example, a <code>&lt;gd:who&gt;</code> representing a contact might have a nested entry from a contact feed.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@href</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>Specifies the entry URI. If the nested entry is embedded and not linked, this attribute may be omitted.</td> 
+      </tr> 
+      <tr>
+        <td><code>@readOnly</code>?</td> 
+        <td><code>xs:boolean</code></td> 
+        <td>Specifies whether the contained entry is read-only. The default value is <code>"false"</code>.</td> 
+      </tr>
+      <tr>
+        <td><code>@rel</code>?</td>
+        <td><code>xs:string</code></td>
+        <td>Specifies the link relation; allows the service to provide multiple types of entry links for a single entity. Has the same semantics and allowed values as the <code>rel</code> attribute of the <code>&lt;atom:link&gt;</code> element. </td>
+      </tr> 
+      <tr>
+        <td><code>atom:entry</code>?</td> 
+        <td><code>atomEntry</code></td> 
+        <td>Contents of the entry.</td> 
+      </tr> 
+    </table> 
+    <h2>Restrictions</h2> 
+    <ul>
+      <li>Either or both of <code>@href</code> or <code>&lt;atom:entry></code> must be present.</li> 
+      <li>If <code>atom:entry</code> is not present, the client can fetch the contents from the entry URI in <code>@href</code>. If <code>atom:entry</code> is present, the contents must be the same as what would be retrieved from <code>@href</code> at the time the entry was generated.</li> 
+      <li>When a <code>PUT</code> or a <code>POST</code> contains a <code>&lt;gd:entryLink&gt;</code> and the <code>@href</code> attribute is specified, the attribute's value is used to create a link; if the <code>atom:entry</code> element is also present, it is ignored. If the <code>@href</code> attribute is not specified, then the <code>atom:entry</code> element is either stored as an embedded entry or stored in another feed and linked to. Note that some services may not support all of these options.</li> 
+    </ul> 
+    <h2>Examples</h2> 
+    <p>Contact information within <code>&lt;gd:who&gt;</code>:</p> 
+    <pre>&lt;gd:who rel=&quot;http://schemas.google.com/g/2005#event.attendee&quot; valueString=&quot;Jo&quot;&gt;
+  &lt;gd:entryLink href=&quot;http://gmail.com/jo/contacts/Jo&quot;&gt;
+    &lt;entry&gt;
+      &lt;category scheme="http://schemas.google.com/g/2005#kind"
+        term="http://schemas.google.com/g/2005#contact"/&gt;
+      &lt;id&gt;http://gmail.com/jo/contacts/Jo&lt;/id&gt;
+      &lt;category term=&quot;user-tag&quot; label=&quot;Google&quot;/&gt;
+      &lt;title&gt;Jo March&lt;/title&gt;
+      &lt;gd:contactSection&gt;
+        &lt;gd:email address=&quot;jo@example.com&quot;/&gt;
+        &lt;gd:phoneNumber label=&quot;work&quot;&gt;(650) 555-1212&lt;/gd:phoneNumber&gt;
+      &lt;/gd:contactSection&gt;
+    &lt;/entry&gt;
+  &lt;/gd:entryLink&gt;
+&lt;/gd:who&gt;</pre> 
+    <p>External reference only (read-only entry):</p> 
+    <pre>&lt;gd:who rel="http://schemas.google.com/g/2005#event.attendee" valueString="Jo"&gt;
+  &lt;gd:entryLink href="http://gmail.com/jo/contacts/Jo" readOnly="true"/&gt;
+&lt;/gd:who&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = entryLink
+
+entryLink =
+   element gd:entryLink {
+      attribute href { xs:string }?,
+      attribute readOnly { xs:boolean }?,
+      (atomEntry?)
+   }
+</pre> 
+    <h1><a name="gdExtendedProperty" id="gdExtendedProperty">gd:extendedProperty</a></h1> 
+    <p>Allows you to store a limited amount of custom data as an auxiliary property of the enclosing entity.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr> 
+      <tr>
+        <td><code>@name</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>Specifies the name of the property expressed as a URI. Extended property URIs usually follow the {scheme}#{local-name} convention.</td> 
+      </tr> 
+      <tr>
+        <td><code>@value</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>Property value.</td> 
+      </tr> 
+    </table> 
+    <h2>Example</h2> 
+    <p>An external identifier for a calendar event:</p> 
+    <pre>&lt;gd:extendedProperty name=&quot;http://www.example.com/schemas/2007#mycal.id&quot;
+  value=&quot;1234&quot;&gt;&lt;/gd:extendedProperty&gt; </pre> 
+    <h2>Schema</h2>
+    <pre>start = extendedProperty
+
+extendedProperty =
+   element gd:extendedProperty {
+      attribute name { xs:string },
+      attribute value { xs:string }
+   }
+</pre> 
+    <h1><a name="gdFeedLink" id="gdFeedLink">gd:feedLink</a></h1> 
+    <p>Represents a logically nested feed. For example, a calendar feed might have a nested feed representing all comments on entries.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@countHint</code>?</td> 
+        <td><code>xs:unsignedInt</code></td> 
+        <td>Hints at the number of entries in the feed. Depending on the implementation, may not be a precise count.</td> 
+      </tr> 
+      <tr>
+        <td><code>@href</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>Specifies the feed URI. If the nested feed is embedded and not linked, this attribute may be omitted.</td> 
+      </tr> 
+      <tr>
+        <td><code>@readOnly</code>?</td> 
+        <td><code>xs:boolean</code></td> 
+        <td>Specifies whether the contained feed is read-only.</td> 
+      </tr>
+      <tr>
+        <td><code>@rel</code>?</td>
+        <td><code>xs:string</code></td>
+        <td>Specifies the link relation; allows the service to provide multiple types of feed links for a single entity. Has the same semantics and allowed values as the <code>rel</code> attribute of the <code>&lt;atom:link&gt;</code> element. </td>
+      </tr> 
+      <tr>
+        <td><code>atom:feed</code>?</td> 
+        <td><code>atomFeed</code></td> 
+        <td>Contents of the feed.</td> 
+      </tr> 
+    </table> 
+    <h2>Restrictions</h2> 
+    <ul>
+      <li>Either or both of <code>@href</code> or <code>&lt;atom:feed></code> must be present.</li> 
+      <li>If <code>atom:feed</code> is not present, the client can fetch the contents from the URI in <code>@href</code>. If it is present, the contents must the same as what would be retrieved from <code>@href</code> at the time the feed was generated.</li> 
+      <li>When a PUT or a POST contains a <code>&lt;gd:feedLink&gt;</code> and the <code>@href</code> attribute is specified, the attribute's value is used to create a link; if the <code>&lt;atom:feed&gt;</code> element is also present, it is ignored. If the <code>@href</code> attribute is not specified, then the <code>&lt;atom:feed&gt;</code> element is stored as an embedded feed. Note that some services may not support all of these options.</li> 
+    </ul> 
+    <h2>Examples</h2> 
+    <p>Blogging:</p> 
+    <pre>&lt;gd:feedLink href=&quot;http://example.com/Jo/posts/MyFirstPost/comments&quot; countHint=&quot;10&quot;&gt;
+    &lt;feed&gt;
+      &lt;id&gt;http://example.com/Jo/posts/MyFirstPost/comments&lt;/id&gt;
+      &lt;title&gt;My first post: comments&lt;/title&gt;
+      ...
+      &lt;entry&gt;
+         ...
+         &lt;content&gt;Good post.&lt;/content&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+         ...
+      &lt;/entry&gt;
+      ...
+    &lt;/feed&gt;
+  &lt;/gd:feedLink&gt;
+</pre> 
+    <p>External reference only:</p> 
+    <pre>&lt;gd:feedLink href="http://example.com/Jo/posts/MyFirstPost/comments"
+            countHint="10"/&gt;
+</pre> 
+    <p>Embedded feed within an Atom entry representing a list:</p> 
+    <pre>&lt;gd:feedLink&gt;
+  &lt;feed&gt;
+    &lt;id&gt;cid:1&lt;/id&gt;
+    &lt;entry&gt;
+       &lt;id&gt;cid:1.1&lt;/id&gt;
+       &lt;content&gt;list item 1&lt;/content&gt;
+    &lt;/entry&gt;
+    &lt;entry&gt;
+       &lt;id&gt;cid:1.2&lt;/id&gt;
+       &lt;content&gt;list item 2&lt;/content&gt;
+    &lt;/entry&gt;
+  &lt;/feed&gt;
+&lt;/gd:feedLink&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = feedLink
+
+feedLink =
+   element gd:feedLink {
+      attribute href { xs:string }?,
+      attribute readOnly { xs:boolean }?,
+      attribute countHint { xs:unsignedInt }?,
+      (atomFeed?)
+   }
+</pre> 
+    <h1><a name="gdGeoPt" id="gdGeoPt">gd:geoPt</a></h1> 
+    <p>A geographical location (latitude, longitude, elevation).</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@elev</code>?</td> 
+        <td><code>xs:float</code></td> 
+        <td>Elevation in meters. Negative values indicate depths below mean sea level.</td> 
+      </tr> 
+      <tr>
+        <td><code>@label</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A simple string value used to name this location. It allows UIs to display a label such as "Current Position".</td> 
+      </tr> 
+      <tr>
+        <td><code>@lat</code></td> 
+        <td><code>xs:float</code></td> 
+        <td>Latitude in degrees. Positive values mean North, negative values mean South. The range is [-90.0, 90.0].</td> 
+      </tr> 
+      <tr>
+        <td><code>@lon</code></td> 
+        <td><code>xs:float</code></td> 
+        <td>Longitude in degrees. Positive values mean East, negative values mean West. The range is [-180.0, 180.0].</td> 
+      </tr> 
+      <tr>
+        <td><code>@time</code>?</td> 
+        <td><code>xs:dateTime</code></td> 
+        <td>Timestamp.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <pre>&lt;gd:geoPt lat="40.75" lon="-74.0"/&gt;</pre> 
+    <pre>&lt;gd:geoPt lat="27.98778" lon="86.94444" elev="8850.0"/&gt;</pre> 
+    <h2>Schema</h2> 
+    <pre>start = geoPt
+
+geoPt =
+   element gd:geoPt {
+      attribute label { xs:string }?,
+      attribute lat { xs:float },
+      attribute lon { xs:float },
+      attribute elev { xs:float }?,
+      attribute time { xs:dateTime }?
+   }
+</pre> 
+    <h1><a name="gdIm" id="gdIm">gd:im</a></h1> 
+    <p>An instant messaging address associated with the containing entity.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@address</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>IM address.</td> 
+      </tr> 
+      <tr>
+        <td><code>@label</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A simple string value used to name this IM address. It allows UIs to display a label such as "Work", "Personal", "Preferred", etc.</td> 
+      </tr> 
+      <tr>
+        <td><code>@protocol</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>Identifies the IM network. The value may be either one of the standard values (shown below) or a URI identifying a proprietary IM network.</td> 
+      </tr> 
+    </table> 
+    <h2>protocol attribute values</h2> 
+    <p>The following table shows some likely possible values for the @protocol attribute.</p> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>sip</code></td> 
+        <td>SIP/SIMPLE</td> 
+      </tr> 
+      <tr>
+        <td><code>unknown</code></td> 
+        <td>Unknown or unspecified protocol</td> 
+      </tr> 
+      <tr>
+        <td><code>xmpp</code></td> 
+        <td>XMPP (the protocol used by Google Talk, among others)</td> 
+      </tr> 
+      <tr>
+        <td><code>http://www.aim.com/</code></td> 
+        <td>AIM</td> 
+      </tr> 
+      <tr>
+        <td><code>http://www.icq.com/</code></td> 
+        <td>ICQ</td> 
+      </tr> 
+      <tr>
+        <td><code>http://messenger.msn.com/</code></td> 
+        <td>MSN Messenger</td> 
+      </tr> 
+      <tr>
+        <td><code>http://messenger.yahoo.com/</code></td> 
+        <td>Yahoo Messenger</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <p>A SIP/SIMPLE IM address:</p> 
+    <pre>&lt;gd:im protocol="sip" address="foo@bar.example.com"/&gt;
+</pre> 
+    <p>A user-provided IM address an unspecified protocol. Such an address is useful for display purposes, but is difficult to handle programmatically.</p> 
+    <pre>&lt;gd:im label="Other" address="foo@baz.example.com"/&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = im
+
+im =
+   element gd:im {
+      attribute label { xs:string }?,
+      attribute protocol { xs:string }?,
+      attribute address { xs:string }?
+   }
+</pre> 
+    <h1><a name="gdOriginalEvent" id="gdOriginalEvent">gd:originalEvent</a></h1> 
+    <p>Equivalent to the Recurrence ID property specified in section 4.8.4.4 of <a href="http://www.faqs.org/rfcs/rfc2445.html">RFC 2445</a>. Appears in every instance of a recurring event, to identify the original event.</p>
+    <p>Contains a <code><a href="#gdWhen">&lt;gd:when&gt;</a></code> element specifying the original start time of the instance that has become an exception.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@id</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>The event ID for the original event.</td> 
+      </tr> 
+      <tr>
+        <td><code>@href</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>The event feed URL for the original event.</td> 
+      </tr> 
+    </table> 
+    <h2>Example</h2> 
+    <p>Specifying an original event:</p> 
+    <pre>&lt;gd:originalEvent id=&quot;i8fl1nrv2bl57c1qgr3f0onmgg&quot;
+   
+href=&quot;http://www.google.com/calendar/feeds/<i>userID</i>/private-<i>magicCookie</i>/full/<i>eventID</i>&quot;&gt;
+  &lt;gd:when startTime=&quot;2006-03-17T22:00:00.000Z&quot;/&gt;<br />&lt;/gd:originalEvent&gt;</pre> 
+    <h2>Schema</h2> 
+    <pre>start = originalEvent
+
+originalEvent =
+   element gd:originalEvent {
+      attribute id { xs:string },
+      attribute href { xs:string },
+      when
+   }
+</pre> 
+    <h1><a name="gdPhoneNumber" id="gdPhoneNumber">gd:phoneNumber</a></h1> 
+    <p>A phone number associated with the containing entity (which is usually an entity representing a person or a location).</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@label</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A simple string value used to name this phone number. In most cases, <code>@label</code> is not necessary as <code>@rel</code> uniquely identifies a number and allows UIs to display a proper label such as "Mobile", "Home", "Work", etc. However, in the case where one person has (for example) multiple mobile phones, this property can be used to disambiguate them.</td> 
+      </tr> 
+      <tr>
+        <td><code>@rel</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A programmatic value that identifies the type of phone number; see below for details.</td> 
+      </tr> 
+      <tr>
+        <td><code>@uri</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>An optional &quot;tel URI&quot; used to represent the number in a formal way, useful for programmatic access, such as a VoIP/PSTN bridge. See <a href="http://rfc3966.x42.com/">RFC 3966</a> for more information on tel URIs.</td> 
+      </tr> 
+      <tr>
+        <td><code>text()</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>Human-readable phone number; may be in any telephone number format. Leading and trailing whitespace is insignificant. Newlines within the string are also insignificant, and may be removed or flattened out to a single space.</td> 
+      </tr> 
+    </table> 
+    <h2>rel values</h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#car</code></td> 
+        <td>Number of a car phone.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#fax</code></td> 
+        <td></td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#general</code> or not specified</td> 
+        <td>Unknown or unspecified type, such as a business phone number that doesn't belong to a particular person.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#home</code></td> 
+        <td></td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#internal-extension</code></td> 
+        <td>Phone number that makes sense only in a context known to the user (such as an enterprise PBX).</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#mobile</code></td> 
+        <td></td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#other</code></td> 
+        <td>A special type of number for which no other <code>rel</code> value makes sense. For example, a TTY device. <code>label</code> can be used to indicate the actual type.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#pager</code></td> 
+        <td></td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#satellite</code></td> 
+        <td></td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#voip</code></td> 
+        <td></td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#work</code></td> 
+        <td></td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <p>Simple phone number entered by a user:</p> 
+    <pre>&lt;gd:phoneNumber&gt;(425) 555-8080 ext. 72585&lt;/gd:phoneNumber&gt;
+</pre> 
+    <p>Same phone number drawn from a directory:</p> 
+    <pre>&lt;gd:phoneNumber rel="http://schemas.google.com/g/2005#work" uri="tel:+1-425-555-8080;ext=52585"&gt;
+  (425) 555-8080 ext. 52585
+&lt;/gd:phoneNumber&gt;
+</pre> 
+    <p>Internal phone number entered by a user:</p> 
+    <pre>&lt;gd:phoneNumber rel="http://schemas.google.com/g/2005#internal-extension"&gt;x72585&lt;/gd:phoneNumber&gt;
+</pre> 
+    <p>Same internal phone number drawn from a directory:</p> 
+    <pre>&lt;gd:phoneNumber rel="http://schemas.google.com/g/2005#internal-extension" uri="tel:72585;phone-context=example.com"&gt;
+  x72585
+&lt;/gd:phoneNumber&gt;
+</pre> 
+    <p>Number with a label:</p> 
+    <pre>&lt;gd:phoneNumber rel="http://schemas.google.com/g/2005#mobile" label="Personal calls only" uri="tel:+12065551212"&gt;
+  +1 206 555 1212
+&lt;/gd:phoneNumber&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = phoneNumber
+
+phoneNumber =
+   element gd:phoneNumber {
+      attribute rel { xs:string }?,
+      attribute label { xs:string }?,
+      attribute uri { xs:string }?,
+      (xs:string)
+   }
+</pre> 
+    <h1><a name="gdPostalAddress" id="gdPostalAddress">gd:postalAddress</a></h1> 
+    <p>A postal address.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@label</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A simple string value used to name this address.</td> 
+      </tr> 
+      <tr>
+        <td><code>text()</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>Address. Leading and trailing whitespace is insignificant. Newlines within the string are significant.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <pre>&lt;gd:postalAddress&gt;
+  500 West 45th Street
+  New York, NY 10036
+&lt;/gd:postalAddress&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = postalAddress
+
+postalAddress =
+   element gd:postalAddress {
+      attribute label { xs:string }?,
+      (xs:string)
+   }
+</pre> 
+    <h1><a name="gdRating" id="gdRating">gd:rating</a></h1> 
+    <p>Represents a numeric rating of the enclosing entity, such as a comment. Each rating supplies its own scale, although it may be normalized by a service; for example, some services might convert all ratings to a scale from 1 to 5.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@average</code>?</td> 
+        <td><code>xs:float</code></td> 
+        <td>Average rating.</td> 
+      </tr> 
+      <tr>
+        <td><code>@max</code></td> 
+        <td><code>xs:int</code></td> 
+        <td>The rating scale's maximum value.</td> 
+      </tr> 
+      <tr>
+        <td><code>@min</code></td> 
+        <td><code>xs:int</code></td> 
+        <td>The rating scale's minimum value.</td> 
+      </tr> 
+      <tr>
+        <td><code>@numRaters</code>?</td> 
+        <td><code>xs:int</code></td> 
+        <td>Number of ratings taken into account when computing the average value.</td> 
+      </tr> 
+      <tr>
+        <td><code>@rel</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>Specifies the aspect that's being rated. If not specified, the rating is an overall rating.</td> 
+      </tr> 
+      <tr>
+        <td><code>@value</code>?</td> 
+        <td><code>xs:int</code></td> 
+        <td>Rating value.</td> 
+      </tr> 
+    </table> 
+    <h2>rel values</h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#overall</code> or not specified</td> 
+        <td>Overall rating. Higher values mean better ratings.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#price</code></td> 
+        <td>Price rating. Higher values mean higher prices.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#quality</code></td> 
+        <td>Quality rating. Higher values mean better quality.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <p>4/5 overall rating:</p> 
+    <pre>&lt;gd:rating value="4" min="1" max="5"/&gt;
+</pre> 
+    <p>Most expensive price range rating:</p> 
+    <pre>&lt;gd:rating rel="http://schemas.google.com/g/2005#price" value="5" min="1" max="5"/&gt;
+</pre> 
+    <p>Rated by 200 users with an average rating of 4.65 out of 5:</p> 
+    <pre>&lt;gd:rating average="4.65" min="1" max="5" numRaters="200"/&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = rating
+
+rating =
+   element gd:rating {
+      gdCommonProperties,
+      attribute rel { xs:string }?,
+      attribute value { xs:int }?,
+      attribute average { xs:float }?,
+      attribute min { xs:int },
+      attribute max { xs:int },
+      attribute numRaters { xs:int }?
+   }
+</pre> 
+    <h1><a name="gdRecurrence" id="gdRecurrence">gd:recurrence</a></h1> 
+    <p>Represents the dates and times when a recurring event takes place.</p> 
+    <p>The string that defines the recurrence consists of a set of properties, each of which is defined in the <a href="http://www.ietf.org/rfc/rfc2445.txt">iCalendar</a> standard (RFC 2445).</p> 
+    <p>Specifically, the string usually begins with a DTSTART property that indicates the starting time of the first instance of the event, and often a DTEND property or a DURATION property to indicate when the first instance ends. Next come RRULE, RDATE, EXRULE, and/or EXDATE properties, which collectively define a recurring event and its exceptions (but see below). (See section 4.8.5 of RFC 2445 for more information about these recurrence component properties.) Last comes a VTIMEZONE component, providing detailed timezone rules for any timezone ID mentioned in the preceding properties.</p> 
+    <p>Google services like Google Calendar don't generally generate EXRULE and EXDATE properties to represent exceptions to recurring events; instead, they generate <code><a href="#gdRecurrenceException">&lt;gd:recurrenceException&gt;</a></code> elements. However, Google services may include EXRULE and/or EXDATE properties anyway; for example, users can import events and exceptions into Calendar, and if those imported events contain EXRULE or EXDATE properties, then Calendar will provide those properties when it sends a <code>&lt;gd:recurrence&gt;</code> element.</p> 
+    <p>Note the the use of <code>&lt;gd:recurrenceException&gt;</code> means that you can't be sure just from examining a <code>&lt;gd:recurrence&gt;</code> element whether there are any exceptions to the recurrence description. To ensure that you find all exceptions, look for <code>&lt;gd:recurrenceException&gt;</code> elements in the feed, and use their <code><a href="#gdOriginalEvent">&lt;gd:originalEvent&gt;</a></code> elements to match them up with <code>&lt;gd:recurrence&gt;</code> elements.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>text()</code></td> 
+        <td><code>xs:string</code></td> 
+        <td>Recurrence description.</td> 
+      </tr> 
+    </table> 
+    <h2>Example</h2> 
+    <p>A recurring event that takes place every morning from 6:00 to 7:00 a.m., Pacific time, from March 14 through March 21, 2006:</p> 
+    <pre>&lt;gd:recurrence&gt;
+  DTSTART;TZID=America/Los_Angeles:20060314T060000
+  DURATION:PT3600S
+  RRULE:FREQ=DAILY;UNTIL=20060321T220000Z
+  BEGIN:VTIMEZONE
+  TZID:America/Los_Angeles
+  X-LIC-LOCATION:America/Los_Angeles
+  BEGIN:STANDARD
+  TZOFFSETFROM:-0700
+  TZOFFSETTO:-0800
+  TZNAME:PST
+  DTSTART:19671029T020000
+  RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+  END:STANDARD
+  BEGIN:DAYLIGHT
+  TZOFFSETFROM:-0800
+  TZOFFSETTO:-0700
+  TZNAME:PDT
+  DTSTART:19870405T020000
+  RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+  END:DAYLIGHT
+  END:VTIMEZONE
+&lt;/gd:recurrence&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = recurrence
+
+recurrence =
+   element gd:recurrence {
+      (xs:string)
+   }
+</pre> 
+    <h1><a name="gdRecurrenceException" id="gdRecurrenceException">gd:recurrenceException</a></h1> 
+    <p>Represents an event that's an exception to a recurring event&mdash;that is, an instance of a recurring event in which one or more aspects of the recurring event (such as attendance list, time, or location) have been changed.</p> 
+    <p>Contains a <code><a href="#gdOriginalEvent">&lt;gd:originalEvent&gt;</a></code> element
+        that specifies the original recurring event that this event is
+        an exception to.</p>
+    <p>When you change an instance of a recurring event, that instance becomes an exception. Depending on what change you made to it, the exception behaves in either of two different ways when the original recurring event is changed:</p>
+    <ul>
+      <li>If you add, change, or remove comments, attendees, or attendee responses, then the exception remains tied to the original event, and changes to the original event also change the exception.</li>
+      <li>If you make any other changes to the exception (such as changing the time or location) then the instance becomes &quot;specialized,&quot; which means that it's no longer as tightly tied to the original event. If you change the original event, specialized exceptions don't change. But see below.</li>
+    </ul>
+    <p>For example, say you have a meeting every Tuesday and Thursday at 2:00 p.m. If you change the attendance list for this Thursday's meeting (but not for the regularly scheduled meeting), then it becomes an exception. If you change the time for this Thursday's meeting (but not for the regularly scheduled meeting), then it becomes specialized.</p>
+    <p>Regardless of whether an exception is specialized or not, if you do something that deletes the instance that the exception was derived from, then the exception is deleted. Note that changing the day or time of a recurring event deletes all instances, and creates new ones.</p>
+    <p>For example, after you've specialized this Thursday's meeting, say you change the recurring meeting to happen on Monday, Wednesday, and Friday. That change deletes all of the recurring instances of the Tuesday/Thursday meeting, including the specialized one.</p>
+    <p>If a particular instance of a recurring event is deleted, then that instance appears as a <code>&lt;gd:recurrenceException&gt;</code> containing a <code>&lt;gd:entryLink&gt;</code> that has its <code>&lt;gd:eventStatus&gt;</code>  set to <code>&quot;http://schemas.google.com/g/2005#event.canceled&quot;</code>. (For more information about canceled events, see RFC 2445.)</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@specialized</code></td> 
+        <td><code>xs:boolean</code></td> 
+        <td>Indicates whether the exception is specialized or not.</td> 
+      </tr>
+      <tr>
+        <td><code>gd:entryLink</code></td>
+        <td><code>entryLink</code></td>
+        <td>An Event entry providing the details about the exception.</td>
+      </tr>
+      <tr>
+        <td><code>gd:originalEvent</code></td>
+        <td><code>originalEvent</code></td>
+        <td>The original recurring event that this is an exception to.</td>
+      </tr> 
+    </table> 
+    <h2>Example</h2> 
+    <p>An exception to a recurring event (with some pieces replaced by brief italicized identifiers for clarity):</p> 
+    <pre>&lt;gd:recurrenceException specialized=&quot;true&quot;&gt;
+  &lt;gd:entryLink&gt;
+    &lt;entry&gt;
+      &lt;id&gt;i8fl1nrv2bl57c1qgr3f0onmgg_20060317T220000Z&lt;/id&gt;
+      &lt;published&gt;2006-03-17T23:00:00.000Z&lt;/published&gt;
+      &lt;updated&gt;2006-03-14T21:33:12.000Z&lt;/updated&gt;
+      &lt;category scheme=&quot;http://schemas.google.com/g/2005#kind&quot;
+        term=&quot;http://schemas.google.com/g/2005#event&quot;/&gt;
+      &lt;title type=&quot;text&quot;&gt;recurrence&lt;/title&gt;
+      &lt;content type=&quot;text&quot;/&gt;
+      &lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot;
+        href=&quot;http://www.google.com/calendar/event?eid=<i>idString</i>&quot;
+        title=&quot;alternate&quot;/&gt;
+      &lt;author&gt;
+        &lt;name&gt;exception&lt;/name&gt;
+      &lt;/author&gt;
+      &lt;gd:eventStatus
+        value=&quot;http://schemas.google.com/g/2005#event.confirmed&quot;/&gt;
+      &lt;gd:comments&gt;
+        &lt;gd:feedLink
+            href=&quot;http://www.google.com/calendar/feeds/<i>userID</i>/private-<i>magicCookie</i>/full/<i>eventID</i>/comments/&quot;&gt;
+          &lt;feed&gt;
+            &lt;updated&gt;2006-03-14T21:36:23.250Z&lt;/updated&gt;
+            &lt;title type=&quot;text&quot;&gt;Comments for: recurrence&lt;/title&gt;
+            &lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot;
+              href=&quot;http://www.google.com/calendar/feeds/<i>userID</i>/private-<i>magicCookie</i>/full/<i>eventID</i>/comments/&quot;
+              title=&quot;alternate&quot;/&gt;
+          &lt;/feed&gt;
+        &lt;/gd:feedLink&gt;
+      &lt;/gd:comments&gt;
+      &lt;gd:transparency
+        value=&quot;http://schemas.google.com/g/2005#event.opaque &quot;/&gt;
+      &lt;gd:originalEvent id=&quot;i8fl1nrv2bl57c1qgr3f0onmgg&quot;
+          href=&quot;http://www.google.com/calendar/feeds/<i>userID</i>/private-<i>magicCookie</i>/composite/<i>eventID</i>&quot;&gt;
+        &lt;gd:when startTime=&quot;2006-03-17T22:00:00.000Z&quot;/&gt;
+      &lt;/gd:originalEvent&gt;
+      &lt;gd:where valueString=&quot;Home&quot;/&gt;
+      &lt;gd:when startTime=&quot;2006-03-17T23:00:00.000Z&quot;
+        endTime=&quot;2006-03-18T00:00:00.000Z&quot;/&gt;
+    &lt;/entry&gt;
+  &lt;/gd:entryLink&gt;
+&lt;/gd:recurrenceException&gt;</pre> 
+    <h2>Schema</h2> 
+    <pre>start = recurrenceException
+
+recurrenceException =
+   element gd:recurrenceException {
+      attribute specialized { xs:boolean },
+      (entryLink
+       &amp; originalEvent)
+   }
+</pre> 
+    <h1><a name="gdReminder" id="gdReminder">gd:reminder</a></h1> 
+    <p><b>Most often used in: <a href="#gdWhen">&lt;gd:when&gt;</a></b></p> 
+    <p>A time interval, indicating how long before the containing entity's <code>@startTime</code> or <code>@dueTime</code> attribute a reminder should be issued. Alternatively, may specify an absolute time at which a reminder should be issued. Also specifies a notification method, indicating what medium the system should use to remind the user.</p>
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@absoluteTime</code>?</td> 
+        <td><code>xs:dateTime</code></td> 
+        <td>Absolute time at which the reminder should be issued. This is typically used when a user uses a &quot;snooze&quot; feature to delay a previous reminder. If the timezone is not specified, the observer's local time is assumed.</td> 
+      </tr> 
+      <tr>
+        <td><code>@method</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>The notification method the reminder should use. Can have any of the following values: <code>alert</code> (causes an alert to appear when a user is viewing the calendar in a browser), <code>email</code> (sends the user an email message), or <code>sms</code> (sends the user an SMS text message).</td>
+      </tr> 
+      <tr>
+        <td><code>@days</code>?</td> 
+        <td><code>xs:unsignedInt</code></td> 
+        <td rowspan="3">Period of time before <code>gd:when/@startTime</code> when a reminder should be issued. If the parent entity's target time is a date rather than a specific time, then these attributes are relative to midnight (00:00) on that date.</td> 
+      </tr> 
+      <tr>
+        <td><code>@hours</code>?</td> 
+        <td><code>xs:unsignedInt</code></td> 
+      </tr> 
+      <tr>
+        <td><code>@minutes</code>?</td> 
+        <td><code>xs:unsignedInt</code></td> 
+      </tr> 
+    </table> 
+    <p>When you create or edit a <code>&lt;gd:when&gt;</code> entry, use the following conventions to achieve particular results:</p>
+    <ul>
+      <li>To tell the service to use the user's default reminders, include a <code>&lt;gd:reminder&gt;</code> element with no attributes.  If you specify a duration but no <code>method</code> attribute, then the service uses the user's default notification methods with the duration you specified.</li>
+      <li>To tell the service to not issue any reminders for the event (or to remove existing reminders when updating an event), don't include any <code>&lt;gd:reminder&gt;</code> elements.</li>
+    </ul>
+    <h2>Restrictions</h2> 
+    <ul>
+      <li>At most one of <code>@days</code>, <code>@hours</code>, <code>@minutes</code>, or <code>@absoluteTime</code> may be specified. To specify a mixed duration, convert to the most precise unit. For example, to specify 1 hour 30 minutes, use <code>@minutes=&quot;90&quot;</code>.</li> 
+      <li>You can't use negative values for the attributes (so if you want a reminder to occur after the start time, you must use <code>@absoluteTime</code>).</li> 
+      <li>A given event  can't have more than five reminders associated with it.</li>
+      <li>When you're adding a reminder to an event, if you specify the <code>alert</code>, <code>email</code>, or <code>sms</code> methods, you must also specify a duration.</li>
+    </ul> 
+    <h2>Examples</h2> 
+    <p>A 15-minute reminder for a meeting:</p> 
+    <pre>&lt;gd:when startTime="2005-06-06T17:00:00-08:00" endTime="2005-06-06T18:00:00-08:00"&gt;
+  &lt;gd:reminder minutes="15"/&gt;
+&lt;/gd:when&gt;
+</pre> 
+    <p>Same meeting as above, but snoozed for 10 minutes after the reminder at 16:45:</p> 
+    <pre>&lt;gd:when startTime="2005-06-06T17:00:00-08:00" endTime="2005-06-06T18:00:00-08:00"&gt;
+  &lt;gd:reminder minutes="15"/&gt;
+  &lt;gd:reminder absoluteTime="2005-06-06T16:55:00-08:00"/&gt;
+&lt;/gd:when&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = reminder
+
+reminder =
+   element gd:reminder {
+      gdCommonProperties,
+      attribute absoluteTime { xs:dateTime }?,
+      attribute method { xs:string }?,
+      attribute days { xs:unsignedInt }?,
+      attribute hours { xs:unsignedInt }?,
+      attribute minutes { xs:unsignedInt }?
+   }
+</pre> 
+    <h1><a name="gdWhen" id="gdWhen">gd:when</a></h1> 
+    <p>Represents a period of time or an instant.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@endTime</code>?</td> 
+        <td><code>xs:dateTime</code> or <code>xs:date</code></td> 
+        <td>Describes when the event ends. If the timezone is not specified, the observer's local timezone is assumed.</td> 
+      </tr> 
+      <tr>
+        <td><code>@startTime</code></td> 
+        <td><code>xs:dateTime</code> or <code>xs:date</code></td> 
+        <td>Describes when the event starts or (for zero-duration events) when it occurs. If the timezone is not specified, the observer's local timezone is assumed.</td> 
+      </tr> 
+      <tr>
+        <td><code>@valueString</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A simple string value that can be used as a representation of this time period.</td> 
+      </tr> 
+    </table> 
+    <h2>Restrictions</h2> 
+    <ul>
+      <li>It's not possible to mix <code>xs:dateTime</code> with <code>xs:date</code> in <code>startTime</code>/<code>endTime</code>.</li> 
+      <li>If <code>endTime</code> is not specified, then the event is considered to be an instant in time (if <code>@startTime</code> includes a time) or a one-day event (if <code>@startTime</code> is only a date).</li> 
+    </ul> 
+    <h2>Examples</h2> 
+    <p>A one-day event:</p> 
+    <pre>&lt;gd:when startTime="2005-06-06"/&gt;</pre> 
+    <p>Alternative representation of a one-day event:</p>
+    <pre>&lt;gd:when startTime="2005-06-06" endTime="2005-06-07"/&gt;</pre> 
+    <p>A two-day event (on June 6 and June 7) with a string description:</p> 
+    <pre>&lt;gd:when startTime="2005-06-06" endTime="2005-06-08" valueString="This weekend"/&gt;
+</pre> 
+    <p>A one-hour meeting:</p> 
+    <pre>&lt;gd:when startTime="2005-06-06T17:00:00-08:00" endTime="2005-06-06T18:00:00-08:00"/&gt;
+</pre> 
+    <p>A zero-duration event:</p> 
+    <pre>&lt;gd:when startTime="2005-06-06T17:00:00-08:00"/&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = when
+
+when =
+   element gd:when {
+      gdCommonProperties,
+      attribute startTime { (xs:date | xs:dateTime) },
+      attribute endTime { (xs:date | xs:dateTime) }?,
+      attribute valueString { xs:string }?
+   }
+</pre> 
+    <h1><a name="gdWhere" id="gdWhere">gd:where</a></h1> 
+    <p>A place (such as an event location) associated with the containing entity. The type of the association is determined by the <code>rel</code> attribute; the details of the location are contained in an embedded or linked-to Contact entry.</p>
+    <p>A <code>&lt;gd:where&gt;</code> element is more general than a <code>&lt;gd:geoPt&gt;</code> element. The former identifies a place using a text description and/or a Contact entry, while the latter identifies a place using a specific geographic location.</p>
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@label</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>Specifies a user-readable label to distinguish this location from other locations.</td> 
+      </tr> 
+      <tr>
+        <td><code>@rel</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>Specifies the relationship between the containing entity and the contained location. Possible values (see below) are defined by other elements. For example, <code>&lt;gd:when&gt;</code> defines <code>http://schemas.google.com/g/2005#event</code>.</td> 
+      </tr> 
+      <tr>
+        <td><code>@valueString</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A simple string value that can be used as a representation of this location.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdEntryLink">entryLink</a></code>?</td> 
+        <td><code>entryLink</code></td> 
+        <td>Entry representing location details. This entry should implement the <a href="#gdContactKind">Contact</a> kind.</td> 
+      </tr> 
+    </table> 
+    <h2>rel values</h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event</code> or not specified</td> 
+        <td>Place where the enclosing event takes place.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.alternate</code></td> 
+        <td>A secondary location. For example, a remote site with a videoconference link to the main site.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.parking</code></td> 
+        <td>A nearby parking lot.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <p>Event location:</p> 
+    <pre>&lt;gd:where valueString="Google Cafeteria (Building 40)"/&gt;
+</pre> 
+    <p>More complicated event location:</p> 
+    <pre>&lt;gd:where rel="http://schemas.google.com/g/2005#event" valueString="Joe's Pub"&gt;
+  &lt;gd:entryLink href="http://local.example.com/10018/JoesPub"&gt;
+    &lt;gd:entry&gt;
+      &lt;id&gt;http://local.example.com/10018/JoesPub&lt;/id&gt;
+      &lt;category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#contact"/&gt;
+      &lt;content&gt;Nice place to listen to jazz music&lt;/content&gt;
+      &lt;link href="http://www.joespub.com"/&gt;
+      &lt;gd:contactSection&gt;
+        &lt;gd:postalAddress&gt;500 West 45th Street, New York, NY 10018&lt;/gd:postalAddress&gt;
+        &lt;gd:geoPt lat="40.75" lon="-74.0"/&gt;
+        &lt;gd:phoneNumber&gt;(212) 555-1212&lt;/gd:phoneNumber&gt;
+        &lt;gd:email address="info@joespub.com"/&gt;
+      &lt;/gd:contactSection&gt;
+    &lt;/gd:entry&gt;
+  &lt;/gd:entryLink&gt;
+&lt;/gd:where&gt;
+</pre> 
+    <p>Event with multiple locations:</p> 
+    <pre>&lt;gd:where label="Mountain View Location (main)"
+         valueString="Google Cafeteria (Building 40)"/&gt;
+
+&lt;gd:where rel="http://schemas.google.com/g/2005#event.alternate"
+         label="New York Location (videoconference)"
+         valueString="Metropolis"/&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = where
+
+where =
+   element gd:where {
+      gdCommonProperties,
+      attribute rel { xs:string }?,
+      attribute label { xs:string }?,
+      attribute valueString { xs:string }?,
+      (entryLink?)
+   }
+</pre> 
+    <h1><a name="gdWho" id="gdWho">gd:who</a></h1> 
+    <p>A person associated with the containing entity. The type of the association is determined by the <code>rel</code> attribute; the details about the person are contained in an embedded or linked-to Contact entry.</p> 
+    <p>The <code>&lt;gd:who&gt;</code> element can be used to specify email senders and recipients, calendar event organizers, and so on.</p> 
+    <h2>Properties</h2> 
+    <table>  
+      <tr>
+        <th>Property</th> 
+        <th>Type</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>@email</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>Email address. This property is typically used when <code>&lt;gd:entryLink&gt;</code> is not specified. The address must comply with <a href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>, section 3.4.1.</td> 
+      </tr> 
+      <tr>
+        <td><code>@rel</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>Specifies the relationship between the containing entity and the contained person. See below for possible values.</td> 
+      </tr> 
+      <tr>
+        <td><code>@valueString</code>?</td> 
+        <td><code>xs:string</code></td> 
+        <td>A simple string value that can be used as a representation of this person.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdAttendeeStatus">attendeeStatus</a></code>?</td> 
+        <td><code>gEnumConstruct</code></td> 
+        <td>Status of event attendee. Extensible enum documented below.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdAttendeeType">attendeeType</a></code>?</td> 
+        <td><code>gEnumConstruct</code></td> 
+        <td>Type of event attendee. Extensible enum documented below.</td> 
+      </tr> 
+      <tr>
+        <td><code>gd:<a href="#gdEntryLink">entryLink</a></code>?</td> 
+        <td><code>entryLink</code></td> 
+        <td>Entry representing person details. This entry should implement the <a href="#gdContactKind">Contact</a> kind. In many cases, this entry will come from a contact feed.</td> 
+      </tr> 
+    </table> 
+    <h2>rel values</h2> 
+    <p>The valid values for @rel depend on which kind the <code>&lt;gd:who&gt;</code> element appears in.</p> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Kind</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.attendee</code></td> 
+        <td><a href="#gdEventKind">Event</a></td> 
+        <td>A general meeting/event attendee.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.organizer</code></td> 
+        <td><a href="#gdEventKind">Event</a></td> 
+        <td>Event organizer. An organizer is not necessarily an attendee.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.performer</code></td> 
+        <td><a href="#gdEventKind">Event</a></td> 
+        <td>Performer. Similar to <code>http://schemas.google.com/g/2005#event.speaker</code>, but with more emphasis on art than speech delivery.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.speaker</code></td> 
+        <td><a href="#gdEventKind">Event</a></td> 
+        <td>Speaker.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.bcc</code></td> 
+        <td><a href="#gdMessageKind">Message</a></td> 
+        <td>Message BCC recipient.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.cc</code></td> 
+        <td><a href="#gdMessageKind">Message</a></td> 
+        <td>Message CC recipient.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.from</code></td> 
+        <td><a href="#gdMessageKind">Message</a></td> 
+        <td>Message (email or IM) sender.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.reply-to</code></td> 
+        <td><a href="#gdMessageKind">Message</a></td> 
+        <td>Intended recipient of a reply message.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#message.to</code></td> 
+        <td><a href="#gdMessageKind">Message</a></td> 
+        <td>Message primary recipient.</td> 
+      </tr> 
+    </table> 
+    <h2><a name="gdAttendeeType" id="gdAttendeeType">gd:attendeeType Values</a></h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.optional</code></td> 
+        <td>Optional attendee.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.required</code></td> 
+        <td>Required attendee.</td> 
+      </tr> 
+    </table> 
+    <h2><a name="gdAttendeeStatus" id="gdAttendeeStatus">gd:attendeeStatus Values</a></h2> 
+    <table>  
+      <tr>
+        <th>Value</th> 
+        <th>Description</th> 
+      </tr>
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.accepted</code></td> 
+        <td>Attendee has accepted.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.declined</code></td> 
+        <td>Attendee has declined.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.invited</code></td> 
+        <td>Invitation has been sent, but the person has not accepted.</td> 
+      </tr> 
+      <tr>
+        <td><code>http://schemas.google.com/g/2005#event.tentative</code></td> 
+        <td>Attendee has accepted tentatively.</td> 
+      </tr> 
+    </table> 
+    <h2>Examples</h2> 
+    <p>Email recipients:</p> 
+    <pre>&lt;gd:who rel="http://schemas.google.com/g/2005#message.from" email="jo@example.com"/&gt;
+&lt;gd:who rel="http://schemas.google.com/g/2005#message.to" valueString="Elizabeth" email="liz@example.com"/&gt;</pre> 
+    <p>Meeting attendee:</p> 
+    <pre>&lt;gd:who rel="http://schemas.google.com/g/2005#event.attendee" valueString="Jo"&gt;
+  &lt;gd:attendeeType value="http://schemas.google.com/g/2005#event.required"/&gt;
+  &lt;gd:attendeeStatus value="http://schemas.google.com/g/2005#event.tentative"/&gt;
+  &lt;gd:entryLink href="http://gmail.com/jo/contacts/Jo"&gt;
+    &lt;entry&gt;
+      &lt;id&gt;http://gmail.com/jo/contacts/Jo&lt;/id&gt;
+      &lt;category term="user-tag" label="Google"/&gt;
+      &lt;title&gt;Jo March&lt;/title&gt;
+      &lt;gd:contactSection&gt;
+        &lt;gd:email address="jo@example.com"/&gt;
+        &lt;gd:phoneNumber label="work"&gt;(650) 555-1212&lt;/gd:phoneNumber&gt;
+      &lt;gd:contactSection&gt;
+    &lt;/entry&gt;
+  &lt;/gd:entryLink&gt;
+&lt;/gd:who&gt;
+</pre> 
+    <p>Event organizer:</p> 
+    <pre>&lt;gd:who rel="http://schemas.google.com/g/2005#event.organizer" valueString="Receptionist 41"/&gt;
+</pre> 
+    <h2>Schema</h2> 
+    <pre>start = who
+
+who =
+   element gd:who {
+      gdCommonProperties,
+      attribute rel { xs:string }?,
+      attribute email { xs:string }?,
+      attribute valueString { xsd:string }?,
+      (entryLink?
+       &amp; element gd:attendeeType { gEnumConstruct }?
+       &amp; element gd:attendeeStatus { gEnumConstruct }?)
+   }</pre> 
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

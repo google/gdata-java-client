@@ -28,6 +28,7 @@ public class GoogleBaseQuery extends Query {
   private static final String BQ_PARAMETER = "bq";
   private static final String MAX_VALUES_PARAMETER = "max-values";
   private static final String ORDER_BY = "orderby";
+  private static final String CROWD_BY = "crowdby";
   private static final String SORT_ORDER = "sortorder";
   private static final String CONTENT = "content";
   private static final String REFINE = "refine";
@@ -171,6 +172,15 @@ public class GoogleBaseQuery extends Query {
   }
 
   /**
+   * Sets the criteria used for crowding the results in groups.
+   *
+   * @param crowdBy crowding criteria (see documentation)
+   */
+  public void setCrowdingBy(String crowdBy) {
+    overwriteCustomParameter(CROWD_BY, crowdBy);
+  }
+  
+  /**
    * Gets the criteria that will be used to sort the results.
    *
    * @return criteria or null if no order has been set
@@ -179,6 +189,15 @@ public class GoogleBaseQuery extends Query {
     return getCustomParameterValue(ORDER_BY);
   }
 
+  /**
+   * Gets the criteria that will be used to crowd the results.
+   *
+   * @return criteria or null if no crowding has been set
+   */
+  public String getCrowdBy() {
+    return getCustomParameterValue(CROWD_BY);
+  }
+  
   /**
    * Changes the order in which results are returned (ascending
    * or descending).

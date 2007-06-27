@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../../../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../../../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="../../local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ieonly.css" />
+<![endif]-->
+<title>Google Base data API- Accessing the Google Base data API using Java</title>
+</head>
+<body id="sample_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+    <div id="sidenav"> <!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="../../index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="../../sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="../../starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="../../attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="../../javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="../../csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="../../snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="../../items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="../../attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="../../itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="../../locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="../../query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="../../ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="../../client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="../../signup.html" id="signup_link">API Key</a></li>
+      <li><a href="../../terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="../../release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+      </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <!-- This comment prevents 
+	space-->
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+</form>
+ </div>
+  <!-- ########## END SIDE NAVIGATION ########## -->
+<div id="pagecontent">
+  <!-- ########## PAGE CONTENT ########## -->
+  <h2 id="page_title">Understanding the Java QueryExample2 API Sample Application</h2>
+  <p><strong>Select a language:</strong> |<activeLang> Java </activelang>
+| <a href="../javascript/javascript-sample.html">JavaScript</a> | <a href="../perl/perl-sample.html">Perl</a> | <a href="../php/php-sample-zend.html">PHP</a> | <a href="../python/python-sample.html">Python</a> | <a href="../csharp/csharp-sample.html">C#</a> | <a href="../vb/vb-sample.html">VB.NET</a> | <a href="../coldfusion/coldfusion-sample.html">ColdFusion</a> </p>
+  <p id="langSelect"> <a href="java-sample.html">Java Sample Home</a> <a href="java-sample-api-query1.html">QueryExample1</a> <strong>QueryExample2</strong> <a href="java-sample-api-query3.html">QueryExample3</a> <a href="java-sample-api-insert.html">InsertExample</a> <a href="java-sample-api-update.html">UpdateExample</a> </p>
+
+  <p><code>QueryExample2</code> queries the Google Base data API, parses the result, and displays the titles of the returned data items.</p>
+  <p>One major problem with <code>QueryExample1</code> is that it simply dumps
+    query results to the console, and the result is barely
+    readable. In any real life application the query result would need to be
+    parsed, interpreted, and the relevant information extracted and
+    displayed to the user. In <code>QueryExample2</code> we demonstrate a
+    possible way of doing this by using a SAX parser to extract each data item's
+    title from the result and display it to the console. Some very basic
+    understanding of how SAX parsers work is necessary in order to fully
+    understand this example.</p>
+  <p>One might argue that for this task we don't even need a SAX parser. We
+    could just search for all <code>&lt;title&gt;</code> tags in the result and
+    display the characters that they enclose. Unfortunately, that wouldn't work,
+    as the Atom response also has a <code>&lt;title&gt;</code> tag, which is the
+    title of the feed:</p>
+  <pre>&lt;feed&gt;
+  ...
+  &lt;title type=&quot;text&quot;&gt;Items matching query: cars [item type : products]&lt;/title&gt;
+  ...
+    &lt;entry&gt;
+    ...
+      &lt;title type='text'&gt;Great car for sale&lt;/title&gt;
+      ...  
+</pre>
+  <p>Atom does not mandate that the feed's <code>&lt;title&gt;</code> tag
+    should appear at a specific position inside the feed, so we need to make sure
+    we only display the <code>&lt;title&gt;</code> tags which are sub-elements of
+    an <code>&lt;entry&gt;</code> tag. </p>
+<h3>Contents</h3>
+<ol class="toc">
+    <li><a href="#QE2run">Running QueryExample2</a> </li>
+    <li><a href="#QE2stepThru">Stepping through the QueryExample2 code </a></li>
+  </ol>
+  <h2><a name="QE2run" id="QE2run"></a>Running QueryExample2</h2>
+  <ol>
+    <li><a href="http://code.google.com/apis/base/signup.html">Obtain a developer key</a> for an &quot;installed application&quot;. </li>
+    <li>Edit <code><a href="QueryExample2.java" target="_blank">QueryExample2.java</a></code> and fill in the <code>DEVELOPER_KEY</code> static string with your developer key. <a href=
+  'http://code.google.com/apis/base/signup.html'></a></li>
+    <pre>private static final String DEVELOPER_KEY = &quot;&quot;; </pre>
+    <li>Compile and run the example using your favorite editor, or using the
+      command line: </li>
+    <pre>javac com/google/api/gbase/examples/basic/QueryExample2.java
+java com/google/api/gbase/examples/basic/QueryExample2
+</pre>
+  </ol>
+  <p>The output will be as follows: </p>
+  <pre>Item 1: Johnny Lightning MUSCLE CARS R8 1967 Chevelle SS
+Item 2: Johnny Lightning MUSCLE CARS USA 2005 Ford GT
+...
+Item 25: The Cars movie Hinged tool Box Toy Organize lunch RARE  </pre>
+  <h2><a name="QE2stepThru" id="QE2stepThru"></a>Stepping through the QueryExample2 code</h2>
+  <p>As in the previous example, we first send the query to the Google
+    Base data API server and obtain an <code>inputStream</code> containing the
+    response:</p>
+  <pre>URL url = new URL(SNIPPETS_FEED + &quot;?bq=&quot; + 
+  URLEncoder.encode(QUERY, &quot;UTF-8&quot;) + &quot;&amp;key=&quot; + DEVELOPER_KEY);
+HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+InputStream inputStream = httpConnection.getInputStream();
+</pre>
+  <p>We then use a standard SAX parser to parse the result. We obtain a <code>SAXParser</code> instance using a <code>SAXParserFactory</code>:</p>
+  <pre>SAXParserFactory factory = SAXParserFactory.newInstance();
+SAXParser parser = factory.newSAXParser();
+</pre>
+  <p>We then parse the resulting <code>inputStream</code> using <code>DisplayTitlesHandler()</code>, our custom SAX event handler: </p>
+  <pre>parser.parse(inputStream, new DisplayTitlesHandler());  </pre>
+  <p><code>DisplayTitlesHandler()</code> is derived from the no-op SAX parser, <code>org.xml.sax.helpers.DefaultHandler</code>. The logic inside <code>DisplayTitlesHandler()</code> is pretty simple: we keep a stack of the
+    currently open XML tags and print all character data when we are inside a <code>&lt;title&gt;</code> tag that has an <code>&lt;entry&gt;</code> parent. The <code>insideEntryTitle</code> flag is turned on each time we are inside an <code>&lt;entry&gt;&lt;title&gt;</code> pair.</p>
+  <pre>public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+  if (qName.equals(&quot;title&quot;) &amp;&amp; xmlTags.peek().equals(&quot;entry&quot;)) {
+    insideEntryTitle = true;
+    System.out.print(&quot;Item &quot; + ++itemNo + &quot;: &quot;);
+  } 
+  xmlTags.push(qName);  </pre>
+  <p>Since <code>startElement()</code> is invoked each time the SAX parser
+    encounters an opening XML tag, we switch on <code>insideEntryTitle</code> only
+    if the currently parsed opening tag is <code>&lt;title&gt;</code> and the tag
+    on the top of the stack is <code>&lt;entry&gt;</code> . Here, we are also printing
+    the <code>itemNo</code> messages, rather than in the <code>characters</code> method, as <code>characters</code> can be called multiple times for different
+    chunks of the title's character data.<br />
+    <br />
+    The <code>endElement()</code> method is invoked each time an XML tag closes.
+    All we need to do here is to remove the closing XML tag from the stack and,
+    if the removed XML tag was an entry's title, flip <code>insideEntryTitle</code> to <code>false</code> and go to a new line in the console
+    in preparation for printing out the next title.</p>
+  <pre>public void endElement(String uri, String localName, String qName) throws SAXException {
+  xmlTags.pop();
+  if (insideEntryTitle) {
+    insideEntryTitle = false;
+    System.out.println();
+  }
+}
+  </pre>
+  <p>The <code>characters()</code> method is invoked when the parser encounters
+    character data inside an XML element. If we are inside the <code>&lt;title&gt;</code> tag; that is, if the <code>insideEntryTitle</code> flag is on, we display the current characters: <code>length</code> characters
+    from the <code>ch</code> array, starting with <code>start</code>. As noted
+    earlier, we can't use <code>println</code> here to get to a new line, as <code> characters</code> can be invoked multiple times for different chunks of the
+    same title.</p>
+  <pre>public void characters(char[] ch, int start, int length) throws SAXException {
+  if (insideEntryTitle) {
+    System.out.print(new String(ch, start, length));
+  }
+}
+</pre>
+  <p>In the <code>main</code> method, all we do is create an instance of <code>QueryExample2</code> and invoke its <code>displayItems()</code> method.</p>
+  <pre>public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
+  new QueryExample2().displayItems();
+}
+</pre>
+<p align="right">Go to <a href="java-sample-api-query3.html">QueryExample3</a></p>
+</div>
+<!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  urchinTracker();
+</script>
+</body>
+</html>

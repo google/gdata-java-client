@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Code Search Data API Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+     color: #000000;
+}
+-->
+</style>
+</head>
+<body id="gdata_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Code Search Data API </h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Code Search </h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="gdata.html" id="gdata_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://code.google.com/tos.html">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>GData Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://groups.google.com/group/Google-Code-Search">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+    <h1 id="page_title">Google Code Search Data API Developer's Guide </h1>
+    <p>The Google Code Search data API allows client applications to search public source code for function definitions and sample code.</p>
+    <h1>Contents</h1>
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#Example">Interacting with Google Code Search: examples</a>
+        <ol>
+          <li><a href="#Send_Query_Manual">Send a query manually</a></li>
+          <li><a href="#Send_Query_Library">Send a query using the client library</a></li>
+        </ol>
+      </li>
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications that can interact with Code Search. It provides a series of examples of basic data API interactions, with explanations. </p>
+    <p>For Code Search data API reference information, see the <a href="reference.html">reference guide</a>. </p>
+    <p>This document assumes that you understand the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>. It also assumes that you know how to program in Java.</p>
+    <p>The examples in this document use the <a href="../gdata/client-java.html">GData Java client library</a>; see the client library documentation for more information and more (non-Code-Search-specific) examples. If your client is written in another language, see the client library documentation for that language, if available; you can translate the examples in this document into other languages as needed.</p>
+    <p>For more information about Google Code Search, see the <a href="http://www.google.com/help/faq_codesearch.html">Google Code Search  FAQ</a>.</p>
+    <h1><a name="Example" id="Example">Interacting with Google Code Search: examples</a></h1>
+    <p>To send a query to Google Code Search, your client application can take either of the following approaches:</p>
+    <ol type="A">
+      <li><a href="#Send_Query_Manual">Send a query manually</a></li>
+      <li><a href="#Send_Query_Library">Send a query using the client library </a></li>
+    </ol>
+    <h2><a name="Send_Query_Manual" id="Send_Query_Manual">Send a query manually</a></h2>
+    <p>Code Search lets you request all known public code samples that match a specified regular expression. For details about query parameters, see <a href="reference.html#Parameters">Google Code Search query parameters reference</a>.</p>
+    <p>To get a feed of results from Code Search, send an HTTP <code>GET</code> request to <code>http://www.google.com/codesearch/feeds/search</code>, with the appropriate query parameters.</p>
+    <p>For example, to request a feed of occurrences of the string <code>malloc</code>, you can use   the following HTTP request:</p>
+    <pre>GET http://www.google.com/codesearch/feeds/search?q=malloc</pre>
+    <p>When you send that request, Code Search returns an HTTP <code>200 OK</code> status code and a feed containing entries representing the search results.</p>
+    <p>An entry in the returned feed might resemble the following:</p>
+    <pre>&lt;entry xmlns:gcs=&quot;http://schemas.google.com/codesearch/2006&quot;&gt;
+  &lt;id&gt;http://www.google.com/codesearch?q=malloc+show:fLwrFGa3hx&lt;/id&gt;
+  &lt;updated&gt;2006-10-02T15:08:42Z&lt;/updated&gt;
+  &lt;author&gt;
+    &lt;name&gt;Code owned by external author.&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;title type="text"&gt;w3c-libwww-5.4.0/Library/src/wwwsys.h&lt;/title&gt;
+  &lt;link rel="alternate" type="text/html"
+      href="http://www.google.com/codesearch?q=malloc+show:fLwrFGa3hxs"/&gt;
+  &lt;gcs:package name="http://www.w3.org/Library/Distribution/w3c-libwww-5.4.0.zip"
+      uri="http://www.w3.org/Library/Distribution/w3c-libwww-5.4.0.zip"/&gt;
+  &lt;gcs:file name="w3c-libwww-5.4.0/Library/src/wwwsys.h"/&gt;
+  &lt;gcs:match lineNumber="706" type="text/html"&gt;
+    &amp;lt;pre&amp;gt;Memory Module for how to handle &amp;lt;b&amp;gt;malloc&amp;lt;/b&amp;gt; and &amp;lt;/pre&amp;gt;
+  &lt;/gcs:match&gt;
+  &lt;gcs:match lineNumber="716" type="text/html"&gt;
+    &amp;lt;pre&amp;gt;#define &amp;lt;b&amp;gt;malloc&amp;lt;/b&amp;gt;	VAXC$&amp;lt;b&amp;gt;MALLOC&amp;lt;/b&amp;gt;_OPT&amp;lt;/pre&amp;gt;
+  &lt;/gcs:match&gt;
+  &lt;gcs:match lineNumber="1032" type="text/html"&gt;
+    &amp;lt;pre&amp;gt;/* &amp;lt;b&amp;gt;malloc&amp;lt;/b&amp;gt;.h */&amp;lt;/pre&amp;gt;
+  &lt;/gcs:match&gt;
+  &lt;gcs:match lineNumber="1033" type="text/html"&gt;
+    &amp;lt;pre&amp;gt;#ifdef HAVE_&amp;lt;b&amp;gt;MALLOC&lt;/b&amp;gt;_H&amp;lt;/pre&amp;gt;
+  &lt;/gcs:match&gt;
+  &lt;gcs:match lineNumber="1034" type="text/html"&gt;
+    &amp;lt;pre&amp;gt;#include &amp;lt;&amp;lt;b&amp;gt;malloc&amp;lt;/b&amp;gt;.h&amp;gt;&amp;lt;/pre&amp;gt;
+  &lt;/gcs:match&gt;
+&lt;/entry&gt;</pre>
+    <p>For information about the elements used in an entry, see <a href="reference.html#Elements">Google Code Search elements reference</a>.</p>
+    <h2><a name="Send_Query_Library" id="Send_Query_Library">Send a query using the client library </a></h2>
+    <p>You
+      can use the client library to send a query instead of
+      sending it by hand. </p>
+    <p>For example, to search for occurrences of the string <code>malloc</code>, use the following Java code:</p>
+    <pre>CodeSearchService myService = new CodeSearchService(&quot;exampleCo-exampleApp-1&quot;);
+URL feedUrl = new URL(&quot;http://www.google.com/codesearch/feeds/search?q=malloc&quot;);
+
+// Send the request and receive the response:
+CodeSearchFeed resultFeed =
+  myService.getFeed(feedUrl, CodeSearchFeed.class);
+System.out.println("Number of Entries Received: " + resultFeed.getEntries().size());</pre>
+    <p>The <code>CodeSearchService</code> class represents a client connection to a GData service. When you pass the complete query URL to the <code>CodeSearchService.getFeed</code> method, the client library sends your query and receives and parses the returned XML.</p>
+    <p>For more information and examples, see the Java client library documentation.</p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

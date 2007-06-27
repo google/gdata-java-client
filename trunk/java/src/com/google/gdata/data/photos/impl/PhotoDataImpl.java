@@ -19,6 +19,8 @@ package com.google.gdata.data.photos.impl;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.geo.Point;
+import com.google.gdata.data.geo.impl.PointDataImpl;
 import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaKeywords;
 import com.google.gdata.data.photos.ExifTags;
@@ -35,18 +37,21 @@ import com.google.gdata.data.photos.pheed.PheedThumbnail;
 import com.google.gdata.data.photos.pheed.PheedVideoUrl;
 import com.google.gdata.util.ParseException;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Implementation class for photo data objects.  This class takes an
  * {@link ExtensionPoint} and uses it to provide all of the methods that
- * {@link PhotoGphotoData} specifies.  These methods are handled by using
+ * {@link PhotoData} specifies.  These methods are handled by using
  * extension classes to retrieve or set extensions of the appropriate type.
  *
  * 
  */
 public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
 
+  private PointDataImpl geoData;
 
   /**
    * Construct a new implementation of PhotoGphotoData with the given extension
@@ -54,6 +59,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
    */
   public PhotoDataImpl(ExtensionPoint extensionPoint) {
     super(extensionPoint);
+    geoData = new PointDataImpl(extensionPoint);
   }
 
   /*
@@ -76,6 +82,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
     declare(extProfile, GphotoChecksum.getDefaultDescription());
     declare(extProfile, GphotoTimestamp.getDefaultDescription());
     declare(extProfile, GphotoExifTime.getDefaultDescription());
+    declare(extProfile, GphotoStreamId.getDefaultDescription());
 
     declare(extProfile, ExifTags.getDefaultDescription());
     new ExifTags().declareExtensions(extProfile);
@@ -85,6 +92,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
 
     declareMediaExtensions(extProfile);
 
+    geoData.declareExtensions(extProfile);
   }
 
   /**
@@ -342,7 +350,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   /**
    * @return true if comments are enabled in the photo the item represents.
    */
-  public Boolean getCommentsEnabled() throws ParseException {
+  public Boolean getCommentsEnabled() {
     return getBooleanValue(GphotoCommentsEnabled.class);
   }
 
@@ -380,10 +388,17 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   }
 
   /**
+   * @return the media:group element on the extension point.
+   */
+  public MediaGroup getMediaGroup() {
+    return getExtension(MediaGroup.class);
+  }
+
+  /**
    * @return the media:keywords that are the keywords on the item.
    */
   public MediaKeywords getKeywords() {
-    MediaGroup group = getExtension(MediaGroup.class);
+    MediaGroup group = getMediaGroup();
     if (group != null) {
       return group.getKeywords();
     }
@@ -400,6 +415,46 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
       addExtension(group);
     }
     group.setKeywords(keywords);
+  }
+
+  public List<String> getStreamIds() {
+    List<GphotoStreamId> exts = getRepeatingExtension(GphotoStreamId.class);
+    List<String> streamIds = new ArrayList<String>(exts.size());
+    for (GphotoStreamId streamId : exts) {
+      streamIds.add(streamId.getValue());
+    }
+    return streamIds;
+  }
+
+  public void addStreamId(String streamId) {
+    addRepeatingExtension(new GphotoStreamId(streamId));
+  }
+
+  /**
+   * Sets the geo-location of where the photo was taken.
+   *
+   * @param lat The latitude coordinate, between -90 and 90 degrees.
+   * @param lon The longitude coordinate, between -180 and 180 degrees.
+   */
+  public void setGeoLocation(Double lat, Double lon) {
+    geoData.setGeoLocation(lat, lon);
+  }
+
+  /**
+   * Sets the geo-location of where the photo was taken.
+   *
+   * @param point A point containing the latitude and longitude coordinates.
+   */
+  public void setGeoLocation(Point point) {
+    geoData.setGeoLocation(point);
+  }
+
+  /**
+   * Gets the geo-location of where the photo was taken.
+   * @return a Point that contains the geo-coordinates (latitude and longitude).
+   */
+  public Point getGeoLocation() {
+    return geoData.getGeoLocation();
   }
 
   /**
@@ -565,6 +620,21 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
     public static ExtensionDescription getDefaultDescription() {
       return new ExtensionDescription(GphotoVideoUrl.class,
           Namespaces.PHOTOS_NAMESPACE, "videosrc");
+    }
+  }
+
+  public static class GphotoStreamId extends GphotoConstruct {
+    public GphotoStreamId() {
+      this(null);
+    }
+
+    public GphotoStreamId(String streamId) {
+      super("streamId", streamId);
+    }
+
+    public static ExtensionDescription getDefaultDescription() {
+      return new ExtensionDescription(GphotoStreamId.class,
+          Namespaces.PHOTOS_NAMESPACE, "streamId", false, true, false);
     }
   }
 }

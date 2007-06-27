@@ -1,0 +1,948 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+  table.syn {
+    font-size: 100%;
+    margin-top: 1.6em;
+    margin-bottom: 1.6em;
+	margin-left: 5%;
+	margin-right: 5%;
+	border: 1px solid #ccccd3;
+	background-color: #eeeeff;
+	padding: 0.8em 0.5em 0.8em 1.0em;
+  }
+  td.synfst {
+	border: 0px;
+	background-color: #eeeeff;
+	text-align: left;
+	vertical-align: top;
+	margin-top: 1em;
+	margin-left: 0x;
+	padding: 8px 0px 1px 0px;
+  }
+  td.syn {
+	border: 0px;
+	background-color: #eeeeff;
+	text-align: left;
+	vertical-align: top;
+	margin-left: 0x;
+	padding: 1px 0px 1px 0px;
+  }
+</style>
+<title>Google Base data API- Query Language</title>
+</head>
+<body id="query_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+<div id="sidenav">
+	<!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="signup.html" id="signup_link">API Key</a></li>
+      <li><a href="terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+    </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+</form>
+
+  </div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <div id="pagecontent">
+    <!-- ########## PAGE CONTENT ########## -->
+    <h2 id="page_title">Query Language</h2>
+    <p> Google Base is a general-purpose repository hosting structured, typed
+      data. Query languages used for other Google services like web search,
+      on the other hand, are designed for searching unstructured textual content.
+      In order to allow Google Base client applications to submit precise queries
+      that constrain the structure of items as well as the value of certain
+      attributes, the Google Base data API supports a structured attribute-based
+      query language. This language also features full support for traditional
+      free-form text search queries. </p>
+    <p>This document provides both an overview over the Google Base query language
+      and a detailed description of the various language elements. It is intended
+      for programmers who want to query data from Google Base using the Google
+      Base data API. The item feeds of the API accept queries in the presented
+      language. </p>
+    <p> The document assumes that the reader is familiar with one of Google's
+      existing query languages. Knowledge of BNF (Backus Naur Form) is helpful
+      for understanding the syntax specification of the various language constructs. </p>
+    <!-- ----------------------------------------------------------------- -->
+    <h3>Contents</h3>
+    <ol class="toc">
+      <li> <a href="#overview">Overview</a></li>
+      <li> <a href="#composition">Query Composition</a></li>
+      <li> <a href="#textsearch">Text Search</a></li>
+      <li> <a href="#attributes">Attribute Search</a></li>
+      <li> <a href="#lexical">Lexical Syntax</a></li>
+    </ol>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- ----------------------------------------------------------------- -->
+    <h2 style="margin-bottom: -10px"><a name="overview" id="overview"></a>Overview </h2>
+    <h3>Composing queries</h3>
+    <p> The Google Base query language adds linguistic constructs for attribute-centric
+      search queries in a conservative way, fully reusing established query
+      composition mechanisms. For instance, a sequence of search terms is interpreted
+      as a conjunction: only documents that match <u>all</u> the individual
+      terms also match the full query. The following Google Base query would
+      yield all data items that contain both terms <code>digital</code> and <code>camera</code> in
+      an arbitrary order in arbitrary attribute values or attribute names. </p>
+    <pre>digital camera</pre>
+    <p style="margin-bottom: -1px;"> </p>
+    <h3>Expressing constraints on attributes</h3>
+    <p> To restrict the search to only those data items describing digital cameras
+      whose resolution is at least 3 megapixels, we have to add a constraint
+      on an imaginary attribute <code>megapixel</code> of type <code>float</code>: </p>
+    <pre>digital camera [megapixel(float) &gt;= 3.0]</pre>
+    <p> The sub-query <code>[megapixel(float) &gt;= 3.0]</code> only matches
+      data items which define a <code>megapixel</code> attribute of type <code>float</code> with
+      a value of at least 3. The tuple <code>megapixel(float)</code> is called
+      an <i>attribute identifier</i>, It specifies both the <i>attribute name</i> and
+      the <i>attribute type</i>. The remainder of the attribute query <code>&gt;=
+        3.0</code> refers to the constraint on the attribute value. </p>
+    <p> Since it is tedious to state the full attribute identifier whenever a
+      user wants to constrain an attribute's value, the proposed query language
+      is able to infer the type from the value constraint. The following query
+      is equivalent to the one before; the constraint on the type of attribute <code>megapixel</code> gets
+      inferred from the value <code>3.0</code>. </p>
+    <pre>digital camera [megapixel &gt;= 3.0]</pre>
+    <p> Sometimes a user is just interested in the existence of an attribute.
+      This can easily be queried by omitting a value constraint. For instance,
+      the following specialization of the previous query would only return
+      data items which have an associated attribute <code>price</code> of type <code>int</code>. </p>
+    <pre>digital camera [megapixel &gt;= 3.0] [price(int)]</pre>
+    <p> Again, it is possible to omit the type specification. In this case, any
+      attribute with the given name matches the query: </p>
+    <pre>digital camera [megapixel &gt;= 3.0] [price]</pre>
+    <p> Currently, Google Base supports the predefined attribute types <code>text</code>, <code>bool</code>, <code>number</code>, <code>int</code>, <code>float</code>, <code>date</code>, <code>daterange</code>,
+      and <code>location</code>. The numeric types have a parametric form where
+      the type parameter refers to a unit of measure. For instance, the value <code>3.0
+        px</code> has the parameterized type <code>float px</code>, referring
+      to floating point values associated with the unit <code>px</code>. Thus,
+      if we want to search only for digital cameras with a resolution of at
+      least 3.0 megapixels and a price of at most $500, we could use the following
+      query: </p>
+    <pre>digital camera [megapixel &gt;= 3.0] [price &lt;= 500.0 USD]</pre>
+    <p> This query makes sure that we are only interested in cameras sold in
+      US currency by inferring <code>float USD</code> as the type of attribute <code>price</code>.
+      For instance, items defining an attribute <code>price(float EUR)</code> would
+      not match. </p>
+    <p style="margin-bottom: -1px;"> </p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h3>Nesting queries</h3>
+    <p> Unlike Google's web search, the Google Base query language has to support
+      arbitrary nesting of queries, allowing users to express non-trivial attribute
+      relationships. Here is an example for a query that returns only data
+      items matching the terms <code>digital</code> and <code>camera</code> where
+      either the megapixel value is at least <code>3.0</code> or the price
+      is below the threshold <code>100 USD</code>: </p>
+    <pre>digital camera ([megapixel &gt;= 3.0] | [price &lt;= 100.0 USD])</pre>
+    <p> The <code>|</code> operator is used to express alternatives (OR), the
+      parenthesis group queries. In addition to conjunctive and disjunctive
+      queries, there is also support for phrase queries as well as the <code>-</code> operator
+      which is checking for the absence of a match. Here is a more complex
+      query illustrating a combination of the features: </p>
+    <pre>[title:&quot;digital camera&quot;] [price &lt;= 100.0 USD] -[label:sold]</pre>
+    <p> This query returns only data items whose mandatory title attribute contains
+      the phrase <code>digital camera</code>, whose price is below $100, and
+      that are not tagged with the <code>sold</code> label. As this example
+      shows, label restricts are simply expressed in terms of an attribute
+      constraint for the standardized attribute <code>label</code> of type <code>text</code>.
+      In Google Base, the key value mapping of attributes is rather a relation
+      than a function, allowing a single attribute having multiple values.
+      Thus, the following query which refers to data items that are tagged
+      with both a <code>sold</code> and a <code>product</code> label is actually
+      satisfactory: </p>
+    <pre>[label:sold] [label:product]</pre>
+    <p style="margin-bottom: -1px;"> </p>
+    <h3>Specification</h3>
+    <p> The remaining document provides a brief specification of the query syntax,
+      including informal explanations of the semantics. </p>
+    <p> For specifying the syntax of the Google Base query language, we use a
+      Backus Naur Form (BNF). Non-terminal symbols are printed in italics.
+      Terminal symbols are either of the form <code>'token'</code>, or they
+      are represented by a symbol printed in non-italicised form. The lexical
+      grammar will explain the micro-syntax of such token classes. </p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <!-- --------------------------------------------------------------------- -->
+    <h2><a name="composition" id="composition"></a>Query Composition</h2>
+    <p style="margin-bottom: -10px;"> </p>
+    <h3>Conjunctions, Disjunctions, and Negations</h3>
+    <p> Google's query languages all support at least operators for building
+      conjunctive (<code>&nbsp;</code>) and disjunctive combinations (<code>|</code>)
+      of queries. Furthermore, they support a unary negation operator (<code>-</code>)
+      for checking that a query does not match within a certain context like
+      the whole document or in a special part like the title. </p>
+    <table class="syn" width="83%">
+      <tbody>
+        <tr>
+          <td class="syn" width="100"><i>Query</i></td>
+          <td class="syn" align="center" width="34">=</td>
+          <td class="syn"><i>Query</i>&nbsp; '|'&nbsp; <i>Conjunction</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>Conjunction</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>Conjunction</i></td>
+          <td class="synfst" align="center" width="34">=</td>
+          <td class="synfst"><i>Conjunction</i>&nbsp; <i>Negated</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>Negated</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>Negated</i></td>
+          <td class="synfst" align="center" width="34">=</td>
+          <td class="synfst">'-'&nbsp; <i>Delimited</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>Delimited</i></td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- ----------------------------------------------------------------- -->
+    <h2><a name="textsearch" id="textsearch"></a>Text Search</h2>
+    <p> The Google Base query language defines a small set of <i>delimited queries</i> which
+      are queries that are either atomic or that are composite but delimited
+      by special tokens. In this section we focus on the queries relevant for
+      text search in general. Search in attribute values is discussed in the
+      next section. </p>
+    <table class="syn" width="83%">
+      <tbody>
+        <tr>
+          <td class="syn" width="100"><i>Delimited</i></td>
+          <td class="syn" align="center" width="34">=</td>
+          <td class="syn">'('&nbsp; <i>Query</i>&nbsp; ')'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'&quot;'&nbsp; <i>PhraseQuery</i>&nbsp; '&quot;'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">term</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'*'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>AttribQuery</i></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-bottom: -4px;"> </p>
+    <h3>Query nesting</h3>
+    <p> The Google Base query language supports arbitrary nesting of queries.
+      Parenthesis are used to express query nesting. </p>
+    <p style="margin-bottom: -4px;"> </p>
+    <h3>Phrase queries</h3>
+    <p> Phrase queries are conjunctions of smaller sub-queries. The difference
+      to regular conjunctions is that the order of the sub-queries matters
+      and that matches of the sub-queries have to be subsequent. Phrases are
+      expressed by enclosing the corresponding sub-queries with quotation marks
+      (<code>&quot;this is a phrase&quot;</code>). Phrase queries can neither
+      be nested nor is it possible to refer to attributes within a phrase.
+      In general, the components of a phrase query have to conform to the following
+      grammar: </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="100"><i>PhraseQuery</i></td>
+        <td class="syn" width="34" align="center">=</td>
+        <td class="syn"><i>PhraseQuery</i>&nbsp; '|'&nbsp; <i>PhraseConjunction</i></td>
+      </tr>
+      <tr>
+        <td class="syn" >&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>PhraseConjunction</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>PhraseConjunction</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst"><i>PhraseConjunction</i>&nbsp; <i>PhraseNegated</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>PhraseNegated</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>PhraseNegated</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst">'-'&nbsp; <i>PhraseDelimited</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>PhraseDelimited</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>PhraseDelimited</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst">'('&nbsp; <i>PhraseQuery</i>&nbsp; ')'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">term</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'*'</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: -4px;"> </p>
+    <h3>Atomic queries</h3>
+    <p> The only atomic queries that are useful for text search are <i>terms</i> and
+      the <i>wildcard</i> token. A term is basically a word delimited by whitespaces
+      or other term delimiters (see the Literal section). The wildcard token <code>*</code> matches
+      every possible term. </p>
+    <!-- ----------------------------------------------------------------- -->
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h2><a name="attributes" id="attributes"></a>Attribute Search</h2>
+    <p style="margin-bottom: -10px;"> </p>
+    <h3>Attribute queries</h3>
+    <p> Searching for attributes and attribute values is a novel feature of the
+      Google Base query language. Syntactically, such attribute queries are
+      delimited by brackets: </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="100"><i>AttribQuery</i></td>
+        <td class="syn" width="34" align="center">=</td>
+        <td class="syn">'['&nbsp; <i>AttribConstraint</i>&nbsp; ']'</td>
+      </tr>
+    </table>
+    <p> An attribute constraint associates an attribute name with a typed attribute
+      value. Thus, the syntax of attribute constraints has to allow us to distinguish
+      names from values, and has to make it possible to distinguish values
+      of different types. It turns out that delimiting the attribute constraint
+      by an explicit delimiter (i.e. brackets) is essential for supporting
+      a natural, unambiguous notation. In particular, because </p>
+    <ul>
+      <li style="padding-bottom: 2px;"> Attribute names can consist of multiple
+        words,</li>
+      <li style="padding-bottom: 2px;"> Attribute values can consist of a sequence
+        of tokens,</li>
+      <li style="padding-bottom: 2px;"> Attribute types and value constraints
+        are optional.</li>
+    </ul>
+    <p> In addition to that, the usage of the bracket delimiters makes it easy
+      to optically distinguish between query components used for free form
+      text search and for queries expressing structured attribute constraints. </p>
+    <h3>Attribute constraints</h3>
+    <p> An attribute constraint consists of an <i>attribute identifier</i> and
+      an <i>attribute value constraint</i>. The attribute identifier specifies
+      an attribute with a name and a type. The attribute value constraint is
+      defined in terms of an operator and a value query. This is the syntax
+      of an attribute constraint: </p>
+    <pre>[attribute name(atype) ?? avquery]</pre>
+    <p> A data item matches such a constraint if it defines an attribute <code>attribute
+      name</code> of type <code>atype</code> which has a value that matches
+      the constraint specified by the operator <code>??</code> and the
+      value query <code>avquery</code>. Here are examples for valid attribute
+      queries: </p>
+    <dl>
+      <dt style="margin-left: 26px; font-weight: normal;"> <code>[access rights(text)
+        : private | protected]</code> </dt>
+      <dd style="padding-bottom: 7px;"> This query asserts that an attribute <code>access
+        rights</code> of type <code>text</code> exists and that its value
+        matches the query <code>private | protected</code>. Note that
+        the type designator is optional. In many cases, the query parser
+        will be able to infer it from the attribute value (which is a
+        text query in this case). The colon operator is used to express
+        that an attribute value is an element of an attribute domain
+        specified by query <code>avquery</code> </dd>
+      <dt style="margin-left: 26px; font-weight: normal;"> <code>[copies &lt;=
+        32]</code> </dt>
+      <dd style="padding-bottom: 7px;"> This query asserts that an attribute <code>copies</code> of
+        a numerical type (i.e. either <code>int</code> or <code>float</code>)
+        exists and that its value is lower or equals than 32. A similar query
+        could use the colon operator and specify a number range as the corresponding
+        domain: <code>[copies : 0..32]</code>. This query assumes the number
+        is positive. </dd>
+      <dt style="margin-left: 26px; font-weight: normal;"> <code>[start date
+        : 2006-02-08]</code> </dt>
+      <dd style="padding-bottom: 7px;"> This query matches all data items that
+        have an attribute named <code>start date</code> of type <code>daterange</code> whose
+        value is a date/time at February 8. 2006. </dd>
+    </dl>
+    <p> If no value constraint is specified in an attribute query, the system
+      will just query for the existence of the specified attribute. It will
+      not look at its value. For instance, query <code>[destination(location)]</code> matches
+      all data items that have an attributed named <code>destination</code> of
+      type <code>location</code>, independent of its actual attribute value. </p>
+    <p> Here is the grammar specifying the various variants of the attribute
+      constraint syntax: </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="100"><i>AttribConstraint</i></td>
+        <td class="syn" width="34" align="center">=</td>
+        <td class="syn"><i>AttribDescriptor</i>&nbsp; <i>AttribOp</i>&nbsp; <i>AttribValue</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>AttribDescriptor</i>&nbsp; ':'&nbsp; <i>AttribValueQuery</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>AttribDescriptor</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>AttribDescriptor</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst"><i>AttribIdentifier</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>AttribIdentifier</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst"><i>AttribName</i>&nbsp; '('&nbsp; <i>AttribType</i>&nbsp; ')'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>AttribName</i></td>
+      </tr>
+    </table>
+    <h3>Operators</h3>
+    <p> The most fundamental operator for constraining the value of an
+      attribute is the matching operator <code>:</code>. It expects a value
+      query as its right-hand side operand describing a domain of valid values.
+      A query of the form <code>[name(type): value_query]</code> matches only
+      if the value of an attribute identified by a name and an optional type
+      matches the given value query; i.e. the value is contained in the domain
+      described by this value query. Value queries are either arbitrary text
+      queries, concrete attribute values, ranges of numbers, or
+      geographical areas. </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="100"><i>AttribValueQuery</i></td>
+        <td class="syn" width="34" align="center">=</td>
+        <td class="syn"><i>TextQuery</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>AttribValue</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">intrange</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">floatrange</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><a name="geoarea" id="geoarea"></a>location&nbsp; '+'&nbsp;
+          int&nbsp; <i>RadiusUnit</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>TextQuery</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst"><i>TextQuery</i>&nbsp; '|'&nbsp; <i>TextConjunction</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>TextConjunction</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>TextConjunction</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst"><i>TextConjunction</i>&nbsp; <i>TextNegated</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>TextNegated</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>TextNegated</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst">'-'&nbsp; <i>TextDelimited</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>TextDelimited</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>TextDelimited</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst">'('&nbsp; <i>TextQuery</i>&nbsp; ')'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'&quot;'&nbsp; <i>PhraseQuery</i>&nbsp; '&quot;'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">term</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'*'</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>RadiusUnit</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst">'m'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'mi'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'km'</td>
+      </tr>
+    </table>
+    <p> For instance, query <code>[rooms: 2..4]</code> matches only if the
+      value of numeric attribute <code>rooms</code> is contained in the range <code>2..4</code>. Similarly, query <code>[location: @&quot;Mountain View, CA&quot; + 3mi]</code> matches only if the
+      location attribute is contained in the geographic area specified by the
+      center of Mountain View and a radius of 3 miles. </p>
+    <p> All other operators besides <code>:</code> can only be used for relating
+      values of attributes with given value literals. The equality operator <code>==</code> expresses an exact match between a given value and the
+      value of an attribute. It is defined for all types of values. </p>
+    <p> The four other comparison operators specified in the grammar below
+      cannot be used with arbitrary types. The operators <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, and <code>&gt;</code> work for
+      the numeric types <code>int</code>, <code>float</code> and <code>number</code> as well as <code>date</code>. For comparison
+      operators, the type checker of the query language will make sure that
+      the type of the left-hand operand and the right-hand operand are the same. </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="100"><i>AttribOp</i></td>
+        <td class="syn" width="34" align="center">=</td>
+        <td class="syn">'&lt;' &nbsp; | &nbsp; '&lt;=' &nbsp; | &nbsp; '==' &nbsp; |
+          &nbsp; '&gt;=' &nbsp; | &nbsp; '&gt;' &nbsp; |
+          &nbsp; '&lt;&lt;' </td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>AttribValue</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst">'&quot;'&nbsp; <i>PhraseQuery</i>&nbsp; '&quot;'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>BoolValue</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">int&nbsp; <i>Unit</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">float&nbsp; <i>Unit</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">date</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">daterange</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">location</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>BoolValue</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst">'true'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'false'</td>
+      </tr>
+    </table>
+    <p> The <i>containment operator</i> <code>&lt;&lt;</code> is the only operator
+      besides <code>:</code> that can be used in combination with attributes of
+      type <code>daterange</code>. It expects a date literal as right-hand side
+      operand and checks that this date is included in the date range of the
+      attribute.</p>
+    <h3>Attribute types</h3>
+    <p> The following grammar defines the attribute types that are currently
+      supported by Google Base. The numeric types <code>int</code>, <code>float</code> and <code>number</code> have
+      a parametric variant which allows users to associate arbitrary units
+      with a number. For instance, type <code>number CHF</code> refers to numbers
+      with unit CHF, i.e. to prices in the currency CHF (Swiss Francs). </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="100"><i>AttribType</i></td>
+        <td class="syn" width="34" align="center">=</td>
+        <td class="syn">'bool'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'number'&nbsp; <i>Unit</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'int'&nbsp; <i>Unit</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'float'&nbsp; <i>Unit</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'text'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'date'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'daterange'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'location'</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>Unit</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst"><i>Name</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">&epsilon;</td>
+      </tr>
+    </table>
+    <h3>Attribute names</h3>
+    <p> Attribute names can consist of multiple words. 
+      For attributes of type <code>daterange</code>, the field selection
+      operator <code>#</code> can be used to project the attribute value
+      to either the start or end date. Field selections are appended directly
+      to the attribute name. </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="100"><i>AttribName</i></td>
+        <td class="syn" width="34" align="center">=</td>
+        <td class="syn"><i>Name</i>&nbsp; '#'&nbsp; <i>Field</i></td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn"><i>Name</i></td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>Name</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst"><i>Name</i>&nbsp; term</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">term</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="100"><i>Field</i></td>
+        <td class="synfst" width="34" align="center">=</td>
+        <td class="synfst">'start'</td>
+      </tr>
+      <tr>
+        <td class="syn">&nbsp;</td>
+        <td class="syn" align="center">|</td>
+        <td class="syn">'end'</td>
+      </tr>
+    </table>
+    <p> For example, a query for checking that a given start date is in a given
+      range, one could use the following query: </p>
+    <pre>[event date range#start : 2006-05Z]</pre>
+    <p style="margin-bottom: -4px;"> </p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <!-- ----------------------------------------------------------------- -->
+    <h2><a name="lexical" id="lexical"></a>Lexical Syntax</h2>
+    <p> Tokens are parsed using the <i>longest match rule</i>; i.e. the longest
+      possible matching token is chosen if there are ambiguities. </p>
+    <p style="margin-bottom: -4px;"> </p>
+    <h3>Delimiters</h3>
+    <p> The following list of delimiters separate tokens in the Google Base query
+      language. It is possible to escape delimiters with a backslash if needed. </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="100"><code>|</code>, <code>-</code>, <code>:</code>, <code>=</code>, <code>&quot;</code>, <code>[</code>, <code>]</code>, <code>(</code>, <code>)</code>, <code>*</code>, <code>#</code>, <code>&lt;</code>, <code>&gt;</code>,
+          whitespace. </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: -4px;"> </p>
+    <h3>Terms</h3>
+    <p> A term is a sequence of characters delimited by one of the special characters
+      listed above. Delimiters cannot be used as characters in a term. Terms
+      never start or end with two periods (<code>..</code>). </p>
+    <p style="margin-bottom: -4px;"> </p>
+    <h3>Numbers</h3>
+    <p> The query language supports both integer and floating point numbers as
+      specified by the following grammar: </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="60">int</td>
+        <td class="syn" width="32" align="center">=</td>
+        <td class="syn">uint&nbsp; |&nbsp; '-' uint</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="60">float</td>
+        <td class="synfst" width="32" align="center">=</td>
+        <td class="synfst">ufloat&nbsp; |&nbsp; '-' ufloat</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="60">uint</td>
+        <td class="synfst" width="32" align="center">=</td>
+        <td class="synfst">digits&nbsp; |&nbsp; '0' 'x' hexdigits</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="60">ufloat</td>
+        <td class="synfst" width="32" align="center">=</td>
+        <td class="synfst">digits '.' digits 'e' sign digits&nbsp; |&nbsp;
+          digits '.' digits&nbsp; |&nbsp;
+          
+          digits 'e' sign digits </td>
+      </tr>
+      <tr>
+        <td class="synfst" width="60">digits</td>
+        <td class="synfst" width="32" align="center">=</td>
+        <td class="synfst">digits digit&nbsp; |&nbsp; digit</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="60">digit</td>
+        <td class="synfst" width="32" align="center">=</td>
+        <td class="synfst">'0' | '1' | '2' | '3' | '4' | '5' | '6' | '7'
+          | '8' | '9'</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="60">hexdigits</td>
+        <td class="synfst" width="32" align="center">=</td>
+        <td class="synfst">hexdigits hexdigit&nbsp; |&nbsp; hexdigit</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="60">hexdigit</td>
+        <td class="synfst" width="32" align="center">=</td>
+        <td class="synfst">digit | 'a' | 'b' | 'c' | 'd' | 'e' | 'f'</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: -4px;"> </p>
+    <h3>Number ranges</h3>
+    <p> The query language supports both integer and floating point number ranges
+      as specified by the following grammar: </p>
+    <table class="syn" width="83%">
+      <tr>
+        <td class="syn" width="60">intrange</td>
+        <td class="syn" width="32" align="center">=</td>
+        <td class="syn">int&nbsp; '.'&nbsp; '.'&nbsp; int</td>
+      </tr>
+      <tr>
+        <td class="synfst" width="60">floatrange</td>
+        <td class="synfst" width="32" align="center">=</td>
+        <td class="synfst">float&nbsp; '.'&nbsp; '.'&nbsp; float&nbsp; |&nbsp;
+          
+          float&nbsp; '.'&nbsp; '.'&nbsp; int&nbsp; |&nbsp;
+          int&nbsp; '.'&nbsp; '.'&nbsp; float </td>
+      </tr>
+    </table>
+    <p> Currently, number ranges can only be used in combination with the attribute
+      value matching operator <code>:</code>. </p>
+    <p style="margin-bottom: -4px;"> </p>
+    <h3><a name="dateType" id="dateType"></a>Dates</h3>
+    <p> Dates are specified in the international format defined by ISO 8601.
+      The standard defines several alternatives; only the following one is
+      supported: <code>yyyy-mm-ddThh:mm:ssZ</code> (the <code>Z</code> is optional).
+      Only times in UTC are supported. In addition to the full date format,
+      the query language also accepts partial date specifications. Such partial
+      dates define <i>date ranges</i>. For example: <code>1973-02Z</code> specifies
+      the date range <code>1973-02-01T00:00:00Z..1973-02-28T23:59:59Z</code>,
+      which corresponds to February in 1973. </p>
+    <p> The previous example also shows that date ranges are either implicitly
+      defined using a partial date, or they are given by a date interval where
+      the dates are separated by two periods <code>..</code>. </p>
+    <p style="margin-bottom: -4px;"><a name="locType" id="locType"></a> </p>
+    <h3>Locations</h3>
+    <p> Locations can be specified in two ways: either by using a human-readable
+      address (text), or by specifying both a latitude and longitude. The textual
+      form has the following microsyntax: <code>@&quot;1600 Amphitheatre Parkway,
+        Mountain View, CA, USA&quot;</code>; i.e. @ prefixes a string. </p>
+    <p> Locations given by a latitude/longitude have to use the syntax defined
+      by ISO 6709 (omitting altitudes). This standard defines several formats.
+      The Google Base query language supports the following forms: <code>@+-DD.D...+-DDD.D...</code>, <code>@+-DDMM.M...+-DDDMM.M...</code>,
+      and <code>@+-DDMMSS.S...+-DDDMMSS.S...</code>. The first form defines
+      the latitude (first number) and longitude as fractional degree values.
+      The second form consists of degrees (2/3 digits) and fractional minutes
+      (2 digits). The third form consists of degrees (2/3 digits), minutes
+      (2 digits), and fractional seconds (2 digits). </p>
+    <p> Here are some examples specifying locations via latitude/longitude: <code>@+4852+00220</code> (Paris), <code>@+48.8577+002.295</code> (Eiffel
+      Tower, Paris), <code>@+90+000</code> (North Pole), <code>+40.6894-074.0447</code> (Statue
+      of Liberty, NYC). </p>
+    <p> Geographic areas can be represented by a location and a radius specified
+      either in meters, kilometers, or miles. The syntax is defined <a href="#geoarea">above</a>.
+      Here is an example: <code>@+40.75-074.00 + 5mi</code> (NYC + radius of
+      5 miles). </p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  _utcp="/apis/base/";
+  _uanchor=1;
+  urchinTracker();
+</script>
+</body>
+</html>

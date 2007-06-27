@@ -19,6 +19,8 @@ package com.google.gdata.data.photos;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.geo.Point;
+import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaKeywords;
 import com.google.gdata.data.photos.impl.PhotoDataImpl;
 import com.google.gdata.util.ServiceException;
@@ -114,6 +116,10 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
     return delegate.getHeight();
   }
 
+  public MediaGroup getMediaGroup() {
+    return delegate.getMediaGroup();
+  }
+
   public MediaKeywords getKeywords() {
     return delegate.getKeywords();
   }
@@ -201,5 +207,25 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
   public void setWidth(Long width) {
     delegate.setWidth(width);
   }
-  
+
+  public void setGeoLocation(Double lat, Double lon)
+      throws IllegalArgumentException {
+    delegate.setGeoLocation(lat, lon);
+  }
+
+  public void setGeoLocation(Point point) {
+    delegate.setGeoLocation(point);
+  }
+
+  public Point getGeoLocation() {
+    return delegate.getGeoLocation();
+  }
+
+  public void addStreamId(String streamId) {
+    delegate.addStreamId(streamId);
+  }
+
+  public List<String> getStreamIds() {
+    return delegate.getStreamIds();
+  }
 }

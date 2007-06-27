@@ -1,0 +1,93 @@
+/*This style sheet strictly regulates the colors for individual code.google.com API documents
+and their page identification for indication in the navigation bar*/
+
+/* 
+GOOGLE API WRITERS: 
+Put a copy of this file in the 
+top directory of your API doc.
+*/
+
+
+/* ---- COLOR DEFINITION ---- */
+/*Each of the following elements uses official google colors */	
+#doc_title, h1, h2, hr, .sidebox h2, .linkbox a, 
+table, th, td, .note, ul .note, ol .note, .notice, #pagecontent img{
+
+	background-color: #e5ecf9;
+	border-color: #224499;
+	
+	}	
+	
+/*  ---- OFFICIAL GOOGLE COLORS ----
+
+Color schemes should be assigned to each product 
+(either red, yellow, green or blue).
+ 
+To change your colors, 
+simply copy and paste both lines below, 
+and paste them into the above definition.
+
+  --------------------------
+
+--RED--
+	background-color: #efefef;
+	border-color: #aa0033;
+
+--YELLOW--
+	background-color: #fff4c2; 
+	border-color: #ffcc33;  
+
+--GREEN--
+	background-color: #ddf8cc;
+	border-color: #008000;
+
+--BLUE--
+	background-color: #e5ecf9;
+	border-color: #224499;
+	
+	
+ ---- END OF OFFICIAL GOOGLE COLORS ---- */
+ 
+
+/* ---- PAGE ID TAGS ---- 
+These tags identify the current page in order 
+to modify the font style in the navigation bar.
+
+For each page that you have in your navigation bar, type here 
+the id name for the page (in the body tag) followed by the 
+id name for the navigation link (in the anchor tag). 
+
+Example: 
+In the HTML: <body id="index_page"> and <a href="index.html" id="index_link">Home</a>
+In this CSS, below: #index_page #index_link 
+
+Separate each page-link pair with a comma.
+*/
+
+#gdata_page #gdata_link,
+#overview_page #overview_link,
+#reference_page #reference_link{
+
+/* ---- ! DO NOT MODIFY ! ---- */
+	color:#000;
+	text-decoration:none;
+	}
+/* ------------------------ */
+
+
+
+/* ---- ! DO NOT MODIFY ! ---- */
+td {
+	background-color: #fff;
+	}
+h2 {
+	background-color: #fff;
+	}
+/* ------------------------ */
+
+
+/* Local items */
+
+td.required {
+	background-color: #ffeedd;
+	}

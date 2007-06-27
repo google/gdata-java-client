@@ -1,0 +1,2098 @@
+<html>
+<head>
+<title>Google Apps for Your Domain Reporting API Reference</title><link rel=stylesheet href=http://www.google.com/google.css>
+<style>
+body,td,font,p,a{font-family:arial,sans-serif}
+td {font-family:arial,sans-serif;font-size:83%}
+.i { margin-left: 1em; margin-right: 2em; }
+pre{font-family:arial,sans-serif; font-size:100%;padding:0px 25px }
+pre.box {background:#eee;border:1px solid #bbb;color:#000;font-family:Courier,monospace;font-size:110%;margin:1em 0 0 25px;padding:15px 5px 15px 10px;text-align:left;overflow:auto}
+pre.codesample {font-family:monospace;font-size:110%}
+table.bt {width:100%}
+td.padbold {font-size:100%;vertical-align:top;font-weight:bold;padding:6px;}
+td.padplain {font-size:100%;vertical-align:middle;padding:6px;}
+td.padboldst {font-size:100%;vertical-align:top;font-weight:bold;padding:6px;}
+td.padplainst {font-size:100%;vertical-align:middle;padding:6px;}
+td.t {font-size:12px;}
+th.t {font-size:12px;}
+a:link{color:#00c}
+a:visited{color:#551a8b}
+a:active{color:#f00}
+a.code {font-family:monospace;font-size:110%}
+.topnav {line-height:130%}
+.indent {line-height:130%; margin-left:.75em;}
+.activelink {line-height:130%; margin-left:0; color:#2F63B0; font-weight:bold}
+.inactivelink {line-height:130%; margin-left:0;}
+.footer {color:#666666; font-size:73%}
+.codeSample {font-size:100%;color:#000000;padding:0px 40px}
+.codeSampleNP {font-size:100%;color:#000000}
+.showvar {font-weight:bold;color:#3366cc}
+tr.t1tth {font-family: monospace; font-size:12pt; font-weight:bold; color: #000000;}
+.indentsidenav {margin-top:0px;margin-left:10px;margin-bottom:4px;font-size:10pt}
+.indentsidenavtoc {margin-top:0px;margin-left:10px;margin-bottom:4px;color:#ddad08;font-weight:bold;font-size:10pt}
+.sidenavnolink {margin-top:15px;margin-bottom:4px;font-weight:bold;font-size:10pt}
+.sidenavlink {margin-top:15px;margin-bottom:4px;font-size:10pt}
+.l1 {vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;font-size:120%;border-top:1px solid #3a7bcb;color:#000;font-weight:bold}
+.l2 {vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;font-size:105%;border-bottom:1px solid #3a7bcb;color:#000;font-weight:bold}
+.l3 {width:100%;font-size:95%;background:#fff;border-bottom:1px solid #3a7bcb;font-weight:bold}
+th.reportl {vertical-align:middle;text-align:left;width:20%;padding:8px 10px;background:#efefff;color:#000;font-weight:bold;font-size:95%}
+th.reportr {vertical-align:middle;text-align:center;width:80%;padding:8px 10px;background:#efefff;color:#000;font-weight:bold;font-size:95%}
+td.reportl {vertical-align:top;width:20%;padding:8px 10px;background:#efefff;color:#000000;font-weight:bold;font-size:83%}
+td.reportr {vertical-align:top;width:80%;padding:8px 10px;font-size:83%}
+th.left {text-align:left;background:#E5ECF9;font-size:83%;padding:4px 10px 4px 4px}
+th.middle {text-align:center;background:#E5ECF9;font-size:83%;padding:4px 10px}
+th.right {text-align:center;background:#E5ECF9;font-size:83%;padding:4px 10px}
+td.left {padding:4px;vertical-align:top;font-size:83%;font-weight:bold}
+td.middle {font-size:83%;font-weight:bold;color:#505050;padding:4px 6px;vertical-align:top}
+td.right {padding:4px;font-size:83%;vertical-align:top}
+th.attrheader {padding:4px 6px;font-size:83%;font-weight:bold;vertical-align:middle;text-align:center;background:#E5ECF9}
+th.attrheaderl {text-align:left;padding:4px 6px;font-size:95%;font-weight:bold;vertical-align:middle;background:#E5ECF9}
+td.attrname {padding:4px;font-size:83%;font-weight:bold;vertical-align:top;text-align:left}
+td.attrtype {padding:4px;font-size:83%;vertical-align:top;text-align:left}
+td.tagname {width:20%;padding:4px;font-size:83%;font-weight:bold;vertical-align:top;text-align:left}
+td.tagtype {width:80%;padding:4px;font-size:83%;vertical-align:top;text-align:left}
+.l4 {width:100%;background:#fff;border-bottom:1px solid #3a7bcb;font-size:100%;font-weight:bold}
+  @media screen {
+    body {
+      font-family: arial, sans-serif;
+      font-size: 83%;
+    }
+    
+    .dontprint {
+        padding:0px;
+        margin:0px;
+    }
+
+    .leftcontent {
+      float:left;
+      width:175px;
+      background:#fff;
+    }
+    
+    .topimage {
+      margin-left:13px;
+      margin-top:0px;
+      padding:0px;
+    }
+    
+    .footerimage {
+      margin-left:15px;
+      margin-top:20px;
+      padding:0px;
+    }
+    
+    .toc { 
+      color: #ddad08; 
+      font-weight:bold;
+    }
+    
+    .rightcontent {
+      background:#fff;
+      margin-left: 179px;
+      margin-right:10px
+    }
+
+    .content {
+    }
+
+    .title {
+    background-color: #FEFADE;
+    border-top:1px solid #ddad08;
+    font-weight:bold;
+    font-size:120%;
+    text-align:left;
+    margin-left:0;
+    }
+  }
+  @media print {
+	          
+    .dontprint {
+        padding:0px;
+        margin:0px;
+        display:none;
+    }
+
+    .leftcontent {
+        display: none;
+        float:left;
+        clear:right;
+        width:100%;
+    }
+
+    .topimage {
+        margin-left:13px;
+        margin-top:0px;
+        padding:0px;
+    }
+
+    .rightcontent {
+        margin-left: 10px;
+    }
+
+    .toc {
+        list-style-type: none;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .toc1 {
+    }
+
+    .toc2 {
+        padding-left: 25pt;
+    }
+
+    .toc3 {
+        padding-left: 50pt;
+    }
+
+    .title {
+        display:none;
+        background-color: #FEFADE; 
+        border-top:1px solid #ddad08;
+        font-weight:bold; 
+        font-size:120%;
+        text-align:left;
+        margin-left:0;
+    }
+
+    .topimage {
+        margin-left:13px;
+        margin-top:0px;
+        padding:0px;
+    }
+
+    body {
+        font-family: arial, sans-serif;
+        font-size: 83%;
+    }
+
+    .backtotop {
+        display:none;
+    }
+  }
+</style>
+<script language="JavaScript">
+<!--
+  function show_when_checked(cbox,divid,defaultid) {
+    document.getElementById(divid).style.display=cbox.checked?"inline":"none";
+    document.getElementById(defaultid).style.display=cbox.checked?"none":"inline";
+  }
+  var flag = new Array();
+  function change(div, divid, defaultid) {
+    var par = new getObj(div);
+    if (flag[div]) {
+      par.obj.innerHTML = "expand";
+      flag[div] = 0;
+    } else {
+      par.obj.innerHTML = "collapse";
+      flag[div] = 1;
+    }
+    document.getElementById(divid).style.display=flag[div]?"inline":"none";
+    document.getElementById(defaultid).style.display=flag[div]?"none":"inline";
+    return false;
+  }
+
+  function getObj(name) {
+    var o = 'this.obj = document.';
+    var s = 'this.style = document.';
+    if (document.getElementById) {
+      eval(o + 'getElementById(name);');
+      eval(s + 'getElementById(name).style;');
+    } else if (document.all) {
+      eval(o + 'all[name];');
+      eval(s + 'all[name].style;');
+    } else if (document.layers) {
+      eval(o + 'layers[name];');
+      eval(s + 'layers[name];');
+    }
+  }
+
+
+
+//-->
+</script>
+</head>
+
+<body><div class="leftcontent">
+<p class="topimage"><a href="http://www.google.com/"><img src="http://www.google.com/images/google_sm.gif" width="143" height="59" alt="Google Apps for Your Domain" border="0"></a></p>
+<p class="sidenavlink"><a href="https://www.google.com/a/">About Google Apps for Your Domain</a></p>
+<p class="sidenavlink"><a href="http://code.google.com/apis/apps-for-your-domain/google_apps_provisioning_api_v1.0_reference.html">Google Apps Provisioning API V1.0 Reference</a></p>
+<p class="sidenavnolink">Google Apps Reporting API Reference</p>
+<p class="sidenavlink"><a href="http://www.google.com/support/a/">Google Apps Help Center</a></p>
+<p class="sidenavlink"><a href="http://groups.google.com/group/hosted">Google Apps for Your Domain Message Board</a></p>
+<p class="sidenavlink"><a href="http://groups.google.com/group/apps-for-your-domain-apis">Google Apps APIs Message Board</a></p>
+</div>
+<div class="rightcontent" style="padding-top:2px">
+
+<p><div style="vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;border-top:1px solid #3a7bcb;color: #000000; font-size:110%;font-weight:bold"><a name=Google_Apps_for_Your_Domain_Reporting_API_Reference></a>Google Apps for Your Domain Reporting API Reference</div></p><div class="content">
+
+
+<p><div style="width:100%;background:#fff;border-bottom:1px solid #3a7bcb;font-size:100%;font-weight:bold"><a name=Table_of_Contents_></a>Table of Contents:</div></p>
+
+
+<a name="toc"/>
+<div style="padding:10px">
+<a href="#Google_Apps_Reports_Overview">Overview</a><br>
+<a href="#googleAppsReportRequestFormat">Submitting Requests to the Reporting API</a><br><div style="padding-left:40px">
+
+<a href="#XML_Element_Definitions">XML Element Definitions</a><br></div>
+<a href="#Google_Apps_Monthly_Reports">Monthly Usage Report</a><br>
+<a href="#Google_Apps_Daily_Reports">Daily Reports</a><br><div style="padding-left:40px">
+
+<a href="#googleAppsReportDailyAccountsDescription">Accounts Report</a><br>
+<a href="#googleAppsReportDailyActivityDescription">Activity Report</a><br>
+<a href="#googleAppsReportDailyDiskSpaceDescription">Disk Space Report</a><br>
+<a href="#googleAppsReportDailyEmailClientsDescription">Email Clients Report</a><br>
+<a href="#googleAppsReportDailyQuotaLimitAccountsDescription">Quota Limit Report</a><br>
+<a href="#googleAppsReportDailySummaryDescription">Summary Report</a><br>
+<a href="#googleAppsReportDailySuspendedAccountsDescription">Suspended Accounts Report</a><br></div>
+<a href="#googleAppsReportingErrorHandling">Error Handling</a><br>
+<a href="#Appendixes">Appendixes</a><br><div style="padding-left:40px">
+
+<a href="#googleAppsAuthentication">Authentication</a><br><div style="padding-left:40px">
+
+<a href="#googleAppsObtainingTokens">Obtaining an Authentication Token</a><br>
+<a href="#googleAppsSampleTokenCode">Sample Code for Obtaining an Authentication Token</a><br></div></div></font></div>
+
+<p><div style="vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;border-top:1px solid #3a7bcb;color: #000000; font-size:110%;font-weight:bold"><a name=Google_Apps_Reports_Overview></a>Overview</div></p>
+
+
+
+<p>The Google Apps for Your Domain Reporting API lets you retrieve daily and monthly usage reports for your domain's hosted accounts. To retrieve a report, you send an HTTP POST request to Google. The body of the request is an XML document that identifies your domain and specifies the type of report being requested. The XML document also specifies an authentication token, which Google uses to confirm that you are authorized to receive the requested data.</p>
+
+<p>This document first defines the process for requesting reports from the reporting API. The <a href="#XML_Element_Definitions">XML Element Definitions</a> section then defines each of the elements in the XML document that you will post to Google.</p>
+
+<p>The document proceeds to explain the different types of <a href="#Google_Apps_Monthly_Reports">monthly</a> and <a href="#Google_Apps_Daily_Reports">daily</a> reports available through the API. The document contains a subsection explaining each of these reports. Each subsection provides a sample XML document for requesting the report, a sample comma-separated report and definitions for each of the fields in the report.</p>
+
+<p><div style="vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;border-top:1px solid #3a7bcb;color: #000000; font-size:110%;font-weight:bold"><a name=googleAppsReportRequestFormat></a>Submitting Requests to the Reporting API</div></p>
+
+
+
+<p>To retrieve a report from the API, you need to POST an appropriately formatted XML document to the following URL:</p>
+
+<pre>
+<b>https://www.google.com/hosted/services/v1.0/reports/ReportingData</b>
+</pre>
+
+<p>The XML document that you will send to Google has the following format:</p>
+
+
+
+
+
+
+
+
+
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;monthly&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;usage&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+<p><b>Note:</b> You must set the <b>&lt;domain&gt;</b> tag value to your domain. You must also set the <b>&lt;token&gt;</b> tag value to your <a href="#googleAppsAuthentication">authentication token</a>. Finally, you must set the <b>&lt;reportType&gt;</b> and <b>&lt;reportName&gt;</b> tags to specify the type of monthly or daily report you wish to retrieve.</p>
+
+<p>Google will use the value of the <b>&lt;token&gt;</b> tag to verify that you are authorized to access the requested data. The data will then be returned in CSV format in response to your request. The following section, <a href="#XML_Element_Definitions">XML Element Definitions</a>, contains complete definitions for all of the XML tags used in the request.</p>
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=XML_Element_Definitions></a>XML Element Definitions</div></p>
+
+
+<p>The following tables define the XML tags used in a reporting API request. The tags are listed in the order that they appear in an API request.</p>
+<a name="google_apps_tag_rest"></a>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">rest</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <b>&lt;rest&gt;</b> tag is the root tag in a reporting API request.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;rest xmlns="google:accounts:rest:protocol"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><a href="#google_apps_tag_type">type</a>, <a href="#google_apps_tag_token">token</a>, <a href="#google_apps_tag_domain">domain</a>, <a href="#google_apps_tag_date">date</a>, <a href="#google_apps_tag_reportType">reportType</a>, <a href="#google_apps_tag_reportName">reportName</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_type"></a>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">type</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;type&gt;</b></font> tag identifies the type of request that you are submitting. The only valid value for this tag is <b>Report</b>.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;type&gt;Account&lt;/type&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_token"></a>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">token</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <b>&lt;token&gt;</b> tag contains a value that Google uses to authorize access to the requested report data. The <a href="#googleAppsAuthentication">Authentication</a> section provides instructions and sample code for obtaining an authentication token.</p>				 <p><b>Note:</b> Your authentication token may be much longer than the value shown in the example.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;token&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy...&lt;/token&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_domain"></a>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">domain</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;domain&gt;</b></font> tag identifies the Google partner domain for a hosted account, email alias or mailing list.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;domain&gt;example.com&lt;/domain&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_date"></a>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">date</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <b>&lt;date&gt;</b> tag specifies the dates for which data should be included in a Google Apps report. The tag's value has a different effect on requests for different types of reports:</p><ul><li><p>If you request a monthly usage report, Google will ignore the day in the <b>date</b> field value and return a report for the requested month and year.</p></li><li><p>If you request a daily <b>accounts</b>, <b>quota limit accounts</b> or <b>suspended accounts</b> report, Google will return data for the requested day, month and year.</p></li><li><p>If you request a daily <b>activity</b>, <b>disk space</b>, <b>email client</b> or <b>summary</b> report, Google will return data for all days prior to and including the requested day in the requested month and year. For example, if you request data for October 10, 2006, your report would include data for October 1, 2006, through October 10, 2006.</p></li></ul></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;date&gt;2006-10-14&lt;/date&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_reportType"></a>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">reportType</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <b>&lt;reportType&gt;</b> value is combined with the <a href="#google_apps_tag_reportName">reportName</a> value to identify the type of report being retrieved.</p><p>If the value of the <b>reportType</b> field is <b>monthly</b>, then the only valid value for the <a href="#google_apps_tag_reportName">reportName</a> tag is <b>usage</b>.</p><p>If the value of the <a href="#google_apps_tag_reportType">reportType</a> field is <b>daily</b>, then the <a href="#google_apps_tag_reportName">reportName</a> tag may have any of the following values.</p><p><ul>  <li>accounts</li>  <li>activity</li>  <li>disk_space</li>  <li>email_clients</li>  <li>quota_limit_accounts</li>  <li>summary</li>  <li>suspended_accounts</li></ul></p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;reportType&gt;disk_space&lt;/reportType&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_reportName"></a>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">reportName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <b>&lt;reportName&gt;</b> value is combined with the <b><a href="#google_apps_tag_reportType">reportType</a></b> value to identify the type of report being retrieved.</p><p>Valid values for this tag are <b>monthly</b> and <b>daily</b>.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;reportName&gt;daily&lt;/reportName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<p><div style="vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;border-top:1px solid #3a7bcb;color: #000000; font-size:110%;font-weight:bold"><a name=Google_Apps_Monthly_Reports></a>Monthly Usage Report</div></p>
+
+
+
+<p>The monthly usage report summarizes account usage and disk space usage for all active accounts in your domain. Each row in the report contains information for a particular day and summarizes information about the accounts that were active on that 
+day.
+</p>
+
+
+<p><div class="l4">Sample XML Request</div></p>
+
+
+
+
+
+
+
+
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;monthly&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;usage&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+
+
+<p><div class="l4">Sample Report Data</div></p>
+<p><b>Note:</b> The data in this sample report has been reformatted to ensure that this document prints correctly. In this sample, an indented line signifies the continuation of the previous line. In the reports you receive through the API, there will not be carriage returns between indented lines and the lines above them.</p>
+
+<pre>
+date,partner,service_tier,service_quota,account_type,num_accounts,
+    total_usage_in_mb,total_quota_in_mb
+
+20060801,"example.com","",2048,"PRI",24,0,49152
+20060802,"example.com ","",2048,"PRI",26,0,53248
+...
+20060831,"example.com ","",2048,"PRI",36,1,73728
+</pre>
+
+<p><div class="l4">Field Definitions for the Monthly Usage Report</div></p>
+<p>The following table lists the fields in the monthly <b>usage</b> report:</p>
+
+<div style="padding-right:0px">
+<table border=1 cellpadding=2 cellspacing=0>
+<tbody>
+<tr>
+<th class="reportl">Field Name</td>
+<th class="reportr">Details</td>
+</tr>
+    
+<!-- <a name="date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="date" name="date_feed_data"></a>date</td>
+      <td class="reportr"><p>The <b>date</b> field specifies the day, month and year that correspond to the remaining data in a row of a report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="partner_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="partner" name="partner_feed_data"></a>partner</td>
+      <td class="reportr"><p>The <b>partner</b> field specifies the partner domain name associated with the report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="service_tier_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="service_tier" name="service_tier_feed_data"></a>service_tier</td>
+      <td class="reportr"><p>The <b>service_tier</b> field is reserved for future use. Currently, this field will contain an empty value.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="service_quota_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="service_quota" name="service_quota_feed_data"></a>service_quota</td>
+      <td class="reportr"><p>The <b>service_quota</b> field specifies the amount of disk space allocated to each of your email accounts. Google hosted accounts are allocated 2GB of disk space each.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="account_type_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="account_type" name="account_type_feed_data"></a>account_type</td>
+      <td class="reportr"><p>The <b>account_type</b> field indicates the type of account identified in the row of a monthly usage report. The only valid value for this field is <b>PRI</b>, indicating that the account is a primary account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="num_accounts_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="num_accounts" name="num_accounts_feed_data"></a>num_accounts</td>
+      <td class="reportr"><p>The <b>num_accounts</b> field specifies the total number of active accounts in your domain. An account is considered active unless you have suspended access to the account or account access has been suspended due to abuse or complaints.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="total_usage_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="total_usage_in_mb" name="total_usage_in_mb_feed_data"></a>total_usage_in_mb</td>
+      <td class="reportr"><p>The <b>total_usage_in_mb</b> field identifies the total amount of disk space, in megabytes, used by all active accounts in your domain.</p>				 
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="total_quota_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="total_quota_in_mb" name="total_quota_in_mb_feed_data"></a>total_quota_in_mb</td>
+      <td class="reportr"><p>The <b>total_quota_in_mb</b> field indicates the total quota, in megabytes, of all active accounts in your domain.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+
+</tbody>
+</table>
+</div>
+    
+<p><div style="vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;border-top:1px solid #3a7bcb;color: #000000; font-size:110%;font-weight:bold"><a name=Google_Apps_Daily_Reports></a>Daily Reports</div></p>
+
+
+
+<p>Daily reports enable you to monitor the usage of hosted accounts for your domain. The following list identifies the different types of daily reports.</p>
+<p><div style="padding:0px 40px 0px 40px"><font size="-1"><a href="#googleAppsReportDailyAccountsDescription">Accounts Report</a><br><span style="line-height:4px">&nbsp;<br></span>
+<a href="#googleAppsReportDailyActivityDescription">Activity Report</a><br><span style="line-height:4px">&nbsp;<br></span>
+<a href="#googleAppsReportDailyDiskSpaceDescription">Disk Space Report</a><br><span style="line-height:4px">&nbsp;<br></span>
+<a href="#googleAppsReportDailyEmailClientsDescription">Email Clients Report</a><br><span style="line-height:4px">&nbsp;<br></span>
+<a href="#googleAppsReportDailyQuotaLimitAccountsDescription">Quota Limit Report</a><br><span style="line-height:4px">&nbsp;<br></span>
+<a href="#googleAppsReportDailySummaryDescription">Summary Report</a><br><span style="line-height:4px">&nbsp;<br></span>
+<a href="#googleAppsReportDailySuspendedAccountsDescription">Suspended Accounts Report</a><br><span style="line-height:4px">&nbsp;<br></span>
+</font></div></p>
+
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=googleAppsReportDailyAccountsDescription></a>Accounts Report</div></p>
+
+
+
+<p>The <b>accounts</b> report contains a list of all of the hosted accounts that exist in your domain on a particular day. The report includes both active accounts and suspended accounts. The <b>status</b> column will indicate whether each account is active or suspended.</p>
+
+
+<p><div class="l4">Sample XML Request</div></p>
+
+
+<p>To retrieve this report, set the value of the <a href="#google_apps_tag_reportType">&lt;reportType&gt;</a> tag to <b>daily</b> and the value of the <a href="#google_apps_tag_reportName">&lt;reportName&gt;</a> tag to <b>accounts</b>. The following XML shows a sample request for a daily accounts report:</p>
+
+
+
+
+
+
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;daily&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;accounts&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+
+
+<p><div class="l4">Sample Report Data</div></p>
+<p><b>Note:</b> The data in this sample report has been reformatted to ensure that this document prints correctly. In this sample, an indented line signifies the continuation of the previous line. In the reports you receive through the API, there will not be carriage returns between indented lines and the lines above them.</p>
+
+<pre>
+date, account_id, account_name, status, quota_in_mb, 
+    usage_in_bytes, primary_account_id, primary_account_name, creation_date, 
+    last_login_date, last_pop_date, last_web_mail_date, last_imap_date, 
+    surname, given_name, service_tier, channel, suspension_reason
+
+20060808, 000000aaaaa11111, "abuse@example.com", "ACTIVE", 10240, 
+    9235, , , 20060802, 19691231, 19691231, 20060802, 19691231, , "Abuse", 0, ,
+
+20060808, 000000bbbbb22222, "admin@example.com", "ACTIVE", 2048, 
+    2593, , , 20060721, 20060804, 19691231, 20060807, 19691231, , "Admin", 0, ,
+
+20060808, 000000ccccc33333, "bart@example.com", "SUSPENDED", 2048, 
+    29057823, , , 20060801, 20060808, 19691231, 20060807, 19691231, 
+    "Simpson", "Bart", , , "Suspended for abuse"
+
+20060808, 000000ddddd4444, "homer@example.com", "SUSPENDED", 2048, 
+    3072, , , 20060803, 20060808, 19691231, 20060807, 19691231, 
+    "Simpson", "Homer", , , "Disabled by operator"
+</pre>
+
+<p><div class="l4">Field Definitions for the Accounts Report</div></p>
+<p>The following table lists the fields in the <b>accounts</b> report.</p>
+
+<div style="padding-right:0px">
+<table border=1 cellpadding=2 cellspacing=0>
+<tbody>
+<tr>
+<th class="reportl">Field Name</td>
+<th class="reportr">Details</td>
+</tr>
+    
+<!-- <a name="date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="date" name="date_feed_data"></a>date</td>
+      <td class="reportr"><p>The <b>date</b> field specifies the day, month and year that correspond to the remaining data in a row of a report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="account_id_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="account_id" name="account_id_feed_data"></a>account_id</td>
+      <td class="reportr"><p>The <b>account_id</b> field contains an ID that uniquely identifies a hosted account. Google will assign an account ID to each hosted account that you create, and this ID will not change for the life of the account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> 16-character hexadecimal string
+      </td>
+    </tr>
+
+
+<!-- <a name="account_name_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="account_name" name="account_name_feed_data"></a>account_name</td>
+      <td class="reportr"><p>The <b>account_name</b> field contains the user's email address, including a username and your domain name &ndash; e.g. <b>admin@example.com</b>.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="status_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="status" name="status_feed_data"></a>status</td>
+      <td class="reportr"><p>The <b>status</b> field indicates whether an account is active or suspended. Valid values for this field are <b>ACTIVE</b> and <b>SUSPENDED</b>.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="quota_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="quota_in_mb" name="quota_in_mb_feed_data"></a>quota_in_mb</td>
+      <td class="reportr"><p>The <b>quota_in_mb</b> field indicates the total amount of disk space available for all of the hosted accounts in your domain.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="usage_in_bytes_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="usage_in_bytes" name="usage_in_bytes_feed_data"></a>usage_in_bytes</td>
+      <td class="reportr"><p>The <b>usage_in_bytes</b> field specifies the total amount of disk space, in bytes, used by all accounts, including suspended accounts, active accounts in your domain.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="primary_account_id_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="primary_account_id" name="primary_account_id_feed_data"></a>primary_account_id</td>
+      <td class="reportr"><p>The <b>primary_account_id</b> field will contain a value if the specified account is a subsidiary account. In that case, this field will contain the <a href="#account_id_feed_data">account ID</a> that identifies the parent account of the subsidiary account. Otherwise, this field will be left blank.</p>				 <p>Currently, all hosted accounts are primary accounts. As such, this field will always be left blank.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Hexadecimal String
+      </td>
+    </tr>
+
+
+<!-- <a name="primary_account_name_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="primary_account_name" name="primary_account_name_feed_data"></a>primary_account_name</td>
+      <td class="reportr"><p>The <b>primary_account_name</b> field will contain a value if the specified account is a subsidiary account. In that case, this field will contain the <a href="#account_name_feed_data">account name</a> for the parent account of the subsidiary account. Otherwise, this field will be left blank.</p>				 <p>Currently, all hosted accounts are primary accounts. As such, this field will always be left blank.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="creation_date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="creation_date" name="creation_date_feed_data"></a>creation_date</td>
+      <td class="reportr"><p>The <b>creation_date</b> field specifies the date that the account was created.</p><p><b>Note:</b> All dates are recorded using Pacific Time (PT).</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="last_login_date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="last_login_date" name="last_login_date_feed_data"></a>last_login_date</td>
+      <td class="reportr"><p>The <b>last_login_date</b> field specifies the most recent date that the account owner logged into the specified account.</p><p><b>Note:</b> All dates are recorded using Pacific Time (PT).</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="last_pop_date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="last_pop_date" name="last_pop_date_feed_data"></a>last_pop_date</td>
+      <td class="reportr"><p>The <b>last_pop_date</b> field specifies the most recent date that the email for an account was accessed using POP.</p><p><b>Note:</b> All dates are recorded using Pacific Time (PT).</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="last_web_mail_date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="last_web_mail_date" name="last_web_mail_date_feed_data"></a>last_web_mail_date</td>
+      <td class="reportr"><p>The <b>last_web_mail_date</b> field specifies the most recent date that the email for an account was accessed using WebMail.</p><p><b>Note:</b> All dates are recorded using Pacific Time (PT).</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="last_imap_date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="last_imap_date" name="last_imap_date_feed_data"></a>last_imap_date</td>
+      <td class="reportr"><p>The <b>last_imap_date</b> field specifies the most recent date that the email for an account was accessed using IMAP.</p><p><b>Note:</b> All dates are recorded using Pacific Time (PT).</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="surname_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="surname" name="surname_feed_data"></a>surname</td>
+      <td class="reportr"><p>The <b>surname</b></font> field contains the last name of the user who owns the account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="given_name_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="given_name" name="given_name_feed_data"></a>given_name</td>
+      <td class="reportr"><p>The <b>given_name</b> field contains the first name of the user who owns the account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="service_tier_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="service_tier" name="service_tier_feed_data"></a>service_tier</td>
+      <td class="reportr"><p>The <b>service_tier</b> field is reserved for future use. Currently, this field will contain an empty value.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="channel_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="channel" name="channel_feed_data"></a>channel</td>
+      <td class="reportr"><p>The <b>channel</b> field is a blank field that is reserved for future use.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="suspension_reason_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="suspension_reason" name="suspension_reason_feed_data"></a>suspension_reason</td>
+      <td class="reportr"><p>The <b>suspension_reason</b> field identifies the reason that an account was suspended.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+
+</tbody>
+</table>
+</div>
+    
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=googleAppsReportDailyActivityDescription></a>Activity Report</div></p>
+
+
+
+<p>The <b>activity</b> report indicates how frequently users in your domain access their hosted accounts. This report helps you to understand the degree to which hosted accounts are <i>active</i> or <i>idle</i>. The report identifies the number of accounts in your domain as well as the number of accounts that were active over several different time periods.</p>
+
+
+<p><div class="l4">Sample XML Request</div></p>
+
+
+
+<p>To retrieve this report, set the value of the <a href="#google_apps_tag_reportType">&lt;reportType&gt;</a> tag to <b>daily</b> and the value of the <a href="#google_apps_tag_reportName">&lt;reportName&gt;</a> tag to <b>activity</b>. The following XML shows a sample request for a daily activity report:</p>
+
+
+
+
+
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;daily&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;activity&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+
+
+<p><div class="l4">Sample Report Data</div></p>
+<p><b>Note:</b> The data in this sample report has been reformatted to ensure that this document prints correctly. In this sample, an indented line signifies the continuation of the previous line. In the reports you receive through the API, there will not be carriage returns between indented lines and the lines above them.</p>
+
+<pre>
+date,num_accounts,count_1_day_actives,count_7_day_actives,count_14_day_actives,
+    count_30_day_actives,count_30_day_idle,count_60_day_idle,count_90_day_idle
+
+20060801,46,34,38,41,44,2,1,0
+20060802,75,61,64,69,73,2,1,0
+20060803,78,65,68,73,76,2,1,1
+20060804,82,68,72,77,80,2,1,1
+</pre>
+
+<p><div class="l4">Field Definitions for the Activity Report</div></p>
+<p>The following table lists the fields in the <b>activity</b> report.</p>
+
+<div style="padding-right:0px">
+<table border=1 cellpadding=2 cellspacing=0>
+<tbody>
+<tr>
+<th class="reportl">Field Name</td>
+<th class="reportr">Details</td>
+</tr>
+    
+<!-- <a name="date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="date" name="date_feed_data"></a>date</td>
+      <td class="reportr"><p>The <b>date</b> field specifies the day, month and year that correspond to the remaining data in a row of a report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="num_accounts_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="num_accounts" name="num_accounts_feed_data"></a>num_accounts</td>
+      <td class="reportr"><p>The <b>num_accounts</b> field specifies the total number of active accounts in your domain. An account is considered active unless you have suspended access to the account or account access has been suspended due to abuse or complaints.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="count_1_day_actives_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="count_1_day_actives" name="count_1_day_actives_feed_data"></a>count_1_day_actives</td>
+      <td class="reportr"><p>The <b>count_1_day_actives</b> field identifies the number of hosted accounts in your domain for which the account owner accessed email within the previous day.</p><p>An account that is counted in the <b>count_1_day_actives</b> column will also be counted in the <b>count_7_day_actives</b>, <b>count_14_day_actives</b> and <b>count_30_day_actives</b> columns.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="count_7_day_actives_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="count_7_day_actives" name="count_7_day_actives_feed_data"></a>count_7_day_actives</td>
+      <td class="reportr"><p>The <b>count_7_day_actives</b> field identifies the number of hosted accounts in your domain for which the account owner accessed email within the previous seven days.</p><p>An account that is counted in the <b>count_7_day_actives</b> column will also be counted in the <b>count_14_day_actives</b> and <b>count_30_day_actives</b> columns and may also be counted in the <b>count_1_day_actives</b> column, depending on the date the account was most recently accessed.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="count_14_day_actives_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="count_14_day_actives" name="count_14_day_actives_feed_data"></a>count_14_day_actives</td>
+      <td class="reportr"><p>The <b>count_14_day_actives</b> field identifies the number of hosted accounts in your domain for which the account owner accessed email within the previous 14 days.</p><p>An account that is counted in the <b>count_14_day_actives</b> column will also be counted in the <b>count_30_day_actives</b> column and may also be counted in the <b>count_1_day_actives</b> and <b>count_7_day_actives</b> columns, depending on the date the account was most recently accessed.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="count_30_day_actives_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="count_30_day_actives" name="count_30_day_actives_feed_data"></a>count_30_day_actives</td>
+      <td class="reportr"><p>The <b>count_30_day_actives</b> field identifies the number of hosted accounts in your domain for which the account owner accessed email within the previous thirty days.</p><p>An account that is counted in the <b>count_30_day_actives</b> column may also be counted in the <b>count_1_day_actives</b> and <b>count_7_day_actives</b> and <b>count_14_day_actives</b> columns, depending on the date the account was most recently accessed.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="count_30_day_idle_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="count_30_day_idle" name="count_30_day_idle_feed_data"></a>count_30_day_idle</td>
+      <td class="reportr"><p>The <b>count_30_day_idle</b> field specifies the number of hosted accounts in your domain that have been idle for 30 to 59 days. An account is idle as long as the account owner has not accessed email for that account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="count_60_day_idle_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="count_60_day_idle" name="count_60_day_idle_feed_data"></a>count_60_day_idle</td>
+      <td class="reportr"><p>The <b>count_60_day_idle</b> field specifies the number of hosted accounts in your domain that have been idle for 60 to 89 days. An account is idle as long as the account owner has not accessed email for that account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="count_90_day_idle_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="count_90_day_idle" name="count_90_day_idle_feed_data"></a>count_90_day_idle</td>
+      <td class="reportr"><p>The <b>count_90_day_idle</b> field specifies the number of hosted accounts in your domain that have been idle for 90 days or more. An account is idle as long as the account owner has not accessed email for that account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+
+</tbody>
+</table>
+</div>
+    
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=googleAppsReportDailyDiskSpaceDescription></a>Disk Space Report</div></p>
+
+
+
+<p>The <b>disk_space</b> report shows the amount of disk space occupied by user's mailboxes. The report identifies the total number of accounts in your domain as well as the number of accounts that fall into several different size groupings. Mailboxes that occupy less than 1GB of disk space are grouped in increments of 100MB, and mailboxes that occupy between 1GB and 10GB of disk space are grouped in increments of 500MB.</p>
+
+
+<p><div class="l4">Sample XML Request</div></p>
+
+
+
+
+<p>To retrieve this report, set the value of the <a href="#google_apps_tag_reportType">&lt;reportType&gt;</a> tag to <b>daily</b> and the value of the <a href="#google_apps_tag_reportName">&lt;reportName&gt;</a> tag to <b>disk_space</b>. The following XML shows a sample request for a daily disk space report:</p>
+
+
+
+
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;daily&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;disk_space&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+
+
+<p><div class="l4">Sample Report Data</div></p>
+<p><b>Note:</b> The data in this sample report has been reformatted to ensure that this document prints correctly. In this sample, an indented line signifies the continuation of the previous line. In the reports you receive through the API, there will not be carriage returns between indented lines and the lines above them.</p>
+
+<pre>
+date,num_accounts,usage_in_mb,avg_usage_in_mb,quota_in_mb,avg_quota_in_mb,
+    size_0.1gb,size_0.2gb,size_0.3gb,size_0.4gb,size_0.5gb,size_0.6gb,
+    size_0.7gb,size_0.8gb,size_0.9gb,size_1.0gb,size_1.5gb,size_2.0gb,
+    size_2.5gb,size_3.0gb,size_3.5gb,size_4.0gb,size_4.5gb,size_5.0gb,
+    size_5.5gb,size_6.0gb,size_7.5gb,size_8.0gb,size_8.5gb,size_9.0gb,
+    size_9.5gb,size_10.0gb
+
+20060801,46,1,0,274432,5965,46,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+20060802,75,1,0,555008,7400,75,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+20060803,78,3,0,569344,7299,78,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+20060804,82,3,0,585728,7143,82,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</pre>
+
+<p><div class="l4">Field Definitions for the Disk Space Report</div></p>
+<p>The following table lists the fields in the <b>disk_space</b> report.</p>
+
+<div style="padding-right:0px">
+<table border=1 cellpadding=2 cellspacing=0>
+<tbody>
+<tr>
+<th class="reportl">Field Name</td>
+<th class="reportr">Details</td>
+</tr>
+    
+<!-- <a name="date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="date" name="date_feed_data"></a>date</td>
+      <td class="reportr"><p>The <b>date</b> field specifies the day, month and year that correspond to the remaining data in a row of a report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="num_accounts_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="num_accounts" name="num_accounts_feed_data"></a>num_accounts</td>
+      <td class="reportr"><p>The <b>num_accounts</b> field specifies the total number of active accounts in your domain. An account is considered active unless you have suspended access to the account or account access has been suspended due to abuse or complaints.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="usage_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="usage_in_mb" name="usage_in_mb_feed_data"></a>usage_in_mb</td>
+      <td class="reportr"><p>The <b>usage_in_mb</b> field identifies the total amount of disk space, in megabytes, used by all active accounts in your domain.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="avg_usage_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="avg_usage_in_mb" name="avg_usage_in_mb_feed_data"></a>avg_usage_in_mb</td>
+      <td class="reportr"><p>The <b>avg_usage_in_mb</b> field contains the average amount of disk space, in megabytes, used by each of your hosted accounts.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="quota_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="quota_in_mb" name="quota_in_mb_feed_data"></a>quota_in_mb</td>
+      <td class="reportr"><p>The <b>quota_in_mb</b> field indicates the total amount of disk space available for all of the hosted accounts in your domain.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="avg_quota_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="avg_quota_in_mb" name="avg_quota_in_mb_feed_data"></a>avg_quota_in_mb</td>
+      <td class="reportr"><p>The <b>avg_quota_in_mb</b> field contains the average amount of disk space, in megabytes, available for each of your hosted accounts.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.1gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.1gb" name="size_0.1gb_feed_data"></a>size_0.1gb</td>
+      <td class="reportr"><p>The <b>size_0.1gb</b> field specifies the number of mailboxes using between 0.0 GB and 0.1 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.2gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.2gb" name="size_0.2gb_feed_data"></a>size_0.2gb</td>
+      <td class="reportr"><p>The <b>size_0.2gb</b> field specifies the number of mailboxes using between 0.1 GB and 0.2 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.3gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.3gb" name="size_0.3gb_feed_data"></a>size_0.3gb</td>
+      <td class="reportr"><p>The <b>size_0.3gb</b> field specifies the number of mailboxes using between 0.2 GB and 0.3 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.4gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.4gb" name="size_0.4gb_feed_data"></a>size_0.4gb</td>
+      <td class="reportr"><p>The <b>size_0.4gb</b> field specifies the number of mailboxes using between 0.3 GB and 0.4 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.5gb" name="size_0.5gb_feed_data"></a>size_0.5gb</td>
+      <td class="reportr"><p>The <b>size_0.5gb</b> field specifies the number of mailboxes using between 0.4 GB and 0.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.6gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.6gb" name="size_0.6gb_feed_data"></a>size_0.6gb</td>
+      <td class="reportr"><p>The <b>size_0.6gb</b> field specifies the number of mailboxes using between 0.5 GB and 0.6 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.7gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.7gb" name="size_0.7gb_feed_data"></a>size_0.7gb</td>
+      <td class="reportr"><p>The <b>size_0.7gb</b> field specifies the number of mailboxes using between 0.6 GB and 0.7 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.8gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.8gb" name="size_0.8gb_feed_data"></a>size_0.8gb</td>
+      <td class="reportr"><p>The <b>size_0.8gb</b> field specifies the number of mailboxes using between 0.7 GB and 0.8 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_0.9gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_0.9gb" name="size_0.9gb_feed_data"></a>size_0.9gb</td>
+      <td class="reportr"><p>The <b>size_0.9gb</b> field specifies the number of mailboxes using between 0.8 GB and 0.9 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_1.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_1.0gb" name="size_1.0gb_feed_data"></a>size_1.0gb</td>
+      <td class="reportr"><p>The <b>size_1.0gb</b> field specifies the number of mailboxes using between 0.9 GB and 1 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_1.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_1.5gb" name="size_1.5gb_feed_data"></a>size_1.5gb</td>
+      <td class="reportr"><p>The <b>size_1.5gb</b> field specifies the number of mailboxes using between 1 GB and 1.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_2.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_2.0gb" name="size_2.0gb_feed_data"></a>size_2.0gb</td>
+      <td class="reportr"><p>The <b>size_2.0gb</b> field specifies the number of mailboxes using between 1.5 GB and 2 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_2.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_2.5gb" name="size_2.5gb_feed_data"></a>size_2.5gb</td>
+      <td class="reportr"><p>The <b>size_2.5gb</b> field specifies the number of mailboxes using between 2 GB and 2.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_3.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_3.0gb" name="size_3.0gb_feed_data"></a>size_3.0gb</td>
+      <td class="reportr"><p>The <b>size_3.0gb</b> field specifies the number of mailboxes using between 2.5 GB and 3 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_3.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_3.5gb" name="size_3.5gb_feed_data"></a>size_3.5gb</td>
+      <td class="reportr"><p>The <b>size_3.5gb</b> field specifies the number of mailboxes using between 3 GB and 3.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_4.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_4.0gb" name="size_4.0gb_feed_data"></a>size_4.0gb</td>
+      <td class="reportr"><p>The <b>size_4.0gb</b> field specifies the number of mailboxes using between 3.5 GB and 4 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_4.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_4.5gb" name="size_4.5gb_feed_data"></a>size_4.5gb</td>
+      <td class="reportr"><p>The <b>size_4.5gb</b> field specifies the number of mailboxes using between 4 GB and 4.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_5.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_5.0gb" name="size_5.0gb_feed_data"></a>size_5.0gb</td>
+      <td class="reportr"><p>The <b>size_5.0gb</b> field specifies the number of mailboxes using between 4.5 GB and 5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_5.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_5.5gb" name="size_5.5gb_feed_data"></a>size_5.5gb</td>
+      <td class="reportr"><p>The <b>size_5.5gb</b> field specifies the number of mailboxes using between 5 GB and 5.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_6.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_6.0gb" name="size_6.0gb_feed_data"></a>size_6.0gb</td>
+      <td class="reportr"><p>The <b>size_6.0gb</b> field specifies the number of mailboxes using between 5.5 GB and 6 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_6.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_6.5gb" name="size_6.5gb_feed_data"></a>size_6.5gb</td>
+      <td class="reportr"><p>The <b>size_6.5gb</b> field specifies the number of mailboxes using between 6 GB and 6.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_7.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_7.0gb" name="size_7.0gb_feed_data"></a>size_7.0gb</td>
+      <td class="reportr"><p>The <b>size_7.0gb</b> field specifies the number of mailboxes using between 6.5 GB and 7 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_7.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_7.5gb" name="size_7.5gb_feed_data"></a>size_7.5gb</td>
+      <td class="reportr"><p>The <b>size_7.5gb</b> field specifies the number of mailboxes using between 7 GB and 7.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_8.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_8.0gb" name="size_8.0gb_feed_data"></a>size_8.0gb</td>
+      <td class="reportr"><p>The <b>size_8.0gb</b> field specifies the number of mailboxes using between 7.5 GB and 8 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_8.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_8.5gb" name="size_8.5gb_feed_data"></a>size_8.5gb</td>
+      <td class="reportr"><p>The <b>size_8.5gb</b> field specifies the number of mailboxes using between 8 GB and 8.5 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_9.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_9.0gb" name="size_9.0gb_feed_data"></a>size_9.0gb</td>
+      <td class="reportr"><p>The <b>size_9.0gb</b> field specifies the number of mailboxes using between 8.5 GB and 9 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_9.5gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_9.5gb" name="size_9.5gb_feed_data"></a>size_9.5gb</td>
+      <td class="reportr"><p>The <b>size_9.5gb</b> field specifies the number of mailboxes using between 9.5 GB and 10 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="size_10.0gb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="size_10.0gb" name="size_10.0gb_feed_data"></a>size_10.0gb</td>
+      <td class="reportr"><p>The <b>size_10.0gb</b> field specifies the number of mailboxes using between 9.5 GB and 10 GB of disk space.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+
+</tbody>
+</table>
+</div>
+    
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=googleAppsReportDailyEmailClientsDescription></a>Email Clients Report</div></p>
+
+
+
+<p>The <b>email_clients</b> report explains how users in your domain access their hosted accounts on a day-by-day basis. The report lists the total number of accounts in your domain as well as the number and percentage of users who accessed their accounts using POP, IMAP or WebMail on each day. This report does not include suspended accounts in the account total.</p>
+
+<p><b>Note:</b> If a user accesses her account using both POP and WebMail, the account will be counted in the total number of accounts accessed using POP <i>and</i> the total number of accounts accessed using WebMail.</p>
+
+
+<p><div class="l4">Sample XML Request</div></p>
+
+
+
+
+
+<p>To retrieve this report, set the value of the <a href="#google_apps_tag_reportType">&lt;reportType&gt;</a> tag to <b>daily</b> and the value of the <a href="#google_apps_tag_reportName">&lt;reportName&gt;</a> tag to <b>email_clients</b>. The following XML shows a sample request for a daily email client report:</p>
+
+
+
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;daily&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;email_clients&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+
+
+<p><div class="l4">Sample Report Data</div></p>
+<p><b>Note:</b> The data in this sample report has been reformatted to ensure that this document prints correctly. In this sample, an indented line signifies the continuation of the previous line. In the reports you receive through the API, there will not be carriage returns between indented lines and the lines above them.</p>
+
+<pre>
+date,num_accounts,count_daily_actives,
+    pop_count,imap_count,web_mail_count
+
+20060801,46,8,0,0,0,0,8,17.4
+20060802,75,39,0,0,0,0,39,52
+20060803,78,13,0,0,0,0,13,16.7
+20060804,82,15,0,0,0,0,15,18.3
+</pre>
+
+<p><div class="l4">Field Definitions for the Email Clients Report</div></p>
+<p>The following table lists the fields in the <b>email_clients</b> report.</p>
+
+<div style="padding-right:0px">
+<table border=1 cellpadding=2 cellspacing=0>
+<tbody>
+<tr>
+<th class="reportl">Field Name</td>
+<th class="reportr">Details</td>
+</tr>
+    
+<!-- <a name="date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="date" name="date_feed_data"></a>date</td>
+      <td class="reportr"><p>The <b>date</b> field specifies the day, month and year that correspond to the remaining data in a row of a report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="num_accounts_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="num_accounts" name="num_accounts_feed_data"></a>num_accounts</td>
+      <td class="reportr"><p>The <b>num_accounts</b> field specifies the total number of active accounts in your domain. An account is considered active unless you have suspended access to the account or account access has been suspended due to abuse or complaints.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="num_accounts_accessed_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="num_accounts_accessed" name="num_accounts_accessed_feed_data"></a>num_accounts_accessed</td>
+      <td class="reportr"><p>The <b>num_accounts_accessed</b> field specifies the total number of accounts in your domain that were accessed on a particular day.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="pop_count_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="pop_count" name="pop_count_feed_data"></a>pop_count</td>
+      <td class="reportr"><p>The <b>pop_count</b> field indicates how many users in your domain used POP to access their email on a particular day.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="imap_count_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="imap_count" name="imap_count_feed_data"></a>imap_count</td>
+      <td class="reportr"><p>The <b>imap_count</b> field indicates how many users in your domain used IMAP to access their email on a particular day.</p><p><b>Note:</b> Google Apps does not currently support IMAP. This report field is a placeholder for future product functionality.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="web_mail_count_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="web_mail_count" name="web_mail_count_feed_data"></a>web_mail_count</td>
+      <td class="reportr"><p>The <b>web_mail_count</b> field indicates how many users in your domain used WebMail to access their email on a particular day.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+
+</tbody>
+</table>
+</div>
+    
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=googleAppsReportDailyQuotaLimitAccountsDescription></a>Quota Limit Report</div></p>
+
+
+
+<p>The <b>quota_limit_accounts</b> report contains a list of the accounts that are approaching or have exceeded their disk space quota. An account will be included in this report if it has less than 5 percent of its quota remaining. This report does not include suspended accounts.</p>
+
+
+<p><div class="l4">Sample XML Request</div></p>
+
+
+
+
+
+
+<p>To retrieve this report, set the value of the <a href="#google_apps_tag_reportType">&lt;reportType&gt;</a> tag to <b>daily</b> and the value of the <a href="#google_apps_tag_reportName">&lt;reportName&gt;</a> tag to <b>quota_limit_accounts</b>. The following XML shows a sample request for a daily quota limit accounts report:</p>
+
+
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;daily&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;quota_limit_accounts&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+
+
+<p><div class="l4">Sample Report Data</div></p>
+
+<pre>
+date,account_id,account_name,status,disk_space_in_mb,quota_in_mb
+20060807,000000ccccc33333,"bart@example.com","QUOTA_LIMIT",2000,2048
+</pre>
+
+<p><div class="l4">Field Definitions for the Quota Limit Report</div></p>
+<p>The following table lists the fields in the <b>quota_limit_accounts</b> report.</p>
+
+<div style="padding-right:0px">
+<table border=1 cellpadding=2 cellspacing=0>
+<tbody>
+<tr>
+<th class="reportl">Field Name</td>
+<th class="reportr">Details</td>
+</tr>
+    
+<!-- <a name="date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="date" name="date_feed_data"></a>date</td>
+      <td class="reportr"><p>The <b>date</b> field specifies the day, month and year that correspond to the remaining data in a row of a report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="account_id_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="account_id" name="account_id_feed_data"></a>account_id</td>
+      <td class="reportr"><p>The <b>account_id</b> field contains an ID that uniquely identifies a hosted account. Google will assign an account ID to each hosted account that you create, and this ID will not change for the life of the account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> 16-character hexadecimal string
+      </td>
+    </tr>
+
+
+<!-- <a name="account_name_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="account_name" name="account_name_feed_data"></a>account_name</td>
+      <td class="reportr"><p>The <b>account_name</b> field contains the user's email address, including a username and your domain name &ndash; e.g. <b>admin@example.com</b>.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="status_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="status" name="status_feed_data"></a>status</td>
+      <td class="reportr"><p>The <b>status</b> field indicates that an account has almost reached or has exceeded its disk space quota. Valid values for this field are <b>QUOTA_APPROACHING</b> and <b>QUOTA_EXCEEDED</b>.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="disk_space_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="disk_space_in_mb" name="disk_space_in_mb_feed_data"></a>disk_space_in_mb</td>
+      <td class="reportr"><p>The <b>disk_space_in_mb</b> field indicates the amount of disk space, in megabytes, that is being used by a particular account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="quota_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="quota_in_mb" name="quota_in_mb_feed_data"></a>quota_in_mb</td>
+      <td class="reportr"><p>The <b>quota_in_mb</b> field indicates the total amount of disk space available for all of the hosted accounts in your domain.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+
+</tbody>
+</table>
+</div>
+    
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=googleAppsReportDailySummaryDescription></a>Summary Report</div></p>
+
+
+
+<p>The <b>summary</b> report contains the total number of accounts, total mailbox usage in bytes and total mailbox quota in megabytes for your domain. Each row in the report contains data for one day. This report does not include information for suspended accounts.</p>
+
+
+<p><div class="l4">Sample XML Request</div></p>
+
+
+
+
+
+
+
+<p>To retrieve this report, set the value of the <a href="#google_apps_tag_reportType">&lt;reportType&gt;</a> tag to <b>daily</b> and the value of the <a href="#google_apps_tag_reportName">&lt;reportName&gt;</a> tag to <b>summary</b>. The following XML shows a sample request for a daily summary report:</p>
+
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;daily&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;summary&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+
+
+<p><div class="l4">Sample Report Data</div></p>
+
+<pre>
+date,num_accounts,usage_in_bytes,quota_in_mb
+20060801,46,1308091,274432
+20060802,75,2090993,555008
+20060803,78,3425876,569344
+20060804,82,3952475,585728
+</pre>
+
+<p><div class="l4">Field Definitions for the Summary Report</div></p>
+<p>The following table lists the fields in the <b>summary</b> report.</p>
+
+<div style="padding-right:0px">
+<table border=1 cellpadding=2 cellspacing=0>
+<tbody>
+<tr>
+<th class="reportl">Field Name</td>
+<th class="reportr">Details</td>
+</tr>
+    
+<!-- <a name="date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="date" name="date_feed_data"></a>date</td>
+      <td class="reportr"><p>The <b>date</b> field specifies the day, month and year that correspond to the remaining data in a row of a report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="num_accounts_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="num_accounts" name="num_accounts_feed_data"></a>num_accounts</td>
+      <td class="reportr"><p>The <b>num_accounts</b> field specifies the total number of active accounts in your domain. An account is considered active unless you have suspended access to the account or account access has been suspended due to abuse or complaints.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="usage_in_bytes_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="usage_in_bytes" name="usage_in_bytes_feed_data"></a>usage_in_bytes</td>
+      <td class="reportr"><p>The <b>usage_in_bytes</b> field specifies the total amount of disk space, in bytes, used by all in your domain.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+<!-- <a name="quota_in_mb_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="quota_in_mb" name="quota_in_mb_feed_data"></a>quota_in_mb</td>
+      <td class="reportr"><p>The <b>quota_in_mb</b> field indicates the total amount of disk space available for all of the hosted accounts in your domain.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer
+      </td>
+    </tr>
+
+
+
+</tbody>
+</table>
+</div>
+    
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=googleAppsReportDailySuspendedAccountsDescription></a>Suspended Accounts Report</div></p>
+
+
+
+<p>The <b>suspended_accounts</b> report lists all of the suspended accounts in your domain on a particular day.</p>
+
+
+<p><div class="l4">Sample XML Request</div></p>
+
+
+
+
+
+
+
+
+<p>To retrieve this report, set the value of the <a href="#google_apps_tag_reportType">&lt;reportType&gt;</a> tag to <b>daily</b> and the value of the <a href="#google_apps_tag_reportName">&lt;reportName&gt;</a> tag to <b>suspended_accounts</b>. The following XML shows a sample request for a suspended accounts report:</p>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;<a href="#google_apps_tag_rest">rest</a> xmlns="google:accounts:rest:protocol"
+    xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance "&gt;
+    &lt;<a href="#google_apps_tag_type">type</a>&gt;Report&lt;/type&gt;
+    &lt;<a href="#google_apps_tag_token">token</a>&gt;DQAAAHQAAADgjT625094TCzxcWC4Ss-MH...&lt;/token&gt;
+    &lt;<a href="#google_apps_tag_domain">domain</a>&gt;www.example.com&lt;/domain&gt;
+    &lt;<a href="#google_apps_tag_date">date</a>&gt;2006-08-01&lt;/date&gt;
+    &lt;<a href="#google_apps_tag_reportType">reportType</a>&gt;daily&lt;/reportType&gt;
+    &lt;<a href="#google_apps_tag_reportName">reportName</a>&gt;suspended_accounts&lt;/reportName&gt;
+&lt;/rest&gt;
+</pre>
+
+
+
+<p><div class="l4">Sample Report Data</div></p>
+<p><b>Note:</b> The data in this sample report has been reformatted to ensure that this document prints correctly. In this sample, an indented line signifies the continuation of the previous line. In the reports you receive through the API, there will not be carriage returns between indented lines and the lines above them.</p>
+
+<pre>
+date,account_id,account_name,status,reason
+
+20060808,000000ccccc33333,"bart@example.com","SUSPENDED_FOR_ABUSE",
+    "Suspended for abuse"
+
+20060808,000000ddddd4444,"homer@example.com","SUSPENDED_BY_ADMIN",
+    "Disabled by operator on 20060725"
+</pre>
+
+<p><div class="l4">Field Definitions for the Suspended Accounts Report</div></p>
+<p>The following table lists the fields in the <b>suspended_accounts</b> report.</p>
+
+<div style="padding-right:0px">
+<table border=1 cellpadding=2 cellspacing=0>
+<tbody>
+<tr>
+<th class="reportl">Field Name</td>
+<th class="reportr">Details</td>
+</tr>
+    
+<!-- <a name="date_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="date" name="date_feed_data"></a>date</td>
+      <td class="reportr"><p>The <b>date</b> field specifies the day, month and year that correspond to the remaining data in a row of a report.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> Integer (YYYYMMDD)
+      </td>
+    </tr>
+
+
+<!-- <a name="account_id_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="account_id" name="account_id_feed_data"></a>account_id</td>
+      <td class="reportr"><p>The <b>account_id</b> field contains an ID that uniquely identifies a hosted account. Google will assign an account ID to each hosted account that you create, and this ID will not change for the life of the account.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> 16-character hexadecimal string
+      </td>
+    </tr>
+
+
+<!-- <a name="account_name_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="account_name" name="account_name_feed_data"></a>account_name</td>
+      <td class="reportr"><p>The <b>account_name</b> field contains the user's email address, including a username and your domain name &ndash; e.g. <b>admin@example.com</b>.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="status_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="status" name="status_feed_data"></a>status</td>
+      <td class="reportr"><p>The <b>status</b> field provides some information as to why an account has been suspended. The <a href="#suspension_reason_feed_data">suspension_reason</a> field may contain additional information explaining why an account was suspended.</p><p>Valid values for this field are <b>SUSPENDED_FOR_ABUSE</b>, <b>SUSPENDED_BY_ADMIN</b> and <b>OTHER</b>.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+<!-- <a name="suspension_reason_feed_data"/> -->
+    <tr>
+      <td class="reportl"><a id="suspension_reason" name="suspension_reason_feed_data"></a>suspension_reason</td>
+      <td class="reportr"><p>The <b>suspension_reason</b> field identifies the reason that an account was suspended.</p>
+          <hr style="margin-top:2px">
+          <b>Type:</b> String
+      </td>
+    </tr>
+
+
+
+</tbody>
+</table>
+</div>
+    
+
+
+<p><div style="vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;border-top:1px solid #3a7bcb;color: #000000; font-size:110%;font-weight:bold"><a name=googleAppsReportingErrorHandling></a>Error Handling</div></p>
+
+
+
+<p>The reporting API returns a report containing comma-separated values in response to a valid API request. However, the API returns an XML response in return to an invalid API request. The example below demonstrates the XML error response's format:</p>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;hs:rest xmlns:hs="google:accounts:rest:protocol"&gt;
+    &lt;hs:status&gt;Failure(2001)&lt;/hs:status&gt;
+    &lt;hs:reason&gt;ReportNotAvailableForGivenDate(1059)&lt;/hs:reason&gt;
+    &lt;hs:extendedMessage&gt;&lt;/hs:extendedMessage&gt;
+    &lt;hs:result&gt;&lt;/hs:result&gt;
+    &lt;hs:type&gt;&lt;/hs:type&gt;
+&lt;/hs:rest&gt;
+</pre>
+
+<p>The &lt;hs:reason&gt; tag in the XML response identifies the type of error that caused the HTTP request to fail. The following list identifies the possible values for the &lt;hs:reason&gt; tag and explains the associated error.</p>
+
+<ul>
+<li>
+<p><b>Unknown(1000)</b> - This error indicates that the HTTP request failed for an unknown reason. If you receive this error, please reissue your request. If the error occurs again, please contact Google support.</p>
+</li>
+<li>
+<p><b>TypeUnsupported(1001)</b> - This error indicates that the HTTP request failed because the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag in your HTTP request was invalid. The value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag must be <b>Report</b> for a reporting API request.</p>
+</li>
+<li>
+<p><b>MalformedRequest(1004)</b> - This error indicates that the HTTP request did not contain properly formed XML.</p>
+</li>
+<li>
+<p><b>RequiredFieldsMissing(1005)</b> - This error indicates that the HTTP request does not contain a required data field. This error will occur if you request a daily report but do not specify a date in the HTTP request. Similarly, this error will occur if another required field is missing in the HTTP request.</p>
+</li>
+<li>
+<p><b>AuthenticationFailure(1006)</b> - This error indicates that Google is unable to verify that you are authorized to receive the requested data. You will receive this error if the <a href="#googleAppsAuthentication">authentication token</a> specified in your request has expired. Please note that authentication tokens expire after 24 hours. If you feel you have received this response in error, please contact Google support.</p>
+</li>
+<li>
+<p><b>DomainDoesNotExist(1007)</b> - This error indicates that the domain specified in the HTTP request is not registered to use Google Apps. Please confirm that your domain is registered and that you have entered the correct <a href="#google_apps_tag_domain">domain</a> in your HTTP request.</p>
+</li>
+<li>
+<p><b>InternalError(1011)</b> - This error indicates that the HTTP request failed due to an internal Google error. If you receive this error, please reissue your request. If the error occurs again, please contact Google support.</p>
+</li>
+<li>
+<p><b>DomainSuspended(1027)</b> - This error indicates that Google has suspended the domain specified in the HTTP request from using Google Apps. If you receive this error, please reissue your request. If the error occurs again, please contact Google support.</p>
+</li>
+<li>
+<p><b>ReportNotFound(1045)</b> - This error indicates that the requested report is not available even though the date and report name specified in the request both appear to be valid. If you receive this error, please reissue your request. If the error occurs again, please contact Google support.</p>
+</li>
+<li>
+<p><b>ReportNotAvailableForGivenDate(1059)</b> - This error indicates that there is no report available for the date specified in the API request. This error will occur if you request a daily report for the current day since daily reports for a particular day are not available until 12 p.m. Pacific time the following day. For example, reports for June 10, 2006, would not be available until 12 p.m. Pacific time on June 11, 2006. This error would also occur if you requested a report for a date in the future.</p>
+</li>
+<li>
+<p><b>ReportNotAvailableWithGivenName(1060)</b> - This error indicates that you specified either an invalid <a href="#google_apps_tag_reportName">reportName</a> or a valid <a href="#google_apps_tag_reportName">reportName</a> and an invalid <a href="#google_apps_tag_reportType">reportType</a>. For example, you will receive this error if you request a daily report named <b>accounts1</b> (instead of <b>accounts</b>). Similarly, you will see this error if you request a monthly report named <b>accounts</b> rather than a daily report with that name.</p>
+</li>
+</ul>
+<p><div style="vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;border-top:1px solid #3a7bcb;color: #000000; font-size:110%;font-weight:bold"><a name=Appendixes></a>Appendixes</div></p>
+
+
+<p><div style="width:100%;padding:2px 4px;background:#e5ecf9;border-bottom:1px solid #3a7bcb;font-size:110%;font-weight:bold"><a name=googleAppsAuthentication></a>Authentication</div></p>
+
+
+
+<p>All of your API requests must be sent over HTTPS. 
+In addition, all data sent to the API will be delivered using HTTPS POST to ensure the security of that data.</p>
+<p>
+
+Each API request that you send needs to contain an authentication token, which Google will use to authorize access to the operation specified in the API request. Authentication tokens are only available to users who have administrative rights in your domain, and those tokens only authorize operations within your domain.</p>
+
+<p>The <a href="http://code.google.com/apis/accounts/AuthForInstalledApps.html">ClientLogin Interface</a> provides additional information about programmatically logging users into their accounts.</p>
+
+<p><div style="width:100%;background:#fff;border-bottom:1px solid #3a7bcb;font-size:100%;font-weight:bold"><a name=googleAppsObtainingTokens></a>Obtaining an Authentication Token</div></p>
+
+
+
+<p>To obtain an authentication token, submit an HTTP POST request to the following URL:</p>
+
+<div style="padding:0px 40px;font-weight:bold">
+https://www.google.com/accounts/ClientLogin
+</div>
+
+
+
+<p>The following guidelines apply to the request:</p>
+<ul>
+<li>
+<p>The POST body needs to include a string in the following format:</p>
+<div style="padding:0px 40px;font-weight:bold">
+accountType=<b>HOSTED</b>&Email=<span style=color:#3a7bcb">&lt;email_address&gt;</span>&Passwd=<span style="color:#3a7bcb">&lt;password&gt;</span>
+</div>
+<p>You will need to make the following changes to this string:</p>
+<ul>
+<li>
+<p>Replace the string <span style="color:#3a7bcb"><b>&lt;email_address&gt;</b></span> with the email address for your hosted admin account.</p>
+</li>
+<li>
+<p>Replace the string <span style="color:#3a7bcb"><b>&lt;password&gt;</b></span> with the password for that account.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>The 
+email address and password 
+in the POST body must be URL-encoded. For example, the URL-encoded form of the email address <b>apps.test.account@example.com</b> is <b>apps%2etest%2eaccount%10example%2ecom</b>.</p>
+<li>
+<p>The POST request must specify the value <b>application/x-www-form-urlencoded</b> for the <b>Content-Type</b> header.</p>
+</li>
+</ul>
+
+<p>Google will return a response containing your authentication token in response to your POST request. The authentication token will be the <b>SID</b> value on that page. You need to extract the token from the page and then submit that token in 
+API requests.</p>
+
+<p><b>Note:</b> Authentication tokens expire after 24 hours. As such, you will need to submit a request to the above URL at least once every 24 hours. We recommend that you keep the token in memory rather than writing it to a file.</p>
+<p><div style="width:100%;background:#fff;border-bottom:1px solid #3a7bcb;font-size:100%;font-weight:bold"><a name=googleAppsSampleTokenCode></a>Sample Code for Obtaining an Authentication Token</div></p>
+
+
+
+<p>The following Perl script demonstrates how to make an HTTP POST request for an authentication token.</p>
+
+<p><pre class="codeSample">
+#! /usr/bin/perl -w
+
+use strict;
+use LWP::UserAgent;
+
+# Create an LWP object to make the HTTP POST request
+my $lwp_object = LWP::UserAgent->new;
+
+# Define the URL to submit the request to
+my $url = 'https://www.google.com/accounts/ClientLogin';
+
+# Submit the request with values for the <b>accountType</b>, 
+# <b>Email</b> and <b>Passwd</b> variables.
+my $response = $lwp_object->post( $url,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ 'accountType' => 'HOSTED',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Email' => '<span class="nh4">admin_email@example.com</span>',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Passwd' => '<span class="nh4">admin_password</span>'
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]
+);
+
+die "$url error: ", $response->status_line unless $response->is_success;
+
+# Extract the authentication token from the response
+my $auth_token;
+foreach my $line (split/\n/, $response->content) {
+&nbsp;&nbsp;&nbsp;&nbsp;if ($line =~ m/^SID=(.+)$/) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$auth_token = $1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;last;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+}
+
+print "authentication token is $auth_token\n";
+</pre></p>
+
+<p>Note that to use this code, you need to replace the <b>Email</b> and <b>Passwd</b> values with the email address and password for your hosted admin account. 
+</p>
+
+<hr>
+<center><font size="-1">&copy; Google Inc. 2007. All Rights Reserved.</font></center>
+</div></div></div></body>
+</html>

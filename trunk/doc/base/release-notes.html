@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<title>Google Base data API- Release Notes</title>
+</head>
+<body id="rnotes_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <div id="sidenav">
+	<!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="signup.html" id="signup_link">API Key</a></li>
+      <li><a href="terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+    </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+</form>
+
+  </div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <div id="pagecontent">
+    <!-- ########## PAGE CONTENT ########## -->
+    <h2 id="page_title">Release Notes</h2>
+    <p>The Google Base data API does not currently support digital upload of
+      content, such as excel spreadsheets. You can use the <code>image_link</code> attribute
+      to refer to an image that you are hosting on your site. </p>
+    <p>Some error messages are unclear. We are planning to improve these error
+      messages for future releases. (523388 and 523673)</p>
+    <p>If you enter an extended ascii character, such as an &uuml; character,
+      it will be corrupted when it is stored. (210500)</p>
+    <h3>New Features</h3>
+    <p>The following new features were recently added to the Google Base data API.</p>
+    <p><strong>JavaScript Tutorial:</strong> The new <a href="http://code.google.com/apis/base/samples/javascript/javascript-sample-autosmasher.html">JavaScript Tutorial</a> is a simple end-to-end example that presents all of the basic concepts of Google Base. It  searches Google Base for vehicles, and then displays the results on a map. If you want to learn how to use the Google Base data API, this is a great place to start.</p>
+    <p><b>Crowding</b>: You can use crowding to limit repetitive query results by placing a cap on similar items. </p>
+    <p><strong>Adjusted names and attributes</strong>: In an effort to improve data quality, queries can now return results for exact attribute names and query terms, as well as <a href="attrs-queries.html#adjusted">synonyms</a> of these. </p>
+    <p><strong>Hiding items</strong>:  You can use the <a href="starting-out.html#item_hide"><code>app:draft</code></a> extension element, defined in the Atom Publishing Protocol, to upload an item as a draft.      </p>
+    <p><strong>Troubleshooting</strong>: Disapproved items are now marked <a href="starting-out.html#disapproved"><code>gm:disapproved</code></a>.      </p>
+    <p><strong>Full-text queries</strong>: Google Base now supports the full functionality of the <a href="http://code.google.com/apis/gdata/reference.html#query-requests"><code>q</code> query parameter</a> as specified by GData. </p>
+    <p><strong>Spell-checking</strong>:  Full-text queries are now automatically <a href="attrs-queries.html#fullTextQueries">spell-checked</a>.</p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  _utcp="/apis/base/";
+  _uanchor=1;
+  urchinTracker();
+</script>
+</body>
+</html>

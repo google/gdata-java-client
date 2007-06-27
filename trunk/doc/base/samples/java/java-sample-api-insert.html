@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../../../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../../../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="../../local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ieonly.css" />
+<![endif]-->
+<title>Google Base data API- Accessing the Google Base data API using Java</title>
+</head>
+<body id="sample_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->  
+  <div id="sidenav"> <!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="../../index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="../../sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="../../starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="../../attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="../../javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="../../csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="../../snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="../../items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="../../attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="../../itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="../../locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="../../query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="../../ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="../../client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="../../signup.html" id="signup_link">API Key</a></li>
+      <li><a href="../../terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="../../release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+      </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <!-- This comment prevents 
+	space-->
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+</form>
+ </div>
+  <!-- ########## END SIDE NAVIGATION ########## -->
+<div id="pagecontent">
+  <!-- ########## PAGE CONTENT ########## -->
+  <h2 id="page_title">Understanding the Java InsertExample API Sample Application</h2>
+  <p><strong>Select a language:</strong> |<activeLang> Java </activelang>
+| <a href="../javascript/javascript-sample.html">JavaScript</a> | <a href="../perl/perl-sample.html">Perl</a> | <a href="../php/php-sample-zend.html">PHP</a> | <a href="../python/python-sample.html">Python</a> | <a href="../csharp/csharp-sample.html">C#</a> | <a href="../vb/vb-sample.html">VB.NET</a> | <a href="../coldfusion/coldfusion-sample.html">ColdFusion</a> </p>
+  <p id="langSelect"> <a href="java-sample.html">Java Sample Home</a> <a href="java-sample-api-query1.html">QueryExample1</a> <a href="java-sample-api-query2.html">QueryExample2</a> <a href="java-sample-api-query3.html">QueryExample3</a> <strong>InsertExample</strong> <a href="java-sample-api-update.html">UpdateExample</a> </p>
+
+        <p> <code>InsertExample</code> shows how to add your own item to Google Base. </p>
+  <p>The previous examples demonstrated how to query the Google Base data API
+    server, both for snippets (unauthenticated feeds) and for items
+    (authenticated feeds, containing a specific customer's items.) <code>InsertExample</code> demonstrates how to add content to Google Base so
+    that the world can see it. </p>
+  <p>You will need a <a href="https://www.google.com/accounts/NewAccount">Google
+    Account email and password</a> in order to run this example.</p>
+  <p><code></code>In this example we will connect to your &quot;items&quot; feed and perform an HTTP POST
+    operation to add a new item. The item
+    to be added is encoded in Atom format, and is defined a <code>String</code> constant.</p>
+  <pre>private static final String DATA_ITEM = 
+  &quot;&lt;?xml version=\'1.0\'?&gt;\n&quot; + 
+  &quot;&lt;entry xmlns=\'http://www.w3.org/2005/Atom\' xmlns:g=\'http://base.google.com/ns/1.0\'&gt;\n&quot; + 
+  &quot;  &lt;category scheme=\'http://base.google.com/categories/itemtypes\' term=\'Products\'/&gt;\n&quot; + 
+  &quot;  &lt;g:item_type type=\'text\'&gt;Products&lt;/g:item_type&gt;\n&quot; + 
+  &quot;  &lt;title type=\'text\'&gt;My cool car is for sale&lt;/title&gt;&quot; +
+  &quot;  &lt;content type=\'xhtml\'&gt;Light pink, yellow seats.&lt;/content&gt;&quot; +
+  &quot;&lt;/entry&gt;&quot;;
+</pre>
+  <p>The item we add is a very simple item, consisting only of an item type (&quot;products&quot;, in
+    our case), a title, and content (a description). Feel free to change these
+    fields to contain your personalized items, or add new attributes and labels.  You can use the responses dumped by <code>QueryExample1</code> and <code>QueryExample3</code> as an inspiration for adding new attributes.</p>
+<h3>Contents</h3>
+<ol class="toc">
+    <li><a href="#insertRun">Running InsertExample</a> </li>
+    <li><a href="#InsertStepThru">Stepping through the InsertExample code </a></li>
+  </ol>
+  <h2><a name="insertRun" id="insertRun"></a>Running InsertExample</h2>
+  <ol>
+    <li><a href="http://code.google.com/apis/base/signup.html">Obtain a developer key</a> for an &quot;installed application&quot;. </li>
+    <li>Edit <code><a href="InsertExample.java" target="_blank">InsertExample.java</a></code> and fill in the <code>DEVELOPER_KEY</code> static string with your developer key. </li>
+      <pre>private static final String DEVELOPER_KEY = &quot;&quot;;</pre>
+        <li>Enter your Google Accounts email address and your password in the <code>EMAIL</code> and <code>PASSWORD</code> static strings.</li>
+          <pre>private static final String EMAIL = &quot;&quot;;
+private static final String PASSWORD = &quot;&quot;;</pre>
+    <li>Compile and run the example using your favorite editor, or the command
+      line:</li>
+      <pre>javac com/google/api/gbase/examples/basic/InsertExample.java
+java com/google/api/gbase/examples/basic/InsertExample
+</pre>
+  </ol>
+<p>The output will be as follows: </p>
+      <pre>Obtained authorization token: DQAAAGgA...dk3fA5N
+&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;entry&gt;
+  &lt;id&gt;http://base.google.com/base/feeds/items/16024998325761524417&lt;/id&gt;
+  &lt;published&gt;2006-08-23T15:18:55.184Z&lt;/published&gt;
+  &lt;updated&gt;2006-08-23T15:18:55.184Z&lt;/updated&gt;
+  &lt;category scheme=&quot;http://base.google.com/categories/itemtypes&quot; term=&quot;Products&quot;/&gt;
+  &lt;title type=&quot;text&quot;&gt;My cool car is for sale&lt;/title&gt;
+  &lt;content type=&quot;xhtml&quot;&gt;Light pink, yellow seats.&lt;/content&gt;
+  &lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot; href=&quot;http://base.google.com/base/feeds/items/16024998325761524417&quot;/&gt;
+  &lt;link rel=&quot;edit&quot; type=&quot;application/atom+xml&quot; href=&quot;http://base.google.com/base/feeds/items/16024998325761524417&quot;/&gt;
+  &lt;g:item_type type=&quot;text&quot;&gt;Products&lt;/g:item_type&gt;
+&lt;/entry&gt;</pre>
+      <h2><a name="InsertStepThru" id="InsertStepThru"></a>Stepping through the InsertExample code</h2>
+  <p>We use the same feed as in <code>QueryExample3.java</code> to insert the item:</p>
+  <pre>private static final String ITEMS_FEED = &quot;http://base.google.com/base/feeds/items&quot;;
+</pre>
+  <p>Authentication is also performed as in <a href="java-sample-api-query3.html">QueryExample3</a>, using <code>makeLoginRequest()</code> to
+    request an authorization token and <code>authenticate()</code> to parse the
+    authentication response. The insertion of the new data item is done in <code>postItem()</code>, which connects to the items feed: </p>
+  <pre>HttpURLConnection connection = (HttpURLConnection)(new URL(ITEMS_FEED)).openConnection();
+</pre>
+  <p>Once the connection is created, we need to set its properties: the HTTP request method, the content type of the information that is being posted, the
+    authorization header, and the developer key: </p>
+  <pre>connection.setRequestMethod(&quot;POST&quot;);
+connection.setRequestProperty(&quot;Content-Type&quot;, &quot;application/atom+xml&quot;);
+connection.setRequestProperty(&quot;Authorization&quot;, &quot;GoogleLogin auth=&quot; + token);
+connection.setRequestProperty(&quot;X-Google-Key&quot;, &quot;key=&quot; + DEVELOPER_KEY);
+</pre>
+  <p>We then obtain the output stream of the connection and dump <code>DATA_ITEM</code> into it: </p>
+  <pre>OutputStream outputStream = connection.getOutputStream();
+outputStream.write(DATA_ITEM.getBytes());
+outputStream.close();
+</pre>
+  <p>The rest of the method is already familiar: we obtain the response code
+    and print out to the console the contents of the input stream that correspond to
+    the response code.</p>
+  <p align="right">Go to <a href="java-sample-api-update.html">UpdateExample</a></p>
+</div>
+<!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  urchinTracker();
+</script>
+</body>
+</html>

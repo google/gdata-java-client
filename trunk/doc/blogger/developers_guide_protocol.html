@@ -1,0 +1,539 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Blogger Data API Developer's Guide</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+  <link rel="stylesheet" type="text/css" href="../css/dev_docs.css"/>
+  <link rel="stylesheet" type="text/css" href="css/local_extensions.css"/>
+  <!--[if IE 7]>
+    <link rel="stylesheet" type="text/css" 
+          href="../css/ie7only.css" />
+  <![endif]-->
+  <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" 
+          href="../css/ie6only.css" />
+  <![endif]-->
+  <!--[if IE]>
+    <link rel="stylesheet" type="text/css" 
+          href="../css/ieonly.css" />
+  <![endif]-->
+  <style type="text/css">
+    <!--
+    h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+      color: #000000;
+    }
+
+    -->
+  </style>
+  <script type="text/javascript">
+    <!--
+    var cancelBubble = false;
+
+    function goTo(url) {
+      window.location = url;
+    }
+    //-->
+  </script>
+</head>
+<body class="t1" id="developers_guide_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo">
+    <a href="/">
+      <img src="/images/code_sm.png" border="0" alt="Return to Google Code homepage"/>
+    </a>
+  </div>
+  <h1 id="doc_title">Blogger Data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+<!-- ########## SIDE NAVIGATION ########## -->
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Blogger</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="developers_guide_protocol.html" id="developers_guide_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.blogger.com/terms.g">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Google Data Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://groups.google.com/group/bloggerDev">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<!-- ########## END SIDE NAVIGATION ########## -->
+<!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+<h1 id="page_title">Blogger Data API Developer's Guide: Protocol</h1>
+
+<div id="topnav">
+<table id="mt" cellspacing="0" cellpadding="0" width="100%" border="0">
+<tr>
+<th class="int1" onclick="if (!cancelBubble) goTo('developers_guide_protocol.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_protocol.html">Protocol</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int2" onclick="if (!cancelBubble) goTo('developers_guide_java.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_java.html">Java</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int3" onclick="if (!cancelBubble) goTo('developers_guide_dotnet.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_dotnet.html">.NET</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<!--
+<th class="int4" onclick="if (!cancelBubble) goTo('developers_guide_php.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_php.html">PHP</a></div>
+</th><td>&nbsp;&nbsp;</td>
+-->
+<th class="int5" onclick="if (!cancelBubble) goTo('developers_guide_python.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_python.html">Python</a></div>
+<td width="100%">&nbsp;</td>
+</tr>
+</table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+<tr>
+<td height="4" align="right" style="padding:0px; vertical-align:top">
+<div class="stur"></div>
+</td>
+</tr>
+</table>
+</div>
+
+
+<p>The Blogger data API allows client applications to view and update Blogger content by using Google data API feeds. Your client application can use the Blogger data API feeds to create new blog posts, edit or delete existing blog posts, and query for posts that match particular criteria.</p>
+
+<p>In addition to providing some background on the capabilities of the Blogger data API, this document provides examples for interacting with the API by sending HTTP messages containing XML formatted messages. If you're using one of our <a href="../gdata/clientlibs.html">client libraries</a> to interact with the API, you may also be interested in exploring the examples found on the appropriate tab above.</p>
+
+<h1>Contents</h1>
+
+<div class="toc">
+  <ol>
+    <li><a href="#Audience">Audience</a></li>
+    <li><a href="#GettingStarted">Getting started</a>
+      <ol>
+        <li><a href="#create_blogger_account">Create a Blogger account</a></li>
+      </ol>
+    </li>
+    <li><a href="#Auth">Authenticating to the Blogger service</a> 
+        <ol class="toc">
+          <li><a href="#auth_sub">AuthSub proxy authentication</a></li>
+          <li><a href="#client_login">ClientLogin username/password authentication</a></li>
+        </ol>
+      </li>
+    <li><a href="#GettingBlogs">Retrieving a list of blogs</a></li>
+    <li><a href="#CreatingPosts">Creating posts</a>
+      <ol class="toc">
+        <li><a href="#create_public_post">Publishing a blog post</a></li>
+        <li><a href="#create_draft_post">Creating a draft blog post</a></li>
+      </ol>
+    </li>
+    <li><a href="#RetrievingPosts">Retrieving posts</a>
+      <ol class="toc">
+        <li><a href="#retrieving_without_query">Retrieving all blog posts</a></li>
+        <li><a href="#retrieving_with_query">Retrieving posts using query parameters</a></li>
+      </ol>
+    </li>
+    <li><a href="#UpdatingPosts">Updating posts</a></li>
+    <li><a href="#DeletingPosts">Deleting posts</a></li>
+    <li><a href="#Comments">Comments</a>
+      <ol class="toc">
+        <li><a href="#CreatingComments">Creating comments</a></li>
+        <li><a href="#RetrievingComments">Retrieving comments</a></li>
+        <li><a href="#DeletingComments">Deleting comments</a></li>
+      </ol>
+    </li>
+  </ol>
+</div>
+
+<h1><a name="Audience" id="Audience">Audience</a></h1>
+
+<p>This document is intended for programmers who want to write client applications that can interact with Blogger. It provides a series of examples of basic data API interactions using raw XML/HTTP, with explanations.  After reading this document, you may wish to learn more about interacting with the API using our <a href="../gdata/clientlibs.html">client libraries</a> by reading the language-specific examples found on the other tabs at the top of this document.</p>
+
+<p>For Blogger data API reference information, see the <a href="reference.html">reference guide</a>. This document assumes that you understand the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>. Each example in this document first shows how to use the bare protocol to interact with Blogger.</p>
+
+<h1><a name="GettingStarted" id="GettingStarted">Getting started</a></h1>
+
+<h2><a name="create_blogger_account" id="create_blogger_account">Create a Blogger account</a></h2>
+
+<p> Blogger uses Google Accounts, so if you already have a Google account you're all set.  If you don't have a Google account, or want to create a new one just for trying out the Blogger data API, sign up <a href="http://www.blogger.com/signup.g">here</a>.</p>
+
+<h1><a name="Auth" id="Auth">Authenticating to the Blogger service</a></h1>
+<p>You can access both public and private feeds using the Blogger data API. Public feeds do not require any authentication, but they are read-only.  If you want to modify blogs then you'll need to authenticate your client before requesting private feeds.  This can be done via <a href="#AuthClientLogin">ClientLogin</a> username/password authentication or <a href="#AuthAuthSub">AuthSub</a> proxy authentication.</p>
+<p>For more information about authentication with Google data APIs in general, please see the <a href="../gdata/auth.html">authentication documentation</a>.</p>
+
+<h2><a name="auth_sub" id="auth_sub">AuthSub proxy authentication</a></h2>
+<p>AuthSub proxy authentication is used by web applications which need to authenticate their users to Google accounts.  The website operator does not need access to the username and password for the Blogger user - only special AuthSub tokens are required.  Please see the <a href="/apis/accounts/AuthForWebApps.html">AuthSub documentation</a> for more detailed information.</p>
+<p>To acquire an AuthSub token for a given Blogger user, your application must redirect the user to the AuthSubRequest URL, which prompts them to log into their Google account. The AuthSubRequest URL might looks like this:</p>
+<pre>
+https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.blogger.com%2Ffeeds%2F&amp;session=1&amp;secure=0&amp;next=http%3A%2F%2Fwww.coolbloggersite.com%2Fwelcome.pyc
+</pre> 
+<p>Notice the query parameters sent to the AuthSubRequest URL:</p>
+  <ul>
+    <li>
+      <b>scope</b>, indicating that the application will only access Blogger feeds.
+    </li>
+    <li>
+      <b>session</b>, indicating whether the token returned can be exchanged for a multi-use (session) token.
+    </li>
+    <li>
+      <b>secure</b>, indicating whether the token returned will be a secure token.
+    </li>
+    <li>
+      <b>next</b>, the URL of the page that Google should redirect the user to after authentication.
+    </li>
+  </ul>
+<p>After the user logs in, the AuthSub system redirects them to the URL you specified in the next query parameter of the AuthSubRequest URL. The AuthSub system appends an authentication token to that URL, as the value of the token query parameter like this:</p>
+<pre>
+http://www.coolbloggersite.com/welcome.pyc?token=<i>yourAuthToken</i>
+</pre>
+<p>This token value represents a single-use AuthSub token.  Since <code>session = True</code> was specified above, this token can be exchanged for an AuthSub session token using by calling the <a href="/apis/accounts/AuthForWebApps.html#AuthSubSessionToken"><code>AuthSubSessionToken</code></a> service with the single-use token in an Authorization header like this:</p>
+<pre>
+GET /accounts/AuthSubSessionToken HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+<b>Authorization: AuthSub token="<i>yourAuthToken</i>"</b>
+User-Agent: Java/1.5.0_06
+Host: https://www.google.com
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+</pre>
+<p>The AuthSubSessionToken service response will include a <code>Token</code> header that contains the session token and an <code>Expiration</code> header that indicates how long the token will remain valid.  Your application can use the session token value in the <code>Authorization</code> header of subsequent interactions with Blogger.  Here's an example of a HTTP request you would send to the Blogger feed service that contains a non-secure token:</p>
+<pre>
+GET /feeds/<i>blogID</i>/blogs/posts/defaults HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+<b>Authorization: AuthSub token="<i>yourSessionToken</i>"</b>
+User-Agent: Java/1.5.0_06
+Host: www.blogger.com
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+</pre>
+
+<h2><a name="client_login" id="client_login">ClientLogin username/password authentication</a></h2>
+<p>ClientLogin authentication is used if your client is a standalone, single-user &quot;installed&quot; client (such as a desktop application).  To request an authentication token using the ClientLogin mechanism, send a <code>POST</code> request to the following URL:</p>
+<pre>https://www.google.com/accounts/ClientLogin</pre>
+<p>The <code>POST</code> body should contain a set of query parameters that look like parameters passed by an HTML form, using the <code>application/x-www-form-urlencoded</code> content type.  These 
+  parameters are:</p>
+<ul>
+  <li><strong>Email</strong>, the user's email address.</li>
+  <li><strong>Passwd</strong>, the user's password.</li>
+  <li><strong>source</strong>, identifies your client application. Should take the form <i>companyName</i>-<i>applicationName</i>-<i>versionID</i>. The examples use the name <code>exampleCo-exampleApp-1</code>.</li>
+  <li><strong>service</strong>, the Blogger service name is <strong><code>blogger</code></strong>. (Other service names are listed <a href="http://code.google.com/support/bin/answer.py?answer=62712&topic=10433"> here</a>.)</li>
+</ul>
+<p>If the authentication request fails, you'll receive an HTTP <code>403 Forbidden</code> status code.</p>
+<p>If it succeeds, then the response from the service is an HTTP <code>200 OK</code> status code, plus three long alphanumeric codes in the body of the response: SID, LSID, and Auth. The Auth value is the authorization token that you'll send to Blogger with your request, so keep a copy of that value. You can ignore the SID and LSID values.</p>
+<p>Since all requests to private feeds require authentication,  you have to set the Authorization header in all subsequent interactions with Blogger, using the following format:</p>
+<pre>Authorization: GoogleLogin auth=<i>yourAuthToken</i></pre>
+<p>Where <code>yourAuthToken</code> is the Auth string returned by the ClientLogin request.</p>
+<p>For more information about ClientLogin authentication, including sample requests and responses, see the <a href="/apis/accounts/AuthForInstalledApps.html">Account Authentication for Installed Applications</a> documentation.</p>
+<p class="note"><strong>Note</strong>: As described in the ClientLogin documentation, the authentication request may fail and request a CAPTCHA challenge. If you want Google to issue and handle the CAPTCHA challenge, then send the user to <code>https://www.google.com/accounts/DisplayUnlockCaptcha?service=blogger</code> (rather than to the CAPTCHA-handling URL given in the ClientLogin documentation).</p>
+
+<h1><a name="GettingBlogs" id="GettingBlogs">Retrieving a list of blogs</a></h1>
+<p>The Blogger data API provides a feed for retrieving the list of blogs for a particular user.  You need to get the user's ID, which is the string of digits at the end of the user's profile URL:
+<pre>http://www.blogger.com/profile/<i>userID</i></pre>
+<p>Once you have the user ID, you can send a HTTP <code>GET</code> to the following URL to retrieve the list of blogs:</p>
+<pre>http://www.blogger.com/feeds/<i>userID</i>/blogs</pre>
+<p class="note"><strong>Note:</strong> You can also substitute <code>default</code> for the user ID, which tells Blogger to return the list of blogs for the user whose credentials accompany the request.</p>
+<p>The response is a <i>metafeed</i> that lists all of that user's blogs. Each entry in the feed represents a blog associated with the user.  For example, an entry in the metafeed might look like this:</p>
+<pre>
+&lt;entry&gt;
+  &lt;id&gt;tag:blogger.com,1999:blog-<i>blogID</i>.post-<i>postID</i>&lt;/id&gt;
+  &lt;published&gt;2006-08-02T18:44:43.089-07:00&lt;/published&gt;
+  &lt;updated&gt;2006-11-08T18:10:23.020-08:00&lt;/updated&gt;
+  &lt;title type='text'&gt;Lizzy's Diary&lt;/title&gt;
+  &lt;summary type='html'&gt;Being the journal of Elizabeth Bennet&lt;/summary&gt;
+  &lt;link rel='alternate' type='text/html'
+    href='http://<i>blogName</i>.blogspot.com/'&gt;
+  &lt;/link&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#feed'
+    type='application/atom+xml'
+    href='http://<i>blogName</i>.blogspot.com/feeds/posts/default'&gt;
+  &lt;/link&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#post'
+    type='application/atom+xml'
+    href='http://www.blogger.com/feeds/<i>blogID</i>/posts/default'&gt;
+  &lt;/link&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://www.blogger.com/feeds/<i>userID</i>/blogs/<i>blogID</i>'&gt;
+  &lt;/link&gt;
+  &lt;link rel='edit' type='application/atom+xml' 
+      href='http://www.blogger.com/feeds/<i>userID</i>/blogs/<i>blogID</i>'&gt;
+  &lt;/link&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+    &lt;email&gt;liz@gmail.com&lt;/email&gt;
+  &lt;/author&gt;
+&lt;/entry&gt;
+</pre>
+<p>For information about what each of those elements means, see the <a href="../gdata/reference.html#Document-format">Google data APIs Protocol Reference</a> document or the <a href="http://www.atomenabled.org/developers/syndication/atom-format-spec.php">Atom 1.0 specification</a>.</p>
+
+<p>If your request fails for some reason, Blogger may return a different status code.  More information about HTTP status codes is also available in the <a href="../gdata/reference.html">Google data APIs Protocol Reference</a> document.</p>
+<p class="note"><strong>Note:</strong> You will see references to &quot;blogger.com&quot; and &quot;blogspot.com&quot; in the feed examples throughout this guide.  The &quot;blogger.com&quot; feeds are for client API use, while the &quot;blogspot.com&quot; feeds are for syndication and reading.</p>
+
+<h1><a name="CreatingPosts" id="CreatingPosts">Creating posts</a></h1>
+<h2><a name="create_public_post" id="create_public_post">Publishing a blog post</a></h2>
+<p>Once the client has been authenticated you can use it to publish blog entries. First, create an XML representation of the post to publish. This XML needs to be in the form of an Atom <code>&lt;entry&gt;</code> element, which might look something like this:</p>
+<pre>
+&lt;entry xmlns='http://www.w3.org/2005/Atom'&gt;
+  &lt;title type='text'&gt;Marriage!&lt;/title&gt;
+  &lt;content type='xhtml'&gt;
+    &lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;
+      &lt;p&gt;Mr. Darcy has &lt;em&gt;proposed marriage&lt;/em&gt; to me!&lt;/p&gt;
+      &lt;p&gt;He is the last man on earth I would ever desire to marry.&lt;/p&gt;
+      &lt;p&gt;Whatever shall I do?&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/content&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+    &lt;email&gt;liz@gmail.com&lt;/email&gt;
+  &lt;/author&gt;
+&lt;/entry&gt;
+</pre>
+<p>To publish this entry, send it to the blog's post URL as follows.  First, place your Atom <code>&lt;entry&gt;</code> element in the body of a new <code>POST</code> request, using the <code>application/atom+xml</code> content type.  Then find the blog's post URL in the metafeed by locating the <code>&lt;link&gt;</code> element where the <code>rel</code> attribute ends with <code>#post</code>.  The blog's post URL is given as the <code>href</code> attribute of this element, which will be in this format:</p>
+<pre>http://www.blogger.com/feeds/<i>blogID</i>/posts/default</pre>
+<p class="note"> <strong>Note</strong>: This URL is the same as the URL in the <code>&lt;link rel="service.post"&gt;</code> tag that appears in the <code>&lt;head&gt;</code> section of the human-readable version of the blog.</p>
+<p>Blogger creates a blog post using the entry you sent, then returns an HTTP <code>201 CREATED</code> status code, along with a copy of the new post in the form of an <code>&lt;entry&gt;</code> element. The entry returned is the same one you sent, but it also contains various elements added by Blogger, such as an <code>&lt;id&gt;</code> element.</p>
+<p>If your request fails for some reason, Blogger may return a different status code.  For information about the status codes, see the <a href="../gdata/reference.html">protocol reference document</a>.</p>
+
+<h2><a name="create_draft_post" id="create_draft_post">Creating a draft blog post</a></h2>
+<p>Draft posts are created in the same way as public posts, but the Atom <code>&lt;entry&gt;</code> must contain the the <code>&lt;app:draft&gt;</code> extension element.  The blog post above could be created as a draft if you change the Atom <code>&lt;entry&gt;</code> element to:</p>
+<pre>
+&lt;entry xmlns='http://www.w3.org/2005/Atom'&gt;
+  &lt;title type='text'&gt;Marriage!&lt;/title&gt;
+  <strong>&lt;app:control xmlns:app="http://purl.org/atom/app#"&gt;
+    &lt;app:draft&gt;yes&lt;/app:draft&gt;
+  &lt;/app:control&gt;</strong>
+  &lt;content type='xhtml'&gt;
+    &lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;
+      &lt;p&gt;Mr. Darcy has &lt;em&gt;proposed marriage&lt;/em&gt; to me!&lt;/p&gt;
+      &lt;p&gt;He is the last man on earth I would ever desire to marry.&lt;/p&gt;
+      &lt;p&gt;Whatever shall I do?&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/content&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+    &lt;email&gt;liz@gmail.com&lt;/email&gt;
+  &lt;/author&gt;
+&lt;/entry&gt;
+</pre>
+<p>You can turn an existing draft blog post into a published post by removing the <code>&lt;app:draft&gt;</code> extension element or setting the value to <code>false</code>.</p>
+<p>For more information on extension elements, see the article entitled <a href="http://code.google.com/p/google-gdata/wiki/UnderstandingTheUnknown">Understanding the Unknown</a> on the Google Data project homepage.</p>
+
+<h1><a name="RetrievingPosts" id="RetrievingPosts">Retrieving posts</a></h1>
+
+<h2><a name="retrieving_without_query" id="retrieving_without_query">
+  Retrieving all blog posts</a></h2>
+<p>The general idea of how to retrieve posts is to request a Blogger feed by sending an HTTP GET request to the blog's feed URL.  Blogger then returns a feed containing the appropriate blog entries.  To get the feed of a blog's entries, you send the following HTTP request to Blogger (with the appropriate value in place of <code>blogID</code>, of course):</p>
+<pre>GET http://www.blogger.com/feeds/<i>blogID</i>/posts/default</pre>
+<p>Blogger then returns an HTTP <code>200 OK</code> status code and a standard Atom 1.0 feed containing all the posts in the blog. The following is an example of a feed for a blog with only one post.  Notice that we've slightly
+  edited the following example to make it a little more readable by humans.  In particular, a real Blogger feed contains actual IDs and URLs.</p>
+<pre>
+&lt;feed xmlns='http://www.w3.org/2005/Atom'&gt;
+  &lt;id&gt;tag:blogger.com,1999:blog-<i>blogID</i>&lt;/id&gt;
+  &lt;updated&gt;2006-11-08T18:10:23.020-08:00&lt;/updated&gt;
+  &lt;title type='text'&gt;Lizzy's Diary&lt;/title&gt;
+  &lt;link rel='alternate' type='text/html'
+    href='http://<i>blogName</i>.blogspot.com/index.html'&gt;
+  &lt;/link&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#feed'
+    type='application/atom+xml'
+    href='http://<i>blogName</i>.blogspot.com/feeds/posts/default'&gt;
+  &lt;/link&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://<i>blogName</i>.blogspot.com/feeds/posts/default'&gt;
+  &lt;/link&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+    &lt;email&gt;liz@gmail.com&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;generator version='7.00' uri='http://www2.blogger.com'&gt;Blogger&lt;/generator&gt;
+  &lt;entry&gt;
+    &lt;id&gt;tag:blogger.com,1999:blog-<i>blogID</i>.post-<i>postID</i>&lt;/id&gt;
+    &lt;published&gt;2006-11-08T18:10:00.000-08:00&lt;/published&gt;
+    &lt;updated&gt;2006-11-08T18:10:14.954-08:00&lt;/updated&gt;
+    &lt;title type='text'&gt;Quite disagreeable&lt;/title&gt;
+    &lt;content type='html'&gt;&amp;lt;p&amp;gt;I met Mr. Bingley's friend Mr. Darcy
+      this evening.  I found him quite disagreeable.&amp;lt;/p&amp;gt;&lt;/content&gt;
+    &lt;link rel='alternate' type='text/html'
+      href='http://<i>blogName</i>.blogspot.com/2006/11/quite-disagreeable.html'&gt;
+    &lt;/link&gt;
+    &lt;link rel='self' type='application/atom+xml'
+      href='http://<i>blogName</i>.blogspot.com/feeds/posts/default/<i>postID</i>'&gt;
+    &lt;/link&gt;
+    &lt;link rel='edit' type='application/atom+xml'
+      href='http://www.blogger.com/feeds/<i>blogID</i>/posts/default/<i>postID</i>'&gt;
+    &lt;/link&gt;
+    &lt;author&gt;
+      &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+      &lt;email&gt;liz@gmail.com&lt;/email&gt;
+    &lt;/author&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+
+<h2><a name="retrieving_with_query" id="retrieving_with_query">Retrieving posts using query parameters</a></h2>
+
+<p>The Google data API lets you request a set of entries that match specified criteria, such as requesting blog posts created or updated in a given date range, or published by a particular author.</p>
+<p>For example, to send a date-range query just add the <code>updated-min</code> and <code>updated-max</code> parameters to the request URL.  To get all the blog entries updated from March 16, 2007 to March 24, 2007, send an HTTP request to the blog's feed URL:</p>
+<pre>GET http://www.blogger.com/feeds/<i>blogID</i>/posts/default?updated-min=2006-03-16T00:00:00&amp;updated-max=2006-03-24T23:59:59</pre>
+<p>When you send that <code>GET</code> request, Blogger returns an HTTP <code>200 OK</code> status code and a feed containing any blog posts that were created or updated in the date range you specified.</p>
+<p>Blogger feeds are public in the sense that querying them does not require authentication. Therefore, you don't need to set the Authorization parameter in a query request.</p>
+<p>The Blogger data API supports the following query parameters:</p>
+<ul>
+  <li><strong>alt</strong> - the type of feed to return, such as <code>atom</code> (the default) or <code>rss</code>.</li>
+  <li><strong>orderby</strong> - the order to return entries, such as <code>lastmodified</code> (the default) and <code>starttime</code>.</li>
+  <li><strong>max-results</strong> - the maximum number of entries to return.</li>
+  <li><strong><i>/category</i></strong> - specifies categories (i.e. labels) to filter the feed results.  For example, <code>http://www.blogger.com/feeds/<i>blogID</i>/posts/default/-/Fritz/Laurie</code> will return entries labeled with Fritz AND Laurie.</li>
+  <li><strong>updated-min, updated-max</strong> - the bounds on entry update dates.</li> 
+  <li><strong>published-min, published-max</strong> - the bounds on entry publication dates.</li> 
+  <li><strong>start-index</strong> - 1-based index of the first result to be retrieved (for paging).</li>
+</ul>
+<p>Please see the <a href="/apis/blogger/reference.html#Query_Params">Blogger Data API Reference Guide</a> and the <a href="/apis/gdata/reference.html#Queries">Google Data APIs Reference Guide</a> for more information about query parameters.</p>
+
+<h1><a name="UpdatingPosts" id="UpdatingPosts">Updating posts</a></h1>
+<p>To update an existing blog post send a <code>PUT</code> request with the updated entry in the message body to the post's edit URL.  Be sure that the <code>&lt;id&gt;</code> value in the entry you <code>POST</code> exactly matches the <code>&lt;id&gt;</code> of the existing entry.  The edit URL is highlighted in the following post entry:
+<pre>
+&lt;entry&gt;
+  &lt;id&gt;tag:blogger.com,1999:blog-<i>blogID</i>.post-<i>postID</i>&lt;/id&gt;
+  &lt;published&gt;2006-11-08T18:10:00.000-08:00&lt;/published&gt;
+  &lt;updated&gt;2006-11-08T18:10:14.954-08:00&lt;/updated&gt;
+  &lt;title type='text'&gt;Quite disagreeable&lt;/title&gt;
+  &lt;content type='html'&gt;&amp;lt;p&amp;gt;I met Mr. Bingley's friend Mr. Darcy
+    this evening.  I found him quite disagreeable.&amp;lt;/p&amp;gt;&lt;/content&gt;
+  &lt;link rel='alternate' type='text/html'
+    href='http://<i>blogName</i>.blogspot.com/2006/11/quite-disagreeable.html'&gt;
+  &lt;/link&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://<i>blogName</i>.blogspot.com/feeds/posts/default/<i>postID</i>'&gt;
+  &lt;/link&gt;
+  &lt;link rel='edit' type='application/atom+xml'
+    href='<b>http://www.blogger.com/feeds/<i>blogID</i>/posts/default/<i>postID</i></b>'&gt;
+  &lt;/link&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+    &lt;email&gt;liz@gmail.com&lt;/email&gt;
+  &lt;/author&gt;
+&lt;/entry&gt;
+</pre>
+<p class="note"><strong>IMPORTANT!</strong> To ensure forward compatibility, be sure that when you <code>POST</code> an updated entry you preserve <b>all</b> the XML that was present when you retrieved the entry from Blogger.  Otherwise, when we implement new stuff and include <code>&lt;new-awesome-feature&gt;</code> elements in the feed, your client won't return them and your users will miss out! The <a href="/apis/gdata/clientlibs.html">Google data API client libraries</a> all handle this correctly, so if you're using one of the libraries you're all set.</p>
+<p class="note"><strong>Troubleshooting Tip:</strong> Some firewalls block HTTP <code>PUT</code> messages.  To get around this you can include the <code>X-HTTP-Method-Override: PUT</code> header in your requests.</p>
+
+<h1><a name="DeletingPosts" id="DeletingPosts">Deleting posts</a></h1>
+<p>Posts are deleted by sending a <code>DELETE</code> request to the post's edit URL.  This is the same URL used to <a href="#UpdatingPosts"> update posts</a>.</p>
+<p class="note"><strong>Troubleshooting Tip:</strong> Some firewalls block HTTP <code>DELETE</code> messages.  To get around this you can include the <code>X-HTTP-Method-Override: DELETE</code> header in your requests.</p>
+
+<h1><a name="Comments" id="Comments">Comments</a></h1>
+<p>The Blogger data API allows for creating, retrieving, and deleting comments. Updating comments is not supported (nor is it available in the web interface).<p>
+
+<h2><a name="CreatingComments">Creating comments</a></h2>
+<p>To post a comment, create an Atom <code>&lt;entry&gt;</code> element like the following:</p>
+<pre>
+  &lt;entry xmlns='http://www.w3.org/2005/Atom'&gt;
+    &lt;title type="text"&gt;This is my first comment&lt;/title&gt;
+    &lt;content type="html"&gt;This is my first comment&lt;/content&gt;
+    &lt;author&gt;
+      &lt;name&gt;Blog Author name&lt;/name&gt;
+    &lt;/author&gt;
+  &lt;/entry&gt;
+</pre>
+<p>To publish this comment, place your Atom <code>&lt;entry&gt;</code> element in the body of a new <code>POST</code> request, using the <code>application/atom+xml</code> content type.  Then send the <code>POST</code> request to the appropriate Blogger URL:</p>
+<pre>POST http://www.blogger.com/feeds/<i>blogID</i>/<i>postID</i>/comments/default</pre>
+<p class="note"><strong>Note:</strong> Currently, you can only post comments to a blog owned by the authenticated user.</p>
+
+<h2><a name="RetrievingComments">Retrieving comments</a></h2>
+<p>You can retrieve the comments for a particular post by sending a <code>GET</code> to this post's comments feed URL:</p>
+<pre>
+GET http://www.blogger.com/feeds/<i>blogID</i>/<i>postID</i>/comments/default
+</pre>
+<p>Or you can get the comments from all posts by using the blog comments feed URL:</p>
+<pre>
+GET http://www.blogger.com/feeds/<i>blogID</i>/comments/default
+</pre>
+<p>These requests will return a comments feed that looks like this:</p>
+<pre>
+&lt;feed xmlns="http://www.w3.org/2005/Atom" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/"&gt;
+  &lt;id&gt;tag:blogger.com,1999:blog-<i>blogID</i>.post<i>postID</i>..comments&lt;/id&gt;
+  &lt;updated&gt;2007-04-04T21:56:29.803-07:00&lt;/updated&gt;
+  &lt;title type="text"&gt;My GData Blog : Time to relax&lt;/title&gt;
+  &lt;link rel="alternate" type="text/html" href="http://<i>blogName</i>.blogspot.com/2007/04/first-post.html"/&gt;
+  &lt;link rel="http://schemas.google.com/g/2005#feed" type="application/atom+xml" href="http://<i>blogName</i>.blogspot.com/feeds/<i>postID</i>/comments/default"/&gt;
+  &lt;link rel="self" type="application/atom+xml" href="http://<i>blogName</i>.blogspot.com/feeds/<i>postID</i>/comments/default"/&gt;
+  &lt;author&gt;
+    &lt;name&gt;Blog Author name&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;generator version="7.00" uri="http://www2.blogger.com"&gt;Blogger&lt;/generator&gt;
+  &lt;openSearch:totalResults&gt;1&lt;/openSearch:totalResults&gt;
+  &lt;openSearch:startIndex&gt;1&lt;/openSearch:startIndex&gt;
+  &lt;entry&gt;
+    &lt;id&gt;tag:blogger.com,1999:blog-<i>blogID</i>.post-<i>commentID</i>&lt;/id&gt;
+    &lt;published&gt;2007-04-04T21:56:00.000-07:00&lt;/published&gt;
+    &lt;updated&gt;2007-04-04T21:56:29.803-07:00&lt;/updated&gt;
+    &lt;title type="text"&gt;This is my first comment&lt;/title&gt;
+    &lt;content type="html"&gt;This is my first comment&lt;/content&gt;
+    &lt;link rel="alternate" type="text/html" href="http://<i>blogName</i>.blogspot.com/2007/04/first-post.html#<i>commentID</i>"/&gt;
+    &lt;link rel="self" type="application/atom+xml" href="http://<i>blogName</i>.blogspot.com/feeds/<i>postID</i>/comments/default/<i>commentID</i>"/&gt;
+    &lt;link rel="edit" type="application/atom+xml" href="<b>http://www.blogger.com/feeds/<i>blogID</i>/<i>postID</i>/comments/default/<i>commentID</i></b>"/&gt;
+    &lt;author&gt;
+      &lt;name&gt;Blog Author name&lt;/name&gt;
+    &lt;/author&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+
+<h2><a name="DeletingComments">Deleting comments</a></h2>
+<p>To delete a comment, send a <code>DELETE</code> request to the comment's edit URL.  This URL is highlighted in the comments feed above.</p>
+
+</div>
+<!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt=""/>
+  </div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2006 - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+  <script type="text/javascript">
+    <!--
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+    //-->
+  </script>
+</p>
+</body>
+</html>

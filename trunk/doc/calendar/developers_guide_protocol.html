@@ -1,0 +1,604 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Calendar Data API Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+var cancelBubble = false;
+
+function goTo(url) {
+  window.location = url;
+}
+//-->
+</script>
+</head>
+<body class="t1" id="developers_guide_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Calendar Data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper"> 
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Calendar</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="developers_guide_protocol.html" id="developers_guide_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.google.com/googlecalendar/terms_of_use.html">Terms and Conditions</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>GData Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://code.google.com/support/bin/topic.py?topic=10023">Knowledge Base</a></li>
+        <li><a href="http://groups.google.com/group/google-calendar-help-dataapi">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent"> 
+    <h1 id="page_title">Google Calendar Data API Developer's Guide: Protocol</h1>
+
+<div id="topnav">
+<table id="mt" cellspacing="0" cellpadding="0" width="100%" border="0">
+<tr>
+<th class="int1" onclick="if (!cancelBubble) goTo('developers_guide_protocol.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_protocol.html">Protocol</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int2" onclick="if (!cancelBubble) goTo('developers_guide_java.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_java.html">Java</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int3" onclick="if (!cancelBubble) goTo('developers_guide_dotnet.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_dotnet.html">.NET</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int4" onclick="if (!cancelBubble) goTo('developers_guide_php.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_php.html">PHP</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int5" onclick="if (!cancelBubble) goTo('developers_guide_python.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_python.html">Python</a></div>
+<td width="100%">&nbsp;</td>
+</tr>
+</table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+<tr>
+<td height="4" align="right" style="padding:0px; vertical-align:top">
+<div class="stur"></div>
+</td>
+</tr>
+</table>
+</div>
+
+
+    <p>Google Calendar allows client applications to view and update calendar events in the form of Google data API (&quot;GData&quot;) feeds. Your client application can use the Google Calendar data API to create new events, edit or delete existing events, and query for events that match particular criteria.</p>
+    <p>There are many possible uses for the Calendar data API. For example, you can create a web front end for your group's calendar that uses Google Calendar as a back end. Or you can generate a public calendar for Google Calendar to display, based on your organization's event database. Or you can search relevant calendars to display a list of upcoming events on those calendars.</p>
+    <p>In addition to providing some background on the capabilities of the Google Calendar data API, this document provides examples interacting with the API by sending HTTP messages containing XML formatted messages.  You will find examples of adding events and querying events.   If you're using one of our <a href="../gdata/clientlibs.html">client libraries</a> to interact with the API, you may also be interested in exploring the examples found on the appropriate tab above.</p>
+    <h1>Contents</h1>
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#Terms">Terms of use</a></li>
+      <li><a href="#Example">Interacting with Calendar: examples</a> 
+        <ol>
+          <li><a href="#create_calendar_account">Create a Calendar account</a></li>
+          <li><a href="#find_feed_url">Find your calendar's feed URL</a></li>
+          <li><a href="#get_feed">Request the feed</a></li>
+          <li><a href="#authenticate">Authenticate</a></li>
+          <li><a href="#create_event">Create a single-occurrence event</a></li>
+          <li><a href="#create_recurring_event">Create and retrieve a recurring event</a></li>
+          <li><a href="#send_query">Send a date-range query</a></li>
+          <li><a href="#list_calendars">Get a list of the user's calendars</a></li>
+          </ol>
+      </li>
+      <li><a href="#ACL">Access control lists</a>
+        <ol>
+          <li><a href="#View_ACL">Retrieving an access control list</a></li>
+          <li><a href="#View_Rule">Retrieving a rule</a></li>
+          <li><a href="#Add_Rule">Adding a rule</a></li>
+          <li><a href="#Change_Rule">Changing a rule</a></li>
+          <li><a href="#Delete_Rule">Deleting a rule</a></li>
+        </ol>
+      </li>
+      </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications that can interact with Google Calendar. It provides a series of examples of basic data API interactions using raw XML/HTTP, with explanations.  After reading this document, you may wish to learn more about interacting with the API using our <a href="../gdata/clientlibs.html">client libraries</a> by reading the language-specific examples found on the other tabs at the top of this document.</p>
+    <p>For Calendar data API reference information, see the <a href="reference.html">reference guide</a>. This document assumes that you understand the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>. Each example in this document first shows how to use the bare protocol to interact with Calendar.</p>
+    <h1><a name="Terms" id="Terms">Terms of use</a></h1>
+    <p>You agree to abide by the <a href="http://www.google.com/googlecalendar/terms_of_use.html">Google Calendar Terms of Use</a> when using the Calendar data API.</p>
+    <h1><a name="Example" id="Example">Interacting with Calendar: examples</a></h1>
+    <p>Assume you're creating a website that needs to communicate with Google Calendar. You want your web pages to be able to get the feed from your calendar and add an event to your calendar. This section shows you how to do that, using the HTTP-level protocol.</p>
+    <p>To make your site communicate with Calendar:</p>
+    <ol>
+      <li><a href="#create_calendar_account">Create a Calendar account</a> (manually).</li>
+      <li><a href="#find_feed_url">Find your calendar's feed URL</a> (manually).</li>
+      <li><a href="#get_feed">Request the feed</a></li>
+      <li><a href="#authenticate">Authenticate</a></li>
+      <li><a href="#create_event">Create an event</a></li>
+      <li><a href="#create_recurring_event">Create and retrieve a recurring event</a></li>
+      <li><a href="#send_query">Send a date-range query</a></li>
+      <li><a href="#list_calendars">Get a list of the user's calendars</a>.</li>
+    </ol>
+    <p>You can, of course, interact with your calendar in other ways too: update an event, delete an event, and so on.</p>
+    <p>Note that the first few examples below assume that you're interacting with your own Calendar account. If you're writing a Calendar client application, your client will, of course, have to interact with a user's account. The later examples in this document show how to use authentication, which your client will need to do to interact with a user's account.</p>
+    <h2><a name="create_calendar_account" id="create_calendar_account">Create a Calendar account</a></h2>
+    <p>You'll probably want a Calendar account for testing purposes. To create a Calendar account, go to <a href="http://www.google.com/calendar/">Google Calendar</a> and log in using your Google account email and password. (If you don't have a Google account, click the &quot;Create an account now&quot; link.)</p>
+    <h2><a name="find_feed_url" id="find_feed_url">Find your calendar's feed URL</a></h2>
+    <p>There are a variety of different URLs you can use to request feeds from a calendar; for more information, see <a href="reference.html#Feeds">Calendar feed types</a>.</p>
+    <p>The simplest feed URL to use is that of the calendar's read-only so-called &quot;magic cookie&quot; private feed, because that URL doesn't require authentication. The usual procedure for determining that URL involves using a JavaScript-enabled GUI browser to get the URL manually. If you can't or don't want to use such a browser, then you can instead interact with Calendar using one of the other feed URLs, which require authentication, but which you can construct without using a browser. Those URLs (and information on how to use authentication) are covered in later examples, but even if you aren't going to use the &quot;magic cookie&quot; URL, you should read through the first couple of examples to learn the basics of sending Calendar requests.</p>
+    <p>To find your calendar's &quot;magic cookie&quot; feed URL:</p>
+    <ol>
+      <li>In the list of calendars on the left side of the page, find the calendar you want to interact with. You can create a new calendar for this purpose if you want to.</li>
+      <li>Click the arrow button to the right of the calendar. Select &quot;Calendar settings&quot; from the drop-down menu. The Calendar Details page appears.</li>
+      <li>Scroll down to the Private Address section. There are two buttons; select the XML button. The feed URL appears.</li>
+      <li>Copy the URL. This is the URL of your calendar's read-only &quot;magic cookie&quot; private feed; it includes a special coded string that lets you read the private feed without having to do authentication. This is the URL you'll use to request a feed from Calendar, so you won't have to do authentication just to view the feed.</li>
+    </ol>
+    <p>The feed URL has the following form:</p>
+    <pre>http://www.google.com/calendar/feeds/<i>userID</i>/private-<i>magicCookie</i>/basic</pre>
+    <p>You can modify this URL in the following ways:</p>
+    <ul>
+      <li>If you want a private feed that requires authentication, convert the &quot;private-{magic-cookie}&quot; part of this path to just &quot;private&quot;.</li>
+      <li>If you want the &quot;full&quot; calendar project, change the last component from &quot;basic&quot; to &quot;full&quot; in the URL. Using &quot;basic&quot; returns a basic Atom feed without any extension elements. Using &quot;full&quot; returns a feed that includes all event properties, but comments aren't included inline. Instead, they're specified (in the <code>&lt;gd:feedLink&gt;</code> element) as a link to a separate comment feed.</li>
+    </ul>
+    <p>The &quot;basic&quot; form of the feed holds event information that is formatted for reading, more suited to human consumption of the feed. The &quot;full&quot; form of the feed holds structured events that are represented as &quot;Kinds", so they are more suited to computer processing.</p>
+    <p>If you're looking at settings for the user's main calendar, then <code>userID</code> is the user's email address. If you're looking at settings for another calendar, then <code>userID</code> is a longer and more complicated email address. In either case, <code>magicCookie</code> is a special code that lets you read the private feed without having to do authentication. Here's an example of a feed URL:</p>
+    <pre>http://www.google.com/calendar/feeds/jo@gmail.com/private-08ce2fac8efa42f2a0d04eceb7d68cc9/full</pre>
+    <p>Under some circumstances, you may want to generate a new &quot;magic cookie&quot; URL. (Note that if someone else gets access to that URL, they can view your calendar without authentication.) To do that, click the &quot;Reset Private URLs&quot; link in the Calendar Details page.</p>
+    <h2><a name="get_feed" id="get_feed">Request the feed</a></h2>
+    <p>The general idea of how to request a Calendar feed is that you determine the URL of the feed type you want (see <a href="reference.html#Feeds">Calendar feed types</a>), and then you send an HTTP <code>GET</code> request for that URL. Calendar then returns a GData feed containing calendar events, each of which is an Event kind. For more information about kinds, see the <a href="../gdata/elements.html">Kinds document</a>.</p>
+    <p>Google provides client libraries for interacting with Google data API services in a variety of programming languages. You can use the client libraries to send the HTTP request and handle the returned feed; see the other tabs of this document for information on how to do this in various languages. But whether or not you use the client library, the following is what's going on at the protocol level. If you're using a UNIX system and you want to try this out without writing any code, you may find the UNIX command-line utilities <code>curl</code> or <code>wget</code> useful; for more information, see the manual pages for those utilities.</p>
+    <p>To get a feed, you send the following HTTP request to Calendar, using the URL you found in the previous section of this document:</p>
+    <pre>GET http://www.google.com/calendar/feeds/<i>userID</i>/private-<i>magicCookie</i>/full</pre>
+    <p>(With the appropriate values in place of <code>userID</code> and <code>magicCookie</code>, of course.)</p>
+    <p>When you send that <code>GET</code> request, Calendar may return an HTTP 302 redirect; the redirect URL has a new query parameter, <code>gsessionid</code>, appended to it. (Note that some methods of sending the <code>GET</code> request may not show you the response headers by default; if you receive a blank response, check your HTTP utility's documentation to find out how to view response headers.) That <code>gsessionid</code> parameter is the way that Calendar keeps track of your session, to improve speed of response.</p>
+    <p>(Some methods of sending the <code>GET</code> request may automatically follow redirects, and in some cases Calendar may not send a redirect at all; in such cases, you don't need to send the second request described below.)</p>
+    <p>So after you've sent the <code>GET</code> request, you have to read the HTTP headers of the response to find the URL with the session ID appended; then you need to send another <code>GET</code> request with that new URL. (Note that if you're using the UNIX command line to send requests, you may have to precede the question mark in the new URL with a backslash to keep your shell from interpreting it.)</p>
+    <p>In response to the second <code>GET</code> request, Calendar returns an HTTP <code>200 OK</code> status code and a feed containing all the events in your calendar. If there's only one event in your calendar, then Calendar returns something similar to the following feed. We've edited the following example a little to make it a little more readable by humans; in particular, a real Calendar feed contains actual magic-cookie values and entry IDs.</p>
+    <pre>&lt;feed xmlns='http://www.w3.org/2005/Atom'
+    xmlns:gd='http://schemas.google.com/g/2005'&gt;
+  &lt;id&gt;http://www.google.com/calendar/feeds/jo@gmail.com/private-<i>magicCookie</i>/full&lt;/id&gt;
+  &lt;updated&gt;2006-03-29T07:35:59.000Z&lt;/updated&gt;
+  &lt;title type='text'&gt;Jo March&lt;/title&gt;
+  &lt;subtitle type='text'&gt;This is my main calendar.&lt;/subtitle&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/jo@gmail.com/private-<i>magicCookie</i>/full'&gt;&lt;/link&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/jo@gmail.com/private-<i>magicCookie</i>/full'&gt;&lt;/link&gt;
+  &lt;author&gt;
+    &lt;name&gt;Jo March&lt;/name&gt;
+    &lt;email&gt;jo@gmail.com&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;generator version='1.0' uri='http://www.google.com/calendar/'&gt;CL2&lt;/generator&gt;
+  &lt;gd:where valueString='California'&gt;&lt;/gd:where&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://www.google.com/calendar/feeds/jo@gmail.com/private-<i>magicCookie</i>/full/<i>entryID</i>&lt;/id&gt;
+    &lt;published&gt;2006-03-30T22:00:00.000Z&lt;/published&gt;
+    &lt;updated&gt;2006-03-28T05:47:31.000Z&lt;/updated&gt;
+    &lt;category scheme='http://schemas.google.com/g/2005#kind'
+      term='http://schemas.google.com/g/2005#event'&gt;&lt;/category&gt;
+    &lt;title type='text'&gt;Lunch with Darcy&lt;/title&gt;
+    &lt;content type='text'&gt;Lunch to discuss future plans.&lt;/content&gt;
+    &lt;link rel='alternate' type='text/html'
+      href='http://www.google.com/calendar/event?eid=aTJxcnNqbW9tcTJnaTE5cnMybmEwaW04bXMgbWFyY2guam9AZ21haWwuY29t'
+      title='alternate'&gt;&lt;/link&gt;
+    &lt;link rel='self' type='application/atom+xml'
+      href='http://www.google.com/calendar/feeds/jo@gmail.com/private-<i>magicCookie</i>/full/<i>entryID</i>'&gt;&lt;/link&gt;
+    &lt;author&gt;
+      &lt;name&gt;Jo March&lt;/name&gt;
+      &lt;email&gt;jo@gmail.com&lt;/email&gt;
+    &lt;/author&gt;
+    &lt;gd:transparency
+      value='http://schemas.google.com/g/2005#event.opaque'&gt;&lt;/gd:transparency&gt;
+    &lt;gd:eventStatus
+      value='http://schemas.google.com/g/2005#event.confirmed'&gt;&lt;/gd:eventStatus&gt;
+    &lt;gd:comments&gt;
+      &lt;gd:feedLink
+        href='http://www.google.com/calendar/feeds/jo@gmail.com/private-<i>magicCookie</i>/full/<i>entryID</i>/comments/'&gt;&lt;/gd:feedLink&gt;
+    &lt;/gd:comments&gt;
+    &lt;gd:when startTime='2006-03-30T22:00:00.000Z'
+      endTime='2006-03-30T23:00:00.000Z'&gt;&lt;/gd:when&gt;
+    &lt;gd:where&gt;&lt;/gd:where&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;</pre>
+    <p>For information about what each of those elements means, see the <a href="../gdata/reference.html">Google Data APIs Protocol Reference</a> document and the <a href="reference.html#Elements">Calendar elements reference</a>.</p>
+    <p>If your request fails for some reason, Calendar may return a different status code; for information about the status codes, see the <a href="../gdata/reference.html">GData Protocol Reference</a> document.</p>
+    <p class="note"><strong>Note</strong>: The events in a feed are ordered by the values of their <code>updated</code> elements by default, with the most recently updated event appearing first in the feed. For information on changing the ordering, see <a href="reference.html#Parameters">Calendar query parameters reference</a>.</p>
+    <h3>View deleted events</h3>
+    <p>There may be times you want to see cancelled events in a feed, such as when you want to synchronize your calendar between two calendar systems. To see cancelled events, you must request a private authenticated feed and specify an <code><a href="../gdata/reference.html#query-requests">updated-min</a></code> query parameter.</p>
+    <h3>Request the feed using the client library</h3>
+    <p>The above description shows how to send a request and receive a response by hand. But we encourage you to instead use Google's client library where possible.</p>
+    <h2><a name="authenticate" id="authenticate">Authenticate</a></h2>
+    <p>Working with private feeds requires authenticating to the Calendar data API.  The example above, in the <a href="#get_feed">Request the feed</a> section used a "magic cookie" to authenticate the request.  This method of authentication works for read-only purposes.  Inserting, updating or deleting entries requires authenticating using one of the two different authentication systems supported by GData services.  The appropriate method of authentication depends on the type of client you're writing. </p>
+    <p>If your client is a standalone single-user "installed" client (such as a desktop application), then you should use the "ClientLogin" system; if your client is a multi-user web application client, then you should use the "AuthSub" system.  Both of these methods involve interacting with an authentication service.  The authentication service returns an authentication token that your client can then send to the Calendar data API service along with every subsequent request on behalf of that user.</p>
+    <p>The ClientLogin method requires having access to the username and password for a Google Account, while the AuthSub method is a proxy-based authentication protocol which does not require your application have access to the username and password.  We'll use the ClientLogin method in the following example.</p>
+    <p>To receive an authentication token using the ClientLogin mechanism, send a <code>POST</code> request to the following URL:</p>
+    <pre>https://www.google.com/accounts/ClientLogin</pre>
+    <p>The <code>POST</code> body should contain a set of query parameters, as described in the following table. They should look like parameters passed by an HTML form, using the <code>application/x-www-form-urlencoded</code> content type.</p>
+    <table border="0" cellspacing="1" cellpadding="2">
+      <tr> 
+        <th>Parameter</th>
+        <th>Description</th>
+      </tr>
+      <tr> 
+        <td><code>Email</code></td>
+        <td>The user's email address.</td>
+      </tr>
+      <tr> 
+        <td><code>Passwd</code></td>
+        <td>The user's password.</td>
+      </tr>
+      <tr> 
+        <td><code>source</code></td>
+        <td>Identifies your client application. Should take the form <i>companyName</i>-<i>applicationName</i>-<i>versionID</i>; below, we'll use the name <code>exampleCo-exampleApp-1</code>.</td>
+      </tr>
+      <tr> 
+        <td><code>service</code></td>
+        <td>The string <code>cl</code>, which is the service name for Google Calendar.</td>
+      </tr>
+    </table>
+    <p>If the authentication request fails, you'll receive an HTTP <code>403 Forbidden</code> status code.</p>
+    <p>If it succeeds, then the response from the service is an HTTP <code>200 OK</code> status code, plus three long alphanumeric codes in the body of the response: SID, LSID, and Auth. The Auth value is the authorization token that you'll send to Calendar with your request, so keep a copy of that value. You can ignore the SID and LSID values.</p>
+    <p>Since all requests to private feeds require authentication,  you have to set the Authorization header in the request, using the following format:</p>
+    <pre>Authorization: GoogleLogin auth=<i>yourAuthToken</i></pre>
+    <p>Where <code>yourAuthToken</code> is the Auth string returned by the login request.</p>
+    <p>As mentioned earlier, this authentication system (known as &quot;Google Authentication for Installed Applications&quot;; also known as &quot;ClientLogin&quot;) is appropriate only for use in installed client applications such as desktop clients, not for use in web applications. For web applications, you should instead use the account authentication proxy, also known as &quot;AuthSub&quot;. The AuthSub &quot;scope&quot; value for Google Calendar is &quot;http://www.google.com/calendar/feeds&quot;.</p>
+    <p>For more information about authentication, including detailed instructions for using AuthSub, see the <a href="../gdata/auth.html">Google Data APIs Authentication Overview</a> and the <a href="http://code.google.com/apis/accounts/Authentication.html">Google Account Authentication</a> documentation.</p>
+
+    <h2><a name="create_event" id="create_event">Create a single-occurrence event</a></h2>
+    <p>Adding an event to a calendar is a little bit more complicated than getting a feed, because you need to create the XML code or client-library object representing the event, and you need to use authentication.</p>
+    <p>Here's what you do at the protocol level:</p>
+    <p>First, create an entry of the Event kind. (For more information about kinds, see the <a href="../gdata/elements.html">Kinds document</a>.) For example, you might create the following entry:</p>
+    <pre>&lt;entry xmlns='http://www.w3.org/2005/Atom'
+    xmlns:gd='http://schemas.google.com/g/2005'&gt;
+  &lt;category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/g/2005#event'&gt;&lt;/category&gt;
+  &lt;title type='text'&gt;Tennis with Beth&lt;/title&gt;
+  &lt;content type='text'&gt;Meet for a quick lesson.&lt;/content&gt;
+  &lt;gd:transparency
+    value='http://schemas.google.com/g/2005#event.opaque'&gt;
+  &lt;/gd:transparency&gt;
+  &lt;gd:eventStatus
+    value='http://schemas.google.com/g/2005#event.confirmed'&gt;
+  &lt;/gd:eventStatus&gt;
+  &lt;gd:where valueString='Rolling Lawn Courts'&gt;&lt;/gd:where&gt;
+  &lt;gd:when startTime='2006-04-17T15:00:00.000Z'
+    endTime='2006-04-17T17:00:00.000Z'&gt;&lt;/gd:when&gt;
+&lt;/entry&gt;
+</pre>
+    <p>Note that this entry does not contain the standard APP <code>&lt;author&gt;</code> tag.  The server will insert author information based on the user that submits the request (i.e. the user whose authentication token accompanies the request).</p>
+    <p>To post an entry, send the following HTTP request to Calendar, using a special &quot;default&quot; URL (and an Authorization header; see the <a href="#authenticate">section on authentication</a> above). Calendar automatically redirects the default URL to the URL of the read/write private feed of the calendar belonging to the authenticated user. (Note that you don't have to use the default URL to send a <code>POST</code> request to Calendar; you can specify the user ID instead of &quot;default&quot; if you prefer. For more information, see the Feed Types section, later in this document.)</p>
+    <pre>POST http://www.google.com/calendar/feeds/default/private/full</pre>
+    <p>The content that you send with the <code>POST</code> request should be the <code>&lt;entry&gt;</code> element you created above, using the <code>application/atom+xml</code> content type.</p>
+    <p>Just like in the previous example, Calendar may return an HTTP 302 redirect; if so, then the redirect URL has a new parameter, <code>gsessionid</code>, appended to it.  If you received the redirect, then send the same <code>POST</code> request again, with the same Authorization header and the same content, but with the <code>gsessionid</code> parameter appended.  The response may also include a <code>S</code> cookie, which you should store and send this cookie with future requests <a href="http://www.ietf.org/rfc/rfc2109.txt">as appropriate</a>.  Please see the <a href="http://code.google.com/support/bin/answer.py?answer=55833&topic=10360">knowledge base</a> for more information on handling sessions with the Calendar data API.  Please note: if a session ID indicated in a cookie header conflicts with the session ID passed as a gsessionid URL parameter, you will get caught in a redirect loop.</p>
+    <p>When you send that second <code>POST</code> request (or the first one in cases where there's no redirect), Calendar creates a calendar event, then returns an HTTP <code>201 CREATED</code> status code, along with a copy of the new event in the form of an <code>&lt;entry&gt;</code> element. The returned entry is similar to the one you sent, but the returned one contains various elements added by Calendar, such as an <code>&lt;id&gt;</code> element.</p>
+    <p>If your request fails for some reason, Calendar may return a different status code; for information about the status codes, see the <a href="http://code.google.com/apis/gdata/reference.html">GData Protocol Reference</a> document.</p>
+    <p>Note that if you use GData to add an event to your calendar that involves multiple participants, the event appears on the other people's calendars just as it would if you added it by hand using the Calendar GUI.</p>
+    <h2><a name="create_recurring_event" id="create_recurring_event">Create and retrieve a recurring event</a></h2>
+    <p>Creating recurring events is very similar to creating a single-occurrence event.  The event is created as a XML element of the <a href="../gdata/elements.html#gdEventKind">Event kind</a>, but includes a <a href="../gdata/elements.html#gdRecurrence"><code>gd:recurrence</code></a> element instead of a <code>gd:when</code> element.  A <a href="../gdata/elements.html#gdRecurrence"><code>gd:recurrence</code></a> element contains syntax for recurring events based upon the <a href="http://www.ietf.org/rfc/rfc2445.txt">iCalendar</a> standard (RFC 2445).</p> 
+    <p>Here's an example of an all-day recurring event that occurs weekly on Tuesdays from May 1st, 2007 through September 4th, 2007:</p>
+    <pre>&lt;entry xmlns='http://www.w3.org/2005/Atom'
+    xmlns:gd='http://schemas.google.com/g/2005'&gt;
+  &lt;category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/g/2005#event'&gt;&lt;/category&gt;
+  &lt;title type='text'&gt;Tuesday Tennis Lessons with Jane&lt;/title&gt;
+  &lt;content type='text'&gt;Meet on Tuesdays for a quick lesson.&lt;/content&gt;
+  &lt;gd:transparency
+    value='http://schemas.google.com/g/2005#event.opaque'&gt;
+  &lt;/gd:transparency&gt;
+  &lt;gd:eventStatus
+    value='http://schemas.google.com/g/2005#event.confirmed'&gt;
+  &lt;/gd:eventStatus&gt;
+  &lt;gd:where valueString='Rolling Lawn Courts'&gt;&lt;/gd:where&gt;
+  &lt;gd:recurrence&gt;DTSTART;VALUE=DATE:20070501
+DTEND;VALUE=DATE:20070502
+RRULE:FREQ=WEEKLY;BYDAY=Tu;UNTIL=20070904
+&lt;/gd:recurrence&gt;
+&lt;/entry&gt;
+</pre>
+    <p>As per <a href="http://www.ietf.org/rfc/rfc2445.txt">RFC 2445</a>, each line of the recurrence syntax ends in a carriage return and a line feed (CRLF).  As the event is an all-day event, it does not include a reference to a timezone.  If you do include a recurring event which references a timezone, you don't need to include the <code>VTIMEZONE</code> definition if the timezone used is a standard Java timezone definition.</p>
+    <p>This entry can then be sent via a <code>POST</code> to the Calendar servers using the method described in the <a href="#create_event">Creating a single-occurrence event</a> section.</p>
+    <p>Retrieving recurring events using the Calendar data API can be done via several methods, using the query parameters defined in the <a href="reference.html#Parameters">Reference Guide</a>.  Here's a basic overview:</p>
+    <ul>
+        <li><b>No query parameters:</b> a recurring event is returned as a single <code>entry</code> element, with a <code>gd:recurrence</code> child element.  No <code>gd:when</code> elements are returned for the recurring event.</li>
+        <li><b><code>start-min</code> and/or <code>start-max</code> specified:</b> a recurring event is represented as a single <code>entry</code> element, with multiple <code>gd:when</code> elements for each occurrence in the range specified.  The <code>gd:recurrence</code> element is also included in the <code>entry</code>.</li>
+        <li><b><code>singleevents=true</code>:</b> recurring events are represented in the same format as single events, with a single <code>entry</code> element per occurrence of the event.  Each <code>entry</code> includes a single <code>gd:when</code> element, but does not include the <code>gd:recurrence</code> syntax.  It does, however, include a <a href="../gdata/elements.html#gdOriginalEvent"><code>gd:originalEvent</code></a> element.</li>
+    </ul>
+    <h2><a name="send_query" id="send_query">Send a date-range query</a></h2>
+    <p>GData lets you request a set of entries that match specified criteria. In addition to the standard GData query parameters, Calendar provides two additional query parameters, <code>start-min</code> and <code>start-max</code>, to let you request all events that fall within or overlap a range of dates. For more information, see <a href="reference.html#Parameters">Calendar query parameters reference</a>.</p>
+    <p>It's a good idea to limit your queries to a range of dates if you're not limiting them in any other way, just to avoid retrieving all entries ever posted to the calendar.</p>
+    <p>Here's how to create and send a date-range query at the protocol level:</p>
+    <p>First, authenticate the user, if you haven't already done so. See the previous example for information on how to do that.</p>
+    <p>Then send an HTTP request like the following to Calendar, using the special &quot;default&quot; URL:</p>
+    <pre>GET http://www.google.com/calendar/feeds/default/private/full?start-min=2006-03-16T00:00:00&amp;start-max=2006-03-24T23:59:59</pre>
+    <p>Be sure to include the Authorization header in the request, as described in the previous example.</p>
+    <p>When you send that <code>GET</code> request, Calendar may return an HTTP 302 redirect with a <code>gsessionid</code> appended to it, just like in the earlier examples. In that case, read the HTTP headers of the response to find the URL with the session ID appended; then send another <code>GET</code> request with that new URL. (This second <code>GET</code> request also needs to have the Authorization header set.)</p>
+    <p>In response to the second <code>GET</code> request (or the first one if there was no redirect), Calendar returns an HTTP <code>200 OK</code> status code and a feed containing any event that overlaps the minimum and maximum start times you specified.</p>
+    <p>To query using standard GData query parameters, just change the URL to use other parameters. (Note that Calendar doesn't support GData category queries.)</p>
+    <h2><a name="list_calendars" id="list_calendars">Get a list of the user's calendars</a></h2>
+    <p>You can get a feed listing the calendars for a particular user by sending an authenticated <code>GET</code> request to the following URL:</p>
+    <pre>http://www.google.com/calendar/feeds/<i>userID</i></pre>
+    <p>Where <code>userID</code> is the user's email address.</p>
+    <p>The result is a &quot;meta-feed,&quot; a feed that lists all of that user's calendars; each entry in the feed represents a calendar associated with the user. The list includes primary, secondary, and imported calendars, and all other calendars that the user has access to.</p>
+    <p>This feed is accessible only using an authentication token. You cannot use a &ldquo;magicCookie&rdquo; URL to access the feed. For information on authentication, see the earlier <a href="#create_event">Create an event</a> example.</p>
+    <p>An entry in the feed might resemble the following:</p>
+    <pre>&lt;entry&gt;
+  &lt;id&gt;http://calendar.google.com/calendar/feeds/jo@gmail.com/jo@gmail.com&lt;/id&gt;
+  &lt;published&gt;2006-06-20T03:28:01.868Z&lt;/published&gt;
+  &lt;updated&gt;2006-06-15T22:03:57.000Z&lt;/updated&gt;
+  &lt;title type=&quot;text&quot;&gt;My Social Calendar&lt;/title&gt;
+  &lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot;
+    href=&quot;http://www.google.com/calendar/feeds/jo@gmail.com/private/full&quot;/&gt;
+  &lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot;
+    href=&quot;http://www.google.com/calendar/feeds/jo@gmail.com/jo@gmail.com&quot;/&gt;
+  &lt;author&gt;<br />    &lt;name&gt;Jo March&lt;/name&gt;<br />    &lt;email&gt;jo@gmail.com&lt;/email&gt;<br />  &lt;/author&gt;
+  &lt;gCal:accesslevel value=&quot;owner&quot;/&gt;
+  &lt;gCal:selected value=&quot;false&quot;/&gt;
+  &lt;gCal:hidden value=&quot;false&quot;/&gt;
+  &lt;gCal:color value=&quot;#2952A3&quot;/&gt;
+  &lt;gCal:timezone value=&quot;America/Los_Angeles&quot;/&gt;
+&lt;/entry&gt;</pre>
+    <p>There are several new elements here, all in the gCal namespace. For information about those elements, see <a href="reference.html#gcal_reference">GCal namespace element reference</a>.</p>
+    <h1><a name="ACL" id="ACL">Access control lists</a></h1>
+    <p>This section describes how to retrieve and modify Google Calendar access control lists (ACLs) using the raw protocol. An access control list identifies the set of users with whom a given calendar is shared, and the level of access for each user (such as read-only access, full access, and so on).</p>
+    <p>Specifically, an ACL is a list of access rules. Each access rule specifies a &quot;scope&quot; (a person or set of people) and then associates a &quot;role&quot; (an access level) with that scope. Those terms are defined as follows: </p>
+    <ul>
+      <li>The <i>scope</i> of a rule directly or indirectly identifies
+        a set of individuals to whom the  rule
+        applies. A scope has two parts: a  type (such as <code>user</code>) and a value (such as an email address).</li>
+      <li>A <i>role</i> defines an access level, which determines what rights people identified by the given scope have.
+        In Google Calendar, the defined roles include <code>none</code>, <code>freebusy</code>, <code>read</code>, and <code>owner</code>. (Note that most role names must be preceded by a specific namespace URI; see the examples and reference document for details.) A given scope can have only one role. </li>
+    </ul>
+    <p>For information about the other defined scopes and roles, see the <a href="reference.html#gacl_reference">GAcl namespace element reference</a> in the Calendar reference document.</p>
+    <p class="note"><strong>Note</strong>: For a given scope, having a role of <code>none</code> is equivalent to having no role defined.</p>
+    <p>The ACL for each calendar is available as a  GData feed.  Each entry in the feed defines a single 
+    access rule.</p>
+    <p>Google Calendar does not support query parameters on requests for ACL feeds.</p>
+    <h2><a name="View_ACL" id="View_ACL">Retrieving an access control list </a></h2>
+    <p>To retrieve a calendar's ACL feed, you send an authenticated <code>GET</code> to the feed's URI. Only someone with <code>owner</code> access to a calendar can view that calendar's ACL feed. </p>
+    <p>You can determine the URI of a calendar's ACL feed by
+      looking at the calendar's entry in the <a href="#list_calendars">metafeed</a>. The ACL feed URI is given in the <code>&lt;link rel=&quot;http//schemas.google.com/acl/2007#accessControlList&quot;&gt;</code> element.  </p>
+    <p>For example, 
+      the following partial entry from a metafeed includes the URI of  the ACL
+      feed for a particular calendar.</p>
+    <pre>&lt;entry&gt;
+  &lt;id&gt;http://www.google.com/calendar/feeds/liz%40gmail.com/liz%40gmail.com&lt;/id&gt;
+  &lt;published&gt;2007-04-24T01:40:29.752Z&lt;/published&gt;
+  &lt;updated&gt;2007-04-21T00:52:04.000Z&lt;/updated&gt;
+  &lt;title type='text'&gt;My Calendar&lt;/title&gt;
+  ...
+  &lt;link rel='http://schemas.google.com/acl/2007#accessControlList'
+    type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full'&gt;
+  &lt;/link&gt;
+  ...
+&lt;/entry&gt;</pre>
+    <p>If you send a <code>GET</code> to  that ACL feed URI, you might receive a feed like the following.</p>
+    <pre>&lt;feed xmlns='http://www.w3.org/2005/Atom'
+    xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/'
+    xmlns:gAcl='http://schemas.google.com/acl/2007'&gt;
+  &lt;id&gt;http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full&lt;/id&gt;
+  &lt;updated&gt;2007-04-21T00:52:04.000Z&lt;/updated&gt;
+  &lt;title type='text'&gt;Elizabeth Bennet's access control list&lt;/title&gt;
+  &lt;link rel='http://schemas.google.com/acl/2007#controlledObject'
+    type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/liz%40gmail.com/private/full'&gt;
+  &lt;/link&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#feed'
+    type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full'&gt;
+  &lt;/link&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#post'
+    type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full'&gt;
+  &lt;/link&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full'&gt;
+  &lt;/link&gt;
+  &lt;generator version='1.0'
+    uri='http://www.google.com/calendar'&gt;Google Calendar&lt;/generator&gt;
+  &lt;openSearch:totalResults&gt;2&lt;/openSearch:totalResults&gt;
+  &lt;openSearch:startIndex&gt;1&lt;/openSearch:startIndex&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/user%3Aliz%40gmail.com&lt;/id&gt;
+    &lt;updated&gt;2007-04-21T00:52:04.000Z&lt;/updated&gt;
+    &lt;category scheme='http://schemas.google.com/g/2005#kind'
+      term='http://schemas.google.com/acl/2007#accessRule'&gt;<br />    &lt;/category&gt;
+    &lt;title type='text'&gt;owner&lt;/title&gt;
+    &lt;content type='text'&gt;&lt;/content&gt;
+    &lt;link rel='self' type='application/atom+xml'
+      href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/user%3Aliz%40gmail.com'&gt;
+    &lt;/link&gt;
+    &lt;link rel='edit' type='application/atom+xml'
+      href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/user%3Aliz%40gmail.com'&gt;
+    &lt;/link&gt;
+    &lt;author&gt;<br />      &lt;name&gt;Elizabeth Bennet&lt;/name&gt;<br />      &lt;email&gt;liz@gmail.com&lt;/email&gt;<br />    &lt;/author&gt;
+    &lt;gAcl:scope type='user' value='liz@gmail.com'&gt;&lt;/gAcl:scope&gt;
+    &lt;gAcl:role value='<code>http://schemas.google.com/gCal/2005#</code>owner'&gt;
+    &lt;/gAcl:role&gt;
+  &lt;/entry&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/default&lt;/id&gt;
+    &lt;updated&gt;2007-04-21T00:52:04.000Z&lt;/updated&gt;
+    &lt;category scheme='http://schemas.google.com/g/2005#kind'
+      term='http://schemas.google.com/acl/2007#accessRule'&gt;
+    &lt;/category&gt;
+    &lt;title type='text'&gt;read&lt;/title&gt;
+    &lt;content type='text'&gt;&lt;/content&gt;
+    &lt;link rel='self' type='application/atom+xml'
+      href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/default'&gt;
+    &lt;/link&gt;
+    &lt;link rel='edit' type='application/atom+xml'
+      href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/default'&gt;
+    &lt;/link&gt;
+    &lt;author&gt;<br />      &lt;name&gt;Elizabeth Bennet&lt;/name&gt;<br />      &lt;email&gt;liz@gmail.com&lt;/email&gt;<br />    &lt;/author&gt;
+    &lt;gAcl:scope type='default'&gt;&lt;/gAcl:scope&gt;
+    &lt;gAcl:role value='http://schemas.google.com/gCal/2005#read'&gt;
+    &lt;/gAcl:role&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;</pre>
+    <p>A few comments on that feed:</p>
+    <ul>
+      <li>The <code>&lt;link rel='http://schemas.google.com/acl/2007#controlledObject'&gt;</code> element contains the URI of the calendar feed for the calendar that this ACL belongs to. </li>
+      <li>Each rule/entry contains a <code>&lt;category scheme='http://schemas.google.com/g/2005#kind'&gt;</code> element, with <code>term='http://schemas.google.com/acl/2007#accessRule'.</code></li>
+      <li>The ACL-specific elements use the namespace alias <code>gAcl</code>.</li>
+      <li>The first entry defines a role (<code>owner</code>) for a specific user (<code>liz@gmail.com</code>). </li>
+      <li>The second entry defines a role (<code>read</code>) for all other users (<code>default</code>). </li>
+    </ul>
+    <h2><a name="View_Rule" id="View_Rule">Retrieving a rule</a></h2>
+    <p>To retrieve a single ACL rule rather than the entire feed, you can   construct the  URI for a single rule using the scope type (such as <code>user</code>) and the scope value (such as the user's email address).</p>
+    <p>To construct the URI for a particular rule, start with the ACL feed URI; then add the scope type and value (URL-encoded as needed), separated by a colon, as an additional path element. For example, the following is the URI for the ACL rule (for the example calendar we've been using) for user darcy@gmail.com:</p>
+    <pre>http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/user%3Adarcy%40gmail.com</pre>
+    <p>If you request a rule that hasn't been defined, then the service returns an HTTP <code>404 NOT FOUND</code> status code.</p>
+    <h2><a name="Add_Rule" id="Add_Rule">Adding a rule</a></h2>
+    <p>A requester with  permission to modify the access control
+      list can add a new ACL rule by posting a new entry to
+      the ACL feed's <code>POST</code> URI. The entry should contain the following elements:</p>
+    <ul>
+      <li><code>&lt;category&gt;</code></li>
+      <li><code>&lt;gAcl:scope&gt;</code></li>
+      <li><code>&lt;gAcl:role&gt;</code></li>
+    </ul>
+    <p>Any other elements that appear in the entry you send are ignored by the server.</p>
+    <p class="note"><strong>Note</strong>: Another way to add a rule is to use <code>PUT</code>. For more information, see <a href="#Change_Rule">Changing a rule</a>. </p>
+    <p>For example, you could send a <code>POST</code> request to the following URI, after authenticating as user <code>liz@gmail.com</code>:</p>
+    <pre>POST /calendar/feeds/liz@gmail.com/acl/full</pre>
+    <p>With the following entry in the body of the <code>POST</code>:</p>
+    <pre>&lt;entry&gt;
+  &lt;category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/acl/2007#accessRule'/&gt;
+  &lt;gAcl:scope type='user' value='darcy@gmail.com'&gt;&lt;/gAcl:scope&gt;
+  &lt;gAcl:role
+    value='http://schemas.google.com/gCal/2005#editor'&gt;
+  &lt;/gAcl:role&gt;
+&lt;/entry&gt;</pre>
+    <p>If the specified scope does not already have a role defined (or,
+      equivalently, if the role for that scope is currently <code>none</code>), then Calendar creates a new
+      ACL rule, and returns the corresponding ACL entry in the response. The returned
+      entry includes several new elements provided by the server.</p>
+    <p>If there is already a rule in the access control list with a
+      scope whose type and value match that in the request, and whose role is anything other than <code>none</code>, then the <code>POST</code> operation fails with error code <code>409 Conflict</code>.</p>
+    <p>The above <code>POST</code> might receive the following successful result: </p>
+    <pre>
+200 OK
+
+
+&lt;entry&gt;
+  &lt;id&gt;http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/user%3Adarcy%40gmail.com&lt;/id&gt;
+  &lt;updated&gt;2007-04-15T22:03:57.000Z&lt;/updated&gt;
+  &lt;category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/acl/2007#accessRule'&gt;
+  &lt;/category&gt;
+  &lt;title type='text'&gt;editor&lt;/title&gt;
+  &lt;content type='text'&gt;&lt;/content&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/user%3Adarcy%40gmail.com'&gt;
+  &lt;/link&gt;
+  &lt;link rel='edit' type='application/atom+xml'
+    href='http://www.google.com/calendar/feeds/liz%40gmail.com/acl/full/user%3Adarcy%40gmail.com'&gt;
+  &lt;/link&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+    &lt;email&gt;liz@gmail.com&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;gAcl:scope type='user' value='darcy@gmail.com'&gt;&lt;/gAcl:scope&gt;
+  &lt;gAcl:role value='http://schemas.google.com/gCal/2005#editor'&gt;
+  &lt;/gAcl:role&gt;
+&lt;/entry&gt;</pre>
+    <h2><a name="Change_Rule" id="Change_Rule">Changing a rule</a></h2>
+    <p>To change an ACL rule, you can send  a <code>PUT</code> request to the edit URI of the entry
+      you want to  modify. (You can also use this approach as an alternate method of creating new rules.)</p>
+    <p>You can construct the edit URI for a Google Calendar ACL rule entry using the  entry's scope type and scope value, without having to retrieve the entry first.</p>
+    <p>For example, to change the ACL rule for user <code>darcy@gmail.com</code>, you could send the following <code>PUT</code> request:</p>
+    <pre>PUT /calendar/feeds/liz@gmail.com/acl/full/user%3Adarcy%40gmail.com</pre>
+    <p>With the following entry in the request body: </p>
+    <pre>&lt;entry&gt;
+  &lt;category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/acl/2007#accessRule'/&gt;
+  &lt;gAcl:scope type='user' value='darcy@gmail.com'&gt;&lt;/gAcl:scope&gt;
+  &lt;gAcl:role value='<code>http://schemas.google.com/gCal/2005#</code>read'&gt;&lt;/gAcl:role&gt;
+&lt;/entry&gt;</pre>
+    <p> The URI fragment following <code>/full/</code> in the <code>PUT</code> URI must indicate the same scope type and value as  the <code>&lt;gAcl:scope&gt;</code> element in the entry you're sending.</p>
+    <p>The server  silently overwrites
+      any previous access level set for the indicated scope. If there is no
+      existing rule for that scope, it will create a new one. </p>
+    <p class="note"><strong>Note</strong>: Because a given rule is associated with a particular scope, it is not possible to modify the scope of a rule when updating it; only the role can be modified. An attempt to modify the scope will result in a <code>403 Forbidden</code> error.</p>
+    <h2><a name="Delete_Rule" id="Delete_Rule">Deleting a rule</a></h2>
+    <p> To remove a specific access rule for a calendar, you may
+      do either of the following:</p>
+    <ul>
+      <li>Send an HTTP <code>DELETE</code> request to the appropriate ACL entry's edit URI.</li>
+      <li> Update the entry (with <code>PUT</code>) and set <code>&lt;gAcl:role value=&quot;none&quot; /&gt;</code>.</li>
+    </ul>
+    <p>Doing either of those things causes the user (or group of users) specified in the scope to lose access to the calendar. </p>
+  </div>
+<!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2006 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

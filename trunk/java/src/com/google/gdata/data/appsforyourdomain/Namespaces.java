@@ -30,14 +30,22 @@ public class Namespaces {
 
   /** Describes the meaning of FeedLinks in the UserEntry */
   public static final String USER_NICKNAME_REL = APPS_PREFIX + "user.nicknames";
-  public static final String USER_EMAILLIST_REL = APPS_PREFIX + "user.emailLists"; 
-
+  public static final String USER_EMAILLIST_REL = APPS_PREFIX
+      + "user.emailLists";
+  
   /** Describes the meaning of FeedLinks in the EmailListEntry */
-  public static final String EMAILLIST_RECIPIENT_REL = APPS_PREFIX + "emailList.recipients";
+  public static final String EMAILLIST_RECIPIENT_REL = APPS_PREFIX
+      + "emailList.recipients";
  
   /** Google data XML writer namespace. */
   public static final XmlWriter.Namespace APPS_NAMESPACE
       = new XmlWriter.Namespace("apps", APPS);
+  
+  /** Google data rel's for migration API */
+  public static final String OWNER_REL = APPS + "/rel/owner";
+  public static final String DESTINATION_REL = APPS + "/rel/destinationAccount";
+  public static final String MIGRATION_REL = APPS + "/rel/migration";
+  public static final String TRANSFER_REL = MIGRATION_REL + "/transfer";
 
   private Namespaces() {
   }

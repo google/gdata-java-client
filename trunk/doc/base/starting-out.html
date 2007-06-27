@@ -1,0 +1,630 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!--<link rel="stylesheet" type="text/css" href="../css/google.css" />-->
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="./local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<script type="text/javascript">
+
+// Copyright 2006 Google Inc.
+// All Rights Reserved.
+
+
+var itemTypes = ['Jobs', 'Housing', 'People profiles', 'Products','Recipes', 'Services', 'Vacation rentals', 'Vehicles'];
+
+/** 
+ * Starts the query process for a single item type.
+ *
+ * @param {Array} types The item types (as strings) whose instance count we 
+ * want to find.
+ */
+function countItemsForType(types) {
+  for (var i = 0; i < types.length; ++i) {
+    removeOldTypeQueryNode(types[i]);
+    addNewQueryNode(types[i]);
+  }
+}
+
+/**
+ * Removes JSON script tags created by previous searchs for the item type.
+ *
+ *
+ */
+function removeOldTypeQueryNode(type, locale) {
+  oldQuery = document.getElementById("json_" + type);
+  if (oldQuery) {
+    oldQuery.parentNode.removeChild(oldQuery);
+  }
+}
+
+
+// Formats an integer to have thousands separators.
+function formattedInteger(num, separator) {
+  var a = num.toString();
+  a = a.reverse();
+
+  var formatted = "";      
+  
+  for(var i = 0; i < a.length; i++) {
+	formatted += a.charAt(i);
+	if (i%3 == 2 && i > 1 && i < a.length-1) {
+	  formatted += separator;
+	}
+  }
+  
+  return formatted.reverse();
+}
+
+
+// Reverses a string.
+String.prototype.reverse = function(){
+  var rev = "";
+  for(var i = this.length-1; i >= 0; i--){
+	rev+=this.substr(i, 1);
+  }
+  return rev;
+}
+
+function addNewQueryNode(type) {
+  var itemCountQuery = "http://www.google.com/base/feeds/snippets/-/" + 
+                       type + "?max-results=0&alt=json-in-script" + 
+                       "&callback=displayQueryResult";
+  
+  var scriptElement = document.createElement("script");
+  scriptElement.setAttribute("id", "json_" + type);
+  scriptElement.setAttribute("src", itemCountQuery);
+  scriptElement.setAttribute("type", "text/javascript");
+
+  document.getElementsByTagName("head")[0].appendChild(scriptElement);
+}
+
+function displayQueryResult(json) {
+    var itemType = json.feed.title.$t.replace(/Items matching query: \[item type:/, "").replace(/\]/, "");
+
+  var span = document.getElementById(itemType.replace(" ", "_") + "_span");
+  var resultCount = json.feed.openSearch$totalResults.$t;
+  span.innerHTML += formattedInteger(resultCount, ",");
+
+}
+
+
+function writeItemTypeTable(types) {
+  var debugDisplay = document.getElementById("itemCountDiv");
+  var html = "";
+  html += "<table border=1><tr><td><b>Item type</td><td><b>Items</b></td></tr>";
+  for (var i = 0; i < types.length; i++) {
+	  html += "<tr><td width=125>" + types[i] + "</td><td width=73 align=center style=\"text-align: right;\" ><span id=\"" + types[i].replace(" ", "_") + "_span\"></span></td></tr>";    
+  }
+  html += "</table>";
+  debugDisplay.innerHTML = html;
+}
+
+
+
+</script>
+
+<title>Google Base data API - Getting Started</title>
+</head>
+<body id="start_page" onLoad="writeItemTypeTable(itemTypes); countItemsForType(itemTypes);">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <div id="sidenav"><!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="signup.html" id="signup_link">API Key</a></li>
+      <li><a href="terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+    </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+</form>
+</div>
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <div id="pagecontent">
+    <!-- ########## PAGE CONTENT ########## -->
+    <h2 id="page_title">Getting Started</h2>
+    <p>This chapter will help you get started using Google Base. </p>
+    <h3>Contents</h3>
+    <ol class="toc">
+        <li><a href="#audience">Audience</a></li>
+        <li><a href="#terms">Google Base terminology</a> </li>
+        <li><a href="#svcs">Google Base data API services</a>
+        <ol class="toc">
+          <li><a href="#search">Searching for data items</a> </li>
+          <li><a href="#dataAvail">Data available in Google Base</a> </li>
+          <li><a href="#execQuery">Executing queries</a></li>
+          <li><a href="#datafeeds">Data feeds </a> </li>
+          <li><a href="#metadata">Discovering metadata </a></li>
+          <li><a href="#metadatafeeds">Metadata feeds </a></li>
+          <li><a href="#ItemTypes">Item types </a></li>
+          <li><a href="#Attrs">Attributes</a></li>
+          <li><a href="#metadataname">Metadata namespace</a></li>
+        </ol>
+        </li>
+        <li><a href="#insupdel">Inserting, updating, and deleting data items</a>
+        <ol class="toc">
+          <li><a href="#dataname">Data namespaces</a></li>
+          <li><a href="#hidattrib">Hiding attributes</a></li>
+          <li><a href="#item_hide">Hiding items</a> </li>
+          <li><a href="#images">Uploading images</a></li>
+          <li><a href="#shipping">Specifying shipping options</a></li>
+          <li><a href="#latlong">Inserting attributes with non-geocodable locations</a></li>
+        </ol></li>
+        <li><a href="#accessing">Accessing  Google Base</a>
+        <ol class="toc">
+          <li><a href="#authUser">Authenticating the user </a> </li>
+          <li><a href="#authDev">Authenticating the developer</a></li>
+          <li><a href="#aggregate">Managing multiple clients</a><br />
+          </li>
+        </ol></li>
+      <li><a href="#testing">Testing</a></li>
+        <li><a href="#troubleshoot">Troubleshooting</a><ol><li><a href="#disapproved">Disapproved items </a>  </li>
+          </ol>
+      </li>
+        <li><a href="#writingapp">Writing a Google Base data API application</a></li>
+    </ol>
+    <h1><a name="audience" id="audience"></a>Audience</h1>
+    <p>The Google Base data API documentation is intended for programmers
+      who want to write client applications that  interact with Google Base. This documentation assumes that you are familiar with <a href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">HTTP protocol</a> and the <a href="http://www.atomenabled.org/developers/syndication/atom-format-spec.php">Atom syndication format</a>. Since the Google Base data API is a Google Data API, you should also familiarize yourself with the <a href="http://code.google.com/apis/gdata/basics.html">Google Data API</a>. </p>
+    <h1><a name="terms" id="terms"></a>Google Base terminology</h1>
+    <p>In order to understand this chapter, you'll need to be familiar with the terms presented in this section. Because Google Base defines these terms slightly differently than the XML standard, you should read this section carefully, even if you're already familiar with XML. </p>
+    <h2>Data items </h2>
+    <p>A <b>data item</b> is an XML construct that describes a single entry in Google Base. Each data item consists of a set of <b>attributes</b> that describe it. You can see an <a href="#example">example</a> of a data item below. </p>
+    <h2>Attributes</h2>
+    <p><b>Attributes</b> are typed name/value pairs that describe the content. Each attribute associates a value with
+      an attribute name to describe the data item. For example, in Google Base, <code>&lt;g:label&gt;kung pao chicken&lt;/g:label&gt;</code> is an attribute (rather than an element.) You can specify multiple
+      values for a single attribute name. For example, the data item <a href="#example">below</a> specifies multiple values for the <code>label</code> attribute. See <a href="attrs-queries.html">Attributes and Queries</a> for more information about attributes. </p>
+    <h2>Item types</h2>
+    <p>The <strong>item type</strong> describes the type of data. Valid Google Base item types include <code>recipe</code>, <code>housing</code>, and <code>products</code>. Each item type has a set of recommended attributes
+      for describing it. For instance, items of
+      type <code> recipe </code> should use the <strong>recommended
+      attributes</strong> <code>main ingredient</code> and <code> cuisine</code> .
+      There are many standard item types in Google Base, each with
+      its own set of recommended
+      attributes. The <a href="http://base.google.com/base/api/itemTypeDocs">Recommended Attributes</a> page lists the valid item types and their associated approved attributes. </p>
+    <h1><a name="svcs" id="svcs"></a>Google Base data API services</h1>
+    <p>The Google Base data API exposes the following functionality via a webservice: </p>
+    <ul>
+      <li>searching for data items</li>
+      <li> discovering metadata</li>
+      <li>inserting, updating, and deleting data items</li>
+    </ul>
+    <h2><b><a name="search" id="search"></a>Searching for data items</b>&nbsp;&nbsp; </h2>
+    <p>You can use the API to create a client that searches for items programmatically.
+      Your client can send a query and retrieve a specified number of data items that
+      match the query.
+      <!-- This is functionality of the internal API but not exposed to external
+         users -->
+      <span class="del"> </span> The Google Base data API supports structured queries
+      that express constraints on attributes and their values.
+      For example, you can create specific queries, search for all items that
+      use a certain label or you can exclude certain attributes and values. You can also perform unstructured queries on the contents of Google Base. You can execute queries against either the  public <a href="snippets-feed.html">snippets feed</a> ( <code> /feeds/snippets </code> ) or your own specific <a href="items-feed.html">items
+      feed</a> ( <code> /feeds/items</code>), depending on the scope of data you want to retrieve.</p>
+    <p>By referencing attributes in your search query, you can obtain very
+      specific results. For example, you can search for cars
+      manufactured in 2004, or you can look for jobs in Denver, Colorado.</p>
+    <h3><b><a name="dataAvail" id="dataAvail"></a></b>Data available in Google Base  </h3>
+    <p>Here is a current snapshot of some of the most popular item types available in Google Base. Refer to the <a href="http://base.google.com/">Google Base homepage</a> for a more complete list. Don't feel limited to the types below; you can also create your own <a href="http://base.google.com/support/bin/answer.py?answer=59460&amp;query=custom+item+type&amp;topic=&amp;type=">custom item type</a>. </p>
+    <div id="itemCountDiv"></div>
+    <h3><b><a name="execQuery" id="execQuery"></a></b>Executing queries </h3>
+    <p>You can execute  queries using a <code>curl</code> command entered into a Unix shell, as follows: </p>
+    <pre> curl &quot;<em>queryURI</em>&quot; | xmllint --format -</pre>
+    <p>Alternately, you can enter the URI in a browser window. If you  execute the query in a feed-enabled browser, you must view the source of the result page in order to see the complete result feed.For more information about how to search for data items, refer to <a href="attrs-queries.html">Attributes and Queries</a>. </p>
+    <h3><a name="datafeeds" id="datafeeds"></a>Data feeds </h3>
+    <p>The Google Base data API provides two feeds for data: Then <a href="snippets-feed.html">snippets feed</a> is a read-only feed that is used to access <span class="alt">all</span> published
+      items in Google Base. This feed does not require authentication. You can perform attribute and full text queries on this feed. The <a href="items-feed.html">items feed</a> is a read/write, customer-specific
+      feed that you can use to insert, update, delete, and query your own data. This feed requires authentication. Note that all data submitted to Google Base is public, except for any attributes that you explicitly <a href="#hidattrib">hide</a>. The items feed is simply a convenient way to view the items you added to Google Base. </p>
+    <h2><b><a name="metadata" id="metadata"></a>Discovering metadata</b></h2>
+    <p>You can use the API to get information about how Google Base data is structured and
+      how each item type is used. This information can be helpful when you are deciding what to query on, and also when you are deciding how to describe new items you post. Google Base associates certain attributes with specific item types. For
+      example, <code> job type </code> and <code> job function </code>are
+      attributes associated with the <code>jobs</code> item type. To see which attributes
+      to use with a specific item type, use the <a href="itemtypes-feed.html">itemtypes</a> metadata
+      feed. For more information about how to discover metadata, refer to <a href="attrs-queries.html">Attributes and Queries</a>. </p>
+    <h3><a name="metadatafeeds" id="metadatafeeds"></a>Meta-data feeds </h3>
+    <p>There are three feeds for metadata: the attributes feed, the item types feed, and the locales feed.The <a href="itemtypes-feed.html">item types feed</a> contains referential information about the Google Base schema. It shows the attributes that Google Base recommends you use to describe your items. The item types feed      uses <code>&lt;gm:item_type&gt;</code> to identify each item type for which there
+      is a set of recommended attributes, <code>&lt;gm:attributes&gt;</code> to indicate
+      a list of attributes, and <code>&lt;gm:attribute&gt;</code> to identify each attribute. If you want metadata about the item types or wish to look at the recommended
+      schema for an item type, use the item types feed.The <a href="attributes-feed.html">attributes feed</a> returns attribute histograms for items that match a given query. The feed lists frequent attributes and attribute values. The attributes feed uses <code>&lt;gm:attribute&gt;</code> to identify each attribute for which there
+      is a set of values and <code>&lt;gm:value&gt;</code> to identify each value. If you want to see which attributes and attribute values are most
+      frequently used for a particular item type, use the attributes feed. The <a href="locales-feed.html">locales feed</a> defines the supported locales for Google Base. Each locale has its own list of recommended item types. You need to specify the locale when accessing the item types feed. </p>
+    <h3><a name="ItemTypes" id="ItemTypes"></a>Item types</h3>
+    <p>To help standardize some of the data entered, Google Base promotes a set of
+      item types, as well as approved attributes for each item type. You can see the current
+      list of item types and by looking at the <a href="http://base.google.com/base/api/itemTypeDocs">Recommended
+      Attributes</a> document, or you can request an <a href="http://www.google.com/base/feeds/itemtypes/en_US">item
+      types feed</a>. You do not have to restrict yourself to this list, but
+      if you do, your data is more likely to be found by other users. </p>
+    <p>If you
+      look at the attributes in the item types feed, you can see that certain
+      attributes have been defined for each item type. Others are item type-specific.
+      For instance, <code>job type</code>, <code>job function</code>, <code>job industry</code>, and <code>employer</code> are defined attributes for
+    the <code>jobs</code> item type. </p>
+    <p>If your data doesn't correspond at all to the existing item types, you can create your own item type. If your data is similiar in structure to one of the existing item types, it's probably best to use the most similar item type, and add custom attributes to it. </p>
+    <p>If you invent your own item type, you can use existing
+      approved attributes, as well as create new attributes for your item type. If you choose to create a new item type, bear in mind that the <code>title</code> attribute
+      and the <code>item type</code> attribute are required. Aside from these
+      two, you can use whichever attributes you want. </p>
+    <p>There are a few attributes, like <code>title</code>, that should be included for every item, regardless of the type.  These are called <a href="http://base.google.com/base/api/universalAttributes">Universal attributes</a>. There are also some universal attributes that are automatically generated by Google Base, such as <code>modification time</code>. You can query on some universal attributes, but not all of them. Finally, some attributes, such as <code>id</code>, can be defined by the user, but if they are not, will be automatically generated. The linked page provides more information.</p>
+    <p>If you create your own attributes, they will be indexed, unless you specify that they should be <a href="#hidattrib">private</a>. 
+    <h3><a name="Attrs" id="Attrs"></a>Attributes</h3>
+    <p>There are two different notations for specifying attributes: </p>
+    <ul>
+      <li>an XML-based notation in the context of an <a href="http://code.google.com/apis/gdata/overview.html#Background">Atom</a> or <a href="http://code.google.com/apis/gdata/json.html">JSON</a> feed describing the
+        attributes of data items, and </li>
+      <li>the Google Base query language notation used in a URL describing
+        your search criteria. </li>
+    </ul>
+    <p>In Atom feeds, attributes correspond to XML elements in either the Atom
+      namespace (<code>atom:</code>) or the Google Base namespace (<code>g:</code>).
+      The standard Atom elements, including <code>title</code>, <code>content</code>, <code>link</code>, <code>id</code>, <code>category</code>, <code>author</code>, <code>created</code> and <code>updated</code>,
+      are supported and mapped to the corresponding Google Base attributes. Here is an example of what definitions in the Google Base namespace look
+      like: </p>
+    <pre>&lt;g:attribute_name type=&quot;attributeType&quot;&gt;
+    attribute value
+&lt;/g:attribute_name&gt;</pre>
+    <p> An attribute definition consists of an attribute name (the XML tag,) an
+      attribute type, and the attribute value. The <a href="attrs-queries.html#attrTypes">Attribute
+      Types</a> section contains a list of the supported attribute types. Note that
+      specifying the attribute type is optional. If recommended attributes
+      are used, Google Base will infer the corresponding type from the attribute
+      name. Refer to <a href="http://base.google.com/base/api/itemTypeDocs">Recommended
+      Attributes</a> for a list of recommended attributes. Within the recommended attributes, there are a number of universal attributes
+      that can be used with every item type. Each item type has an individual
+      set of attributes specific to items of this type. Spaces are not allowed in attribute names. Use an underscore instead.For instance, the <code>job</code><code> type</code> attribute can be specified via the XML element <code>&lt;g:job_type&gt;</code>. Here are some sample attributes of the <code>jobs</code> itemtype from an Atom feed entry. </p>
+    <pre>&lt;g:employer&gt;Hewlett Packard&lt;/g:employer&gt;
+&lt;g:job_type&gt;full time&lt;/g:job_type&gt;<br />&lt;g:job_industry&gt;Computers&lt;/g:job_industry&gt;<br />&lt;g:job_function&gt;Marketing&lt;/g:job_function&gt;</pre>
+    <p> The Google <code>g</code> namespace needs to be defined in your input feed
+      as: </p>
+    <pre>xmlns:g=&quot;http://base.google.com/ns/1.0&quot;</pre>
+    <p> The notation for defining constants on attributes in queries is not based
+      on XML. Namespace definitions are superfluous and spaces do not have
+      to be escaped using underscores. In general, a query constraining the
+      value of an attribute looks like this: </p>
+    <pre> [attribute_name(attributeType): <em>attribute value query</em>]
+      </pre>
+    <p> Brackets are used to associate an attribute name with a type and a query
+      constraining the value of this attribute. Such an attribute query will
+      match items that define an attribute of the given name and type with
+      a value that matches the given value query. Again, types are optional,
+      and most queries will look like this: </p>
+    <pre> [attribute_name: <em>attribute value</em> <em>query</em>] </pre>
+    <p> For example, here's a job-related query: </p>
+    <pre> [employer: Apple]  [job_type: full time]  [job_function: Marketing]</pre>
+    <p> This query will match items that define an <code>employer</code> attribute
+      of type text that contains the term <code>Apple</code>, a <code>job_type</code> text
+      attribute that matches both the terms <code>full</code> and <code>time</code>,
+      and a <code>job_function</code> text attribute that contains the term <code>Marketing</code> in
+      its attribute value. </p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h4><a name="AttrLimits" id="AttrLimits"></a>Attribute limitations </h4>
+    <p>There are some limitations on how long your attribute names and values
+      can be and how many you can use: </p>
+    <ul>
+      <li>titles: between 3-1000 characters</li>
+      <li>attributes:
+        <ul>
+          <li> names: 30 characters</li>
+          <li>attribute text: 1000 characters, including spaces</li>
+          <li>total number permitted: 30 per item </li>
+        </ul>
+      </li>
+      <li> labels:
+        <ul>
+          <li>names: 40 characters</li>
+          <li>total number permitted: 10 per item </li>
+        </ul>
+      </li>
+      <li>URL length: 1000</li>
+    </ul>
+    <h3><b><a name="metadataname" id="metadataname"></a></b>Metadata namespace</h3>
+    <p>The <code>gm</code> namespace is used to represent metadata. It is identified by the URL <code> http://base.google.com/ns-metadata/1.0</code>. For example, the item types feed describes attributes using the <code>&lt;gm:attribute&gt;</code> element. Similarly, the attributes feed uses the <code><code>&lt;gm:</code>attribute&gt;</code> and <code>&lt;gm:value&gt;</code> to represent attribute histograms. Finally, the items feed provides access to statistics that keep track of the number of clicks, impressions, and page views for each item. This information is stored, respectively, in the <code>&lt;gm:impressions&gt;</code>, <code>&lt;gm:clicks&gt;</code>, and <code>&lt;gm:page_views&gt;</code> elements.The meta-data attributes are read-only. </p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    <h2><strong><a name="insupdel" id="insupdel"></a>Inserting, updating, and deleting data items</strong>&nbsp;&nbsp;</h2>
+    <p>You can use the Google Base data API to programmatically post new items, and edit or delete items you have posted. You must use your own <a href="items-feed.html">items feed</a> to insert, update, or delete data. </p>
+    <p>If possible, you should try to use one of the <a href="http://base.google.com/base/api/itemTypeDocs">recommended itemtypes</a> to represent your data. If the itemtype doesn't exactly fit your application, you can add custom attributes to suit your needs. </p>
+    <p>You may also create your own item type, if necessary. However, if you do so, it will be much more difficult for other people to find your data, since only the recommended itemtypes are publicized. </p>
+    <p>If you choose to create your own item type, your item must have a title, and must belong to one of the <a href="http://code.google.com/apis/base/locales-feed.html">accepted locales</a>. You can  choose your own itemtype name, and use the item without any restrictions. </p>
+    <h3><b><a name="dataname" id="dataname"></a></b>Data namespaces</h3>
+    <p>When you are defining
+      the attributes for a new Google Base item, it is important to use the
+      correct namespace in the XML input file.The XML encoding of Google Base items uses the <a href="http://base.google.com/base/api/universalAttributes">Atom</a> and <a href="http://base.google.com/base/api/itemTypeDocs">Google
+      Base</a> namespaces. Attributes like <code> &lt;title&gt;</code>, <code> &lt;link&gt;</code>, <code> &lt;entry&gt;</code>, <code> &lt;id&gt;</code>,
+      and <code> &lt;category&gt;</code> are encoded as XML elements in the Atom namespace. All other attributes use the Google Base namespace. This namespace is identified by  the URL <code> http://base.google.com/ns/1.0</code> . In the following example, the first several attributes, such as <code>&lt;title&gt;</code> and <code>&lt;author&gt;</code>,
+      are standard Atom attributes. The next set of <code> &lt;g:main_ingredient&gt; </code> tags define Google Base recommended
+      attributes. And the last set, such as <code> &lt;g:spices_used&gt; and </code> <code> &lt;g:cook_technique&gt; </code> are
+      user-defined attributes. Note that every data item entry is required
+      to have the <code> &lt;title&gt; </code> and <code> &lt;g:item_type&gt; </code> elements. </p>
+    <pre><b><a name="example" id="example"></a></b>&lt;?xml version='1.0'?&gt;<br />&lt;entry xmlns='http://www.w3.org/2005/Atom'<br />    xmlns:g='http://base.google.com/ns/1.0'&gt;<br />    &lt;author&gt;<br />      &lt;name&gt;Jane Doe&lt;/name&gt;<br />      &lt;email&gt;JaneDoe@gmail.com&lt;/email&gt;<br />    &lt;/author&gt;<br />    &lt;category scheme='http://www.google.com/type' term='googlebase.item'/&gt;<br />    &lt;title type='text'&gt;He Jingxian's chicken&lt;/title&gt;<br />    &lt;content type='xhtml'&gt;<br />      &lt;div xmlns='http://www.w3.org/1999/xhtml'&gt;Delectable Sichuan specialty&lt;/div&gt;<br />    &lt;/content&gt;<br />    &lt;link rel='alternate' type='text/html' href='http://www.host.com/123456jsh9'/&gt;<br />    &lt;g:item_type&gt;Recipes&lt;/g:item_type&gt;<br />    &lt;g:cooking_time&gt;30&lt;/g:cooking_time&gt;<br />    &lt;g:main_ingredient&gt;chicken&lt;/g:main_ingredient&gt;<br />    &lt;g:main_ingredient&gt;chili peppers&lt;/g:main_ingredient&gt;<br />    &lt;g:main_ingredient&gt;peanuts&lt;/g:main_ingredient&gt;
+    &lt;g:spices_used&gt;Szechuan peppercorn&lt;/g:spices_used&gt;
+    &lt;g:cook_technique&gt;blackened&lt;/g:cook_technique&gt;<br />&lt;/entry&gt;</pre>
+    <h3><a name="hidattrib" id="hidattrib"></a>Hiding Attributes </h3>
+    <p>You can control whether attributes are visible by specifying the XML attribute <code>access=&quot;private&quot;</code>.
+      For instance, if you include the following attribute definition in an
+      entry: </p>
+    <pre>&lt;g:private_id type=&quot;text&quot; access=&quot;private&quot;&gt; 
+   this is not visible by others 
+&lt;/g:private_id&gt; </pre>
+    <p> then the <code>&lt;private_id&gt;</code> element will not appear on the <code>snippets</code> feed,
+      and will consequently not be visible by other users. It will, however,
+      be visible on the <code>items</code> feed, so that you can access it for queries or updates. <br />
+      <br />
+      If the <code>access</code> attribute is not specified, the content of
+      the corresponding item will be public so that everyone can see it. This
+      is the default behavior. </p>
+    <h3><a name="item_hide" id="item_hide"></a>Hiding items </h3>
+    <p>You can use the <code>&lt;app:draft&gt;</code> extension element, defined in the Atom Publishing Protocol, to upload an item as a draft. You can see draft items on your own items feed. However, they are not visible on the snippets feed, and are not searchable. </p>
+    <p>In order to mark an item as a draft, include the <code>&lt;app:control&gt;</code> element as follows: </p>
+    <pre>&lt;entry&gt;
+   ...   
+	&lt;app:control xmlns:app='http://purl.org/atom/app#'&gt;
+		&lt;app:draft&gt;yes&lt;/app:draft&gt;
+	&lt;/app:control&gt; 
+&lt;/entry&gt; </pre>
+    <p>When the item is ready for public release, remove the <code>&lt;app:control&gt;</code> element, or set the <code>&lt;app:draft&gt;</code> flag to <code>no</code>. Note that if the item is <a href="#disapproved">disapproved</a>, you will not be able to change the value of the <code>&lt;app:draft&gt;</code> flag.</p>
+    <p>You can also set the <code>&lt;app:draft&gt;</code> flag on an existing item to remove it from the snippets feed.</p>
+    <h3><a name="images" id="images"></a>Uploading Images</h3>
+    <p>You can provide images by specifying the <code>image link</code> attribute
+      as follows: </p>
+    <pre wrap="">&lt;g:image_link&gt;http://www.bigfoto.com/sites/main/forest_wood.JPG&lt;/g:image_link&gt; </pre>
+    <p> Google Base caches the provided image and normalizes it to fit within
+      the Google webpages. Please note: the files you upload may not exceed 4 megabytes, 2800 by 2800 pixels, or 8 million
+      pixels in total size. The five common accepted image formats are GIF,
+      JPG (or JPEG), PNG, BMP, and TIF. As with all files you upload to Google
+      Base, Google reserves the right to review all items in order to ensure they
+      comply with the Google Base <a href="http://base.google.com/base/help/terms_of_service.html">Terms
+      and Conditions</a>.You can upload up to 10 images per offer. You cannot upload images from
+      a local machine. They must reside online. </p>
+    <h3><a name="shipping" id="shipping"></a>Specifying shipping rules </h3>
+    <p>If you insert an item that includes shipping information, you must describe it using the <code>&lt;g:shipping&gt;</code> element. The <code>&lt;g:shipping&gt;</code> element contain the following subelements: </p>
+    <ul>
+      <li><code>&lt;g:country&gt;</code> is a two-letter <a href="http://www.iso.org/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166</a> country code that describes the country of origin of the item. <code>&lt;g:country&gt;</code> is required. </li>
+      <li><code>&lt;g:service&gt;</code> is a free-form description of the mode of transportation for the item. <code>&lt;g:service&gt;</code> is optional. </li>
+      <li> <code>&lt;g:price&gt;</code> is the price of the item, a space, and a three-character currency code. <code>&lt;g:price&gt;</code> is optional. </li>
+    </ul>
+    <pre>&lt;g:shipping&gt;<br />&nbsp;&nbsp; &lt;g:country&gt; US &lt;/g:country&gt;<br />&nbsp;&nbsp; &lt;g:service&gt; By monkey &lt;/g:service&gt;<br /> &nbsp;&nbsp; &lt;g:price&gt; 20 EUR &lt;/g:price&gt;<br />&nbsp;&lt;/g:shipping&gt;</pre>
+    <p> Each item may have a maximum of 10 shipping rules. Multiple shipping methods with the same region and shipping service are not allowed. </p>
+    <p><code>shipping</code> is the only attribute that can be of type <code>shipping</code>. </p>
+    <h3><a name="latlong" id="latlong"></a>Inserting attributes with non-geocodable locations</h3>
+    <p>When you insert an attribute of type <code>location</code>, Google Base attempts to calculate the coordinates of the address. If an address cannot be geocoded, either because the address isn't recognized or 
+      because there are multiple matches, the Google Base data API returns an error.If you know where an address is, you can specify the geographic location of the address by adding two elements to your item: <code>&lt;g:latitude&gt;</code> and <code>&lt;g:longitude&gt;</code>. The values of these
+      attributes must be the geographic latitude and longitude you wish to associate with the address string. Both values must be numbers, and they must fall within the valid range. The valid range for latitude is from <code>-90.0</code> through <code>90.0</code>. The valid range for
+      longitude is from <code>-180.0</code> through <code>180.0</code>, exclusive. If you add the latitude and longitude
+      to a location using these attributes, Google Base will not attempt to geocode the address string, and instead will accept the geographic location you
+      submitted. The following example submits latitude and longitude with an address string: </p>
+    <pre>
+&lt;g:location&gt;
+    My Favorite Beach
+    &lt;g:latitude&gt;37.0&lt;/g:latitude&gt;
+    &lt;g:longitude&gt;-122.5&lt;/g:longitude&gt;
+&lt;/g:location&gt;</pre>
+    <p> If you specify the latitude and longitude when you submit the item, you can later query on these values. If you submit a geocodable location, the latitude and longitude are calculated, but not returned in query feeds. </p>
+    <h1><a name="accessing" id="accessing"></a>Accessing Google Base</h1>
+    <p>To use the Google Base data API from your application, you need to: </p>
+    <ul>
+      <li>obtain an API key </li>
+      <li>know the URLs for the Google Base servers:
+        <ul>
+          <li>The default data server is <code> http://www.google.com/base/ </code> . </li>
+          <li>The default authentication server is <code> https://www.google.com/accounts/. </code> </li>
+        </ul>
+      </li>
+      <li>authenticate the customer if your application performs inserts, updates,
+        or deletes</li>
+    </ul>
+   <p>All of the feeds require you to specify an <a href="#authDev">API Key</a> when making a request. To query for customer-specific data or to
+      insert, update, or delete data, you need to perform  authentication.
+      The <a href="http://www.google.com/base/api/demo/html/demo.html">API Demo Page</a> has code that obtains web authentication tokens for you. If
+      you are using the API instead, you need to provide a valid username and password
+      to the defined authentication server to be able to access the items feed.
+      If you are doing queries on the public snippets feed, you do not need to
+      be authenticated. </p>
+    <h2><a name="authUser" id="authUser"></a>Authenticating the user </h2>
+    <p>If you are doing a query against the <a href="snippets-feed.html">public
+      snippets feed,</a> you do not need to be authenticated. The public data
+      includes all data and is available for read-only access by anyone.If, however, you want to insert, update, or delete data, you need to go against
+      the <a href="items-feed.html">customer items feed</a> and you need
+      to be authenticated. Customer-specific data is available for read-write access
+      by each customer. Only the owner of a piece of data can change or remove
+      it. Also, as a customer, you can choose to limit your query to your own data
+      and you need to be authenticated for this type of query. There are two methods for authentication. Desktop applications,  such as the
+      Google Base Java samples, use a Google-specific authentication system called <a href="http://code.google.com/apis/accounts/AuthForInstalledApps.html">Programmatic
+      Login</a> and
+      web applications, such as the Google Base web-UI demo application, use another
+      approach, called <a href="http://code.google.com/apis/accounts/AuthForWebApps.html#registering">AuthSub</a>.
+      Both require a username and password.If you use the Programmatic Login system, the desktop client asks the user for
+      their credentials, and then sends those credentials to the Google
+      authentication system. If authentication succeeds, then the
+      authentication system returns a token that the client subsequently uses
+      (in an HTTP Authorization header) when it sends GData requests. If
+      authentication fails, then the server returns a 403 Forbidden status
+      code, along with a WWW-Authenticate header containing a challenge
+      applicable to the authentication.In the AuthSub system, the client connects the user to a Google service that
+      requests credentials. The service then returns a token that the web application
+      can use. In this way, Google (rather than the web front
+      end) securely handles and stores the user's credentials. The <a href="http://www.google.com/base/api/demo/html/demo.html">API
+      Demo Page</a> uses AuthSub to authenticate users. With this form of authentication,
+      customers log in to a page that provides their username and password to a
+      Google authentication server. The AuthSub processing creates a token that
+      is then passed back to the demo page and is used to authenticate you whenever
+      you perform an action (insert, update, delete) from that page. For more information,
+      see the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">AuthSub</a> documentation
+      and the <a href="http://code.google.com/apis/gdata/protocol.html#Authentication">Google
+      data API Developer's Guide</a>.In summary, AuthSub consists of these two steps: </p>
+    <ol>
+      <li><strong>Get one-time upgradable
+        token.</strong><em> &nbsp;</em><br />
+        The third-party application sends
+        the user to <code>http://www.google.com/accounts/AuthSubRequest</code> to authorize the application to act on their behalf.
+        When the user clicks the &quot;Grant&quot; permission
+        button, Google redirects the user back to the application, appending
+        the token to the URL.</li>
+      <li><strong>Upgrade to multi-use session token. &nbsp;</strong><br />
+        The application sends
+        a GET request to <code>http://www.google.com/accounts/AuthSubSessionToken</code> with an HTTP Authorization header that 
+        includes the one-time token. &nbsp;The Google  
+        frontend responds with the multi-use session token in
+        the body.</li>
+    </ol>
+    <p>Once you have a token, you pass it as part of every request you send to Google Base. The following example shows how to use <code>curl</code> to access the
+      published items of a
+      customer/user of the application in the items feed: </p>
+    <pre> curl --header &quot;Authorization:AuthSub token=&lt;YOUR AUTHSUB TOKEN HERE&gt;&quot; 
+    -I http://www.google.com/base/feeds/items?bq=recipes</pre>
+   <h2><a name="authDev" id="authDev"></a>Authenticating the developer</h2>
+    <p>In order to develop a Google Base application, you will need an API key. You will need a valid Google account in order to get an API key. If you
+      don't already have a valid Google account, go to <a href="#">http://www.google.com</a> to
+      get one. To <a href="signup.html">get an API key</a>, you must agree
+      to the terms
+      of service. You will need to supply this API key every time you make
+      a request to the Google Base data API. You can supply the <code>key</code> parameter in three
+      ways: In the HTTP header of your request, as in the following example: </p>
+    <pre>X-Google-Key: key=ABQIAAAA2P3O4IU5JL23H452LKJ34HEDJFHQWI04985QWEKLTJJQ43           </pre>
+    <p> As a query parameter in the URL, as in the following example: </p>
+    <pre>http://www.google.com/base/feeds/items?bq=digital+camera&amp;key=ABQIAAAA2P3O4IU5JL23H452LKJ34HEDJFHQWI04985QWEKLTJJQ43 
+</pre>
+    <p> Using <code>curl</code> , as in the following example. The URL being passed includes
+      a query that searches for recipes. </p>
+    <pre>curl --header &quot;X-Google-Key: key=ABQIAAAA2P3O4IU5JL23H452LKJ34HEDJFHQWI04985QWEKLTJJQ43&quot; 
+   -I http://www.google.com/base/feeds/snippets?bq=recipes</pre>
+    <h2><a name="aggregate" id="aggregate"></a>Managing multiple clients </h2>
+    <p>Aggregators can use Google Base to manipulate data on behalf of their customers.To become an aggregator, <a href="http://base.google.com/support/bin/request.py?extra.Language=en&amp;extra.BaseLocale=&amp;contact_type=account&amp;submit=Continue">send a request</a> to the Google Base team. Once  your account has been configured to manage multiple clients, you will be able to see your customers' IDs in the <a href="http://base.google.com/base">Google Base dashboard</a>. To submit an operation on behalf of a customer, insert the customer ID in the path of the Customer Items feed as follows: <code>http://www.google.com/base/feeds/<i>customer_ID</i>/items </code>For example, if the customer ID is 12345, the URL would be <code>http://www.google.com/base/feeds/12345/items </code>You can perform all of the standard Items feed operations on this URL. Refer to the <a href="items-feed.html">Items feed reference</a> for more information. </p>
+    <h1><a name="testing" id="testing"></a>Testing</h1>
+    <p>You can test a feed operation before it is actually executed by specifying the <code>dry-run</code> flag. Once you are sure that you want to submit the data, remove the <code><code>dry-run</code> </code> flag to execute the operation. </p>
+    <h1><a name="troubleshoot" id="troubleshoot"></a>Troubleshooting</h1>
+    <h2><a name="disapproved" id="disapproved"></a>Disapproved items </h2>
+    <p>Google Base monitors all items according to our <a href="http://base.google.com/base/base_policies.html">Program Policies</a> and <a href="http://base.google.com/base/guidelines.html">Editorial Guidelines</a>. Items that do not comply with these policies always remain drafts, which means that they will not match any queries. Such items are marked <code>&lt;gm:disapproved/&gt;</code>. Disapproved items have an <code>&lt;app:draft&gt;</code> flag that is always set to <code>yes</code>. </p>
+    <p>The <code>&lt;app:draft&gt;</code> flag can never be removed from a disapproved item. In order to resolve a disapproved item, delete it from Google Base, fix it so that it complies with the Google Base Program Policies and Editorial Guidelines, and resubmit it as a new item.</p>
+    <pre>&lt;entry&gt;
+...
+	&lt;app:control xmlns:app='http://purl.org/atom/app#'&gt;
+		&lt;app:draft&gt;yes&lt;/app:draft&gt;
+		&lt;gm:disapproved/&gt;   
+	&lt;/app:control&gt;
+&lt;/entry&gt; </pre>
+    <h1><a name="writingapp" id="writingapp"></a>Writing a Google Base data API application</h1>
+    <p>There are two ways to write an application using the Google Base data  APIs: </p>
+    <ul>
+      <li>You can interact directly with the Google Base feeds. This is a  language-independent method of accessing the Google Base  functionality.&nbsp; We provide some <a href="samples/java/java-sample.html">basic tutorial examples</a> that show how  to do this using Java.&nbsp;  Even if you choose to use a different language, you can refer to these  examples to help you get started. We provide <a href="sample-apps.html">sample code</a> in a host of other languages, as well. </li>
+      <li>You can use the Client Libraries. Currently, we offer client  libraries in Java and C#.&nbsp; You can download both from the <a href="client-download.html">Download  page</a>.  We provide a <a href="javadevguide.html">Java Developer's Guide</a> and a <a href="csharpdevguide.html">C# Developer's Guide</a> to help you get started, as well as some <a href="sample-apps.html">sample applications</a> in both Java and C# that use the client library. </li>
+    </ul>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  _utcp="/apis/base/";
+  _uanchor=1;
+  urchinTracker();
+</script>
+</body>
+</html>

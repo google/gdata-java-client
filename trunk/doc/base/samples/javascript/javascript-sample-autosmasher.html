@@ -1,0 +1,475 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../../../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../../../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="../../local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ieonly.css" />
+<![endif]-->
+<title>Google Base data API- Accessing the Google Base data API using JavaScript</title>
+</head>
+<body id="sample_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+    <div id="sidenav"> <!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="../../index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="../../sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="../../starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="../../attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="../../javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="../../csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="../../snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="../../items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="../../attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="../../itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="../../locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="../../query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="../../ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="../../client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="../../signup.html" id="signup_link">API Key</a></li>
+      <li><a href="../../terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="../../release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+      </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <!-- This comment prevents 
+	space-->
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+</form>
+ </div>
+  <!-- ########## END SIDE NAVIGATION ########## -->
+<div id="pagecontent">
+    <!-- ########## PAGE CONTENT ########## -->
+    <h2 id="page_title">Writing a  Google Base data API application in JavaScript</h2>
+    <p><strong>Select a language:</strong> <a href="../java/java-sample.html">Java</a> |<activeLang><strong> JavaScript </strong></activelang> | <a href="../perl/perl-sample.html">Perl</a> |
+    <a href="../php/php-sample-zend.html">PHP</a>    | <a href="../python/python-sample.html">Python</a> | <a href="../csharp/csharp-sample.html">C#</a> | <a href="../vb/vb-sample.html">VB.NET</a> | <a href="../coldfusion/coldfusion-sample.html">ColdFusion</a> </p>
+    	    <p id="langSelect"><a href="../../samples/javascript/javascript-sample.html">JavaScript Sample Home</a> | <strong>JavaScript Tutorial</strong> | <a href="javascript-sample-demo.html">Interactive Demo</a></p>
+    <p>The JavaScript Tutorial is a simple end-to-end example that presents all of the basic concepts of Google Base. It  searches Google Base for vehicles, and then displays the results on a map. If you want to learn how to use the Google Base data API, this is a great place to start.</p>
+    <p>AutosMasher is a mashup of the Google Base data API and the Google Maps API.  It demonstrates how to query various Base data feeds, as well as how to interact with markers and info windows in the Maps API.</p>
+    <h3>Contents</h3>
+    <ol class="toc">
+	<!-- begin_autotoc -->
+<!-- Automatically generated by autotoc.pl -->
+<li><a href="#audience">Audience</a>
+<li><a href="#using">Using the AutosMasher Application</a> 
+<li><a href="#google_base_data_api">Google Base data API</a>
+  <ol>
+    <li><a href="#queryAtts">Querying the attributes feed to get car makes and models </a></li>
+    <li><a href="#querySnipps">Querying the snippets feed to get car listings </a>
+      <ol>
+   <li><a href="#queries">Understanding queries and search results</a> </li>
+      </ol>
+    </li>
+    <li><a href="#parseJSON">Parsing JSON</a></li>
+  </ol>
+<li><a href="#google_maps_api">Google Maps API</a>
+<ol>
+<li><a href="#drawing_a_map">Drawing a map</a>
+<li><a href="#drawing_markers">Drawing markers to show vehicle locations </a>
+<li><a href="#centerZoom">Centering and zooming the map</a>
+</ol>
+<li><a href="#cleanup">Cleanup</a>
+<!-- end_autotoc -->
+    </ol>
+    <h2><a name="audience"></a>Audience</h2>
+    <p>This document is intended for anyone who wants to develop a Google Base data application in JavaScript. </p>
+    <p>This document assumes that you're an experienced JavaScript programmer. It also assumes that you're familiar with JSON. To learn more about  JSON, and how it is used in the GData APIs, refer to the <a href="http://code.google.com/apis/gdata/json.html">GData documentation</a>. </p>
+    <p>These examples assume that you  are familiar with <a href="http://code.google.com/apis/base/starting-out.html">Google Base
+    concepts</a>. You also need a basic understanding of <a href="http://code.google.com/apis/base/attrs-queries.html">how to execute queries</a>.</p>
+    <p>This sample application also uses the Google Maps API to build a map corresponding to query results. Refer to the <a href="http://www.google.com/apis/maps/">Google Maps API documentation</a> for more information. </p>
+    <h2><a name="using" id="using"></a>Using the AutosMasher application </h2>
+    <p>You can <a href="tutorial.html">get the sample program</a> from this directory and run it from your local machine. </p>
+    <p>Before you can run it, you will need to <a href="http://www.google.com/apis/maps/signup.html">sign up for a new Google Maps API key</a> and replace the value for the <code>key</code> parameter in the following <code>&lt;script&gt;</code> tag: </p>
+    <pre>&lt;script src=&quot;http://maps.google.com/maps?file=api&amp;amp;v=2&amp;amp;
+   key=ABQIAAAA-NjjZakzY5MKFK-MdkfixBRfu3r7dH9FYihKTdE4J-EIk6ejuxRKNHpS-zxJaV5DOxQYxtLscHqrVQ&quot;
+   type=&quot;text/javascript&quot;&gt;
+&lt;/script&gt;</pre>
+    <h2><a name="google_base_data_api"></a>Google Base data API </h2>
+    <p>The Google Base data API code executes queries and loads results from Google Base. It includes the following functions:</p>
+    <table width="680" border="0" cellpadding="0" cellspacing="10">
+      <tr>
+   <td><code>getMakeOptions()</code></td>
+   <td><a href="#queryAtts">queries the attributes feed</a> for a list of vehicle makes.</td>
+      </tr>
+      <tr>
+   <td><code>showMakeOptions()</code></td>
+   <td><a href="#parseJSON">parses the JSON results</a> in  the vehicle make response feed and populates the <strong>Select Make</strong> dropdown list in the webpage. </td>
+      </tr>
+      <tr>
+   <td><code>getModels()</code></td>
+   <td><a href="#queryAtts">queries the attributes feed</a> for the list of vehicle models that correspond to the selected make. </td>
+      </tr>
+      <tr>
+   <td><code>showModelOptions()</code></td>
+   <td><a href="#parseJSON">parses the JSON results</a>  in the vehicle model response feed and populates the <strong>Select Model </strong> dropdown list in the webpage. </td>
+      </tr>
+      <tr>
+   <td><code>getSnippets()</code></td>
+   <td><a href="#querySnipps">queries the snippets feed</a> for vehicles that match the user input. </td>
+      </tr>
+      <tr>
+   <td><code>showSnippets()</code></td>
+   <td><a href="#parseJSON">parses the JSON results</a> in the vehicle snippets response feed and displays the matching vehicles. </td>
+      </tr>
+    </table>
+    <h3><a name="queryAtts" id="queryAtts"></a>Querying the attributes feed to get car makes and models </h3>
+    <p>The attributes feed gives aggregate information about what kinds of data exists in Google Base. Given an item type, the attributes feed lists the values that are most frequently used for that item type's attributes. </p>
+    <p>To get a list of vehicle makes, the <code>getMakeOptions()</code> function queries the attributes feed by adding the following script element to the page:</p>
+    <pre>
+&lt;script type=&quot;text/javascript&quot; src=&quot;http://www.google/com/base/feeds/attributes/
+     -/vehicles?max-values=30&amp;alt=json-in-script&amp;callback=showMakeOptions&quot; /&gt;
+</pre>
+    <p>This script element is constructed using the <code>getMakeOptions()</code> and <code>getModels()</code> functions. </p>
+    <p><code>getMakeOptions()</code> is  defined as follows: </p>
+    <pre>function getMakeOptions() {
+  // Add a script element with the src set to the Google Base query for vehicle
+  // makes. The JSON output is specified by including the alt=json-in-script
+  // argument. The callback function is also specified as a URI argument.
+  // This is equivalent to adding a script tag that looks like this:
+  // &lt;script type="text/javascript" src="http://www.google/com/base/feed/attributes/.." /&gt; 
+
+  var attributesElement = document.createElement("script");
+  attributesElement.setAttribute("id", "attributes");
+  attributesElement.setAttribute("src", "http://www.google.com/base/"
+   + "feeds/attributes/-/vehicles?max-values=30"
+   + "&alt=json-in-script&callback=showMakeOptions");
+  attributesElement.setAttribute("type", "text/javascript");
+  document.documentElement.firstChild.appendChild(attributesElement);
+}	</pre>
+    <p>The <code>alt=json-in-script</code> component of the URL tells Google Base to return the results feed in JSON format. The <code>callback=showMakeOptions</code> component specifies the <code>showMakeOptions()</code> function as the callback. 
+
+    Refer to <a href="#parseJSON">Parsing JSON</a> for a description of <code>showMakeOptions()</code>. 
+    <p>Next, to get a list of vehicle models, we query the attributes feed using the <code>getModels()</code> function. The resulting list of vehicle models is used to populate the <strong>Select Model</strong> dropdown list in the webpage. <code>getModels()</code>calls the same URL as <code>getMakeOptions()</code>, but adds a <code>bq</code> structured query to specify the make.  <code>bq</code> is the URL parameter that signifies a Base query. All structured queries must start with <code>bq</code>. </p>
+      <pre>function getModels() {
+  // Add a script element with the src set to the Google Base query for vehicle  
+  // models.  The JSON output is specified by including the alt=json-in-script 
+  // argument. The callback function is also specified as a URI argument.
+  // This is equivalent to adding a script tag that looks like this:
+  // &lt;script type="text/javascript" src="http://www.google/com/base/feed/attributes/.." /&gt; 
+
+  makeOptions = document.getElementById("make_options");
+  make = makeOptions.options[makeOptions.selectedIndex].text;
+
+  var attributesElement = document.createElement("script");
+  attributesElement.setAttribute("id", "attributes");
+  attributesElement.setAttribute("src", "http://www.google.com/base/"
+   + "feeds/attributes/-/vehicles?max-values=30&bq=[make:" + make + "]"
+   + "&alt=json-in-script&callback=showModelOptions");
+  attributesElement.setAttribute("type", "text/javascript");
+
+  document.documentElement.firstChild.appendChild(attributesElement);
+}
+</pre>
+      <h3><a name="querySnipps" id="querySnipps"></a>Querying the Snippets feed to get car listings </h3>
+      <p>The snippets feed is a public feed that contains all of the Google Base data.  </p>
+      <p>The <code>getSnippets()</code> function collects the user input, and builds a query from it.</p>
+      <p>The following code, extracted from <code>getSnippets()</code>, collects the search criteria for the query:</p>
+      <pre>  location_input = document.getElementById(&quot;location_input&quot;).value;<br />  makeOptions = document.getElementById(&quot;make_options&quot;);<br />  make = makeOptions.options[makeOptions.selectedIndex].text;<br />  modelOptions = document.getElementById(&quot;model_options&quot;);<br />  model = modelOptions.options[modelOptions.selectedIndex].text;<br />  min_price = document.getElementById(&quot;min_price&quot;).value;<br />  max_price = document.getElementById(&quot;max_price&quot;).value;<br />  keywords = document.getElementById(&quot;keywords&quot;).value;<br />  location_sort_input = document.getElementById(&quot;location_sort_input&quot;).value;      </pre>
+      <p>The following code constructs a query.</p>
+      <pre>  var query = &quot;bq=&quot;;      </pre>
+      <p>The following code adds the car make and model to the query. The user sets the values for the <code>make</code> and <code>model</code> variables by selecting from a dropdown list on the web page. </p>
+      <pre>  if (make!=&quot;Select Make&quot;) {<br />    query = query + &quot;[make:&quot; + make + &quot;]&quot;;<br />  }<br />  if (model!=&quot;Select Model&quot;) {<br />    query = query + &quot;[model:&quot; + model + &quot;]&quot;;<br />  }     </pre>
+      <p>The following code adds an optional location to the query.</p>
+   <pre>  if (location_input!=&quot;&quot;) {<br />    query = query + &quot;[location:@&quot; + location_input + &quot;]&quot;;<br />  }  </pre>
+   <p>The following code adds an optional price range to  the query.</p>
+    <pre>  if (min_price!=&quot;&quot;) {<br />    query = query + &quot;[price:&quot; + min_price + &quot;..&quot; + max_price + &quot;]&quot;;<br />  }    </pre>
+    <p>The following code adds optional keywords to the query. Keywords are stored as unstructured data. Therefore, keyword queries are passed using the <code>q</code> URL parameter. This is the standard GData query delineator. </p>
+   <pre>  if (keywords!=&quot;&quot;) {<br />    query = query + &quot;&amp;q=&quot;+keywords;<br />  }   </pre>
+
+<p>The following code orders the query by either price, year or location, depending on the user selection. </p>
+<pre>  if (orderby==&quot;price&quot;) {<br />    query = query + &quot;&amp;orderby=price(float%20USD)&quot;;<br />  }<br />  if (orderby==&quot;year&quot;) {<br />    query = query + &quot;&amp;orderby=year(int)&quot;;<br />  }<br />  if (orderby==&quot;location&quot;) {<br />    query = query + &quot;&amp;orderby=[x=location(location):neg(min(dist(x,@'&quot;+location_sort_input+&quot;')))]&quot;;<br />  }
+</pre>
+<h4><a name="queries" id="queries"></a>Understanding queries and search results </h4>
+<p>Depending on user input, the code above might construct the following query:</p>
+   <pre>http://www.google.com/base/feeds/snippets/-/vehicles/&amp;bq=[make:honda][model:civic]
+   [location:@chicago][price:2000...10000]&amp;q=red</pre>
+   <p>For this query, the item type is <code>vehicle</code>.</p>
+   <p>The Google Base structured query contains the following specifications:</p>
+   <ul>
+     <li>The make is <code>honda</code>.</li>
+     <li>The model is <code>civic</code>.</li>
+     <li>The car should be located in <code>Chicago</code></li>
+     <li>An acceptable price range is between <code>2000-5000</code> USD.</li>
+   </ul>
+   <p>The Google data unstructured query, starting with <code>&amp;q</code>, specifies that the car should be <code>red</code>.   </p>
+   <p>When you build a query on using the dropdown menus on the <a href="tutorial.html">tutorial page</a>, the resulting query is shown as an alert. You can use this to better understand how queries are constructed. </p>
+   <p>Using the above example, a partial XML response for a single response might be as follows: </p>
+   <pre>&lt;entry&gt;
+   &lt;id&gt;http://www.google.com/base/feeds/snippets/9032647622616759218&lt;/id&gt;
+   &lt;published&gt;2007-05-07T14:00:04.000Z&lt;/published&gt;
+   &lt;updated&gt;2007-05-22T23:33:32.000Z&lt;/updated&gt;
+   &lt;category scheme='http://base.google.com/categories/itemtypes' term='Vehicles'&gt;&lt;/category&gt;
+   &lt;title type='text'&gt;Honda Civic 2000&lt;/title&gt;
+   &lt;content type='html'&gt;&lt;/content&gt;
+   &lt;link rel='alternate' type='text/html' href='http://www.cars.com/go/search/detail.jsp?tracktype=usedcc&amp;amp;searchType=21&amp;amp;paId=134322625&amp;amp;pageNumber=0&amp;amp;aff=google&amp;amp;PSRCH2=googbase'&gt;&lt;/link&gt;
+   &lt;link rel='self' type='application/atom+xml' href='http://www.google.com/base/feeds/snippets/9032647622616759218'&gt;&lt;/link&gt;
+   &lt;author&gt;
+      &lt;name&gt;Cars.com&lt;/name&gt;
+      &lt;email&gt;foobar@cars.com&lt;/email&gt;
+   &lt;/author&gt;
+   &lt;g:make type='text'&gt;Honda&lt;/g:make&gt;
+   &lt;g:item_type type='text'&gt;Vehicles&lt;/g:item_type&gt;
+   &lt;g:color type='text'&gt;Red&lt;/g:color&gt;
+   &lt;g:price type='floatUnit'&gt;8900.0 usd&lt;/g:price&gt;
+   &lt;g:model type='text'&gt;Civic&lt;/g:model&gt;
+   &lt;g:location type='location'&gt;Chicago,IL,60638&lt;/g:location&gt;
+&lt;/entry&gt;</pre>
+   <h3><a name="parseJSON" id="parseJSON"></a>Parsing JSON </h3>
+   <p>To use the Google Base data API with JavaScript, you will need to use JSON-format feeds. </p>
+   <p>JSON is a lightweight data-interchange format. Like XML, it consists of a collection of name/value pairs. </p>
+   <p>The following excerpt shows the JSON equivalent of the above query response: </p>
+   <pre>{&quot;id&quot;:
+ {
+   &quot;$t&quot;: &quot;http://www.google.com/base/feeds/snippets/9032647622616759218&quot;},
+   &quot;published&quot;:{&quot;$t&quot; :&quot;2007-05-07T14:00:04.000Z&quot;},
+   &quot;updated&quot;:{&quot;$t&quot; :&quot;2007-05-22T23:33:32.000Z&quot;},
+   &quot;category&quot;:[{
+      &quot;scheme&quot;:&quot;http://base.google.com/categories/itemtypes&quot;,
+      &quot;term&quot;:&quot;Vehicles&quot;}],
+   &quot;title&quot;:{&quot;type&quot;:&quot;text&quot;,&quot;$t&quot;:&quot;Honda Civic 2000&quot;},
+   &quot;content&quot;:{&quot;type&quot;:&quot;html&quot;,&quot;$t&quot;:&quot;&quot;},
+   &quot;link&quot;:[{&quot;rel&quot;:&quot;alternate&quot;,
+      &quot;type&quot;:&quot;text/html&quot;,
+      &quot;href&quot;:&quot;http://www.cars.com/go/search/detail.jsp?tracktype\u003Dusedcc\u0026searchType\u003D21\u0026paId\u003D134322625\u0026pageNumber\u003D0\u0026aff\u003Dgoogle\u0026PSRCH2\u003Dgoogbase&quot;},{
+      &quot;rel&quot;:&quot;self&quot;,
+      &quot;type&quot;:&quot;application/atom+xml&quot;,
+      &quot;href&quot;:&quot;http://www.google.com/base/feeds/snippets/9032647622616759218&quot;}],
+   &quot;author&quot;:[{
+      &quot;name&quot;:{&quot;$t&quot;:&quot;Cars.com&quot;},
+      &quot;email&quot;:{&quot;$t&quot;:&quot;foobar@cars.com&quot;}}],
+   &quot;g$make&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;$t&quot;:&quot;Honda&quot;}],
+   &quot;g$category&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;$t&quot;:&quot;VEHICLES&quot;}],
+   &quot;g$color&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;$t&quot;:&quot;Red&quot;}],
+   &quot;g$price&quot;:[{&quot;type&quot;:&quot;floatUnit&quot;,&quot;$t&quot;:&quot;8900.0 usd&quot;}],   &quot;g$model&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;$t&quot;:&quot;Civic&quot;}],
+   &quot;g$location&quot;:[{&quot;type&quot;:&quot;location&quot;,&quot;$t&quot;:&quot;Chicago,IL,60638&quot;}],}</pre>
+   <p><code>showMakeOptions()</code> uses the resulting list of vehicle makes to populate the <strong>Select Make</strong> dropdown list in the webpage. <code>showMakeOptions()</code> is defined as follows: </p>
+    <pre>function showMakeOptions(json) {
+  clearOldAttributes();
+
+  // transform the JSON results into a drop down menu
+  var select = document.getElementById("make_options");
+  select.disabled=false;           // enable the dropdown
+  select.onchange=getModels;       
+  select.options[select.selectedIndex].disabled=true; // disable the 'Loading...' option
+  select.options[select.selectedIndex].text="Select Make";
+  
+  for (var i = 0; i &lt; json.feed.entry.length; ++i) {
+    var entry = json.feed.entry[i];
+    
+    // find the make entry
+    if (entry.title.$t == "make(text)") {
+      makeList = entry['gm$attribute']['gm$value']
+      for (var j=0; j&lt;makeList.length; ++j) {
+        var option = document.createElement("option");
+        make = makeList[j].$t
+        option.appendChild(document.createTextNode(make));
+        select.appendChild(option);
+      }
+      break;
+    }
+  }
+  document.getElementById("make_div").appendChild(select);
+}</pre>
+    <h2><a name="google_maps_api"></a>Google Maps API</h2>
+      <p>The Google Maps API code displays a map that corresponds to the geographical locations of the results from Google Base. It includes the following functions:</p>
+      <table width="680" border="0" cellpadding="0" cellspacing="10">
+   <tr>
+     <td><code>onLoad()</code></td>
+     <td><a href="#drawing_a_map">draws the map</a> and instantiates the geocoder. </td>
+   </tr>
+   <tr>
+     <td><code>showAddress()</code></td>
+     <td><a href="#drawing_markers">creates a market and draws it </a> on the map at the given address. </td>
+   </tr>
+   <tr>
+     <td><code>openInfoWindow()</code></td>
+     <td>is called when a user clicks on a snippets entry. It opens the info window on the map for the marker that corresponds to that snippets entry.</td>
+   </tr>
+   <tr>
+     <td><code>centerAndZoomMap()</code></td>
+     <td><a href="#centerZoom">centers the map on the markers </a> and sets an appropriate zoom level.</td>
+   </tr>
+    </table>
+      <h3><a name="drawing_a_map"></a>Drawing a map</h3>
+      <p>To add a map using the <a href="http://www.google.com/apis/maps/">Google Maps API</a> you need to include three things.</p>
+      <p>First, register for a Maps API key <a href="http://www.google.com/apis/maps/signup.html">here</a> and include the following script tag in your program:</p>
+    <pre>
+&lt;script src="http://maps.google.com/maps?file=api&amp;v=2
+   &amp;key=&lt;Your Maps API key&gt;" type="text/javascript"&gt;&lt;/script&gt;</pre>
+      <p>Next, create a div where you want to display the map:</p>
+    <pre>
+&lt;div id="map_div" style="width:100%; height:300px"&gt;&lt;/div&gt;</pre>
+      <p>Finally, create the map and insert it in the div you created. The following excerpt from <code>onLoad()</code> accomplishes this. </p>
+      <pre>    map = new GMap2(document.getElementById(&quot;map_div&quot;));<br />    map.addControl(new GSmallMapControl());<br />    map.addControl(new GMapTypeControl());<br />    map.setCenter(new GLatLng(37.44, -92.25), 3);      </pre>
+      <h3><a name="drawing_markers"></a>Drawing markers to show vehicle locations </h3>
+      <p>The Google Maps API requires latitude and longitude to plot markers, but the locations provided by the Base data API are given as addresses.  To plot the markers, <code>showAddress()</code> uses the geocoder from the Maps API:</p>
+      <pre>function showAddress(address, title, alturl, imgLinks) {
+  geocoder.getLatLng(
+    address,
+    function(point) {
+      if (point) {
+        var marker = new GMarker(point);
+        bounds.extend(point);
+        centerAndZoomMap();
+	  //populates array
+        markers.push(marker);
+        map.addOverlay(marker);
+        html = '&lt;a href="' + alturl + '"&gt;'+title+'&lt;/a&gt;';
+        if (imgLinks) {
+          html+="&lt;br/&gt;";
+          imgIndex = 0;
+          while (imgIndex&lt;3) {
+            html+='&lt;a href="' + alturl + '"&gt;&lt;img height="50" width="50" src="'+imgLinks[imgIndex++].$t+'"/&gt;&lt;/a&gt;'
+          }
+        }
+	  //populates array
+        markerHtmls.push(html);        
+      } else {
+      }
+    }
+  );
+}</pre>
+    <p>You can make the map zoom in on the appropriate area by keeping track of the bounds of the markers displayed.  </p>
+    <p>The <code>GLatLng</code> point is created with the following code in the <code>showAddress()</code> function: </p>
+    <pre>var marker = new GMarker(point);</pre>
+    <p>The <code>GLatLngBounds</code> point is created with the following code in the <code>onLoad()</code> function: </p>
+    <pre>bounds = new GLatLngBounds();</pre>
+    <p>Each time the application gets a <code>GLatLng</code> point from the geocoder, it adds the point to a <code>GLatLngBounds</code> object.</p>
+    <p>For more examples of displaying markers, see the <a href="http://www.google.com/apis/maps/documentation/index.html#Map_Overlays">Maps API documentation.</a></p>
+    <p>This application creates and maintains two global parallel arrays of markers:</p>
+    <pre>var markers = [];
+var markerHtmls = [];</pre>
+    <p>These arrays are built by <code>showAddress()</code>. Every time <code>showAddress()</code> is called, it adds a new entry to both arrays. </p>
+    <p>The <code>openInfoWindow()</code> function uses the data in these arrays to display the map marker that corresponds to the specified Google Base entry.  </p>
+    <pre>  markers[markerIndex].openInfoWindowHtml(markerHtmls[markerIndex]);    </pre>
+    <h3><a name="centerZoom" id="centerZoom"></a>Centering and zooming the map</h3>
+    <p>Once all the points have been processed, <code>centerAndZoomMap()</code> zooms the map to the appropriate level:</p>
+    <pre>  map.setZoom(map.getBoundsZoomLevel(bounds));
+  map.setCenter(bounds.getCenter());
+</pre>
+    <h2><a name="cleanup"></a>Cleanup</h2>
+    <p>This tutorial also includes the following housekeeping functions. </p>
+    <table width="680" border="0" cellpadding="0" cellspacing="10">
+      <tr>
+   <td><code>clearMarkers()</code></td>
+   <td>is called before each query to remove old markers from the map.</td>
+      </tr>
+      <tr>
+   <td><code>clearOldAttributes()</code></td>
+   <td>deletes pre-existing children of the data div from the page.</td>
+      </tr>
+      <tr>
+   <td width="180"><code>clearOldSnippets()</code></td>
+   <td width="510">deletes pre-existing query results from the page.</td>
+      </tr>
+      <tr>
+   <td><code>resetForm()</code></td>
+   <td>resets the query form.</td>
+      </tr>
+    </table>
+</div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  urchinTracker();
+</script>
+</body>
+</html>

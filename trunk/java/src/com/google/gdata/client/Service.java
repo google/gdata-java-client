@@ -25,6 +25,7 @@ import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Feed;
 import com.google.gdata.data.MediaContent;
+import com.google.gdata.data.ParseSource;
 import com.google.gdata.data.batch.BatchInterrupted;
 import com.google.gdata.data.batch.BatchStatus;
 import com.google.gdata.data.batch.BatchUtils;
@@ -436,16 +437,9 @@ public class Service {
                                              InputStream entryStream)
       throws IOException, ServiceException {
 
-    E entry;
-    try {
-      entry = entryClass.newInstance();
-    } catch (InstantiationException e) {
-      throw new ServiceException("Unable to create entry instance", e);
-    } catch (IllegalAccessException e) {
-      throw new ServiceException("Unable to create entry instance", e);
-    }
+    E entry = BaseEntry.readEntry(new ParseSource(entryStream), entryClass,
+        extProfile);
     entry.setService(this);
-    entry.parseAtom(extProfile, entryStream);
     return entry;
   }
 
@@ -530,17 +524,9 @@ public class Service {
       request.execute();
       feedStream = request.getResponseStream();
 
-      BaseFeed<?,?> feed;
-      try {
-        feed = feedClass.newInstance();
-        feed.setService(this);
-      } catch (InstantiationException e) {
-        throw new ServiceException("Unable to create Feed instance", e);
-      } catch (IllegalAccessException e) {
-        throw new ServiceException("Unable to create Feed instance", e);
-      }
-      feed.parseAtom(extProfile, feedStream);
-
+      BaseFeed<?,?> feed =
+          BaseFeed.readFeed(new ParseSource(feedStream), feedClass, extProfile);
+      feed.setService(this);
       return (F) feed;
     }
     finally {
@@ -935,17 +921,10 @@ public class Service {
       request.execute();
 
       resultStream = request.getResponseStream();
-      F resultFeed;
-      try {
-        // Cast should be type safe, since inserted entry will match original
-        resultFeed = (F) inputFeed.getClass().newInstance();
-      } catch (InstantiationException e) {
-        throw new ServiceException("Unable to create feed instance", e);
-      } catch (IllegalAccessException e) {
-        throw new ServiceException("Unable to create feed instance", e);
-      }
+      F resultFeed = (F)
+          BaseFeed.readFeed(new ParseSource(resultStream), inputFeed.getClass(),
+              extProfile);
       resultFeed.setService(this);
-      resultFeed.parseAtom(extProfile, resultStream);
 
       // Detect BatchInterrupted
       int count = resultFeed.getEntries().size();

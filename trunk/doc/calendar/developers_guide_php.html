@@ -1,0 +1,566 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Calendar Data API Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    color: #000000;
+}
+-->
+</style>
+</head>
+<body class="t4" id="developers_guide_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Calendar Data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper"> 
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Calendar</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="developers_guide_protocol.html" id="developers_guide_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.google.com/googlecalendar/terms_of_use.html">Terms and Conditions</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>GData Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://code.google.com/support/bin/topic.py?topic=10023">Knowledge Base</a></li>
+        <li><a href="http://groups.google.com/group/google-calendar-help-dataapi">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent"> 
+    <h1 id="page_title">Google Calendar Data API Developer's Guide: PHP</h1>
+
+<div id="topnav">
+<table id="mt" cellspacing="0" cellpadding="0" width="100%" border="0">
+<tr>
+<th class="int1" onclick="if (!cancelBubble) goTo('developers_guide_protocol.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_protocol.html">Protocol</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int2" onclick="if (!cancelBubble) goTo('developers_guide_java.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_java.html">Java</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int3" onclick="if (!cancelBubble) goTo('developers_guide_dotnet.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_dotnet.html">.NET</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int4" onclick="if (!cancelBubble) goTo('developers_guide_php.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_php.html">PHP</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int5" onclick="if (!cancelBubble) goTo('developers_guide_python.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_python.html">Python</a></div>
+<td width="100%">&nbsp;</td>
+</tr>
+</table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+<tr>
+<td height="4" align="right" style="padding:0px; vertical-align:top">
+<div class="stur"></div>
+</td>
+</tr>
+</table>
+</div>
+
+
+    <p>Google Calendar allows client applications to view and update calendar events in the form of Google data API ("GData") feeds. Your client application can use the Google Calendar data API to create new events, edit or delete existing events, and query for events that match particular criteria.</p>
+    <p>There are many possible uses for the Calendar data API. For example, you can create a web front end for your group's calendar that uses Google Calendar as a back end.  Or you can generate a public calendar for Google Calendar to display, based on your organization's event database. Or you can search relevant calendars to display a list of upcoming events on those calendars.</p>
+    <p>This document provides detailed examples for using the  <a href="http://framework.zend.com/download/gdata">Zend Google Data Client Library</a> to work with the Google Calendar service. You will find examples of adding events, updating events, deleting events and querying events. If you're interested in understanding more about the underlying protocol used by the Zend Google Data Client Library to interact with the Calendar data API, please see the <a href="http://code.google.com/apis/calendar/developers_guide_protocol.html">protocol tab</a>.</p> 
+    <h1>Contents</h1>
+    <ol class="toc">
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#GettingStarted">Getting Started</a></li>
+      <li><a href="#Auth">Authenticating to the Calendar service</a> 
+        <ol class="toc">
+          <li><a href="#AuthAuthSub">AuthSub proxy authentication</a></li>
+          <li><a href="#AuthClientLogin">ClientLogin username/password authentication</a></li>
+          <li><a href="#AuthMagicCookie">Magic cookie authentication</a></li>
+        </ol>
+      </li>
+      <li><a href="#RetrievingCalendars">Retrieving a list of calendars</a></li>
+      <li><a href="#RetrievingEvents">Retrieving events</a>
+        <ol class="toc">
+          <li><a href="#RetrievingWithoutQuery">Retrieving events without query parameters</a></li>
+          <li><a href="#RetrievingDateRange">Retrieving events for a specified date range</a></li>
+          <li><a href="#RetrievingWithQuery">Retrieving events matching a full text query</a></li>
+        </ol>
+      </li>
+      <li><a href="#CreatingEvents">Creating events</a>
+        <ol class="toc">
+          <li><a href="#CreatingSingle">Creating single-occurrence events</a></li>
+          <li><a href="#CreatingQuickAdd">Creating Quick Add events</a></li>
+          <li><a href="#CreatingWebContent">Creating web content events</a></li>
+          <li><a href="#CreatingRecurring">Creating recurring events</a></li>  
+        </ol>
+      </li>
+      <li><a href="#UpdatingEvents">Updating events</a></li>
+      <li><a href="#DeletingEvents">Deleting events</a></li>
+      <li><a href="#AdditionalOps">Additional operations</a>
+        <ol class="toc">
+          <li><a href="#ExtendedProps">Extended properties</a></li>
+          <li><a href="#Reminders">Reminders and Notifications</a></li>
+        </ol>
+      </li>
+    </ol>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications in PHP that can interact with Google Calendar.</p>
+    <h1><a name="GettingStarted" id="GettingStarted">Getting started</a></h1>
+    <p>The Zend Google data Client Library is available as part of the <a href="http://framework.zend.com/">Zend Framework</a> and also as a <a href="http://framework.zend.com/download/gdata">separate download</a>.  Please use version 1.0.0 RC2a or later of the client library to work with the Google Calendar data API. The client library is only available for use with PHP 5.1.4 or later.</p>
+    <p>A full working copy of this sample is available in the <a href="http://framework.zend.com/download/subversion">Zend Framework SVN repository</a>.  The sample is located at <a href="http://framework.zend.com/svn/framework/trunk/demos/Zend/Gdata/Calendar.php">/framework/trunk/demos/Zend/Gdata/Calendar.php</a>.
+You can run the sample both from the command line (CLI) and also from a web browser. When running through a web browser, only <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">AuthSub</a> and outputting a list of calendars is demonstrated.  When running via <a href="http://www.php.net/features.commandline">CLI</a>, all functionality except AuthSub is available and dependent upon the command line options passed. Run this script without any command line options to see usage, e.g.:<br></p>
+    <pre>php Calendar.php</pre>
+    <p>Before running this sample or developing your own code which uses the Zend Framework, you may need to set the <code>include_path</code> and load the appropriate classes.  The include path can be set using either a <a href="http://www.php.net/manual/en/ini.core.php#ini.include-path">php.ini setting</a> or using the <code><a href="http://www.php.net/set_include_path">set_include_path</a></code> method.  This code requests access to the core <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata.html">Zend_Gdata</a></code> class, the <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar.html">Zend_Gdata_Calendar</a></code> class for Calendar-specific functionality, as well as the authentication classes &mdash; <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_AuthSub.html">Zend_Gdata_AuthSub</a></code> and <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_ClientLogin.html">Zend_Gdata_ClientLogin</a></code>. Depending upon your application, you may require only one of the two authentication classes.</p>
+    <pre>require_once 'Zend/Loader.php';
+Zend_Loader::loadClass('Zend_Gdata');
+Zend_Loader::loadClass('Zend_Gdata_AuthSub');
+Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
+Zend_Loader::loadClass('Zend_Gdata_Calendar');
+
+...</pre> 
+    <p>Throughout the PHP client library, support has been added for <a href="http://www.php.net/manual/en/language.oop5.magic.php">magic setters/getters</a> as a convience to develoeprs. These allow a class's properties to be accessed either in a safe way using traditional setter/getter methods or by accessing the properties. For example, if $gdataObject were an instance of an object in this library, the following two lines of code are both completely identical:
+    <pre>$gdataObject-&gt;setFoo("bar");
+$gdataObject-&gt;foo = "bar";</pre>
+    <p>Likewise, these two lines of code are also completely identical:</p>
+    <pre>$baz = $gdataObject-&gt;getFoo();
+$baz = $gdataObject-&gt;foo;</pre>
+    <p>Similarly, we've implemented a "magic" factory method in all service classes, including <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar.html">Zend_Gdata_Calendar</a></code>. These sheild programmers from having to type the large class names mandated for modules within the Zend Framework. As a result, the following blocks of code would also be identical, assuming that the fictitous class <code>Zend_Gdata_Calendar_Extensions_Object</code> existed:</p>
+    <pre>// Traditional instantiation
+$gdataCal = new Zend_Gdata_Calendar();
+$gdataObject = new Zend_Gdata_Calendar_Extensions_Object();
+    
+// Magic factory instantiation
+$gdataCal = new Zend_Gdata_Calendar();
+$gdataObject = $gdataCal-&gt;newObject();</pre>
+    <p>Both magic setters/getters and magic factories are optional, so feel free to use them or not use them at your convenience.</p>
+    
+    <p>Other Resources for the Zend Framework Google data component (Zend_Gdata):</p>
+    <ul>
+      <li><a href="http://framework.zend.com/manual/en/zend.gdata.html">Reference Documentation</a></li>
+      <li><a href="http://framework.zend.com/wiki/display/ZFDEV/Contributing+to+Zend+Framework#ContributingtoZendFramework-Subscribetotheappropriatemailinglists">Mailing list information and archives</a></li>
+     <li><a href="http://framework.zend.com/download/subversion">Zend Framework Subversion info</a></li>
+      <li><a href="http://framework.zend.com/download/snapshot">Zend Framework Nightly snapshots</a></li>
+    </ul>
+    <h1><a name="Auth">Authenticating to the Calendar service</a></h1>
+    <p>The Zend PHP client library can be used to work with either public or private feeds. Public feeds are read-only, but do not require any authentication. Private feeds require that you authenticate to the calendar servers. This can be done via <a href="#AuthClientLogin">ClientLogin</a> username/password authentication or <a href="#AuthAuthSub">AuthSub</a> proxy authentication.  The calendar service also allows authentication to a read-only private feed using <a href="#AuthMagicCookie">magic cookie</a> authentication.</p>
+    <p>Please see the <a href="http://code.google.com/apis/gdata/auth.html">authentication documentation</a> for more information on AuthSub and ClientLogin.</p>
+    <h2><a name="AuthAuthSub" id="AuthAuthSub">AuthSub proxy authentication</a></h2>
+    <p>AuthSub proxy authentication is used by web applications which need to authenticate their users to Google accounts. The website operator does not need access to the username and password for the calendar user - only special AuthSub tokens are required. Please see the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">AuthSub documentation</a> for more detailed information.</p>
+    <p>When a user first visits your application, they have not yet been authenticated. In this case, you need to print some text and a link directing the user to Google to authenticate your request for access to their calendar. The Zend Google data client library provides a static function to generate this URL. The code below sets up a link to the <code><a href="http://code.google.com/apis/accounts/AuthForWebApps.html#AuthSubRequest">AuthSubRequest</a></code> page with these options:<br />
+      </p><ul>
+        <li><b>session</b>, indicating this token can be exchanged for a multi-use (session) token;</li>
+        <li><b>next</b>, the URL of the current page (obtained by examining $_SERVER variables for HTTP_POST, SERVER_PORT, HTTPS and REQUEST_URI)</li>
+        <li><b>scope</b>, indicating that the application will only access Google Calendar feeds.</li>
+      </ul>
+    
+    <pre>function getAuthSubUrl() 
+{
+  $next = getCurrentUrl();
+  $scope = 'http://www.google.com/calendar/feeds/';
+  $secure = false;
+  $session = true;
+  return Zend_Gdata_AuthSub::getAuthSubTokenUri($next, $scope, $secure, 
+      $session);
+}
+
+$authSubUrl = getAuthSubUrl();
+echo "&lt;a href=\"$authSubUrl\"&gt;login to your Google account"&lt;/a&gt; </pre>
+    <p>The user will then follow the link to Google's site and authenticate to their Google account. The link will look something like:</p>
+    <pre>https://www.google.com/accounts/AuthSubRequest?next=http%3A%2F%2Fwww.example.com%2Fcal_demo.php
+&amp;scope=http://www.google.com/calendar/feeds/&amp;secure=&amp;session=1</pre>
+    <p>After the user authenticates, they will be redirected back to the <code>next</code> URL. The URL will also have a <code>token</code> and value appended to it as a query parameter. The URL the user will be redirected to will be like:</p>
+    <pre>http://www.example.com/cal_demo.php?token=14a87fe98219731acd516</pre>
+    <p>The token value in the URL will be accessible to your application using <code>$_GET['token']</code>. This always represents a single-use AuthSub token. Since you specified <code>$session = true</code> above, this token can be exchanged for an AuthSub session token. This is necessary for calendar operation, as the calendar servers only support session tokens. The Zend Google data client library provides a method called <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_AuthSub.html#getAuthSubSessionToken">Zend_Gdata_AuthSub::getAuthSubSessionToken</a></code> which does this exchange for you by calling the <code><a href="http://code.google.com/apis/accounts/AuthForWebApps.html#AuthSubSessionToken">AuthSubSessionToken</a></code> service.</p>
+    <p>The following code snippet checks whether an AuthSub session token is already present. If it isn't, but a single-use <code>token</code> is specified in the URL, then the <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_AuthSub.html#getAuthSubSessionToken">getAuthSubSessionToken</a></code> method is used to retrieve a session token from Google and place this value into the session variable <code>$_SESSION['sessionToken']</code>.</p>
+    <pre>if(! isset($_SESSION['sessionToken']) &amp;&amp; isset($_GET['token'])) {
+  $_SESSION['sessionToken'] = 
+      Zend_Gdata_AuthSub::getAuthSubSessionToken($_GET['token']);
+}</pre>
+    <p>When communicating with the calendar servers, you only need access to the <code>$_SESSION['sessionToken']</code> value. The client client library provides a method to get a <code><a href="http://framework.zend.com/apidoc/core/Zend_Http/Client/Zend_Http_Client.html">Zend_Http_Client</a></code> object which has the <code>Authorization</code> header preset to include AuthSubCredentials.</p>
+    <pre>$client = Zend_Gdata_AuthSub::getHttpClient($_SESSION['sessionToken']);
+</pre>
+
+    <h2><a name="AuthClientLogin" id="AuthClientLogin">ClientLogin username/password authentication</a></h2>
+    <p>ClientLogin authentication is much easier to use than AuthSub because it does not require redirecting the user or doing a token exchange. However, ClientLogin is designed to be used only with installed applications or in cases where only a single calendar is being accessed with hard-coded credentials.</p>
+    <p>The following code uses the <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_ClientLogin.html#getHttpClient">Zend_Gdata_ClientLogin::getHttpClient</a></code> method to perform a request to the <a href="http://code.google.com/apis/accounts/AuthForInstalledApps.html#Request"><code>ClientLogin</code></a> service, retrieve an authentication token and create a <code><a href="http://framework.zend.com/apidoc/core/Zend_Http/Client/Zend_Http_Client.html">Zend_Http_Client</a></code> object with the appropriate <code>Authentication</code> header.</p>
+    <pre>$user = 'user@gmail.com';
+$pass = 'myPassword';
+$service = Zend_Gdata_Calendar::AUTH_SERVICE_NAME; // predefined service name for calendar
+
+$client = Zend_Gdata_ClientLogin::getHttpClient($user,$pass,$service);</pre>
+    <p>Note: You will need to replace the values of <code>$user</code> and <code>$pass</code> with the username and password of the Google Account whose calendar you will access.</p>
+    <h2><a name="AuthMagicCookie" id="AuthMagicCookie">Magic cookie authentication</a></h2>
+    <p>Magic cookie authentication can be used in cases where you want to retrieve a read-only feed containing private calendar events. A magic cookie can be specified in the URL of the feed. In the following example feed URL, 'abcdefg' is the magic cookie:</p>
+    <pre>http://www.google.com/calendar/feeds/username@gmail.com/private-abcdefg/full/</pre>
+    <p>The appropriate value for a magic cookie can be obtained through the Calendar details' page in the UI for each of your calendars. It is labeled as a 'Private Address'.</p>
+    <p>The following code retrieves the private magic cookie feed using the <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar.html">Zend_Gdata_Calendar</a></code> object, setting the following options: <br>
+    </p><ul>
+      <li><b>user</b>, indicating the username (in e-mail address form) of the calendar which you are accessing</li>
+      <li><b>visibility</b>, specifying the private visibility feed along with the magic cookie value</li>
+      <li><b>projection</b>, indicating the use of the full projection (as opposed to the basic projection, composite projection or others)</li>
+    </ul>
+
+    <p>Unlike AuthSub and ClientLogin authentication, magic cookie authentication credentials are stored entirely within query requests. As a result, it is not necessary to request a special authenticated HTTP client before creating a calendar service object.</p>
+    
+    <p>Please see the <a href="http://code.google.com/apis/calendar/reference.html#Feeds">Reference Guide</a> for more information about the Calendar feed types.</p>
+    <pre>$gdataCal = new Zend_Gdata_Calendar();
+$query = $gdataCal-&gt;newEventQuery();
+$query-&gt;setUser('username@gmail.com');
+$query-&gt;setVisibility('private-abcdefg');
+$query-&gt;setProjection('full');
+$eventFeed = $gdataCal-&gt;getCalendarEventFeed($query);
+foreach ($eventFeed as $event) {
+  echo $event-&gt;title-&gt;text . '&lt;br /&gt;';
+}</pre>
+    <h1><a name="RetrievingCalendars" id="RetrievingCalendars">Retrieving a list of calendars</a></h1>
+    <p>The calendar service supports retrieving a list of calendars for the authenticated user. This is the same list of calendars which are presented in the UI, except those marked as 'hidden' are also
+available. You cannot retrieve a list of another user's calendars. The following example presumes that you already have a <code>$client</code> object which has credentials via either AuthSub or ClientLogin method.</p>
+<pre>function outputCalendarList($client) 
+{
+  $gdataCal = new Zend_Gdata_Calendar($client);
+  $calFeed = $gdataCal-&gt;getCalendarListFeed();
+  echo '&lt;h1&gt;' . $calFeed-&gt;title-&gt;text . '&lt;/h1&gt;';
+  echo '&lt;ul&gt;';
+  foreach ($calFeed as $calendar) {
+    echo '&lt;li&gt;' . $calendar-&gt;title-&gt;text . '&lt;/li&gt;';
+  }
+  echo '&lt;/ul&gt;';
+} </pre>
+    <h1><a name="RetrievingEvents" id="RetrievingEvents">Retrieving events</a></h1>
+    <h2><a name="RetrievingWithoutQuery" id="RetrievingWithoutQuery">Retrieving events without query parameters</a></h2>
+    <p>Like the list of calendars, events are also retrieved using the <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar.html">Zend_Gdata_Calendar</a></code> class. When invoked with no query parameters, the <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar.html#getCalendarEventFeed">getCalendarEventFeed</a></code> method returns the primary calendar of the current user using the private visibility/full projection feed. Please see the <a href="http://code.google.com/apis/calendar/reference.html#Feeds">Calendar Feed types</a> section of the reference guide for more information on the various feed types available.</p>
+   <pre>function outputCalendarList($client) 
+{
+  $gdataCal = new Zend_Gdata_Calendar($client);
+  $calFeed = $gdataCal-&gt;getCalendarListFeed();
+  echo "&lt;h1&gt;" . $calFeed-&gt;title-&gt;text . "&lt;/h1&gt;\n";
+  echo "&lt;ul&gt;\n";
+  foreach ($calFeed as $calendar) {
+    echo "\t&lt;li&gt;" . $calendar-&gt;title-&gt;text . "&lt;/li&gt;\n";
+  }
+  echo '&lt;/ul&gt;\n';
+}</pre> 
+    <p>By default, the server limits the result set initially returned, but you can use the <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Query.html#setMaxResults">setMaxResults</a></code> query parameter to ask the server to send additional results back. Additionally, you can page through the results returned by using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_FeedEntryParent.html#getNextLink">getNextLink</a></code> then calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Link.html#getHref">getHref</a></code> on the returned object to get the location of the next set of results. Later sections of the guide will demonstrate how to create detailed queries like this.</p>
+
+    <h2><a name="RetrievingDateRange" id="RetrievingDateRange">Retrieving events for a specified date range</a></h2>
+    <p>To print out all events between May 1, 2007 and August 1, 2007, a <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_EventQuery.html">Zend_Gdata_Calendar_EventQuery</a></code> object is created. This is a subclass of the Google data query class &mdash; <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Query.html">Zend_Gdata_Query</a></code> &mdash; which allows developers to modify and refine the results which are generated by the calendar service.</p>
+    <pre>function outputCalendarByDateRange($client, $startDate='2007-05-01', 
+                                   $endDate='2007-08-01') 
+{
+  $gdataCal = new Zend_Gdata_Calendar($client);
+  $query = $gdataCal-&gt;newEventQuery();
+  $query-&gt;setUser('default');
+  $query-&gt;setVisibility('private');
+  $query-&gt;setProjection('full');
+  $query-&gt;setOrderby('starttime');
+  $query-&gt;setStartMin($startDate);
+  $query-&gt;setStartMax($endDate);
+  $eventFeed = $gdataCal-&gt;getCalendarEventFeed($query);
+  echo "&lt;ul&gt;\n";
+  foreach ($eventFeed as $event) {
+    echo "\t&lt;li&gt;" . $event-&gt;title-&gt;text .  " (" . $event-&gt;id-&gt;text . ")\n";
+    echo "\t\t&lt;ul&gt;\n";
+    foreach ($event-&gt;when as $when) {
+      echo "\t\t\t&lt;li&gt;Starts: " . $when-&gt;startTime . "&lt;/li&gt;\n";
+    }
+    echo "\t\t&lt;/ul&gt;\n";
+    echo "\t&lt;/li&gt;\n";
+  }
+  echo "&lt;/ul&gt;\n";
+}</pre>
+    
+    <p>Note that while the <code>startMin</code> is inclusive, </code>startMax</code> is exclusive, so specifying a startMax of '2007-08-01' will include those events up until 2007-07-31 11:59:59PM. Please see the <a href="http://code.google.com/apis/calendar/reference.html#Parameters">query parameters reference</a> for more information.</p>
+
+    <h2><a name="RetrievingWithQuery" id="RetrievingWithQuery">Creating events matching a full text query</a></h2>
+    <p>Calendars also allow users to search for events using full-text queries. A full-text query searches both the title and content of an event, but it does not search the value of extended properties at the time of this writing. It searches the default calendar of the authenticated user as contained within the private visibility/full projection feed. Again, please see the <a href="http://code.google.com/apis/calendar/reference.html#Parameters">query parameters reference</a> for more information about the various feed types used available.</p>
+    <pre>function outputCalendarByFullTextQuery($client, $fullTextQuery='tennis') 
+{
+  $gdataCal = new Zend_Gdata_Calendar($client);
+  $query = $gdataCal-&gt;newEventQuery();
+  $query-&gt;setUser('default');
+  $query-&gt;setVisibility('private');
+  $query-&gt;setProjection('full');
+  $query-&gt;setQuery($fullTextQuery);
+  $eventFeed = $gdataCal-&gt;getCalendarEventFeed($query);
+  echo "&lt;ul&gt;\n";
+  foreach ($eventFeed as $event) {
+    echo "\t&lt;li&gt;" . $event-&gt;title-&gt;text .  " (" . $event-&gt;id-&gt;text . ")\n";
+    echo "\t\t&lt;ul&gt;\n";
+    foreach ($event-&gt;when as $when) {
+      echo "\t\t\t&lt;li&gt;Starts: " . $when-&gt;startTime . "&lt;/li&gt;\n";
+      echo "\t\t&lt;/ul&gt;\n";
+      echo "\t&lt;/li&gt;\n";
+    }
+  }
+  echo "&gt;/ul&lt;\n";
+}</pre>
+
+    <h1><a name="CreatingEvents" id="CreatingEvents">Creating Events</a></h1> 
+    <h2><a name="CreatingSingle" id="CreatingSingle">Creating single-occurrence events</a></h2>
+    <p>Events are added to a calendar by creating a <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_EventEntry.html">Zend_Gdata_Calendar_EventEntry</a></code> and populating it with the appropriate data.  An instance of <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar.html">Zend_Gdata_Calendar</a></code> is then used to POST the XML to a specific Google Calendar. In this case, the event is posted to the default calendar of the authenticated user.</p>
+    <p>The following attributes of the event should be set:
+    </p><ul>
+      <li><b>title</b>, set using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_FeedEntryParent.html#setTitle">setTitle</a></code>, specifies the headline that will appear above the event in the Google Calendar UI.
+      <li><b>when</b>, set using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Kind_EventEntry.html#setWhen">setWhen</a></code>, denotes the time and duration of the event. The start and end times of the event are specified with <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_When.html#setStartTime">setStartTime</a></code> and <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_When.html#setEndTime">setEndTime</a></code>, respectively, using <a href="http://tools.ietf.org/html/rfc3339">RFC 3339</a> formatted strings. All day events are created by specifying a date without a time, and zero-duration events are set by omitting the end time entirely. Optionally, up to five reminders for an event can be created by attaching them to a <code>when</code> object. Reminders will be covered in more detail later in this guide.</li>
+    </ul>
+    <p>Other useful functions include but are not limited to:</p>
+    <ul>
+        <li><b>author</b>, retrieved using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_FeedEntryParent.html#getAuthor">getAuthor</a></code>, can be used to access the user who created the event. Note that the calendar API will not accept user-submitted updates to this attribute.</li>
+      <li><b>content</b>, set using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Entry.html#setContent">setContent</a></code>, provides additional information about the event which appears when the event details are requested from within Google Calendar. Optionally, the description's mime-type is set using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Text.html#setType">setType</a></code> to specify HTML instead of plain text.</li>
+        <li><b>eventStatus</b>, set using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Kind_EventEntry.html#setEventStatus">setEventStatus</a></code>, denotes whether the event is confirmed, tentative, or canceled. See <a href="http://code.google.com/apis/gdata/elements.html#gdEventStatus">gd:eventStatus in the Google data Common Elements Reference</a> for a list of possible values.</li>
+        <li><b>transparency</b>, set using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Kind_EventEntry.html#setTransparency">setTransparency</a></code>, indicates whether the event should consume time on the user's free/busy list.</li>
+        <li><b>visibility</b>, set using <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Kind_EventEntry.html#setVisibility">setVisibility</a></code>, allows an event to be hidden from a user's public feeds.</li>
+    </ul>
+    <p>For a complete list of event attributes, refer to the Google data package in the <a href="http://framework.zend.com/apidoc/core/">Zend Framework API Documentation</a>, the <a href=http://code.google.com/apis/calendar/reference.html>Google Calendar Data API Reference Guide</a>, and the <a href="http://code.google.com/apis/gdata/elements.html#gdEventKind">Event Kind in the Google Data APIs Common Elements List</a>. Attribute that can can contain multiple values, such as where, are implemented as arrays and need to be created accordingly. Be aware that all of these attributes require objects as parameters. Trying to instead populate them using strings or primitives will result in errors during conversion to XML.</p>
+    <pre>function createEvent ($client, $title = 'Tennis with Beth',
+    $desc='Meet for a quick lesson', $where = 'On the courts',
+    $startDate = '2008-01-20', $startTime = '10:00',
+    $endDate = '2008-01-20', $endTime = '11:00', $tzOffset = '-08')
+{
+  $gdataCal = new Zend_Gdata_Calendar($client);
+  $newEvent = $gdataCal-&gt;newEventEntry();
+  
+  $newEvent-&gt;title = $gdataCal-&gt;newTitle($title);
+  $newEvent-&gt;where = array($gdataCal-&gt;newWhere($where));
+  $newEvent-&gt;content = $gdataCal-&gt;newContent("$desc");
+  
+  $when = $gdataCal-&gt;newWhen();
+  $when-&gt;startTime = "{$startDate}T{$startTime}:00.000{$tzOffset}:00";
+  $when-&gt;endTime = "{$endDate}T{$endTime}:00.000{$tzOffset}:00";
+  $newEvent-&gt;when = array($when);
+
+  // Upload the event to the calendar server
+  // A copy of the event as it is recorded on the server is returned
+  $createdEvent = $gdataCal-&gt;insertEvent($newEvent);
+  return $createdEvent-&gt;id-&gt;text;
+}
+
+createEvent($client, 'New Years Party',
+    'Ring in the new year with Kim and I',
+    'Our house', 
+    '2006-12-31', '22:00', '2007-01-01', '03:00', '-08' );</pre>
+
+    <h2><a name="CreatingQuickAdd" id="CreatingQuickAdd">Creating Quick Add events</a></h2>
+    <p>To create an event using Google Calendar's <a href="http://www.google.com/support/calendar/bin/answer.py?answer=36604">Quick Add</a> feature, store the Quick Add string you'd like to use as the entry's content attribute. Then call <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_EventEntry.html#setQuickAdd">setQuickAdd</a></code> on the new entry, as follows:
+    <pre>function createQuickAddEvent ($client, $quickAddText) {
+  $gdataCal = new Zend_Gdata_Calendar($client);
+  $event = $gdataCal-&gt;newEventEntry();
+  $event-&gt;content = $gdataCal-&gt;newContent($quickAddText);
+  $event-&gt;quickAdd = $gdataCal-&gt;newQuickAdd('true');
+  $newEvent = $gdataCal-&gt;insertEvent($event);
+}
+
+createQuickAddEvent($client, "Dinner at Joe's on Thursday at 8 PM");</pre>
+
+    <p>Notice that it is not necessary to set a <code>title</code> or <code>when</code> on the new entry. These fields are automatically generated based on the Quick Add text.</p>
+
+    <h2><a name="CreatingWebContent" id="CreatingWebContent">Creating web content events</a></h2>
+    <p>In addition to standard events, you can also use the calendar API to also insert new <a href="http://www.google.com/support/calendar/bin/answer.py?answer=48490">web content events</a> into a user's calendar. These are special events which reference external content inside of a small popup display. The procedure for creating a web content event is similar to a regular event, except a <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_WebContent.html">Zend_Gdata_Calendar_Extension_WebContent</a></code> instance is added to the event inside of a <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_Link.html">Zend_Gdata_Calendar_Extension_Link</a></code> instance. This link class is similar to <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Link.html">Zend_Gdata_App_Extension_Link</a></code>, except includes support specifically for web content events.</p>
+    <p>To create a web content event, create a new <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_WebContent.html">Zend_Gdata_Calendar_Extension_WebContent</a></code> instance. This instance's URL should be set by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_WebContent.html#setURL">setURL</a></code>, providing the location of the content which should be embedded inside the popup display. The height and width of this panel should specify the dimensions of the popup by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_WebContent.html#setHeight">setHeight</a></code> and <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_WebContent.html#setWidth">setWidth</a></code>, respectively.</p>
+    <p>This object should then be added to a new <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_Link.html">Zend_Gdata_Calendar_Extension_Link</a></code> object by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_Link.html#setWebContent">setWebContent</a></code>. A 16x16 icon for the event should be provided by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Link.html#setHref">setHref</a></code> with the URL of the icon. The title that should appear on the top of the popup display can be set by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Link.html#setTitle">setTitle</a></code>, and the MIME type for the displayed content can optionally be set by calling <code><a  href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Link.html#setType">setType</a></code>. Finally, the link's rel value must be set to <code>"http://schemas.google.com/gCal/2005/webContent"</code> by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Link.html#setRel">setRel</a></code>.</p>
+    <p>Once these two instances are created, the link is added as an array to the event by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_FeedEntryParent.html#methodsetLink">setLink</a></code>. All other properties of the event may be set as usual before uploading the event to the calendar servers.</p>
+    <p>Note that <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_Extension_Link.html">Zend_Gdata_Calendar_Extension_Link</a></code> is identical to <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Link.html">Zend_Gdata_App_Extension_Link</a></code>, except the calendar version supports the addition of web content objects to the event.</p>
+    <pre>function createWebContentEvent ($client, $title = 'World Cup 2006', 
+        $startDate = '2006-06-09', $endDate = '2006-06-09', 
+        $icon = 'http://www.google.com/calendar/images/google-holiday.gif',
+        $url = 'http://www.google.com/logos/worldcup06.gif',
+        $height  = '120', $width = '276', $type = 'image/gif'
+        )
+{
+  $gc = new Zend_Gdata_Calendar($client);
+  $newEntry = $gc-&gt;newEventEntry();
+  $newEntry-&gt;title = $gc-&gt;newTitle(trim($title));
+
+  $when = $gc-&gt;newWhen();
+  $when-&gt;startTime = $startDate;
+  $when-&gt;endTime = $endDate;
+  $newEntry-&gt;when = array($when);
+
+  $wc = $gc-&gt;newWebContent();
+  $wc-&gt;url = $url;
+  $wc-&gt;height = $height;
+  $wc-&gt;width = $width;
+
+  $wcLink = $gc-&gt;newLink();
+  $wcLink-&gt;rel = "http://schemas.google.com/gCal/2005/webContent";
+  $wcLink-&gt;title = $title;
+  $wcLink-&gt;type = $type;
+  $wcLink-&gt;href = $icon;
+
+  $wcLink-&gt;webContent = $wc;
+  $newEntry-&gt;link = array($wcLink);
+
+  $createdEntry = $gc-&gt;insertEvent($newEntry);
+  return $createdEntry-&gt;id-&gt;text;
+}</pre>
+
+    <h2><a name="CreatingRecurring" id="CreatingRecurring">Creating recurring events</a></h2>
+    <p>To create a recurring event, create an event as usual except instead of setting the event's <code>when</code> property, set its <code>recurrence</code> property by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Kind_EventEntry.html#setRecurrence">setRecurrence</a></code>.
+    <pre>$gdataCal = new Zend_Gdata_Calendar($client);
+$newEntry = $service-&gt;newEventEntry();
+
+$recurrence = "DTSTART;VALUE=DATE:20070501\r\n" .
+        "DTEND;VALUE=DATE:20070502\r\n" .
+        "RRULE:FREQ=WEEKLY;BYDAY=Tu;UNTIL=20070904\r\n";
+$event-&gt;recurrence = $service-&gt;newRecurrence($recurrence);</pre>
+    <p>In this example, a new event is created and set it to occur all-day, every Tuesday from 2007-05-01 until 2007-09-04. The recurrence is described using an iCalendar (<a href="http://tools.ietf.org/html/rfc2445">RFC 2445</a>) formatted string and stored inside of a <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_Recurrence.html">Zend_Gdata_Extension_Recurrence</a></code> object. This object is then stored within the new event by calling the <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Kind_EventEntry.html#setRecurrence">setRecurrence</a></code> method. The remainder of the event's properties can then be set and the event uploaded to the calendar servers.</p>
+    <h1><a name="UpdatingEvents" id="UpdatingEvents">Updating Events</a></h1> 
+    <p>The general methodology for updating an event is to retrieve the existing event from the server, update the properties you wish to change and save the changes. Here's some sample code to retrieve and update an event with a known event ID.</p>
+    <p>This sample introduces some error handling. The Zend Framework PHP client library for Google data properties throws PHP exceptions when a HTTP error status code
+(generally &gt;=400) is returned from the Calendar service. In this example, errors in <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Feed.html#getEntry">Zend_Gdata_App_Feed::getEntry</a></code> are caughted and <code>null</code> is returned instead of throwing the exception further up the chain.  The most likely cause of an error in this method would be if the <code>eventId</code> specified did not exist.  If you want information on the possible errors returned by Google data services, please see the <a href="http://code.google.com/apis/gdata/reference.html#http-status-codes">HTTP status codes</a> section of the <a href="http://code.google.com/apis/gdata/reference.html">Google data Protocol Reference</a>.</p>
+    <pre>
+function updateEvent ($client, $eventId, $newTitle) 
+  {
+    $gdataCal = new Zend_Gdata_Calendar($client);
+    if ($eventOld = getEvent($client, $eventId)) {
+      echo "Old title: " . $eventOld-&gt;title-&gt;text . "&lt;br /&gt;\n";
+      $eventOld-&gt;title = $gdataCal-&gt;newTitle($newTitle);
+      try {
+        $eventOld-&gt;save();
+      } catch (Zend_Gdata_App_Exception $e) {
+        var_dump($e);
+        return null;
+      }
+      $eventNew = getEvent($client, $eventId);
+      echo "New title: " . $eventNew-&gt;title-&gt;text . "&lt;br /&gt;\n";
+      return $eventNew;
+    } else {
+      return null;
+    }
+}
+
+updateEvent($client, 'ot9j78u2gfklfflnelcdrduz', 'New Years Party');
+</pre>
+    <h1><a name="DeletingEvents" id="DeletingEvents">Deleting Events</a></h1> 
+    <p>There are two different ways to delete an event, depending upon what information about the event you already have available.</p>
+    <p>If you already have access to a <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Calendar_EventEntry.html">EventEntry</a></code> object (like <code>$eventOld</code> or <code>$eventNew</code> in the section on updating an event), you can delete it using it's <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Entry.html#delete">delete</a></code> method:</p>
+    <pre>function deleteEntryById ($client, $eventId) 
+{
+  $event = getEvent($client, $eventId);
+  $event-&gt;delete();
+}
+
+deleteEntryById($client, 'ot9j78u2gfklfflnelcdrduz'); </pre>
+    <p>The example above retrieves an entry only for the purposes of deleting it.  This is not efficient, so the <code>$event-&gt;delete()</code> method should only be used when you already have access to the <code>$event</code> object.  If you don't, the other method is calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App.html#delete">Zend_Gdata::delete</a></code> with the full edit URL of the entry to be deleted, available by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_FeedEntryParent.html#methodgetEditLink">getEditLink</a></code> then calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_Extension_Link.html#getHref">getHref</a></code> on the returned object. Attempting to delete an entry using a non-edit URL such as the one returned by <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_App_FeedEntryParent.html#getId">getId</a></code> will result in an HTTP 400 (Bad Requet) error.</p>
+
+    <pre>function deleteEntryByUrl ($client, $url) 
+{
+  $gdataCal = new Zend_Gdata_Calendar($client);
+  $gdataCal-&gt;delete($url);
+}
+
+deleteEntryByUrl($client, 'http://www.google.com/calendar/feeds/default/private/full/ot9j78u2gfklfflnelcdrdtjuz'); </pre>
+
+    <h1><a name="AdditionalOps" id="AdditionalOps">Additional operations</a></h1>
+    <p>This section describes other Calendar operations you can perform with the Google data PHP client library.</p>
+
+    <h2><a name="ExtendedProps" id="ExtendedProps">Extended properties</a></h2>
+    <p>You can add extended properties (arbitrary name-value pairs) to Calendar events by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Kind_EventEntry.html#methodsetExtendedProperty">setExtededProperty</a></code> and providing an array of <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_ExtendedProperty.html">Zend_Gdata_Extension_ExtendedProperty</a></code> instances. These can be used to store application-specific IDs or other small amounts of information your application needs when interacting with a Google Calendar. Extended properties are only accessible through the API &mdash; they do not appear in the Calendar user interface.</p>
+<pre>function addExtendedProperty ($client, $eventId, 
+    $name='http://www.example.com/schemas/2005#mycal.id', $value='1234') 
+{
+  $gc = new Zend_Gdata_Calendar($client);
+  if ($event = getEvent($client, $eventId)) {
+    $extProp = $gc-&gt;newExtendedProperty($name, $value);
+    $extProps = array_merge($event-&gt;extendedProperty, array($extProp));
+    $event-&gt;extendedProperty = $extProps;
+    $eventNew = $event-&gt;save();
+    return $eventNew;
+  } else {
+    return null;
+  }
+}</pre>
+    <p>Once an extended property has been associated with the entry, the entry needs to be saved to the calendar servers. Note that extended properties cannot be deleted from an event once created, though they can be modified.</p>
+
+    <h2><a name="Reminders" id="Reminders">Reminders and Notifications</a></h2>
+    <p>Reminders can be added to events by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Kind_EventEntry.html#getWhen">getWhen</a></code>, selecting the relevant <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_When.html">Zend_Gdata_Extension_When</a></code> object, and attaching the reminder to it by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_When.html#setReminders">setReminders</a></code> and providing an array of <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_Reminder.html">Zend_Gdata_Extension_Reminder</a></code> instances. Each event may have up to five reminders attached to it.</p>
+    <p>Reminders contain two fundamental attributes: their method and activation time. The method is set by calling <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_Reminder.html#setMethod">setMethod</a></code> and may be either <code>'alert'</code>, <code>'email'</code>, or <code>'sms'</code>. By default every event created through the Google Calendar UI receives an SMS reminder, even if SMS notifications are not otherwise enabled. The activation time is set by calling either <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_Reminder.html#setAbsoluteTime">setAbsoluteTime</a></code>, <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_Reminder.html#setDays">setDays</a></code>, <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_Reminder.html#setHours">setHours</a></code>, or <code><a href="http://framework.zend.com/apidoc/core/Zend_Gdata/Zend_Gdata_Extension_Reminder.html#setMinutes">setMinutes</a></code> and specifies how far in advance of the event the reminder should be triggered. If your reminder has a mixed activation time, convert it to the most precise unit available. For example, '1 hour and 30 minutes' should be stored as simply '90 minutes'.  Only reminder time periods found in the Google Calendar web interface are valid to use in the API.</p>
+    <pre>function setReminder($client, $eventId, $minutes=15)
+{
+  $gc = new Zend_Gdata_Calendar($client);
+  $method = "alert";
+  if ($event = getEvent($client, $eventId)) {
+    $times = $event-&gt;when;
+    foreach ($times as $when) {
+        $reminder = $gc-&gt;newReminder();
+        $reminder-&gt;setMinutes($minutes);
+        $reminder-&gt;setMethod($method);
+        $when-&gt;reminder = array($reminder);
+    }
+    $eventNew = $event-&gt;save();
+    return $eventNew;
+  } else {
+    return null;
+  }
+}</pre>
+    <p>This example creates an email reminder scheduled for 10 minutes before the event, and associates it with the first time specified for the event. As with any modification, the event should be saved to the calendar service after creating a reminder.</p>
+    <p>To delete a reminder from an event, either remove the reminder from its array or set the reminder's method to <code>'none'</code>.</p>
+
+</div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt=""></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2006 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body></html>

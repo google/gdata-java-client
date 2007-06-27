@@ -17,6 +17,7 @@ package com.google.api.gbase.client;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.PubControl;
 
 /**
  * Constants for GoogleBase-specific namespaces.
@@ -86,5 +87,6 @@ class GoogleBaseNamespaces {
     extProfile.declareEntryExtension(AttributeHistogram.class);
     extProfile.declareEntryExtension(GmAttributes.class);
     extProfile.declareEntryExtension(GmItemType.class);
+    extProfile.declare(PubControl.class, GmDisapproved.getDefaultDescription());
   }
 }

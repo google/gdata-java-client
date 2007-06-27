@@ -1,0 +1,524 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Blogger Data API Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+
+-->
+</style>
+<script type="text/javascript">
+<!--
+var cancelBubble = false;
+
+function goTo(url) {
+  window.location = url;
+}
+//-->
+</script>
+</head>
+<body class="t5" id="developers_guide_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+
+<div id="header">
+  <div id="logo"><a href="/"><img src="/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Blogger Data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper"> 
+  <!-- ########## SIDE NAVIGATION ########## -->
+   <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Blogger</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="developers_guide_protocol.html" id="developers_guide_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.blogger.com/terms.g">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Google Data Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://groups.google.com/group/bloggerDev">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+<h1 id="page_title">Blogger Data API Developer's Guide: Python</h1>
+
+<div id="topnav">
+<table id="mt" cellspacing="0" cellpadding="0" width="100%" border="0">
+<tr>
+<th class="int1" onclick="if (!cancelBubble) goTo('developers_guide_protocol.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_protocol.html">Protocol</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int2" onclick="if (!cancelBubble) goTo('developers_guide_java.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_java.html">Java</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int3" onclick="if (!cancelBubble) goTo('developers_guide_dotnet.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_dotnet.html">.NET</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<!--
+<th class="int4" onclick="if (!cancelBubble) goTo('developers_guide_php.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_php.html">PHP</a></div>
+</th><td>&nbsp;&nbsp;</td>
+-->
+<th class="int5" onclick="if (!cancelBubble) goTo('developers_guide_python.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_python.html">Python</a></div>
+<td width="100%">&nbsp;</td>
+</tr>
+</table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+<tr>
+<td height="4" align="right" style="padding:0px; vertical-align:top">
+<div class="stur"></div>
+</td>
+</tr>
+</table>
+</div>
+
+<p>The Blogger data API allows client applications to view and update Blogger content by using Google data API feeds. Your client application can use the Blogger data API feeds to create new blog posts, edit or delete existing blog posts, and query for posts that match particular criteria.
+</p>
+    <p>This document provides detailed examples for using the <a href="http://code.google.com/p/gdata-python-client/">Python Client Library</a> to work with Blogger.  You will find examples of basic operations on posts and comments, as well as code snippets for authentication.  If you're interested in understanding more about the underlying protocol used by the Python Client Library to interact with the Blogger data API, please see the <a href="developers_guide_protocol.html">protocol tab</a>.</p> 
+    
+
+<h1>Contents</h1>
+
+<div class="toc">
+  <ol>
+    <li><a href="#Audience">Audience</a></li>
+    <li><a href="#GettingStarted">Getting started</a>
+        <ol class="toc">
+          <li><a href="#run_samples">Running the sample code</a></li>
+          <li><a href="#create_blogger_account">Create a Blogger account</a></li>
+        </ol>
+    </li>
+    <li><a href="#Auth">Authenticating to the Blogger service</a> 
+        <ol class="toc">
+          <li><a href="#auth_sub">AuthSub proxy authentication</a></li>
+          <li>
+            <a href="#client_login">
+              ClientLogin username/password authentication
+            </a>
+          </li>
+        </ol>
+      </li>
+    <li><a href="#GettingBlogs">Retrieving a list of blogs</a></li>
+    <li><a href="#CreatingPosts">Creating posts</a>
+      <ol class="toc">
+	<li><a href="#create_public_post">Publishing a blog post</a></li>      
+        <li><a href="#create_draft_post">Creating a draft blog post</a></li>
+      </ol>
+    </li>
+    <li><a href="#RetrievingPosts">Retrieving posts</a>
+      <ol class="toc">
+        <li><a href="#retrieving_without_query">
+          Retrieving all blog posts</a>
+        </li>
+        <li><a href="#retrieving_with_query">
+          Retrieving posts using query parameters</a>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#UpdatingPosts">Updating posts</a></li>
+    <li><a href="#DeletingPosts">Deleting posts</a></li>
+    <li><a href="#Comments">Comments</a>
+      <ol class="toc">
+        <li><a href="#CreatingComments">Creating comments</a></li>
+        <li><a href="#RetrievingComments">Retrieving comments</a></li>
+        <li><a href="#DeletingComments">Deleting comments</a></li>
+      </ol>
+    </li>
+  </ol>
+</div>
+
+<h1><a name="Audience" id="Audience">Audience</a></h1>
+
+<p>This document is intended for programmers who want to write client applications using the <a href="http://code.google.com/p/gdata-python-client/">Google data Python client library</a> that can interact with Blogger.</p>
+
+<p>For Blogger data API reference information, see the
+  <a href="reference.html">reference guide</a>. This document assumes that you
+  understand the general ideas behind the <a href="../gdata/basics.html">Google
+  data APIs protocol</a>.</p>
+
+<h1><a name="GettingStarted" id="GettingStarted">Getting started</a></h1>
+
+<h2><a name="run_samples">Running the sample code</a></h2>
+
+<p>The Python client library is available for <a href="http://code.google.com/p/gdata-python-client/downloads/list">download from the project page</a> or from the <a href="http://code.google.com/p/gdata-python-client/source">Subversion repository</a>.  You will also need to download and install the <a href="http://effbot.org/zone/element-index.htm">ElementTree</a> package.  Also note that to use the Python client library, you must be running Python 2.2 or newer.</p>
+
+<p>A full working copy of this sample is available in the <code><a href="http://gdata-python-client.googlecode.com/svn/trunk/samples/blogger/BloggerExample.py">BloggerExample.py</a></code> file, under the directory <code>gdata-python-client/samples/blogger/</code>.  You can run the sample with the following arguments:</p>
+
+<pre>python BloggerExample.py --email [email_address] --password [password]</pre>
+
+<p>The sample performs a number of operations on the provided user's blog to demonstrate the use of the Blogger data API.  Please see the <code>Run</code> method of the code for more details as to which operations are performed, but you'll want to be sure to use a test account so you don't modify or delete your real data.</p>  
+
+<p>To run the examples in this document in your own code, you'll need to use the following import statements:
+</p>
+
+<pre>
+try:
+  from xml.etree import ElementTree # for Python 2.5 users
+except:
+  from elementtree import ElementTree
+
+from gdata import service
+import gdata
+import atom
+import getopt
+import sys
+</pre>
+
+<h2><a name="create_blogger_account" id="create_blogger_account">Create a Blogger account</a></h2>
+
+<p> Blogger uses Google Accounts, so if you already have a Google account you're all set.  If you don't have a Google account, or want to create a new one just for trying out the Blogger data API, sign up <a href="http://www.blogger.com/signup.g">here</a>.</p>
+
+<h1><a name="Auth" id="Auth">Authenticating to the Blogger service</a></h1>
+
+<p>You can access both public and private feeds using the Blogger data API. Public feeds do not require any authentication, but they are read-only.  If you want to modify blogs then you'll need to authenticate your client before requesting private feeds.  This can be done via <a href="#client_login">ClientLogin</a> username/password authentication or <a href="#auth_sub">AuthSub</a> proxy authentication.</p>
+
+<p>For more information about authentication with Google data APIs in general, please see the <a href="../gdata/auth.html">authentication documentation</a>.</p>
+
+<h2><a name="auth_sub" id="auth_sub">AuthSub proxy authentication</a></h2>
+
+<p>AuthSub proxy authentication is used by web applications which need to authenticate their users to Google accounts.  The website operator does not need access to the username and password for the Blogger user - only special AuthSub tokens are required.  Please see the <a href="/apis/accounts/AuthForWebApps.html">AuthSub documentation</a> for more detailed information.</p>
+
+<p>When a user first visits your application, they have not yet been authenticated. In this case, you need to print some text and a link directing the user to Google to authenticate your request for access to their blog.  The Python Google Data client library provides a function to generate this URL.  The code below sets up a link to the <code><a href="../../apis/accounts/AuthForWebApps.html#AuthSubRequest">AuthSubRequest</a></code> page.</p>
+
+<pre>
+
+def GetAuthSubUrl():
+  next = 'http://www.coolbloggersite.com/welcome.pyc'
+  scope = 'http://www.blogger.com/feeds'
+  secure = False
+  session = True
+  blogger_service = service.GDataService()
+  return blogger_service.GenerateAuthSubURL(next, scope, secure, session);
+
+authSubUrl = GetAuthSubUrl();
+print '&lt;a href="%s"&gt;Login to your Google account&lt;/a&gt;' % authSubUrl
+
+</pre>
+
+<p>Notice the parameters sent to the <code>GenerateAuthSubURL</code> method:</p>
+  <ul>
+    <li><b>next</b>, the URL of the page that Google should redirect the user to after authentication.</li>
+    <li><b>scope</b>, indicating that the application will only access Blogger feeds.</li>
+    <li><b>secure</b>, indicating that the token returned will not be a secure token.</li>
+    <li><b>session</b>, indicating this token can be exchanged for a multi-use (session) token.</li>
+  </ul>
+<p>The URL will look something like this:<p>
+<pre>https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.blogger.com%2Ffeeds%2F&session=1&secure=0&next=http%3A%2F%2Fwww.coolbloggersite.com%2Fwelcome.pyc</pre> 
+<p>The user will then follow the link to Google's site and authenticate to their Google account.</p>
+
+<p>After the user authenticates, they will be redirected back to the <code>next</code> URL. The URL will have a single-use token value appended to it as a query parameter. The URL the user will be redirected to will look something like this:  
+
+<pre>http://www.coolbloggersite.com/welcome.pyc?token=14a87fe98219731acd516</pre>
+
+<p>For security, this token is single-use only, so now we need to exchange this single-use token for a session token.  The following code snippet shows how to upgrade the token.</p>
+<pre>
+blogger_service = service.GDataService()
+blogger_service.auth_token = authsub_token
+blogger_service.UpgradeToSessionToken()
+</pre>
+
+<p>In this snippet, the <code>authsub_token</code> variable contains the value from the <code>token</code> query parameter in the URL.  There are several ways to retrieve this value, for example:</p>
+
+<pre>
+import cgi
+
+parameters = cgi.FieldStorage()
+authsub_token = parameters['token']
+</pre>
+
+<p>This token value represents a single-use AuthSub token.  Since we specified <code>session = True</code> above, this token can be exchanged for an AuthSub session token using the <code>UpgradeToSessionToken</code> method, which calls the <a href="../../apis/accounts/AuthForWebApps.html#AuthSubSessionToken"><code>AuthSubSessionToken</code></a> service.</p>
+
+<h2><a name="client_login" id="client_login">ClientLogin username/password authentication</a></h2>
+
+<p>To use ClientLogin (also called "Authentication for Installed Applications"), set the credentials in a <code>GDataService</code> object, then invoke the ProgrammaticLogin method. For example:
+</p>
+
+<pre>
+blogger_service = GDataService('user@example.com', 'myPassword')
+blogger_service.source = 'Blogger_Python_Sample-1.0'
+blogger_service.service = 'blogger'
+blogger_service.server = 'www.blogger.com'
+blogger_service.ProgrammaticLogin()
+</pre>
+
+<p>Calling ProgrammaticLogin() will send the email and password defined above to Google's <a href="../../apis/accounts/AuthForInstalledApps.html">ClientLogin</a> authentication service.  This service responds with a token which is then added as part of the Authorization header to the GDataService object.  All future requests using this GDataService object will include this Authorization header.  For more information about authentication systems, see the <a href="../../apis/accounts/Authentication.html">Google Account Authentication</a> documentation.
+</p> 
+
+<p class="note"><strong>Note</strong>: As described in the ClientLogin documentation, the authentication request may fail and request a CAPTCHA challenge. If you want Google to issue and handle the CAPTCHA challenge, then send the user to <code>https://www.google.com/accounts/DisplayUnlockCaptcha?service=blogger</code> (rather than to the CAPTCHA-handling URL given in the ClientLogin documentation).</p>
+
+<h1><a name="GettingBlogs" id="GettingBlogs">Retrieving a list of blogs</a></h1>
+
+<p> The following example will retrieve and print the titles of all blogs associated with the user. It assumes that you have a <code>GDataService</code> object that is authenticated. 
+Though we are only printing out the blog titles here, other attributes, such as creation date and author's name, are available as well.
+</p>
+
+<pre>
+  def PrintUserBlogTitles(blogger_service):
+    query = service.Query()
+    query.feed = '/feeds/default/blogs'
+    feed = blogger_service.Get(query.ToUri())
+
+    print feed.title.text
+    for entry in feed.entry:
+      print "\t" + entry.title.text
+</pre>
+
+<p> The snippet of code below demonstrates how to extract a blog ID from the feed. You will need the blog ID to perform create, update, and deletion operations on posts and comments. The snippet below chooses the first blog retrieved for a user. 
+</p>
+
+<pre>
+  self_id = feed.entry[0].link[-1].href
+  tokens = self_id.split("/")
+  blog_id = tokens[-1]
+</pre>
+
+<p> In the <code>BloggerExample.py</code> sample, a <code>BloggerExample</code> class is created, and the blog ID is set in the constructor for easy access later on. For the examples listed below, blog_id will just be passed in as a variable in most cases. 
+</p>
+
+<h1><a name="CreatingPosts" id="CreatingPosts">Creating posts</a></h1>
+
+<p>The Blogger data API allows you to create and publish new posts, as well as save drafts of posts. All the samples below assume you have an authenticated <code>GDataService</code> object.  
+</p>
+
+<h2><a name="create_public_post" id="create_public_post">Publishing a blog post</a></h2>
+
+<p> To create a post, populate a new <code>GDataEntry</code> instance and <code>Post</code> it to the blog's edit link.
+</p>
+
+<pre>
+def CreatePublicPost(blogger_service, blog_id, title='I have the answer', content='Eureka! It is 42!', author_name='DT'):
+    entry = gdata.GDataEntry()
+    entry.author.append(atom.Author(atom.Name(text=author_name)))
+    entry.title = atom.Title('xhtml', title)
+    entry.content = atom.Content('html', '', content)
+    
+    blogger_service.Post(entry, '/feeds/' + blog_id + '/posts/default')
+</pre>
+
+<h2><a name="create_draft_post" id="create_draft_post">Creating a draft blog post</a></h2>
+
+<p>To create a draft of a post, the <code>draft</code> extension element in the <code>GDataEntry</code> instance must be set to <code>yes</code>. The default is <code>no</code> (a published post). 
+</p>
+
+<pre>
+def CreateDraftPost(blogger_service, blog_id, title='I have the question', content='WHAT DO YOU GET IF YOU MULTIPLY SIX BY NINE?', author_name='Arthur'):
+    entry = gdata.GDataEntry()
+    entry.author.append(atom.Author(atom.Name(text=author_name)))
+    entry.title = atom.Title('xhtml', title)
+    entry.content = atom.Content('html', '', content)
+    
+    <strong>control = atom.Control()
+    control.draft = atom.Draft(text='yes')
+    entry.control = control</strong>
+
+    blogger_service.Post(entry, '/feeds/' + blog_id + '/posts/default')
+</pre>
+
+<p>You can turn an existing draft blog post into a published post by retrieving the draft post, setting the draft attribute to <code>no</code>, and then updating the post. We'll cover retrieving and updating posts in the next two sections.
+</p>
+
+<h1><a name="RetrievingPosts" id="RetrievingPosts">Retrieving posts</a></h1>
+
+<p>The Blogger data API allows you to retrieve posts with or without query parameters. 
+</p>
+
+<h2><a name="retrieving_without_query" id="retrieving_without_query">Retrieving all blog posts</a></h2>
+
+<p> The example below will retrieve and print all the posts from a particular blog ID. 
+</p>
+
+<pre>
+  def PrintAllPosts(blogger_service, blog_id):
+    feed = blogger_service.GetFeed('/feeds/' + blog_id + '/posts/default')
+
+    print feed.title.text
+    for entry in feed.entry:
+      print "\t" + entry.title.text
+      print "\t" + entry.content.text
+      print "\t" + entry.updated.text
+    print
+</pre>
+
+<h2><a name="retrieving_with_query" id="retrieving_with_query">Retrieving posts using query parameters</a></h2>
+
+<p>The Blogger data API supports query parameters to filter results. The following snippet retrieves all posts between 2007-04-01 and 2007-04-25.  
+</p>
+
+<pre>
+  def PrintPostsInDateRange(blogger_service, blog_id, start_time='2007-04-01', end_time='2007-04-25'):
+    query = service.Query()
+    query.feed = '/feeds/' + blog_id + '/posts/default'
+    query.updated_min = start_time
+    query.updated_max = end_time
+    feed = blogger_service.Get(query.ToUri())
+
+    print feed.title.text + " posts between " + start_time + " and " + end_time
+    for entry in feed.entry:
+      print "\t" + entry.title.text
+      print "\t" + entry.content.text
+      print "\t" + entry.updated.text
+    print
+</pre>
+
+<p>Notice that the <code>Query</code> object is constructed using the same post feed URL used to retrieve posts.</p>
+<p>The Blogger data API supports the following <code>Query</code> properties:</p>
+
+<ul>
+  <li><strong>author</strong> - the author of the entry.</li>
+  <li><strong>max_results</strong> - the maximum number of entries to return.</li>
+  <li><strong>categories</strong> - specifies categories (i.e. labels) to filter the feed results.  For example, <code>http://www.blogger.com/feeds/<i>blogID</i>/posts/default/-/Fritz/Laurie</code> will return entries labeled with Fritz AND Laurie.  To do this in the Python client library, you can do <code>query.categories = ['Fritz','Laurie',]</code></li>
+  <li><strong>updated_min, updated_max</strong> - the bounds on entry update dates.</li> 
+  <li><strong>published_min, published_max</strong> - the bounds on entry publication dates.</li> 
+  <li><strong>start_index</strong> - 1-based index of the first result to be retrieved (for paging).</li>
+</ul>
+<p>Please see the <a href="../../apis/blogger/reference.html#Query_Params">Blogger Data API Reference Guide</a> and the <a href="../../apis/gdata/reference.html#Queries">Google Data APIs Reference Guide</a> for more information about query parameters.</p>
+
+
+
+<h1><a name="UpdatingPosts" id="UpdatingPosts">Updating posts</a></h1>
+
+<p>Here's some sample code to update the title of a post. We are passing in the entry as a <code>GDataEntry</code> object that we've already retrieved from the service. As with the other write calls, this call assumes that you have an authenticated <code>GDataService</code> object. 
+</p>
+
+<pre>
+  def UpdatePostTitle(blogger_service, entry_to_update, new_title='The REAL answer'):
+    entry_to_update.title = atom.Title('xhtml', new_title)
+    return blogger_service.Put(entry_to_update, entry_to_update.link[1].href)
+</pre>
+
+<p>The function returns a <code>GDataEntry</code> with the newly-updated post in its entirety. To update any other properties, simply set them in the <code>GDataEntry</code> instance you are pushing to the server. 
+</p>
+
+<h1><a name="DeletingPosts" id="DeletingPosts">Deleting posts</a></h1>
+<p>To delete a post, call the <code>Delete</code> method on an authenticated <code>GDataService</code> object, and pass in the edit link.
+</p>
+<pre>
+  def DeletePost(blogger_service, edit_link_href):
+    blogger_service.Delete(edit_link_href)
+</pre>
+
+<h1><a name="Comments" id="Comments">Comments</a></h1>
+
+<p> The Blogger data API allows for creating, retrieving, and deleting comments. Updating comments is not available (nor is it available in the web interface). 
+</p>
+
+<h2><a name="CreatingComments" id="CreatingComments">Creating comments</a></h2>
+
+<p>This will create a comment on the supplied post ID. It will return a <code>GDataEntry</code> object with the new comment if successful. This call assumes you have an authenticated <code>GDataService</code> object.   
+</p>
+
+<pre>
+  def CreateComment(blogger_service, blog_id, post_id, comment_text='Mostly harmless'):
+    feed_uri = '/feeds/' + blog_id + '/' + post_id + '/comments/default'
+
+    entry = gdata.GDataEntry()
+    entry.content = atom.Content('xhtml', '', comment_text)
+    return blogger_service.Post(entry, feed_uri)
+</pre>
+
+<p class="note"><strong>Note:</strong> Currently, you can only post comments to a blog owned by the authenticated user.
+</p>
+
+<h2><a name="RetrievingComments" id="RetrievingComments">Retrieving comments</a></h2>
+
+<p> The example below will pull all the comments for a given blog ID and print them out. You can also retrieve all the comments for a particular post by adding a post ID when constructing the feed URL. Ie. <code>/feeds/blogID/postID/comments/default</code>
+</p>
+
+<pre>
+  def PrintAllComments(blogger_service, blog_id):
+    feed_url = '/feeds/' + blog_id + '/comments/default'
+    feed = blogger_service.Get(feed_url)
+
+    print feed.title.text
+    for entry in feed.entry:
+      print "\t" + entry.title.text
+      print "\t" + entry.updated.text
+    print 
+</pre>
+
+<p>For more information on link structure, visit the <a href="developers_guide_protocol.html#Comments">protocol tab</a>.
+</p>
+<h2><a name="DeletingComments" id="DeletingComments">Deleting comments</a></h2>
+
+<p>To delete a comment, simply call the <code>Delete</code> method from an authenticated <code>GDataService</code> object to the comment's edit URL. 
+</p>
+
+<pre>
+  def DeleteComment(blogger_service, post_id, comment_id):
+    feed_url = '/feeds/' + post_id + '/comments/default/' + comment_id
+    blogger_service.Delete(feed_url)
+</pre>
+
+</div>
+
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2006 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

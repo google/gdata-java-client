@@ -84,7 +84,7 @@ public class MetadataEntryExtension {
    *   item types in this object
    */
   public boolean isEmpty() {
-    return (hasAttributeHistogram() || hasItemTypeDescription() || hasStats());
+    return hasAttributeHistogram() || hasItemTypeDescription() || hasStats();
   }
 
   /**
@@ -129,5 +129,17 @@ public class MetadataEntryExtension {
    */
   public boolean hasItemTypeDescription() {
     return itemType.getName() != null;
+  }
+  
+  /**
+   * Checks whether the entry contains the {@code gm:disapproved} tag, marking
+   * it as a disapproved item.
+   * 
+   * @return {@code true} if the {@code gm:disapproved} tag is present in the 
+   *    {@code app:control} section, {@code false} otherwise. 
+   */
+  public boolean hasGmDisapproved() {
+    return owner.getPubControl() != null 
+        && owner.getPubControl().getExtension(GmDisapproved.class) != null;
   }
 }

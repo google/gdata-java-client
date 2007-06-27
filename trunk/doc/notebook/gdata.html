@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Notebook Data API Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+     color: #000000;
+}
+-->
+</style>
+</head>
+<body id="gdata_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Notebook Data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Notebook </h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="gdata.html" id="gdata_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.google.com/googlenotebook/terms.html">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>GData Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://groups.google.com/group/Google-Labs-Notebook">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+  <h1 id="page_title">Google Notebook Data API Developer's Guide </h1>
+    <p>The Google Notebook  data API allows client applications to view public notebook content in the form of Google data API (&quot;GData&quot;) feeds. Your client application can request a list of notes from a public notebook, request a list of public notebooks owned by a particular user, and query for notes that match particular criteria.</p>
+    <p>Google Notebook feeds are currently read-only and public-only; you can't send data to Notebook using the data API, and you can't get a feed of private Notebook data.</p>
+    <h1>Contents</h1>
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#Example">Interacting with Google Notebook: examples</a>
+          <ol>
+            <li><a href="#Obtain_ID">Obtain the user ID</a></li>
+            <li><a href="#List_Notebooks">Get a list of all the user's public notebooks</a></li>
+            <li><a href="#Get_Feed_Manual">Request a feed manually</a></li>
+            <li><a href="#Get_Feed_Library">Request a feed using the client library</a></li>
+            <li><a href="#Send_Query">Send a query</a></li>
+          </ol>
+      </li>
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications that can interact with Google Notebook. It provides a series of examples of basic data API interactions, with explanations.</p>
+    <p>For Google Notebook data API reference information, see the <a href="reference.html">reference guide</a>.</p>
+    <p>This document assumes that you understand the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>. It also assumes that you know how to program in Java.</p>
+    <p>The code examples in this document use the <a href="../gdata/client-java.html">GData Java client library</a>; see the client library documentation for more information and more (non-Notebook-specific) examples. If your client is written in another language, see the client library documentation for that language, if available; you can translate the examples in this document into other languages as needed.</p>
+    <h1><a name="Example" id="Example">Interacting with Google Notebook: examples</a></h1>
+    <p>Assume you're creating a client application that needs to communicate with Google Notebook. You want your client to be able to get a list of notes from a notebook.</p>
+    <p class="note"><strong>Note</strong> (no pun intended): If you don't already have a Google Notebook account, you may want to create one for testing purposes.</p>
+    <p>To communicate with Google Notebook, your application needs to request the feed for a particular notebook, or for a list of public notebooks from a particular user. The first step is to <a href="#Obtain_ID">obtain the user ID</a>; then you can <a href="#List_Notebooks">get a list of all the user's public notebooks</a>.</p>
+    <p>You can also get a feed of the contents of an individual notebook. With any GData feed, you can take either of two approaches:</p>
+    <ul>
+            <li><a href="#Get_Feed_Manual">Request the feed manually</a>, using the raw GData protocol.</li>
+          <li><a href="#Get_Feed_Library">Request the feed using the client library</a>.</li>
+    </ul>
+    <p>Finally, you can <a href="#Send_Query">send a query</a> to request a feed of entries that match particular criteria.</p>
+    <p>For general information about Google data APIs and more example code that you can adapt for use with  Notebook, see <a href="../gdata/client-java.html">Using the Java Client Library</a>.</p>
+    <h2><a name="Obtain_ID" id="Obtain_ID">Obtain the user ID </a></h2>
+      <p>Before you can request a feed, you have to determine the feed URL. This requires a manual step: the user must visit the public notebook or user page that they want to subscribe to, and copy the URL of that page, and provide the URL to your client.</p>
+      <p class="note"><strong>Note</strong>: Only public notebooks provide feeds. To make a notebook public, the owner has to use the &quot;Publish this notebook&quot; link in the GUI. The user&mdash;the person reading the notebook&mdash;generally finds out about a public notebook by following a link to it from email or a web page. The notebook's owner can find the notebook's public URL in various ways, such as by following the &quot;Published (view)&quot; link. For more information about publishing notebooks and viewing public notebooks, see the Google Notebook help pages.</p>
+      <p>The URL of  a user's page, listing all their public notebooks, is of the following form:</p>
+      
+    <pre>http://www.google.com/notebook/user/<i>userID</i></pre>
+      <p>The URL of a public  notebook page is of the following form:</p>
+      <pre>http://www.google.com/notebook/public/<i>userID</i>/<i>notebookID</i></pre>
+      <p>Your client should parse the URL supplied by the user, and store the user ID and (if included) notebook ID for later use in constructing a feed URL.</p>
+      <p>The user may supply your client with a feed URL rather than with an HTML page's URL, so your client should be able to identify a feed URL; see below for information about feed URLs. </p>
+    <h2><a name="List_Notebooks" id="List_Notebooks">Get a list of all the user's public notebooks</a></h2>
+    <p>The general idea of how to request a  feed is that you determine the feed URL, and then you send an HTTP <code>GET</code> request to that URL. Google Notebook then returns a GData feed containing either notebooks or notes, depending on the type of feed you requested.</p>
+    <p>Google provides client libraries for interacting with Google data API services in a variety of programming languages. You can use the client libraries to send the HTTP request and handle the returned feed; we'll show you an example of how to do that below. But whether or not you use the client library, the following is what's going on at the protocol level. If you're using a UNIX system and you want to try this out without writing any code, you may find the UNIX command-line utilities <code>curl</code> or <code>wget</code> useful; for more information, see the manual pages for those utilities.</p>
+    <p>To get a feed listing all of a user's public notebooks,  send the following HTTP request to Google Notebook:</p>
+    <pre>GET http://www.google.com/notebook/feeds/<i>userID</i></pre>
+    <p>Where <i>userID</i> is the user ID you obtained in the previous section. </p>
+    <p>Google Notebook then returns an HTTP <code>200 OK</code> status code and a &quot;metafeed,&quot; a feed that lists all of that user's public notebook feeds; each entry in the feed represents a public notebook associated with the user.</p>
+    <p>An entry in the metafeed might resemble the following:</p>
+    <pre>&lt;entry&gt;
+  &lt;id&gt;http://www.google.com/notebook/feeds/<i>userID</i>/<i>notebookID</i>&lt;/id&gt;
+  &lt;published&gt;2007-01-10T15:20:12.819Z&lt;/published&gt;
+  &lt;updated&gt;2007-01-23T20:03:59.624Z&lt;/updated&gt;
+  &lt;title type='text'&gt;My Birthday Wish List&lt;/title&gt;
+  &lt;summary type='text'&gt;My Birthday Wish List&lt;/summary&gt;
+  &lt;content type='application/atom+xml'
+    src='http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>'&gt;
+  &lt;/content&gt;
+  &lt;link rel='alternate' type='text/html' 
+    href='http://www.google.com/notebook/public/<i>userID</i>/<i>notebookID</i>' 
+    title='My Birthday Wish List'&gt;&lt;/link&gt;
+  &lt;link rel='self' type='application/atom+xml' 
+    href='http://www.google.com/notebook/feeds/<i>userID</i>/<i>notebookID</i>'&gt;&lt;/link&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+  &lt;/author&gt;
+&lt;/entry&gt;</pre>
+    <p>For information about what each of those elements means, see the <a href="../gdata/reference.html">Google Data APIs Protocol Reference</a> or the <a href="http://www.atomenabled.org/developers/syndication/atom-format-spec.php">Atom 1.0 specification</a>.</p>
+    <p>If your request fails for some reason, Google Notebook may return a different status code; for information about the status codes, see the protocol reference document.</p>
+    <h2><a name="Get_Feed_Manual" id="Get_Feed_Manual">Request a feed</a> manually</h2>
+    <p>To get a feed of all the notes in a particular public notebook,  send the following HTTP request:</p>
+    <pre>GET http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i></pre>
+    <p>Where <i>userID</i> and <i>notebookID</i> are the IDs you obtained earlier. </p>
+    <p>Google Notebook then returns an HTTP <code>200 OK</code> status code and a feed containing all the notes in the specified notebook.</p>
+    <p>Suppose you request the notes in a public notebook, and the notebook has only one note. Then Google Notebook returns something similar to the following feed. We've slightly edited the following example  to make it a little more readable by humans; in particular, a real feed contains actual IDs and URLs.</p>
+    <pre>
+&lt;feed xmlns='http://www.w3.org/2005/Atom' 
+    xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/'&gt;
+  &lt;id&gt;http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>&lt;/id&gt;
+  &lt;updated&gt;2007-01-10T22:21:21.552Z&lt;/updated&gt;
+  &lt;title type='text'&gt;My Birthday Wish List&lt;/title&gt;
+  &lt;link rel='alternate' type='text/html'
+    href='http://www.google.com/notebook/public/<i>userID</i>/<i>notebookID</i>'
+    title='My Birthday Wish List'&gt;&lt;/link&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml' 
+    href='http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>'&gt;
+  &lt;/link&gt;
+  &lt;link rel='self' type='application/atom+xml' 
+    href='http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>'&gt;
+  &lt;/link&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;generator version='1.0'
+    uri='http://www.google.com/notebook'&gt;Google Notebook&lt;/generator&gt;
+  &lt;openSearch:totalResults&gt;1&lt;/openSearch:totalResults&gt;
+  &lt;openSearch:startIndex&gt;1&lt;/openSearch:startIndex&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>/<i>noteID</i>&lt;/id&gt;
+    &lt;published&gt;2007-01-10T23:21:21.552Z&lt;/published&gt;
+    &lt;updated&gt;2007-01-10T23:21:21.552Z&lt;/updated&gt;
+    &lt;title type='text'&gt;Jane Austen books&lt;/title&gt;
+    &lt;content type='html'&gt;
+       Jane Austen books: &lt;em&gt;especially&lt;/em&gt; &lt;cite&gt;Pride and Prejudice&lt;/cite&gt;.
+    &lt;/content&gt;
+    &lt;link rel='related' type='text/html'
+      href='http://en.wikipedia.org/wiki/Pride_and_Prejudice'
+      title='Pride and Prejudice'&gt;&lt;/link&gt;
+    &lt;link rel='alternate' type='text/html'
+      href='http://www.google.com/notebook/public/<i>userID</i>/<i>notebookID</i>#<i>noteID</i>'
+       title='Pride and Prejudice'&gt;&lt;/link&gt;
+    &lt;link rel='self' type='application/atom+xml'
+      href='http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>/<i>noteID</i>'&gt;
+    &lt;/link&gt;
+    &lt;author&gt;
+      &lt;name&gt;Elizabeth Bennet&lt;/name&gt;
+    &lt;/author&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;</pre>
+    <p>For information about what each of those elements means, see the <a href="../gdata/reference.html">Google Data APIs Protocol Reference</a>, the <a href="reference.html">Google Notebook Reference Guide</a>, and/or the <a href="http://www.atomenabled.org/developers/syndication/atom-format-spec.php">Atom 1.0 specification</a>.</p>
+    <p class="note"><strong>Note</strong>: The entries in a feed are ordered by the values of their <code>updated</code> elements, with the most recently updated entry appearing first in the feed. To request notes in the order that they are listed in the notebook, use the <code>orderby</code> query parameter, which is described in the <a href="reference.html#Parameters">Google Notebook  Reference Guide</a>.</p>
+    <h2><a name="Get_Feed_Library" id="Get_Feed_Library">Request a feed using the client library</a></h2>
+    <p>The above description shows how to send a request and receive a response by hand; if you already have code that handles  feeds, then you can simply use it to send the relevant <code>GET</code> request, as shown above.</p>
+    <p>However, if you don't already have your own feed-handling code,  then we encourage you to use Google's client library where possible.</p>
+    <p>To use the client library, the general steps are:</p>
+    <ol>
+      <li>Obtain or construct the appropriate URL.</li>
+      <li>Create an object of the <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html">GoogleService</a></code> class, which handles communication and authentication with Google Data services.</li>
+      <li>Use client library methods to send the request and receive any results the service sends back.</li>
+    </ol>
+    <p>For example, to request the feed of notes from a public notebook, you could use the following Java code. You'll have to replace the URL in this example with one of the feed URLs you constructed earlier.</p>
+    <pre>URL feedUrl =
+  new URL(&quot;http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>&quot;);
+GoogleService myService = new GoogleService(&quot;notebook&quot;, &quot;exampleCo-exampleApp-1&quot;);
+
+// Send the request and receive the response:
+Feed myFeed = myService.getFeed(feedUrl, Feed.class);
+
+// Print the title of the notebook:
+System.out.println(myFeed.getTitle().getPlainText());</pre>
+    <p>In the above example, first you specify the URL; to request a metafeed rather than a notebook's feed, just use the metafeed URL instead. </p>
+    <p>Then you create a <code>GoogleService</code> object.</p>
+    <p>Then you call the <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html#getFeed(java.net.URL,%20java.lang.Class)">getFeed</a></code> method. That method handles all of the communication with Google Notebook&mdash;it sends the HTTP <code>GET</code> request, it waits for the XML response to arrive, and it parses the XML and assigns the element contents and attribute values to appropriate parts of the <code><a href="../../java/doc/com/google/gdata/data/Feed.html">Feed</a></code> object.</p>
+    <p>If an error occurs during the <code>getFeed</code> call, then the client library generates an appropriate exception, so your code should be prepared to handle exceptions.</p>
+    <p>The final line of the above code calls the feed's <code><a href="../../java/doc/com/google/gdata/data/Source.html#getTitle()">getTitle</a></code> method, which returns a <code><a href="../../java/doc/com/google/gdata/data/TextConstruct.html">TextConstruct</a></code> object. To transform the text construct into a <code>String</code>, we call the title's <code><a href="../../java/doc/com/google/gdata/data/TextConstruct.html#getPlainText()">getPlainText</a></code> method.</p>
+    <p>In most contexts, you'll probably want to do something more with the feed than just print out the title. For example, the client library lets you generate Atom or RSS representations of the feed and perform various other transformations. For more information, see the <a href="../../java/doc/index.html">Javadoc documentation</a>.</p>
+    
+    <h2><a name="Send_Query" id="Send_Query">Send a  query</a></h2>
+    <p>GData lets you request a set of entries that match specified criteria, such as requesting entries created or updated in a given date range, or requesting entries in the order that they appear in the notebook.
+      For more information about the query parameters for GData queries (such as <code>updated-min</code> and <code>updated-max</code>), see the <a href="../gdata/reference.html">Google Data APIs Protocol Reference</a> document.</p>
+    <p>Here's how to create and send a date-range query at the protocol level:</p>
+    <p>Send an HTTP request like the following to Google Notebook, using the  feed URL:</p>
+    <pre>GET http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>?updated-min=2006-03-16T00:00:00&amp;updated-max=2006-03-24T23:59:59</pre>
+    <p>When you send that <code>GET</code> request, Google Notebook returns
+      an HTTP <code>200 OK</code> status code and a feed (of a notebook) containing any
+      entries (notes) that were created or updated in the date range you specified.</p>
+    <p>To query using other standard GData query parameters, just change the URL to use other parameters. Google Notebook supports all standard query parameters in the protocol reference except for entry author (<code>author</code>) and full-text search (<code>q</code>). Google Notebook also offers one special query parameter, <code>orderby</code>. If you append <code>orderby=position</code> to the end of a query of a notebook, Google Notebook  returns a feed of notes sorted in the order that they would appear in the original notebook, instead of by their update times.</p>
+    <p>You can, of course, use the client library to send a query instead of sending it by hand. In this case, you'll need to add a new step to the process: constructing a <a href="../../java/doc/com/google/gdata/client/Query.html">Query</a> object.</p>
+    <p>For example, to view entries created or modified in a particular date range, use the following Java code.</p>
+    <pre>URL feedUrl = new URL(&quot;http://www.google.com/notebook/feeds/<i>userID</i>/notebooks/<i>notebookID</i>&quot;);
+
+Query myQuery = new Query(feedUrl);
+myQuery.setUpdatedMin(DateTime.parseDateTime(&quot;2006-03-16T00:00:00&quot;));<br />myQuery.setUpdatedMax(DateTime.parseDateTime(&quot;2006-03-24T23:59:59&quot;));
+
+GoogleService myService = new GoogleService(&quot;notebook&quot;, &quot;exampleCo-exampleApp-1&quot;);
+
+// Send the request and receive the response:
+Feed resultFeed = myService.query(myQuery, Feed.class);</pre>
+    <p>The above code creates a new Query and sets the minimum and maximum updated times; then it creates a <code>GoogleService</code> and calls the <code><a href="../../java/doc/com/google/gdata/client/Service.html#query(com.google.gdata.client.Query,%20java.lang.Class)">query</a></code> method to send the query and receive the response.</p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>
