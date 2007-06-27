@@ -1,0 +1,821 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Picasa Web Albums Data API Reference Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+     color: #000000;
+}
+.q {
+	font-weight: bold;
+	color: #FF0000;
+}
+-->
+</style>
+</head>
+<body id="reference_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Picasa Web Albums Data API </h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Picasa Web Albums </h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="gdata.html" id="gdata_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="terms.html" id="terms_link">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>GData Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://code.google.com/support/bin/topic.py?topic=10949">Knowledge Base</a></li>
+        <li><a href="http://groups.google.com/group/Google-Picasa-Data-API">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+    <h1 id="page_title">Picasa Web Albums Data API Reference Guide </h1>
+    <p>This document provides detailed reference documentation for the Picasa Web Albums data API.</p>
+    <h1>Contents</h1>
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#Feeds">Picasa Web Albums feed types</a>
+        <ol>
+          <li><a href="#Visibility">Visibility values</a></li>
+          <li><a href="#Projection">Projection values</a></li>
+          <li><a href="#Path_Values">Path values</a></li>
+          <li><a href="#Kind">Kind values</a></li>
+        </ol>
+      </li>
+      <li><a href="#Parameters">Picasa Web Albums query parameters reference</a></li>
+      <li><a href="#Elements">Picasa Web Albums elements reference</a>
+         <ol>
+          <li><a href="#media_reference">Media RSS namespace</a></li>
+          <li><a href="#gphoto_reference">Picasa Web Albums extension namespace</a></li>
+        </ol>
+      </li>
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications that can interact with Picasa Web Albums.</p>
+    <p>It's a reference document; it assumes that you understand the concepts presented in the <a href="gdata.html">developer's guide</a>, and  the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>.</p>
+    <h1><a name="Feeds" id="Feeds">Picasa Web Albums feed types</a></h1>
+    <p>Picasa Web Albums provides a variety of representations of photo- and album-related data. There are three independent axes for specifying what you want when you request data: visibility, projection, and path/kind.</p>
+    <p>Visibility values let you request data at various levels of sharing. For example, a visibility value of <code>public</code> requests publicly visible data. For a list of values, see <a href="#Visibility">Visibility values</a>, below.  The default visibility depends on whether the request is authenticated or not.</p>
+    <p>Projection values let you indicate what elements and extensions should appear in the feed you're requesting. For example, a projection value of <code>base</code> indicates that the representation is a basic Atom feed without any extension elements, suitable for display in an Atom reader. For a list of values, see <a href="#Projection">Projection values</a>, below. You must specify a projection value. </p>
+    <p>Path and kind values let you indicate what type of items you want information about. For example, a path of <code>user/liz</code> and a kind value of <code>tag</code> requests a  feed of  tags associated with the user whose username is <code>liz</code>.  Path and kind values are separate parts of the URI, but they're used together to indicate the item type(s) desired. For a list of path values, see <a href="#Path_Values">Path values</a>, below; for a list of  kind values, see <a href="#Kind">Kind values</a>, below. You must specify a path, but kind is optional; the default kind depends on the path.</p>
+    <p>To request a particular representation, you specify  a visibility value, a projection value, and a path and kind  in the URI that you send to Picasa Web Albums.</p>
+    <p>The URI of a representation of a Picasa Web Albums feed takes the following form:</p>
+    <pre>http://picasaweb.google.com/data/feed/<i>projection</i>/<i>path</i>?kind=<i>kind</i>&amp;access=<i>visibility</i></pre>
+    <p>For example, the following URI is for a feed listing a user's private albums. The projection is <code>api</code>, which requests a full feed with all relevant extension elements, and the visibility is  <code>private</code>, which requests only albums that aren't publicly visible:</p>
+    <pre>http://picasaweb.google.com/data/feed/api/user/liz?kind=album&amp;access=private</pre>
+    <p>If you don't specify a visibility value, then the visibility depends on your authentication.  For authenticated requests, the default is <code>all</code>. For unauthenticated requests, the default is <code>public</code>.</p>
+    <p>The projection value is required.</p>
+    <p>As a developer, you'll usually want to use the <code>api</code> projection. You'll normally use only two of the visibility levels: <code>public</code> or <code>all</code>.</p>
+    <p>For an authenticated feed, instead of specifying a user ID, you can specify the special value <code>default</code>, which tells Picasa Web Albums to use the user ID and password that you provided during authentication.</p>
+    <p>Some feed types are read/write (that is, you can post new data to them, and edit or delete existing data), while others are read-only. Read-only feeds don't include a <code>&lt;link rel=&quot;http://schemas.google.com/g/2005#post&quot;&gt;</code> element (to tell you where to post new events), and entries in read-only feeds don't include <code>&lt;link rel=&quot;edit&quot;&gt;</code> or <code>&lt;link rel=&quot;edit-media&quot;&gt;</code> elements.</p>
+    <h2><a name="Visibility" id="Visibility">Visibility values</a></h2>
+    <p>The following table describes the supported visibility values:</p>
+    <table>
+      <tr>
+        <th>Visibility</th>
+        <th>Description</th>
+        <th>Security Notes</th>
+      </tr>
+      <tr>
+        <td><code>all</code></td>
+        <td>Shows both public and private data.</td>
+        <td>Requires authentication. Default for authenticated users. </td>
+      </tr>
+      <tr>
+        <td><code>private</code></td>
+        <td>Shows only private data.</td>
+        <td>Requires authentication.</td>
+      </tr>
+      <tr>
+        <td><code>public</code></td>
+        <td>Shows only public data.</td>
+        <td>Does not require authentication. Default for unauthenticated users.</td>
+      </tr>
+    </table>
+    <h2><a name="Projection" id="Projection">Projection values</a></h2>
+    <p>Although the examples in this documentation use only the <code>api</code> projection, Picasa Web Albums also supports a <code>base</code> projection for use by feed readers.</p>
+    <p>The following table describes the supported projection values:</p>
+    <table>
+      <tr>
+        <th>Projection Name</th>
+        <th>Description</th>
+        <th>Updatability</th>
+      </tr>
+      <tr>
+        <td><code>api</code></td>
+        <td>Feed including all relevant <a href="#gphoto_reference">gphoto</a> extension elements. All properties contain plain text, not HTML. </td>
+        <td>Read/write if authenticated user is owner of the content.</td>
+      </tr>
+      <tr>
+        <td><code>base</code></td>
+        <td>Basic Atom feed without any extension elements. Its <code>&lt;atom:summary&gt;</code> and <code>&lt;atom:content&gt;</code> properties contain entity-encoded HTML.</td>
+        <td>Always read-only.</td>
+      </tr>
+    </table>
+    <h2><a name="Path_Values" id="Path_Values">Path values</a></h2>
+    <p>There are three basic types of feeds: user-based, album-based, and photo-based. You indicate which type you want by specifying a path. For each of those types, you can additionally specify which kind or kinds of associated data you want.</p>
+    <p class="note"><strong>Note</strong>: Each path includes a user ID, which  is an ID associated with a user's Google account. The user ID can be either a username or an email address, so it may or may not include an <code>@</code> sign and a domain name.</p>
+    <h3><a name="User_Feed" id="User_Feed">User-based feed</a></h3>
+    <p>The user-based feed represents data associated with a particular user.  A user-based feed can contain either <code>album</code> or <code>tag</code> kinds, which you can  request  using the <code>kind</code> parameter.</p>
+    <p>To retrieve a user-based feed, you can make a request to the appropriate feed URL:</p>
+    <pre>http://picasaweb.google.com/data/feed/<i>projection</i>/user/<i>userID</i>/?kind=<i>kinds</i></pre>
+    <h3><a name="Album_Feed" id="Album_Feed">Album-based feed</a></h3>
+    <p>The album-based feed represents an album and any kinds associated with the album.  An album-based feed can contain either <code>photo</code> or <code>tag</code> kinds, which you can  request  using the <code>kind</code> parameter.</p>
+    <p>To retrieve an album-based feed, you can make a request to the appropriate feed URL. To retrieve an album by ID:</p>
+    <pre>http://picasaweb.google.com/data/feed/<i>projection</i>/user/<i>userID</i>/albumid/<i>albumID</i>?kind=<i>kinds</i></pre>
+    <p>To retrieve an album by name:</p>
+    <pre>http://picasaweb.google.com/data/feed/<i>projection</i>/user/<i>userID</i>/album/<i>albumName</i>?kind=<i>kinds</i></pre>
+    <h3><a name="Photo_Feed" id="Photo_Feed">Photo-based feed</a></h3>
+    <p>The photo-based feed provides a list of comments or tags associated with the specified photo.</p>
+    <p>To retrieve a photo-based feed,  send a request to the appropriate feed URL, specifying the photo's album either by ID or by name:</p>
+    <pre>http://picasaweb.google.com/data/feed/<i>projection</i>/user/<i>userID</i>/albumid/<i>albumID</i>/photoid/<i>photoID</i>?kind=<i>kinds</i></pre>
+    <p>Or:</p>
+    <pre>http://picasaweb.google.com/data/feed/<i>projection</i>/user/<i>userID</i>/album/<i>albumName</i>/photoid/<i>photoID</i>?kind=<i>kinds</i></pre>
+    <h2><a name="Kind" id="Kind">Kind values</a></h2>
+    <p>The <code>kind</code> parameter lets you request  information about a particular kind of item.  The parameter value should be  a comma-separated list of requested kinds.</p>
+    <p>If you omit the <code>kind</code> parameter,  Picasa Web Albums chooses a default kind depending on the level of feed you're requesting. For a user-based feed, the default kind is <code>album</code>; for an album-based feed, the default kind is <code>photo</code>; for a photo-based feed, the default kind is <code>comment</code>. </p>
+    <p class="note"><strong>Note</strong>: You can't edit comments or tags. Sending a <code>PUT</code> to the edit URI of a   comment or tag entry has no effect. </p>
+    <p>The following table describes the supported kind values:</p>
+    <table>
+      <tr>
+        <th>Projection Name</th>
+        <th>Description</th>
+        <th>Supported Feeds</th>
+      </tr>
+      <tr>
+        <td><code>album</code></td>
+        <td>Feed includes some or all of the albums the specified user has in their gallery.  Which albums are returned depends on the <a href="#Visibility">visibility</a> value specified.</td>
+        <td>User-based feed</td>
+      </tr>
+      <tr>
+        <td><code>photo</code></td>
+        <td>Feed includes the photos in an album.</td>
+        <td>Album-based feed</td>
+      </tr>
+      <tr>
+        <td><code>comment</code></td>
+        <td>Feed includes the comments that have been made on a photo.</td>
+        <td>Photo-based feed</td>
+      </tr>
+      <tr>
+        <td><code>tag</code></td>
+        <td>Includes all tags associated with the specified user, album, or photo.  For user-based and album-based feeds, the tags  include a weight value indicating how often they occurred.</td>
+        <td>User-based, album-based, or photo-based feeds</td>
+      </tr>
+    </table>
+    <h1><a name="Parameters" id="Parameters">Picasa Web Albums query parameters reference</a></h1>
+    <p>Picasa Web Albums  supports the standard GData <code>start-index</code> and <code>max-results</code> parameters. It does not currently support the other standard parameters.</p>
+    <p>In addition, the Picasa Web Albums data API supports the following parameters:</p>
+    <table>
+      <tr>
+        <th>Parameter</th>
+        <th>Meaning</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td><code>kind</code></td>
+        <td>Picasa Web Albums-specific query parameter for kind queries.</td>
+        <td>See the <a href="#Kind">Kind values</a> section for valid values.</td>
+      </tr>
+      <tr>
+        <td><code>access</code></td>
+        <td>Visibility parameter</td>
+        <td>See the <a href="#Visibility">Visibility values</a> section for valid values.</td>
+      </tr>
+      <tr>
+        <td><code>thumbsize</code></td>
+        <td>Thumbnail size parameter</td>
+        <td>Valid with <code>album</code> or <code>photo</code> kinds; specifies what image size to use for thumbnails.</td>
+      </tr>
+    </table>
+    <h1><a name="Elements" id="Elements">Picasa Web Albums elements reference</a></h1>
+    <p>In addition to the standard GData elements, the Picasa Web Albums data API uses the <code>media</code> and <code>gphoto</code> namespaces.</p>
+    <ol class="toc">
+      <li><a href="#media_reference">Media RSS  (media namespace) element reference</a></li>
+      <li><a href="#gphoto_reference">Picasa Web Albums extension (gphoto namespace) element reference</a></li>
+    </ol>
+
+    <p>For information about the standard GData elements, see  the Atom specification and the <a href="../gdata/elements.html">Kinds document</a>.</p>
+    <h2><a name="media_reference" id="media_reference">Media RSS  (media namespace) element reference</a></h2>
+    <p>Picasa Web Albums uses the <code>media</code> namespace for elements defined in the Media RSS specification.  For information about the <code>media</code> namespace, see the <a href="http://search.yahoo.com/mrss">Media RSS specification</a>.</p>
+    <p class="note"><strong>Note</strong>: Despite the name &quot;Media RSS,&quot; the Picasa Web Albums data API uses elements from the media namespace in both Atom and RSS feeds. </p>
+    <p>Picasa Web Albums uses the following <code>media</code> elements:</p>
+    <ol class="toc">
+      <li><a href="#media_content">media:content</a></li>
+      <li><a href="#media_title"></a></li>
+      <li><a href="#media_credit">media:credit</a></li>
+      <li><a href="#media_description">media:description</a></li>
+      <li><a href="#media_group">media:group</a></li>
+      <li><a href="#media_keywords">media:keywords</a></li>
+      <li><a href="#media_thumbnail">media:thumbnail</a></li>
+      <li><a href="#media_title">media:title</a></li>
+    </ol>
+    <p>As usual in the GData documentation, a question mark after an attribute name indicates that the attribute is optional. Almost all of the attributes we list for <code>media</code> elements are required.</p>
+    <h3><a name="media_content">media:content</a></h3>
+    <p>Contains the URL and other information about the full version of the entry's media content.</p>
+    <p>The <code>&lt;media:content&gt;</code> element appears as a child of a <code>&lt;<a href="#media_group">media:group</a>&gt;</code> element.</p>
+    <p>There can be multiple <code>&lt;media:content&gt;</code> elements for a given <code>&lt;media:group&gt;</code>. For example, a video may have a <code>&lt;media:content&nbsp;medium=&quot;image&quot;&gt;</code> element that specifies a JPEG representation of the video, and a <code>&lt;media:content&nbsp;medium=&quot;video&quot;&gt;</code> element that specifies the URL of the video itself.</p>
+    <h4>Attributes</h4>
+    <table>
+      <tr>
+        <th>Attribute</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>url</code></td>
+        <td>The URL of the full version of the media for the current entry.</td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td>The MIME type of the media.</td>
+      </tr>
+      <tr>
+        <td><code>medium</code></td>
+        <td>Either <code>image</code> or <code>video</code>.  Somewhat redundant, as <code>type</code> contains a more specific MIME type, but <code>medium</code> may be simpler for the client to interpret.</td>
+      </tr>
+      <tr>
+        <td><code>height</code></td>
+        <td>The height of the image or video represented by this <code>&lt;media:content&gt;</code> element.</td>
+      </tr>
+      <tr>
+        <td><code>width</code></td>
+        <td>The width of the image or video represented by this <code>&lt;media:content&gt;</code> element.</td>
+      </tr>
+      <tr>
+        <td><code>fileSize</code>?</td>
+        <td>The file size in bytes of the image or video represented by this <code>&lt;media:content&gt;</code> element.</td>
+      </tr>
+    </table>
+    <h4>Example</h4>
+    <pre>&lt;media:content url="http://lh3.google.com/image/.../MyImage.jpg"
+  fileSize="12216320" type="image/jpeg" medium="image"
+  height="1600" width="1200"&gt;&lt;media:content&gt;</pre>
+
+    <h3><a name="media_credit" id="media_credit">media:credit</a></h3>
+    <p>Contains the nickname of the user who created the content. This is a user-specified value that should be used when referring to the user by name.</p>
+    <p>The <code>&lt;media:credit&gt;</code> element  appears as a child of a <code>&lt;<a href="#media_group">media:group</a>&gt;</code> element.</p>
+    <pre>&lt;media:credit&gt;Liz Bennet&lt;/media:credit&gt;</pre>
+    <h3><a name="media_description" id="media_description">media:description</a></h3>
+    <p>Contains a description of the entry's media content.  For <code>api</code> projections, the description is in  plain text; for <code>base</code> projections, the description is in HTML.</p>
+    <p>The <code>&lt;media:description&gt;</code> element  appears as a child of a <code>&lt;<a href="#media_group">media:group</a>&gt;</code> element.</p>
+    <h4>Attributes</h4>
+    <table>
+      <tr>
+        <th>Attribute</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td>Either <code>plain</code> or <code>html</code>. Is set to <code>plain</code> for <code>api</code> projections, <code>html</code> for <code>base</code> projections.</td>
+      </tr>
+    </table>
+    <h4>Example</h4>
+    <pre>&lt;media:description type=&quot;plain&quot;&gt;A set of photographs I took while
+  vacationing in Italy.  Florence is beautiful!&lt;/media:description&gt;</pre>
+    <h3><a name="media_group" id="media_group">media:group</a></h3>
+    <p>Container element for all <code>media</code> elements.</p>
+    <p>The <code>&lt;media:group&gt;</code> element can appear as a child of an <code>album</code> or <code>photo</code> entry.</p>
+    <h3><a name="media_keywords">media:keywords</a></h3>
+    <p>Lists the tags associated with the entry.  Contains a comma-separated list of  tags that have been added to the photo, or all tags that have been added to photos in the album.</p>
+    <p>The <code>&lt;media:keywords&gt;</code> element  appears as a child of a <code>&lt;<a href="#media_group">media:group</a>&gt;</code> element.</p>
+    <pre>&lt;media:keywords&gt;italy, vacation, sunset&lt;/media:keywords&gt;</pre>
+    <h3><a name="media_thumbnail">media:thumbnail</a></h3>
+    <p>Contains the URL of a thumbnail of a photo or album cover.  If the <code>thumbsize</code> parameter is set, this element points to  thumbnails of the requested sizes; otherwise the thumbnails are the default thumbnail size.</p>
+    <p>The <code>&lt;media:thumbnail&gt;</code> element  appears as a child of a <code>&lt;<a href="#media_group">media:group</a>&gt;</code> element. There can be multiple <code>&lt;media:content&gt;</code> elements for a given <code>&lt;media:group&gt;</code>; for example, a given item may have multiple thumbnails at different sizes. Photos generally have two thumbnails at different sizes; albums generally have one cropped thumbnail.</p>
+    <h4>Attributes</h4>
+    <table>
+      <tr>
+        <th>Attribute</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>url</code></td>
+        <td>The URL of the thumbnail image.</td>
+      </tr>
+      <tr>
+        <td><code>height</code></td>
+        <td>The height of the thumbnail image.</td>
+      </tr>
+      <tr>
+        <td><code>width</code></td>
+        <td>The width of the thumbnail image.</td>
+      </tr>
+    </table>
+    <h4>Example</h4>
+    <pre>&lt;media:thumbnail
+  url="http://picasaweb.google.com/image/liz/.../Wonderful.jpg?imgmax=160&amp;crop=1'
+  height='160' width='160'&gt;&lt;/media:thumbnail&gt;</pre>
+    <h3><a name="media_title">media:title</a></h3>
+    <p>Contains the title of the  entry's media content, in plain text.</p>
+    <p>The <code>&lt;media:title&gt;</code> element  appears as a child of a <code>&lt;<a href="#media_group">media:group</a>&gt;</code> element.</p>
+    <h4>Attributes</h4>
+    <table>
+      <tr>
+        <th>Attribute</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td>Always set to <code>plain</code>.</td>
+      </tr>
+    </table>
+    <h4>Example</h4>
+    <pre>&lt;media:title type="plain"&gt;My Album&lt;/media:title&gt;</pre>
+    <h2><a name="gphoto_reference" id="gphoto_reference">Picasa Web Albums extension (gphoto namespace) element reference</a></h2>
+    <p>The Picasa Web Albums data API uses the <code>gphoto</code> namespace for extension elements. The schema URL for the <code>gphoto</code> namespace is <code>http://schemas.google.com/photos/2007</code>.</p>
+    <p>Most of the gphoto elements can appear only with a particular kind. A few elements can appear with multiple different kinds. </p>
+    <ol class="toc">
+      <li>Elements appearing with multiple kinds
+        <ol class="toc">
+	      <li><a href="#gphoto_albumid">gphoto:albumid</a></li>
+	      <li><a href="#gphoto_commentCount">gphoto:commentCount</a></li>
+	      <li><a href="#gphoto_commentingenabled">gphoto:commentingEnabled</a></li>
+	      <li><a href="#gphoto_id">gphoto:id</a></li>
+        </ol>
+      </li>
+	  <li>Elements appearing only  with the <code>user</code> kind
+            <ol class="toc">
+	      <li><a href="#gphoto_maxPhotosPerAlbum">gphoto:maxPhotosPerAlbum</a></li>
+	      <li><a href="#gphoto_nickname">gphoto:nickname</a></li>
+	      <li><a href="#gphoto_quotacurrent">gphoto:quotacurrent</a></li>
+	      <li><a href="#gphoto_quotalimit">gphoto:quotalimit</a></li>
+	      <li><a href="#gphoto_thumbnail">gphoto:thumbnail</a></li>
+	      <li><a href="#gphoto_user">gphoto:user</a></li>
+            </ol>
+	  </li>
+	  <li>Elements appearing only  with the <code>album</code> kind
+	    <ol class="toc">
+	      <li><a href="#gphoto_access">gphoto:access</a></li>
+	      <li><a href="#gphoto_bytesUsed">gphoto:bytesUsed</a></li>
+	      <li><a href="#gphoto_location">gphoto:location</a></li>
+	      <li><a href="#gphoto_name">gphoto:name</a></li>
+	      <li><a href="#gphoto_numphotos">gphoto:numphotos</a></li>
+	      <li><a href="#gphoto_numphotosremaining">gphoto:numphotosremaining</a></li>
+            </ol>
+	  </li>
+	  <li>Elements appearing only  with the <code>photo</code> kind
+	    <ol class="toc">
+	      <li><a href="#gphoto_checksum">gphoto:checksum</a></li>
+	      <li><a href="#gphoto_client">gphoto:client</a></li>
+	      <li><a href="#gphoto_height">gphoto:height</a></li>
+	      <li><a href="#gphoto_position">gphoto:position</a></li>
+	      <li><a href="#gphoto_rotation">gphoto:rotation</a></li>
+	      <li><a href="#gphoto_size">gphoto:size</a></li>
+	      <li><a href="#gphoto_timestamp">gphoto:timestamp</a></li>
+	      <li><a href="#gphoto_version">gphoto:version</a></li>
+	      <li><a href="#gphoto_width">gphoto:width</a></li>
+            </ol>
+	  </li>
+          <li>Elements appearing only with the <code>comment</code> kind
+	    <ol>
+	      <li><a href="#gphoto_photoid">gphoto:photoid</a></li>
+	    </ol>
+	  </li>
+	  <li>Elements appearing only  with the <code>tag</code> kind
+	    <ol class="toc">
+	      <li><a href="#gphoto_weight">gphoto:weight</a></li>
+            </ol>
+      </li>
+    </ol>
+    <h2>Elements appearing with multiple kinds</h2>
+    <p>The following elements  appear in feeds of multiple kinds. </p>
+    <h3><a name="gphoto_albumid">gphoto:albumid</a></h3>
+    <p>The album's ID.</p>
+    <p>The <code>&lt;gphoto:albumid&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>. The <code>&lt;gphoto:albumid&gt;</code> element is valid with the <code>photo</code> and <code>comment</code> kinds.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:albumid&gt;5024425138&lt;/gphoto:albumid&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = albumid
+
+albumid =
+  element gphoto:albumid {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_commentCount">gphoto:commentCount</a></h3>
+    <p>The number of comments on an element.</p>
+    <p>The <code>&lt;gphoto:commentCount&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>. The <code>&lt;gphoto:commentCount&gt;</code> element is valid with the <code>album</code> and <code>photo</code> kinds.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:commentCount&gt;11&lt;/gphoto:commentCount&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = commentCount
+
+commentCount =
+  element gphoto:commentCount {
+    xsd:unsignedInt
+  }</pre>
+    <h3><a name="gphoto_commentingenabled">gphoto:commentingEnabled</a></h3>
+    <p>Boolean value indicating whether commenting is enabled for the element.</p>
+    <p>The <code>&lt;gphoto:commentingEnabled&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.</p>
+    <p>The <code>&lt;gphoto:commentingEnabled&gt;</code> element is valid with the <code>album</code> and <code>photo</code> kinds.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:commentingEnabled&gt;true&lt;/gphoto:commentingEnabled&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = commentingEnabled
+
+commentingEnabled =
+  element gphoto:commentingEnabled {
+    xsd:boolean
+  }</pre>
+    <h3><a name="gphoto_id">gphoto:id</a></h3>
+    <p>The  ID of the current element.</p>
+    <p>The <code>&lt;gphoto:id&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:id&gt;</code> element is valid with the <code>album</code>, <code>photo</code>, and <code>comment</code> kinds.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:id&gt;512131187&lt;/gphoto:id&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = id
+
+id =
+  element gphoto:id {
+    xsd:string
+  }</pre>
+    <h2>Elements appearing with the user kind</h2>
+    <p>The following elements  appear only in feeds of the <code>user</code> kind. </p>
+    <h3><a name="gphoto_maxPhotosPerAlbum">gphoto:maxPhotosPerAlbum</a></h3>
+    <p>The maximum number of photos allowed in an album.</p>
+    <p>The <code>&lt;gphoto:maxPhotosPerAlbum&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:maxPhotosPerAlbum&gt;</code> element is valid with the <code>user</code> kind.</p>
+    <p class="note"><strong>Note</strong>: This element appears only if the authenticated user is the owner of the feed. </p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:maxPhotosPerAlbum&gt;1000&lt;/gphoto:maxPhotosPerAlbum&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = maxPhotosPerAlbum
+
+maxPhotosPerAlbum =
+  element gphoto:maxPhotosPerAlbum {
+    xsd:unsignedInt
+  }</pre>
+    <h3><a name="gphoto_nickname">gphoto:nickname</a></h3>
+    <p>The user's nickname.  This is a user-specified value that should be used when referring to the user by name.</p>
+    <p>The <code>&lt;gphoto:nickname&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:nickname&gt;</code> element is valid with the <code>user</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:nickname&gt;Liz Bennett&lt;/gphoto:nickname&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = nickname
+
+nickname =
+  element gphoto:nickname {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_quotacurrent">gphoto:quotacurrent</a></h3>
+    <p>The number of bytes of storage currently in use by the user.</p>
+    <p>The <code>&lt;gphoto:quotacurrent&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:quotacurrent&gt;</code> element is valid with the <code>user</code> kind.</p>
+    <p class="note"><strong>Note</strong>: This element appears only if the authenticated user is the owner of the feed.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:quotacurrent&gt;312459331&lt;/gphoto:quotacurrent&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = quotacurrent
+
+quotacurrent =
+  element gphoto:quotacurrent {
+    xsd:unsignedLong
+  }</pre>
+    <h3><a name="gphoto_quotalimit">gphoto:quotalimit</a></h3>
+    <p>The total amount of space allotted to the user.</p>
+    <p>The <code>&lt;gphoto:quotalimit&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:quotalimit&gt;</code> element is valid with the <code>user</code> kind.</p>
+    <p class="note"><strong>Note</strong>: This element appears only if the authenticated user is the owner of the feed. </p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:quotalimit&gt;1385222385&lt;/gphoto:quotalimit&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = quotalimit
+
+quotalimit =
+  element gphoto:quotalimit {
+    xsd:unsignedLong
+  }</pre>
+    <h3><a name="gphoto_thumbnail">gphoto:thumbnail</a></h3>
+    <p>The URL of a thumbnail-sized portrait of the user. Not to be confused with the <code>&lt;<a href="#media_thumbnail">media:thumbnail</a>&gt;</code> element. </p>
+    <p>The <code>&lt;gphoto:thumbnail&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:thumbnail&gt;</code> element is valid with the <code>user</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:thumbnail&gt;http://picasaweb.google.com/image/.../Hello.jpg&lt;/gphoto:thumbnail&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = thumbnail
+
+thumbnail =
+  element gphoto:thumbnail {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_user">gphoto:user</a></h3>
+    <p>The user's username.  This is the name that is used in all feed URLs.</p>
+    <p>The <code>&lt;gphoto:user&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:user&gt;</code> element is valid with the <code>user</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:user&gt;liz&lt;/gphoto:user&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = user
+
+user =
+  element gphoto:user {
+    xsd:string
+  }</pre>
+    <h2>Elements appearing with the album kind</h2>
+    <p>The following elements  appear only in feeds of the <code>album</code> kind. </p>
+    <h3><a name="gphoto_access">gphoto:access</a></h3>
+    <p>The album's access level.  In this document, access level is also referred to as &quot;visibility.&quot;  Valid values are <code>public</code> or <code>private</code>.</p>
+    <p>The <code>&lt;gphoto:access&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:access&gt;</code> element is valid with the <code>album</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:access&gt;public&lt;/gphoto:access&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = access
+
+access =
+  element gphoto:access {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_bytesUsed">gphoto:bytesUsed</a></h3>
+    <p>The number of bytes of storage that  this album uses.</p>
+    <p>The <code>&lt;gphoto:bytesUsed&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:bytesUsed&gt;</code> element is valid with the <code>album</code> kind.</p>
+    <p class="note"><strong>Note</strong>: This element appears only if the authenticated user is the owner of the feed. </p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:bytesUsed&gt;11876307&lt;/gphoto:bytesUsed&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = bytesUsed
+
+bytesUsed =
+  element gphoto:bytesUsed {
+    xsd:unsignedInt
+  }</pre>
+    <h3><a name="gphoto_location">gphoto:location</a></h3>
+    <p>The user-specified location associated with the album.</p>
+    <p>The <code>&lt;gphoto:location&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:location&gt;</code> element is valid with the <code>album</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:location&gt;Tokyo, Japan&lt;/gphoto:location&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = location
+
+location =
+  element gphoto:location {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_name">gphoto:name</a></h3>
+    <p>The name of the album, which is the URL-usable name derived from the title.  This is the name that should be used in all URLs involving the album.</p>
+    <p>The <code>&lt;gphoto:name&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:name&gt;</code> element is valid with the <code>album</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:name&gt;mytrip&lt;/gphoto:name&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = name
+
+name =
+  element gphoto:name {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_numphotos">gphoto:numphotos</a></h3>
+    <p>The number of photos in the album.</p>
+    <p>The <code>&lt;gphoto:numphotos&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:numphotos&gt;</code> element is valid with the <code>album</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:numphotos&gt;237&lt;/gphoto:numphotos&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = numphotos
+
+numphotos =
+  element gphoto:numphotos {
+    xsd:unsignedInt
+  }</pre>
+    <h3><a name="gphoto_numphotosremaining">gphoto:numphotosremaining</a></h3>
+    <p>The number of remaining photo uploads allowed in this album.  This is equivalent to the user's maximum number of photos per album (<code>&lt;<a href="#gphoto_maxPhotosPerAlbum">gphoto:maxPhotosPerAlbum</a>&gt;</code>) minus the number of photos currently in the album (<code>&lt;<a href="#gphoto_numphotos">gphoto:numphotos</a>&gt;</code>).</p>
+    <p>The <code>&lt;gphoto:numphotosremaining&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:numphotosremaining&gt;</code> element is valid with the <code>album</code> kind.</p>
+    <p class="note"><strong>Note</strong>: This element appears only if the authenticated user is the owner of the feed. </p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:numphotosremaining&gt;763&lt;/gphoto:numphotosremaining&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = numphotosremaining
+
+numphotosremaining =
+  element gphoto:numphotosremaining {
+    xsd:unsignedInt
+  }</pre>
+    <h2>Elements appearing with the photo kind</h2>
+    <p>The following elements  appear only in feeds of the <code>photo</code> kind. </p>
+    <h3><a name="gphoto_checksum">gphoto:checksum</a></h3>
+    <p>The checksum on the photo.  This optional field can be used by uploaders to associate a checksum with a photo to ease duplicate detection.</p>
+    <p>The <code>&lt;gphoto:checksum&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:checksum&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:checksum&gt;23512309abbs298&lt;/gphoto:checksum&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = checksum
+
+checksum =
+  element gphoto:checksum {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_client">gphoto:client</a></h3>
+    <p>The client application that created the photo.  (Optional element.)</p>
+    <p>The <code>&lt;gphoto:client&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:client&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:client&gt;Picasa2.6&lt;/gphoto:client&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = client
+
+client =
+  element gphoto:client {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_height">gphoto:height</a></h3>
+    <p>The height of the photo in pixels.</p>
+    <p>The <code>&lt;gphoto:height&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:height&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:height&gt;1200&lt;/gphoto:height&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = height
+
+height =
+  element gphoto:height {
+    xsd:unsignedLong
+  }</pre>
+    <h3><a name="gphoto_position">gphoto:position</a></h3>
+    <p>The ordinal position of the photo within the parent album.</p>
+    <p>The <code>&lt;gphoto:position&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:position&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:position&gt;10&lt;/gphoto:position&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = position
+
+position =
+  element gphoto:position {
+    xsd:float
+  }</pre>
+    <h3><a name="gphoto_rotation">gphoto:rotation</a></h3>
+    <p>The rotation of the photo in degrees, used to change the rotation of the photo.  Will only be shown  if the rotation has not already been applied to the requested images.</p>
+    <p>The <code>&lt;gphoto:rotation&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:rotation&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:rotation&gt;90&lt;/gphoto:rotation&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = rotation
+
+rotation =
+  element gphoto:rotation {
+    xsd:unsignedInt
+  }</pre>
+    <h3><a name="gphoto_size">gphoto:size</a></h3>
+    <p>The size of the photo in bytes.</p>
+    <p>The <code>&lt;gphoto:size&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:size&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:size&gt;149351&lt;/gphoto:size&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = size
+
+size =
+  element gphoto:size {
+    xsd:unsignedLong
+  }</pre>
+    <h3><a name="gphoto_timestamp">gphoto:timestamp</a></h3>
+    <p>The photo's timestamp, represented as the number of milliseconds since January 1st, 1970.  Contains the date of the photo either set externally or retrieved from the EXIF data.</p>
+    <p>The <code>&lt;gphoto:timestamp&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:timestamp&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:timestamp&gt;1168640584000&lt;/gphoto:timestamp&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = timestamp
+
+timestamp =
+  element gphoto:timestamp {
+    xsd:long
+  }</pre>
+    <h3><a name="gphoto_version" id="gphoto_version">gphoto:version</a></h3>
+    <p>The version number of the  photo. Version numbers are based on modification time, so they don't increment linearly. Note that if you try to update a photo using a version number other than the latest one, you may receive an error; for more information, see <a href="../gdata/reference.html#Optimistic-concurrency">Optimistic concurrency (versioning)</a> in the GData reference document. </p>
+    <p>The <code>&lt;gphoto:version&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:version&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:version&gt;22838&lt;/gphoto:version&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = &quot;http://schemas.google.com/photos/2007&quot;
+start = version
+
+version =
+  element gphoto:version {
+    xsd:string
+  }</pre>
+    <h3><a name="gphoto_width">gphoto:width</a></h3>
+    <p>The width of the photo in pixels.</p>
+    <p>The <code>&lt;gphoto:width&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:width&gt;</code> element is valid with the <code>photo</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:width&gt;1600&lt;/gphoto:width&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = width
+
+width =
+  element gphoto:width {
+    xsd:unsignedLong
+  }</pre>
+    <h2>Elements appearing with the comment kind</h2>
+    <p>The following element appears only in feeds of the <code>comment</code> kind. </p>
+    <h3><a name="gphoto_photoid" id="gphoto_photoid">gphoto:photoid</a></h3>
+    <p>The ID of the photo associated with the current comment.</p>
+    <p>The <code>&lt;gphoto:photoid&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:photoid&gt;</code> element is valid with the <code>comment</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:photoid&gt;301521187&lt;/gphoto:photoid&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = &quot;http://schemas.google.com/photos/2007&quot;
+start = photoid
+
+photoid =
+  element gphoto:photoid {
+    xsd:string
+  }</pre>
+    <h2>Elements appearing with the tag kind</h2>
+    <p>The following element appears only in feeds of the <code>tag</code> kind. </p>
+    <h3><a name="gphoto_weight">gphoto:weight</a></h3>
+    <p>The weight of the tag.  The weight is the number of times the tag appears in photos under the current element.  The default weight is 1.</p>
+    <p>The <code>&lt;gphoto:weight&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.  The <code>&lt;gphoto:weight&gt;</code> element is valid with the <code>tag</code> kind.</p>
+    <h4>Example</h4>
+    <pre>&lt;gphoto:weight&gt;3&lt;/gphoto:weight&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gphoto = "http://schemas.google.com/photos/2007"
+start = weight
+
+weight =
+  element gphoto:weight {
+    xsd:unsignedInt
+  }</pre>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

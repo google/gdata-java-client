@@ -52,6 +52,8 @@ public enum AppsForYourDomainErrorCode {
   InvalidUsername(1403),
   InvalidHashFunctionName(1404),
   InvalidHashDigestLength(1405),
+  InvalidEmailAddress(1406),
+  InvalidQueryParameterValue(1407),
 
   TooManyRecipientsOnEmailList(1500);
 

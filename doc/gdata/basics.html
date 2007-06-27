@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Data APIs (Beta) Developer's Guide - Google Data APIs Protocol Basics</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+-->
+</style>
+</head>
+<body id="basics_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Data APIs (Beta) Developer's Guide</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>GData documentation</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="index.html" id="index_link">Main</a></li>
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="basics.html" id="basics_link">Protocol Basics</a></li>
+        <li><a href="reference.html" id="reference_link">Protocol Reference</a></li>
+        <li><a href="auth.html" id="auth_link">Authentication</a></li>
+        <li><a href="elements.html" id="elements_link">Common Elements</a></li>
+        <li><a href="clientlibs.html" id="clientlibs_link">Client Libraries</a></li>
+        <li><a href="batch.html" id="batch_link">Batch Processing</a></li>
+        <li><a href="samples.html" id="samples_link">Samples</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Service-specific documents</h1>
+      <ul>
+	
+        <li><a href="http://code.google.com/apis/base/">Base Data API</a></li>
+	
+	
+        <li><a href="../blogger/overview.html" id="blogger_link">Blogger Data API</a></li>
+	
+        <li><a href="../calendar/overview.html" id="calendar_link">Calendar Data API</a></li>
+        <li><a href="../codesearch/overview.html" id="codesearch_link">Code Search Data API</a></li>
+	
+	<li><a href="http://code.google.com/apis/apps/gdata_provisioning_api_v2.0_reference.html">Google Apps Provisioning API</a></li>
+	
+	
+        <li><a href="../notebook/overview.html" id="notebook_link">Notebook Data API</a></li>
+	
+        <li><a href="../spreadsheets/overview.html" id="spreadsheets_link">Spreadsheets Data API</a></li>
+        <li><a href="../picasaweb/overview.html" id="picasaweb_link">Picasa Web Albums Data API</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Related links</h1>
+      <ul><li><a href="http://groups.google.com/group/google-help-dataapi">Discussion Group</a></li>
+        <li><a href="http://googledataapis.blogspot.com/">GData Blog</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+    <h1 id="page_title">Google Data APIs Protocol Basics</h1> 
+    <p>This document describes the basics of the protocol used by the Google data APIs (&quot;GData&quot;), including examples of what a query looks like, what results look like, and so on.</p> 
+    <p>For more information about the Google data APIs, see the <a href="overview.html">Google Data APIs Overview</a> document and the <a href="reference.html">Protocol Reference</a> document. </p> 
+    <h1>Contents</h1> 
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li> 
+      <li><a href="#Examples">Examples</a> 
+	<ol>
+          <li><a href="#Requesting-a-feed">Requesting a feed or other resource</a></li> 
+          <li><a href="#Inserting-a-new-entry">Inserting a new entry</a></li> 
+          <li><a href="#Searching-for-a-string">Searching for a string</a></li> 
+          <li><a href="#Updating-an-entry">Updating an entry</a></li> 
+          <li><a href="#Deleting-an-entry">Deleting an entry</a></li> 
+        </ol> 
+      </li> 
+      <li><a href="#Additional-resources">Additional resources</a></li> 
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1> 
+    <p>This document is intended for anyone wanting to understand the general idea of the XML format and protocol used by the Google data APIs.</p> 
+    <p>If you just want to write code that uses the GData client APIs, you can alternatively use the language-specific <a href="clientlibs.html">client libraries</a>. But you might want to read this document anyway, to understand what's going on beneath the client-library abstraction layer. </p> 
+    <p>This document assumes that you understand the basics of XML, namespaces, syndicated feeds, and the <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code> requests in HTTP, as well as HTTP's concept of a &quot;resource.&quot; For more information about those things, see the <a href="#Additional-resources">Additional resources</a> section of this document.</p> 
+    <p>This document doesn't rely on any particular programming language; you can send and receive GData messages using any programming language that lets you issue HTTP requests and parse XML-based responses.</p> 
+    <h1><a name="Examples" id="Examples">Examples</a></h1> 
+    <p>The following examples show bare GData protocol requests you might send to a generic service, and the GData-formatted results you might receive. For examples of how to send the requests using various programming languages, see the language-specific <a href="samples.html">samples</a> and <a href="clientlibs.html">client libraries</a>. For information about using GData with specific Google services, see the service-specific documentation.</p> 
+    <h2><a name="Requesting-a-feed" id="Requesting-a-feed">Requesting a feed or other resource</a></h2> 
+    <p>Assume there's a feed called /myFeed, and assume that it currently doesn't happen to contain any entries. To see it, send the following request to the server:</p> 
+    <pre>GET /myFeed</pre> 
+    <p>The server responds:</p> 
+    <pre>200 OK
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+  &lt;title&gt;Foo&lt;/title&gt;
+  &lt;updated&gt;2006-01-23T16:25:00-08:00&lt;/updated&gt;
+  &lt;id&gt;http://www.example.com/myFeed&lt;/id&gt;
+  &lt;author&gt;
+    &lt;name&gt;Jo March&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;link href=&quot;/myFeed&quot; rel=&quot;self&quot;/&gt;
+&lt;/feed&gt;
+</pre> 
+    <p>Note that although the feed doesn't contain any entries, it does contain metadata, such as a title and an author's name.</p> 
+    <h2><a name="Inserting-a-new-entry" id="Inserting-a-new-entry">Inserting a new entry</a></h2> 
+    <p>To create a new entry, send a <code>POST</code> request, and supply a new entry in GData format:</p> 
+    <pre>POST /myFeed
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;entry xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+    &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+  &lt;/author&gt;
+  &lt;title type=&quot;text&quot;&gt;Entry 1&lt;/title&gt;
+  &lt;content type=&quot;text&quot;&gt;This is my entry&lt;/content&gt;
+&lt;/entry&gt;
+</pre> 
+    <p>Note that you don't supply the standard Atom <code>&lt;id&gt;</code>, <code>&lt;link&gt;</code>, or <code>&lt;updated&gt;</code> elements; the server creates those in response to your <code>POST</code> request. Also note that the author of a feed doesn't have to be the same person as the author of an entry.</p> 
+    <p>The server responds:</p> 
+    <pre>
+201 CREATED
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;entry xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+  &lt;id&gt;1&lt;/id&gt;
+  &lt;link rel=&quot;edit&quot; href=&quot;http://example.com/myFeed/1/1/&quot;/&gt;
+  &lt;updated&gt;2006-01-23T16:26:03-08:00&lt;/updated&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+    &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+  &lt;/author&gt;
+  &lt;title type=&quot;text&quot;&gt;Entry 1&lt;/title&gt;
+  &lt;content type=&quot;text&quot;&gt;This is my entry&lt;/content&gt;
+&lt;/entry&gt;
+</pre> 
+    <h2><a name="Searching-for-a-string" id="Searching-for-a-string">Searching for a string</a></h2> 
+    <p>To do a full-text search for a particular string, when using a service that supports full-text searches, send a <code>GET</code> request with the <code>q</code> parameter. For more information about query parameters, see <a href="reference.html#query-requests">Query requests</a> in the protocol reference document.</p> 
+    <pre>GET /myFeed?q=This</pre> 
+    <p>The server responds with all the entries that match the search string <code>This</code>. (In this case there's only one.)</p> 
+    <pre>
+200 OK
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+  &lt;title&gt;Foo&lt;/title&gt;
+  &lt;updated&gt;2006-01-23T16:26:03-08:00&lt;/updated&gt;
+  &lt;id&gt;http://www.example.com/myFeed&lt;/id&gt;
+  &lt;author&gt;
+    &lt;name&gt;Jo March&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;link href=&quot;/myFeed&quot; rel=&quot;self&quot;/&gt;
+  &lt;entry&gt;
+    &lt;id&gt;1&lt;/id&gt;
+    &lt;link rel=&quot;edit&quot; href=&quot;http://example.com/myFeed/1/1/&quot;/&gt;
+    &lt;updated&gt;2006-01-23T16:26:03-08:00&lt;/updated&gt;
+    &lt;author&gt;
+      &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+      &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+    &lt;/author&gt;
+    &lt;title type=&quot;text&quot;&gt;Entry 1&lt;/title&gt;
+    &lt;content type=&quot;text&quot;&gt;This is my entry&lt;/content&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;</pre> 
+    <h2><a name="Updating-an-entry" id="Updating-an-entry">Updating an entry</a></h2> 
+    <p>To update an existing entry, use <code>PUT</code>, with the entry's edit URI (as provided by the server in the previous example, in the <code>&lt;link rel=&quot;edit&quot;&gt;</code> element).</p> 
+    <p>If your firewall does not allow <code>PUT</code>, then do an HTTP <code>POST</code> and set the method override header as follows:</p>
+    <pre><code>X-HTTP-Method-Override: PUT</code></pre>
+    <p>In the following example, we're changing the entry's text from its old value (&quot;This is my entry&quot;) to a new value (&quot;This is my first entry.&quot;):</p> 
+    <pre>
+PUT /myFeed/1/1/
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;entry xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+  &lt;id&gt;1&lt;/id&gt;
+  &lt;link rel=&quot;edit&quot; href=&quot;http://example.com/myFeed/1/1/&quot;/&gt;
+  &lt;updated&gt;2006-01-23T16:28:05-08:00&lt;/updated&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+    &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+  &lt;/author&gt;
+  &lt;title type=&quot;text&quot;&gt;Entry 1&lt;/title&gt;
+  &lt;content type=&quot;text&quot;&gt;This is my first entry.&lt;/content&gt;
+&lt;/entry&gt;
+</pre> 
+    <p>The server responds:</p> 
+    <pre>
+200 OK
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;entry xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+  &lt;id&gt;1&lt;/id&gt;
+  &lt;link rel=&quot;edit&quot; href=&quot;http://example.com/myFeed/1/2/&quot;/&gt;
+  &lt;updated&gt;2006-01-23T16:28:05-08:00&lt;/updated&gt;
+  &lt;author&gt;
+    &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+    &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+  &lt;/author&gt;
+  &lt;title type=&quot;text&quot;&gt;Entry 1&lt;/title&gt;
+  &lt;content type=&quot;text&quot;&gt;This is my first entry.&lt;/content&gt;
+&lt;/entry&gt;
+</pre> 
+    <p>Note that the edit URI has changed; it now ends with &quot;/2/&quot; instead of &quot;/1/&quot;. The final number in the edit URI is a version number. For more information about versions, see the <a href="reference.html#Optimistic-concurrency">Optimistic concurrency</a> section of the protocol reference document.</p> 
+    <p>To see the new entry in context, request the entire resource again:</p> 
+    <pre>GET /myFeed</pre> 
+    <p>The server responds:</p> 
+    <pre>
+200 OK
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+  &lt;title&gt;Foo&lt;/title&gt;
+  &lt;updated&gt;2006-01-23T16:28:05-08:00&lt;/updated&gt;
+  &lt;id&gt;http://www.example.com/myFeed&lt;/id&gt;
+  &lt;author&gt;
+    &lt;name&gt;Jo March&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;link href=&quot;/myFeed&quot; rel=&quot;self&quot;/&gt;
+  &lt;entry&gt;
+    &lt;id&gt;1&lt;/id&gt;
+    &lt;link rel=&quot;edit&quot; href=&quot;http://example.com/myFeed/1/2/&quot;/&gt;
+    &lt;updated&gt;2006-01-23T16:28:05-08:00&lt;/updated&gt;
+    &lt;author&gt;
+      &lt;name&gt;Elizabeth Bennet&lt;/name&gt; 
+      &lt;email&gt;liz@gmail.com&lt;/email&gt; 
+    &lt;/author&gt;
+    &lt;title type=&quot;text&quot;&gt;Entry 1&lt;/title&gt;
+    &lt;content type=&quot;text&quot;&gt;This is my first entry.&lt;/content&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre> 
+    <h2><a name="Deleting-an-entry" id="Deleting-an-entry">Deleting an entry</a></h2> 
+    <p>To delete an existing entry, send a <code>DELETE</code> request, using the entry's edit URI (as provided by the server in the previous example).</p> 
+    <p>If your firewall does not allow <code>DELETE</code>, then do an HTTP <code>POST</code> and set the method override header as follows:</p>
+    <pre> <code>X-HTTP-Method-Override: DELETE</code></pre>
+    <p>The following example deletes an entry:</p>
+    <pre>
+DELETE /myFeed/1/2/
+</pre> 
+    <p>The server responds:</p> 
+    <pre>
+200 OK
+</pre> 
+    <p>Do another <code>GET</code> to see that the feed now contains no entries:</p> 
+    <pre>GET /myFeed</pre> 
+    <p>The server responds:</p> 
+    <pre>200 OK
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+  &lt;title&gt;Foo&lt;/title&gt;
+  &lt;updated&gt;2006-01-23T16:30:11-08:00&lt;/updated&gt;
+  &lt;id&gt;http://www.example.com/myFeed&lt;/id&gt;
+  &lt;author&gt;
+    &lt;name&gt;Jo March&lt;/name&gt;
+  &lt;/author&gt;
+  &lt;link href=&quot;/myFeed&quot; rel=&quot;self&quot;/&gt;
+&lt;/feed&gt;
+</pre> 
+    <p>If the deletion fails, then the server responds with an error code. For more information, see <a href="reference.html#http-status-codes">HTTP status codes</a>  in the protocol reference document.</p> 
+    <h1><a name="Additional-resources" id="Additional-resources"></a>Additional resources</h1> 
+    <p>You may find the following third-party documents useful:</p> 
+    <ul><li><a href="http://www-128.ibm.com/developerworks/xml/library/x-atom10.html">Overview of Atom</a> from IBM</li> 
+      <li>HTTP 1.1 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">method definitions</a>; specification for <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code></li> 
+      <li>HTTP 1.1 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">status code definitions</a></li> 
+      <li><a href="http://www.xml.com/lpt/a/2004/12/01/restful-web.html">How to Create a REST Protocol</a></li> 
+      <li><a href="http://www.xfront.com/REST-Web-Services.html">Building Web Services the REST Way</a></li> 
+      <li><a href="http://www.xml.com/pub/a/98/10/guide0.html">A Technical Introduction to XML</a></li> 
+      <li><a href="http://www.xml.com/pub/a/1999/01/namespaces.html">XML Namespaces by Example</a></li> 
+    </ul> 
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

@@ -23,9 +23,11 @@ import com.google.gdata.data.Entry;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Feed;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.ParseSource;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.io.base.UnicodeReader;
 
 import javax.activation.DataContentHandler;
@@ -61,6 +63,59 @@ import java.util.regex.Pattern;
  */
 public class GDataContentHandler implements DataContentHandler {
 
+  /**
+   * The DataContext class represents the (optional) contextual information
+   * that can be configured on a per-thread basis when parsing GData content
+   * using Java activation.
+   *
+   * A value of {@code null} for entryClass or feedClass indicates that
+   * dynamic adaptation based upon kind category tags should be used to
+   * determine the resulting return type.
+   *
+   * A value of {@code null} for extProfile indicates that a new
+   * profile should be created for parsing and either initialized by
+   * the specified type (feed or entry class) for static typing or
+   * via auto-extension for dynamic typing.
+   */
+  public static class DataContext {
+
+    private ExtensionProfile extProfile;
+    private Class <? extends BaseEntry> entryClass;
+    private Class <? extends BaseFeed> feedClass;
+
+    public DataContext(ExtensionProfile extProfile,
+                       Class <? extends BaseEntry> entryClass,
+                       Class <? extends BaseFeed> feedClass) {
+      this.extProfile = extProfile;
+      this.entryClass = entryClass;
+      this.feedClass = feedClass;
+    }
+
+    public ExtensionProfile getExtensionProfile() { return extProfile; }
+    public Class <? extends BaseEntry> getEntryClass() { return entryClass; }
+    public Class <? extends BaseFeed> getFeedClass() { return feedClass; }
+  }
+
+  private static final ThreadLocal<DataContext> threadDataContext =
+      new ThreadLocal<DataContext>();
+
+  /**
+   * Sets the DataContext for the current {@link java.lang.Thread}. If
+   * {@code null}, the default behavior is dynamic adaptation with
+   * extension profile creation and auto-extension.
+   */
+  public static void setThreadDataContext(DataContext dataContext) {
+    threadDataContext.set(dataContext);
+  }
+
+  /**
+   * Returns the DataContext for the current {@link java.lang.Thread}. If
+   * {@code null}, the default behavior is dynamic adaptation with
+   * extension profile creation and auto-extension.
+   */
+  public static DataContext getThreadDataContext() {
+    return threadDataContext.get();
+  }
 
   public DataFlavor[] getTransferDataFlavors() {
     throw new UnsupportedOperationException("No DataFlavor support");
@@ -122,66 +177,55 @@ public class GDataContentHandler implements DataContentHandler {
     } else {
       parseString = new String(buf, 0, n, charset);
     }
-    Object retObject;
+    boolean isFeed;     // true = feed, false = entry
     if (FEED_DOCUMENT_PATTERN.matcher(parseString).matches()) {
-      retObject = new Feed();
+      isFeed = true;
     } else if (ENTRY_DOCUMENT_PATTERN.matcher(parseString).matches()) {
-      retObject = new Entry();
+      isFeed = false;
     } else {
       throw new IOException("Unable to find Atom feed or entry element");
     }
     pushbackStream.unread(buf, 0, n);
 
-    // Parse the full stream based upon document type.
-    ExtensionProfile extProfile = new ExtensionProfile();
-    extProfile.setAutoExtending(true);
-
     // If the charset is known, construct a reader with the appropriate
     // encoding otherwise, we'll use a stream and let the XML parser try to
     // determine the encoding.
-    Reader reader = null;
+    ParseSource source = null;
     if (charset != null) {
       if (charset.toLowerCase().startsWith("utf-")) {
         // For unicode, use a special reader that includes BOM handling.
-        reader = new UnicodeReader(pushbackStream, charset);
+        source = new ParseSource(new UnicodeReader(pushbackStream, charset));
       } else {
-        reader = new InputStreamReader(pushbackStream, charset);
+        source =
+            new ParseSource(new InputStreamReader(pushbackStream, charset));
       }
     }
-    try {
-      if (retObject instanceof Feed) {
-        Feed feed = (Feed)retObject;
-        feed.declareExtensions(extProfile);
-        if (reader == null) {
-          feed.parseAtom(extProfile, pushbackStream);
-        } else {
 
-         feed.parseAtom(extProfile, reader);
-        }
-        BaseFeed adaptedFeed = feed.getAdaptedFeed();
-        if (adaptedFeed != null) {
-          retObject = adaptedFeed;
+    Object retObject;
+    DataContext dataContext = getThreadDataContext();
+    try {
+      if (isFeed) {
+        if (dataContext != null) {
+          retObject = BaseFeed.readFeed(source, dataContext.feedClass,
+              dataContext.extProfile);
+        } else {
+          retObject = BaseFeed.readFeed(source);
         }
       } else {
-        Entry entry = (Entry)retObject;
-        entry.declareExtensions(extProfile);
-        if (reader == null) {
-          entry.parseAtom(extProfile, pushbackStream);
+        if (dataContext != null) {
+          return BaseEntry.readEntry(source, dataContext.entryClass,
+              dataContext.extProfile);
         } else {
-          entry.parseAtom(extProfile, reader);
-        }
-        BaseEntry adaptedEntry = entry.getAdaptedEntry();
-        if (adaptedEntry != null) {
-          retObject = adaptedEntry;
+          retObject = BaseEntry.readEntry(source);
         }
       }
-    } catch (Kind.AdaptorException ae) {
-      IOException ioe = new IOException("Unable to convert to Adaptor type");
-      ioe.initCause(ae);
-      throw ioe;
     } catch (ParseException pe) {
       IOException ioe = new IOException("Unable to parse DataSource");
       ioe.initCause(pe);
+      throw ioe;
+    } catch (ServiceException se) {
+      IOException ioe = new IOException("Error reading content");
+      ioe.initCause(se);
       throw ioe;
     }
     return retObject;

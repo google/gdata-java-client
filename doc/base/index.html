@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Data APIs (Beta) Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="local_extensions.css" />
+<link href="http://code.google.com/apis/gdata/css/product-page.css" rel="stylesheet" type="text/css"/>
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+-->
+</style>
+</head>
+<body id="index_page">
+<a name="top"></a>
+
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <div id="sidenav"> <!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="signup.html" id="signup_link">API Key</a></li>
+      <li><a href="terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+    </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+</form>
+ </div>
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+  <div id="pagecontent">
+    <h1  id="page_title">Google Base data API Overview </h1>
+    <div class="getstarted"> <a href="http://www.google.com/base/api/demo/html/demo.html">Get 
+      Started with the Google Base API</a> </div>
+    <p>The Google Base data API is designed to enable developers to do two things:</p>
+
+    <ul>
+      <li>
+        <div> Query Google Base data to create applications and mashups.</div>
+      </li>
+      <li>
+        <div>Input and manage Google Base items programmatically. </div>
+      </li>
+
+    </ul>
+    <p>To get started with the Google Base data API:</p>
+    <ol>
+      <li> First, visit the <a href="http://www.google.com/base/api/demo/html/demo.html">API 
+        Demo Page</a>. You can experiment with the API and see examples of what you 
+        can do with it.</li>
+      <li>Read the <a href="starting-out.html">Getting 
+        Started Guide</a>, which contains important background information on the 
+        API, including how authentication works in Google Base.</li>
+
+      <li>Read the <a href="attrs-queries.html">Attributes 
+        and Queries </a>chapter to learn how to query for data and attributes. </li>
+    </ol>
+    <p>(For more information about Google Base, refer to the <a href="http://base.google.com">Google 
+      Base homepage</a>.) </p>
+    <table class="bottom">
+      <tr>
+        <td><div class="section">
+
+            <div class="subscribe"> 
+				<a href="http://googlebase.blogspot.com/atom.xml"> 
+					<span class="linktext">Subscribe</span> 
+					<img src="http://code.google.com/images/subscribe.gif" alt="Subscribe"/> 
+				</a> 
+			</div>
+            <h2>Google Base Blog</h2>
+            <div id="blog"> </div>
+            <p class="more"><a href="http://googlebase.blogspot.com/">All posts 
+              &raquo;</a></p>
+
+          </div></td>
+        <td style="padding-left: 40px"><div class="section" id="examplesection">
+            <h2>Example Projects</h2>
+		
+	  <div style="clear: both">&nbsp;</div>
+	  <div class="project">
+            <div class="screenshot"> <a href="http://www.junkdepot.com"><img src="apidemopics/junkdepot.png" alt="Junkdepot"/></a> </div>
+            <div class="info">
+              <div class="name"><a href="http://www.fatdoor.com">Junkdepot</a></div>
+              <div class="snippet">Buy and sell stuff for your home.</div>
+              <div class="apis">
+                <div class="head">GData APIs used:</div>
+                <div class="item"><a href="index.html">Google Base</a></div>
+            </div>
+          </div>
+		
+	  <div style="clear: both">&nbsp;</div>
+	  <div class="project">
+            <div class="screenshot"> <a href="http://www.fatdoor.com"><img src="apidemopics/fatdoor.png" alt="Fatdoor"/></a> </div>
+            <div class="info">
+              <div class="name"><a href="http://www.fatdoor.com">Fatdoor</a></div>
+              <div class="snippet">Find new friends in your neighborhood, as well as information about local events and businesses.</div>
+              <div class="apis">
+                <div class="head">GData APIs used:</div>
+                <div class="item"><a href="index.html">Google Base</a></div>
+            </div>
+          </div>
+		
+	   <div style="clear: both">&nbsp;</div>
+	   <div class="project">
+             <div class="screenshot"> <a href="http://www.gumiyo.com"><img src="../gdata/images/gumiyo.png" alt="Gumiyo"/></a> </div>
+             <div class="info">
+               <div class="name"><a href="http://www.gumiyo.com">Gumiyo</a></div>
+               <div class="snippet">Use your mobile phone to search for and add items to Google Base!</div>
+               <div class="apis">
+                 <div class="head">GData APIs used:</div>
+                 <div class="item"><a href="index.html">Google Base</a></div>
+               </div>
+              </div>
+            </div>
+
+	   <div style="clear: both">&nbsp;</div>
+	     <div class="project">
+               <div class="screenshot"> <a href="http://honda.googlepages.com/"><img src="apidemopics/honda.png" alt="Honda"/></a> </div>
+               <div class="info">
+                 <div class="name"><a href="http://honda.googlepages.com/">Honda Certified Used Cars</a></div>
+                 <div class="snippet">Find Honda certified used cars in your area.</div>
+                 <div class="apis">
+                   <div class="head">GData APIs used:</div>
+                   <div class="item"><a href="index.html">Google Base</a></div>
+                 </div>
+               </div>
+             </div>
+			
+<!--          <div class="project">
+              <div class="screenshot"> <a href="http://www.seatsnapper.com/"><img src="http://photos1.blogger.com/blogger/6803/1982/1600/exposing-earmarks.jpg" alt="Screenshot"/></a> </div>
+              <div class="info">
+                <div class="name"><a href="http://www.seatsnapper.com/">Seat 
+                  Grabber</a></div>
+                <div class="snippet">Look for tickets on Google Base, Craigslist 
+                  and eBay.</div>
+                <div class="apis">
+
+                  <div class="head">GData APIs used:</div>
+                  <div class="item"><a href="index.html">Google Base</a></div>
+                </div>
+              </div>
+            </div> -->
+          </div></td>
+      </tr>
+    </table>
+
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google Inc. - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+  <script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+<script type="text/javascript" src="http://code.google.com/apis/gdata/product-page.js"></script>
+<script type="text/javascript" src="http://www.google.com/reader/public/javascript/user/08127303618716159857/label/base?n=5&amp;callback=(new+BlogRenderer(document.getElementById('blog'))).render"></script>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  urchinTracker();
+</script>
+</body>
+</html>

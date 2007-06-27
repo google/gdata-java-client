@@ -1,0 +1,129 @@
+.section {
+  border-top: 1px dotted silver;
+  margin-top: 15px;
+  padding-top: 5px;
+}
+
+.subscribe {
+  float: right;
+}
+
+.subscribe a, .subscribe a:visited {
+  text-decoration: none;
+  color: #bb4900;
+}
+
+.subscribe a .linktext {
+  text-decoration: underline;
+}
+
+.subscribe img {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  padding-bottom: 2px;
+}
+
+.section h2 {
+  margin: 0;
+  margin-bottom: 0.5em;
+}
+
+table.bottom {
+  width: 90%;
+}
+
+#blog .entry {
+  margin-bottom: 1.5em;
+}
+
+#blog .title {
+  font-size: medium;
+}
+
+#blog .author {
+  color: gray;
+  margin-bottom: 0.5em;
+}
+
+#blog .permalink {
+  margin-top: 1em;
+}
+
+#blog .permalink a:link {
+  color: #7777cc;
+}
+
+.more {
+  font-size: medium;
+  margin-left: 0;
+}
+
+#examplesection {
+  width: 300px;
+}
+
+.project {
+  clear: both;
+}
+
+.project a img {
+  border: 1px solid;
+}
+
+.project .screenshot {
+  float: left;
+  margin-right: 10px;
+}
+
+.project .info .apis {
+  margin-top: 0.5em;
+}
+
+.project .info .name {
+  font-size: medium;
+}
+
+.project .info .apis .item {
+  margin-left: 150px;
+}
+
+div.getstarted {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  margin: 15px 0 15px 25px;
+}
+
+div.getstarted a {
+  border: 1px solid #3366cc;
+  background-color: #e5ecf9;
+  padding: 0.5em;
+  position: relative;
+  font-weight: bold;
+}
+
+table.bottom {
+  border: 0;
+  border-collapse: collapse;
+}
+
+table.bottom th {
+  border: 0;
+}
+
+table.bottom td {
+  border: 0;
+  padding: 0;
+}
+
+table.bottom h2 {
+  border: 0;
+}
+
+#pagecontent table.bottom img {
+  margin: 0;
+}
+
+img#blogsubimage {
+  border: 0;
+}

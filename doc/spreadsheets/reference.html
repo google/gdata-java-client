@@ -1,0 +1,498 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Spreadsheets Data API Reference Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+     color: #000000;
+}
+
+.q {
+  font-weight: bold;
+  color: red;
+  font-style: italic;
+}
+-->
+</style>
+</head>
+<body id="reference_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Spreadsheets Data API </h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Spreadsheets </h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="developers_guide_protocol.html" id="developers_guide_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.google.com/google-d-s/terms.html">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Google data Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://groups.google.com/group/Google-Spreadsheets-Data-API">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent">
+    <h1 id="page_title">Google Spreadsheets Data API Reference Guide </h1>
+    <p>This document provides detailed reference documentation for the Google Spreadsheets data API.</p>
+    <h1>Contents</h1>
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#Feeds">Spreadsheets feed types</a>
+        <ol>
+          <li><a href="#constructing_URIs">Constructing URIs</a> </li>
+          <li><a href="#spreadsheets_Feed">Spreadsheet metafeed</a></li>
+          <li><a href="#worksheets_Feed">Worksheet metafeed</a></li>
+          <li><a href="#list_Feed">List-based feed</a></li>
+          <li><a href="#cells_Feed">Cell-based feed</a></li>
+          <li><a href="#Visibility">Visibility values</a></li>
+          <li><a href="#Projection">Projection values</a></li>
+        </ol>
+      </li>
+      <li><a href="#Parameters">Spreadsheets query parameters reference</a>
+        <ol>
+          <li><a href="#list_Parameters">List-feed query parameters</a></li>
+          <li><a href="#cells_Parameters">Cell-feed query parameters</a></li>
+        </ol>
+      </li>
+      <li><a href="#Elements">Spreadsheets elements reference</a>
+        <ol>
+          <li><a href="#gs_reference">gs namespace element reference</a></li>
+          <li><a href="#gsx_reference">gsx namespace element reference</a></li>
+        </ol>
+      </li>
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications that can interact with Spreadsheets.</p>
+    <p>It's a reference document; it assumes that you understand the concepts presented in the <a href="gdata.html">developer's guide</a>, and  the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>.</p>
+    <h1><a name="Feeds" id="Feeds">Spreadsheets feed types</a></h1>
+    <p>Google Spreadsheets provides a variety of representations of worksheet data.</p>
+    <p>A Spreadsheets feed URI takes the following form:</p>
+    <pre>http://spreadsheets.google.com/feeds/<i>feedType</i>/<i>key</i>/<i>worksheetId</i>/<i>visibility</i>/<i>projection</i></pre>
+    <p>A Spreadsheets metafeed URI is similar, but doesn't always include all of those parameters. For more information, see <a href="#spreadsheets_Feed">Spreadsheet metafeed</a>.</p>
+    <p>The <code>feedType</code> parameter can have any of the following values: <code>spreadsheets</code>, <code>worksheets</code>, <code>list</code>, or <code>cells</code>.</p>
+    <p>The <code>key</code> parameter identifies a spreadsheet.</p>
+    <p>The <code>worksheetId</code> parameter identifies a specific worksheet within the given spreadsheet; within a given spreadsheet, each worksheet has a unique identifier. Alternatively,  in a <code>list</code> or <code>cells</code> feed you can refer to a worksheet by tab number (<code>1</code> for
+      the leftmost worksheet, <code>2</code> for the second  worksheet,
+      etc).</p>
+    <p class="note"><strong>Note</strong>: Be careful referring to worksheets by tab number. If the order of the worksheets
+      changes within the spreadsheet, you may end up accessing the wrong
+      worksheet.</p>
+    <p>The <i>visibility</i> parameter has two possible values: <code>private</code> and <code>public</code>. In almost all cases, your client should use <code>private</code>. For more information, see <a href="#Visibility">Visibility values</a>, below.</p>
+    <p>The <i>projection</i> parameter indicates what information is
+      included in the representation. For example, if your client specifies a projection  of <code>basic</code>, it's requesting an  Atom feed without any GData extension elements.  For a list of values, see <a href="#Projection">Projection values</a>, below.</p>
+    <p>All combinations of  visibility and projection are valid except for <code>public/full</code>. </p>
+    <h3><a name="constructing_URIs" id="constructing_URIs">Constructing URIs </a></h3>
+    <p>Your client will usually determine feed URIs by examining the <code>&lt;link&gt;</code> elements of metafeeds, but in some cases you'll want to construct a feed URI by plugging in appropriate values.</p>
+    <p>For example, when you
+      receive an invitation to share a spreadsheet created by someone else, the
+      URL looks something like the following:</p>
+    <pre>http://spreadsheets.google.com/ccc?key=o12167459629904738010.2120042623512936542</pre>
+    <p>The <i>key</i> parameter in that URL identifies a spreadsheet; to obtain a feed for that spreadsheet, use the same <i>key</i> value to construct a
+      feed URI.</p>
+    <p>Similarly, when you create a spreadsheet, the URL looks something like the following: </p>
+    <pre>http://spreadsheets.google.com/ccc?id=o12167459629904738010.2120042623512936542.1231238971923719237.1892371892731892</pre>
+    <p>In this case, the first two parts of the ID (<code>o12167459629904738010.2120042623512936542</code>) comprise the <i>key</i> value to use in constructing a feed URI.</p>
+    <h2><a name="spreadsheets_Feed" id="spreadsheets_Feed">Spreadsheet metafeed</a></h2>
+    <p>The <code>spreadsheets</code> metafeed lists all the spreadsheets for
+      the Google Account that's associated with the authenticated user:</p>
+    <pre>http://spreadsheets.google.com/feeds/spreadsheets/private/full</pre>
+    <p>Note that  the <code>spreadsheets</code> metafeed URI never includes a <i>worksheetId</i>.</p>
+    <p>When the URI includes a <i>key</i> value, then the metafeed contains only the entry 
+      for the spreadsheet associated with the provided <i>key</i>:</p>
+    <pre>http://spreadsheets.google.com/feeds/spreadsheets/private/full/<i>key</i></pre>
+    <p>Note that in this case the spreadsheet ID (<i>key</i>) appears at the end of the URI rather than in the middle.</p>
+    <h2><a name="worksheets_Feed">Worksheet metafeed</a></h2>
+    <p>The <code>worksheets</code> metafeed lists all
+      the worksheets within the spreadsheet identified by the specified <i>key</i>, along with the URIs for <code>list</code> and <code>cells</code> feeds for each worksheet:</p>
+    <pre>http://spreadsheets.google.com/feeds/worksheets/<i>key</i>/<i>visibility</i>/<i>projection</i></pre>
+    <p>When <i>visibility</i> is <code>public</code>, the returned metafeed  includes only published worksheets; unpublished worksheets are not listed in a <code>public</code> metafeed.</p>
+    <h2><a name="list_Feed">List-based feed</a></h2>
+    <p>A <code>list</code> feed represents each row in a worksheet as a separate <code>&lt;entry&gt;</code> element. Each entry  contains multiple fields,  labelled by
+      XML elements named after the column headers.</p>
+    <pre>http://spreadsheets.google.com/feeds/list/<i>key</i>/<i>worksheetId</i>/<i>visibility</i>/<i>projection</i></pre>
+    <p>Every row has a unique row ID, which you can determine using the <code>&lt;link rel=&quot;self&quot;&gt;</code> element of an entry in a list-based feed. You can include a row ID in the URI, in which case the feed is limited to that row:</p>
+    <pre>http://spreadsheets.google.com/feeds/list/<i>key</i>/<i>worksheetId</i>/<i>visibility</i>/<i>projection</i>/<i>rowId</i></pre>
+    <p>You can set <i>visibility</i> to <code>public</code> only with published worksheets; if you request the feed for an unpublished worksheet using a URI with visibility set to <code>public</code>, you'll get an error.</p>
+    <p class="note"><strong>Note</strong>: The list feed treats the values in the first row of the spreadsheet
+      as the names of the columns. We strongly recommend that Spreadsheets users freeze the first row, using <i>Sort &gt;
+      Freeze Rows</i>. Otherwise, column names may
+      change during sorting.</p>
+    <h2><a name="cells_Feed">Cell-based feed</a></h2>
+    <p>The <code>cells</code> feed represents each cell in the worksheet as a separate <code>&lt;entry&gt;</code> element.</p>
+    <pre>http://spreadsheets.google.com/feeds/cells/<i>key</i>/<i>worksheetId</i>/<i>visibility</i>/<i>projection</i></pre>
+    <p>You can also include a cell ID in the URI, which retrieves the entry for the indicated cell. Cell IDs are in R1C1 notation; for example, cell C8 in the GUI has cell ID <code>R8C3</code>.</p>
+    <pre>http://spreadsheets.google.com/feeds/cells/<i>key</i>/<i>worksheetId</i>/<i>visibility</i>/<i>projection</i>/<i>cellId</i></pre>
+    <p>If you retrieve a cell that's empty, behavior is undefined. </p>
+    <p>You can set <i>visibility</i> to <code>public</code> only with published worksheets; if you request the feed for an unpublished worksheet using a URI with visibility set to <code>public</code>, you'll get an error.</p>
+    <h2><a name="Visibility" id="Visibility">Visibility values </a></h2>
+    <p> The following table describes the supported visibility values:</p>
+    <table>
+      <tr>
+        <th>Visibility</th>
+        <th>Description</th>
+        <th>Updatability</th>
+        <th>Security Notes</th>
+      </tr>
+      <tr>
+        <td><code>private</code></td>
+        <td>For use whenever you can authenticate the request. </td>
+        <td>Read/write access if the authenticated user has edit privileges; otherwise, read-only. </td>
+        <td>Requires authentication.</td>
+      </tr>
+      <tr>
+        <td><code>public</code></td>
+        <td>For use in unauthenticated requests for published feeds. </td>
+        <td>Always read-only.</td>
+        <td>Does not require authentication. Inaccessible if the worksheet is
+          not published.</td>
+      </tr>
+    </table>
+    <p>In almost all cases, your client should use <code>private</code>.</p>
+    <p>If a worksheet's owner has published the worksheet (using the Spreadsheets GUI), and if you want to be able to get a list-based or cell-based data feed from that worksheet without authenticating, then you can construct a feed URI that uses <code>public</code> visibility. For example, if you want to allow a feed reader to subscribe to a published worksheet without authenticating, you can give the feed reader the data feed's URL with <code>private</code> changed to <code>public</code>.</p>
+    <p>Note that <code>public</code> visibility feeds are available only for published worksheets.</p>
+    <h2><a name="Projection" id="Projection"> Projection values </a></h2>
+    <p>The following table describes the supported projection values:</p>
+    <table>
+      <tr>
+        <th>Projection Name</th>
+        <th>Description</th>
+        <th>Updatability</th>
+      </tr>
+      <tr>
+        <td><code>full</code></td>
+        <td>Full-fidelity feed; contains all spreadsheet data including
+          formulas.</td>
+        <td>Full read/write access.</td>
+      </tr>
+      <tr>
+        <td><code>values</code></td>
+        <td>Feed includes all data except for formulas. Formulas are replaced with their evaluations. Includes GData extension elements. </td>
+        <td>Read-only access.</td>
+      </tr>
+      <tr>
+        <td><code>basic</code></td>
+        <td>Feed includes all  data except for formulas. 
+          Formulas are replaced with their evaluations. This feed uses only Atom elements, leaving out all GData extension elements. </td>
+        <td>Read-only access.</td>
+      </tr>
+    </table>
+    <h1><a name="Parameters" id="Parameters">Spreadsheets query parameters reference</a></h1>
+    <p>Spreadsheets supports the following standard GData  query parameters:</p>
+    <table>
+      <tr>
+        <th>Parameters</th>
+        <th>Support</th>
+      </tr>
+      <tr>
+        <td><code>alt</code>, <code>start-index</code>, <code>max-results</code></td>
+        <td>Supported in all feed types. </td>
+      </tr>
+      <tr>
+        <td><code>author</code>, <code>updated-min</code>, <code>updated-max</code></td>
+        <td>Supported only in <code>spreadsheets</code> metafeed. </td>
+      </tr>
+      <tr>
+        <td><code>q</code></td>
+        <td>Supported only in list and cell feeds. </td>
+      </tr>
+    </table>
+    <p>Spreadsheets does not support GData category queries. For more information about the standard parameters, see the <a href="../gdata/reference.html">GData protocol reference document</a>.</p>
+    <p>Note that since <code>updated-min</code> and <code>updated-max</code> are supported only for the <code>spreadsheets</code> metafeed, you can't get a list of cells or rows that have been updated since the last time you queried.</p>
+    <p>In addition to the standard GData query parameters, the Spreadsheets data API uses the parameters described in the following sections.</p>
+    <h2><a name="list_Parameters">List-feed query parameters</a></h2>
+    <table>
+      <tbody>
+        <tr>
+          <th>Parameter</th>
+          <th>Meaning</th>
+          <th>Notes</th>
+        </tr>
+        <tr>
+          <td><code>orderby</code></td>
+          <td>Specifies what column to use in ordering the entries in the feed.</td>
+          <td><ul>
+              <li>By position (the default): <code>orderby=position</code> returns rows in the order in which they appear in the GUI. Row 1, then row 2, then row 3, and so on.</li>
+              <li>By column: <code>orderby=column:<i>columnName</i></code> sorts rows in ascending order based on the values in the column with the given <i>columnName</i>, where <i>columnName</i> is the value in the header row for that column.</li>
+            </ul></td>
+        </tr>
+        <tr>
+          <td><code>reverse</code></td>
+          <td>Specifies whether to sort in descending or ascending order. </td>
+          <td>Reverses default sort order: <code>reverse=true</code> results in a
+            descending sort; <code>reverse=false</code> (the default) results in an ascending sort. </td>
+        </tr>
+        <tr>
+          <td><code>sq</code></td>
+          <td>Structured query on the full text in the worksheet. </td>
+          <td>[<i>columnName</i>][<i>binaryOperator</i>][<i>value</i>]
+            <ul>
+              <li>Supported <i>binaryOperator</i>s are:
+                <ul>
+                  <li><code>()</code> for overriding order of operations</li>
+                  <li><code>=</code> or <code>==</code> for strict equality</li>
+                  <li><code>&lt;&gt;</code> or <code>!=</code> for strict
+                    inequality</li>
+                  <li><code>and</code> or <code>&amp;&amp;</code> for boolean <code>and</code></li>
+                  <li><code>or</code> or <code>||</code> for boolean <code>or</code></li>
+                </ul>
+              </li>
+            </ul></td>
+        </tr>
+      </tbody>
+    </table>
+    <h2><a name="cells_Parameters">Cell-feed query parameters</a></h2>
+    <table>
+      <tbody>
+        <tr>
+          <th>Parameter</th>
+          <th>Meaning</th>
+          <th>Notes</th>
+        </tr>
+        <tr>
+          <td><code>min-row</code></td>
+          <td>Positional number of minimum row returned in query.</td>
+          <td rowspan="4">Queries indicate an inclusive range.</td>
+        </tr>
+        <tr>
+          <td><code>max-row</code></td>
+          <td>Positional number of maximum row returned in query.</td>
+        </tr>
+        <tr>
+          <td><code>min-col</code></td>
+          <td>Positional number of minimum column returned in query.</td>
+        </tr>
+        <tr>
+          <td><code>max-col</code></td>
+          <td>Positional number of maximum column returned in query.</td>
+        </tr>
+        <tr>
+          <td><code>range</code></td>
+          <td>A single cell or a range of cells. </td>
+          <td><p>Use standard spreadsheet cell-range notations, using a colon to separate start and end of range. Examples:</p>
+            <ul>
+              <li><code>range=A1</code> and <code>range=R1C1</code> both specify only cell A1. </li>
+              <li><code>range=D1:F3</code> and <code>range=R1C4:R3C6</code> both specify the rectangle of cells with corners at D1 and F3. </li>
+            </ul>
+            <p>&nbsp;</p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h1><a name="Elements" id="Elements">Spreadsheets elements reference</a></h1>
+    <p>In addition to the standard GData elements, the Spreadsheets data API uses the <code>gs</code> and <code>gsx</code> namespaces.</p>
+    <p>For information about the standard GData elements, see  the Atom specification and the <a href="../gdata/elements.html">Kinds document</a>.</p>
+    <h2><a name="gs_reference" id="gs_reference">gs namespace element reference</a></h2>
+    <p>Google Spreadsheets provides the <code>gs</code> namespace for use in the cell feed and <code>worksheets</code> metafeed. The schema URL for the <code>gs</code> namespace is <code>http://schemas.google.com/spreadsheets/2006</code>.</p>
+    <h3><a name="gs_rowCount">gs:rowCount</a></h3>
+    <p>Indicates the number of total rows in the worksheet, including  rows that contain only empty cells.</p>
+    <p>The <code>&lt;gs:rowCount&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Property</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>text()</code></td>
+        <td><code>xs:unsignedInt</code></td>
+        <td>The number of rows in the worksheet.</td>
+      </tr>
+    </table>
+    <h4>Example</h4>
+    <pre>&lt;gs:rowCount&gt;100&lt;/gs:rowCount&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gs = "http://schemas.google.com/spreadsheets/2006"
+start = rowCount 
+
+rowCount =
+  element gs:rowCount {
+    xsd:unsignedInt
+  }</pre>
+    <h3><a name="gs_colCount">gs:colCount</a></h3>
+    <p>Indicates the number of columns in the worksheet, including columns that contain only empty cells.</p>
+    <p>The <code>&lt;gs:colCount&gt;</code> element can appear  as a child of <code>&lt;atom:entry&gt;</code> or <code>&lt;atom:feed&gt;</code>.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Property</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>text()</code></td>
+        <td><code>xs:unsignedInt</code></td>
+        <td>The number of columns in the worksheet.</td>
+      </tr>
+    </table>
+    <h3>Example</h3>
+    <pre>&lt;gs:colCount&gt;20&lt;/gs:colCount&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gs = "http://schemas.google.com/spreadsheets/2006"
+start = colCount 
+
+colCount =
+  element gs:colCount {
+    xsd:unsignedInt
+  }</pre>
+    <h3><a name="gs_cell">gs:cell</a></h3>
+    <p>A cell in the worksheet.</p>
+    <p>The <code>&lt;gs:cell&gt;</code> element can appear  only as a child of <code>&lt;atom:entry&gt;</code>.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Property</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>@row</code></td>
+        <td><code>xs:unsignedInt</code></td>
+        <td>The row number of the cell.</td>
+      </tr>
+      <tr>
+        <td><code>@col</code></td>
+        <td><code>xs:unsignedInt</code></td>
+        <td>The column number of the cell.</td>
+      </tr>
+      <tr>
+        <td><code>@inputValue</code></td>
+        <td><code>xs:string</code></td>
+        <td>The input string of the cell.</td>
+      </tr>
+      <tr>
+        <td><code>@numericValue?</code></td>
+        <td><code>xs:float</code></td>
+        <td>The numeric value of the cell if the input value begins with an "="
+          and the equation evaluates to a numeric.</td>
+      </tr>
+      <tr>
+        <td><code>text()</code></td>
+        <td><code>xs:string</code></td>
+        <td>The displayed value of the cell.</td>
+      </tr>
+    </table>
+    <h4>Example</h4>
+    <pre>&lt;gs:cell row=&quot;2&quot; col=&quot;4&quot; inputValue="=FLOOR(R[0]C[-1]/(R[0]C[-2]*60),.0001)"
+    numericValue="0.0033"&gt;0.0033&lt;/gs:cell&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gs = "http://schemas.google.com/spreadsheets/2006"
+start = cell 
+
+cell =
+  element gs:cell {
+    attribute row { xsd:unsignedInt },
+    attribute col { xsd:unsignedInt },
+    attribute inputValue { xsd:string }?,
+    attribute numericValue { xsd:float }?,
+    xsd:string
+  }</pre>
+    <h2><a name="gsx_reference" id="gsx_reference">gsx namespace element reference</a></h2>
+    <p>Google Spreadsheets provides a custom tag namespace, <code>gsx</code>, for
+      use in list feeds. 
+      The schema URL for the <code>gsx</code> namespace is
+      http://schemas.google.com/spreadsheets/2006/extended.</p>
+    <p>A <code>gsx</code> element can appear only as a child of <code>&lt;atom:entry&gt;</code>.</p>
+    <p>Each column's header value (the contents of the cell in row 1 in that column) becomes a custom element name in the <code>gsx</code> namespace. If a header cell is empty, then a unique column ID is used for the <code>gsx</code> element name.</p>
+    <p>Spaces in a column name are removed from the name of the corresponding <code>gsx</code> element.</p>
+    <p class="note"><strong>Caution</strong>: The <i>columnName</i>s are <strong>case-insensitive</strong>. For example, if you see a <code>&lt;gsx:e-mail&gt;</code> element in a feed, you can't know whether the column heading in the original worksheet was "e-mail" or "E-Mail".</p>
+    <p class="note"><strong>Note</strong>: If two or more columns have the same name, then subsequent
+      columns of the same name  have <code>_<i>n</i></code> appended to the <i>columnName</i>. For example, if the first column name is "e-mail", followed by columns
+      named "E-Mail" and "E-mail", then the <i>columnName</i>s will be <code>gsx:e-mail</code>, <code>gsx:e-mail_2</code>, and <code>gsx:e-mail_3</code> respectively.</p>
+    <h3><a name="gsx_tag">gsx:<i>columnName</i></a></h3>
+    <p>A value in a column of the list entry.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Property</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>text()</code></td>
+        <td><code>xs:string</code></td>
+        <td>The string representation of the value in the column or the returned
+          list record.</td>
+      </tr>
+    </table>
+    <h4>Example</h4>
+    <p>A value in a retrieved list record of a column named "e-mail": </p>
+    <pre>&lt;gsx:e-mail&gt;fitz@gmail.com&lt;/gsx:e-mail&gt;</pre>
+    <h4>Schema</h4>
+    <pre>namespace gsx = "http://schemas.google.com/spreadsheets/2006/extended"
+start = columnName 
+
+columnName =
+  element gsx:* {
+    xsd:string
+  }</pre>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

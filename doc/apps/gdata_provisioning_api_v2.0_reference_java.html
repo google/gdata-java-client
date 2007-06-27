@@ -1,0 +1,1176 @@
+<html>
+<head>
+<title>Google Apps Provisioning API V2.0 Reference</title><link rel=stylesheet href=http://www.google.com/google.css>
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<style>
+body,td,font,a{font-family:arial,sans-serif}
+p{font-family:arial,sans-serif;padding-left:15px}
+table {margin-left:4px}
+td {font-family:arial,sans-serif;font-size:83%}
+.i { margin-left: 1em; margin-right: 2em; }
+pre{font-family:arial,sans-serif; font-size:100%;padding:0px 25px }
+pre.box {background:#eee;border:1px solid #bbb;color:#000;font-family:Courier,monospace;font-size:110%;margin:1em 0 0 25px;padding:15px 5px 15px 10px;text-align:left;overflow:auto}
+pre.codesample {font-family:monospace;font-size:110%}
+table.bt {width:100%}
+td.padbold {font-size:100%;vertical-align:top;font-weight:bold;padding:6px;}
+td.padplain {font-size:100%;vertical-align:middle;padding:6px;}
+td.padboldst {font-size:100%;vertical-align:top;font-weight:bold;padding:6px;}
+td.padplainst {font-size:100%;vertical-align:middle;padding:6px;}
+td.t {font-size:12px;}
+th.t {font-size:12px;}
+a:link{color:#00c}
+a:visited{color:#551a8b}
+a:active{color:#f00}
+a.code {font-family:monospace;font-size:110%}
+.topnav {line-height:130%}
+.indent {line-height:130%; margin-left:.75em;}
+.activelink {line-height:130%; margin-left:0; color:#2F63B0; font-weight:bold}
+.inactivelink {line-height:130%; margin-left:0;}
+.footer {color:#666666; font-size:73%}
+.codeSample {font-size:100%;color:#000000;padding:0px 40px}
+.codeSampleNP {font-size:100%;color:#000000}
+.showvar {font-weight:bold;color:#3366cc}
+tr.t1tth {font-family: monospace; font-size:12pt; font-weight:bold; color: #000000;}
+.indentsidenav {margin-top:0px;margin-left:10px;margin-bottom:4px;font-size:10pt}
+.indentsidenavtoc {margin-top:0px;margin-left:10px;margin-bottom:4px;color:#ddad08;font-weight:bold;font-size:10pt}
+.sidenavnolink {margin-top:15px;margin-bottom:4px;font-weight:bold;font-size:10pt}
+.sidenavlink {margin-top:15px;margin-bottom:4px;font-size:10pt}
+.l1 {vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;font-size:120%;border-top:1px solid #3a7bcb;color:#000;font-weight:bold}
+.l2 {vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;font-size:105%;border-bottom:1px solid #3a7bcb;color:#000;font-weight:bold}
+.l3 {width:100%;font-size:95%;padding:4px;background:#fff;border-bottom:1px solid #3a7bcb;font-weight:bold}
+th.reportl {vertical-align:middle;text-align:left;width:20%;padding:8px 10px;background:#ddf8cc;color:#000;font-weight:bold;font-size:95%}
+th.reportr {vertical-align:middle;text-align:center;width:80%;padding:8px 10px;background:#ddf8cc;color:#000;font-weight:bold;font-size:95%}
+td.reportl {vertical-align:top;width:20%;padding:8px 10px;background:#ddf8cc;color:#00723d;font-weight:bold;font-size:83%}
+td.reportr {vertical-align:top;width:80%;padding:8px 10px;font-size:83%}
+th.left {text-align:left;background:#E5ECF9;font-size:83%;padding:4px 10px 4px 4px}
+th.middle {text-align:center;background:#E5ECF9;font-size:83%;padding:4px 10px}
+th.right {text-align:center;background:#E5ECF9;font-size:83%;padding:4px 10px}
+td.left {padding:4px;vertical-align:top;font-size:83%;font-weight:bold}
+td.middle {font-size:83%;font-weight:bold;color:#505050;padding:4px 6px;vertical-align:top}
+td.right {padding:4px;font-size:83%;vertical-align:top}
+th.attrheader {padding:4px 6px;font-size:83%;font-weight:bold;vertical-align:middle;text-align:center;background:#E5ECF9}
+th.attrheaderl {text-align:left;padding:4px 6px;font-size:95%;font-weight:bold;vertical-align:middle;background:#E5ECF9}
+td.attrname {padding:4px;font-size:83%;font-weight:bold;vertical-align:top;text-align:left}
+td.attrtype {padding:4px;font-size:83%;vertical-align:top;text-align:left}
+td.tagname {width:20%;padding:4px;font-size:83%;font-weight:bold;vertical-align:top;text-align:left}
+td.tagtype {width:80%;padding:4px;font-size:83%;vertical-align:top;text-align:left}
+.l4 {width:100%;background:#fff;border-bottom:1px solid #3a7bcb;font-size:100%;font-weight:bold}
+
+#pagecontent{
+  padding-bottom:5em;
+  border-left:thin dotted #bbb ;
+  margin:0 10px 0 170px;
+  padding-left:15px;
+}
+
+#header {
+  position: relative;
+  margin:0;
+  height:60px;
+  padding-top: 12px;
+}
+
+#wrapper{
+  width:100%;
+}
+
+#logo{  /* in header */
+  float:left;
+  width: 175px;
+  top:0;
+  left:0;
+  padding:0;
+  margin:0;
+  position:absolute;
+}
+  
+#logo img{border:none;}
+  
+#doc_title{  /* in header */
+  font-size:135%;
+  font-weight:bold;
+  background-color: #e5ecf9;
+  border-color: #3a7bcb; 
+  border-top: 1px solid;
+  margin:0 0 0 170px;
+  padding:.1em 0 .1em 3px;
+}
+
+#sidenav {
+  float:left;
+  width:160px;
+  margin:0 0 0 3px;
+  background:#fff;
+  padding:0;
+  left:0;
+}
+#sidenav ul{
+  padding:0;
+  margin:0;
+  }
+  
+#sidenav ul li ul, #sidenav ul li ul li ul{
+  padding:0;
+  margin:0 0 0 .6em;
+}
+  
+#sidenav ul li{
+  list-style:none;
+  padding:0;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav ul li ul li{
+  list-style:none;
+  padding:0;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav ul li ul li ul li{
+  list-style:none;
+  padding:1px;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav p {
+  margin: 0 .3em 0 0;
+  padding:1em 0 0 0;
+}
+    
+#sidenav ul li a, #sidenav ul ul li a, #sidenav ul ul ul li a{
+  color: #0000cc;
+  display:block;
+  width:92%;
+  padding:0;
+}
+  
+#sidenav ul li a:hover{
+  color: #0000cc;
+}
+    
+#sidenav h1{
+  font-weight:bold;
+  font-size:100%;
+  color:#000;
+  position:relative;
+  background-color:#fff;
+  border:none;
+  margin:1em 0 0 0;
+  padding:0 2px 0 2px;
+  width:100%;
+  left:-4px;
+}
+  
+.other{  /* little box for side nav */
+  border-top:thin dotted #bbb;
+  border-bottom:thin dotted #bbb;
+  margin:3em 0 3em 0;
+  padding: 0 0 10px 0;
+}
+    
+.line{  /* dotted line for division */
+  border-top:thin dotted #bbb;
+  margin:1em 0 0 0;
+  padding:0;
+  height:5px;
+}
+  @media screen {
+    body {
+      font-family: arial, sans-serif;
+      font-size: 83%;
+    }
+    
+    .dontprint {
+        padding:0px;
+        margin:0px;
+    }
+
+    .leftcontent {
+      float:left;
+      width:175px;
+      background:#fff;
+    }
+    
+    .topimage {
+      margin-left:13px;
+      margin-top:0px;
+      padding:0px;
+    }
+    
+    .footerimage {
+      margin-left:15px;
+      margin-top:20px;
+      padding:0px;
+    }
+    
+    .toc { 
+      color: #ddad08; 
+      font-weight:bold;
+    }
+    
+    .rightcontent {
+      background:#fff;
+      margin-left: 179px;
+      margin-right:10px
+    }
+
+    .content {
+    }
+
+    .title {
+    background-color: #FEFADE;
+    border-top:1px solid #ddad08;
+    font-weight:bold;
+    font-size:120%;
+    text-align:left;
+    margin-left:0;
+    }
+  }
+  @media print {
+	          
+    .dontprint {
+        padding:0px;
+        margin:0px;
+        display:none;
+    }
+
+    .leftcontent {
+        display: none;
+        float:left;
+        clear:right;
+        width:100%;
+    }
+
+    .topimage {
+        margin-left:13px;
+        margin-top:0px;
+        padding:0px;
+    }
+
+    .rightcontent {
+        margin-left: 10px;
+    }
+
+    .toc {
+        list-style-type: none;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .toc1 {
+    }
+
+    .toc2 {
+        padding-left: 25pt;
+    }
+
+    .toc3 {
+        padding-left: 50pt;
+    }
+
+    .title {
+        display:none;
+        background-color: #FEFADE; 
+        border-top:1px solid #ddad08;
+        font-weight:bold; 
+        font-size:120%;
+        text-align:left;
+        margin-left:0;
+    }
+
+    .topimage {
+        margin-left:13px;
+        margin-top:0px;
+        padding:0px;
+    }
+
+    body {
+        font-family: arial, sans-serif;
+        font-size: 83%;
+    }
+
+    .backtotop {
+        display:none;
+    }
+
+    #sidenav {
+        visibility:hidden;
+	position:absolute;
+    }
+    #pagecontent {
+        float:left;
+	position:relative;
+	top:0;
+	left:-175px;
+	width:100%;
+    }
+    #doc_title {
+        border-bottom:1px solid;
+	padding-bottom:2px;
+    }
+    pre { /* don't print scrollbars---display overflow text */
+        overflow:visible;
+    }
+  }
+</style>
+<script language="JavaScript">
+<!--
+  var cancelBubble = false;
+
+  function goTo(url) {
+    window.location = url;
+  }
+
+
+  function show_when_checked(cbox,divid,defaultid) {
+    document.getElementById(divid).style.display=cbox.checked?"inline":"none";
+    document.getElementById(defaultid).style.display=cbox.checked?"none":"inline";
+  }
+  var flag = new Array();
+  function change(div, divid, defaultid) {
+    var par = new getObj(div);
+    if (flag[div]) {
+      par.obj.innerHTML = "expand";
+      flag[div] = 0;
+    } else {
+      par.obj.innerHTML = "collapse";
+      flag[div] = 1;
+    }
+    document.getElementById(divid).style.display=flag[div]?"inline":"none";
+    document.getElementById(defaultid).style.display=flag[div]?"none":"inline";
+    return false;
+  }
+
+  function getObj(name) {
+    var o = 'this.obj = document.';
+    var s = 'this.style = document.';
+    if (document.getElementById) {
+      eval(o + 'getElementById(name);');
+      eval(s + 'getElementById(name).style;');
+    } else if (document.all) {
+      eval(o + 'all[name];');
+      eval(s + 'all[name].style;');
+    } else if (document.layers) {
+      eval(o + 'layers[name];');
+      eval(s + 'layers[name];');
+    }
+  }
+
+
+
+//-->
+</script>
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+  <link rel="stylesheet" type="text/css" href="apps_ie7_only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+  <link rel="stylesheet" type="text/css" href="apps_ie6_only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+</head>
+
+<body class="t2"><a name="top"></a>
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Apps Provisioning API V2.0 Reference</h1>
+</div>
+
+<div class="wrapper">
+
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+<ul>
+  <li>
+    <h1>About Google Apps APIs</h1>
+    <ul>
+      <li><a href="index.html">Main</a></li>
+      <li><a href="overview.html">Overview</a></li>
+      <li><a href="start.html">Getting Started</a></li>
+    </ul>
+  </li>
+  <li>
+    <h1>Domain Administrators</h1>
+    <ul>
+      <li>Provisioning API</li>
+      <li><a href="sso/saml_reference_implementation.html">Single Sign-On Service</a></li>
+      <li><a href="http://www.google.com/support/a/bin/answer.py?answer=60730">Email Gateway Interface</a></li>
+      <li><a href="libraries_and_samples.html">Client Libraries and Sample Code</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=11279">Frequently Asked Questions</a></li>
+      <li><a href="http://groups.google.com/group/google-apps-apis">Discussion Group</a></li>
+      <li><a href="http://www.google.com/support/a/">Help Center</a></li>
+    </ul>
+  </li>
+  <li>
+    <h1>Application Developers</h1>
+    <ul>
+      <li><a href="http://code.google.com/apis/gdata/index.html">Google Data APIs</a></li>
+      <li><a href="http://code.google.com/apis/calendar/overview.html">Calendar Data API</a></li>
+      <li><a href="http://code.google.com/apis/spreadsheets/overview.html">Spreadsheets Data API</a></li>
+      <li><a href="http://code.google.com/apis/gadgets/index.html">Gadgets API</a></li>
+      <li><a href="http://code.google.com/apis/talk/talk_developers_home.html">Talk for Developers</a></li>
+    </ul>
+  </li>
+  <li>
+    <h1>Solutions Gallery</h1>
+    <ul>
+	  <li><a href="submit.html" id="submit_link">Share Your Solution</a></li>
+      <li><a href="http://www.google.com/enterprise/gallery/">View Solutions Gallery</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<div id="pagecontent">
+<h2 id="page_title">Google Provisioning API Developer's Guide: Java</h2>
+
+<div id="topnav">
+<table id="mt" cellspacing="0" cellpadding="0" width="20%" border="0">
+<tr>
+<th class="int1" onclick="if (!cancelBubble) goTo('gdata_provisioning_api_v2.0_reference.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="gdata_provisioning_api_v2.0_reference.html">Protocol</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int2" onclick="if (!cancelBubble) goTo('gdata_provisioning_api_v2.0_reference_java.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="gdata_provisioning_api_v2.0_reference_java.html">Java</a></div>
+
+</th><td>&nbsp;&nbsp;</td>
+<th class="int3" onclick="if (!cancelBubble) goTo('gdata_provisioning_api_v2.0_reference_dotnet.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="gdata_provisioning_api_v2.0_reference_dotnet.html">.NET</a></div>
+</th><td>&nbsp;&nbsp;</td>
+</table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+<tr>
+<td height="4" align="right" style="padding:0px; vertical-align:top">
+<div class="stur"></div>
+</td>
+</tr>
+</table>
+</div>
+
+<a name=Using_the_Java_Client_Library></a><p><div class="l1">Using the Java Client Library</div></p>
+
+
+
+<p>The following subsections explain how to use the Google Apps Java client library to access Provisioning API functionality. Each subsection explains the Java client library methods for specific API functionality.</p>
+
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td style="vertical-align:top;padding:0px 25px">
+<p><b>Methods for User Accounts</b></p>
+<p><div class="codeSample">
+<a href="#Create_Account_Example">Creating a User Account</a><br>
+<a href="#Retrieve_Account_Example">Retrieving a User Account</a><br>
+<a href="#Retrieve_All_Users_in_Domain_Example">Retrieving all Users in a Domain</a><br>
+<a href="#Retrieve_100_Users_in_Domain_Example">Retrieving List of 100 Users</a><br>
+<a href="#Update_Account_Example">Updating a User Account</a><br>
+<a href="#Suspend_User_Example">Suspending a User Account</a><br>
+<a href="#Restore_User_Example">Restoring a User Account</a><br>
+<a href="#Delete_Account_Example">Deleting a User Account</a><br>
+</div></p>
+
+<p><b>Methods for Nicknames</b></p>
+<p><div class="codeSample">
+<a href="#Create_Nickname_Example">Creating a Nickname</a><br>
+<a href="#Retrieve_Nickname_Example">Retrieving a Nickname</a><br>
+<a href="#Retrieve_All_Nicknames_for_User_Example">Retrieving all Nicknames for a User</a><br>
+<a href="#Retrieve_All_Nicknames_in_Domain_Example">Retrieving all Nicknames in a Domain</a><br>
+<a href="#Retrieve_100_Nicknames_in_Domain_Example">Retrieving List of 100 Nicknames</a><br>
+<a href="#Delete_Nickname_Example">Deleting a User Account</a><br>
+</div></p>
+</td>
+<td style="vertical-align:top">
+<p><b>Methods for Email Lists</b></p>
+<p><div class="codeSample">
+<a href="#Create_Email_List_Example">Creating an Email List</a><br>
+<a href="#Retrieve_Email_List_Example">Retrieving an Email List</a><br>
+<a href="#Retrieve_All_Email_Lists_for_User_Example">Retrieving all Email List Subscriptions for a User</a><br>
+<a href="#Retrieve_All_Email_Lists_in_Domain_Example">Retrieving all Email Lists in a Domain</a><br>
+<a href="#Retrieve_100_Email_Lists_in_Domain_Example">Retrieving List of 100 Email Lists</a><br>
+<a href="#Delete_Email_List_Example">Deleting an Email List</a><br>
+</div></p>
+
+<p><b>Methods for Email List Recipients</b></p>
+<p><div class="codeSample">
+<a href="#Create_Email_List_Recipient_Example">Adding an Address to an Email List</a><br>
+<a href="#Retrieve_Email_List_Recipient_Example">Retrieving All Subscribers to an Email List</a><br>
+<a href="#Retrieve_100_Email_List_Recipients_Example">Retrieving List of 100 Email List Subscribers</a><br>
+<a href="#Delete_Email_List_Recipient_Example">Deleting an Address from an Email List</a><br>
+</div></p>
+
+<p><b>Methods for Handling Errors</b></p>
+<p><div class="codeSample">
+<a href="#AppsForYourDomainException">Identifying Errors in API Responses</a><br>
+</div></p>
+</td>
+</tr>
+</table>
+
+<a name=User_Library_Methods></a><p><div class="l2">Methods for User Accounts</div></p>
+
+<a name=Create_Account_Example></a><p><div class="l3">Creating a User Account</div></p>
+
+
+
+<p>To create a user account using the Java client library, call one of the following methods. These methods all return a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_UserEntry_Response">UserEntry</a> XML response, which the Java client library converts to a <b>UserEntry</b> object.</p>
+<pre class="codeSample">
+<b>createUser(String username, String givenName, String familyName, String password)</b>
+<b>createUser(String username, String givenName, String familyName, String password, Integer quotaLimitInMb)</b>
+</pre>
+<p><b>Note:</b> Not all partners have the ability to adjust the disk space quota allocated to users. This method takes the following arguments:</p>
+<p><ul>
+<li>The <b>username</b> argument contains the unique name that identifies the account owner.</li>
+<li>The <b>givenName</b> argument contains the user's first name.</li>
+<li>The <b>familyName</b> argument contains the user's last name.</li>
+<li>The <b>password</b> argument contains the password for the user account.</li>
+<li>The <b>quotaLimitInMb</b> argument identifies the amount of disk space in MB that will be allocated to the user account.</li>
+</ul></p>
+
+
+
+
+<a name=Retrieve_Account_Example></a><p><div class="l3">Retrieving a User Account</div></p>
+
+
+
+<p>To retrieve information about a user account using the Java client library, call the following method. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_UserEntry_Response">UserEntry</a> XML response, which the Java client library converts to a <b>UserEntry</b> object.</p>
+<pre class="codeSample">
+<b>retrieveUser(String username)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the username associated with the account that you wish to retrieve. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+<b>https://www.google.com/a/feeds/<span class="showvar">{domainName}</span>/user/2.0/<span class="showvar">{userName}</span></b>
+</pre>
+-->
+
+<a name=Retrieve_All_Users_in_Domain_Example></a><p><div class="l3">Retrieving all Users in a Domain</div></p>
+
+
+
+
+<p>To retrieve all of the users in a domain, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_UserFeed_Response">UserFeed</a> XML response, which the Java client library converts to a <b>UserFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrieveAllUsers()</b>
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Retrieve_100_Users_in_Domain_Example></a><p><div class="l3">Retrieving List of 100 Users</div></p>
+
+
+
+
+
+<p>This method allows you to control the size of your result set when you request all of the users in your domain. As discussed in the <a href="gdata_provisioning_api_v2.0_reference.html#Results_Pagination">Results Pagination</a> section, the Java client library offers methods that allow you to request all results or to request 100 results at a time. If you use the latter method, you will need to ensure that your code requests additional pages of results as necessary.</p>
+
+<p>To retrieve a list of 100 users in your domain, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_UserFeed_Response">UserFeed</a> XML response, which the Java client library converts to a <b>UserFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrievePageOfUsers(String startUsername)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the first username that should appear in your result set. Usernames are ordered case-insensitively by ASCII value.</p>
+
+
+
+
+
+
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Update_Account_Example></a><p><div class="l3">Updating a User Account</div></p>
+
+
+
+<p>To update a user account using the Java client library, call the following method. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_UserEntry_Response">UserEntry</a> XML response, which the Java client library converts to a <b>UserEntry</b> object.</p>
+<pre class="codeSample">
+<b>updateUser(String username, UserEntry userEntry)</b>
+</pre>
+<p>This method takes two arguments:</p>
+<p><ul>
+<li>The <b>username</b> argument identifies the account that you are updating.</li>
+<li>The <b>userEntry</b> object contains information about a user account, including the user's first name, last name, username and password. The <b>createUser</b> and <b>retrieveUser</b> methods both return a <b>UserEntry</b> object.</li>
+</ul></p>
+<p>The common use case for this method will be to <a href="#Retrieve_Account_Example">retrieve a user account</a>, modify the <b>UserEntry</b> object that contains information about that account, and then submit the modified object to the <b>updateUser</b> method.</p>
+
+
+
+<!--
+<p>This method, in turn, issues an HTTP PUT request to the following URL:</p>
+
+<pre class="codeSample">
+<b>https://www.google.com/a/feeds/<span class="showvar">{domainName}</span>/user/2.0/<span class="showvar">{userName}</span></b>
+</pre>
+
+<p>The body of the request is an XML document that contains information about the resource that you are updating. The XML below shows a sample request body for updating 
+a user account.
+</p>
+
+<pre class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;<a href="#google_apps_tag_atom:entry">atom:entry</a> xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:apps="http://schemas.google.com/apps/2006"
+  xmlns:gd="http://schemas.google.com/g/2005"&gt;
+    &lt;<a href="#google_apps_tag_atom:category">atom:category</a> scheme="http://schemas.google.com/g/2005#kind"
+        term="http://schemas.google.com/apps/2006#user"/&gt;
+    &lt;<a href="#google_apps_tag_apps:login">apps:login</a> userName="SusanJones-1321"/&gt;
+    &lt;<a href="#google_apps_tag_apps:name">apps:name</a> familyName="Jones" givenName="Susan"/&gt;
+&lt;/atom:entry&gt;
+</pre>
+
+-->
+
+<a name=Suspend_User_Example></a><p><div class="l3">Suspending a User Account</div></p>
+
+
+
+
+<p>To suspend a user account using the Java client library, call the following method. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_UserEntry_Response">UserEntry</a> XML response, which the Java client library converts to a <b>UserEntry</b> object.</p>
+<pre class="codeSample">
+<b>suspendUser(String username)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the name of the user whose account you wish to suspend.</p>
+
+
+<!--
+<p>This method, in turn, issues an HTTP PUT request to the following URL:</p>
+
+<pre class="codeSample">
+<b>https://www.google.com/a/feeds/<span class="showvar">{domainName}</span>/user/2.0/<span class="showvar">{userName}</span></b>
+</pre>
+
+<p>The body of the request is an XML document that contains information about the resource that you are updating. The XML below shows a sample request body for updating 
+</p>
+
+<pre class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;<a href="#google_apps_tag_atom:entry">atom:entry</a> xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:apps="http://schemas.google.com/apps/2006"
+  xmlns:gd="http://schemas.google.com/g/2005"&gt;
+    &lt;<a href="#google_apps_tag_atom:category">atom:category</a> scheme="http://schemas.google.com/g/2005#kind"
+        term="http://schemas.google.com/apps/2006#user"/&gt;
+&lt;/atom:entry&gt;
+</pre>
+
+-->
+
+<a name=Restore_User_Example></a><p><div class="l3">Restoring a User Account</div></p>
+
+
+
+
+<p>To restore a user account using the Java client library, call the following method. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_UserEntry_Response">UserEntry</a> XML response, which the Java client library converts to a <b>UserEntry</b> object.</p>
+<pre class="codeSample">
+<b>restoreUser(String username)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the name of the user whose account you wish to restore.</p>
+
+
+<!--
+<p>This method, in turn, issues an HTTP PUT request to the following URL:</p>
+
+<pre class="codeSample">
+<b>https://www.google.com/a/feeds/<span class="showvar">{domainName}</span>/user/2.0/<span class="showvar">{userName}</span></b>
+</pre>
+
+<p>The body of the request is an XML document that contains information about the resource that you are updating. The XML below shows a sample request body for updating 
+</p>
+
+<pre class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;<a href="#google_apps_tag_atom:entry">atom:entry</a> xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:apps="http://schemas.google.com/apps/2006"
+  xmlns:gd="http://schemas.google.com/g/2005"&gt;
+    &lt;<a href="#google_apps_tag_atom:category">atom:category</a> scheme="http://schemas.google.com/g/2005#kind"
+        term="http://schemas.google.com/apps/2006#user"/&gt;
+&lt;/atom:entry&gt;
+</pre>
+
+-->
+
+<a name=Delete_Account_Example></a><p><div class="l3">Deleting a User Account</div></p>
+
+
+
+<p>To delete a user account using the Java client library, call the following method:</p>
+<pre class="codeSample">
+<b>deleteUser(String username)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the name of the user whose account you wish to delete. 
+
+<a name=Nickname_Library_Methods></a><p><div class="l2">Methods for Nicknames</div></p>
+<a name=Create_Nickname_Example></a><p><div class="l3">Creating a Nickname</div></p>
+
+
+
+
+
+<p>To create a nickname using the Java client library, call the following method. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_NicknameEntry_Response">NicknameEntry</a> XML response, which the Java client library converts to a <b>NicknameEntry</b> object.</p>
+<pre class="codeSample">
+<b>createNickname(String username, String nickname)</b>
+</pre>
+<p>This method takes two arguments:</p>
+<p><ul>
+<li>The <b>username</b> argument identifies the user account for which you are creating a nickname.</li>
+<li>The <b>nickname</b> argument identifies the nickname for the user account.</li>
+</ul></p>
+
+
+<a name=Retrieve_Nickname_Example></a><p><div class="l3">Retrieving a Nickname</div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>To retrieve information about a nickname using the Java client library, call the following method. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_NicknameEntry_Response">NicknameEntry</a> XML response, which the Java client library converts to a <b>NicknameEntry</b> object.</p>
+<pre class="codeSample">
+<b>retrieveNickname(String nickname)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the nickname you wish to retrieve. 
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+<b>https://www.google.com/a/feeds/<span class="showvar">{domainName}</span>/nickname/2.0/<span class="showvar">{nickname}</span></b>
+</pre>
+-->
+
+<a name=Retrieve_All_Nicknames_for_User_Example></a><p><div class="l3">Retrieving all Nicknames for a User Account</div></p>
+
+
+
+
+
+
+
+
+
+
+
+<p>To retrieve all of the nicknames created for a user account, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_NicknameFeed_Response">NicknameFeed</a> XML response, which the Java client library converts to a <b>NicknameFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrieveNicknames(String username)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the username for which you wish to retrieve nicknames. 
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Retrieve_All_Nicknames_in_Domain_Example></a><p><div class="l3">Retrieving all Nicknames in a Domain</div></p>
+
+
+
+
+
+
+
+
+
+<p>To retrieve all of the nicknames in a domain, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_NicknameFeed_Response">NicknameFeed</a> XML response, which the Java client library converts to a <b>NicknameFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrieveAllNicknames()</b>
+</pre>
+
+
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Retrieve_100_Nicknames_in_Domain_Example></a><p><div class="l3">Retrieving List of 100 Nicknames</div></p>
+
+
+
+
+
+
+<p>This method allows you to control the size of your result set when you request all of the nicknames in your domain. As discussed in the <a href="gdata_provisioning_api_v2.0_reference.html#Results_Pagination">Results Pagination</a> section, the Java client library offers methods that allow you to request all results or to request 100 results at a time. If you use the latter method, you will need to ensure that your code requests additional pages of results as necessary.</p>
+
+<p>To retrieve a list of 100 nicknames in your domain, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_NicknameFeed_Response">NicknameFeed</a> XML response, which the Java client library converts to a <b>NicknameFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrievePageOfNicknames(String startNickname)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the first nickname that should appear in your result set. Nicknames are ordered case-insensitively by ASCII value.</p>
+
+
+
+
+
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Delete_Nickname_Example></a><p><div class="l3">Deleting a Nickname</div></p>
+
+
+
+<p>To delete a nickname using the Java client library, call the following method:</p>
+<pre class="codeSample">
+<b>deleteNickname(String nickname)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the name of the nickname that you wish to delete.</p>
+
+<a name=EmailList_Library_Methods></a><p><div class="l2">Methods for Email Lists</div></p>
+
+<a name=Create_Email_List_Example></a><p><div class="l3">Creating an Email List</div></p>
+
+
+
+
+
+
+<p>To create an email list using the Java client library, call the following method. This method returns an <a href="gdata_provisioning_api_v2.0_reference.html#Sample_EmailListEntry_Response">EmailListEntry</a> XML response, which the Java client library converts to an <b>EmailListEntry</b> object.</p>
+<pre class="codeSample">
+<b>createEmailList(String emailList)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the name of the email list that you wish to create.</p>
+
+<p><b>Note:</b> A newly created email list does not have any subscribers. You must call the <a href="#Create_Email_List_Recipient_Example">addRecipientToEmailList</a> method to add subscribers to an email list.</p>
+
+
+<a name=Retrieve_Email_List_Example></a><p><div class="l3">Retrieving an Email List</div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>To retrieve information about an email list using the Java client library, call the following method. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_EmailListEntry_Response">EmailListEntry</a> XML response, which the Java client library converts to a <b>EmailListEntry</b> object.</p>
+<pre class="codeSample">
+<b>retrieveEmailList(String emailList)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the name of the email list that you wish to retrieve. 
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+<b>https://www.google.com/a/feeds/<span class="showvar">{domainName}</span>/emailList/2.0/<span class="showvar">{emailListName}</span></b>
+</pre>
+-->
+
+<a name=Retrieve_All_Email_Lists_for_User_Example></a><p><div class="l3">Retrieving all Email Lists for a User Account</div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p>To retrieve all of the email lists that a user is a recipient of, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_EmailListFeed_Response">EmailListFeed</a> XML response, which the Java client library converts to a <b>EmailListFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrieveEmailLists(String recipient)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the username or email address of a hosted user for which you wish to retrieve email list subscriptions. 
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Retrieve_All_Email_Lists_in_Domain_Example></a><p><div class="l3">Retrieving all Email Lists in a Domain</div></p>
+
+
+
+
+
+
+
+
+
+
+<p>To retrieve all of the email lists in a domain, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_EmailListFeed_Response">EmailListFeed</a> XML response, which the Java client library converts to a <b>EmailListFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrieveAllEmailLists()</b>
+</pre>
+
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Retrieve_100_Email_Lists_in_Domain_Example></a><p><div class="l3">Retrieving List of 100 Email Lists</div></p>
+
+
+
+
+
+
+
+<p>This method allows you to control the size of your result set when you request all of the email lists in your domain. As discussed in the <a href="gdata_provisioning_api_v2.0_reference.html#Results_Pagination">Results Pagination</a> section, the Java client library offers methods that allow you to request all results or to request 100 results at a time. If you use the latter method, you will need to ensure that your code requests additional pages of results as necessary.</p>
+
+<p>To retrieve a list of 100 email lists in your domain, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_EmailListFeed_Response">EmailListFeed</a> XML response, which the Java client library converts to a <b>EmailListFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrievePageOfEmailLists(String startEmailListName)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the first email list that should appear in your result set. Email list names are ordered case-insensitively by ASCII value.</p>
+
+
+
+
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Delete_Email_List_Example></a><p><div class="l3">Deleting an Email List</div></p>
+
+
+
+<p>To delete an email list using the Java client library, call the following method:</p>
+<pre class="codeSample">
+<b>deleteEmailList(String emailList)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the name of the email list that you wish to delete.</p>
+<p><b>Note:</b> When you delete an email list, the Provisioning API will automatically delete all recipients from the email list as well.</p>
+
+<a name=EmailListRecipient_Library_Methods></a><p><div class="l2">Methods for Email List Recipients</div></p>
+
+<a name=Create_Email_List_Recipient_Example></a><p><div class="l3">Adding an Address to an Email List</div></p>
+
+
+
+
+<p>To add an email address to an email list using the Java client library, call the following method. This method returns an <a href="gdata_provisioning_api_v2.0_reference.html#Sample_EmailListRecipientEntry_Response">EmailListRecipientEntry</a> XML response, which the Java client library converts to a <b>EmailListRecipientEntry</b> object.</p>
+<pre class="codeSample">
+<b>addRecipientToEmailList(String recipientAddress, String emailList)</b>
+</pre>
+<p>This method takes two arguments:</p>
+<p><ul>
+<li>The <b>recipientAddress</b> argument identifies the email address that is being added to an email list.</li>
+<li>The <b>emailList</b> argument identifies the email list to which the address is being added.</li>
+</ul></p>
+
+
+
+<a name=Retrieve_Email_List_Recipient_Example></a><p><div class="l3">Retrieving all Subscribers to an Email List</div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>To retrieve a list of all of the subscribers to an email list, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_EmailListRecipientFeed_Response">EmailListRecipientFeed</a> XML response, which the Java client library converts to a <b>EmailListRecipientFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrieveAllRecipients(String emailList)</b>
+</pre>
+<p>The only argument that you need to pass to the method is the name of the email list for which you wish to retrieve a subscriber list.</p>
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Retrieve_100_Email_List_Recipients_Example></a><p><div class="l3">Retrieving List of 100 Email List Subscribers</div></p>
+
+
+
+
+
+
+
+
+<p>This method allows you to control the size of your result set when you request all of the recipients of an email list. As discussed in the <a href="gdata_provisioning_api_v2.0_reference.html#Results_Pagination">Results Pagination</a> section, the Java client library offers methods that allow you to request all results or to request 100 results at a time. If you use the latter method, you will need to ensure that your code requests additional pages of results as necessary.</p>
+
+<p>To retrieve a list of 100 email list recipients, you can call the following method in the Java client library. This method returns a <a href="gdata_provisioning_api_v2.0_reference.html#Sample_EmailListRecipientFeed_Response">EmailListRecipientFeed</a> XML response, which the Java client library converts to a <b>EmailListRecipientFeed</b> object.</p>
+<pre class="codeSample">
+<b>retrievePageOfRecipients(String emailList, String startRecipient)</b>
+</pre>
+<p>This method takes two arguments. The first argument is the name of the email list for which you are retrieving recipients, and the second argument is the first email address that should appear in your result set. Email addresses are ordered case-insensitively by ASCII value.</p>
+
+
+
+
+
+
+
+
+</p>
+<!--
+This method, in turn, issues an HTTP GET request to the following URL:</p>
+
+<pre class="codeSample">
+</pre>
+-->
+
+<a name=Delete_Email_List_Recipient_Example></a><p><div class="l3">Deleting an Address from an Email List</div></p>
+
+
+
+<p>To delete an email address from an email list using the Java client library, call the following method:</p>
+<pre class="codeSample">
+<b>removeRecipientFromEmailList(String recipientAddress, String emailList)</b>
+</pre>
+<p>This method takes two arguments:</p>
+<p><ul>
+<li>The <b>recipientAddress</b> argument identifies the email address that is being removed from an email list.</li>
+<li>The <b>emailList</b> argument identifies the email address to which the address is being removed.</li>
+</ul></p>
+
+<a name=Error_Handling_Methods></a><p><div class="l2">Methods for Handling Errors</div></p>
+
+<a name=AppsForYourDomainException></a><p><div class="l3">Identifying Errors in API Responses</div></p>
+
+
+
+<p>The Java client library will throw an <b>AppsForYourDomainException</b> when it receives an error response from the Provisioning API. Other types of exceptions may also be thrown for other types of errors. To process or log an <b>AppsForYourDomainException</b>, we recommend that you call the <b>getErrorCode</b> method on that object to determine the type of error that the Provisioning API returned. The sample code below demonstrates how you would catch an <b>AppsForYourDomainException</b> in the Provisioning API:</p>
+
+<pre class="codeSample">
+try {
+    // Some API actions
+} catch (AppsForYourDomainException e) {
+    if (e.getErrorCode() == AppsForYourDomainErrorCode.EntityDoesNotExist ) {
+        // Do some post-error processing or logging.
+    }
+}
+</pre>
+
+<p>A complete list of error codes is provided in <a href="gdata_provisioning_api_v2.0_reference.html#appendix_e">Appendix E - GData Error Codes</a>.</p>
+
+
+<hr>
+<center><font size="-1">&copy; Google Inc. 2007. All Rights Reserved.</font></center>
+</div></div></div></body>
+</html>

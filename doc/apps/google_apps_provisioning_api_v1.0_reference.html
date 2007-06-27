@@ -1,0 +1,2500 @@
+<html>
+<head>
+<title>Google Apps for Your Domain Provisioning API V1.0 Reference</title><link rel=stylesheet href=http://www.google.com/google.css>
+<style>
+body,td,font,a{font-family:arial,sans-serif}
+p{font-family:arial,sans-serif}
+table {margin-left:4px}
+td {font-family:arial,sans-serif;font-size:83%}
+.i { margin-left: 1em; margin-right: 2em; }
+pre{font-family:arial,sans-serif; font-size:100%;padding:0px 25px }
+pre.box {background:#eee;border:1px solid #bbb;color:#000;font-family:Courier,monospace;font-size:110%;margin:1em 0 0 25px;padding:15px 5px 15px 10px;text-align:left;overflow:auto}
+pre.codesample {font-family:monospace;font-size:110%}
+table.bt {width:100%}
+td.padbold {font-size:100%;vertical-align:top;font-weight:bold;padding:6px;}
+td.padplain {font-size:100%;vertical-align:middle;padding:6px;}
+td.padboldst {font-size:100%;vertical-align:top;font-weight:bold;padding:6px;}
+td.padplainst {font-size:100%;vertical-align:middle;padding:6px;}
+td.t {font-size:12px;}
+th.t {font-size:12px;}
+a:link{color:#00c}
+a:visited{color:#551a8b}
+a:active{color:#f00}
+a.code {font-family:monospace;font-size:110%}
+.topnav {line-height:130%}
+.indent {line-height:130%; margin-left:.75em;}
+.activelink {line-height:130%; margin-left:0; color:#2F63B0; font-weight:bold}
+.inactivelink {line-height:130%; margin-left:0;}
+.footer {color:#666666; font-size:73%}
+.codeSample {font-size:100%;color:#000000;padding:0px 40px}
+.codeSampleNP {font-size:100%;color:#000000}
+.showvar {font-weight:bold;color:#3366cc}
+tr.t1tth {font-family: monospace; font-size:12pt; font-weight:bold; color: #000000;}
+.indentsidenav {margin-top:0px;margin-left:10px;margin-bottom:4px;font-size:10pt}
+.indentsidenavtoc {margin-top:0px;margin-left:10px;margin-bottom:4px;color:#ddad08;font-weight:bold;font-size:10pt}
+.sidenavnolink {margin-top:15px;margin-bottom:4px;font-weight:bold;font-size:10pt}
+.sidenavlink {margin-top:15px;margin-bottom:4px;font-size:10pt}
+.l1 {vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;font-size:120%;border-top:1px solid #3a7bcb;color:#000;font-weight:bold}
+.l2 {vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;font-size:105%;border-bottom:1px solid #3a7bcb;color:#000;font-weight:bold}
+.l3 {width:100%;font-size:95%;padding:4px;background:#fff;border-bottom:1px solid #3a7bcb;font-weight:bold}
+th.reportl {vertical-align:middle;text-align:left;width:20%;padding:8px 10px;background:#ddf8cc;color:#000;font-weight:bold;font-size:95%}
+th.reportr {vertical-align:middle;text-align:center;width:80%;padding:8px 10px;background:#ddf8cc;color:#000;font-weight:bold;font-size:95%}
+td.reportl {vertical-align:top;width:20%;padding:8px 10px;background:#ddf8cc;color:#00723d;font-weight:bold;font-size:83%}
+td.reportr {vertical-align:top;width:80%;padding:8px 10px;font-size:83%}
+th.left {text-align:left;background:#E5ECF9;font-size:83%;padding:4px 10px 4px 4px}
+th.middle {text-align:center;background:#E5ECF9;font-size:83%;padding:4px 10px}
+th.right {text-align:center;background:#E5ECF9;font-size:83%;padding:4px 10px}
+td.left {padding:4px;vertical-align:top;font-size:83%;font-weight:bold}
+td.middle {font-size:83%;font-weight:bold;color:#505050;padding:4px 6px;vertical-align:top}
+td.right {padding:4px;font-size:83%;vertical-align:top}
+th.attrheader {padding:4px 6px;font-size:83%;font-weight:bold;vertical-align:middle;text-align:center;background:#E5ECF9}
+th.attrheaderl {text-align:left;padding:4px 6px;font-size:95%;font-weight:bold;vertical-align:middle;background:#E5ECF9}
+td.attrname {padding:4px;font-size:83%;font-weight:bold;vertical-align:top;text-align:left}
+td.attrtype {padding:4px;font-size:83%;vertical-align:top;text-align:left}
+td.tagname {width:20%;padding:4px;font-size:83%;font-weight:bold;vertical-align:top;text-align:left}
+td.tagtype {width:80%;padding:4px;font-size:83%;vertical-align:top;text-align:left}
+.l4 {width:100%;background:#fff;border-bottom:1px solid #3a7bcb;font-size:100%;font-weight:bold}
+
+#pagecontent{
+  padding-bottom:5em;
+  border-left:thin dotted #bbb ;
+  margin:0 10px 0 170px;
+  padding-left:15px;
+}
+
+#header {
+  position: relative;
+  margin:0;
+  height:60px;
+  padding-top: 12px;
+}
+
+#wrapper{
+  width:100%;
+}
+
+#logo{  /* in header */
+  float:left;
+  width: 175px;
+  top:0;
+  left:0;
+  padding:0;
+  margin:0;
+  position:absolute;
+}
+  
+#logo img{border:none;}
+  
+#doc_title{  /* in header */
+  font-size:135%;
+  font-weight:bold;
+  background-color: #e5ecf9;
+  border-color: #3a7bcb; 
+  border-top: 1px solid;
+  margin:0 0 0 170px;
+  padding:.1em 0 .1em 3px;
+}
+
+#sidenav {
+  float:left;
+  width:160px;
+  margin:0 0 0 3px;
+  background:#fff;
+  padding:0;
+  left:0;
+}
+#sidenav ul{
+  padding:0;
+  margin:0;
+  }
+  
+#sidenav ul li ul, #sidenav ul li ul li ul{
+  padding:0;
+  margin:0 0 0 .6em;
+}
+  
+#sidenav ul li{
+  list-style:none;
+  padding:0;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav ul li ul li{
+  list-style:none;
+  padding:0;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav ul li ul li ul li{
+  list-style:none;
+  padding:1px;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav p {
+  margin: 0 .3em 0 0;
+  padding:1em 0 0 0;
+}
+    
+#sidenav ul li a, #sidenav ul ul li a, #sidenav ul ul ul li a{
+  color: #0000cc;
+  display:block;
+  width:92%;
+  padding:0;
+}
+  
+#sidenav ul li a:hover{
+  color: #0000cc;
+}
+    
+#sidenav h1{
+  font-weight:bold;
+  font-size:100%;
+  color:#000;
+  position:relative;
+  background-color:#fff;
+  border:none;
+  margin:1em 0 0 0;
+  padding:0 2px 0 2px;
+  width:100%;
+  left:-4px;
+}
+  
+.other{  /* little box for side nav */
+  border-top:thin dotted #bbb;
+  border-bottom:thin dotted #bbb;
+  margin:3em 0 3em 0;
+  padding: 0 0 10px 0;
+}
+    
+.line{  /* dotted line for division */
+  border-top:thin dotted #bbb;
+  margin:1em 0 0 0;
+  padding:0;
+  height:5px;
+}
+  @media screen {
+    body {
+      font-family: arial, sans-serif;
+      font-size: 83%;
+    }
+    
+    .dontprint {
+        padding:0px;
+        margin:0px;
+    }
+
+    .leftcontent {
+      float:left;
+      width:175px;
+      background:#fff;
+    }
+    
+    .topimage {
+      margin-left:13px;
+      margin-top:0px;
+      padding:0px;
+    }
+    
+    .footerimage {
+      margin-left:15px;
+      margin-top:20px;
+      padding:0px;
+    }
+    
+    .toc { 
+      color: #ddad08; 
+      font-weight:bold;
+    }
+    
+    .rightcontent {
+      background:#fff;
+      margin-left: 179px;
+      margin-right:10px
+    }
+
+    .content {
+    }
+
+    .title {
+    background-color: #FEFADE;
+    border-top:1px solid #ddad08;
+    font-weight:bold;
+    font-size:120%;
+    text-align:left;
+    margin-left:0;
+    }
+  }
+  @media print {
+	          
+    .dontprint {
+        padding:0px;
+        margin:0px;
+        display:none;
+    }
+
+    .leftcontent {
+        display: none;
+        float:left;
+        clear:right;
+        width:100%;
+    }
+
+    .topimage {
+        margin-left:13px;
+        margin-top:0px;
+        padding:0px;
+    }
+
+    .rightcontent {
+        margin-left: 10px;
+    }
+
+    .toc {
+        list-style-type: none;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .toc1 {
+    }
+
+    .toc2 {
+        padding-left: 25pt;
+    }
+
+    .toc3 {
+        padding-left: 50pt;
+    }
+
+    .title {
+        display:none;
+        background-color: #FEFADE; 
+        border-top:1px solid #ddad08;
+        font-weight:bold; 
+        font-size:120%;
+        text-align:left;
+        margin-left:0;
+    }
+
+    .topimage {
+        margin-left:13px;
+        margin-top:0px;
+        padding:0px;
+    }
+
+    body {
+        font-family: arial, sans-serif;
+        font-size: 83%;
+    }
+
+    .backtotop {
+        display:none;
+    }
+
+    #sidenav {
+        visibility:hidden;
+	position:absolute;
+    }
+    #pagecontent {
+        float:left;
+	position:relative;
+	top:0;
+	left:-175px;
+	width:100%;
+    }
+    #doc_title {
+        border-bottom:1px solid;
+	padding-bottom:2px;
+    }
+    pre { /* don't print scrollbars---display overflow text */
+        overflow:visible;
+    }
+  }
+</style>
+<script language="JavaScript">
+<!--
+  function show_when_checked(cbox,divid,defaultid) {
+    document.getElementById(divid).style.display=cbox.checked?"inline":"none";
+    document.getElementById(defaultid).style.display=cbox.checked?"none":"inline";
+  }
+  var flag = new Array();
+  function change(div, divid, defaultid) {
+    var par = new getObj(div);
+    if (flag[div]) {
+      par.obj.innerHTML = "expand";
+      flag[div] = 0;
+    } else {
+      par.obj.innerHTML = "collapse";
+      flag[div] = 1;
+    }
+    document.getElementById(divid).style.display=flag[div]?"inline":"none";
+    document.getElementById(defaultid).style.display=flag[div]?"none":"inline";
+    return false;
+  }
+
+  function getObj(name) {
+    var o = 'this.obj = document.';
+    var s = 'this.style = document.';
+    if (document.getElementById) {
+      eval(o + 'getElementById(name);');
+      eval(s + 'getElementById(name).style;');
+    } else if (document.all) {
+      eval(o + 'all[name];');
+      eval(s + 'all[name].style;');
+    } else if (document.layers) {
+      eval(o + 'layers[name];');
+      eval(s + 'layers[name];');
+    }
+  }
+
+
+
+//-->
+</script>
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+</head>
+
+<body><a name="top"></a>
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Apps Provisioning API V1.0 Reference</h1>
+</div>
+
+<div class="wrapper">
+
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+<ul>
+  <li>
+    <h1>About Google Apps APIs</h1>
+    <ul>
+      <li><a href="index.html">Main</a></li>
+      <li><a href="overview.html">Overview</a></li>
+      <li><a href="start.html">Getting Started</a></li>
+    </ul>
+  </li>
+  <li>
+    <h1>Domain Administrators</h1>
+    <ul>
+      <li><a href="gdata_provisioning_api_v2.0_reference.html">Provisioning API V2.0</a></li>
+      <li>Provisioning API V1.0</li>
+      <li><a href="sso/saml_reference_implementation.html">Single Sign-On Service</a></li>
+      <li><a href="http://www.google.com/support/a/bin/answer.py?answer=60730">Email Gateway Interface</a></li>
+      <li><a href="libraries_and_samples.html">Client Libraries and Sample Code</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=11279">Frequently Asked Questions</a></li>
+      <li><a href="http://groups.google.com/group/google-apps-apis">Discussion Group</a></li>
+      <li><a href="http://www.google.com/support/a/">Help Center</a></li>
+    </ul>
+  </li>
+  <li>
+    <h1>Application Developers</h1>
+    <ul>
+      <li><a href="http://code.google.com/apis/gdata/index.html">Google Data APIs</a></li>
+      <li><a href="http://code.google.com/apis/calendar/overview.html">Calendar Data API</a></li>
+      <li><a href="http://code.google.com/apis/spreadsheets/overview.html">Spreadsheets Data API</a></li>
+      <li><a href="http://code.google.com/apis/gadgets/index.html">Gadgets API</a></li>
+      <li><a href="http://code.google.com/apis/talk/talk_developers_home.html">Talk for Developers</a></li>
+    </ul>
+  </li>
+  <li>
+    <h1>Solutions Gallery</h1>
+    <ul>
+	  <li><a href="submit.html" id="submit_link">Share Your Solution</a></li>
+      <li><a href="http://www.google.com/enterprise/gallery/">View Solutions Gallery</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<div id="pagecontent">
+
+<a name=Table_of_Contents_></a><p><div class="l3">Table of Contents:</div></p>
+
+
+<a name="toc"/>
+<div style="padding:10px">
+<a href="#googleAppsOverview">Overview</a><br>
+<a href="#googleAppsSettingUp">Setting Up Google Apps</a><br>
+<a href="#googleAppsRequestTypes">API Operations</a><br>
+<a href="#googleAppsAuthentication">Authentication</a><br><div style="padding-left:40px">
+
+<a href="#googleAppsObtainingTokens">Obtaining an Authentication Token</a><br>
+<a href="#googleAppsSampleTokenCode">Sample Code for Obtaining an Authentication Token</a><br></div>
+<a href="#googleAppsRequestFormat">Submitting API Requests</a><br><div style="padding-left:40px">
+
+<a href="#googleAppsAccountAPIRequests">Sample API Requests for User Accounts</a><br>
+<a href="#googleAppsAliasAPIRequests">API Requests for Aliases</a><br>
+<a href="#googleAppsMailingListAPIRequests">API Requests for Mailing Lists</a><br></div>
+<a href="#googleAppsLogging">Logging and Privacy</a><br>
+<a href="#googleAppsResponseFormat">Processing API Responses</a><br><div style="padding-left:40px">
+
+<a href="#googleAppsSampleResponses">Sample API Responses</a><br><div style="padding-left:40px">
+
+<a href="#googleAppsSampleFailureResponse">Sample Failure Response</a><br>
+<a href="#googleAppsSampleSuccessResponse">Sample Success Response</a><br></div></div>
+<a href="#Appendixes">Appendixes</a><br><div style="padding-left:40px">
+
+<a href="#Appendix_A___XML_Tag_Definitions_for_API_Requests">Appendix A - XML Tag Definitions for API Requests</a><br>
+<a href="#Appendix_B___XML_Tag_Definitions_for_API_Responses">Appendix B - XML Tag Definitions for API Responses</a><br></div></font></div>
+
+<a name=googleAppsOverview></a><p><div class="l1">Overview</div></p><div class="content">
+
+<p><b>Note: Google only supports this version of the Provisioning API for partners who have already been approved to use this API version. If you have not been approved to use this version of the API, you must implement <a href="gdata_provisioning_api_v2.0_reference.html">version 2.0 of the Provisioning API</a>.</b></p>
+
+<p>Google Apps allows website administrators to offer their users cobranded versions of a variety of personalized Google applications, including Gmail, Google Talk and Google Calendar. Google hosts all of these applications, thereby reducing partners' costs for installing and maintaining these applications. Partners can choose to offer access to any of the following Google Apps:</p>
+
+<p><div style="padding:0px 25px">
+<table border="0" cellpadding="0" cellspacing="0">
+  <tbody>
+  <tr valign="top">
+    <td width="35"><img src="http://www.google.com/a/help/intl/en/images/gmail.gif" alt="Checkout" border="0" height="35" width="35"></td>
+    <td width="100%" style="padding:5px 8px;vertical-align:top;font-size:83%"><b>Gmail</b></td>
+  </tr>
+  <tr valign="top">
+    <td width="35"><img src="http://www.google.com/a/help/intl/en/images/talk.gif" alt="Checkout" border="0" height="35" width="35"></td>
+    <td width="100%" style="padding:5px 8px;vertical-align:top;font-size:83%"><b>Chat</b></td>
+  </tr>
+  <tr valign="top">
+    <td width="35"><img src="http://www.google.com/a/help/intl/en/images/calendar.gif" alt="Checkout" border="0" height="35" width="35"></td>
+    <td width="100%" style="padding:5px 8px;vertical-align:top;font-size:83%"><b>Calendar</b></td>
+  </tr>
+  <tr valign="top">
+    <td width="35"><img src="http://www.google.com/accounts/hosted/psp.gif" alt="Checkout" border="0" height="35" width="35"></td>
+    <td width="100%" style="padding:5px 8px;vertical-align:top;font-size:83%"><b>Personalized Start Page (PSP)</b></td>
+  </tr>
+</tbody></table>
+</div></p>
+
+<p>To access Google Apps, an end user must have a Google-hosted account. This document describes 
+the Google Apps Provisioning API, which enables Google partners to create, retrieve, update and delete user accounts. Partners can also use the API to create 
+email accounts, user aliases and mailing lists.</p>
+
+<p>This document explains the formats for all of the different types of API requests as well as the format of the API's XML responses to those requests.</p>
+
+
+<a name=googleAppsSettingUp></a><p><div class="l1">Setting Up Google Apps</div></p>
+
+
+
+
+<p>To set up Google Apps, you will need to create a Google account that will serve as an admin account for your domain. You can use an existing Google account. However, since the owner of the account will have the ability to create, update and delete user accounts for your domain, we recommend that you consider creating a new Google account for your domain rather than using someone's personal Google account.</p>
+
+
+<p>The following steps explain how you would set up Google Apps.</p>
+
+<ol>
+<li>
+<p>Go to the home page for <a href="http://www.google.com/a">Google Apps</a> and follow the instructions to sign up for Google Apps Premier Edition (for your enterprise) or Google Apps Education Edition (for your school).</p>
+</li>
+<!--
+<li>
+<p>Sign in to an existing Google account or create a new account.</p>
+<p><div style="padding:0px 25px"><img src="googleAppsSignIn.gif" width="275" height="368" border="0"/></div></p>
+</li>
+-->
+<li>
+<p>Enter your domain name or indicate that you would like to purchase a new domain. If you purchase a new domain, you will need to complete the registration forms for the new domain before proceeding to the next step.</p>
+</li>
+<li>
+<p>Complete the form to provide information about your organization and yourself to Google.</p>
+<p><div style="padding:0px 25px"><img src="googleAppsAboutYourOrganization.gif" border="1"/></div></p>
+</li>
+<li>
+<p>On the following page, complete the form indicating the number of user accounts you would like to purchase and then accept the terms and conditions.</p>
+<p><div style="padding:0px 25px"><img src="googleAppsPaymentForm.gif" border="1"/></div></p>
+</li>
+<li>
+<p>Complete the signup process using Google Checkout.</p>
+<p><div style="padding:0px 25px"><img src="googleAppsGoogleCheckout.gif" border="1"/></div></p>
+</li>
+<li>
+<p>Complete the form to set up your admin account.</p>
+<p><div style="padding:0px 25px"><img src="googleAppsAdminAccountSetup.gif" border="1"/></div></p>
+</li>
+<li>
+<p>Follow the instructions to verify that you own your domain.</p>
+</li>
+<li>
+<p>Use the email address and password for your admin account to request an <a href="#googleAppsAuthentication">authentication token</a> for your domain. The authentication token will be submitted in each API request that you send to Google, and Google will use the authentication token to authorize the execution of those API requests.</p>
+</li>
+</ol>
+
+<a name=googleAppsRequestTypes></a><p><div class="l1">API Operations</div></p>
+
+
+
+<p>To use the API, you will send HTTP 
+POST 
+requests to Google that instruct Google to perform a create, retrieve, update or delete operation on a resource in your domain. Resources include user accounts, 
+email aliases and mailing lists. 
+<b>Note:</b> The Google Apps online control panel refers to aliases as <b>nicknames</b> and to mailing lists as <b>email lists</b>.
+</p>
+
+<p>This section explains the different types of operations that the API supports. The <a href="#googleAppsRequestFormat">Submitting API Requests</a> section identifies the URL that corresponds to each API operation.</p>
+
+<ul>
+
+<li>
+<p><b>Create</b> operations enable partners to add new 
+<a href="#googleAppsAccountCreate">user accounts</a>, <a href="#googleAppsAliasCreate">email aliases</a> and <a href="#googleAppsMailingListCreate">mailing lists</a>. The <a href="#googleAppsRequestFormat">Submitting API Requests</a> section identifies the URL that corresponds to each API operation.</p>
+</li>
+
+<li>
+<p><b>Retrieve</b> operations allow Google partners to request and obtain information about 
+<a href="#googleAppsAccountRetrieve">user accounts</a>, <a href="#googleAppsAliasRetrieve">email aliases</a> and <a href="#googleAppsMailingListRetrieve">mailing lists</a>. 
+</p>
+<p>The XML for a retrieve request identifies a <b><a href="#google_apps_tag_queryKey">queryKey</a></b>, which indicates the type of resource that is being retrieved. A retrieve request also specifies a <b><a href="#google_apps_tag_queryData">queryData</a></b> value, which identifies the particular resource being retrieved. Google will locate the resource identified in your request and return the corresponding information in the API response.</p>
+</li>
+
+<li>
+<p><b>Update</b> operations allow Google partners to modify information about 
+<a href="#googleAppsAccountUpdate">user accounts</a> and <a href="#googleAppsMailingListUpdate">mailing lists</a>. 
+<b>Note:</b> The API does not support updates to email aliases. 
+The API supports the following types of updates:</p>
+<p>
+<ul>
+<li>First name changes</li>
+<li>Last name changes</li>
+<li>Password changes</li>
+<li>Enable/disable a user's access to email</li>
+<li>Adding users to an email list</li>
+<li>Removing users from an email list</li>
+</ul></p>
+<p>Update requests also use the <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> and <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> XML elements to identify the resource being updated. When you submit an update request, Google will locate the appropriate resource and update it to match the information in the <a href="#google_apps_tag_UpdateSection">&lt;UpdateSection&gt;</a> node of the XML request.</p>
+</li>
+
+<li>
+<p><b>Delete</b> operations allow Google partners to delete 
+<a href="#googleAppsAccountDelete">user accounts</a>, <a href="#googleAppsAliasDelete">email aliases</a> and <a href="#googleAppsMailingListDelete">mailing lists</a>. 
+</p>
+<p>Like retrieve and update requests, delete requests use the <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> and <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> XML elements to identify the resource being deleted. Google will locate the resource specified in your request, delete it, and return a success or failure message in the API response.</p>
+<p>After you delete an account, you must wait five days before reassigning the username for the deleted account to another account.</p>
+
+
+</li>
+
+</ul>
+
+<p>Google will verify that all <b>Create</b> and <b>Update</b> requests contain valid XML, include all required data fields and meet authentication requirements.</p>
+<a name=googleAppsAuthentication></a><p><div class="l1">Authentication</div></p>
+
+
+
+<p>All of your API requests must be sent over HTTPS. 
+In addition, all data sent to the API will be delivered using HTTPS POST to ensure the security of that data.</p>
+<p>
+
+Each API request that you send needs to contain an authentication token, which Google will use to authorize access to the operation specified in the API request. Authentication tokens are only available to users who have administrative rights in your domain, and those tokens only authorize operations within your domain.</p>
+
+<p>The <a href="http://code.google.com/apis/accounts/AuthForInstalledApps.html">ClientLogin Interface</a> provides additional information about programmatically logging users into their accounts.</p>
+
+<a name=googleAppsObtainingTokens></a><p><div class="l3">Obtaining an Authentication Token</div></p>
+
+
+
+<p>To obtain an authentication token, submit an HTTP POST request to the following URL:</p>
+
+<div style="padding:0px 40px;font-weight:bold">
+https://www.google.com/accounts/ClientLogin
+</div>
+
+
+
+<p>The following guidelines apply to the request:</p>
+<ul>
+<li>
+<p>The POST body needs to include a string in the following format:</p>
+<div style="padding:0px 40px;font-weight:bold">
+accountType=<b>HOSTED</b>&Email=<span style=color:#3a7bcb">&lt;email_address&gt;</span>&Passwd=<span style="color:#3a7bcb">&lt;password&gt;</span>
+</div>
+<p>You will need to make the following changes to this string:</p>
+<ul>
+<li>
+<p>Replace the string <span style="color:#3a7bcb"><b>&lt;email_address&gt;</b></span> with the email address for your admin account.</p>
+</li>
+<li>
+<p>Replace the string <span style="color:#3a7bcb"><b>&lt;password&gt;</b></span> with the password for that account.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>The 
+email address and password 
+in the POST body must be URL-encoded. For example, the URL-encoded form of the email address <b>apps.test.account@example.com</b> is <b>apps%2etest%2eaccount%10example%2ecom</b>.</p>
+<li>
+<p>The POST request must specify the value <b>application/x-www-form-urlencoded</b> for the <b>Content-Type</b> header.</p>
+</li>
+</ul>
+
+<p>Google will return a response containing your authentication token in response to your POST request. The authentication token will be the <b>SID</b> value on that page. You need to extract the token from the page and then submit that token in 
+API requests.</p>
+
+<p><b>Note:</b> Authentication tokens expire after 24 hours. As such, you will need to submit a request to the above URL at least once every 24 hours. We recommend that you keep the token in memory rather than writing it to a file.</p>
+<a name=googleAppsSampleTokenCode></a><p><div class="l3">Sample Code for Obtaining an Authentication Token</div></p>
+
+
+
+<p>The following Perl script demonstrates how to make an HTTP POST request for an authentication token.</p>
+
+<p><pre class="codeSample">
+#! /usr/bin/perl -w
+
+use strict;
+use LWP::UserAgent;
+
+# Create an LWP object to make the HTTP POST request
+my $lwp_object = LWP::UserAgent->new;
+
+# Define the URL to submit the request to
+my $url = 'https://www.google.com/accounts/ClientLogin';
+
+# Submit the request with values for the <b>accountType</b>, 
+# <b>Email</b> and <b>Passwd</b> variables.
+my $response = $lwp_object->post( $url,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ 'accountType' => 'HOSTED',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Email' => '<span class="nh4">admin_email@example.com</span>',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Passwd' => '<span class="nh4">admin_password</span>'
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]
+);
+
+die "$url error: ", $response->status_line unless $response->is_success;
+
+# Extract the authentication token from the response
+my $auth_token;
+foreach my $line (split/\n/, $response->content) {
+&nbsp;&nbsp;&nbsp;&nbsp;if ($line =~ m/^SID=(.+)$/) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$auth_token = $1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;last;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+}
+
+print "authentication token is $auth_token\n";
+</pre></p>
+
+<p>Note that to use this code, you need to replace the <b>Email</b> and <b>Passwd</b> values with the email address and password for your admin account. 
+</p>
+<a name=googleAppsRequestFormat></a><p><div class="l1">Submitting API Requests</div></p>
+
+
+
+<p>To execute an operation using the API, you need to POST an appropriately formatted XML document to the URL that corresponds to that operation. The following table lists the different operations available in version 1.0 of the API. The table also identifies the URL to which you would submit an API request for each operation.</p>
+<table border="1" cellpadding="4" style="font-size:100%">
+  <tbody>
+    <tr class="t2h">
+      <th width="25%" style="text-align:left;padding:6px">Operation</th>
+      <th width="75%" style="padding:6px">URL</th>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Create Account with Email</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Create/Account/Email</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Create Alias</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Create/Alias</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Create Mailing List</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Create/MailingList</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Update Account</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Update/Account</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Update Account Status (locked/unlocked)</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Update/Account/Status</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Update Mailing List</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Update/MailingList</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Retrieve Account</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Retrieve/Account</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Retrieve Alias</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Retrieve/Alias</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Retrieve Mailing List</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Retrieve/MailingList</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Delete Account</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Delete/Account</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Delete Alias</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Delete/Alias</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Delete Mailing List</b></td>
+      <td class="padplain">https://www.google.com/a/services/v1.0/Delete/MailingList</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The following sections contain sample API requests to <font size="-1"><b>Create</b></font>, <font size="-1"><b>Retrieve</b></font>, <font size="-1"><b>Update</b></font> and <font size="-1"><b>Delete</b></font> user accounts, email aliases and mailing lists:</p>
+<p><ul>
+<li><font size="-1"><b><a href="#googleAppsAccountAPIRequests">User Accounts</a></b></font></li>
+<li><font size="-1"><b><a href="#googleAppsAliasAPIRequests">Email Aliases</a></b></font></li>
+<li><font size="-1"><b><a href="#googleAppsMailingListAPIRequests">Mailing Lists</a></b></font></li>
+</ul></p>
+
+<p>These sections provide a sample API request for each operation that you can perform using the API. These sections also discuss the XML tags used in each API request. Definitions for these XML tags are provided in <a href="#Appendix_A___XML_Tag_Definitions_for_API_Requests">Appendix A - XML Tag Definitions for API Requests</a>.</p>
+<a name=googleAppsAccountAPIRequests></a><p><div class="l2">Sample API Requests for User Accounts</div></p>
+
+
+
+<p>As described earlier, your users must have a user account to access Google Apps for your domain. The following subsections show the proper API request syntax for creating, updating, retrieving and deleting Google user accounts.</p>
+
+<p><div class="codeSample">
+<a href="#googleAppsAccountCreate">Creating a User Account with Email</a><br>
+<a href="#googleAppsAccountUpdate">Updating an Account - Changing a User's First Name, Last Name or Password</a>*<br>
+<a href="#googleAppsAccountUpdateStatus">Updating an Account - Enabling or Disabling Accounts</a>*<br>
+<a href="#googleAppsAccountRetrieve">Retrieving a User Account</a><br>
+<a href="#googleAppsAccountDelete">Deleting a User Account</a><br>
+</div></p>
+
+<p><b>*Note:</b> Each command marked with an asterisk (*) updates an account in a different way.</p>
+
+<a name=googleAppsAccountCreate></a><p><div class="l3">Creating a User Account with Email</div></p>
+
+
+
+<p>This example shows a request to create a user account. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;Account&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_CreateSection">hs:CreateSection</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_firstName">hs:firstName</a>&gt;John&lt;/hs:firstName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_lastName">hs:lastName</a>&gt;Doe&lt;/hs:lastName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_password">hs:password</a>&gt;abc123&lt;/hs:password&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_userName">hs:userName</a>&gt;john-doe&lt;/hs:userName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_quota">hs:quota</a>&gt;2048&lt;/hs:quota&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:CreateSection&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+The URL to use for this request is:
+</p><p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Create/Account/Email
+</div></p>
+
+<p>In this request, the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag is <b>Account</b>. The <a href="#google_apps_tag_CreateSection">&lt;CreateSection&gt;</a> tag has four required subtags:</p>
+<p><ul>
+<li><a href="#google_apps_tag_firstName">&lt;firstName&gt;</a></li>
+<li><a href="#google_apps_tag_lastName">&lt;lastName&gt;</a></li>
+<li><a href="#google_apps_tag_password">&lt;password&gt;</a></li>
+<li><a href="#google_apps_tag_userName">&lt;userName&gt;</a></li>
+</ul></p>
+<p>The <a href="#google_apps_tag_CreateSection">&lt;CreateSection&gt;</a> tag in the example also contains the <a href="#google_apps_tag_quota">&lt;quota&gt;</a> tag. Please note that this tag, which is used in a request to create an account with email, is required for domains that have the ability to customize the disk space quota allocated to their email accounts.</p>
+
+
+
+<a name=googleAppsAccountUpdate></a><p><div class="l3">Updating an Account - Changing a User's First Name, Last Name or Password</div></p>
+
+
+
+<p>This example shows a request to update a user account. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;Account&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;userName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;john-doe&lt;/hs:queryData&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_UpdateSection">hs:UpdateSection</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_firstName">hs:firstName</a>&gt;Johnny&lt;/hs:firstName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_lastName">hs:lastName</a>&gt;Doe&lt;/hs:lastName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_password">hs:password</a>&gt;abc123&lt;/hs:password&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:UpdateSection&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:
+</p><p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Update/Account
+</div></p>
+
+<p>In this request, the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag is <b>Account</b>. In addition, the <a href="#google_apps_tag_queryKey">queryKey</a> value (<b>userName</b>) indicates that Google Apps should look up a user account, and the <a href="#google_apps_tag_queryData">queryData</a> value identifies the account to be located (<b>john-doe</b>).</p>
+
+<p>The <a href="#google_apps_tag_UpdateSection">&lt;UpdateSection&gt;</a> tag in this request has three optional subtags. A request may include any combination of the three subtags and only the corresponding values will be updated.</p>
+
+<p><ul>
+<li><a href="#google_apps_tag_firstName">&lt;firstName&gt;</a></li>
+<li><a href="#google_apps_tag_lastName">&lt;lastName&gt;</a></li>
+<li><a href="#google_apps_tag_password">&lt;password&gt;</a></li>
+</ul></p>
+
+
+
+
+
+
+
+
+
+
+
+<a name=googleAppsAccountUpdateStatus></a><p><div class="l3">Updating an Account - Enabling or Disabling Accounts</div></p>
+
+
+
+<p>This example shows a request to lock, or disable, a user's email account. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;Account&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;userName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;john-doe&lt;/hs:queryData&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_UpdateSection">hs:UpdateSection</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_accountStatus">hs:accountStatus</a>&gt;locked&lt;/hs:accountStatus&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:UpdateSection&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:
+</p><p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Update/Account/Status
+</div></p>
+
+
+
+
+
+<p>In this request, the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag is <b>Account</b>. In addition, the <a href="#google_apps_tag_queryKey">queryKey</a> value (<b>userName</b>) indicates that Google Apps should look up a user account, and the <a href="#google_apps_tag_queryData">queryData</a> value identifies the account to be located (<b>john-doe</b>).</p>
+
+<p>The <a href="#google_apps_tag_UpdateSection">&lt;UpdateSection&gt;</a> tag in this request has one required subtag:</p>
+
+<ul>
+<li>
+<p><a href="#google_apps_tag_accountStatus">&lt;accountStatus&gt;</a> - Valid values for this tag are <b>locked</b>, which disables the specified email account, and <b>unlocked</b>, which enables the specified email account. An end user cannot log in to a disabled account, and email sent to the account will not be delivered.</p>
+</li>
+</ul>
+
+
+
+<a name=googleAppsAccountRetrieve></a><p><div class="l3">Retrieving a User Account</div></p>
+
+
+
+<p>This example shows a request to retrieve information about 
+a user account. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;Account&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;userName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;john-doe&lt;/hs:queryData&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:</p>
+<p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Retrieve/Account
+</div></p>
+
+<p>API requests to retrieve user accounts, email aliases and mailing lists all use the same XML structure. The only differences between the requests are the values of the <a href="#google_apps_tag_type">&lt;type&gt;</a>, <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> and <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tags.</p>
+
+<p>To retrieve information about a user account, set the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag to <b>Account</b> and the value of the <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> tag to <b>userName</b>. Also set the value of the <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tag to the name of the user account to be retrieved.</p>
+
+<a name=googleAppsAccountDelete></a><p><div class="l3">Deleting a User Account</div></p>
+
+
+
+<p>This example shows a request to delete 
+a user account. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;Account&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;userName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;john-doe&lt;/hs:queryData&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:
+</p>
+<p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Delete/Account
+</div></p>
+
+<p>API requests to delete user accounts, email aliases and mailing lists all use the same XML structure. The only differences between the requests are the values of the <a href="#google_apps_tag_type">&lt;type&gt;</a>, <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> and <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tags.</p>
+
+<p>To delete a user account, set the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag to <b>Account</b> and the value of the <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> tag to <b>userName</b>. Also set the value of the <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tag to the name of the user account to be deleted.</p>
+<a name=googleAppsAliasAPIRequests></a><p><div class="l2">API Requests for Aliases</div></p>
+
+
+
+<p>Email aliases enable a single email account to receive email sent to more than one email address. However, an alias should not be considered an alternate <font size="-1"><b><a href="#google_apps_tag_userName">userName</a></b></font> for an account. For example, a user cannot log in to an account using an alias name.</p>
+
+
+<p>The following subsections demonstrate the proper syntax for creating, retrieving and deleting aliases through the API. (Aliases cannot be updated.)</p>
+
+<p><div class="codeSample">
+<a href="#googleAppsAliasCreate">Creating an Alias</a><br>
+<a href="#googleAppsAliasRetrieve">Retrieving an Alias</a><br>
+<a href="#googleAppsAliasDelete">Deleting an Alias</a><br>
+</div></p>
+
+<a name=googleAppsAliasCreate></a><p><div class="l3">Creating an Alias</div></p>
+
+
+
+<p>This example shows a request to create an email alias. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;Alias&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_CreateSection">hs:CreateSection</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_userName">hs:userName</a>&gt;john-doe&lt;/hs:userName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_aliasName">hs:aliasName</a>&gt;johnnyd&lt;/hs:aliasName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:CreateSection&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+The URL to use for this request is:
+</p><p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Create/Alias
+</div></p>
+
+
+<p>In this request, the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag is <b>Alias</b>. The <a href="#google_apps_tag_CreateSection">&lt;CreateSection&gt;</a> tag has two required subtags:
+<p><ul>
+<li>
+<p><a href="#google_apps_tag_userName">&lt;userName&gt;</a> - This value identifies the user to whom the alias is assigned.</p>
+</li>
+<li>
+<p><a href="#google_apps_tag_aliasName">&lt;aliasName&gt;</a> - This value identifies the name of the alias to be created.</p>
+</li>
+</ul></p>
+
+
+<a name=googleAppsAliasRetrieve></a><p><div class="l3">Retrieving an Alias</div></p>
+
+
+
+<p>This example shows a request to retrieve information about 
+an email alias. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;Alias&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;aliasName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;johnnyd&lt;/hs:queryData&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:</p>
+<p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Retrieve/Alias
+</div></p>
+
+<p>API requests to retrieve user accounts, email aliases and mailing lists all use the same XML structure. The only differences between the requests are the values of the <a href="#google_apps_tag_type">&lt;type&gt;</a>, <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> and <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tags.</p>
+
+<p>To retrieve information about an email alias, set the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag to <b>Alias</b> and the value of the <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> tag to <b>aliasName</b>. Also set the value of the <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tag to the name of the email alias to be retrieved.</p>
+
+<a name=googleAppsAliasDelete></a><p><div class="l3">Deleting an Alias</div></p>
+
+
+
+<p>This example shows a request to delete 
+an email alias. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;Alias&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;aliasName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;johnnyd&lt;/hs:queryData&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:
+</p>
+<p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Delete/Alias
+</div></p>
+
+<p>API requests to delete user accounts, email aliases and mailing lists all use the same XML structure. The only differences between the requests are the values of the <a href="#google_apps_tag_type">&lt;type&gt;</a>, <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> and <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tags.</p>
+
+<p>To delete an email alias, set the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag to <b>Alias</b> and the value of the <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> tag to <b>aliasName</b>. Also set the value of the <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tag to the name of the email alias to be deleted.</p>
+<a name=googleAppsMailingListAPIRequests></a><p><div class="l2">API Requests for Mailing Lists</div></p>
+
+
+
+<p>Mailing lists enable many different users to receive email sent to a single email address. The following subsections show the proper API request syntax for creating, updating, retrieving and deleting mailing lists.</p>
+
+<p><div class="codeSample">
+<a href="#googleAppsMailingListCreate">Creating a Mailing List</a><br>
+<a href="#googleAppsMailingListUpdate">Updating a Mailing List</a><br>
+<a href="#googleAppsMailingListRetrieve">Retrieving a Mailing List</a><br>
+<a href="#googleAppsMailingListDelete">Deleting a Mailing List</a><br>
+</div></p>
+
+<p><b>Note:</b> Mailing lists are always empty when you create them. After creating a mailing list, you will need to update the mailing list to add users to it. A user must already have a user account before she can be added to a mailing list.</p>
+
+<a name=googleAppsMailingListCreate></a><p><div class="l3">Creating a Mailing List</div></p>
+
+
+
+<p>This example shows a request to create a mailing list. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;MailingList&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_CreateSection">hs:CreateSection</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_mailingListName">hs:mailingListName</a>&gt;sales-europe&lt;/hs:mailingListName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:CreateSection&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+The URL to use for this request is:
+</p><p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Create/MailingList
+</div></p>
+
+
+
+<p>In this request, the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag is <b>MailingList</b>. In addition, the <a href="#google_apps_tag_CreateSection">&lt;CreateSection&gt;</a> tag has one required subtag (<b><a href="#google_apps_tag_mailingListName">&lt;mailingListName&gt;</a></b>), which identifies the list to be created.</p>
+
+<a name=googleAppsMailingListUpdate></a><p><div class="l3">Updating a Mailing List</div></p>
+
+
+
+<p>This example shows a request to update a mailing list. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;MailingList&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;mailingListName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;sales-europe&lt;/hs:queryData&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_UpdateSection">hs:UpdateSection</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_userName">hs:userName</a>&gt;john-doe&lt;/hs:userName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_listOperation">hs:listOperation</a>&gt;add&lt;/hs:listOperation&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:UpdateSection&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:
+</p><p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Update/MailingList
+</div></p>
+
+
+
+
+
+
+
+<p>In this request, the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag is <b>MailingList</b>.  In addition, the <a href="#google_apps_tag_queryKey">queryKey</a> value (<b>mailingListName</b>) indicates that Google Apps should look up a mailing list, and the <a href="#google_apps_tag_queryData">queryData</a> value identifies the mailing list to be located (<b>sales-europe</b>).</p>
+
+<p>The <a href="#google_apps_tag_UpdateSection">&lt;UpdateSection&gt;</a> tag contains two required subtags:</p>
+
+<ul>
+<li>
+<p><a href="#google_apps_tag_userName">&lt;userName&gt;</a> - This tag identifies the user who is being added to or removed from the mailing list.</p>
+</li>
+<li>
+<p><a href="#google_apps_tag_listOperation">&lt;listOperation&gt;</a> - This tag indicates whether the user should be added to the list or removed from the list. Valid values for this tag are <b>add</b> and <b>remove</b>.</p>
+</li>
+</ul>
+
+<a name=googleAppsMailingListRetrieve></a><p><div class="l3">Retrieving a Mailing List</div></p>
+
+
+
+<p>This example shows a request to retrieve information about 
+a mailing list. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;MailingList&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;mailingListName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;sales-europe&lt;/hs:queryData&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:</p>
+<p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Retrieve/MailingList
+</div></p>
+
+<p>API requests to retrieve user accounts, email aliases and mailing lists all use the same XML structure. The only differences between the requests are the values of the <a href="#google_apps_tag_type">&lt;type&gt;</a>, <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> and <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tags.</p>
+
+<p>To retrieve information about a mailing list, set the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag to <b>MailingList</b> and the value of the <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> tag to <b>mailingListName</b>. Also set the value of the <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tag to the name of the mailing list to be retrieved.</p>
+
+<a name=googleAppsMailingListDelete></a><p><div class="l3">Deleting a Mailing List</div></p>
+
+
+
+<p>This example shows a request to delete 
+a mailing list. 
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_type">hs:type</a>&gt;MailingList&lt;/hs:type&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_token">hs:token</a>&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_domain">hs:domain</a>&gt;example.com&lt;/hs:domain&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryKey">hs:queryKey</a>&gt;mailingListName&lt;/hs:queryKey&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_tag_queryData">hs:queryData</a>&gt;sales-europe&lt;/hs:queryData&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<p>The URL to use for this request is:
+</p>
+<p><div class="codeSample">
+https://www.google.com/a/services/v1.0/Delete/MailingList
+</div></p>
+
+<p>API requests to delete user accounts, email aliases and mailing lists all use the same XML structure. The only differences between the requests are the values of the <a href="#google_apps_tag_type">&lt;type&gt;</a>, <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> and <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tags.</p>
+
+<p>To delete a mailing list, set the value of the <a href="#google_apps_tag_type">&lt;type&gt;</a> tag to <b>MailingList</b> and the value of the <a href="#google_apps_tag_queryKey">&lt;queryKey&gt;</a> tag to <b>mailingListName</b>. Also set the value of the <a href="#google_apps_tag_queryData">&lt;queryData&gt;</a> tag to the name of the mailing list to be deleted.</p>
+<a name=googleAppsLogging></a><p><div class="l1">Logging and Privacy</div></p>
+
+
+
+<p>The API will log each operation in which a user account is created, updated or deleted for your domain. Logs are available on a per-domain basis.</p>
+
+<p><font size="-1"><b>Note:</b></font> Usernames and passwords for your accounts are not recorded in logs.</p>
+<a name=googleAppsResponseFormat></a><p><div class="l1">Processing API Responses</div></p>
+
+
+
+<p>The API returns an XML response to all API requests that are sent to a valid API URL. The XML response indicates whether Google processed the API request successfully. (Google does not return XML responses to requests sent to <a href="#invalid_url">invalid API URLs</a>.)</p>
+
+<ul>
+<li>
+<p>If a response is processed successfully, the <b><a href="#google_apps_response_tag_status">&lt;status&gt;</a></b> tag in the XML response will contain the text <b>Success(2000)</b>.</p>
+</li>
+<li>
+<p>If a request is not processed successfully, the <b><a href="#google_apps_response_tag_status">&lt;status&gt;</a></b> tag in the XML response will contain the text <b>Failure(2001)</b> and the <b><a href="#google_apps_response_tag_reason">&lt;reason&gt;</a></b> tag will contain an error code that explains the cause of the failure.</p>
+</li>
+</ul>
+
+<p>The following list contains the XML tags that may appear in an API response. These tags are defined in <a href="#Appendix_B___XML_Tag_Definitions_for_API_Responses">Appendix B - XML Tag Definitions for API Responses</a>. In addition, the <a href="#googleAppsSampleResponses">Sample API Responses</a> section of this document contains sample XML responses for both successful and unsuccessful API requests.</p>
+
+
+<table style="border:solid 0px;padding-left:40px">
+<tr>
+<td style="width:100%;vertical-align:top;font-weight:bold">
+<ul>
+<li><font size="-1"><a href="#google_apps_response_tag_rest">rest</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_status">status</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_reason">reason</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_extendedMessage">extendedMessage</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_result">result</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_firstName">firstName</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_lastName">lastName</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_userName">userName</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_accountStatus">accountStatus</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_aliases">aliases</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_alias">alias</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_emailLists">emailLists</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_emailList">emailList</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_emailAddresses">emailAddresses</a></font></li>
+<li><font size="-1"><a href="#google_apps_response_tag_emailAddress">emailAddress</a></font></li>
+</ul>
+</td>
+</tr>
+</table>
+
+<a name="invalid_url"/>
+<p>* <b>Note:</b> The URLs that correspond to each API operation are listed in the <a href="#googleAppsRequestFormat">Submitting API Requests</a> section of this document. If you send an API request to a URL that is not in that list, Google will return an HTTP 301 response code, indicating that the requested URL has been permanently redirected. If you receive an HTTP 301 response code from the API, please verify that you are sending your POST requests to a valid API URL.</p>
+<a name=googleAppsSampleResponses></a><p><div class="l2">Sample API Responses</div></p>
+
+
+
+<p>The following examples demonstrate the syntax used for API XML responses.</p>
+
+<ul style="list-style-type:none">
+<li>
+<a name=googleAppsSampleFailureResponse></a><p><div class="l3">Sample Failure Response</div></p>
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;hs:rest xmlns:hs="google:accounts:rest:protocol"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;hs:status&gt;Failure(2001)&lt;/hs:status&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;hs:reason&gt;AuthenticationFailure(1006)&lt;/hs:reason&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;hs:extendedMessage&gt;Supplied user is not an admin, cannot use API.&lt;/hs:extendedMessage&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;hs:result&gt;&lt;/hs:result&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+</li>
+<li>
+<a name=googleAppsSampleSuccessResponse></a><p><div class="l3">Sample Success Response</div></p>
+
+<p>The syntax of an API response is identical for <b>Create</b>, <b>Update</b> and <b>Delete</b> requests. This syntax is shown below in <a href="#successful_response_example_1">example 1</a>. Responses to <b>Retrieve</b> requests use some additional tags. Those tags vary depending on whether the API request was for user account or mailing list information. The syntax for returning user account information is shown in <a href="#successful_response_example_2">example 2</a>, and the syntax for returning mailing list information is shown in <a href="#successful_response_example_3">example 3</a>.</p>
+
+<a name="successful_response_example_1"/>
+<p><b>Example 1: Successful Response to Create, Update or Delete Request</b></p>
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_response_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_status">hs:status</a>&gt;Success(2000)&lt;/hs:status&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_reason">hs:reason</a>&gt;N/A&lt;/hs:reason&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_extendedMessage">hs:extendedMessage</a>&gt;N/A&lt;/hs:extendedMessage&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_result">hs:result</a>&gt;N/A&lt;/hs:result&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<a name="successful_response_example_2"/>
+<p><b>Example 2: Successful Response to Retrieve Account Information</b></p>
+
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_response_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_status">hs:status</a>&gt;Success(2000)&lt;/hs:status&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_reason">hs:reason</a>&gt;N/A&lt;/hs:reason&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_extendedMessage">hs:extendedMessage</a>&gt;N/A&lt;/hs:extendedMessage&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_result">hs:result</a>&gt;N/A&lt;/hs:result&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_RetrievalSection">hs:RetrievalSection</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_firstName">hs:firstName</a>&gt;John&lt;/hs:firstName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_lastName">hs:lastName</a>&gt;Doe&lt;/hs:lastName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_userName">hs:userName</a>&gt;john-doe&lt;/hs:userName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_accountStatus">hs:accountStatus</a>&gt;unlocked&lt;/hs:accountStatus&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_aliases">hs:aliases</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_alias">hs:alias</a>&gt;johnnyd&lt;/hs:alias&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:aliases&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_emailLists">hs:emailLists</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_emailList">hs:emailList</a>&gt;sales-europe&lt;/hs:emailList&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_emailList">hs:emailList</a>&gt;sales-uk&lt;/hs:emailList&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:emailLists&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:RetrievalSection&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+
+<a name="successful_response_example_3"/>
+<p><b>Example 3: Successful Response to Retrieve Mailing List Information</b></p>
+<p><div class="codeSample">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;<a href="#google_apps_response_tag_rest">hs:rest</a> xmlns:hs="google:accounts:rest:protocol"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_status">hs:status</a>&gt;Success(2000)&lt;/hs:status&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_reason">hs:reason</a>&gt;N/A&lt;/hs:reason&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_extendedMessage">hs:extendedMessage</a>&gt;N/A&lt;/hs:extendedMessage&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_result">hs:result</a>&gt;N/A&lt;/hs:result&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_RetrievalSection">hs:RetrievalSection</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_emailAddresses">hs:emailAddresses</a>&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_emailAddress">hs:emailAddress</a>&gt;john-doe@example.com&lt;/hs:emailAddress&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_emailAddress">hs:emailAddress</a>&gt;mary-smith@example.com&lt;/hs:emailAddress&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<a href="#google_apps_response_tag_emailAddress">hs:emailAddress</a>&gt;steve-jones@example.com&lt;/hs:emailAddress&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;hs:/emailAddresses&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/hs:RetrievalSection&gt;<br>
+&lt;/hs:rest&gt;
+</div></p>
+</li>
+</ul>
+<a name=Appendixes></a><p><div class="l1">Appendixes</div></p>
+
+
+
+<p>The following appendixes contain definitions of the XML tags used in API XML requests and responses.</p>
+<p><div class="codeSample">
+<a href="#Appendix_A___XML_Tag_Definitions_for_API_Requests">Appendix A - XML Tag Definitions for API Requests</a><br><br style="line-height:6px"/>
+<a href="#Appendix_B___XML_Tag_Definitions_for_API_Responses">Appendix B - XML Tag Definitions for API Responses</a>
+</div></p>
+
+<p><b>Note:</b> The tags in both appendixes are presented in alphabetical order. However, in API requests, XML tags must appear in a specific sequence. The sections on sample API requests for <a href="#googleAppsAccountAPIRequests">user accounts</a>, <a href="#googleAppsAliasAPIRequests">email aliases</a> and <a href="#googleAppsMailingListAPIRequests">mailing lists</a> show the sequence in which tags must appear in your API requests.</p>
+
+    
+<a name=subtagsLegend></a><p><div class="l3">Subtags Legend</div></p>
+
+
+
+
+<p>Certain symbols may be displayed next to some subtags in the definitions below. These symbols, and their meanings, are:
+<p><div style="padding-left:40px">
+? = optional subtag<br>
+* = zero or more instances of the subtag<br>
++ = one or more instances of the subtag<br>
+| = Boolean OR
+</div></p>
+
+<a name=Appendix_A___XML_Tag_Definitions_for_API_Requests></a><p><div class="l2">Appendix A - XML Tag Definitions for API Requests</div></p>
+
+
+<a name="google_apps_tag_accountStatus"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">accountStatus</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;accountStatus&gt;</b></font> tag indicates whether a user account should be enabled or disabled. This tag is only used in API requests to <a href="#googleAppsAccountUpdateStatus">update the status of an account</a>. Valid values for this tag are <font size="-1"><b>locked</b></font>, which means a user account should be disabled, and <font size="-1"><b>unlocked</b></font>, which indicates that a user account should be enabled.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Update (only used to update account status)				 </b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:accountStatus&gt;locked&lt;/hs:accountStatus&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_UpdateSection">UpdateSection</a>				 </td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_aliasName"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">aliasName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;aliasName&gt;</b></font> tag identifies an email alias that should be created.</p>				 </td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:aliasName&gt;webmaster&lt;/hs:aliasName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_CreateSection">CreateSection</a>				 </td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_CreateSection"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">CreateSection</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;CreateSection&gt;</b></font> tag encapsulates information about a new user account, email alias or mailing list.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:CreateSection&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><b>For creating user accounts:</b><br><a href="#google_apps_tag_firstName">firstName</a>, <a href="#google_apps_tag_lastName">lastName</a>, <a href="#google_apps_tag_password">password</a>, <a href="#google_apps_tag_userName">userName</a>, <a href="#google_apps_tag_quota">quota</a>?<br><br><b>For creating email aliases:</b><br><a href="#google_apps_tag_userName">userName</a>, <a href="#google_apps_tag_aliasName">aliasName</a><br><br><b>For creating mailing lists:</b><br><a href="#google_apps_tag_mailingListName">mailingListName</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Empty</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_domain"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">domain</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;domain&gt;</b></font> tag identifies the Google partner domain for a user account, email alias or mailing list.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Retrieve, Update, Delete</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:domain&gt;example.com&lt;/hs:domain&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_firstName"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">firstName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;firstName&gt;</b></font> tag identifies the user's first name. The value of the <font size="-1"><b>&lt;firstName&gt;</b></font> tag must be 40 characters or shorter.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Update</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:firstName&gt;John&lt;/hs:firstName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_CreateSection">CreateSection</a>, <a href="#google_apps_tag_UpdateSection">UpdateSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_lastName"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">lastName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;lastName&gt;</b></font> tag identifies the user's last name. The value of the <font size="-1"><b>&lt;lastName&gt;</b></font> tag must be 40 characters or shorter.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Update</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:lastName&gt;Doe&lt;/hs:lastName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_CreateSection">CreateSection</a>, <a href="#google_apps_tag_UpdateSection">UpdateSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_listOperation"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">listOperation</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;listOperation&gt;</b></font> tag indicates whether a name should be added to a mailing list or removed from a mailing list. Valid values for this tag are: <font size="-1"><b>add</b></font> and <font size="-1"><b>remove</b></font>.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Update (mailing list only)</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:listOperation&gt;add&lt;/hs:listOperation&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_UpdateSection">UpdateSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_mailingListName"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">mailingListName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;mailingListName&gt;</b></font> tag identifies the name of a mailing list that should be created.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:mailingListName&gt;sales-us&lt;/hs:mailingListName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_CreateSection">CreateSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_password"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">password</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;password&gt;</b></font> tag identifies the user's password. Passwords must be between six characters and 100 characters in length.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Update</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:password&gt;123abc&lt;/hs:password&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_CreateSection">CreateSection</a>, <a href="#google_apps_tag_UpdateSection">UpdateSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_queryData"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">queryData</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;queryData&gt;</b></font> value is combined with the <font size="-1"><b><a href="#google_apps_tag_queryKey">queryKey</a></b></font> value to uniquely identify a user account within a particular domain. The <font size="-1"><b><a href="#google_apps_tag_queryKey">queryKey</a></b></font> identifies a lookup field (e.g. <font size="-1"><b>userName</b></font>) while the <font size="-1"><b>queryData</b></font> tag identifies the lookup value.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Retrieve, Delete</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:queryData&gt;john_doe&lt;/hs:queryData&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_queryKey"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">queryKey</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;queryKey&gt;</b></font> value is combined with the <font size="-1"><b><a href="#google_apps_tag_queryData">queryData</a></b></font> value to uniquely identify a user account, email alias or mailing list within a particular domain. The <font size="-1"><b>queryKey</b></font> identifies a lookup field (e.g. <font size="-1"><b>userName</b></font>) while the <font size="-1"><b><a href="#google_apps_tag_queryData">queryData</a></b></font> tag identifies the lookup value.</p><p><font size="-1"><b>Note:</b></font> The only valid values for this tag are:</p><p><ul><li><font size="-1"><b>aliasName</b></font></li><li><font size="-1"><b>mailingListName</b></font></li><li><font size="-1"><b>userName</b></font></li></ul></p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Retrieve, Delete</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:queryKey&gt;userName&lt;/hs:queryKey&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_quota"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">quota</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;quota&gt;</b></font> tag specifies the amount of storage space, in megabytes, that should be allocated to an email account. The storage quota for an account may only be set at the time the account is created.</p><p>The default value for this tag is <font size="-1"><b>2048</b></font>. Additional valid values may be specified in your agreement.</p><p><font size="-1"><b>Note:</b></font> Domains that have additional valid quotas specified in their contracts <i>must</i> specify a value for the <font size="-1"><b>&lt;quota&gt;</b></font> element in requests to create email accounts.</p><p>Domains that do not have additional valid quota values specified in their contracts may omit the <font size="-1"><b>&lt;quota&gt;</b></font> element from requests to create email accounts. If requests from these domains do specify a <font size="-1"><b>&lt;quota&gt;</b></font> value, that value will be ignored.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create Account with Email</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:quota&gt;2048&lt;/hs:quota&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_CreateSection">CreateSection</a>?</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Integer</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_rest"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">rest</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;rest&gt;</b></font> tag encapsulates the information in an API request or response.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Retrieve, Delete, Update, Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:rest xmlns:hs="google:accounts:rest:protocol"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><a href="#google_apps_tag_type">type</a>, <a href="#google_apps_tag_token">token</a>, <a href="#google_apps_tag_domain">domain</a>, <a href="#google_apps_tag_queryKey">queryKey</a>, <a href="#google_apps_tag_queryData">queryData</a>, <a href="#google_apps_tag_CreateSection">CreateSection</a>, <a href="#google_apps_tag_UpdateSection">UpdateSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_token"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">token</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;token&gt;</b></font> tag contains a value used to authorize access to create, retrieve, update or delete an account, email alias or mailing list on a particular domain. For more information about this value, please see the <a href="#googleAppsAuthentication">Authentication</a> and <a href="#googleAppsObtainingTokens">Obtaining an Authentication Token</a> sections of this document.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Retrieve, Delete, Update</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:token&gt;DQAAAGAAAADa7eYOUNcbs9zZxMnLvHdEy&lt;/hs:token&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_type"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">type</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;type&gt;</b></font> tag identifies the type of entity that is being created, retrieved, updated or deleted.</p><p>Valid values for this tag are:</p><p><ul><li><font size="-1"><b>Account</b></font></li><li><font size="-1"><b>Alias</b></font></li><li><font size="-1"><b>MailingList</b></font></li></ul></p>				 </td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Retrieve, Delete, Update</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:type&gt;Account&lt;/hs:type&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_UpdateSection"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">UpdateSection</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;UpdateSection&gt;</b></font> tag encapsulates information about a user account or mailing list that is being updated.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Update</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:UpdateSection&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><p>The following tags are used to update user information for a user account:<br><a href="#google_apps_tag_firstName">firstName</a>?, <a href="#google_apps_tag_lastName">lastName</a>?, <a href="#google_apps_tag_password">password</a>?</p>				 <p>The following tags are used to enable or disable an email account:<br><a href="#google_apps_tag_accountStatus">accountStatus</a>?<br>				 <br>The following tags are used to update a mailing list:<br><a href="#google_apps_tag_listOperation">listOperation</a>, <a href="#google_apps_tag_userName">userName</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Empty</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_tag_userName"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">userName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;userName&gt;</b></font> tag identifies the username assigned to a user account. The <font size="-1"><b>&lt;userName&gt;</b></font> value has a maximum length of 30 characters. Valid characters for usernames are: <font size="-1"><b>a-zA-Z0-9.-</b></font>. Note that the only nonalphanumeric characters you may use are periods (.) and hyphens (-). In addition, usernames may not contain consecutive periods and may not begin or end with a period.</p><p><b>Note:</b> In requests to change the username for an account, the <b>&lt;userName&gt;</b> tag identifies the new username that should be assigned to the account, and the <b>&lt;queryData&gt;</b> tag identifies the username that is being replaced.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Update</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:userName&gt;john-doe&lt;/hs:userName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_tag_CreateSection">CreateSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name=Appendix_B___XML_Tag_Definitions_for_API_Responses></a><p><div class="l2">Appendix B - XML Tag Definitions for API Responses</div></p>
+
+
+<a name="google_apps_response_tag_accountStatus"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">accountStatus</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;accountStatus&gt;</b></font> tag indicates whether the requested account is <b>locked</b> or <b>unlocked</b>.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response				 </b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:accountStatus&gt;locked&lt;/hs:accountStatus&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a>				 </td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_alias"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">alias</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;alias&gt;</b></font> tag identifies an alias that is assigned to a user.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:alias&gt;johnnyd@example.com&lt;/hs:alias&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_aliases">aliases</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_aliases"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">aliases</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;aliases&gt;</b></font> tag encapsulates a list of aliases assigned to a user.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:aliases&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_alias">alias</a>*</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Container</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_emailAddress"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">emailAddress</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;emailAddress&gt;</b></font> tag identifies an email account that is in a mailing list.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:emailAddress&gt;john-doe@example.com&lt;/hs:emailAddress&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_emailAddresses">emailAddresses</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_emailAddresses"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">emailAddresses</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;emailAddresses&gt;</b></font> tag encapsulates a list of email addresses that are in a mailing list.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:emailAddresses&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_emailAddress">emailAddress</a>*</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Container</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_emailList"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">emailList</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;emailList&gt;</b></font> tag identifies a mailing list to which a user is subscribed.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:emailList&gt;sales-europe@example.com&lt;/hs:emailList&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_emailLists">emailLists</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_emailLists"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">emailLists</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;emailLists&gt;</b></font> tag encapsulates a list of mailing lists to which a user is subscribed.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:emailLists&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_emailList">emailList</a>*</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Container</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_extendedMessage"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">extendedMessage</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;extendedMessage&gt;</b></font> tag contains additional details explaining why an API request failed to execute. The <font size="-1"><b>&lt;extendedMessage&gt;</b></font> tag may be empty even if an API request failed to execute. For this reason, your application should not rely on this tag's value.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:extendedMessage&gt;Supplied user is not an admin, cannot use API.&lt;/hs:extendedMessage&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_firstName"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">firstName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;firstName&gt;</b></font> tag identifies the user's first name. </p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:firstName&gt;John&lt;/hs:firstName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_lastName"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">lastName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;lastName&gt;</b></font> tag identifies the user's last name. </td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:lastName&gt;Doe&lt;/hs:lastName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_reason"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">reason</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;reason&gt;</b></font> tag identifies the reason that an API request failed to execute. Possible values of this tag are:</p><p><ul class="codeSampleNP"><li>Unknown(1000)</li><li>TypeUnsupported(1001)</li><li>OperationUnsupported(1002)</li><li>MalformedRequest(1004)</li><li>RequiredFieldsMissing(1005)</li><li>AuthenticationFailure(1006)</li><li>DomainDoesNotExist(1007)</li><li>UserLimitExceed(1008)</li><li>UserDoesNotExist(1009)</li><li>UserAlreadyExists(1010)</li><li>InternalError(1011)</li><li>InvalidUserID(1014)</li><li>BadRequest(1016)</li><li>InvalidEmail(1017)</li><li>InvalidPassword(1023)</li><li>DomainOverUserLimit(1025)</li><li>DomainSuspended(1027)</li><li>NicknameAlreadyHasAddress(1028)</li><li>InvalidName(1030)</li><li>InvalidData(1031)</li><li>ReservedUsername(1032)</li><li>DeletedUserExists(1035)</li><li>DomainOverAliasLimit(1036)</li><li>InvalidQuota(1041)</li></ul></p><p>Additional details explaining the failure may be found in the <font size="-1"><b><a href="#google_apps_response_tag_extendedMessage">extendedMessage</a></b></font> tag.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:reason&gt;UserAlreadyExists(1010)&lt;/hs:reason&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_rest"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">rest</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;rest&gt;</b></font> tag encapsulates the information in an API request or response.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Create, Retrieve, Delete, Update, Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:rest xmlns:hs="google:accounts:rest:protocol"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_status">status</a>, <a href="#google_apps_response_tag_reason">reason</a>, <a href="#google_apps_response_tag_extendedMessage">extendedMessage</a>, <a href="#google_apps_response_tag_result">result</a>, <a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_result"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">result</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;result&gt;</b></font> tag contains the answer to a request to determine the latest version of the API.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:result&gt;v0.9&lt;/hs:result&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_RetrievalSection"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">RetrievalSection</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;RetrievalSection&gt;</b></font> tag encapsulates information returned in an API response. The <font size="-1"><b>&lt;RetrievalSection&gt;</b></font> tag and its subtags are only returned if the API request is a request to retrieve data.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>RetrievalSection</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:RetrievalSection&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtags</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_firstName">firstName</a>?, <a href="#google_apps_response_tag_lastName">lastName</a>?, <a href="#google_apps_response_tag_userName">userName</a>?, <a href="#google_apps_response_tag_accountStatus">accountStatus</a>?, <a href="#google_apps_response_tag_aliases">aliases</a>?, <a href="#google_apps_response_tag_emailLists">emailLists</a>?, <a href="#google_apps_response_tag_emailAddresses">emailAddresses</a>?</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Empty</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_status"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">status</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;status&gt;</b></font> tag indicates whether the API request was successfully executed. Possible values of this tag are <font size="-1"><b>Success(2000)</b></font> and <font size="-1"><b>Failure(2001)</b></font>.</p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:status&gt;Success(2000)&lt;/hs:status&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_rest">rest</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+<a name="google_apps_response_tag_userName"/>
+<div style="width:100%">
+<table border="1" style="width:100%;font-size:100%">
+  <tbody>
+    <tr>
+      <td class="padbold" style="font-size:110%;padding:2px 5px;background:#e5ecf9" colspan="2">userName</td>
+    </tr>
+    <tr>
+      <td class="padbold" style="width:25%"><b>Definition</b></td>
+      <td class="padplain" style="width:75%"><p>The <font size="-1"><b>&lt;userName&gt;</b></font> tag identifies the username assigned to a user account. </p></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Action</b></td>
+      <td class="padplain"><b>Response</b></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Example</b></td>
+      <td class="padplain">&lt;hs:userName&gt;john-doe&lt;/hs:userName&gt;</td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Subtag of</b></td>
+      <td class="padplain"><a href="#google_apps_response_tag_RetrievalSection">RetrievalSection</a></td>
+    </tr>
+    <tr>
+      <td class="padbold"><b>Content Format</b></td>
+      <td class="padplain">Text</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br style="line-height:4px">
+
+
+
+<hr>
+<center><font size="-1">&copy; Google Inc. 2007. All Rights Reserved.</font></center>
+</div></div></div></body>
+</html>

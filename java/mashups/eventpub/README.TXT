@@ -1,11 +1,14 @@
-This sample publishes events from Google Spreadsheets to Google Calendar
-and Google Base.  A user visits this webapp, logs into their Google 
-account using AuthSub and chooses the worksheet they wish to publish.
-The events stored in the spreadsheet are then transferred to a 
-pre-configured Google Calendar and/or Google Base account.  New events
-are added, while pre-existing events are updated.  Please see
-the information below on how to configure credentials for Google Base
-and Google Calendar.
+This sample web application publishes events from Google Spreadsheets 
+to Google Calendar and Google Base.  A user visits this webapp, 
+logs into their Google account using AuthSub and chooses the worksheet 
+they wish to publish.  The events stored in the spreadsheet are then 
+transferred to a pre-configured Google Calendar and/or Google Base 
+account.  New events are added, while pre-existing events are updated.  
+Please see the information below on how to configure credentials for 
+Google Base and Google Calendar.
+
+The following instructions assume some knowledge of building, deploying 
+and running Java web applications.
 
 In order to build and run this sample, there are a number of dependent
 libraries required:
@@ -50,7 +53,14 @@ libraries required:
       jstl.jar
       standard.jar
 
-Also, you must have the Apache Ant tool installed.
+There are also several tool/application dependencies:
+* Apache Ant
+  * URL: 
+      http://ant.apache.org/
+* Servlet container such as Apache Tomcat or full app server such as JBoss
+  * URLs:
+      http://tomcat.apache.org/
+      http://www.jboss.org/downloads/index
 
 Before you begin, please do the following: 
 1) Update build.properties to point to the correct location of the 
@@ -77,7 +87,9 @@ Before you begin, please do the following:
  
 
 To build, run ant.  A war file should be produced in the deploy directory.  
-Copy this file to the appropriate location in your servlet container. 
+Deploy this file to your servlet container.  Tomcat's default configuration, 
+for example, will auto-deploy the war file if it is copied to <root>/webapps.
+
 You should then be able to access this application at:
 http://hostname:port/EventPublisher
 

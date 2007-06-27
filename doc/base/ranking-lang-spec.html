@@ -1,0 +1,857 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+  table.syn {
+    width: 93%;
+    font-size: 100%;
+	margin: 1.5em 4% 1.5em 25px;
+	padding: 15px 5px 15px 10px;
+	border: 1px solid #ccccd3;
+	background-color: #eeeeff;
+	text-align:left;
+	overflow: auto;
+  }
+  td.synfst {
+	border: 0px;
+	background-color: #eeeeff;
+	text-align: left;
+	vertical-align: top;
+	margin-top: 1em;
+	margin-left: 0x;
+	padding: 10px 10px 1px 10px;
+  }
+  td.syn {
+	border: 0px;
+	background-color: #eeeeff;
+	text-align: left;
+	vertical-align: top;
+	margin-left: 0x;
+	padding: 1px 10px 1px 10px;
+  }
+  td.synlst {
+	border: 0px;
+	background-color: #eeeeff;
+	text-align: left;
+	vertical-align: top;
+	margin-left: 0x;
+	padding: 1px 10px 10px 10px;
+  }
+  table.def {
+    border: 0px;
+  }
+  td.def {
+    border: 0px;
+  }
+.style1 {color: #FF0000}
+</style>
+<title>Google Base data API: Ranking Language</title>
+</head>
+<body id="ranking_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <div id="sidenav">
+	<!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="signup.html" id="signup_link">API Key</a></li>
+      <li><a href="terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+    </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+</form>
+
+  </div>
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <div id="pagecontent">
+    <!-- ########## PAGE CONTENT ########## -->
+    <h1 id="page_title">Expression Language</h1>
+    <p>You can use the Google
+       Base data API <a href="query-lang-spec.html">query language</a> to express criteria specifying the items of
+       interest. Only items that match a query will be returned, so queries
+    can be used to <i>filter</i> items.</p>
+    <p>By default, the Google Base data API returns all matching items in a feed, and the items that are most
+      relevant for a given query are returned first. </p>
+    <p>Relevancy is a soft and
+      fuzzy criteria which works well for full-text search queries, but for
+      many structured queries, there is no adequate notion of relevancy.
+      For these cases, you can specify a ranking criteria
+      which assigns each item a rank. Matching items are sorted by their
+      rank and returned in decreasing order by default. The ranking
+      criteria gets specified using the expresssion language in conjunction with the <code>orderby</code> parameter. The sorting order (ascending/descending) can be set via the <code>sortorder</code> parameter.</p>
+    <p>In some cases, you might wish to eliminate repetitive search results, also known as crowding. You can do this using the expression language in conjunction with the <code>crowdby</code> parameter. </p>
+    <p>This page:</p>
+    <ul>
+      <li> introduces the expression language provided by the Google Base
+        data API </li>
+      <li>gives examples of its use </li>
+      <li> explains the syntax and semantics of
+        ranking criteria</li>
+      <li>explains the syntax and semantics of crowding criteria </li>
+    </ul>
+    <p>Since filtering, ranking, and crowding are closely
+        related operations, the expression language reuses many concepts introduced
+        by the query language. This document assumes the reader is
+        familiar with the terminology used by the <a href="query-lang-spec.html">query language</a>.</p>
+    <!-- ----------------------------------------------------------------- -->
+    
+    <h3>Contents</h3>
+    <ol class="toc">
+      <li> <a href="#overview">Overview</a>
+        <ol class="toc">
+          <li><a href="#accessing">Accessing attribute values</a>
+          <li> <a href="#resolving">Resolving ambiguities</a>
+          <li> <a href="#nonums">Non-numeric attributes</a>
+          <li><a href="#sorting">Sorting search results</a>
+          <li><a href="#crowding">Crowding search results</a>          
+        </ol>
+      </li>
+      <li> <a href="#specification">Specification</a>
+        <ol class="toc">
+          <li> <a href="#criteria">Ranking criteria</a></li>
+          <li> <a href="#expressions">Ranking expressions</a></li>
+          <li> <a href="#functions">Supported functions</a></li>
+        </ol>
+      </li>
+    </ol>
+    
+    <!-- ----------------------------------------------------------------- -->
+    
+    <h1><a name="overview" id="overview"></a>Overview</h1>
+    <p>Let's assume we are interested in finding items of type <i>housing</i>
+      located in the area of <i>Mountain View, CA</i>. We could find such items
+    by using the following query:</p>
+    <pre>[item type: housing] [location: @"Mountain View, CA 94043" + 5mi]</pre>
+
+    <p>The API returns all items that match this query, ordered by relevancy,
+    unless we specify crowding or sorting criteria. </p>
+    <p> In an expression you can define variables that are associated with a specified attribute of an item. The expression computes a result value for each item, based on the values of the attributes. This per-item result value can then be used to crowd or sort the items in the search result. </p>
+    <p> For sorting, this result value is always a float. The float value is used to numerically rank the search results. For crowding, the type of the result value varies, depending on the attribute type. All types are accepted, because the crowding engine tests for equality. </p>
+    <h2><a name="accessing" id="accessing"></a>Accessing attribute values</h2>
+    <p>Using the housing example above, if we want the items to
+      be sorted or crowded by the number of bedrooms,
+    we could assign the value of the <code>bedrooms</code> attribute of each item to a variable. The following expression does this:</p>
+    <pre>[x = bedrooms(int): max(x)]</pre>
+    <p>This query does not guarantee that all matching items
+      have a <code>bedrooms</code> attribute. For items that do not have this
+      attribute, <code>x</code> is undefined, which means that <code>max(x)</code> is undefined as well. We can extend the expression above slightly to assign
+      rank 0 to items without a <code>bedrooms</code> attribute by checking that
+    at least one value exists for <code>x</code>:</p>
+    <pre>[x = bedrooms(int): if exists(x) then max(x) else 0]</pre>
+    <p>The function call <code>exists(x)</code> returns true if there is at
+      least one value associated with <code>x</code>.</p>
+    <h2><a name="resolving" id="resolving"></a>Resolving ambiguities</h2>
+    <p>When the previous criteria is used, items with the same maximum
+      number of bedrooms are returned in an undefined order. We can extend the
+      expression further and use the bathrooms attribute for resolving/avoiding
+      collisions in attribute bedrooms:</p>
+    <pre>[x = bedrooms(int), y = bathrooms(float):
+ if exists(x) then
+   max(x) * 100 + (if exists(y) then max(y) else 0)
+ else
+   fail()]</pre>
+    <p>Under the assumption that the maximum number of bathrooms
+      is always below 100, this criteria ranks items with the
+      same maximum of bedrooms higher if the maximum of bathrooms
+      is higher. So, effectively, attribute <code>bathrooms</code> becomes a
+      secondary sorting criteria.</p>
+    <h2><a name="nonums" id="nonums"></a>Non-numeric attributes</h2>
+    <p>Besides numeric attributes, the expression language also
+      supports attributes of other types such like <code>location</code>.
+      The following ranking criteria can be used to sort items based on
+      their distance (minimal distance if there is more than
+      one location attribute) to location <code>Mountain View, CA 94043</code>: </p>
+    <pre>[x = location(location): neg(min(dist(x, @&quot;Mountain View, CA 94043&quot;)))]</pre>
+    <p>Note that we do not use the <code>exists</code> function here because
+      the query ensures already that all matching items have at least one <code>location</code> attribute. Function <code>dist</code> computes the
+      distances between <code>x</code> and the given address, <code>min</code> chooses the mininum, and <code>neg</code> finally negates the result to
+      give short distances a higher (negative) rank so that they show up
+      on top of the resulting feed.</p>
+    <p>Instead of using function <code>neg</code> for returning items in
+      ascending order, it is possible to set the parameter <code>sortorder</code> to <code>ascending</code>; the default for this
+      parameter is <code>descending</code>.</p>
+    <h2><a name="sorting" id="sorting"></a>Sorting search results </h2>
+    <p>The order is
+      defined by the <code>orderby</code> parameter. This parameter can be set
+      to a predefined criteria like <code>relevancy</code> or <code>modification_time</code>, or the user can provide a custom
+      ranking criteria that assigns each item a <i>rank</i>. The API returns
+    items sorted in decreasing rank by default. </p>
+    <p>In general, a ranking criteria consists of a list of attribute
+    bindings and a ranking expression returning a numeric value (the actual
+    rank). An attribute binding assigns a variable the values of
+    a given attribute. In the line above, we define one binding that
+    assigns <code>x</code> the values of attribute <code>bedrooms</code> of type
+    <code>int</code>. Since items, in general, can define multiple values
+    for an attribute, variable x really refers to a <i>set of values</i>.
+    The ranking expression <code>max(x)</code> above projects the value set
+    <code>x</code> to its maximum value which becomes the rank of the items.
+    <!-- ----------------------------------------------------------------- -->
+    </p>
+    <p>For sorting, you might not want some items to show up in the search results, regardless of the attribute value. You can use the <code>fail</code> function to drop items. <code>fail</code> may only be used in sorting expressions. The following modified ranking criteria
+    would drop items that do not have a <code>bedrooms</code> attribute. </p>
+    <pre>[x = bedrooms(int): if exists(x) then max(x) else fail()]</pre>
+    <p>Note: In practice, if only items without a <code>bedrooms</code> attribute are of
+      interest, you should not use the <code>fail</code> function, but instead add a <code>[bedrooms(int)]</code> restrict to the query. This
+      improves the performance of the request and the quality of the result.
+      For simple cases like the previous ranking expression, the API is able
+      to do this kind of optimization automatically for the user.</p>
+    <h2><a name="crowding" id="crowding"></a>Crowding search results </h2>
+    <p>The syntax for the value of <code>crowdby</code> is a comma-separated list of <em><code>crowding</code></em> and <em><code>maxvalue</code></em> pairs: </p>
+    <p><code> crowdby=<em>crowding</em>:<em>maxvalue</em>,<em>crowding</em>:<em>maxvalue</em></code></p>
+    <p><em><code>crowding</code></em>: is the crowding criteria. You can use any of the following criteria:</p>
+    <blockquote>
+      <p><em><code>attribute</code></em> filters results based on the specified attribute.</p>
+      <p><code>url</code> filters results based on the URL. </p>
+      <p><code> customerid</code> filters results based on the customer ID.</p>
+      <p><code> content</code> filters results based on the content of the <code>title</code> and <code>description</code> attributes  in the item.</p>
+      <p>[<em><code>crowding expression</code></em>] uses an expression for crowding.</p>
+    </blockquote>
+    <p><em><code>maxvalue</code></em> is an integer number greater than or equal to 1. If you do not specify a value for <code>maxvalue</code>, 1 is used by default. </p>
+    <p>Each query may contain a maximum of two crowding expressions. </p>
+    <p>The following example specifies that you only want to see two items associated with each root URL.</p>
+    <pre>crowdby=url:2, [x=price(float USD): if exists(x) then max(x) else 0.0]</pre>
+    <p>For crowding, might not want the crowding restrictions to be applied to certain items. You can use the <code>passthrough</code> function for this purpose. <code>passthrough</code> may only be used in crowding expressions. </p>
+    <p><code>passthrough</code> bypasses the crowding restrictions for the given item and add it to the result list, as follows. </p>
+    <pre>[x = bedrooms(int): if exists(x) then max(x) else passthrough()]</pre>
+    <p>The following example displays all items that do not have a price, but only displays a maximum of two items that have a price.<span class="style1"></span> </p>
+    <pre>crowdby=[x=price(float USD): if exists(x) then max(x) else passthrough()]:2
+</pre>
+    <h1><a name="specification" id="specification"></a>Specification</h1>
+    <p>The remaining document explains the expression language
+    features in detail. It provides a brief specification
+    of the ranking criteria syntax, including informal
+    explanations of the semantics.</p>
+
+    <p>For specifying the syntax, we use a Backus Naur Form (BNF).
+    Non-terminal symbols are printed in italics. Terminal symbols
+    are either of the form <code>'token'</code>, or they are represented by
+    a symbol printed in non-italicised form. The lexical grammar
+    is shared with the <a href="query-lang-spec.html">query
+    language</a>.The only difference is that <code>"</code> encloses a text constant rather than a phrase query.</p>
+    
+    <h2><a name="criteria"></a>Ranking criteria</h2>
+    <p>A <i>ranking criteria</i> consists of two components: a set of
+    <i>attribute bindings</i> and a <i>ranking expression</i>. An attribute
+    binding introduces variables for the values of attributes. The ranking
+    expression specifies the formula for computing a rank for each item in
+    terms of the defined variables. The evaluation of a ranking expression
+    can <i>fail</i>, in which case the item will be dropped from the results.
+    
+    <table class="syn">
+      <tbody>
+        <tr>
+          <td class="synfst" width="100"><i>RankingCriteria</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst">'['&nbsp; <i>Bindings</i>&nbsp; ':'&nbsp;
+              <i>Expression</i>&nbsp; ']'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>Expression</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>Bindings</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>Bindings</i>&nbsp; ','&nbsp; <i>Binding</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>Binding</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100" style="padding: 10px 10px 10px 10px;">
+              <i>Binding</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>Var</i>&nbsp; '='&nbsp;
+              <i>AttribName</i>&nbsp; '('&nbsp; <i>AttribType</i>&nbsp; ')'</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p>Currently, the expression language does not support any of the
+    <a href="http://base.google.com/base/api/universalAttributes">universal
+    attributes</a>. Most useful are attributes of type <code>int</code> and
+    <code>float</code>, because the expression language defines many operators
+    on numbers. <code>text</code> attributes may also be used for crowding. They are less useful for ranking because lexicopgraphical sorting is not supported. For attributes of most other types, the language can only be used to check whether an attribute is defined, and how often it has been defined
+    by an item.</p>
+    
+    <h2><a name="expressions"></a>Ranking expressions</h2>
+    <p>Ranking expressions are numeric or boolean expressions. The ranking
+    language supports an <code>if-then-else</code> construct as well as the
+    typical boolean operators. Standard operations for comparing numbers
+    are supported as well. With the colon operator one can check whether a
+    number is contained in a given number range. For instance,
+    <code>3 : 0..12</code> would evaluate to <code>true</code></p>
+    
+    <table class="syn">
+      <tbody>
+        <tr>
+          <td class="synfst" width="100"><i>Expression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst">'if'&nbsp; <i>OrExpression</i>&nbsp; 'then'&nbsp;
+              <i>OrExpression</i>&nbsp; 'else'&nbsp; <i>Expression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>OrExpression</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>OrExpression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>OrExpression</i>&nbsp; '|'&nbsp;
+              <i>AndExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>AndExpression</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>AndExpression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>AndExpression</i>&nbsp; '&amp;'&nbsp;
+              <i>EqExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>EqExpression</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>EqExpression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>EqExpression</i>&nbsp; '=='&nbsp;
+              <i>CmpExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>EqExpression</i>&nbsp; '!='&nbsp;
+              <i>CmpExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>CmpExpression</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>CmpExpression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>InExpression</i>&nbsp; '<'&nbsp;
+              <i>InExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>InExpression</i>&nbsp; '>'&nbsp;
+              <i>InExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>InExpression</i>&nbsp; '<='&nbsp;
+              <i>InExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>InExpression</i>&nbsp; '>='&nbsp;
+              <i>InExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>InExpression</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>InExpression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>AddExpression</i>&nbsp; ':'&nbsp; intrange</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>AddExpression</i>&nbsp; ':'&nbsp; floatrange</td>
+        </tr>
+        <tr>
+          <td class="synlst">&nbsp;</td>
+          <td class="synlst" align="center">|</td>
+          <td class="synlst"><i>AddExpression</i></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p>The expression language supports arithmetic expressions consisting
+    of the following binary operations: <code>+</code>, <code>-</code>,
+    <code>*</code>, <code>/</code>, and <code>%</code>. The <code>+</code> operation can also be used on text strings. In this case, it concatenates the two strings.
+    </p>
+    
+    <table class="syn">
+      <tbody>
+        <tr>
+          <td class="synfst" width="100"><i>AddExpression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>AddExpression</i>&nbsp; '+'&nbsp;
+              <i>MultExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>AddExpression</i>&nbsp; '-'&nbsp;
+              <i>MultExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>MultExpression</i></td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>MultExpression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>MultExpression</i>&nbsp; '*'&nbsp;
+              <i>SimpleExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>MultExpression</i>&nbsp; '/'&nbsp;
+              <i>SimpleExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>MultExpression</i>&nbsp; '%'&nbsp;
+              <i>SimpleExpression</i></td>
+        </tr>
+        <tr>
+          <td class="synlst">&nbsp;</td>
+          <td class="synlst" align="center">|</td>
+          <td class="synlst"><i>SimpleExpression</i></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p>The prefix operator <code>!</code> negates a boolean expression,
+    parenthesis can be used to nest expressions, and function calls 
+    of the form <code>funname(arg1, arg2, ...)</code> are supported.
+    The provided functions are mentioned in the grammar below.
+    
+    <p>A term in a ranking expression has to refer to a variable which
+    is bound to the values of an attribute. Integer, floating point, and
+    location literals are identical to the ones defined for the
+    query language. The terms 'true' and 'false' refer to the respective
+    boolean values.</p>
+    
+    <table class="syn">
+      <tbody>
+        <tr>
+          <td class="synfst" width="100"><i>SimpleExpression</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst">'!'&nbsp; <i>SimpleExpression</i></td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'('&nbsp; <i>Expression</i>&nbsp; ')'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn"><i>Function</i>&nbsp; '('&nbsp;
+              <i>Expressions</i>&nbsp; ')'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center" width="28">|</td>
+          <td class="syn"><i>Function</i>&nbsp; '('&nbsp; ')'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">Var</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">int</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">float</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">location</td>
+        </tr>
+		<tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">text</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'true'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'false'</td>
+        </tr>
+        <tr>
+          <td class="synfst" width="100"><i>Expressions</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst"><i>Expressions</i>&nbsp; ','&nbsp;
+              <i>Expression</i></td>
+        </tr>
+        <tr>
+          <td class="synlst">&nbsp;</td>
+          <td class="synlst" align="center">|</td>
+          <td class="synlst"><i>Expression</i></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h2><a name="functions"></a>Supported functions</h2>
+    <p>The expression language supports the standard set of numeric functions:
+    <code>sin</code>, <code>cos</code>, <code>tan</code>, <code>log</code>,
+    <code>log10</code>, <code>exp</code>, <code>sqrt</code>, <code>floor</code>,
+    and <code>ceil</code>. These functions map numbers to numbers. There is
+    a function <code>rand(n)</code> which returns a random number between
+    <code>0</code> and <code>n - 1</code>. There is a binary function
+    <code>pow(x, y)</code> which computes <code>x</code> to the power of
+    <code>y</code>. Function <code>int</code> can be used to coerce a
+    floating-point number into an integer value.</p>
+	
+	<p>There are also type conversion functions: <code>int</code>, <code>float</code> and <code>string</code>. <code>int</code> and <code>float</code> convert texts or numbers into ints or floats. <code>text</code> converts a number into a text.</p>
+	
+	<p>The text functions <code>upper</code>, <code>lower</code> and <code>len</code> are also supported. <code>upper</code> converts a text string into upper case. <code>lower</code> converts a text string into lower case. <code>len</code> counts the number of characters in a string.</p>
+    
+    <p>Since attributes are potentially multi-valued, bindings of sorting
+    criteria yield variables that refer to sets of values. The ranking
+    language defines the following functions for handling such sets of
+    values:</p>
+    
+    <table class="def">
+      <tr>
+        <td class="def"><b>exists(x)</b></td>
+        <td class="def">
+          Returns true if the set of values <i>x</i> is not empty;
+          i.e. there is at least one value in <i>x</i>.
+        </td>
+      </tr>
+      <tr>
+        <td class="def"><b>count(x)</b></td>
+        <td class="def">
+          Returns the number of values in <i>x</i>.
+        </td>
+      </tr>
+      <tr>
+        <td class="def"><b>max(x)</b></td>
+        <td class="def">
+          Returns the maximum value of <i>x</i>. This function is
+          only defined if <i>x</i> refers to a non-empty set of numbers.
+        </td>
+      </tr>
+      <tr>
+        <td class="def"><b>min(x)</b></td>
+        <td class="def">
+          Returns the minimum value of <i>x</i>. This function is
+          only defined if <i>x</i> refers to a non-empty set of numbers.
+        </td>
+      </tr>
+      <tr>
+        <td class="def"><b>avg(x)</b></td>
+        <td class="def">
+          Returns the average of the numbers associated with <i>x</i>.
+          This function is only defined if <i>x</i> refers to a non-empty
+          set of numbers.
+        </td>
+      </tr>
+      <tr>
+        <td class="def"><b>join(x)</b></td>
+        <td class="def">
+          Returns a space-separated concatenation if all text strings associated with <i>x</i>.  This function is only defined if <i>x</i> refers to a set of text strings.
+        </td>
+      </tr>
+      <tr>
+        <td class="def"><b>sum(x)</b></td>
+        <td class="def">
+          Returns the sum of the values in <i>x</i>. This function is
+          only defined if <i>x</i> refers to a non-empty set of numbers.
+        </td>
+      </tr>
+    </table>
+    <p>Function <code>dist(x, </code><i>loc</i><code>)</code> can be used
+    to map the distance between locations of attribute value set <code>x</code>
+    and the location literal <i>loc</i> to a set of numbers, the
+    respective distances. For instance, <code>dist(x, @+010-078)</code>
+    would return a set of values for the distances between the locations
+    of <code>x</code> and location <code>@+010-078></code> (see the
+    <a href="query-lang-spec.html">query language documentation</a> for
+    the description of location literals). <code>dist</code> is typically
+    used in combination with <code>max</code>, <code>min</code>, or
+    <code>avg</code> to project the set of distances to a single number,
+    as in <code>min(dist(x, @+010-078))</code></p>.
+    
+    <p>In ranking expressions, the <code>fail()</code> function can be used to drop items. A dropped item does not get returned as a search result. Thus, the expression language can be used as a secondary, more expressive filtering	mechanism. Dropping of items is not supported in the crowding expressions.</p>
+	
+	<p>The <code>passthrough</code> function is supported for crowding. It passes the crowding restrictions directly to the search result set, rather than applying them to the items. <code>passthrough</code> is not supported in ranking expressions.</p>
+	<table class="syn">
+      <tbody>
+        <tr>
+          <td class="synfst" width="100"><i>Function</i></td>
+          <td class="synfst" align="center" width="28">=</td>
+          <td class="synfst">'sin'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'cos'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'tan'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'log'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'log10'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'exp'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'sqrt'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center" width="28">|</td>
+          <td class="syn">'floor'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'ceil'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'rand'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'pow'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'int'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'float'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'text'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'exists'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'count'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'max'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'min'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'avg'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'join'</td>
+        </tr>		
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'sum'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'dist'</td>
+        </tr>
+        <tr>
+          <td class="synlst">&nbsp;</td>
+          <td class="synlst" align="center">|</td>
+          <td class="synlst">'fail'</td>
+        </tr>
+        <tr>
+          <td class="syn">&nbsp;</td>
+          <td class="syn" align="center">|</td>
+          <td class="syn">'passthrough'  (only supported in crowding expressions)</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  _utcp="/apis/base/";
+  _uanchor=1;
+  urchinTracker();
+</script>
+</body>
+</html>

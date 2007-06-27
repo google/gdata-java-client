@@ -770,6 +770,72 @@ abstract public class BaseEntry<E extends BaseEntry>
     namespaceDeclsRss.add(Namespaces.atomNs);
   }
 
+  /**
+   * Reads an entry representation from the provided {@link ParseSource}.
+   * The return type of the entry will be determined using dynamic adaptation
+   * based upon any {@link Kind} category tag found in the input content. If
+   * no kind tag is found an {@link Entry} instance will be returned.
+   */
+  public static BaseEntry readEntry(ParseSource source)
+      throws IOException, ParseException, ServiceException {
+    return readEntry(source, null, null);
+  }
+
+  public static <T extends BaseEntry> T readEntry(ParseSource source,
+                                                  Class <T> entryClass,
+                                                  ExtensionProfile extProfile)
+      throws IOException, ParseException, ServiceException {
+
+    if (source == null) {
+      throw new NullPointerException("Null source");
+    }
+
+    // Determine the parse entry type
+    boolean isAdapting = (entryClass == null);
+    if (isAdapting) {
+      entryClass = (Class<T>)Entry.class;
+    }
+
+    // Create a new entry instance.
+    T entry;
+    try {
+      entry = entryClass.newInstance();
+    } catch (IllegalAccessException iae) {
+      throw new ServiceException("Unable to create entry", iae);
+    } catch (InstantiationException ie) {
+      throw new ServiceException("Unable to create entry", ie);
+    }
+
+    // Initialize the extension profile (if not provided)
+    if (extProfile == null) {
+      extProfile = new ExtensionProfile();
+      entry.declareExtensions(extProfile);
+      if (isAdapting) {
+        extProfile.setAutoExtending(true);
+      }
+    }
+
+    // Parse the content
+    if (source.getReader() != null) {
+      entry.parseAtom(extProfile, source.getReader());
+    } else if (source.getInputStream() != null) {
+      entry.parseAtom(extProfile, source.getInputStream());
+    } else if (source.getParser() != null) {
+      entry.parseAtom(extProfile, source.getParser());
+    } else {
+      throw new IllegalStateException("Unexpected source: " + source);
+    }
+
+    // Adapt if requested and the entry contained a kind tag
+    if (isAdapting) {
+      BaseEntry adaptedEntry = entry.getAdaptedEntry();
+      if (adaptedEntry != null) {
+        entry = (T)adaptedEntry;
+      }
+    }
+
+    return entry;
+  }
 
   /**
    * Parses XML in the Atom format.

@@ -16,20 +16,21 @@
 package com.google.api.gbase.client;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.data.DateTime;
-import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.Extension;
+import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.util.XmlParser;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.XmlParser;
 
 import org.xml.sax.Attributes;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Keeps track of attributes in the g: namespace.
@@ -57,8 +58,7 @@ import java.io.IOException;
  * {@link com.google.gdata.data.ExtensionPoint#getExtension(Class)}.
  *
  */
-public class GoogleBaseAttributesExtension
-    implements Extension {
+public class GoogleBaseAttributesExtension implements Extension {
 
   /**
    * A description for this extension, to pass to an
@@ -220,6 +220,11 @@ public class GoogleBaseAttributesExtension
    */
   public static final String CUSTOMER_ID = "customer id";
 
+  /** Meta attribute {@code <gm:adjusted_name>}. */
+  static final String GM_ADJUSTED_NAME_ATTRIBUTE = "adjusted_name";
+  
+  /** Meta attribute {@code <gm:adjusted_value>}. */
+  static final String GM_ADJUSTED_VALUE_ATTRIBUTE = "adjusted_value";
 
   /**
    * All the attributes available for the current
@@ -232,7 +237,7 @@ public class GoogleBaseAttributesExtension
    */
   private final List<GoogleBaseAttribute> attributes =
       new ArrayList<GoogleBaseAttribute>();
-
+  
   static {
     ExtensionDescription desc = new ExtensionDescription();
     desc.setExtensionClass(GoogleBaseAttributesExtension.class);
@@ -242,7 +247,7 @@ public class GoogleBaseAttributesExtension
     desc.setAggregate(true);
     DESCRIPTION = desc;
   }
-
+  
   /**
    * Gets the labels set for the entry.
    *
@@ -646,6 +651,20 @@ public class GoogleBaseAttributesExtension
   }
 
   /**
+   * Gets the first value of a specific reference attribute.
+   *
+   * This method only takes into account attributes of type
+   * {@link GoogleBaseAttributeType#REFERENCE}.
+   *
+   * @param name attribute name
+   * @return value of the attribute or null if no reference attribute
+   *   with this name was found on the list
+   */
+  public String getReferenceAttribute(String name) {
+    return getAttributeAsString(name, GoogleBaseAttributeType.REFERENCE);
+  }
+  
+  /**
    * Gets the string representation of the first
    * attribute with matching name and type.
    *
@@ -918,6 +937,24 @@ public class GoogleBaseAttributesExtension
     return addAttribute(new GoogleBaseAttribute(name,
                                                 GoogleBaseAttributeType.TEXT,
                                                 value));
+  }
+  
+  /**
+   * Adds an attribute of type
+   * {@link com.google.api.gbase.client.GoogleBaseAttributeType#REFERENCE}.
+   *
+   * This method will never remove an attribute, even if it has
+   * the same name as the new attribute. If you would like to set
+   * an attribute that can only appear once, call
+   * {@link #removeAttributes(String, GoogleBaseAttributeType)} first.
+   *
+   * @param name attribute name
+   * @param value attribute value
+   * @return the attribute object that has been created and added to the item
+   */
+  public GoogleBaseAttribute addReferenceAttribute(String name, String value) {
+    return addAttribute(new GoogleBaseAttribute(name, 
+        GoogleBaseAttributeType.REFERENCE, value));
   }
 
   /**
@@ -1431,33 +1468,88 @@ public class GoogleBaseAttributesExtension
                              elementName,
                              getXmlAttributes(attribute),
                              null);
-      generate(attribute, xmlWriter);
+      
+      generateValue(attribute, xmlWriter);
+      generateSubElements(attribute, xmlWriter);
+      generateAdjustments(attribute, xmlWriter);
+      
       xmlWriter.endElement();
     }
   }
 
   /**
-   * Generates XML code for one attribute in this extension.
+   * Generates XML code for the value of the {@code attribute}.
    *
    * @param attribute
    * @param xmlWriter
    * @throws java.io.IOException
    */
-  private void generate(GoogleBaseAttribute attribute, XmlWriter xmlWriter)
+  private void generateValue(GoogleBaseAttribute attribute, XmlWriter xmlWriter)
       throws IOException {
     if (attribute.hasValue()) {
       xmlWriter.characters(attribute.getValueAsString());
     }
+  }
+  
+  /**
+   * Generates XML code for all sub-elements of the {@code attribute}.
+   * 
+   * @param attribute
+   * @param xmlWriter
+   * @throws IOException
+   */
+  private void generateSubElements(GoogleBaseAttribute attribute, 
+      XmlWriter xmlWriter) throws IOException {
     if (attribute.hasSubElements()) {
       for (String name : attribute.getSubElementNames()) {
-        xmlWriter.startElement(GoogleBaseNamespaces.G,
-                               convertToElementName(name),
-                               null,
-                               null);
-        xmlWriter.characters(attribute.getSubElementValue(name));
-        xmlWriter.endElement();
+        writeXmlNameValue(xmlWriter, GoogleBaseNamespaces.G, name, 
+            attribute.getSubElementValue(name));
       }
     }
+  }
+
+  /**
+   * Generates XML code for the adjustments of the {@code attribute} 
+   * ({@code adjusted_value}, {@code adjusted_name}). 
+   *  
+   * @param attribute
+   * @param xmlWriter
+   * @throws IOException
+   */
+  private void generateAdjustments(GoogleBaseAttribute attribute, 
+      XmlWriter xmlWriter) throws IOException {
+    if (attribute.hasAdjustments()) {
+      Adjustments adjustments = attribute.getAdjustments();
+      if (adjustments.getName() != null) {
+        writeXmlNameValue(xmlWriter, GoogleBaseNamespaces.GM, 
+            GM_ADJUSTED_NAME_ATTRIBUTE, adjustments.getName());
+      }
+      if (adjustments.getValue() != null) {
+        writeXmlNameValue(xmlWriter, GoogleBaseNamespaces.GM, 
+            GM_ADJUSTED_VALUE_ATTRIBUTE, adjustments.getValue());
+      }
+    }
+  }
+
+  /**
+   * Writes a attribute to the {@code xmlWriter} with the specified 
+   * {@code namespace} and {@code name} and with the text content defined by
+   * the {@code value}.
+   *   
+   * @param xmlWriter
+   * @param namespace
+   * @param name
+   * @param value
+   * @throws IOException
+   */
+  private void writeXmlNameValue(XmlWriter xmlWriter, Namespace namespace, 
+      String name, String value) throws IOException {
+    xmlWriter.startElement(namespace,
+            convertToElementName(name),
+            null,
+            null);
+    xmlWriter.characters(value);
+    xmlWriter.endElement();
   }
 
   /**
@@ -1608,7 +1700,6 @@ public class GoogleBaseAttributesExtension
       attributes.add(attribute);
     }
 
-
     @Override
     public void processEndElement() throws ParseException {
       if (super.value != null) {
@@ -1617,16 +1708,25 @@ public class GoogleBaseAttributesExtension
     }
 
     @Override
-    public XmlParser.ElementHandler getChildHandler(String uri,
-                                                    final String localName,
-                                                    Attributes attrs) {
-
+    public XmlParser.ElementHandler getChildHandler(final String uri, 
+                                                    final String localName, 
+                                                    Attributes attrs) {      
       return new XmlParser.ElementHandler() {
         @Override
         public void processEndElement() {
-          attribute.setSubElement(localName, super.value);
+          if (GoogleBaseNamespaces.GM_URI.equals(uri)) {
+            if (GM_ADJUSTED_VALUE_ATTRIBUTE.equals(localName)) {
+              attribute.getAdjustments().setValue(super.value);
+            } else if (GM_ADJUSTED_NAME_ATTRIBUTE.equals(localName)) {
+              attribute.getAdjustments().setName(super.value);              
+            }
+            // if the uri is gm but the name is not recognized, we ignore it
+          } else {
+            // only non-gm uris are considered sub-elements
+            attribute.setSubElement(localName, super.value);
+          }
         }
-      };
+      };        
     }
   }
 }

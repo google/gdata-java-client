@@ -110,6 +110,12 @@ public final class ContentType {
     new ContentType("text/xml;" + DEFAULT_CHARSET);
 
   /**
+   * A ContentType constant that describes the generic text/html content type.
+   */
+  public static final ContentType TEXT_HTML =
+    new ContentType("text/html;" + DEFAULT_CHARSET);
+
+  /**
    * A ContentType constant that describes the generic text/plain content type.
    */
   public static final ContentType TEXT_PLAIN =

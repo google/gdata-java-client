@@ -1,0 +1,94 @@
+
+/* ---- COLOR DEFINITION ---- */
+#doc_title, h1, h2, hr, .sidebox h2, .linkbox a, 
+table, th, td, #pagecontent img{
+
+	background-color: #e5ecf9;
+	border-color: #224499;
+	}	
+	
+/*  ---- COLORS ----
+
+--RED--
+	background-color: #efefef;
+	border-color: #aa0033;
+
+--YELLOW--
+	background-color: #fff4c2; 
+	border-color: #ffcc33;  
+
+--GREEN--
+	background-color: #ddf8cc;
+	border-color: #008000;
+
+--BLUE--
+	background-color: #e5ecf9;
+	border-color: #224499;
+	
+	
+ ---- END COLORS ---- */
+ 
+
+/* ---- PAGE ID TAGS ---- */
+
+#demo_page #demo_link,
+#rnotes_page #rnotes_link,
+#index_page #index_link,
+#start_page #start_link,
+#concepts_page #concepts_link,
+#attsquer_page #attsquer_link,
+#itemType_page #itemType_link,
+#snippets_page #snippets_link,
+#items_page #items_link,
+#attributes_page #attributes_link,
+#locales_page #locales_link,
+#itemtypes_page #itemtypes_link,
+#query_page #query_link,
+#ranking_page #ranking_link,
+#signup_page #signup_link,
+#terms_page #terms_link,
+#javaDev_page #javaDev_link,
+#cSharpDev_page #cSharpDev_link,
+#clientdownload_page #clientdownload_link,
+#sample_page #sample_link,
+#llfeed_page #llfeed_link{
+
+/* ---- ! DO NOT MODIFY ! ---- */
+	color:#000;
+	text-decoration:none;
+	}
+/* ------------------------ */
+
+/* ---- ! DO NOT MODIFY ! ---- */
+td {
+	background-color: #fff;
+	}
+h2 {
+	background-color: #fff;
+	}
+	
+/* ---Styles for sample app top navbar--- */
+
+/* ---Styles for sample app top navbar--- */
+activeLang {
+	text-align:center;
+	background-color:#e5ecf9;
+	font-family:arial,sans-serif;
+	font-weight:bold;
+	}
+#langSelect {
+	background-color:#e5ecf9;	
+	text-align:center;
+	margin:0px 4% 0 25px; 
+	padding:3px 3px 7px 3px;
+	}
+#nextExample {
+	text-align:right;
+	font-weight:bold;
+	}
+	
+/* ---Misc styles--- */
+
+question(
+	color: red;
+	}

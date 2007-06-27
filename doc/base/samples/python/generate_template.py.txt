@@ -1,0 +1,232 @@
+#!/usr/bin/python2.3
+#
+# Copyright (c) 2006 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import optparse
+import sys
+from xml.dom import minidom
+
+import googlebase
+
+
+
+TEMPLATE = ("<?xml version='1.0'?>"
+"<entry xmlns='http://www.w3.org/2005/Atom' "
+"xmlns:g='http://base.google.com/ns/1.0'>"
+"<title type='text'>INSERT TITLE</title>"
+"<content type='xhtml'>"
+"<div xmlns='http://www.w3.org/1999/xhtml'>INSERT DESCRIPTION</div></content>"
+"</entry>")
+
+def writeTemplate(item_type, most_common, example, output):
+  """Writes a template XML file into the given file handle.
+
+  Args:
+    item_type: item type name
+    most_common: object of type googlebase.MostCommonAttributes
+    example: a DOM atom feed, the result of a query or None
+    output: output stream
+  """
+  template = minidom.parseString(TEMPLATE)
+  root = template.documentElement
+
+  def createSeparator():
+    """Creates some node to visually separate attributes."""
+    return template.createTextNode("\n")
+
+
+  def createAttribute(attribute, value=""):
+    """Creates one attribute tag.
+
+    Args:
+      attribute: (name, type)
+      value: text content
+    Returns:
+      a new DOM element
+    """
+    name, attrtype = attribute
+    element = template.createElementNS(googlebase.G_NAMESPACE_URI,
+                                       "g:" + xmlname(name))
+    element.setAttribute("type", attrtype)
+    element.appendChild(template.createTextNode(value))
+    return element
+
+
+  def createAttributeComment(attribute, values):
+    """Creates a comment with some examples.
+
+    Args:
+      attribute: (name, type)
+      value: a list of examples
+    Returns:
+      a new DOM comment
+    """
+    name, attrtype = attribute
+    tagname = xmlname(name)
+    examples = []
+    for value in values:
+      examples.append("    <g:%s type='%s'>%s</g:%s>"
+                      % (tagname, attrtype, value, tagname))
+    return template.createComment("Examples:\n" +
+                                  '\n'.join(examples))
+
+
+  item_type_attribute = ("item type", "text")
+  root.appendChild(createAttribute(item_type_attribute, item_type))
+
+  for attribute in most_common.attributes:
+    root.appendChild(createSeparator())
+    root.appendChild(createAttribute(attribute))
+
+    values = most_common.getExamplesFor(attribute)
+    if values:
+      root.appendChild(createAttributeComment(attribute, values))
+
+  if example:
+    root.appendChild(createSeparator())
+    example_str = toxml(example)
+    # -- is forbidden in XML comments
+    example_str = example_str.replace("--", "- -")
+    root.appendChild(template.createComment("Complete example "
+                                            "found on Google Base"))
+    root.appendChild(createSeparator())
+    # Encoding seems to be lost. Insist it's utf-8.
+    root.appendChild(template.createComment(unicode(example_str,
+                                                    encoding="utf-8")))
+  output.write(toxml(template))
+
+
+def getExample(service, item_type, attributes):
+  """Tries and find a 'representative' example for the item type.
+
+  Args:
+    service: GoogleBaseService
+    item_type: item type name
+    attributes: ordered list of the most common attributes
+      [ (name, type) ]
+  Returns:
+    One XML DOM element atom:item or None
+  """
+  most_important = attributes
+  if len(most_important) > 6:
+    most_important = most_important[0:6]
+
+  # Try getting an example with as many most common
+  # attributes as possible.
+  example = None
+  while not example and most_important:
+    attrs = [ "[%s]" % googlebase.escape(attr[0]) for attr in most_important]
+    query= "[item type: %s] " % (item_type) + ' '.join(attrs)
+    feed = service.run_query(bq=query, max_results = 1)
+    entries = getFeedEntries(feed)
+    if entries:
+      return entries[0]
+    most_important = most_important[:-1]
+  return None
+
+def requireAttribute(name):
+  """Generates a query that will require the given attribute
+  to be present.
+
+  Args:
+    name: attribute name
+
+  Returns:
+    a string of the form "[attributename]"
+  """
+
+
+def xmlname(name):
+  """Generates the XML tag name given an attribute name.
+
+  Args:
+    name: attribute name, with spaces
+
+  Returns:
+    XML tag name, with underscores instead of spaces
+  """
+  return name.replace(' ', '_')
+
+def toxml(domTree):
+  """Generates a nice XML representation for a DOM tree.
+
+  Args:
+    domTree: DOM tree (document or element)
+  Returns:
+    Nice textual representation
+  """
+  return domTree.toprettyxml(indent="  ", encoding="utf-8")
+
+
+def getFeedEntries(feed):
+  """Extracts the entry/entries from an atom feed.
+
+  Args:
+    feed: atom feed, a DOM document
+  Returns:
+    a list of DOM elements 'entry', which might be empty
+  """
+  return feed.getElementsByTagNameNS(googlebase.ATOM_NAMESPACE_URI,
+                                     "entry")
+
+def main():
+  parser = optparse.OptionParser("usage: $s [options] item_type")
+  parser.add_option("--url", dest="base_url",
+                    default="http://base.google.com/",
+                    help="the url of the google base server to use")
+  parser.add_option("--file", dest="file", metavar="FILE",
+                    help="write output to FILE instead of standard output")
+  parser.add_option("--key", dest="key",
+                    help="developer key (required)")
+  parser.add_option("--attribute_count", dest="max_results", type="int",
+                    default=10, help="maximum number of attributes to include")
+  parser.add_option("--value_count", dest="max_values", type="int",
+                    default=5, help="maximum number of examples to include")
+  parser.add_option("--include_example", action="store_true", default=False,
+                    help="include an example in the template")
+
+  options, args = parser.parse_args()
+
+  if not options.key:
+    print >>sys.stderr, "error: Option --key is required"
+    sys.exit(1)
+
+  if not args:
+    print >>sys.stderr, "error: missing item_type parameter"
+    sys.exit(1)
+
+  # Allow for spaces in the item type name.
+  item_type = ' '.join(args)
+
+  service = googlebase.GoogleBaseService(options.key,
+                                         base_url=options.base_url)
+  most_common = service.listMostCommonItemTypeAttributes(item_type,
+                                                         options.max_results,
+                                                         options.max_values)
+  if options.include_example:
+    example = getExample(service, item_type, most_common.attributes)
+  else:
+    example = None
+  if options.file:
+    output = open(options.file, "w")
+    try:
+      writeTemplate(item_type, most_common, example, output)
+    finally:
+      output.close()
+  else:
+    writeTemplate(item_type, most_common, example, sys.stdout)
+
+if __name__ == '__main__':
+  main()

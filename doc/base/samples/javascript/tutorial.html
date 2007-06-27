@@ -1,0 +1,571 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="../../../css/dev_docs.css">
+  <title>AutosMasher Demonstration</title>
+  <style type="text/css">
+
+table.plain {
+  border: 1px solid;
+  border-color: #ccc; 
+  border-spacing:0;
+  margin: 0 0 0 0;
+  padding: 0px 0px 0px 0px;
+  border-collapse:collapse;
+  clear:right;
+  }
+  
+td {
+  border: 0px; 
+  background: #fff;
+  text-align:left;
+  padding: 2px 2px 2px 2px;
+  vertical-align:middle;
+  }
+  
+td.snippet-title {
+  width:auto;
+  background-color: #99b3cc;
+  font-size:14px;
+}
+
+td.snippet-data {
+  vertical-align: top;
+  background-color: #e1e7fa;
+  font-size:12px;
+}
+  
+img {
+  width:64;
+  height:64
+}
+  </style>
+  <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA-NjjZakzY5MKFK-MdkfixBRfu3r7dH9FYihKTdE4J-EIk6ejuxRKNHpS-zxJaV5DOxQYxtLscHqrVQ"
+    type="text/javascript"></script>
+  <script type="text/javascript">
+
+//TODO use OO to avoid global vars
+var map = null;
+var geocoder = null;
+var markers = [];
+var markerHtmls = [];
+var bounds = null;
+
+/**
+ * This function is called when the page loads.  It renders the map,
+ * instantiates the geocoder, and calls getMakeOptions() to get the list 
+ * of different makes of vehicles.
+ */
+function onLoad() {
+  resetForm();
+  if (GBrowserIsCompatible()) {
+    map = new GMap2(document.getElementById("map_div"));
+    map.addControl(new GSmallMapControl());
+    map.addControl(new GMapTypeControl());
+    map.setCenter(new GLatLng(37.44, -92.25), 3);
+    
+    GEvent.addListener(map, "click", function(marker, point) {
+      for (var i = 0; i < markers.length; i++) {
+        if (marker==markers[i]) {
+          marker.openInfoWindowHtml(markerHtmls[i]);
+        }
+      }
+    });
+
+    geocoder = new GClientGeocoder();
+    bounds = new GLatLngBounds();
+    getMakeOptions();
+  }
+}
+
+/*********************
+ *  Google Maps API  *
+ *********************/
+
+/**
+ * This function draws a marker on the map at the given address. 
+ */
+function showAddress(address, title, alturl, imgLinks) {
+  geocoder.getLatLng(
+    address,
+    function(point) {
+      if (point) {
+        var marker = new GMarker(point);
+        bounds.extend(point);
+        centerAndZoomMap();
+	  //populates array
+        markers.push(marker);
+        map.addOverlay(marker);
+        html = '<a href="' + alturl + '">'+title+'</a>';
+        if (imgLinks) {
+          html+="<br/>";
+          imgIndex = 0;
+          while (imgIndex<3) {
+            html+='<a href="' + alturl + '"><img height="50" width="50" src="'+imgLinks[imgIndex++].$t+'"/></a>'
+          }
+        }
+	  //populates array
+        markerHtmls.push(html);        
+      } else {
+      }
+    }
+  );
+}
+
+// This function displays the appropriate HTML in the InfoWindow of a marker.
+function openInfoWindow(markerIndex) {
+  markers[markerIndex].openInfoWindowHtml(markerHtmls[markerIndex]);
+}
+
+// This function centers the map and sets the zoom level based the lat/long of the markers.
+function centerAndZoomMap() {
+  map.setZoom(map.getBoundsZoomLevel(bounds));
+  map.setCenter(bounds.getCenter());
+}
+
+
+// This function is called before each query to remove old markers from the map.
+function clearMarkers() {
+  map.clearOverlays();
+  bounds = new GLatLngBounds();
+  markers = [];
+  markerHtmls = [];
+}
+
+/*****************
+ * JSON Parsing  *
+ *****************/
+ 
+ 
+ /**
+ * This function parses the JSON results to create a dropdown 
+ * menu of all the vehicle make options.
+ */
+function showMakeOptions(json) {
+  clearOldAttributes();
+
+  // transform the JSON results into a drop down menu
+  var select = document.getElementById("make_options");
+  select.disabled=false;           // enable the dropdown
+  select.onchange=getModels;       
+  select.options[select.selectedIndex].disabled=true; // disable the 'Loading...' option
+  select.options[select.selectedIndex].text="Select Make";
+  
+  for (var i = 0; i < json.feed.entry.length; ++i) {
+    var entry = json.feed.entry[i];
+    
+    // find the make entry
+    if (entry.title.$t == "make(text)") {
+      makeList = entry['gm$attribute']['gm$value']
+      for (var j=0; j<makeList.length; ++j) {
+        var option = document.createElement("option");
+        make = makeList[j].$t
+        option.appendChild(document.createTextNode(make));
+        select.appendChild(option);
+      }
+      break;
+    }
+  }
+  document.getElementById("make_div").appendChild(select);
+}
+ 
+ 
+
+/**
+ * This function parses the JSON results to create a dropdown 
+ * menu of all the models for a particular make.
+ */
+function showModelOptions(json) {
+  //Create or reset the options in the drop down box
+  var select = document.getElementById("model_options");
+  select.disabled=false;
+  select.options[0].disabled=true;
+  // Use 1 instead of 0 so we don't delete the first option
+  while (select.length>1) {
+     select.remove(1);
+  }
+  
+  // Find the 'model' entry
+  for (var i = 0; i < json.feed.entry.length; ++i) {
+    var entry = json.feed.entry[i];
+
+    if (entry.title.$t == "model(text)") {
+
+      // Create an <option> element for each model
+      makeList = entry['gm$attribute']['gm$value']
+      for (var j=0; j<makeList.length; ++j) {
+        var option = document.createElement("option");
+        make = makeList[j].$t
+        option.appendChild(document.createTextNode(make));
+        select.appendChild(option);
+      }
+            
+    // Don't process any more entries 
+    break;
+    }    
+  }
+}
+
+
+/**
+ * This function parses the JSON results to display vehicle information and 
+ * put a marker on the map for each car.
+ */
+function showSnippets(json) {
+  // get rid of the old search results
+  clearOldSnippets();
+  clearMarkers();
+
+  // create a table to  list the results
+  var snippet_list = document.createElement("table");
+  snippet_list.style.margin="0px 0px 0px 0px";
+  document.getElementById("snippets_div").appendChild(snippet_list);
+
+  // use the JSON results to populate the table with images and vehicle information
+  for (var i = 0; i < json.feed.entry.length; ++i) {
+    var entry = json.feed.entry[i];
+
+    // Create the table data elements for displaying the information
+	var firstRow = snippet_list.insertRow(snippet_list.rows.length);
+	firstRow.style.border="1px";
+	var imgCell = firstRow.insertCell(0);
+    imgCell.setAttribute("class", "snippet-data");
+    imgCell.setAttribute("className", "snippet-data");
+	imgCell.rowSpan=3;
+    var titleCell = firstRow.insertCell(1);
+    titleCell.colSpan=2;
+    titleCell.setAttribute("class", "snippet-title");
+    titleCell.setAttribute("className", "snippet-title");
+
+	var secondRow = snippet_list.insertRow(snippet_list.rows.length);
+	var priceCell = secondRow.insertCell(0);
+    priceCell.setAttribute("class", "snippet-data");
+    priceCell.setAttribute("className", "snippet-data");
+	var locationCell = secondRow.insertCell(1);
+    locationCell.setAttribute("class", "snippet-data");
+    locationCell.setAttribute("className", "snippet-data");
+	
+	
+	var thirdRow = snippet_list.insertRow(snippet_list.rows.length);
+	var yearCell = thirdRow.insertCell(0);
+	yearCell.setAttribute("class", "snippet-data");
+    yearCell.setAttribute("className", "snippet-data");
+	var colorCell = thirdRow.insertCell(1);
+	colorCell.setAttribute("class", "snippet-data");
+    colorCell.setAttribute("className", "snippet-data");
+	
+	
+	// get an image of the car
+	if (entry.g$image_link) {
+      var img = document.createElement("img");
+      img.src=entry.g$image_link[0].$t;
+      imgCell.appendChild(img)
+	}
+
+    // get the price and condition of the car
+    var price;
+    if (entry.g$price) {
+      var splitIdx = entry.g$price[0].$t.indexOf(".");
+      price = entry.g$price[0].$t.slice(0,splitIdx);
+    } else {
+      price = "Not listed";
+    }
+    var condition;
+    if (entry.g$condition) { 
+      condition = entry.g$condition[0].$t;
+    } else {
+      condition = "";
+    }
+	priceCell.innerHTML = "$" + price + " " + condition;
+
+    // get the location of the car
+    var location;
+    if (entry.g$location) {
+      location = entry.g$location[0].$t;
+    } else {
+      location = "Location unknown";
+    }
+	locationCell.innerHTML = location;
+	
+	// get the year the car was made
+	var year
+	if (entry.g$year) {
+	  year = "Year: " + entry.g$year[0].$t;
+	} else {
+	  year = "Year: Unknown";
+	}
+	yearCell.innerHTML=year;
+	
+	// get the color of the car
+	var color
+	if (entry.g$color) {
+	  color = "Color: " + entry.g$color[0].$t;
+	} else {
+	  color = "Color: Unknown";
+	}
+	colorCell.innerHTML=color;	
+
+    // add a link to the car seller's page to the snippet title
+    var linkCell = document.createElement("td");
+    firstRow.appendChild(linkCell);
+    var alturl;
+    for (var k = 0; k < entry.link.length; ++k) {
+        if (entry.link[k].rel == "alternate") {
+	      alturl = entry.link[k].href; 
+          break;
+        }
+    }
+    titleCell.innerHTML = "<a onclick=\"openInfoWindow(" + i + ")\">" + entry.title.$t + "</a>";
+    
+    // get the location and put a marker on the map
+    if (entry.g$location) {
+      var location = entry.g$location[0];
+      if (location) {
+        var txt = document.createTextNode(entry.title.$t+ " - " + location.$t);
+        showAddress(location.$t, entry.title.$t, alturl, entry.g$image_link);
+      } else {
+       var txt = document.createTextNode(entry.title.$t);    
+      }
+    }
+  }
+}
+
+
+
+
+/*********************
+ *  Google Base API  *
+ *********************/
+
+
+
+/**
+ * This function adds a JSON script element which queries Google Base and calls the 
+ * call-back function.
+ */
+
+function getMakeOptions() {
+  // Add a script element with the src set to the Google Base query for vehicle
+  // makes. The JSON output is specified by including the alt=json-in-script
+  // argument. The callback function is also specified as a URI argument.
+  // This is equivalent to adding a script tag that looks like this:
+  // <script type="text/javascript" src="http://www.google/com/base/feed/attributes/.." /> 
+
+  var attributesElement = document.createElement("script");
+  attributesElement.setAttribute("id", "attributes");
+  attributesElement.setAttribute("src", "http://www.google.com/base/"
+   + "feeds/attributes/-/vehicles?max-values=30"
+   + "&alt=json-in-script&callback=showMakeOptions");
+  attributesElement.setAttribute("type", "text/javascript");
+  document.documentElement.firstChild.appendChild(attributesElement);
+}
+
+
+
+/**
+ * This function queries the attributes feed for a JSON result and 
+ * sets a callback to the showModelOptions() function.
+ */
+function getModels() {
+  // Add a script element with the src set to the Google Base query for vehicle  
+  // models.  The JSON output is specified by including the alt=json-in-script 
+  // argument. The callback function is also specified as a URI argument.
+  // This is equivalent to adding a script tag that looks like this:
+  // <script type="text/javascript" src="http://www.google/com/base/feed/attributes/.." /> 
+
+  makeOptions = document.getElementById("make_options");
+  make = makeOptions.options[makeOptions.selectedIndex].text;
+
+  var attributesElement = document.createElement("script");
+  attributesElement.setAttribute("id", "attributes");
+  attributesElement.setAttribute("src", "http://www.google.com/base/"
+   + "feeds/attributes/-/vehicles?max-values=30&bq=[make:" + make + "]"
+   + "&alt=json-in-script&callback=showModelOptions");
+  attributesElement.setAttribute("type", "text/javascript");
+
+  document.documentElement.firstChild.appendChild(attributesElement);
+}
+
+
+/**
+ * This function queries the snippets feed for a JSON result and 
+ * sets a callback to the showSnippets() function.
+ */
+function getSnippets(orderby) {
+  // Add a script element with the Google Base query to get snippets for 
+  // vehicles of a particular make and model. 
+  // The JSON output is specified by including the alt=json-in-script argument.
+  // The callback function is also specified as a URI argument.
+  // This is equivalent to adding a script tag that looks like this:
+  // <script type="text/javascript" src="http://www.google/com/base/feed/snippets/.." /> 
+
+  // get search criteria for query
+  location_input = document.getElementById("location_input").value;
+  makeOptions = document.getElementById("make_options");
+  make = makeOptions.options[makeOptions.selectedIndex].text;
+  modelOptions = document.getElementById("model_options");
+  model = modelOptions.options[modelOptions.selectedIndex].text;
+  min_price = document.getElementById("min_price").value;
+  max_price = document.getElementById("max_price").value;
+  keywords = document.getElementById("keywords").value;
+  location_sort_input = document.getElementById("location_sort_input").value;
+  
+  // build the query
+  var query = "bq=";
+  if (location_input!="") {
+    query = query + "[location:@" + location_input + "]";
+  }
+  if (make!="Select Make") {
+    query = query + "[make:" + make + "]";
+  }
+  if (model!="Select Model") {
+    query = query + "[model:" + model + "]";
+  }
+  if (min_price!="") {
+    query = query + "[price:" + min_price + ".." + max_price + "]";
+  }
+  if (keywords!="") {
+    query = query + "&q="+keywords;
+  }
+  if (orderby=="price") {
+    query = query + "&orderby=price(float%20USD)";
+  }
+  if (orderby=="year") {
+    query = query + "&orderby=year(int)";
+  }
+  if (orderby=="location") {
+    query = query + "&orderby=[x=location(location):neg(min(dist(x,@'"+location_sort_input+"')))]";
+  }
+    
+  // build the Base API URL
+  var url = "http://www.google.com/base/feeds/snippets/-/vehicles?";
+  url = url + query;
+  url = url + "&alt=json-in-script&callback=showSnippets";
+  alert(url);
+
+  // Create a script element that references the snippets feed query
+  // Example URL: 
+  // http://www.google.com/base/feeds/snippets/-/vehicles/?bq=[make:ford][model:taurus]&alt=json-in-script&callback=showSnippets
+  var attributesElement = document.createElement("script");
+  attributesElement.setAttribute("id", "attributes");
+  attributesElement.setAttribute("src", url);
+  attributesElement.setAttribute("type", "text/javascript");
+  document.documentElement.firstChild.appendChild(attributesElement);
+}
+
+
+/******************
+ *  Housekeeping  *
+ ******************/
+ 
+/**
+ * This function deletes pre-existing children of the data div from the page. The data div 
+ * may contain a "Loading..." message, or the results of a previous query. 
+ * This old data should be removed before displaying new data.
+ */
+function clearOldAttributes() {
+  var div = document.getElementById("make_div");
+  if (div && div.firstChild) {
+    div.removeChild(div.firstChild);
+  }
+}
+
+function clearOldSnippets() {
+  var div = document.getElementById("snippets_div");
+  if (div && div.firstChild) {
+    div.removeChild(div.firstChild);
+  }
+}
+
+function resetForm() {
+  document.getElementById("location_input").value="";
+  document.getElementById("min_price").value="";
+  document.getElementById("max_price").value="";
+  document.getElementById("keywords").value="";
+}
+
+//-->
+</script>
+</head>
+
+<body onLoad="onLoad()" onUnload="GUnload()">
+<h2>AutosMasher</h2>
+<table style="width: 800px; border: none">
+  <tr>
+    <td style="width: 500px;">Need a new ride?  Your dream car may be closer than you think.
+    <td style="width: 300px; text-align: right"><a href="javascript-sample.html">Learn how to build sites like this</a></td>
+  </tr>
+</table>
+
+<form name="theForm" onSubmit="alert("submit")">
+<table style="border:none; margin-left:auto; margin-right:auto; margin-bottom:0px">
+  <tr>
+    <td/>
+    <td>
+      <div id="make_div">
+        <select id="make_options" style="width:120px" disabled="disabled">
+          <option>Loading...</option>
+        </select>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td/>
+    <td>
+      <div id="model_div">
+        <select id="model_options" style="width:120px" disabled="disabled">
+          <option>Select Model</option>
+        </select>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:right; font: 14px arial">
+      Location: 
+    </td>
+    <td>
+      <input type="text" id="location_input" style="width:100%" onKeyDown="if(event.keyCode==13) getSnippets();"/>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:right; font: 14px arial">
+      Price Range: $
+    </td>
+    <td style="font: 14px arial">
+      <input type="text" name="min_price" id="min_price" style="width:100px" onKeyDown="if(event.keyCode==13) getSnippets();"/>
+      to 
+      $<input type="text" name="max_price" id="max_price" style="width:100px" onKeyDown="if(event.keyCode==13) getSnippets();"/>
+    </td>
+  </tr>
+    <td style="text-align:right; font: 14px arial">Keywords: </td>
+    <td>
+      <input type="text" name="keywords" id="keywords" style="width:100%" onKeyDown="if(event.keyCode==13) getSnippets();"/>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" style="text-align:center">
+      <input type="button" name="submitQuery" value="Submit Query" onClick="getSnippets()"/>
+    </td>
+  </tr>
+</table>
+</form>
+
+<div style="padding: 3px 3px 3px 30px">
+Sort results by 
+<a href="#" onClick="getSnippets('price')">Price</a>,
+<a href="#" onClick="getSnippets('year')">Year</a>, or 
+<a href="#" onClick="getSnippets('location')">Location:</a>
+<input type="text" id="location_sort_input" style="width:100px" onKeyDown="if(event.keyCode==13) getSnippets('location');"/>
+</div>
+<table style="width:800px; margin-top:0px">
+  <tr>
+    <td class="snippet" style="width:auto">
+      <div id="snippets_div" style="overflow:auto; height:300px; width:auto"></div>
+    </td>
+    <td style="width:50%">
+      <div id="map_div" style="width:100%; height:300px"></div>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

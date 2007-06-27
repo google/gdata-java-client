@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../../../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../../../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="../../local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../../../css/ieonly.css" />
+<![endif]-->
+<title>Google Base data API- Accessing the Google Base data API using Java</title>
+</head>
+<body id="sample_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+    <div id="sidenav"> <!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="../../index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="../../sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="../../starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="../../attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="../../javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="../../csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="../../snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="../../items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="../../attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="../../itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="../../locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="../../query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="../../ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="../../client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="../../signup.html" id="signup_link">API Key</a></li>
+      <li><a href="../../terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="../../release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+      </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <!-- This comment prevents 
+	space-->
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+</form>
+ </div>
+  <!-- ########## END SIDE NAVIGATION ########## -->
+<div id="pagecontent">
+  <!-- ########## PAGE CONTENT ########## -->
+  <h2 id="page_title">Understanding the Java QueryExample3 API Sample Application</h2>
+  <p><strong>Select a language:</strong> |<activeLang> Java </activelang>
+    | <a href="../javascript/javascript-sample.html">JavaScript</a> | <a href="../perl/perl-sample.html">Perl</a> | <a href="../php/php-sample-zend.html">PHP</a> | <a href="../python/python-sample.html">Python</a> | <a href="../csharp/csharp-sample.html">C#</a> | <a href="../vb/vb-sample.html">VB.NET</a> | <a href="../coldfusion/coldfusion-sample.html">ColdFusion</a> </p>
+  <p id="langSelect"> <a href="java-sample.html">Java Sample Home</a> <a href="java-sample-api-query1.html">QueryExample1</a> <a href="java-sample-api-query2.html">QueryExample2</a> <strong>QueryExample3</strong> <a href="java-sample-api-insert.html">InsertExample</a> <a href="java-sample-api-update.html">UpdateExample</a> </p>
+
+  <p><code>QueryExample3</code> introduces authentication. It also shows how to query your own items using the items
+    feed.</p>
+  <p>The previous two examples demonstrated how to query the Google Base data
+    API public feeds, also known as the <a href="../../snippets-feed.html">Snippets feed </a>. Snippets are accessible to anyone
+    without authentication. The downside is that snippets are the &quot;indexable&quot;
+    version of the items and can slightly differ from the original items. It can
+    also take a while for a newly inserted or updated item to show up in the
+    snippets feed. Therefore, the Google
+    Base data API server exposes the customer-specific &quot;items&quot; feed so that you can change your own items. This feed is
+    very similar to the snippets feed, except that:</p>
+  <ul>
+    <li>it only allows you to query your own items, and thus you need to
+      authenticate in order to access it</li>
+    <li>there is no delay between updating an item and being able to display it
+      in the items feed</li>
+  </ul>
+  <p>Refer to the <a href="../../items-feed.html">Customer Items feed reference</a> for more information about the items feed. </p>
+  <p>You will need a <a href="https://www.google.com/accounts/NewAccount">Google
+    Account email and password</a> in order to run this example.</p>
+  <p><code>QueryExample3</code> connects to your items feed and dumps your items to the
+    console, just as in <code>QueryExample1</code>. If you don't have any items
+    in Google Base yet, use <a href="java-sample-api-insert.html">InsertExample</a> to insert one,
+    or go to the <a href='http://base.google.com/base/step1offer?hl=en_US'>Google
+    Base Provider Frontend</a> and insert one.</p>
+<h3>Contents</h3>
+<ol class="toc">
+    <li><a href="#QE3run">Running QueryExample3</a> </li>
+    <li><a href="#QE3stepThru">Stepping through the QueryExample3 code </a></li>
+  </ol>
+  <h2><a name="QE3run" id="QE3run"></a>Running QueryExample3</h2>
+  <ol>
+    <li><a href="http://code.google.com/apis/base/signup.html">Obtain a developer key</a> for an &quot;installed application&quot;. </li>
+    <li>Edit <code><a href="QueryExample3.java" target="_blank">QueryExample3.java</a></code> and fill in the <code>DEVELOPER_KEY</code> static string with your developer key. <a href=
+  'http://code.google.com/apis/base/signup.html'></a></li>
+    <pre>private static final String DEVELOPER_KEY = &quot;&quot;;</pre>
+    <li>Enter your Google Accounts email address and your password in the <code>EMAIL</code> and <code>PASSWORD</code> static strings:</li>
+    <pre>private static final String EMAIL = &quot;&quot;;
+private static final String PASSWORD = &quot;&quot;;      </pre>
+    
+    <li>Compile and run the example using your favorite editor, or the command
+      line:</li>
+    <pre>javac com/google/api/gbase/examples/basic/QueryExample3.java
+java com/google/api/gbase/examples/basic/QueryExample3
+</pre>
+  </ol>
+  <p>The output will be as follows: </p>
+  <pre>&lt;?xml version='1.0' encoding='UTF-8'?&gt; 
+  &lt;feed&gt;
+    &lt;id&gt;http://base.google.com/base/feeds/items&lt;/id&gt;
+    &lt;updated&gt;2006-08-22T12:00:00.000Z&lt;/updated&gt;
+    &lt;title type=&quot;text&quot;&gt;Items matching query: [customer id(int):1870031]&lt;/title&gt;
+    ...
+</pre>
+  <h2><a name="QE3stepThru" id="QE3stepThru"></a>Stepping through the QueryExample3 code</h2>
+  <p>As opposed to the previous examples, here we need to obtain an
+    authorization token by authenticating with the Google Accounts server. We
+    then use this authorization token to invoke <code>displayMyItems()</code>:</p>
+  <pre>public static void main(String[] args) throws IOException {
+  QueryExample3 queryExample = new QueryExample3();
+  String token = queryExample.authenticate();
+  new QueryExample3().displayMyItems(token);
+}</pre>
+  <p>We authenticate using <a href=
+  'http://code.google.com/apis/accounts/AuthForInstalledApps.html'>authentication
+    for installed applications</a> by making a POST request to <code>AUTHENTICATION_URL</code>.</p>
+  <pre>private static final String AUTHENTICATION_URL = &quot;https://www.google.com/accounts/ClientLogin&quot;;
+</pre>
+  <p>The POST request is constructed in <code>makeLoginRequest()</code>. It
+    looks like this: </p>
+  <pre>// POST /accounts/ClientLogin HTTP/1.0
+// Content-type: application/x-www-form-urlencoded
+// Email=johndoe@gmail.com&amp;Passwd=north23AZ&amp;service=gbase&amp;source=Insert Example
+</pre>
+  <p>The <code>service</code> parameter is the name of the Google service for which authorization is being requested. For Google Base applications, it must be set to gbase, as in the above example. For more information, refer to the <a href="http://code.google.com/apis/accounts/AuthForInstalledApps.html">authorization documentation</a>. </p>
+  <p><code>makeLoginRequest()</code> sends the request to the Google Accounts
+    server and returns the response as a <code>String</code>. A successful response
+    will have the following structure: </p>
+  <pre>//      HTTP/1.0 200 OK
+//      Server: GFE/1.3
+//      Content-Type: text/plain 
+//      SID=DQAAAGgA...7Zg8CTN
+//      LSID=DQAAAGsA...lk8BBbG
+//      Auth=DQAAAGgA...dk3fA5N
+</pre>
+  <p><code>authenticate()</code> first obtains the authentication response from <code>makeLoginRequest()</code> and stores it in <code>postOutput</code>: </p>
+  <pre>String postOutput = null;
+try {
+  URL url = new URL(AUTHENTICATION_URL);
+  postOutput = makeLoginRequest(url);
+} catch (IOException e) {
+  System.out.println(&quot;Authentication error: &quot; + e.toString());
+}
+</pre>
+  <p>It then tokenizes <code>postOutput</code>, and returns the next token
+    after &quot;Auth&quot;, or <code>null</code> if the token is not found: </p>
+  <pre>StringTokenizer tokenizer = new StringTokenizer(postOutput, &quot;=\n &quot;);
+String token = null;
+    
+while (tokenizer.hasMoreElements()) {
+  if (tokenizer.nextToken().equals(&quot;Auth&quot;)) {
+    if (tokenizer.hasMoreElements()) {
+      token = tokenizer.nextToken(); 
+    }
+  break;
+  }
+}
+</pre>
+  <p>The items are displayed in <code>displayMyItems()</code>, which is very
+    similar to <code>displayItems()</code> in <code>QueryExample1</code>, except that it injects
+    the authorization token (as well as the developer key) in the HTTP header. Developer
+    keys can be specified both as a URL parameter (as in <code>QueryExample1</code>) and in
+    the HTTP header (as in this example).</p>
+  <pre>connection.setRequestProperty(&quot;Authorization&quot;, &quot;GoogleLogin auth=&quot; + token);
+connection.setRequestProperty(&quot;X-Google-Key&quot;, &quot;key=&quot; + DEVELOPER_KEY);
+</pre>
+<p align="right">Go to <a href="java-sample-api-insert.html">InsertExample</a></p>
+</div>
+<!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+  <!-- ########## PAGE FOOTER ########## -->
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+  <div id="copyright">
+    <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+      Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+      and Conditions</a> - <a href="http://www.google.com/about.html">About
+      Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+  <!-- javascript to display the date this page was updated -->
+  <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+  <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  urchinTracker();
+</script>
+</body>
+</html>

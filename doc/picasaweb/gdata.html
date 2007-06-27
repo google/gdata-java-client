@@ -1,0 +1,621 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Picasa Web Albums Data API Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+     color: #000000;
+}
+
+.q {
+  color: #FF0000;
+  font-weight: bold;
+}
+-->
+</style>
+</head>
+<body id="gdata_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Picasa Web Albums Data API </h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Picasa Web Albums </h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="gdata.html" id="gdata_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="terms.html" id="terms_link">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>GData Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://code.google.com/support/bin/topic.py?topic=10949">Knowledge Base</a></li>
+        <li><a href="http://groups.google.com/group/Google-Picasa-Data-API">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+  <div id="pagecontent">
+    <h1 id="page_title">Picasa Web Albums Data API Developer's Guide </h1>
+
+    <p>Picasa Web Albums allows client applications to view and update albums, photos, and comments in the form of Google data API (&quot;GData&quot;) feeds. Your client application can use the Picasa Web Albums data API to create new albums, upload photos, add comments, edit or delete existing albums, photos, and comments, and query for items that match particular criteria.</p>
+    <h1>Contents</h1>
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#Example">Interacting with Picasa Web Albums: examples</a>
+          <ol class="toc">
+            <li><a href="#Find_URL">Choose a feed type</a></li>
+            <li><a href="#Get_Album_Feed_Manual">Request a list of albums manually</a></li>
+            <li><a href="#Get_Album_Feed_Library">Request a list of albums using the client library</a></li>
+            <li><a href="#Get_Photo_Feed_Manual">Request a list of photos</a></li>
+            <li>If you're writing an installed (desktop) client:
+              <ol>
+                  <li><a href="#Add_Album_Manual_Installed">Add an album manually</a></li>
+                  <li><a href="#Add_Album_Library_Installed">Add an album    using the client library</a></li>
+              </ol>
+            </li>
+            <li>If you're writing a web application client:
+              <ol>
+                  <li><a href="#Add_Album_Manual_Web">Add an album manually</a></li>
+                  <li><a href="#Add_Album_Library_Web">Add an album using the client library</a></li>
+              </ol>
+            </li>
+            <li><a href="#Add_Photo">Post a new photo</a></li>
+            <li><a href="#Send_Query">Send a query</a></li>
+            <li><a href="#Update_Photo">Update a photo</a></li>
+            <li><a href="#Delete_Photo">Delete a photo</a></li>
+            <li><a href="#Add_Delete_Tag_Comment">Insert and delete tags and comments</a></li>
+          </ol>
+      </li>
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications that can interact with Picasa Web Albums.</p>
+    <p>This document assumes that you understand the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>. It also assumes that you know how to program in Java.</p>
+    <p>The code examples in this document use the <a href="../gdata/client-java.html">Java client library</a>; see the client library documentation for more information and more (non-Picasa Web Albums-specific) examples. If you're writing a client  in another language, see the client library documentation for that language, if available; you can translate the examples in this document into other languages as needed.</p>
+
+    <h1><a name="Example" id="Example">Interacting with Picasa Web Albums: examples</a></h1>
+
+    <p>Assume you're creating a client application that needs to communicate with Picasa Web Albums. You want your client to be able to get the feed from an album and add a photo to that album. These examples show you how to do that.</p>
+    <p>To communicate with Picasa Web Albums, your application needs to be able to do the following, among other things:</p>
+    <ol>
+      <li><a href="#Find_URL">Find a feed URL</a>.</li>
+
+      <li>Request the feed. If you want to request a feed of albums, for example, you can take either of two approaches:
+        <ul>
+          <li><a href="#Get_Album_Feed_Manual">Request a list of albums manually</a>, using the raw GData protocol.</li>
+          <li><a href="#Get_Album_Feed_Library">Request a list of albums using the client library</a>.</li>
+        </ul>
+      </li>
+      <li>Request other feeds as needed. For example,  <a href="#Get_Photo_Feed_Manual">Request a list of photos</a>.</li>
+      <li>Create a new album. There are four options here, depending on the kind of client you're writing:
+        <ul>
+
+          <li>If you're writing an installed (desktop) client:
+            <ul>
+              <li><a href="#Add_Album_Manual_Installed">Add an album  manually</a></li>
+              <li><a href="#Add_Album_Library_Installed">Add an album   using the client library</a></li>
+            </ul>
+          </li>
+          <li>If you're writing a web application client:
+            <ul>
+              <li><a href="#Add_Album_Manual_Web">Add an album  manually</a></li>
+
+              <li><a href="#Add_Album_Library_Web">Add an album  using the client library</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li><a href="#Add_Photo">Post a new photo</a>.</li>
+      <li><a href="#Send_Query">Send a query</a>.</li>
+      <li><a href="#Update_Photo">Update a photo</a>.</li>
+      <li><a href="#Delete_Photo">Delete a photo</a>.</li>
+      <li><a href="#Add_Delete_Tag_Comment">Insert and delete tags and comments</a>.</li>
+    </ol>
+    <p>This guide focuses on operations involving albums and photos, but you can interact with Picasa Web Albums in a variety of other ways as well. For example, you can create, query, and delete albums, tags, and comments, and you can update albums and query users, all using the GData protocol or the client libraries.</p>
+    <p>For general information about Google data APIs and more example code that you can adapt for use with Picasa Web Albums, see <a href="../gdata/client-java.html">Using the Java Client Library</a>.</p>
+
+    <p>Note: If you don't already have an account on Picasa Web Albums, you may want to create one for testing purposes.</p>
+    <h2><a name="Find_URL" id="Find_URL">Choose a feed type </a></h2>
+    <p>You can request any of several  different kinds of feeds  from Picasa Web Albums; for more information, see <a href="reference.html#Feeds">Picasa Web Albums feed types</a>, in the reference document.</p>
+    <p>For each feed, you can specify what kinds of entries should be returned, using the <code>kind</code> parameter in the URL.</p>
+    <p>Choose one of the following feed types:</p>
+    <table width="95%" border="1">
+      <tr>
+        <th scope="col">Desired items</th>
+        <th scope="col">Feed type </th>
+        <th scope="col">URL</th>
+        <th scope="col">Valid kinds </th>
+      </tr>
+      <tr>
+        <td>Albums or tags associated with a given user</td>
+        <td>User-based</td>
+        <td>http://picasaweb.google.com/data/feed/api/user/<i>userID</i>?kind=<i>kinds</i></td>
+        <td><b>album</b>, tag</td>
+      </tr>
+      <tr>
+        <td rowspan="2">Photos or tags from a given album</td>
+        <td rowspan="2">Album-based (by name or ID)</td>
+        <td>By album name: http://picasaweb.google.com/data/feed/api/user/<i>userID</i>/album/<i>albumName</i>?kind=<i>kinds</i></td>
+        <td rowspan="2"><b>photo</b>, tag </td>
+      </tr>
+      <tr>
+        <td>By album ID: http://picasaweb.google.com/data/feed/api/user/<i>userID</i>/albumid/<i>albumID</i>?kind=<i>kinds</i></td>
+      </tr>
+      <tr>
+        <td>Comments or tags associated with a given photo</td>
+        <td>Photo-based</td>
+        <td>http://picasaweb.google.com/data/feed/api/user/<i>userID</i>/albumid/<i>albumID</i>/photoid/<i>photoID</i>?kind=<i>kinds</i></td>
+        <td><b>comment</b>, tag </td>
+      </tr>
+    </table>
+    <p>To specify which kind or kinds of items you want,  you list one or more kinds in the <code>kind</code> query parameter. The kind listed in boldface in the &quot;Valid kinds&quot; column is the default kind for that feed type; if you want the default kind, you can leave out the <code>kind</code> query parameter. </p>
+    <h2><a name="Get_Album_Feed_Manual" id="Get_Album_Feed_Manual">Request a list of albums </a> manually</h2>
+    <p>The general idea of how to request a Picasa Web Albums feed is that you determine the feed URL, and then you send an HTTP <code>GET</code> request to that URL. Picasa Web Albums then returns a GData feed containing entries of whatever sort you specified in the <code>kind</code> URL parameter. If you don't include a <code>kind</code> parameter, the default kind depends on the feed you requested; for more information, see <a href="reference.html#Kind">Kind values</a> in the reference document. </p>
+    <p>Google provides client libraries for interacting with Google data API services in a variety of programming languages. You can use the client libraries to send the HTTP request and handle the returned feed; we'll show you an example of how to do that below. But whether or not you use the client library, the following is what's going on at the protocol level. If you're using a UNIX system and you want to try this out without writing any code, you may find the UNIX command-line utilities <code>curl</code> or <code>wget</code> useful; for more information, see the manual pages for those utilities.</p>
+
+    <p>To get a feed listing all of the albums belonging to user &quot;liz&quot;, you send an  HTTP request like the following to Picasa Web Albums:</p>
+    <pre>GET http://picasaweb.google.com/data/feed/api/user/liz?kind=album</pre>
+    <p>After you send the <code>GET</code> request, Picasa Web Albums may return a redirect, depending on various factors. If so, send another <code>GET</code> request to the redirect URL.</p>
+    <p>Picasa Web Albums then returns an HTTP <code>200 OK</code> status code and a feed containing all the albums for the user. If there's only one entry, then Picasa Web Albums returns something similar to the following feed.</p>
+    <p>We've slightly edited the following example  to make it a little more readable by humans; in particular, a real Picasa Web Albums feed contains actual IDs and URLs.</p>
+    <pre>&lt;feed xmlns='http://www.w3.org/2005/Atom'
+    xmlns:media='http://search.yahoo.com/mrss/'
+    xmlns:gphoto='http://schemas.google.com/photos/2007'&gt;
+  &lt;id&gt;http://picasaweb.google.com/data/feed/api/user/liz&lt;/id&gt;
+  &lt;updated&gt;2007-03-06T00:08:51.553Z&lt;/updated&gt;
+  &lt;category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/photos/2007#user'&gt;&lt;/category&gt;
+  &lt;title type='text'&gt;liz&lt;/title&gt;
+  &lt;subtitle type='text'&gt;&lt;/subtitle&gt;
+  &lt;icon&gt;http://picasaweb.google.com/image/liz/<i>imageKey</i>/liz.jpg?imgmax=64&amp;amp;crop=1&lt;/icon&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#feed'
+    type='application/atom+xml'
+    href='http://picasaweb.google.com/data/feed/api/user/liz'&gt;
+  &lt;/link&gt;
+  &lt;link rel='alternate' type='text/html'
+    href='http://picasaweb.google.com/liz'&gt;&lt;/link&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://picasaweb.google.com/data/feed/api/user/liz?start-index=1&amp;amp;max-results=10000&amp;amp;kind=album'&gt;
+  &lt;/link&gt;
+  &lt;author&gt;
+    &lt;name&gt;Liz&lt;/name&gt;
+    &lt;uri&gt;http://picasaweb.google.com/liz&lt;/uri&gt;
+  &lt;/author&gt;
+  &lt;generator version='1.00' uri='http://picasaweb.google.com/'&gt;Picasaweb&lt;/generator&gt;
+  &lt;gphoto:user&gt;liz&lt;/gphoto:user&gt;
+  &lt;gphoto:nickname&gt;Liz&lt;/gphoto:nickname&gt;
+  &lt;gphoto:thumbnail&gt;http://picasaweb.google.com/image/liz/<i>imageKey</i>/liz.jpg?imgmax=64&amp;amp;crop=1&lt;/gphoto:thumbnail&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://picasaweb.google.com/data/entry/api/user/liz/albumid/<i>albumID</i>&lt;/id&gt;
+    &lt;published&gt;2007-03-01T08:00:00.000Z&lt;/published&gt;
+    &lt;updated&gt;2007-03-02T02:09:52.000Z&lt;/updated&gt;
+    &lt;category scheme='http://schemas.google.com/g/2005#kind'
+      term='http://schemas.google.com/photos/2007#album'&gt;&lt;/category&gt;
+    &lt;title type='text'&gt;Netherfield Park&lt;/title&gt;
+    &lt;summary type='text'&gt;Photos of my vacation.&lt;/summary&gt;
+    &lt;rights type='text'&gt;public&lt;/rights&gt;
+    &lt;link rel='self' type='application/atom+xml'
+      href='http://picasaweb.google.com/data/entry/api/user/liz/albumid/<i>albumID</i>'&gt;
+    &lt;/link&gt;
+    &lt;link rel='http://schemas.google.com/g/2005#feed'
+      type='application/atom+xml'
+      href='http://picasaweb.google.com/data/feed/api/user/liz/albumid/<i>albumID</i>'&gt;
+    &lt;/link&gt;
+    &lt;link rel='alternate' type='text/html'
+      href='http://picasaweb.google.com/liz/NetherfieldPark'&gt;&lt;/link&gt;
+    &lt;author&gt;
+      &lt;name&gt;Liz&lt;/name&gt;
+      &lt;uri&gt;http://picasaweb.google.com/liz&lt;/uri&gt;
+    &lt;/author&gt;
+    &lt;gphoto:id&gt;<i>albumID</i>&lt;/gphoto:id&gt;
+    &lt;gphoto:name&gt;NetherfieldPark&lt;/gphoto:name&gt;
+    &lt;gphoto:location&gt;&lt;/gphoto:location&gt;
+    &lt;gphoto:access&gt;public&lt;/gphoto:access&gt;
+    &lt;gphoto:timestamp&gt;1172736000000&lt;/gphoto:timestamp&gt;
+    &lt;gphoto:numphotos&gt;184&lt;/gphoto:numphotos&gt;
+    &lt;gphoto:numphotosremaining&gt;316&lt;/gphoto:numphotosremaining&gt;
+    &lt;gphoto:bytesUsed&gt;11060624&lt;/gphoto:bytesUsed&gt;
+    &lt;gphoto:user&gt;liz&lt;/gphoto:user&gt;
+    &lt;gphoto:nickname&gt;Liz&lt;/gphoto:nickname&gt;
+    &lt;gphoto:commentingEnabled&gt;true&lt;/gphoto:commentingEnabled&gt;
+    &lt;gphoto:commentCount&gt;0&lt;/gphoto:commentCount&gt;
+    &lt;media:group&gt;
+      &lt;media:title type='plain'&gt;Netherfield Park&lt;/media:title&gt;
+      &lt;media:description type='plain'&gt;Photographs taken on vacation.&lt;/media:description&gt;
+      &lt;media:keywords&gt;&lt;/media:keywords&gt;
+      &lt;media:content
+        url='http://picasaweb.google.com/image/liz/<i>imageKey</i>/Netherfield.jpg'
+        type='image/jpeg' medium='image'&gt;
+      &lt;/media:content&gt;
+      &lt;media:thumbnail
+        url='http://picasaweb.google.com/image/liz/<i>imageKey</i>/Netherfield.jpg?imgmax=160&amp;amp;crop=1'
+        height='160' width='160'&gt;
+      &lt;/media:thumbnail&gt;
+      &lt;media:credit&gt;Liz&lt;/media:credit&gt;
+    &lt;/media:group&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;</pre>
+    <p>For information about what each of those elements means, see the <a href="../gdata/reference.html">Google Data APIs Protocol Reference</a> document, or the <a href="http://www.atomenabled.org/developers/syndication/atom-format-spec.php">Atom 1.0 specification</a>.  For Picasa Web Albums specific information, see the <a href="reference.html#Elements">Elements</a> section of the Picasa Web Albums data API reference document.</p>
+    <p>If your request fails for some reason, Picasa Web Albums may return a different status code; for information about the status codes, see the protocol reference document.</p>
+    <p class="note"><strong>Note</strong>: The entries in a feed are ordered by the values of their <code>updated</code> elements, with the most recently updated entry appearing first in the feed.</p>
+    <h2><a name="Get_Album_Feed_Library" id="Get_Album_Feed_Library">Request a list of albums using the client library</a></h2>
+    <p>The above description shows how to send a request and receive a response by hand; if you already have code that handles  feeds, then you can simply use it to send the relevant <code>GET</code> request, as shown above.</p>
+    <p>However, if you don't already have your own feed-handling code,  then we encourage you to use Google's client library where possible.</p>
+    <p>To use the client library, the general steps are:</p>
+    <ol>
+
+      <li>Obtain or construct the appropriate URL.</li>
+      <li>Create an object of the <code><a href="../../java/doc/com/google/gdata/client/photos/PicasawebService.html">PicasawebService</a></code> class, which handles communication and authentication with Picasa Web Albums.</li>
+      <li>Use client library methods to send the request and receive any results the service sends back.</li>
+    </ol>
+    <p>For example, to request the feed of albums belonging to user &quot;liz&quot;, you could use the following Java code.</p>
+
+    <pre>URL albumsUrl = new
+  URL(&quot;http://picasaweb.google.com/data/feed/api/user/liz?kind=album&quot;);
+PicasawebService myService = new PicasawebService(&quot;exampleCo-exampleApp-1&quot;);
+
+// Send the request for the user's albums.
+UserFeed myUserFeed = myService.getFeed(albumsUrl, UserFeed.class);
+
+// Print the title of the returned feed:
+System.out.println(myUserFeed.getTitle().getPlainText());</pre>
+
+    <p>In the above example, first you specify the URL, then you create a <code>PicasawebService</code> object.</p>
+    <p>Then you call the <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html#getFeed(java.net.URL,%20java.lang.Class,%20com.google.gdata.data.DateTime)">getFeed</a></code> method. That method handles all of the communication with Picasa Web Albums&mdash;it sends the HTTP <code>GET</code> request, it receives the redirect (if any), it sends the second <code>GET</code> request, it waits for the XML response to arrive, and it parses the XML and assigns the element contents and attribute values to appropriate parts of the given feed object. (In this case, the UserFeed class is a subclass of the generic Feed class.) </p>
+
+    <p>If an error occurs during the <code>getFeed</code> call, then the client library generates an appropriate exception, so your code should be prepared to handle exceptions.</p>
+    <p>The final line of the above code calls the feed's <code><a href="../../java/doc/com/google/gdata/data/Source.html#getTitle()">getTitle</a></code> method, which returns a <code><a href="../../java/doc/com/google/gdata/data/TextConstruct.html">TextConstruct</a></code> object. To transform the text construct into a <code>String</code>, we call the title's <code><a href="../../java/doc/com/google/gdata/data/TextConstruct.html#getPlainText()">getPlainText</a></code> method.</p>
+
+    <p>In most contexts, you'll probably want to do something more with the feed than just print out the title. For example, the client library lets you generate Atom or RSS representations of the feed and perform various other transformations. For more information, see the <a href="../../java/doc/index.html">Javadoc documentation</a>.</p>
+    <h2><a name="Get_Photo_Feed_Manual" id="Get_Photo_Feed_Manual">Request a list of photos </a></h2>
+    <p>You can request any of the other available feeds in much the same way.</p>
+    <p>For example, to get a feed listing all of the photos in an album named &quot;NetherfieldPark&quot;, belonging to user &quot;liz&quot;, you send an  HTTP request like the following to Picasa Web Albums:</p>
+    <pre>GET http://picasaweb.google.com/data/feed/api/user/liz/album/NetherfieldPark?kind=photo</pre>
+    <p>In this example, we're using the album-by-name URI instead of the album-by-ID URI. In some cases your client may already have the album name; in others, to request an album by name you may have to construct the album-by-name URI using the value of the <code>&lt;gphoto:name&gt;</code> element in the list-of-albums feed from the previous example. If you prefer to request a feed by album ID, you can use the URI given in the <code>&lt;link rel='http://schemas.google.com/g/2005#feed'&gt;</code> element in the list-of-albums feed. </p>
+    <p>To request the list-of-photos feed using the Java client library, you could use the following Java code.</p>
+    <pre>URL albumAndPhotosUrl = new 
+  URL(&quot;http://picasaweb.google.com/data/feed/api/user/liz/album/NetherfieldPark?kind=photo&quot;);
+PicasawebService myService = new PicasawebService(&quot;exampleCo-exampleApp-1&quot;);
+
+// Send the request for the album's photos.
+AlbumFeed myAlbumFeed = myService.getFeed(albumAndPhotosUrl, AlbumFeed.class);
+
+// Print the title of the returned feed:
+System.out.println(myAlbumFeed.getTitle().getPlainText());</pre>
+    <h2><a name="Add_Album_Manual_Installed" id="Add_Album_Manual_Installed">Add an album manually (desktop client version)</a></h2>
+    <p>Most GData operations require authentication. GData uses two different authentication systems, depending on what kind of client you're writing. If your client is a standalone single-user &quot;installed&quot; client (such as a desktop application), then you should use the &quot;ClientLogin&quot; system; if your client is a multi-user web application client, then you should use the &quot;AuthSub&quot; system.  (For more information about authentication, see the <a href="http://code.google.com/apis/accounts/Authentication.html">Google Account Authentication</a> documentation.)</p>
+    <p>Because the two systems are so different, this document covers them in separate sections. Therefore, if your client is an installed application, read this section.  If your client is a web app, skip this section and read <a href="#Add_Album_Manual_Web">Add an album manually (web client version)</a> instead.</p>
+    <p>Adding an album is a little bit more complicated than getting a feed, because you need to create the XML code or client-library object representing the  new album, and because authentication is required.</p>
+    <p>Here's what you do at the protocol level:</p>
+    <p>First, create an album. For example, you might create the following XML code:</p>
+    <pre>&lt;entry xmlns='http://www.w3.org/2005/Atom'
+    xmlns:media='http://search.yahoo.com/mrss/'
+    xmlns:gphoto='http://schemas.google.com/photos/2007'&gt;
+  &lt;title type='text'&gt;Trip To Italy&lt;/title&gt;
+  &lt;summary type='text'&gt;This was the recent trip I took to Italy.&lt;/summary&gt;
+  &lt;gphoto:location&gt;Italy&lt;/gphoto:location&gt;
+  &lt;gphoto:access&gt;public&lt;/gphoto:access&gt;
+  &lt;gphoto:commentingEnabled&gt;true&lt;/gphoto:commentingEnabled&gt;
+  &lt;gphoto:timestamp&gt;1152255600000&lt;/gphoto:timestamp&gt;
+  &lt;media:group&gt;
+    &lt;media:keywords&gt;italy, vacation&lt;/media:keywords&gt;
+  &lt;/media:group&gt;
+  &lt;category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/photos/2007#album'&gt;&lt;/category&gt;
+&lt;/entry&gt;</pre>
+    <p>Then authenticate the user. To do that, send a <code>POST</code> request to the following URL:</p>
+    <pre>https://www.google.com/accounts/ClientLogin</pre>
+
+    <p>Include the relevant parameters in the body of the <code>POST</code> request, as described in the <a href="http://code.google.com/apis/accounts/AuthForInstalledApps.html">ClientLogin documentation</a>.  Use <code>lh2</code> as the service name.</p>
+    <p>If the request succeeds, then the response contains an alphanumeric string labeled <code>Auth</code>.</p>
+    <p>After a successful authentication request, use the <code>Auth</code> value to create  an  Authorization header for a new <code>POST</code> request:</p>
+
+    <pre>Authorization: GoogleLogin auth=<i>yourAuthValue</i></pre>
+    <p>In the body of  the new <code>POST</code> request, place the Atom <code>&lt;entry&gt;</code> element you created above,
+      using the <code>application/atom+xml</code> content type.</p>
+    <p>Now send the <code>POST</code> request to the appropriate Picasa Web Albums URL:</p>
+
+    <pre>http://picasaweb.google.com/data/feed/api/user/<i>userID</i></pre>
+    <p>Picasa Web Albums creates a new album using the data you sent, then returns an HTTP <code>201 CREATED</code> status code, along with a copy of the new album in the form of an <code>&lt;entry&gt;</code> element. The returned entry is similar to the one you sent, but the returned one contains various elements added by Picasa Web Albums, such as an <code>&lt;id&gt;</code> element.</p>
+    <p>If your request fails for some reason, then Picasa Web Albums may return a different status code; for information about the status codes, see the <a href="../gdata/reference.html#http-status-codes">HTTP status codes</a> section of the protocol reference document.</p>
+
+    <h2><a name="Add_Album_Library_Installed" id="Add_Album_Library_Installed">Add an album  using the client library (desktop client version)</a></h2>
+    <p>As an alternative to working with the raw HTTP and XML, you can create a new album using the client library. To do that, you follow the same general steps as in the get-a-feed example, with a couple of extra steps mixed in:</p>
+    <ol>
+      <li>Obtain or construct the appropriate URL.</li>
+      <li>Construct an <code><a href="../../java/doc/com/google/gdata/data/photos/AlbumEntry.html">AlbumEntry</a></code> object, using client library methods to create objects corresponding to Atom elements.</li>
+
+      <li>Create a <code><a href="../../java/doc/com/google/gdata/client/photos/PicasawebService.html">PicasawebService</a></code> object.</li>
+      <li>Add the user's credentials to the <code>PicasawebService</code>.</li>
+      <li>Use client library methods to send the request and receive any results the service sends back.</li>
+    </ol>
+
+    <p>For example, to add an album to a gallery, use the following Java code. You'll have to replace the credentials in this example with the user's email address and password.</p>
+    <pre>
+URL postUrl = new URL(&quot;http://picasaweb.google.com/data/feed/api/user/<i>userID</i>&quot;);
+AlbumEntry myEntry = new AlbumEntry();
+
+myEntry.setTitle(new PlainTextConstruct(&quot;Trip to France&quot;));
+myEntry.setDescription(new
+  PlainTextConstruct(&quot;My recent trip to France was delightful!&quot;));
+
+Person author = new Person(&quot;Elizabeth Bennet&quot;, null, &quot;liz@gmail.com&quot;);
+myEntry.getAuthors().add(author);
+
+PicasawebService myService =
+  new PicasawebService(&quot;exampleCo-exampleApp-1&quot;);
+myService.setUserCredentials(&quot;liz@gmail.com&quot;, &quot;mypassword&quot;);
+
+// Send the request and receive the response:
+AlbumEntry insertedEntry = myService.insert(postUrl, myEntry);</pre>
+
+    <p>The above code creates a new Atom entry, then sets various element values. Then it creates a <code>PicasawebService</code>, uses the <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html#setUserCredentials(java.lang.String,%20java.lang.String)">setUserCredentials</a></code> method to set the user ID and password, and calls the <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html#insert(java.net.URL,%20E)">insert</a></code> method to add the album and receive the response. If an error occurs during the insertion, then the client library generates an appropriate exception, so your code should be prepared to handle exceptions.</p>
+    <h2><a name="Add_Album_Manual_Web" id="Add_Album_Manual_Web">Add an album  manually (web client version)</a></h2>
+    <p>This section is for use only with a  multi-user web application client. If your client is an installed application, then skip this section and read <a href="#Add_Album_Manual_Installed">Add an album   manually (desktop client version)</a> instead.</p>
+
+    <p>Adding an album is a little bit more complicated than getting a feed, because you need to create the XML code or client-library object representing the  album, and  authentication is required.</p>
+    <p>Here's what you do at the protocol level:</p>
+    <p>First, create an album. For example, you might create the following XML code:</p>
+    <pre>&lt;entry xmlns='http://www.w3.org/2005/Atom'
+    xmlns:media='http://search.yahoo.com/mrss/'
+    xmlns:gphoto='http://schemas.google.com/photos/2007'&gt;
+  &lt;title type='text'&gt;Trip To Italy&lt;/title&gt;
+  &lt;summary type='text'&gt;This was the recent trip I took to Italy.&lt;/summary&gt;
+  &lt;gphoto:location&gt;Italy&lt;/gphoto:location&gt;
+  &lt;gphoto:access&gt;public&lt;/gphoto:access&gt;
+  &lt;gphoto:commentingEnabled&gt;true&lt;/gphoto:commentingEnabled&gt;
+  &lt;gphoto:timestamp&gt;1152255600000&lt;/gphoto:timestamp&gt;
+  &lt;media:group&gt;
+    &lt;media:keywords&gt;italy, vacation&lt;/media:keywords&gt;
+  &lt;/media:group&gt;
+  &lt;category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/photos/2007#album'&gt;&lt;/category&gt;
+&lt;/entry&gt;</pre>
+    <p>Then authenticate the user, using the AuthSub authentication system.</p>
+    <p>To acquire an AuthSub token for a given Picasa Web Albums user, your application must redirect the user to  the AuthSubRequest URL, which prompts them to log into their Google account.</p>
+
+    <p>After the user logs in, the AuthSub system redirects them to the URL you specified in the <code>next</code> query parameter of the AuthSubRequest URL. The AuthSub system appends an authentication token to that URL, as the value of the <code>token</code> query parameter. Your application then uses that authentication token in subsequent interactions with Picasa Web Albums.</p>
+    <p>For details, including information on registering your application with Google and on exchanging a one-time token for a session token, see the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">AuthSub documentation</a>.</p>
+    <p>Use the authentication token to create an Authorization header for a new <code>POST</code> request:</p>
+
+    <pre>Authorization: AuthSub token=&quot;<i>yourAuthToken</i>&quot;</pre>
+    <p>Note that the values in the Authorization header for AuthSub should be surrounded by quotation marks.</p>
+    <p>In the body of the new <code>POST</code> request, place the Atom <code>&lt;entry&gt;</code> element you created above, using the <code>application/atom+xml</code> content type.</p>
+
+    <p>Now  send the <code>POST</code> request to the appropriate Picasa Web Albums URL:</p>
+    <pre>http://picasaweb.google.com/data/feed/api/user/<i>userID</i></pre>
+    <p>Picasa Web Albums creates a new album using the entry you sent, then returns an HTTP <code>201 CREATED</code> status code, along with a copy of the new album in the form of an <code>&lt;entry&gt;</code> element. The returned entry is similar to the one you sent, but the returned one contains various elements added by Picasa Web Albums, such as an <code>&lt;id&gt;</code> element.</p>
+
+    <p>If your request fails for some reason, then Picasa Web Albums may return a different status code; for information about the status codes, see the <a href="../gdata/reference.html#http-status-codes">HTTP status codes</a> section of the protocol reference document.</p>
+    <h2><a name="Add_Album_Library_Web" id="Add_Album_Library_Web">Add an album  using the client library (web client version)</a></h2>
+    <p>As an alternative to working with the raw HTTP and XML, you can create a new album using the client library. To do that, you follow the same general steps as in <a href="#Get_Album_Feed_Library">Request the feed using the client library</a>, with a couple of extra steps mixed in:</p>
+
+    <ol>
+      <li>Construct the AuthSub URL.</li>
+      <li>Send the user to a Google page to enter their AuthSub credentials.</li>
+      <li>When the user returns, acquire a session token.</li>
+      <li>Create a <code><a href="../../java/doc/com/google/gdata/client/photos/PicasawebService.html">PicasawebService</a></code> object. </li>
+      <li>Tell the client library to use the given session token for interaction with the service, using the <code>setAuthSubToken</code> method. </li>
+      <li>Construct an <code><a href="../../java/doc/com/google/gdata/data/photos/AlbumEntry.html">AlbumEntry</a></code> object, using client library methods to set  properties corresponding to Atom elements.</li>
+
+      <li>Use client library methods to send the request and receive any results the service sends back.</li>
+    </ol>
+    <p>To add an album using AuthSub authentication, first follow the instructions in the <a href="../gdata/authsub.html">AuthSub and GData client library documentation</a> to acquire a session token, using the <code>getRequestUrl</code>, <code>getTokenFromReply</code>, <code>exchangeForSessionToken</code>, and <code>setAuthSubToken</code> methods. The scope string to use is <code>http://picasaweb.google.com/data/</code>.</p>
+
+    <p>After you've called the <code>PicasawebService</code> object's <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html#setAuthSubToken(java.lang.String)">setAuthSubToken</a></code> method, the client library sends the token with every request, so you don't need to do anything further with the token.</p>
+    <p>The following Java code shows how to add the album after you've acquired a session token:</p>
+    <pre>PicasawebService myService =
+  new PicasawebService(&quot;exampleCo-exampleApp-1&quot;);
+
+myService.setAuthSubToken(sessionToken, null);
+
+URL postUrl =
+  new URL(&quot;http://picasaweb.google.com/data/feed/api/user/<i>userID</i>&quot;);
+AlbumEntry myEntry = new AlbumEntry();
+
+myEntry.setTitle(new PlainTextConstruct(&quot;Trip to Mongolia&quot;));
+myEntry.setDescription(new
+  PlainTextConstruct(&quot;My trip to Mongolia was most enjoyable, but cold.&quot;));
+
+Person author = new Person(&quot;Elizabeth Bennet&quot;, null, &quot;liz@gmail.com&quot;);
+myEntry.getAuthors().add(author);
+
+// Send the request and receive the response:
+AlbumEntry insertedEntry = myService.insert(postUrl, myEntry);</pre>
+
+    <p>The above code sets the AuthSub session token, then creates a new Atom entry, then sets various element values. Then it calls the <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html#insert(java.net.URL,%20E)">insert</a></code> method to insert the post and receive the response. If an error occurs during the insertion, then the client library generates an appropriate exception, so your code should be prepared to handle exceptions.</p>
+    <h2><a name="Add_Photo" id="Add_Photo">Post a new photo</a></h2>
+    <p>There are two ways to add a photo to an album using the data API:</p>
+    <ul>
+      <li>Upload the binary image data  along with its metadata. To do this, use MIME content type &quot;multipart/related&quot;; send photo metadata in one part of the <code>POST</code> body, and binary-encoded image data in another part. This is the preferred approach.</li>
+      <li>Upload the binary image data without the metadata.</li>
+    </ul>
+    <h3>Post a photo with metadata </h3>
+    <p>To send metadata along with the photo, post to the following URL: </p>
+    <pre>POST http://picasaweb.google.com/data/feed/api/user/liz/album/NetherfieldPark</pre>
+    <p>And use the following format for the body of the <code>POST</code>: </p>
+    <pre>Content-Type: multipart/related; boundary=&quot;END_OF_PART&quot;
+Content-Length: 24680246
+MIME-version: 1.0
+
+Media multipart posting
+--END_OF_PART
+Content-Type: application/atom+xml
+
+&lt;entry xmlns='http://www.w3.org/2005/Atom'&gt;
+  &lt;title&gt;darcy-beach.jpg&lt;/title&gt;
+  &lt;summary&gt;Darcy on the beach&lt;/summary&gt;
+  &lt;category scheme=&quot;http://schemas.google.com/g/2005#kind&quot;
+    term=&quot;http://schemas.google.com/photos/2007#photo&quot;/&gt;
+&lt;/entry&gt;
+--END_OF_PART
+
+Content-Type: image/jpeg
+
+<i>...binary image data goes here...</i>
+--END_OF_PART--</pre>
+    <p>Note that the <code>&lt;title&gt;</code> element contains the filename you want to use for the image.</p>
+    <p>To upload a photo and metadata using the Java client library, use code similar to the following:</p>
+    <pre>PhotoEntry myPhoto = new PhotoEntry();
+myPhoto.setTitle(new PlainTextConstruct("darcy-beach.jpg"));
+myPhoto.setDescription(new PlainTextConstruct("Darcy on the beach"));
+myPhoto.setClient("myClientName");
+myPhoto.setTimestamp (new Date());
+
+MediaFileSource myMedia = new MediaFileSource(new File(&quot;/usr/home/liz/photos/photo23a.jpg&quot;), &quot;image/jpeg&quot;);
+myPhoto.setMediaSource(myMedia);
+
+PhotoEntry returnedPhoto = myService.insert(feedUrl, myPhoto);</pre>
+    <p>The <code>MediaFileSource</code> object specifies a source file on the local disk for the image; you can instead use <code>MediaSource</code> to use an image from another kind of data stream. The <code>insert</code> method pulls the image data from the specified file or stream and sends it to Picasa Web Albums. </p>
+<p>The <code>setClient</code> method sets the name of the client that's uploading the photo. You can use any name for your client that you want.</p>
+<h3>Post a photo without metadata </h3>
+    <p>To send a photo without its associated metadata, post to the following URL: </p>
+    <pre>POST http://picasaweb.google.com/data/feed/api/user/liz/album/NetherfieldPark</pre>
+    <p>And use the following format for the body of the <code>POST</code>: </p>
+    <pre>Content-Type: image/jpeg
+Content-Length: 47899
+Slug: darcy-beach.jpg
+
+<i>...binary image data goes here...</i></pre>
+    <p>The optional   <a href="http://bitworking.org/projects/atom/draft-ietf-atompub-protocol-13.html#rfc.section.9.6"><code>Slug:</code> HTTP header</a> specifies a filename for Picasa Web Albums to use for the photo.</p>
+    <p>To upload a photo without metadata using the Java client library, use code similar to the following:</p>
+    <pre>MediaFileSource myMedia = new MediaFileSource(new File(&quot;/usr/home/liz/photos/photo23a.jpg&quot;), &quot;image/jpeg&quot;);
+PhotoEntry returnedPhoto = myService.insert(feedUrl, PhotoEntry.class, myMedia);</pre>
+    <p>The Java client library internally uses the value returned by the <code>MediaSource.getName</code> method as the value of the <code>Slug:</code> header. </p>
+    <h2><a name="Send_Query" id="Send_Query">Send a  query</a></h2>
+    <p>GData lets you specify various query parameters, such as  a limit on the number of entries returned.
+      For more information about the query parameters for GData queries, see the <a href="../gdata/reference.html">Google Data APIs Protocol Reference</a> document. Picasa Web Albums  supports the standard GData <code>start-index</code> and <code>max-results</code> parameters. It does not currently support the other standard parameters. </p>
+
+    <p>Queries can be sent either authenticated or unauthenticated.  Unauthenticated queries  return only public information; authenticated queries  return any data the authenticated user has access to.</p>
+    <p>To   request a feed with a limit on number of entries returned, send an HTTP request like the following to Picasa Web Albums, using the  feed URL:</p>
+    <pre>GET http://picasaweb.google.com/data/feed/api/user/liz?kind=album&amp;max-results=10</pre>
+    <p>When you send that <code>GET</code> request, Picasa Web Albums returns
+      an HTTP <code>200 OK</code> status code and a feed containing up to ten albums. </p>
+
+    <p>You can, of course, use the client library to send a query instead of sending it by hand. In this case, you'll need to add a new step to the process: constructing a <code><a href="../../java/doc/com/google/gdata/client/Query.html">Query</a></code> object.</p>
+    <p>For example, to view entries created or modified in a particular date range, use the following Java code.</p>
+    <pre>URL feedUrl = new URL(&quot;http://picasaweb.google.com/data/feed/api/user/liz?kind=album&quot;);
+
+Query myQuery = new Query(feedUrl);
+myQuery.setMaxResults(10);
+
+// Send the request and receive the response:
+AlbumFeed resultFeed = myService.query(myQuery, AlbumFeed.class);</pre>
+
+    <p>The above code creates a new Query and sets the maximum number of results; then it calls the service's <code><a href="../../java/doc/com/google/gdata/client/Service.html#query(com.google.gdata.client.Query,%20java.lang.Class)">query</a></code> method to send the query and receive the response.</p>
+    <h2><a name="Update_Photo" id="Update_Photo">Update a photo</a></h2>
+    <p>You can replace the metadata and/or the binary  image data for a photo.</p>
+    <h3>Update a photo and its metadata</h3>
+    <p>To replace both the binary data and metadata for the photo that you inserted earlier, use an HTTP request like the following:</p>
+    <pre>PUT http://picasaweb.google.com/data/entry/api/user/liz/albumid/<i>albumID</i>/photoid/<i>photoID</i>/<i>versionNumber</i></pre>
+    <p>The URI is the value of the <code>&lt;link rel=&quot;edit&quot;&gt;</code> tag that was returned after you did the earlier <code>POST</code>. Note that if you try to update using a version number other than the latest one, you may receive an error; for more information, see <a href="../gdata/reference.html#Optimistic-concurrency">Optimistic concurrency (versioning)</a> in the GData reference document. </p>
+    <p>In the body of the <code>PUT</code>, include the updated metadata and image data, in the same multipart format that you used to do the <code>POST</code> with metadata.</p>
+    <p class="note"><strong>Note</strong>: As usual with GData, you can't do a partial update of an entry; you have to send the full entry data to replace the  existing data. The exception is if you don't want to touch the metadata at all, in which case you can send an updated image as described in the next section. </p>
+    <p>To do the same thing using the Java client library, use code similar to the following: </p>
+    <pre>PhotoEntry myPhoto = ...get photo entry...
+myPhoto.setMediaSource(updatedMediaSource);
+myPhoto.setTitle(new PlainTextConstruct(&quot;Updated Title&quot;));
+myPhoto.updateMedia(true);</pre>
+    <h3>Update only the photo</h3>
+    <p>To replace only the photo's binary data, use the following HTTP request:</p>
+    <pre>PUT http://picasaweb.google.com/data/media/api/user/liz/albumid/<i>albumID</i>/photoid/<i>photoID</i>/<i>versionNumber</i></pre>
+    <p>The URI is the value of the <code>&lt;link rel=&quot;edit-media&quot;&gt;</code> tag that was returned after you did the earlier <code>POST</code>. Note that if you try to update using a version number other than the latest one, you may receive an error; for more information, see <a href="../gdata/reference.html#Optimistic-concurrency">Optimistic concurrency (versioning)</a> in the GData reference document. </p>
+    <p>In the body of the <code>PUT</code>, include the replacement image data, in the same  format that you used to do the <code>POST</code> without metadata.</p>
+    <p>To do the same thing using the Java client library, use code similar to the following: </p>
+    <pre>PhotoEntry myPhoto = ...get photo entry...
+myPhoto.setMediaSource(updatedMediaSource);
+myPhoto.updateMedia(false);</pre>
+    <h2><a name="Delete_Photo" id="Delete_Photo">Delete a photo</a></h2>
+    <p>To delete a photo and its metadata, send an HTTP <code>DELETE</code> request to either the edit link or the edit-media link. In both cases, the photo and metadata are deleted.</p>
+    <p>For example, to delete the photo  from the previous examples:</p>
+    <pre>DELETE http://picasaweb.google.com/data/entry/api/user/liz/albumid/<i>albumID</i>/photoid/<i>photoID</i>/<i>versionNumber</i></pre>
+    <p>As with updating,  if you try to delete using a version number other than the latest one, you may receive an error; for more information, see <a href="../gdata/reference.html#Optimistic-concurrency">Optimistic concurrency (versioning)</a> in the GData reference document. </p>
+    <p>Or you can use  the Java client library:</p>
+    <pre>myPhoto.delete();</pre>
+    <h2><a name="Add_Delete_Tag_Comment" id="Add_Delete_Tag_Comment">Insert and delete tags and comments</a></h2>
+    <p>In addition to albums and photos, the Picasa Web Albums data API lets you  interact with    two other kinds of data: tags and comments. You can't update tags or comments, but you can insert and delete them.</p>
+    <p>The process is similar to the process for inserting and deleting albums.</p>
+    <p>For example, to manually add a tag to a photo, first you create the XML code for the tag, including a <code>&lt;category&gt;</code> element indicating that it's a tag:</p>
+    <pre>&lt;entry xmlns='http://www.w3.org/2005/Atom'&gt;
+  &lt;title&gt;AtTheBeach&lt;/title&gt;
+  &lt;category scheme=&quot;http://schemas.google.com/g/2005#kind&quot;
+    term=&quot;http://schemas.google.com/photos/2007#tag&quot;/&gt;
+&lt;/entry&gt;</pre>
+    <p>Then you send the tag as the body of an authenticated <code>POST</code> request to the photo's <code>POST</code> URI:</p>
+    <pre>POST http://picasaweb.google.com/data/feed/api/user/<i>userID</i>/album/<i>albumName</i>/photo/<i>photoID</i></pre>
+    <p>To manually add a comment, you follow the same process (using the same <code>POST</code> URI), but use a <code>&lt;content&gt;</code> element for the comment's text, and use a slightly different <code>&lt;category&gt;</code> element  to indicate that it's a comment:</p>
+    <pre>&lt;entry xmlns='http://www.w3.org/2005/Atom'&gt;
+  &lt;content&gt;This is what all the gentlemen are wearing this season.&lt;/content&gt;
+  &lt;category scheme=&quot;http://schemas.google.com/g/2005#kind&quot;
+    term=&quot;http://schemas.google.com/photos/2007#comment&quot;/&gt;
+&lt;/entry&gt;</pre>
+    <p>To insert a tag or comment using the client library, first create a <code>TagEntry</code> or <code>CommentEntry</code> object, then use the <code>PicasawebService.insert</code> method (with the same <code>POST</code> URI as above) to insert the entry. </p>
+    <p>To delete a tag or comment, send an HTTP <code>DELETE</code> request to the tag's or comment's edit URI, or call the <code>TagEntry.delete</code> or <code>CommentEntry.delete</code> methods.</p>
+    <p>&nbsp;</p>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

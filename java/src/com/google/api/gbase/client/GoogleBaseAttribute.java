@@ -36,6 +36,12 @@ public class GoogleBaseAttribute {
 
   /** Corresponds to the XML attribute {@code access="private"}. */
   private boolean privateAccess;
+  
+  /**
+   * Corresponds to the XML attributes {@code gm:adjusted_name} and
+   * {@code gm:adjusted_value}, or null if none of these tags is specified.
+   */
+  private Adjustments adjustments;
 
   /**
    * Creates a new GoogleBaseAttribute with a name and no type.
@@ -266,6 +272,24 @@ public class GoogleBaseAttribute {
     return subElements.keySet();
   }
 
+  public boolean hasAdjustments() {
+    return adjustments != null && !adjustments.isEmpty();
+  }
+  
+  /**
+   * Gets the adjustments for this attribute. If no adjustments are present,
+   * an empty {@link Adjustments} object is created, linked to this attribute
+   * and returned.
+   * 
+   * @return the adjustments for this attribute.
+   */
+  public Adjustments getAdjustments() {
+    if (adjustments == null) {
+      adjustments = new Adjustments();
+    }
+    return adjustments;
+  }
+    
   @Override
   public int hashCode() {
     int retval = 27 + attributeId.hashCode();

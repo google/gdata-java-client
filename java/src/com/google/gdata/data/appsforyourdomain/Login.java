@@ -47,6 +47,10 @@ public class Login extends ExtensionPoint implements Extension {
   public static final String ATTRIBUTE_SUSPENDED = "suspended";
   public static final String ATTRIBUTE_IPWHITELISTED = "ipWhitelisted";
   public static final String ATTRIBUTE_HASH_FUNCTION_NAME = "hashFunctionName";
+  public static final String ATTRIBUTE_ADMIN = "admin";
+  public static final String ATTRIBUTE_AGREED_TO_TERMS = "agreedToTerms";
+  public static final String ATTRIBUTE_CHANGE_PASSWORD_AT_NEXT_LOGIN = 
+    "changePasswordAtNextLogin";
 
   /*
    * property "userName"
@@ -100,6 +104,37 @@ public class Login extends ExtensionPoint implements Extension {
   public String getHashFunctionName() { return hashFunctionName; }
   public void setHashFunctionName(String h) { hashFunctionName = h; }
 
+  /*
+   * property "admin"
+   * Optional.  The admin attribute is set to true if the user is an 
+   * administrator and false if the user is not an administrator. When 
+   * unspecified, the admin property is set to null. 
+   */
+  protected Boolean admin = null;
+  public Boolean getAdmin() { return admin; }
+  public void setAdmin(Boolean b) { admin = b; }
+
+  /*
+   * property "agreedToTerms"
+   * Read-only.  True if the user has agreed to the terms of service.
+   */
+  protected Boolean agreedToTerms = null;
+  public Boolean getAgreedToTerms() { return agreedToTerms; }
+  public void setAgreedToTerms(Boolean b) { agreedToTerms = b; }
+
+  /*
+   * property "changePasswordAtNextLogin"
+   * Optional.  True if user needs to change password at next login.
+   * When unspecified, the attribute is set to null.
+   */
+  protected Boolean changePasswordAtNextLogin = null;
+  public Boolean getChangePasswordAtNextLogin() { 
+    return changePasswordAtNextLogin;
+  }
+  public void setChangePasswordAtNextLogin(Boolean b) { 
+    changePasswordAtNextLogin = b;
+  }
+
   /**
    * @return Description of this extension
    */
@@ -143,6 +178,20 @@ public class Login extends ExtensionPoint implements Extension {
           hashFunctionName));
     }
 
+    if (admin != null) {
+      attributes.add(new XmlWriter.Attribute(ATTRIBUTE_ADMIN, admin));
+    }
+    
+    if (changePasswordAtNextLogin != null) {
+      attributes.add(new XmlWriter.Attribute(
+          ATTRIBUTE_CHANGE_PASSWORD_AT_NEXT_LOGIN, changePasswordAtNextLogin));
+    }
+    
+    if (agreedToTerms != null) {
+      attributes.add(new XmlWriter.Attribute(ATTRIBUTE_AGREED_TO_TERMS, 
+          agreedToTerms));
+    }
+
     generateStartElement(
         w, Namespaces.APPS_NAMESPACE, EXTENSION_LOCAL_NAME, attributes, null);
 
@@ -181,6 +230,24 @@ public class Login extends ExtensionPoint implements Extension {
             suspended = true;
           } else if (value.trim().equalsIgnoreCase("false")) {
             suspended = false;
+          }
+        } else if (ATTRIBUTE_ADMIN.equals(localName)) {
+          if (value.trim().equalsIgnoreCase("true")) {
+            admin = true;
+          } else if (value.trim().equalsIgnoreCase("false")) {
+            admin = false;
+          }
+        } else if (ATTRIBUTE_AGREED_TO_TERMS.equals(localName)) {
+          if (value.trim().equalsIgnoreCase("true")) {
+            agreedToTerms = true;
+          } else if (value.trim().equalsIgnoreCase("false")) {
+            agreedToTerms = false;
+          }
+        } else if (ATTRIBUTE_CHANGE_PASSWORD_AT_NEXT_LOGIN.equals(localName)) {
+          if (value.trim().equalsIgnoreCase("true")) {
+            changePasswordAtNextLogin = true;
+          } else if (value.trim().equalsIgnoreCase("false")) {
+            changePasswordAtNextLogin = false;
           }
         }
       }

@@ -1,0 +1,498 @@
+<html>
+<head>
+<title>Google Apps - SAML-based Single Sign-On</title><link rel=stylesheet href=http://www.google.com/google.css>
+<style>
+body,td,font,a{font-family:arial,sans-serif}
+p{font-family:arial,sans-serif;padding-left:15px}
+table {margin-left:4px}
+td {font-family:arial,sans-serif;font-size:83%}
+.i { margin-left: 1em; margin-right: 2em; }
+pre{font-family:arial,sans-serif; font-size:100%;padding:0px 25px }
+pre.box {background:#eee;border:1px solid #bbb;color:#000;font-family:Courier,monospace;font-size:110%;margin:1em 0 0 25px;padding:15px 5px 15px 10px;text-align:left;overflow:auto}
+pre.codesample {font-family:monospace;font-size:110%}
+table.bt {width:100%}
+td.padbold {font-size:100%;vertical-align:top;font-weight:bold;padding:6px;}
+td.padplain {font-size:100%;vertical-align:middle;padding:6px;}
+td.padboldst {font-size:100%;vertical-align:top;font-weight:bold;padding:6px;}
+td.padplainst {font-size:100%;vertical-align:middle;padding:6px;}
+td.t {font-size:12px;}
+th.t {font-size:12px;}
+a:link{color:#00c}
+a:visited{color:#551a8b}
+a:active{color:#f00}
+a.code {font-family:monospace;font-size:110%}
+.topnav {line-height:130%}
+.indent {line-height:130%; margin-left:.75em;}
+.activelink {line-height:130%; margin-left:0; color:#2F63B0; font-weight:bold}
+.inactivelink {line-height:130%; margin-left:0;}
+.footer {color:#666666; font-size:73%}
+.codeSample {font-size:100%;color:#000000;padding:0px 40px}
+.codeSampleNP {font-size:100%;color:#000000}
+.showvar {font-weight:bold;color:#3366cc}
+tr.t1tth {font-family: monospace; font-size:12pt; font-weight:bold; color: #000000;}
+.indentsidenav {margin-top:0px;margin-left:10px;margin-bottom:4px;font-size:10pt}
+.indentsidenavtoc {margin-top:0px;margin-left:10px;margin-bottom:4px;color:#ddad08;font-weight:bold;font-size:10pt}
+.sidenavnolink {margin-top:15px;margin-bottom:4px;font-weight:bold;font-size:10pt}
+.sidenavlink {margin-top:15px;margin-bottom:4px;font-size:10pt}
+.l1 {vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;font-size:120%;border-top:1px solid #3a7bcb;color:#000;font-weight:bold}
+.l2 {vertical-align:middle;padding:4px;width:100%;background:#e5ecf9;font-size:105%;border-bottom:1px solid #3a7bcb;color:#000;font-weight:bold}
+.l3 {width:100%;font-size:95%;padding:4px;background:#fff;border-bottom:1px solid #3a7bcb;font-weight:bold}
+th.reportl {vertical-align:middle;text-align:left;width:20%;padding:8px 10px;background:#ddf8cc;color:#000;font-weight:bold;font-size:95%}
+th.reportr {vertical-align:middle;text-align:center;width:80%;padding:8px 10px;background:#ddf8cc;color:#000;font-weight:bold;font-size:95%}
+td.reportl {vertical-align:top;width:20%;padding:8px 10px;background:#ddf8cc;color:#00723d;font-weight:bold;font-size:83%}
+td.reportr {vertical-align:top;width:80%;padding:8px 10px;font-size:83%}
+th.left {text-align:left;background:#E5ECF9;font-size:83%;padding:4px 10px 4px 4px}
+th.middle {text-align:center;background:#E5ECF9;font-size:83%;padding:4px 10px}
+th.right {text-align:center;background:#E5ECF9;font-size:83%;padding:4px 10px}
+td.left {padding:4px;vertical-align:top;font-size:83%;font-weight:bold}
+td.middle {font-size:83%;font-weight:bold;color:#505050;padding:4px 6px;vertical-align:top}
+td.right {padding:4px;font-size:83%;vertical-align:top}
+th.attrheader {padding:4px 6px;font-size:83%;font-weight:bold;vertical-align:middle;text-align:center;background:#E5ECF9}
+th.attrheaderl {text-align:left;padding:4px 6px;font-size:95%;font-weight:bold;vertical-align:middle;background:#E5ECF9}
+td.attrname {padding:4px;font-size:83%;font-weight:bold;vertical-align:top;text-align:left}
+td.attrtype {padding:4px;font-size:83%;vertical-align:top;text-align:left}
+td.tagname {width:20%;padding:4px;font-size:83%;font-weight:bold;vertical-align:top;text-align:left}
+td.tagtype {width:80%;padding:4px;font-size:83%;vertical-align:top;text-align:left}
+.l4 {width:100%;background:#fff;border-bottom:1px solid #3a7bcb;font-size:100%;font-weight:bold}
+
+#pagecontent{
+  padding-bottom:5em;
+  border-left:thin dotted #bbb ;
+  margin:0 10px 0 170px;
+  padding-left:15px;
+}
+
+#header {
+  position: relative;
+  margin:0;
+  height:60px;
+  padding-top: 12px;
+}
+
+#wrapper{
+  width:100%;
+}
+
+#logo{  /* in header */
+  float:left;
+  width: 175px;
+  top:0;
+  left:0;
+  padding:0;
+  margin:0;
+  position:absolute;
+}
+  
+#logo img{border:none;}
+  
+#doc_title{  /* in header */
+  font-size:135%;
+  font-weight:bold;
+  background-color: #e5ecf9;
+  border-color: #3a7bcb; 
+  border-top: 1px solid;
+  margin:0 0 0 170px;
+  padding:.1em 0 .1em 3px;
+}
+
+#sidenav {
+  float:left;
+  width:160px;
+  margin:0 0 0 3px;
+  background:#fff;
+  padding:0;
+  left:0;
+}
+#sidenav ul{
+  padding:0;
+  margin:0;
+  }
+  
+#sidenav ul li ul, #sidenav ul li ul li ul{
+  padding:0;
+  margin:0 0 0 .6em;
+}
+  
+#sidenav ul li{
+  list-style:none;
+  padding:0;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav ul li ul li{
+  list-style:none;
+  padding:0;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav ul li ul li ul li{
+  list-style:none;
+  padding:1px;
+  margin:.4em 0 0 0;
+}
+  
+#sidenav p {
+  margin: 0 .3em 0 0;
+  padding:1em 0 0 0;
+}
+    
+#sidenav ul li a, #sidenav ul ul li a, #sidenav ul ul ul li a{
+  color: #0000cc;
+  display:block;
+  width:92%;
+  padding:0;
+}
+  
+#sidenav ul li a:hover{
+  color: #0000cc;
+}
+    
+#sidenav h1{
+  font-weight:bold;
+  font-size:100%;
+  color:#000;
+  position:relative;
+  background-color:#fff;
+  border:none;
+  margin:1em 0 0 0;
+  padding:0 2px 0 2px;
+  width:100%;
+  left:-4px;
+}
+  
+.other{  /* little box for side nav */
+  border-top:thin dotted #bbb;
+  border-bottom:thin dotted #bbb;
+  margin:3em 0 3em 0;
+  padding: 0 0 10px 0;
+}
+    
+.line{  /* dotted line for division */
+  border-top:thin dotted #bbb;
+  margin:1em 0 0 0;
+  padding:0;
+  height:5px;
+}
+  @media screen {
+    body {
+      font-family: arial, sans-serif;
+      font-size: 83%;
+    }
+    
+    .dontprint {
+        padding:0px;
+        margin:0px;
+    }
+
+    .leftcontent {
+      float:left;
+      width:175px;
+      background:#fff;
+    }
+    
+    .topimage {
+      margin-left:13px;
+      margin-top:0px;
+      padding:0px;
+    }
+    
+    .footerimage {
+      margin-left:15px;
+      margin-top:20px;
+      padding:0px;
+    }
+    
+    .toc { 
+      color: #ddad08; 
+      font-weight:bold;
+    }
+    
+    .rightcontent {
+      background:#fff;
+      margin-left: 179px;
+      margin-right:10px
+    }
+
+    .content {
+    }
+
+    .title {
+    background-color: #FEFADE;
+    border-top:1px solid #ddad08;
+    font-weight:bold;
+    font-size:120%;
+    text-align:left;
+    margin-left:0;
+    }
+  }
+  @media print {
+	          
+    .dontprint {
+        padding:0px;
+        margin:0px;
+        display:none;
+    }
+
+    .leftcontent {
+        display: none;
+        float:left;
+        clear:right;
+        width:100%;
+    }
+
+    .topimage {
+        margin-left:13px;
+        margin-top:0px;
+        padding:0px;
+    }
+
+    .rightcontent {
+        margin-left: 10px;
+    }
+
+    .toc {
+        list-style-type: none;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .toc1 {
+    }
+
+    .toc2 {
+        padding-left: 25pt;
+    }
+
+    .toc3 {
+        padding-left: 50pt;
+    }
+
+    .title {
+        display:none;
+        background-color: #FEFADE; 
+        border-top:1px solid #ddad08;
+        font-weight:bold; 
+        font-size:120%;
+        text-align:left;
+        margin-left:0;
+    }
+
+    .topimage {
+        margin-left:13px;
+        margin-top:0px;
+        padding:0px;
+    }
+
+    body {
+        font-family: arial, sans-serif;
+        font-size: 83%;
+    }
+
+    .backtotop {
+        display:none;
+    }
+
+    #sidenav {
+        visibility:hidden;
+	position:absolute;
+    }
+    #pagecontent {
+        float:left;
+	position:relative;
+	top:0;
+	left:-175px;
+	width:100%;
+    }
+    #doc_title {
+        border-bottom:1px solid;
+	padding-bottom:2px;
+    }
+    pre { /* don't print scrollbars---display overflow text */
+        overflow:visible;
+    }
+  }
+</style>
+<script language="JavaScript">
+<!--
+  function show_when_checked(cbox,divid,defaultid) {
+    document.getElementById(divid).style.display=cbox.checked?"inline":"none";
+    document.getElementById(defaultid).style.display=cbox.checked?"none":"inline";
+  }
+  var flag = new Array();
+  function change(div, divid, defaultid) {
+    var par = new getObj(div);
+    if (flag[div]) {
+      par.obj.innerHTML = "expand";
+      flag[div] = 0;
+    } else {
+      par.obj.innerHTML = "collapse";
+      flag[div] = 1;
+    }
+    document.getElementById(divid).style.display=flag[div]?"inline":"none";
+    document.getElementById(defaultid).style.display=flag[div]?"none":"inline";
+    return false;
+  }
+
+  function getObj(name) {
+    var o = 'this.obj = document.';
+    var s = 'this.style = document.';
+    if (document.getElementById) {
+      eval(o + 'getElementById(name);');
+      eval(s + 'getElementById(name).style;');
+    } else if (document.all) {
+      eval(o + 'all[name];');
+      eval(s + 'all[name].style;');
+    } else if (document.layers) {
+      eval(o + 'layers[name];');
+      eval(s + 'layers[name];');
+    }
+  }
+
+
+
+//-->
+</script>
+<style>
+.adslotbullet {list-style-image:url(http://www.corp.google.com/~acook/gfp/mocks/v22/images/adSlot.gif);}
+.placementbullet {list-style-image:url(http://www.corp.google.com/~acook/gfp/mocks/v22/images/placement.gif);}
+.adproductbullet {list-style-image:url(http://www.corp.google.com/~acook/gfp/mocks/v22/images/adProduct.gif);}
+</style>
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../../css/ie7only.css" />
+  <link rel="stylesheet" type="text/css" href="../apps_ie7_only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../../css/ie6only.css" />
+  <link rel="stylesheet" type="text/css" href="../apps_ie6_only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../../css/ieonly.css" />
+<![endif]-->
+</head>
+
+<body><a name="top"></a>
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">SAML Single Sign-On (SSO) Service for Google Apps</h1>
+</div>
+
+<div class="wrapper">
+
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+<ul>
+  <li>
+    <h1>SAML SSO Reference</h1>
+    <ul>
+      <li><a href="#Overview">Overview</a></li>
+      <li><a href="#Workflow">Workflow</a></li>
+      <li><a href="#Tools">Reference Tools</a></li>
+    </ul>
+  </li>
+  <li>
+    <h1><a href="saml_reference_implementation_static_demo.html">Static Demo</a></h1>
+  </li>
+  <li>
+    <h1><a href="saml_reference_implementation_web.html">Web-based Reference Implementation</a></h1>
+    <ul>
+      <li><a href="saml_reference_implementation_web.html#samlReferenceImplementationWebUnderstandingCode">Understanding the SAML Reference Code</a></li>
+      <li><a href="saml_reference_implementation_web.html#samlReferenceImplementationWebSetup">Creating a SAML-based SSO Service</a>
+<ul>
+      <li><a href="saml_reference_implementation_web.html#samlReferenceImplementationWebSetupInstallCode">Stage I: Installing the Code</a></li>
+      <li><a href="saml_reference_implementation_web.html#samlReferenceImplementationWebSetupRouteRequests">Stage II: Send SAML Requests to your Application</a></li>
+      <li><a href="saml_reference_implementation_web.html#samlReferenceImplementationWebSetupChangeDomain">Stage III: Log Users into your Domain</a></li>
+</ul>
+</li>
+    </ul>
+  </li>
+  <li>
+    <h1>Additional Resources</h1>
+    <ul>
+      <li><a href="http://www.projectliberty.org/liberty_interoperable/interoperable_products/saml_2_0_test_procedure_v1_0_interoperable_product_table">SAML v2.0 Compliant Products</a></li>
+      <li><a href="../index.html">Google Apps APIs Home</a></li>
+      <li><a href="../gdata_provisioning_api_v2.0_reference.html">Provisioning API</a></li>
+      <li><a href="../libraries_and_samples.html">Client Libraries and Sample Code</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=11279">Frequently Asked Questions</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<div id="pagecontent">
+
+
+<p>Security Assertion Markup Language (SAML) is an XML standard that allows secure web domains to exchange user authentication and authorization data. Using SAML, an online service provider can contact a separate online identity provider to authenticate users who are trying to access secure content.</p>
+
+<p>Google Apps offers a SAML-based Single Sign-On (SSO) service that provides partner companies with full control over the authorization and authentication of hosted user accounts that can access web-based applications like Gmail or Google Calendar. Using the SAML model, Google acts as the <b>service provider</b> and provides services such as Gmail and Partner Start Pages (PSP). Google partners act as <b>identity providers</b> and control usernames, passwords and other information used to identify, authenticate and authorize users for web applications that Google hosts.</p>
+
+<p>It is important to note that the SSO solution only applies to web applications. If you want to enable your users to access Google services with desktop clients such as Outlook &ndash; for example, Outlook would provide POP access to Gmail &ndash; you will still need to provide your users with usable passwords and synchronize those passwords with your internal user database using the <a href="http://code.google.com/apis/apps/gdata_provisioning_api_v2.0_reference.html">Provisioning API</a>.</p>
+
+<a name=Workflow></a><p><div class="l2">Understanding SAML-based SSO for Google Apps</div></p>
+
+</p>
+<p>The following process explains how a user logs into a hosted Google application through a partner-operated, SAML-based SSO service.</p>
+
+<p>Figure 1, shown below, illustrates the process by which a user logs in to a Google Apps application, such as Gmail, through a SAML-based SSO service. The numbered list that follows the image explains each step in more detail.</p>
+
+<p><b>Note:</b> Before this process takes place, the partner must provide Google with the URL for its SSO service as well as the public key that Google should use to verify SAML responses.</p>
+
+<p><b>Figure 1: Logging in to Google Apps using SAML</b></p>
+<p><div style="padding:0px 25px">
+<img src="saml_workflow_vertical.gif" border="0" alt="SAML Workflow"/>
+</div></p>
+
+<p>This image illustrates the following steps.</p>
+
+<ol>
+<li>
+<p>The user attemps to reach a hosted Google application, such as Gmail, Partner Start Pages (PSP) or another Google service.</p>
+</li>
+<li>
+<p>Google generates a SAML authentication request. The SAML request is encoded and embedded into the URL for the partner's SSO service. The URL that the user is trying to reach is also embedded in the SSO URL.</p>
+</li>
+<li>
+<p>Google sends a redirect to the user's browser. The redirect URL includes the encoded SAML authentication request that should be submitted to the partner's SSO service.</p>
+</li>
+<li>
+<p>The partner decodes the SAML request and extracts the URL for both Google's ACS (Assertion Consumer Service) and the user's destination URL. The partner then authenticates the user. Partners could authenticate users by either asking for valid login credentials or by checking for valid session cookies.</p>
+</li>
+<li>
+<p>The partner generates a SAML response that contains the authenticated user's username. In accordance with the SAML 2.0 specification, this response is digitally signed with the partner's public and private DSA/RSA keys.</p>
+</li>
+<li>
+<p>The partner encodes the SAML response and the user's destination URL and returns that information to the user's browser. The partner provides a mechanism so that the browser can forward that information to Google's ACS. For example, the partner could embed the SAML response and destination URL in a form and provide a button that the user can click to submit the form to Google. The partner could also include JavaScript on the page that automatically submits the form to Google.</p>
+</li>
+<li>
+<p>Google's ACS verifies the SAML response using the partner's public key. If the response is successfully verified, ACS redirects the user to the destination URL.</p>
+</li>
+<li>
+<p>The user has been redirected to the destination URL and is logged in to Google Apps.</p>
+</li>
+</ol>
+<a name=Tools></a><p><div class="l2">Reference Tools</div></p>
+
+</p>
+<p>Google offers two tools to help partners understand and implement a SAML-based SSO service.</p>
+
+
+<ol>
+<li>
+<p>The <b>SAML-based SSO Static Demo</b> demonstrates the SAML transaction process. The demo uses static files to simulate the transactions that Google and the partner company would conduct to log a user into a hosted Google application (Gmail).</p>
+</li>
+<li>
+<p>The <b>Web-based Reference Implementation</b> is an interactive Java application that allows partners to view the XML generated for SAML requests and responses. The <a href="saml_reference_implementation_web.html">documentation for the tool</a> explains how the partner could modify the tool to submit SAML requests to an internal application that actually authenticates a user.</p>
+</li>
+</ol>
+
+<p>Both of these tools display a similar interface. However, the static demo does not actually execute any code whereas the web-based reference implementation provides Java code that demonstrates the functionality a partner will need to perform to process SAML requests and generate SAML responses.</p>
+
+<hr>
+<center><font size="-1">&copy; Google Inc. 2007. All Rights Reserved.</font></center>
+</div></div></div></body>
+</html>

@@ -234,7 +234,12 @@ public class DisplayUtils {
         case '&':
           retval.append("&amp;");
           break;
-
+        case '\'':
+          retval.append("&#039;");
+          break;
+        case '"': 
+          retval.append("&#034;");
+          break;
         default:
           retval.append(c);
           break;

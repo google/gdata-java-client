@@ -1,0 +1,20 @@
+/*This style sheet is only for Internet Explorer version 6.0 and lower only*/
+	
+.line{
+	margin:20px 0 0 0; /*adjusts the top margin for the sidenav divider line*/
+	}
+	
+#wrapper{
+	position:relative; /*keeps the sidenav below the header, since the sidenav is now absolute*/
+  	border: 1px solid #fff; /*keeps the vertical line dividing the sidenav and pagecontent level with the pagecontent*/
+	}
+	
+#pagecontent{
+	height: expression(document.getElementById("sidenav").clientHeight - 60); /*makes the pagecontent height at least equal to the sidenav height, to prevent the footer from hovering over the sidenav in the event that the pagecontent is shorter than the navigation*/
+	}
+
+#sidenav{
+	position:absolute; /*solves a bug in IE6 in which the pagecontent drops below the header if the content's static width exceeds the width of the window---this fix is the reason we then need the #wrapper and #pagecontent fixes, above*/
+	left:0;
+	top:0;
+	}

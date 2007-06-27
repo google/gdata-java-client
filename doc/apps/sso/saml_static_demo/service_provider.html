@@ -1,0 +1,61 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link href="style.css" type="text/css" rel="stylesheet"/>
+</head>
+<script language="JavaScript">
+  function show_authnRequest(show) {
+  if (show == 'yes')
+    authnRequestDisplay.style.display="inline";
+  else
+    authnRequestDisplay.style.display="none";
+  }
+</script>
+<body>
+  <h1 style="margin-bottom:6px">GOOGLE - Service Provider</h1>
+  <div style="padding:6px 0px;border-top:solid 1px #3366cc;border-bottom:solid 1px #3366cc"><b>Step 2: Google generates SAML Request</b></div></p>
+  <p>When an unauthenticated user tries to reach a hosted service, such as Gmail, Google will send a SAML request to the partner, which acts as the identity provider in the SAML transaction. In this step, you can click the <b>Generate SAML Request</b> button, prompting Google to create the SAML request. The request contains four variables:</p>
+  <p><ul>
+    <li><b>AUTHN_ID</b> - A 160-bit string containing a string of randomly generated characters.</li>
+    <li><b>ISSUE_INSTANT</b> - A timestamp indicating the date and time that Google generated the request.</li>
+    <li><b>PROVIDER_NAME</b> - A string identifying the service provider's domain (google.com).</li>
+    <li><b>ACS_URL</b> - The URL that the service provider uses to verify a SAML response. This demo uses the following URL:<br><br>
+    <div style="padding:0px 15px">https://www.google.com/a/psosamldemo.net/acs</div>
+    </li>
+  </ul></p>
+  <form>
+  <p><center><input type="button" value="Generate AuthnRequest" onclick="javascript: show_authnRequest('yes')"></center>
+  </form>
+  <p>
+  <div id="authnRequestDisplay" style="display: none">
+  <p><div style="padding:6px 0px;border-top:solid 1px #3366cc;border-bottom:solid 1px #3366cc"><b>Step 3: Submitting the SAML Request</b></div></p>
+  <p>You can now review the generated SAML request before submitting it to the identity provider.</p>
+  <b>Generated SAML XML</b><p>
+  <div class="codediv">
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+    &lt;samlp:AuthnRequest <br>
+      xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" <br>
+      ID="fpagejpkbhmddfodlbmnfhdginimekieckijbeei" <br>
+      Version="2.0" <br>
+      IssueInstant="2006-05-02T08:49:40Z" <br>
+      ProtocolBinding="urn:oasis:names.tc:SAML:2.0:bindings:HTTP-Redirect" <br>
+      ProviderName="google.com" <br>
+      AssertionConsumerServiceURL="https://www.google.com/hosted/psosamldemo.net/acs"/&gt;
+  </div>
+  <p><br>
+  <b> Encoded Redirect URL to Identity Provider's SSO Service </b><p>
+  <div class="codediv">
+    identity_provider.html?SAMLRequest=eJxdkE1PwzAMhs%2F9F1XubcM00IjWTQOEmDTQtA8O3NrEa7M1donTjZ9P2UAgrraf1489nn64Jj6CZ0uYi6tUihhQk7FY5WK7eUxGYjoZc%2BGaVs26UOMK3jvgEEc9iKzOnVx0HhUVbFlh4YBV0Go9e16oQSpV6ymQpkZE84dc7Nqign17KGtnzI5MUzrc1aayaB0cLOiD3ZcAVsTR649Wn9LDzB3MkUOBoS9JeZPI60QONnKkhrdqKN9EtPxedWfxcsE%2Fr%2FSvV3kZYvW02SyTFRjrQYdzyNEa8C89kYuKqGog1eRENGMGH3qle0LuHPg1%2BKPVsF0tclGH0LLKstPplP5CWU0cwGQt09erDDhKEUJWaBbZ5BPy1YRc&RelayState=http%3A%2F%2Fwww.google.com%2Fhosted%2Fpsosamldemo.net%2FDashboard
+  </div>
+  <p>
+  <center>
+  <input type="button" 
+    value="Submit AuthnRequest" 
+    onclick="javascript:parent.frames['identity_provider'].location 
+    = 'identity_provider.html';return true;">
+  <input type="button" value="Cancel" 
+    onclick="javascript: show_authnRequest('no')">
+  </center>
+  </div>
+</body>
+</html>

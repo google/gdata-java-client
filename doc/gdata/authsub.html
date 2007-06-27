@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Data APIs (Beta) Developer's Guide - Using "AuthSub" Authentication with GData Client Libraries</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+-->
+</style>
+</head>
+<body id="authsub_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Data APIs (Beta) Developer's Guide</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+  <!-- ########## SIDE NAVIGATION ########## -->
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>GData documentation</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="index.html" id="index_link">Main</a></li>
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="basics.html" id="basics_link">Protocol Basics</a></li>
+        <li><a href="reference.html" id="reference_link">Protocol Reference</a></li>
+        <li><a href="auth.html" id="auth_link">Authentication</a></li>
+        <li><a href="elements.html" id="elements_link">Common Elements</a></li>
+        <li><a href="clientlibs.html" id="clientlibs_link">Client Libraries</a></li>
+        <li><a href="batch.html" id="batch_link">Batch Processing</a></li>
+        <li><a href="samples.html" id="samples_link">Samples</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Service-specific documents</h1>
+      <ul>
+	
+        <li><a href="http://code.google.com/apis/base/">Base Data API</a></li>
+	
+	
+        <li><a href="../blogger/overview.html" id="blogger_link">Blogger Data API</a></li>
+	
+        <li><a href="../calendar/overview.html" id="calendar_link">Calendar Data API</a></li>
+        <li><a href="../codesearch/overview.html" id="codesearch_link">Code Search Data API</a></li>
+	
+	<li><a href="http://code.google.com/apis/apps/gdata_provisioning_api_v2.0_reference.html">Google Apps Provisioning API</a></li>
+	
+	
+        <li><a href="../notebook/overview.html" id="notebook_link">Notebook Data API</a></li>
+	
+        <li><a href="../spreadsheets/overview.html" id="spreadsheets_link">Spreadsheets Data API</a></li>
+        <li><a href="../picasaweb/overview.html" id="picasaweb_link">Picasa Web Albums Data API</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Related links</h1>
+      <ul><li><a href="http://groups.google.com/group/google-help-dataapi">Discussion Group</a></li>
+        <li><a href="http://googledataapis.blogspot.com/">GData Blog</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+  <div id="pagecontent">
+    <h1 id="page_title">Using "AuthSub" Authentication with GData Client Libraries</h1> 
+    <p>This document describes how to use the Google data API ("GData") client libraries to connect to Google's <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">account authentication proxy for web-based applications</a> (known as the &quot;AuthSub interface&quot;).</p>
+    <p>The AuthSub interface allows a web-based application to access a Google service on behalf of a user. To maintain a high level of security, the  AuthSub interface enables the application to get an authentication token without ever handling the user's account login information.</p>
+    <p>The GData client libraries provide methods to help you use AuthSub in your web application. Specifically, there are methods for constructing the request URL, acquiring a single-use authentication token, exchanging the single-use token for a session token, and signing the request.</p>
+    <p>This document focuses on examples specific to the Java client library, but the basic approach in the other client libraries is similar.</p> 
+    <h1>Contents</h1> 
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li> 
+      <li><a href="#No-Library">Using AuthSub and GData without the client libraries</a></li> 
+      <li><a href="#Examples">Working with AuthSub and GData: client library examples</a>
+        <ol>
+          <li><a href="#register">Decide whether to register your web application</a></li>
+          <li><a href="#token-type">Decide what type of token to use</a></li>
+          <li><a href="#scope">Determine the scope required</a></li>
+          <li><a href="#request-one-time-token">Request a one-time-use authentication token</a></li>
+          <li><a href="#request-session-token">Request a session token</a></li>
+          <li><a href="#use-token">Use the session token</a></li>
+          <li><a href="#revoke-token">Revoke the session token</a></li>
+        </ol>
+      </li> 
+      <li><a href="#Registered">Generating keys and certificates for use with registered mode</a>
+        <ol>
+          <li><a href="#openssl">Generating keys using OpenSSL</a></li>
+          <li><a href="#keytool">Generating keys using the Java keytool utility</a></li>
+        </ol>
+      </li> 
+    </ol>
+    </div>
+    <h1><a name="Audience" id="Audience">Audience</a></h1> 
+    <p>This document is intended for programmers who want their web-based applications to access Google services on behalf of users, using the GData client libraries.</p> 
+    <p>This document assumes that you are familiar with the AuthSub interface and the general process for incorporating AuthSub into your web application. For a complete description of the AuthSub interface, outside of the GData context, see <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">Account Authentication Proxy for Web-Based Applications</a>.</p>
+    <p>This document also assumes that you're familiar with using the GData <a href="client-java.html">Java client library</a>.</p>
+    <h1><a name="No-Library" id="No-Library">Using AuthSub and GData without the client libraries</a></h1>
+    <p>If you want your web application client to interact with a GData service using AuthSub as an authentication system, then everything you really need to know is in the AuthSub documentation. You don't need to use the GData client libraries if you don't want to.</p>
+    <p>Here's an outline of how your application might authenticate a user using AuthSub:</p>
+    <p>Your application constructs the appropriate AuthSub URL  and then sends the user to that URL so they can log in; the AuthSub system sends the user back to the URL on your site that you specified, and returns a one-time-use token; your application optionally exchanges that token for a session token; then your application sends the token in the Authorization header with each request that the application sends to the service.</p>
+    <p>But as usual, the GData client libraries simplify the process, handling various details for you; this document explains how.</p>
+    <h1><a name="Examples" id="Examples">Working with AuthSub and GData: client library examples</a></h1> 
+    <p>This section shows an example of using GData client library methods to follow the steps outlined in the &quot;Working With AuthSub&quot; section of the AuthSub documentation.</p>
+    <p>In this example, we're integrating the AuthSub interface into a web application that interacts with Google Calendar (although you don't need to know anything about Google Calendar to follow the example). The example assumes the web application is hosted at example.com.</p>
+    <h2><a name="register" id="register">Decide whether to register your web application</a></h2>
+    <p>As discussed in the AuthSub documentation, AuthSub can be used in two different modes. You can choose to <a href="http://code.google.com/apis/accounts/AuthForWebApps.html#registeredapps">register your web application with Google</a>, or not register it.</p>
+    <p>Registering offers applications the following benefits:</p>
+    <ul>
+      <li>The ability to use secure tokens.</li>
+      <li>A higher level of security.</li>
+      <li>Being trusted by Google, which means that no warning is displayed on the Google Accounts consent page.</li>
+      <li>The ability to have a descriptive name  displayed on the Google Accounts consent page.</li>
+    </ul>
+    <p>Though unregistered mode is simpler to set up than registered mode, Google encourages you to use registered mode where possible.</p>
+    <p>If you decide to register, you'll need a key; see <a href="#Registered">Generating keys and certificates for use with registered mode</a> (below) for an example of how to acquire one.</p>
+    <p>This example works regardless of whether you register or not; we'll explain the differences  as they come up.</p>
+    <h2><a name="token-type" id="token-type">Decide what type of token to use</a></h2>
+    <p>You can choose to use single-use tokens or session tokens; in this example, for the sake of demonstration, we'll use a session token. As discussed in the AuthSub documentation, if you decide to use session tokens in a real web app, you'll need to manage token storage; this document doesn't cover that.</p>
+    <h2><a name="scope" id="scope">Determine the scope required</a></h2>
+    <p>Each Google service defines the scope of capabilities that a token gives your application. Refer to the documentation for the Google service you want to access to get the appropriate scope.</p>
+    <p>In this example, we're interacting with Google Calendar's feeds, so the scope is &quot;http://www.google.com/calendar/feeds&quot;.</p>
+    <p>If you can't find a scope in the service's documentation, you can usually guess what it should be: it's usually the root URL of the service's feeds, or of the part of the service that's made available through AuthSub.</p>
+    <h2><a name="request-one-time-token" id="request-one-time-token">Request a one-time-use authentication token</a></h2>
+    <p>To acquire an AuthSub token for a given user and a given service, your application must redirect the user to  the AuthSubRequest URL, which prompts them to log into their Google account. (For more information on the AuthSubRequest URL, see the AuthSub documentation.)</p>
+    <p>To construct the AuthSubRequest URL for your application, make a Java client library call as follows:</p>
+    <pre>String requestUrl =
+  AuthSubUtil.getRequestUrl("http://www.example.com/RetrieveToken",
+                            "http://www.google.com/calendar/feeds/",
+                            false,
+                            true);
+</pre> 
+    <p>The <a href="../../java/doc/com/google/gdata/client/http/AuthSubUtil.html#getRequestUrl(java.lang.String,%20java.lang.String,%20boolean,%20boolean)"><code>getRequestUrl</code></a> method takes several parameters (corresponding to the query parameters used by the AuthSubRequest handler): the &quot;next&quot;  URL (which is the URL that Google  will redirect to after the user logs into their account and grants access); the scope (as determined in the previous section); and two Booleans, one to indicate whether the token will be used in registered mode or not, and one to indicate whether the token will later be exchanged for a session token or not. The above example shows a call in unregistered mode (the first Boolean is <code>false</code>), for a token that will be exchanged for a session token later (the second Boolean is <code>true</code>); adjust the Booleans appropriately for your application.</p>
+    <p>After constructing the &quot;next&quot; URL, your application can use it in a variety of ways to send the user to the AuthSubRequest handler. The most common approach is to display a page that tells the user that they need to follow a link to authorize your application to access your Google account; then attach the request URL to the link. For example, you could display the following string on a page:</p>
+    <pre>String suggestAuthorization = &quot;&lt;p&gt;MyApp needs access to your
+  Google Calendar account to read your Calendar feed. To authorize
+  MyApp to access your account, &lt;a href=\&quot;&quot; + requestUrl + &quot;\&quot;&gt;log in
+  to your account&lt;/a&gt;.&lt;/p&gt;&quot;;</pre>
+    <p>The user follows the link to the AuthSub page at Google, and logs in. The AuthSub system then redirects the user back to your application, using the &quot;next&quot; URL you provided.</p>
+    <p>When Google redirects back to your application, the token is appended to the &quot;next&quot; URL as a query parameter. So in the case of the above &quot;next&quot; URL, after the user logs in, Google redirects to a URL like <code>http://www.example.com/RetrieveToken?token=DQAADKEDE</code>.</p>
+    <p>The user's browser is redirected to that URL. The servlet handling that URL should then examine the query parameters in the requested URL to retrieve the token set by Google. For example, the servlet can retrieve the token from the URL by using the convenience function <code><a href="../../java/doc/com/google/gdata/client/http/AuthSubUtil.html#getTokenFromReply(java.lang.String)">getTokenFromReply</a></code> from the Java client library:</p>
+    <pre>String onetimeUseToken = AuthSubUtil.getTokenFromReply(httpServletRequest.getQueryString());
+</pre> 
+    <p>If your application set an authentication cookie in the user's browser before sending them to the AuthSub system, then when Google redirects back to the &quot;next&quot; URL, your application can read the authentication cookie to recognize which user has arrived at that URL. You can use such a cookie to associate a user ID in your application with the AuthSub token retrieved from Google.</p>
+    <h2><a name="request-session-token" id="request-session-token">Request a session token</a></h2>
+    <p>The token you retrieve with <code>getTokenFromReply</code> is always a one-time use token. You can exchange this token  for a session token using the AuthSubSessionToken URL, as described in the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">AuthSub documentation</a>. Your application can make this exchange using the Java client library as follows:</p>
+    <pre>String sessionToken = AuthSubUtil.exchangeForSessionToken(onetimeUseToken,
+                                                          null);
+</pre> 
+    <p>You pass your one-time use token to the <code><a href="../../java/doc/com/google/gdata/client/http/AuthSubUtil.html#exchangeForSessionToken(java.lang.String,%20java.security.PrivateKey)">exchangeForSessionToken</a></code> method, along with either <code>null</code> (for unregistered mode) or a private key (for registered mode), and the AuthSub interface returns a session token.</p>
+    <p>If you've registered your application and you're using registered mode, then instead of <code>null</code> in that method call, you have to provide your private key. To do this, you first generate a set of keys and a certificate by following the instructions in the <a href="#Registered">Generating keys and certificates for use with registered mode</a> section, below; then you read in the private key from the generated keystore (.jks) file using the <code><a href="../../java/doc/com/google/gdata/client/http/AuthSubUtil.html#getPrivateKeyFromKeystore(java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String)">getPrivateKeyFromKeystore</a></code> method:</p>
+    <pre>java.security.PrivateKey privateKey =
+  AuthSubUtil.getPrivateKeyFromKeystore(&quot;AuthSubExample.jks&quot;, &quot;changeme&quot;,
+                                        &quot;AuthSubExample&quot;, &quot;changeme&quot;);</pre>
+    <p>Then you can use the following code to acquire a session token:</p>
+    <pre>String sessionToken = AuthSubUtil.exchangeForSessionToken(onetimeUseToken,
+                                                          privateKey);</pre>
+<p>Note that you don't need to provide the other parameters required by the AuthSubSessionToken handler (see the AuthSub documentation); the client library generates the other parameters and sends them along for you.</p>
+<p>Also note that your private key itself is not sent over the network; you pass the private key to <code>exchangeForSessionToken</code>, but what the client library sends to the Google service is the signature made by the private key, not the private key itself.</p>
+<h2><a name="use-token" id="use-token">Use the session token</a></h2>
+<p>You can use the session  token to authenticate requests to the server by placing the token in the Authorization header, as described in the AuthSub documentation. To tell the Java client library to automatically send the Authorization header (containing the session token) with each request, you call the <code>GoogleService</code> object's <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html#setAuthSubToken(java.lang.String)">setAuthSubToken</a></code> method:</p>
+<pre>googleService.setAuthSubToken(sessionToken, null);
+</pre> 
+    <p>Again, if you're using registered mode, then you provide your private key instead of <code>null</code>.</p>
+    <p>After you've called <code>setAuthSubToken</code>, you can use the standard GData client library calls to interact with the service, without having to think about the token. For details, see the client library documentation and the GData documentation for the service you're interacting with.</p>
+    <p>If you want to test that your client and the server agree on the token's parameters, you can pass the token to the <code><a href="../../java/doc/com/google/gdata/client/http/AuthSubUtil.html#getTokenInfo(java.lang.String,%20java.security.PrivateKey)">getTokenInfo</a></code> method, which returns a set of name-value pairs containing information about the token. For example:</p>
+    <pre>Map&lt;String, String&gt; info = AuthSubUtil.getTokenInfo(sessionToken, null);  </pre>
+    <h2><a name="revoke-token" id="revoke-token">Revoke the session token</a></h2>
+    <p>AuthSub session tokens don't expire; your client can store the session token for as long as needed.</p>
+    <p>Therefore, when your client is done using the session token, it can  revoke the token using the AuthSubRevokeToken handler, as described in the AuthSub documentation.</p>
+    <p>For example, if you want to manage tokens in a traditional session-like way, then your client can get a token at the beginning of a user's session and  revoke it at the end of the user's session.</p>
+    <p>To revoke a token using the Java client library, call <code><a href="../../java/doc/com/google/gdata/client/http/AuthSubUtil.html#revokeToken(java.lang.String,%20java.security.PrivateKey)">revokeToken</a></code>. Include your private key for registered mode, or <code>null</code> otherwise. For example:</p>
+    <pre>AuthSubUtil.revokeToken(sessionToken, null);</pre>     
+    <h1><a name="Registered" id="Registered">Generating keys and certificates for use with registered mode</a></h1> 
+    <p>Applications that register with Google to use AuthSub are provided with a higher level of security. To use registered mode, however, you must first generate a set of keys and a corresponding certificate.</p>
+    <p>The private key is used to generate a signature, which must be included with each request. The public key embedded in the certificate is used by Google to verify the signature. The public key must be a 1024-bit RSA key encoded in an X.509 certificate in PEM format. The certificate should be sent to Google at time of registration.</p>
+    <p>The following sections  provide examples of how to generate keys and certificates using two particular tools: the <code>OpenSSL</code> utility and Java's <code>keytool</code> utility.</p>
+    <p>These examples are not specific to GData; you can use the same utilities to generate keys for any use of AuthSub.</p>
+    <p>The examples assume that your company is named My_Company, and is located in Mountain View, California, US, with domain name example.com.</p>
+    <p>For more information about keys and certificates, see the AuthSub documentation.</p>
+    <h2><a name="openssl" id="openssl">Generating keys using OpenSSL</a></h2> 
+    <p>To create a pair of RSA keys and the corresponding certificate, you could use the following command:</p> 
+    <pre>
+# Generate the RSA keys and certificate
+openssl req -x509 -nodes -days 365 -newkey rsa:1024 -sha1 -subj \
+  '/C=US/ST=CA/L=Mountain View/CN=www.example.com' -keyout \
+  myrsakey.pem -out /tmp/myrsacert.pem
+</pre> 
+    <p>The <code>-sha1</code> parameter specifies that the key will be used to generate SHA1 signatures. The <code>-subj</code> parameter specifies the identity of the application that the certificate represents. The <code>-nodes</code> parameter specifies that the private keys will not be protected with a password. Consider protecting it with a password for additional security.</p>
+    <p>The <code>-keyout</code> parameter specifies the file that will contain the keys. This file contains sensitive information and should be protected and not shared with anyone. The <code>-out</code> parameter specifies the file that will contain the certificate in PEM format (which can be sent to Google while registering).</p>
+    <h2><a name="keytool" id="keytool">Generating keys using the Java keytool utility</a></h2> 
+    <p>To create a pair of RSA keys and the corresponding certificate, you could use the following command:</p> 
+    <pre>
+# Generate the RSA keys and certificate
+keytool -genkey -v -alias AuthSubExample -keystore ./AuthSubExample.jks\
+  -keyalg RSA -sigalg SHA1withRSA
+  -dname "CN=www.example.com, OU=Engineering, O=My_Company, L=Mountain  View, ST=CA, C=US"\
+  -storepass changeme -keypass changeme
+</pre> 
+    <p>Note that &quot;<code>changeme</code>&quot; is not a good password; this is just an example.</p>
+    <p>To write the certificate to a file that can be sent to Google during registration, use the following command:</p>
+    <pre>
+# Output the public certificate to a file
+keytool -export -rfc -keystore ./AuthSubExample.jks -storepass changeme \
+  -alias AuthSubExample -file mycert.pem
+</pre> 
+    <p>The <code>-dname</code> parameter specifies the identity of the application that the certificate represents. The <code>-storepass</code> parameter specifies the password to protect the keystore. The <code>-keypass</code> parameter specifies the password to protect the private key.</p> 
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+  </div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2007 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>

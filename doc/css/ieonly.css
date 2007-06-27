@@ -1,0 +1,25 @@
+/*This style sheet is only for Internet Explorer*/
+
+
+body{margin-top:19px;} /*aligns the vertical position of the header*/
+
+#pagecontent{
+	position:relative; /*stops the vertical dotted line form dissapearing (MIGHT not be needed for IE7) */
+	}
+
+* html div.toc {
+  height: 1%; /*ensures following, floating content will rest relative to wrapper*/
+}
+
+
+/* ######### PRINT PAGE STYLE ########### */
+
+@media print{
+
+#pagecontent{
+	margin:0; /* keeps left margin to the left */
+	padding:0; /* maintains bottom padding */
+	left:0; /* keeps left margin from going off left side of page */
+	}
+	
+}

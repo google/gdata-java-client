@@ -1,0 +1,444 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Spreadsheets Data API Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+
+-->
+</style>
+<script type="text/javascript">
+<!--
+var cancelBubble = false;
+
+function goTo(url) {
+  window.location = url;
+}
+//-->
+</script>
+</head>
+<body class="t2" id="developers_guide_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Spreadsheets Data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper"> 
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Spreadsheets </h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="developers_guide_protocol.html" id="developers_guide_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.google.com/google-d-s/terms.html">Terms of Service</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Google data Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://groups.google.com/group/Google-Spreadsheets-Data-API">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+
+<div id="pagecontent"> 
+<h1 id="page_title">Google Spreadsheets Data API Developer's Guide: Java</h1>
+
+<div id="topnav">
+<table id="mt" cellspacing="0" cellpadding="0" width="100%" border="0">
+<tr>
+<th class="int1" onclick="if (!cancelBubble) goTo('developers_guide_protocol.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_protocol.html">Protocol</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int2" onclick="if (!cancelBubble) goTo('developers_guide_java.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_java.html">Java</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int3" onclick="if (!cancelBubble) goTo('developers_guide_dotnet.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_dotnet.html">.NET</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int4" onclick="if (!cancelBubble) goTo('developers_guide_php.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_php.html">PHP</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int5" onclick="if (!cancelBubble) goTo('developers_guide_python.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_python.html">Python</a></div>
+<td width="100%">&nbsp;</td>
+</tr>
+</table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+<tr>
+<td height="4" align="right" style="padding:0px; vertical-align:top">
+<div class="stur"></div>
+</td>
+</tr>
+</table>
+</div>
+
+
+<p>The Google Spreadsheets data API allows client applications to view and update Spreadsheets content in the form of Google data API feeds. Your client application can request a list of a user's spreadsheets, edit or delete content in an existing Spreadsheets worksheet, and query the content in an existing Spreadsheets worksheet.</p>
+<p>In addition to providing some background on the capabilities of the Spreadsheets data API, this document provides examples for interacting with the API using the <a href="http://code.google.com/p/gdata-java-client/">Java client library</a>. If you're interested in understanding more about the underlying protocol used by the Java Client Library to interact with the Spreadsheets data API, please see the <a href="developers_guide_protocol.html">protocol tab</a>.</p>
+
+    <h1>Contents</h1>
+    <div class="toc">
+    <ol>
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#GettingStarted">Getting started</a></li>
+      <li><a href="#createSpreadsheet">Create a spreadsheet</a></li>
+      <li><a href="#Auth">Authenticating to the Spreadsheets service</a>
+        <ol>
+          <li><a href="#AuthClientLogin">Single-user "installed" client authentication</a></li>
+          <li><a href="#AuthAuthSub">Multiple-user web application client authentication</a></li>
+          <li><a href="#AuthSubSessionToken">Upgrading to a session token</a></li>
+        </ol>
+      </li>
+      <li><a href="#listSpreadsheets">Get a list of spreadsheets</a></li>
+      <li><a href="#listWorksheets">Get a list of worksheets</a></li>
+      <li><a href="#listFeedExample">Interacting with list-based feeds</a>
+        <ol>
+          <li><a href="#listFeeds">Get a list-based feed</a> </li>
+          <li><a href="#reverseSortExample">Reverse-sort rows</a></li>
+          <li><a href="#listQueryExample">Send a structured query</a></li>
+          <li><a href="#addRow">Add a row</a></li>
+          <li><a href="#updateRow">Edit a row</a></li>
+          <li><a href="#deleteRow">Remove a row</a></li>
+        </ol>
+      </li>
+      <li><a href="#cellsFeedExample">Interacting with cell-based feeds</a>
+        <ol>
+          <li><a href="#cellFeeds">Get a cell-based feed</a> </li>
+          <li><a href="#cellsQueryExample">Send a cell range query</a></li>
+          <li><a href="#updateCell">Change contents of a cell</a></li>
+        </ol>
+      </li>
+    </ol>
+    </div>
+
+
+
+<h1><a name="Audience" id="Audience">Audience</a></h1>
+<p>This document is intended for programmers who want to write client applications that can interact with Google Spreadsheets. It provides a series of examples of basic data API interactions using the <a href="http://code.google.com/p/gdata-java-client/">Java client library</a>.</p>
+<p>For Spreadsheets data API reference information, see the <a href="reference.html">reference guide</a>. This document assumes that you understand the general ideas behind the <a href="../gdata/basics.html">Google data APIs protocol</a>.</p>
+
+<h1><a name="GettingStarted">Getting started</a></h1>
+<p>To use the Java client library, you must be running Java 1.5. After <a href="http://code.google.com/p/gdata-java-client/downloads/list">downloading the client library</a>, you'll find the classes you need to get started in the <code>java/lib/gdata-spreadsheet-1.0.jar</code> and <code>java/lib/gdataclient-1.0.jar</code> jar files.
+<p>Working samples are available in the distribution, under the directory <code>gdata/java/sample/spreadsheets/</code>.  There is a <code>README.txt</code> file in the same directory that includes an explanation of each sample, along with build and execution instructions.</p>
+<p>The samples perform a number of operations on a spreadsheet to demonstrate the use of the Spreadsheets data API.</p>  
+<p>To compile the examples in this document into your own code, you'll need to use the following import statements:</p>
+<pre>
+import com.google.gdata.client.spreadsheet.*;
+import com.google.gdata.data.*;
+import com.google.gdata.data.spreadsheet.*;
+import com.google.gdata.util.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+</pre>
+<p>The <a href="../../java/doc/com/google/gdata/client/spreadsheet/SpreadsheetService.html"><code>SpreadsheetService</code></a> class represents a client connection (with authentication) to a Spreadsheets service. The general procedure for sending a query to a service using the client library consists of the following steps:</p> 
+<ol>
+  <li>Obtain or construct the appropriate URL.</li> 
+  <li>If you're sending data to a service (for example, if you're inserting a new entry), then transform the raw data into objects using the client library classes. (This step doesn't apply if you're just requesting a feed, as in this example.)</li> 
+  <li>Create a new <code>SpreadsheetService</code> instance, setting your application's name (in the form <code><i>companyName</i>-<i>applicationName</i>-<i>versionID</i></code>).</li> 
+  <li>Set the appropriate credentials.</li> 
+  <li>Call a method to send the request and receive any results.</li> 
+</ol> 
+<h1><a name="createSpreadsheet" id="createSpreadsheet">Create a spreadsheet</a></h1>
+
+<p>The Spreadsheets data API does not currently provide a way to create or delete a spreadsheet. For testing purposes, you'll need to create a spreadsheet manually.</p>
+
+<h1><a name="Auth">Authenticating to the Spreadsheets service</a></h1>
+<p>The Java client library can be used to work with either public or private feeds.  Public feeds are read-only, but do not require any authentication.  Private feeds require that you authenticate to the spreadsheets servers.  This can be done via <a href="#AuthClientLogin">ClientLogin</a> username/password authentication or <a href="#AuthAuthSub">AuthSub</a> proxy authentication.</p>
+<p>Please see the <a href="../gdata/auth.html">authentication documentation</a> for more information on AuthSub and ClientLogin.</p>
+
+<h2><a name="AuthClientLogin" id="AuthClientLogin">Single-user "installed" client authentication</a></h2>
+<p>To use ClientLogin (also called "Authentication for Installed Applications"), invoke the <code><a href="../../java/doc/com/google/gdata/client/GoogleService.html#setUserCredentials(java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String)">setUserCredentials</a></code> method of <code>SpreadhsheetService</code>, specifying the ID and password of the user on whose behalf your client is sending the query. For example:</p>
+<pre>
+SpreadsheetService myService = new SpreadsheetService("exampleCo-exampleApp-1");
+myService.setUserCredentials("jo@gmail.com", "mypassword");
+</pre>
+<p>For more information about authentication systems, see the <a href="http://code.google.com/apis/accounts/Authentication.html">Google Account Authentication</a> documentation.</p> 
+
+<h2><a name="AuthAuthSub" id="AuthAuthSub">Multiple-user web application client authentication</a></h2>
+<p>AuthSub proxy authentication is used by web applications which need to authenticate their users to Google accounts.  The website operator does not need access to the username and password for the Google Spreadsheets user - only special AuthSub tokens are required.  Please see the <a href="/apis/accounts/AuthForWebApps.html">AuthSub documentation</a> for more detailed information.</p>
+<p>To acquire an AuthSub token for a given Google Spreadsheets user, your application must redirect the user to the AuthSubRequest URL, which prompts them to log into their Google account. The AuthSubRequest URL might looks like this:</p>
+<pre>https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fspreadsheets.google.com%2Ffeeds%2F&amp;session=1&amp;secure=0&amp;next=http%3A%2F%2Fwww.coolspreadsheetssite.com%2Fwelcome.pyc
+</pre> 
+<p>Notice the query parameters sent to the AuthSubRequest URL:</p>
+  <ul>
+    <li>
+      <b>scope</b>, indicating that the application will only access Google Spreadsheets feeds.
+    </li>
+    <li>
+      <b>session</b>, indicating whether the token returned can be exchanged for a multi-use (session) token.
+    </li>
+
+    <li>
+      <b>secure</b>, indicating whether the token returned will be a secure token.
+    </li>
+    <li>
+      <b>next</b>, the URL of the page that Google should redirect the user to after authentication.
+    </li>
+  </ul>
+<p>After the user logs in, the AuthSub system redirects them to the URL you specified in the next query parameter of the AuthSubRequest URL. The AuthSub system appends an authentication token to that URL, as the value of the token query parameter like this:</p>
+<pre>http://www.coolspreadsheetssite.com/welcome.pyc?token=<i>yourAuthToken</i></pre>
+
+<h2><a name="AuthSubSessionToken" id="AuthSubSessionToken">Upgrading to a session token</a></h2>
+<p>The token you initially retrieve is always a one-time use token. You can exchange this token for a session token using the AuthSubSessionToken URL, as described in the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">AuthSub documentation</a>. Your application can make this exchange using the Java client library as follows:</p>
+<pre>String sessionToken = AuthSubUtil.exchangeForSessionToken(singleUseToken, null);</pre>
+<p>You pass your one-time use token to the <code>exchangeForSessionToken</a></code> method, along with either <code>null</code> (for unregistered mode) or a private key (for registered mode), and the AuthSub interface returns a session token. For more information about registered applications and private keys, refer to the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html#signingrequests">Signing requests</a> section of the AuthSub documentation</a>.</p>
+<p>Now you are ready to use the session token to authenticate requests to the Spreadsheets server by placing the token in the Authorization header. To tell the Java client library to automatically send the Authorization header (containing the session token) with each request, do the following:</p>
+<pre>
+SpreadsheetService myService = new SpreadsheetService("exampleCo-exampleApp-1");
+service.setAuthSubToken(sessionToken);
+</pre>
+
+<h1><a name="listSpreadsheets" id="listSpreadsheets">Get a list of spreadsheets</a></h1>
+<p>You can get a feed containing a list of the currently authenticated user's spreadsheets by sending an authenticated <code>GET</code> request to the following URL:</p>
+<pre>http://spreadsheets.google.com/feeds/spreadsheets/private/full</pre>
+<p>The result is a "metafeed," a feed that lists all of that user's spreadsheets; each entry in the feed represents a spreadsheet associated with the user. This feed is only accessible using an authentication token.</p>
+<p>To request the metafeed using the Java client library, do the following:</p>
+<pre>
+URL metafeedUrl = new URL("http://spreadsheets.google.com/feeds/spreadsheets/private/full");
+SpreadsheetFeed feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
+List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+for (int i = 0; i < spreadsheets.size(); i++) {
+  SpreadsheetEntry entry = spreadsheets.get(i);
+  System.out.println("\t" + entry.getTitle().getPlainText());
+}
+</pre>
+<p>The <code>getFeed</code> method sends a request to the server and the <code><a href="../../java/doc/com/google/gdata/data/spreadsheet/SpreadsheetFeed.html">SpreadsheetFeed</a></code> object represents a response from the server. Among other things, this feed contains a list of <code><a href="../../java/doc/com/google/gdata/data/spreadsheet/SpreadsheetEntry.html">SpreadsheetEntry</a></code> objects, each of which represents a single spreadsheet. <code>SpreadsheetEntry</code> encapsulates the information shown in <a href="developers_guide_protocol.html#listSpreadsheets">the protocol document</a>.</p>
+
+<h1><a name="listWorksheets" id="listWorksheets">Get a list of worksheets</a></h1>
+<p>A given spreadsheet may contain multiple worksheets. For each spreadsheet, there's a <code>worksheets</code> metafeed listing all the worksheets in that spreadsheet.</p>
+<p>Given a <code>SpreadsheetEntry</code> you've already retrieved, you can print a list of all worksheets in this spreadsheet by simply calling the <code>getWorksheets</code> method and displaying the results:</p>
+<pre>
+List<WorksheetEntry> worksheets = spreadsheetEntry.getWorksheets();
+for (int i = 0; i < worksheets.size(); i++) {
+  WorksheetEntry entry = worksheets.get(i);
+  System.out.println("\t" + entry.getTitle().getPlainText());
+}
+</pre>
+<p>This code is equivalent to sending an authenticated <code>GET</code> request to the worksheets feed URL:</p>
+<pre>http://spreadsheets.google.com/feeds/worksheets/<i>key</i>/private/full</pre>
+<p>where <i>key</i> is the permanent unique ID of a specific worksheet within the spreadsheet.</p>
+
+<h1><a name="listFeedExample" id="listFeedExample">Interacting with list-based feeds</a></h1>
+<p>A given worksheet generally contains multiple rows, each containing multiple cells. You can request data from the worksheet either as a list-based feed, in which each entry represents a row, or as a cell-based feed, in which each entry represents a single cell. For information on cell-based feeds, see <a href="#cellsFeedExample">Interacting with cell-based feeds</a>.</p>
+<p>The following sections describe how to get a list-based feed, add a row to a worksheet, and send queries with various query parameters.</p>
+<p>The list feed makes some assumptions about how the data is laid out in the spreadsheet.</p>
+<p>In particular, the list feed treats the first row of the worksheet as a header row; Spreadsheets dynamically creates XML elements named after the contents of header-row cells. Users who want to provide Google data feeds should not put any data other than column headers in the first row of a worksheet.</p>
+<p>The list feed contains all rows after the first row up to the first  blank row.  The first blank row terminates the data set. If expected data isn't appearing in a feed, check the worksheet manually to see whether there's an unexpected blank row in the middle of the data. In particular, if the second row of the spreadsheet is blank, then the list feed will contain no data.</p>
+<p>A row in a list feed is as many columns wide as the worksheet itself.</p>
+
+<h2><a name="listFeeds" id="listFeeds">Get a list-based feed</a></h2>
+<p>To retrieve a worksheet's list feed, you might do the following.  This assumes that <code>service</code> is an authenticated <code>SpreadsheetService</code> object, and <code>entry</code> is a <code>WorksheetEntry</code>.</p>
+<pre>
+URL listFeedUrl = worksheetEntry.getListFeedUrl();
+ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
+for (ListEntry entry : feed.getEntries()) {
+  System.out.println(entry.getTitle().getPlainText());
+  for (String tag : entry.getCustomElements().getTags()) {
+    out.println("  <gsx:" + tag + ">" + entry.getCustomElements().getValue(tag) + "</gsx:" + tag + ">");
+  }
+}
+</pre>
+<p>First obtain the list feed URL from a <code>WorksheetEntry</code> and request this feed from our authenticated <code>SpreadsheetService</code> object.  The <code>SpreadsheetService</code> returns a <code><a href="../../java/doc/com/google/gdata/data/spreadsheet/ListFeed.html">ListFeed</a></code>, which contains a list of all the rows in this worksheet.  Each row is represented as a <code><a href="../../java/doc/com/google/gdata/data/spreadsheet/ListEntry.html">ListEntry</a></code> object.</p>
+<p>To retrieve the contents of a single row, iterate over the <code>ListEntry</code>'s <code><a href="../../java/doc/com/google/gdata/data/spreadsheet/CustomElementCollection.html">CustomElementCollection</a></code> member, where each element in the collection represents a cell in that row. </p>
+<p>This code is equivalent to sending an authenticated <code>GET</code> request to the URL:</p>
+<pre>http://spreadsheets.google.com/feeds/list/<i>key</i>/<i>worksheetId</i>/private/full</pre>
+
+
+<h2><a name="reverseSortExample" id="reverseSortExample">Reverse-sort rows</a></h2>
+<p>By default, rows in the feed appear in the same order as the corresponding position in the UI; that is, they're in order by row number. To get rows in reverse order, use the <code>setReverse</code> method of the <code><a href="../../java/doc/com/google/gdata/client/spreadsheet/ListQuery.html">ListQuery</a></code> object:</p>
+<pre>
+ListQuery query = new ListQuery(listFeedUrl);
+query.setReverse(true);
+ListFeed feed = service.query(query, ListFeed.class);
+</pre>
+<p>This is equivalent to sending an authenticated <code>GET</code> request to the URL:</p>
+<pre>http://spreadsheets.google.com/feeds/list/<i>key</i>/<i>worksheetId</i>/private/full?reverse=true</pre>
+<p>Note that if you want to order (or reverse sort) by a particular column, rather than by position in the worksheet, you can pass the name of the header for the column to the the <code><a href="../../java/doc/com/google/gdata/client/spreadsheet/ListQuery.html#setSortColumn(java.lang.String)">setSortColumn</a></code> method of the <code>ListQuery</code> object.  This is analogous to adding an <code>orderby</code> query parameter in the outbound <code>GET</code> request.</p>
+
+<h2><a name="listQueryExample" id="listQueryExample">Send a structured query</a></h2>
+<p>You can set a <code>ListQuery</code>'s <code><a href="../../java/doc/com/google/gdata/client/spreadsheet/SpreadsheetQuery.html">SpreadsheetQuery</a></code> property to produce a feed with entries that meet the specified criteria. For example, suppose you have a worksheet containing personnel data, in which each row represents information about a single person. You wish to retrieve all rows in which the person's name is "John" and the person's age is over 25. To do so, you would set <code>SpreadsheetQuery</code> as follows:</p>
+<pre>
+ListQuery query = new ListQuery(listFeedUrl);
+query.setSpreadsheetQuery("name = John and age > 25");
+ListFeed feed = service.query(query, ListFeed.class);
+</pre>
+<p>This is equivalent to sending an authenticated <code>GET</code> request to the URL:</p>
+<pre>http://spreadsheets.google.com/feeds/list/<i>key</i>/<i>worksheetId</i>/private/full?sq=<i>yourQuery</i></pre>
+<p>For more information about the structured query syntax, see the <a href="reference.html#list_Parameters">List-feed query parameters</a> reference section.</p>
+
+
+<h2><a name="addRow" id="addRow">Add a row</a></h2>
+
+<p>To insert a new row in a list-based feed, first construct a new <code>ListEntry</code> and add the contents of each cell as a <code>CustomElement</code>.  For example, the following example parses a <code>nameValuePairs</code> input string such as "name=Rosa,phone=555-1212" into a <code>ListEntry</code> object representing a row.</p>
+<pre>
+ListEntry newEntry = new ListEntry();
+
+// Split first by the commas between the different fields.
+for (String nameValuePair : nameValuePairs.split(",")) {
+  // Then, split by the equal sign.
+  String[] parts = nameValuePair.split("=", 2);
+  String tag = parts[0]; // such as "name"
+  String value = parts[1]; // such as "Rosa"
+  newEntry.getCustomElements().setValueLocal(tag, value);
+}
+</pre>
+<p>Then insert the new row in the <code>ListFeed</code> as follows:</p>
+<pre>
+ListEntry insertedRow = service.insert(listFeedUrl, newEntry);
+</pre>
+<p>Spreadsheets inserts the new row immediately after the last row that appears in the list-based feed, which is to say immediately before the first entirely blank row. This code is equivalent to sending an authenticated <code>POST</code> request to the URL:</p>
+<pre>http://spreadsheets.google.com/feeds/list/<i>key</i>/<i>worksheetId</i>/private/full</pre>
+<p>with the corresponding XML document in the <code>POST</code> body.</p>
+
+<h2><a name="updateRow" id="updateRow">Edit a row</a></h2>
+<p>To change the contents of a row, first modify the desired <code>CustomElements</code> of the <code>ListEntry</code> object. For example, to change the cell in the "name" column to "John" and the cell in the "phone" column to "555-3254", do the following:</p>
+<pre>
+existingEntry.getCustomElements().setValueLocal("name", "John");
+existingEntry.getCustomElements().setValueLocal("phone", "555-3254");
+</pre>
+<p>Then call the <code><a href="../../java/doc/com/google/gdata/data/BaseEntry.html#update()">update</a></code> method on the <code>ListEntry</code> object to perform the update:</p>
+<pre>ListEntry updatedRow = existingEntry.update()</pre>
+<p>This is equivalent to sending an authenticated <code>PUT</code> request to the entry's edit link, with the updated XML as <code>PUT</code> data.</p>
+
+<h2><a name="deleteRow" id="deleteRow">Remove a row</a></h2>
+<p>To delete a row, simply invoke the <code><a href="../../java/doc/com/google/gdata/data/BaseEntry.html#delete()">delete</a></code> method on the corresponding <code>ListEntry</code> object:</p>
+<pre>
+entry.delete();
+</pre>
+<p>This is equivalent to performing an HTTP <code>DELETE</code> request on the row's edit URL.</p>
+<p class="note"><strong>Note</strong>: If you delete a row, that row is completely removed from the worksheet.</p>
+
+<h1><a name="cellsFeedExample" id="cellsFeedExample">Interacting with cell-based feeds</a></h1>
+<p>In a cell-based feed, each entry represents a single cell.</p>
+<p>Note that it isn't recommended to interact with both a cell-based feed and a list-based feed for the same worksheet at the same time.</p>
+
+<h2><a name="cellFeeds" id="cellFeeds">Get a cell-based feed</a></h2>
+<p>To retrieve a worksheet's cell-based feed, you might do the following.  Again, assume that <code>service</code> is an authenticated <code>SpreadsheetService</code> object, and <code>worksheetEntry</code> is a <code>WorksheetEntry</code> from the spreadsheet.</p>
+<pre>
+URL cellFeedUrl = worksheetEntry.getCellFeedUrl();
+CellFeed feed = service.getFeed(celFeedUrl, CellFeed.class);
+for (CellEntry cell : feed.getEntries()) {
+  System.out.println(entry.getTitle().getPlainText());
+  String shortId = cell.getId().substring(cell.getId().lastIndexOf('/') + 1);
+  System.out.println(" -- Cell(" + shortId + "/" + cell.getTitle().getPlainText()
+      + ") formula(" + cell.getCell().getInputValue() + ") numeric("
+      + cell.getCell().getNumericValue() + ") value("
+      + cell.getCell().getValue() + ")");
+}
+</pre>
+<p>You can obtain the cell feed URL from the <code>worksheetEntry</code> object using the <code>getCellFeedUrl</code> method.  The <code>SpreadsheetService</code> returns a <code><a href="../../java/doc/com/google/gdata/data/spreadsheet/CellFeed.html">CellFeed</a></code>, which contains a list of all the cells in this worksheet.  Each <code><a href="../../java/doc/com/google/gdata/data/spreadsheet/CellEntry.html">CellEntry</a></code> in the feed is a single cell.</p>
+<p>You can easily access a cell's content or information about the cell, such as the row or column number, using the various getters provided by the <code>CellEntry</code> class.</p>
+<p>This code is equivalent to sending an authenticated <code>GET</code> request to the URL:</p>
+<pre>http://spreadsheets.google.com/feeds/cells/<i>key</i>/<i>worksheetId</i>/private/full</pre>
+
+<h2><a name="cellsQueryExample" id="cellsQueryExample">Send a cell range query</a></h2>
+<p>Suppose you only want to retrieve the cells within a given range of rows and columns of a worksheet.  You can request a cell feed containing only these cells by using a <code><a href="../../java/doc/com/google/gdata/client/spreadsheet/CellQuery.html">CellQuery</a></code> object:</p>
+<pre>
+CellQuery query = new CellQuery(cellFeedUrl);
+query.setMinimumRow(minRow);
+query.setMaximumRow(maxRow);
+query.setMinimumCol(minCol);
+query.setMaximumCol(maxCol);
+CellFeed feed = service.query(query, CellFeed.class);    
+</pre>
+<p>That requests all the data in rows from <code>minRow</code> to <code>maxRow</code> and columns from <code>minCol</code> to <code>maxCol</code>.</p>
+<p>The setters in this example are equivalent to providing values for the parameters <code>min-row</code>, <code>max-row</code>, <code>min-col</code>, and <code>max-col</code> (respectively) in the HTTP <code>GET</code> request.</p>
+
+<h2><a name="updateCell" id="updateCell">Change contents of a cell</a></h2>
+<p>To modify the contents of an existing <code>CellEntry</code> that you have retrieved from a feed, first change its <code>InputValue</code> property.  Then execute the update request as follows:</p>
+<pre>
+existingCellEntry.changeInputValueLocal(formulaOrValue);
+existingCell.update();
+</pre>
+<p>This is equivalent to sending an authenticated <code>PUT</code> request, with the updated cell's XML representation, to the URL:</p>
+<pre>http://spreadsheets.google.com/feeds/cells/<i>key</i>/<i>worksheetId</i>/private/full/cell/<i>version</i></pre>
+<p class="note"><strong>Note</strong>: Use <code>update()</code> (i.e., HTTP <code>PUT</code>) to change the data in a cell, even if it is empty; the use of <code>POST</code> on empty cells is no longer recommended.  To clear a cell, send an empty string as the value instead of using a <code>DELETE</code>.</p>
+
+<p class="backtotop"><a href="#top">Back to top</a></p>
+</div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2006 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html

@@ -222,7 +222,14 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   /**
    * Sets that GData {@link Service} instance associated with this feed.
    */
-  public void setService(Service v) { feedState.service = v; }
+  public void setService(Service v) {
+    feedState.service = v;
+
+    // Propagate service information to nested entries
+    for (E entry : entries) {
+      entry.setService(v);
+    }
+  }
 
   /**
    * Gets the property that indicates if it is possible to post new entries
@@ -663,6 +670,78 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     rssHeaderAttrs.add(new XmlWriter.Attribute("version", "2.0"));
   }
 
+  /**
+   * Reads a feed representation from the provided {@link ParseSource}.
+   * The return type of the feed will be determined using dynamic adaptation
+   * based upon any {@link Kind} category tag found in the input content. If
+   * no kind tag is found a {@link Feed} instance will be returned.
+   */
+  public static BaseFeed readFeed(ParseSource source)
+      throws IOException, ParseException, ServiceException {
+    return readFeed(source, null, null);
+  }
+
+  // This method provides the base implementation of feed reading using either
+  // static or dynamic typing.  If feedClass is non-null, the method is
+  // guaranteed to return an instance of this type, otherwise adaptation will
+  // be used to determine the type.  The source object may be either an
+  // InputStream, Reader, or XmlParser.
+  public static <F extends BaseFeed> F readFeed(ParseSource source,
+                                                Class <F> feedClass,
+                                                ExtensionProfile extProfile)
+      throws IOException, ParseException, ServiceException {
+
+    if (source == null) {
+      throw new NullPointerException("Null source");
+    }
+
+    // Determine the parse feed type
+    boolean isAdapting = (feedClass == null);
+    if (isAdapting) {
+      feedClass = (Class<F>)Feed.class;
+    }
+
+    // Create a new feed instance.
+    F feed;
+    try {
+      feed = feedClass.newInstance();
+    } catch (IllegalAccessException iae) {
+      throw new ServiceException("Unable to create feed", iae);
+    } catch (InstantiationException ie) {
+      throw new ServiceException("Unable to create feed", ie);
+    }
+
+    // Initialize the extension profile (if not provided)
+    if (extProfile == null) {
+      extProfile = new ExtensionProfile();
+      feed.declareExtensions(extProfile);
+      if (isAdapting) {
+        extProfile.setAutoExtending(true);
+      }
+    }
+
+    // Parse the content
+    if (source.getReader() != null) {
+      feed.parseAtom(extProfile, source.getReader());
+    } else if (source.getInputStream() != null) {
+      feed.parseAtom(extProfile, source.getInputStream());
+    } else if (source.getParser() != null) {
+      feed.parseAtom(extProfile, source.getParser());
+    } else {
+      throw new IllegalStateException("Invalid source: " + source.getClass());
+    }
+
+    // Adapt if requested and the feed contained a kind tag
+    if (isAdapting) {
+      F adaptedFeed = (F)feed.getAdaptedFeed();
+      if (adaptedFeed != null) {
+        feed = adaptedFeed;
+      }
+    }
+
+    return feed;
+  }
+
 
   /**
    * Parses XML in the Atom format.
@@ -900,5 +979,4 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
     return adaptedEntries;
   }
-
 }

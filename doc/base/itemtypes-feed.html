@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../css/google.css" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<title>Google Base data API- Item Types Feed</title>
+</head>
+<body id="itemtypes_page">
+<a name="top" id="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+<div id="header">
+    <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+    <h1 id="doc_title">Google Base data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper">
+    <!-- ########## SIDE NAVIGATION ########## -->
+    <div id="sidenav">
+		<!-- ID tag identifies current page -->
+
+<ul>
+  <li><a href="http://base.google.com/base">Base Home</a></li>
+  <li><a href="index.html" id="index_link">Base API Home</a></li>
+</ul>
+<ul>
+  <li>
+    <h1>Getting Started</h1>
+    <ul>
+      <li><a href="http://www.google.com/base/api/demo/html/demo.html" id="demo_link">API Demo Page</a> </li>
+      <li><a href="sample-apps.html" id="sample_link">Sample Applications</a></li>
+      <li><a href="starting-out.html" id="start_link">Getting Started</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Developer's Guide</h1>
+    <ul>
+      <li><a href="attrs-queries.html" id="attsquer_link">Attributes and Queries</a></li>
+      <li><a href="http://code.google.com/apis/gdata/index.html">GData Developer's Guide</a></li>
+      <li><a href="javadevguide.html" id="javaDev_link">Java Developer's Guide</a></li>
+      <li><a href="csharpdevguide.html" id="cSharpDev_link">C# Developer's Guide</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Reference</h1>
+    <ul>
+      <li><a href="http://base.google.com/base/api/itemTypeDocs" id="itemType_link">Recommended
+        Attributes</a></li>
+      <li><a href="snippets-feed.html" id="snippets_link">Snippets
+        Feed</a></li>
+      <li><a href="items-feed.html" id="items_link">Customer Items
+        Feed</a></li>
+      <li><a href="attributes-feed.html" id="attributes_link">Attributes
+        Feed</a></li>
+      <li><a href="itemtypes-feed.html" id="itemtypes_link">Item Types
+        Feed</a></li>
+      <li><a href="locales-feed.html" id="locales_link">Locales Feed</a></li>
+      <li><a href="query-lang-spec.html" id="query_link">Query Language</a></li>
+      <li><a href="ranking-lang-spec.html" id="ranking_link">Expression Language</a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Related Links</h1>
+    <ul>
+      <li><a href="client-download.html" id="clientdownload_link">Client
+        Library </a></li>
+      <li><a href="signup.html" id="signup_link">API Key</a></li>
+      <li><a href="terms.html" id="terms_link">Terms of Use</a></li>
+      <li><a href="release-notes.html" id="rnotes_link">Release Notes </a></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <h1>Help Center</h1>
+    <ul>
+      <li><a href="http://base.google.com/support/bin/topic.py?topic=9231">FAQ</a></li>
+      <li><a href="http://groups.google.com/group/Google-Base-data-API">Developer Forum</a></li>
+      <li><a href="http://code.google.com/support/bin/topic.py?topic=10024">Knowledge Base</a> </li>
+      <li><a href="http://base.google.com/base/base_policies.html">Program Policies</a></li>
+    </ul>
+  </li>
+</ul>
+<form action="http://www.google.com/search" method="get" id="searchbox" style="font-size: 80%; margin-bottom: 0;">
+  <input type="text" name="q" size="15" id="searchinput" title="Search developer's guide" style="font-size: 100%;"
+		onfocus="clearDefaultValue(this);"/>
+  <input type="submit" name="submit" value="Go" title="" style="font-size: 90%;"/>
+  <input type="hidden" name="ie" value="UTF-8"/>
+  <input type="hidden" name="oe" value="UTF-8"/>
+  <input type="hidden" name="domains" value="http://code.google.com/apis/base/"/>
+  <input type="hidden" name="sitesearch" value="http://code.google.com/apis/base/"/>
+</form>
+
+  	</div>
+
+    <!-- ########## END SIDE NAVIGATION ########## -->
+    <div id="pagecontent">
+        <!-- ########## PAGE CONTENT ########## -->
+        <h2 id="page_title">Item Types Feed</h2>
+        <p>This read-only feed provides a list of attributes associated with each
+            of the Google Base item types. See <a href="attrs-queries.html#itemTypes">Attributes
+            and Queries</a> for some code samples on how to access this feed through
+            the Google Base client library. </p>
+        <h3>Contents</h3>
+        <ol class="toc">
+            <li><a href="#URL">Feed URL</a></li>
+            <li><a href="#Elements">Elements </a></li>
+            <li><a href="#usageExample">Usage example</a></li>
+        </ol>
+        <h2><a name="URL" id="Parameters"></a>Feed URL</h2>
+        <p>You can request a list of all attributes for all items in a specific locale
+            or just for a single item type. </p>
+        <p>Use this URL to get the entire list of attributes for a given locale: </p>
+        <pre>http://www.google.com/base/feeds/itemtypes/&lt;<em>locale</em>&gt;</pre>
+        <p>Use this URL to get a list of all attributes for a single item type: </p>
+        <pre>http://www.google.com/base/feeds/itemtypes/&lt;<em>locale</em>&gt;[/&lt;<em>itemtype</em>&gt;]</pre>
+        <p><em><code>locale</code></em> limits the feed to return information for a single location.
+      <em><code>locale</code></em> is a required parameter. Currently, the following locales are defined: </p>
+        <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td>United States</td>
+            <td><code>en_US</code></td>
+          </tr>
+          <tr>
+            <td>Great Britain </td>
+            <td><code>en_GB</code></td>
+          </tr>
+          <tr>
+            <td>Germany</td>
+            <td><code>de_DE</code></td>
+          </tr>
+        </table>
+        <p><em><code>itemtype</code></em> limits the feed to return detailed attribute data for a single item type. To find a list of valid itemtype values for a given locale, query the feed without an itemtype parameter first. </p>
+        <p>For example, this url provides a list of all attributes for the US locale: </p>
+        <pre>http://www.google.com/base/feeds/itemtypes/en_US</pre>
+        <p>This URL obtains only those attributes defined for the housing item type:</p>
+        <pre>http://www.google.com/base/feeds/itemtypes/en_US/housing                    </pre>
+        <p>You can also run <a href="http://code.google.com/apis/gdata/batch.html">batch queries</a> on the itemtypes feed. </p>
+        <h2><a name="Elements" id="Elements"></a>Elements</h2>
+        <p>Google Base uses the following elements in the itemtypes feed:</p>
+        <table width="765">
+            <tbody>
+                <tr>
+                    <th width="129">Element</th>
+                    <th width="624">Meaning</th>
+                </tr>
+                <tr>
+                    <td><code> gm:item_type </code></td>
+                    <td>The name of the item type</td>
+                </tr>
+                <tr>
+                    <td><code> gm:attributes </code></td>
+                    <td>A list of all the attributes supported by Google Base to
+                        describe&nbsp;items of this type.</td>
+                </tr>
+                <tr>
+                    <td><code> gm:attribute </code></td>
+                    <td>A single attribute specified by name and type. </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Note that these elements use the gm: namespace. This namespace contains
+            the metadata attributes that are used in the item types and attributes
+            feeds. No other feeds use them and they are read-only, so users do not
+            need to use this gm: namespace to input the attributes. The only impact
+            on users is that you will see an extra line in the response, giving the
+            location of the namespace, <span class="attribute-name"> <code> xmlns:gm </code> </span> <code> =<span class="attribute-value">'http://base.google.com/ns-metadata/1.0</span>. </code> </p>
+        <p>There is a link in the response that points to the snippets feed where
+            more data can be found about this item type. This allows you to write
+            code that automatically takes you to the next level of detail. The link
+            uses a category search, with &quot; <code> /-/</code>&quot; prefix to
+            indicate that the query is to get all items with the Jobs item type. </p>
+        <pre>&lt;link rel=&quot;related&quot; type=&quot;application/atom+xml&quot; href=&quot;http://www.google.com/base/feeds/snippets/-/jobs&quot; title=&quot;Items in jobs&quot;/&gt;</pre>
+        <h2><a name="usageExample" id="usageExample"></a>Usage example</h2>
+        <p>Request:</p>
+        <pre><code>http://www.google.com/base/feeds/itemtypes/en_US/jobs</code></pre>
+        <p>Response: </p>
+        <pre id="line1"><span class="pi">&lt;?xml version='1.0' encoding='UTF-8'?&gt;</span><br />&lt;<span class="start-tag">entry</span><span class="attribute-name"> xmlns</span>=<span class="attribute-value">'http://www.w3.org/2005/Atom'<br />  </span><span class="attribute-name">     xmlns:gm</span>=<span class="attribute-value">'http://base.google.com/ns-metadata/1.0'</span>&gt;<br />  &lt;id&gt;<br />  http://www.google.com/base/feeds/itemtypes/en_US/jobs<br />  &lt;/id&gt;<br />  &lt;updated&gt;2006-03-16T23:02:50.771Z&lt;/updated&gt;<br />  &lt;category scheme=&quot;http://base.google.com/categories/itemtypes&quot; term=&quot;jobs&quot;/&gt;<br />  &lt;title type=&quot;text&quot;&gt;jobs&lt;/title&gt;<br />  &lt;content type=&quot;text&quot;&gt;jobs&lt;/content&gt;
+
+  &lt;link rel=&quot;related&quot; type=&quot;application/atom+xml&quot; href=&quot;http://www.google.com/base/feeds/snippets/-/jobs&quot; title=&quot;Items in jobs&quot;/&gt;<br />  &lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot; href=&quot;http://www.google.com/base/feeds/itemtypes/en_US/jobs&quot;/&gt;<br />  &lt;gm:item_type&gt;jobs&lt;/gm:item_type&gt;<br />    &lt;gm:attributes&gt;<br />       &lt;gm:attribute name=&quot;job type&quot; type=&quot;text&quot;/&gt;<br />       &lt;gm:attribute name=&quot;job industry&quot; type=&quot;text&quot;/&gt;<br />       &lt;gm:attribute name=&quot;job function&quot; type=&quot;text&quot;/&gt;<br />       &lt;gm:attribute name=&quot;employer&quot; type=&quot;text&quot;/&gt;<br />       &lt;gm:attribute name=&quot;expiration date&quot; type=&quot;dateTime&quot;/&gt;<br />       &lt;gm:attribute name=&quot;pickup&quot; type=&quot;boolean&quot;/&gt;<br />       &lt;gm:attribute name=&quot;location&quot; type=&quot;location&quot;/&gt;<br />    &lt;/gm:attributes&gt;
+
+&lt;/entry&gt; 
+    </pre>
+    <p class="backtotop"><a href="#top">Back to top</a></p>
+    </div>
+    <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<div id="footer">
+    <!-- ########## PAGE FOOTER ########## -->
+    <div id="footerlogo"><img src="http://www.google.com/images/art.gif" /></div>
+    <div id="copyright">
+        <p>&copy;2007 Google - <a href="http://www.google.com/privacy.html">Privacy
+                Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms
+                and Conditions</a> - <a href="http://www.google.com/about.html">About
+                Google</a></p>
+    </div>
+    <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date"> Updated on
+    <!-- javascript to display the date this page was updated -->
+    <script type="text/javascript">
+<!-- hide script from old browsers
+    var lm = new Date(document.lastModified);
+    document.write(lm.toDateString());
+//-->
+</script>
+    <!-- end javascript -->
+</p>
+<script
+  src="http://www.google-analytics.com/urchin.js"
+  type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct="UA-18071-1";
+  _utcp="/apis/base/";
+  _uanchor=1;
+  urchinTracker();
+</script>
+</body>
+</html>

@@ -21,6 +21,7 @@ import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.calendar.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
 import com.google.gdata.util.XmlParser.ElementHandler;
@@ -29,10 +30,12 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * A "web content" extension, which looks something like:
+ * A "web content" extension -- here are some examples:
  * <xmp>
  * <atom:link rel="http://schemas.google.com/gCal/2005/webContent"
  *            title="World Cup"
@@ -42,6 +45,18 @@ import java.util.List;
  *         width="276"
  *         height="120"
  *         url="http://www.google.com/logos/worldcup06.gif" />
+ * </atom:link>
+ * 
+ * <atom:link rel="http://schemas.google.com/gCal/2005/webContent"
+ *            title="DateTime Gadget (a classic!)"
+ *            href="http://www.google.com/favicon.ico"
+ *            type="application/x-google-gadgets+xml">
+ *   <gCal:webContent
+ *         width="300"
+ *         height="136"
+ *         url="http://google.com/ig/modules/datetime.xml">
+ *     <gCal:webContentGadgetPref name="color" value="green" />
+ *   </gCal:webContent>
  * </atom:link>
  * </xmp>
  */
@@ -54,6 +69,9 @@ public class WebContent implements Extension {
   /** the name of the child element of the web content link */
   private static final String TYPE = "webContent";
 
+  /** the name of a gadget pref element */
+  private static final String GADGET_TYPE = "webContentGadgetPref";
+  
   private static final ExtensionDescription EXTENSION_DESCRIPTION;
 
   static {
@@ -71,6 +89,8 @@ public class WebContent implements Extension {
 
   private String url;
 
+  private Map<String,String> gadgetPrefs;
+  
   // webContentLink should never be null
   private Link webContentLink;
 
@@ -115,11 +135,26 @@ public class WebContent implements Extension {
     if (getUrl() != null) {
       attrs.add(new XmlWriter.Attribute("url", getUrl()));
     }
+    Map<String,String> preferences = getGadgetPrefs();
     if (attrs.size() != 0) {
-      writer.simpleElement(Namespaces.gCalNs, TYPE, attrs, null);
+      if (preferences == null || preferences.isEmpty()) {
+        writer.simpleElement(Namespaces.gCalNs, TYPE, attrs, null);
+      } else {
+        writer.startElement(Namespaces.gCalNs, TYPE, attrs, null);
+        writer.startRepeatingElement();
+        for (Map.Entry<String,String> pref : preferences.entrySet()) {
+          List<XmlWriter.Attribute> prefAttrs =
+              new ArrayList<XmlWriter.Attribute>();
+          prefAttrs.add(new XmlWriter.Attribute("name", pref.getKey()));
+          prefAttrs.add(new XmlWriter.Attribute("value", pref.getValue()));
+          writer.simpleElement(Namespaces.gCalNs, GADGET_TYPE, prefAttrs, null);
+        }
+        writer.endRepeatingElement();
+        writer.endElement(Namespaces.gCalNs, TYPE);
+      }
     }
   }
-
+  
   public XmlParser.ElementHandler getHandler(ExtensionProfile profile,
                                              String namespace,
                                              String localName,
@@ -129,12 +164,13 @@ public class WebContent implements Extension {
   }
 
   class Handler extends XmlParser.ElementHandler {
-
+    
     public Handler() {
       // clear all existing values
       width = null;
       height = null;
       url = null;
+      gadgetPrefs = null;
     }
 
     @Override
@@ -154,6 +190,66 @@ public class WebContent implements Extension {
       }
     }
 
+    public ElementHandler getChildHandler(String namespace,
+        String localName,
+        Attributes attrs)
+        throws ParseException, IOException {
+      // handle element: <gCal:webContentGadgetPref name="" value="" />
+      if (Namespaces.gCal.equals(namespace) && GADGET_TYPE.equals(localName)) {
+        return new GadgetPrefHandler(this);
+      } else {
+        return null;
+      }
+    }
+    
+    void addGadgetPref(String name, String value) {
+      if (gadgetPrefs == null) {
+        gadgetPrefs = new HashMap<String,String>();
+      }
+      gadgetPrefs.put(name, value);
+    }
+    
+  }
+  
+  class GadgetPrefHandler extends XmlParser.ElementHandler {
+    
+    private Handler parentHandler;
+    
+    private String name;
+    
+    private String value;
+    
+    GadgetPrefHandler(Handler parentHandler) {
+      this.parentHandler = parentHandler;
+      this.name = null;
+      this.value = null;
+    }
+    
+    @Override
+    public void processAttribute(String namespace,
+                                 String localName,
+                                 String value)
+        throws ParseException {
+      if (!namespace.equals("")) {
+        return;
+      }
+      if (localName.equals("name")) {
+        this.name = value;
+      } else if (localName.equals("value")) {
+        this.value = value;
+      }
+    }    
+    
+    public void processEndElement() throws ParseException {
+      if (this.name != null && this.value != null) {
+        this.parentHandler.addGadgetPref(this.name, this.value);
+      } else if (this.name != null) {
+        throw new ParseException("name attribute defined but not value");
+      } else if (this.value != null) {
+        throw new ParseException("value attribute defined but not name");
+      }
+    }
+    
   }
 
   // restrict Link getter and setter to default access
@@ -219,6 +315,14 @@ public class WebContent implements Extension {
     this.height = height;
   }
 
+  public Map<String,String> getGadgetPrefs() {
+    return gadgetPrefs;
+  }
+  
+  public void setGadgetPrefs(Map<String,String> gadgetPrefs) {
+    this.gadgetPrefs = gadgetPrefs;
+  }
+  
   public String toString() {
     return "icon=" + getIcon() + ",title=" + getTitle() + ",type=" +
       getType() + ",width=" + getWidth() + ",height=" + getHeight() +

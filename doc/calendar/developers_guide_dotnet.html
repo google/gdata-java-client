@@ -1,0 +1,449 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Google Calendar Data API Developer's Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../css/dev_docs.css" />
+<link rel="stylesheet" type="text/css" href="css/local_extensions.css" />
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../css/ie7only.css" />
+<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="../css/ie6only.css" />
+<![endif]-->
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="../css/ieonly.css" />
+<![endif]-->
+<style type="text/css">
+<!--
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+ 	color: #000000;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+var cancelBubble = false;
+
+function goTo(url) {
+  window.location = url;
+}
+//-->
+</script>
+</head>
+<body class="t3" id="developers_guide_page">
+<a name="top"></a>
+<!-- ########## PAGE HEADER ########## -->
+
+<div id="header">
+  <div id="logo"><a href="http://code.google.com/"><img src="http://code.google.com/images/code_sm.png" border="0" alt="Return to Google Code homepage" /></a></div>
+  <h1 id="doc_title">Google Calendar Data API</h1>
+</div>
+<!-- ########## END PAGE HEADER ########## -->
+<div id="wrapper"> 
+  <!-- ########## SIDE NAVIGATION ########## -->
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+  _uacct = "UA-18071-1";
+  urchinTracker();
+</script>
+
+<div id="sidenav">
+  <ul>
+    <li>
+      <h1>Calendar</h1>
+      <ul>
+        <!-- ID tag identifies current page -->
+        <li><a href="overview.html" id="overview_link">Overview</a></li>
+        <li><a href="developers_guide_protocol.html" id="developers_guide_link">Developer's Guide</a></li>
+        <li><a href="reference.html" id="reference_link">Reference Guide</a></li>
+        <li><a href="http://www.google.com/googlecalendar/terms_of_use.html">Terms and Conditions</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>GData Protocol</h1>
+      <ul>
+        <li><a href="../gdata/overview.html">Overview</a></li>
+        <li><a href="../gdata/clientlibs.html">Client Libraries</a></li>
+        <li><a href="../gdata/auth.html">Authentication</a></li>
+      </ul>
+    </li>
+    <li>
+      <h1>Support Resources</h1>
+      <ul>
+        <li><a href="http://code.google.com/support/bin/topic.py?topic=10023">Knowledge Base</a></li>
+        <li><a href="http://groups.google.com/group/google-calendar-help-dataapi">Discussion Group</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+  <!-- ########## END SIDE NAVIGATION ########## -->
+  <!-- ########## PAGE CONTENT ########## -->
+<div id="pagecontent"> 
+    <h1 id="page_title">Google Calendar Data API Developer's Guide: .NET</h1>
+
+<div id="topnav">
+<table id="mt" cellspacing="0" cellpadding="0" width="100%" border="0">
+<tr>
+<th class="int1" onclick="if (!cancelBubble) goTo('developers_guide_protocol.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_protocol.html">Protocol</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int2" onclick="if (!cancelBubble) goTo('developers_guide_java.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_java.html">Java</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int3" onclick="if (!cancelBubble) goTo('developers_guide_dotnet.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_dotnet.html">.NET</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int4" onclick="if (!cancelBubble) goTo('developers_guide_php.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_php.html">PHP</a></div>
+</th><td>&nbsp;&nbsp;</td>
+<th class="int5" onclick="if (!cancelBubble) goTo('developers_guide_python.html');">
+<div class="tc1"><div class="tc2"><div class="tc3"></div></div></div>
+<div class="tT"><a onclick="cancelBubble=true;" href="developers_guide_python.html">Python</a></div>
+<td width="100%">&nbsp;</td>
+</tr>
+</table>
+
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+<tr>
+<td height="4" align="right" style="padding:0px; vertical-align:top">
+<div class="stur"></div>
+</td>
+</tr>
+</table>
+</div>
+
+
+    <p>Google Calendar allows client applications to view and update calendar events in the form of Google data API (&quot;GData&quot;) feeds. Your client application can use the Google Calendar data API to create new events, edit or delete existing events, and query for events that match particular criteria.</p>    
+    <p>There are many possible uses for the Calendar data API. For example, you can create a web front end for your group's calendar that uses Google Calendar as a back end. Or you can generate a public calendar for Google Calendar to display, based on your organization's event database. Or you can search relevant calendars to display a list of upcoming events on those calendars.</p>
+    <p>This document provides detailed examples for using the .NET Client Library to work with the Google Calendar service.  You will find examples of adding events, updating events, deleting events and querying events.  If you're interested in understanding more about the underlying protocol used by the .NET Client Library to interact with the Calendar data API, please see the  <a href="developers_guide_protocol.html">protocol tab</a>.</p>
+    <h1>Contents</h1>
+    <ol class="toc">
+      <li><a href="#Audience">Audience</a></li>
+      <li><a href="#GettingStarted">Getting started</a></li>
+      <li><a href="#Auth">Authenticating to the Calendar service</a> 
+        <ol class="toc">
+          <li><a href="#AuthAuthSub">AuthSub proxy authentication</a></li>
+          <li><a href="#AuthClientLogin">ClientLogin username/password authentication</a></li>
+          <li><a href="#AuthMagicCookie">Magic cookie authentication</a></li>
+        </ol>
+      </li>
+	  <li><a href="#RetrievingCalendars">Retrieving a list of calendars</a></li>
+      <li><a href="#RetrievingEvents">Retrieving events</a>
+        <ol class="toc">
+          <li><a href="#RetrievingWithoutQuery">Retrieving events without query parameters</a></li>
+          <li><a href="#RetrievingDateRange">Retrieving events for a specified date range</a></li>
+          <li><a href="#RetrievingWithQuery">Retrieving events matching a full text query </a></li>
+        </ol>
+      </li>
+      <li><a href="#CreatingEvents">Creating events</a>
+        <ol class="toc">
+          <li><a href="#CreatingSingle">Creating single-occurrence events</a></li>
+          <li><a href="#CreatingRecurring">Creating recurring events</a></li>
+        </ol>
+      <li><a href="#UpdatingEvents">Updating events</a> 
+      <li><a href="#DeletingEvents">Deleting events</a> 
+      <li><a href="#SharingACalendar">Sharing calendars</a>
+        <ol class="tok">
+          <li><a href="#RetrieveAcl">Retrieving access control lists</a></li>
+          <li><a href="#AddAcl">Adding a rule to an access control list</a></li>
+          <li><a href="#UpdateAcl">Updating a rule in an access control list</a></li>
+          <li><a href="#DeleteAcl">Removing a rule from an access control list</a></li>
+        </ol>
+      <li><a href="#AdditionalOps">Additional operations</a>
+        <ol class="toc">
+          <li><a href="#ExtendedProps">Extended properties</a></li>
+          <li><a href="#Reminders">Reminders and Notifications</a></li>
+        </ol>
+    </ol>
+    <h1><a name="Audience" id="Audience">Audience</a></h1>
+    <p>This document is intended for programmers who want to write client applications using the GData .NET client library that can interact with Google Calendar.</p>
+    <h1><a name="GettingStarted">Getting started</a></h1>
+    <p>To use the .NET client library, you'll need the .NET 1.1 runtime, and you should also be current on all patches. After <a href="http://code.google.com/p/google-gdata/downloads/list">downloading the client library</a>, you'll find the DLLs you need to get started in the <code>lib/Release</code> subdirectory of the distribution.
+    <p>A full working copy of this sample is available in the <a href="http://code.google.com/p/google-gdata/">GData project</a> in the project hosting section of code.google.com. The sample is located at <a href="http://google-gdata.googlecode.com/svn/trunk/clients/cs/samples/calendar/console/CalendarDemo.cs">/trunk/clients/cs/samples/calendar/console/CalendarDemo.cs</a> in the SVN repository accessible from the Source tab.</p>
+    <p>After compiling the sample, run it as follows:</p>
+    <pre>gcal_demo &lt;userName&gt; &lt;userPassword&gt; &lt;feedUri&gt;</pre>
+    <p>The <code>userName</code> and <code>userPassword</code> values represent the credentials used to login to Google Calendar.  The <code>feedUri</code> value is typically <code>http://www.google.com/calendar/feeds/default/private/full</code> for working with your primary calendar.  To use a non-primary calendar, find the address in the Google Calendar UI by clicking the arrow next to the calendar, choosing calendar settings and copy and paste the XML URL for the 'Calendar Address' seen on the settings tab.  Please replace the word <code>public</code> with the word <code>private</code> in the URL, as the sample will be authenticating using the provided credentials.</p>
+    <p>The sample performs a number of operations on the provided calendar to demonstrate the use of the Calendar data API.  Please see the <code>RunSample</code> method of the code for more details as to which operations are performed.</p>
+    <p>To compile the examples in this document into your own code, you'll need the following <code>using</code> statements:</p>
+    <pre>using Google.GData.Calendar;
+using Google.GData.Client;
+using Google.GData.Extensions;</pre>
+    <p>The <a href="http://code.google.com/apis/gdata/csdoc/Google.GData.Calendar.CalendarService.html"><code>CalendarService</code></a> class represents a client connection (with authentication) to a Calendar service. The general procedure for sending a query to a service using the client library consists of the following steps:</p> 
+    <ol>
+      <li>Obtain or construct the appropriate URL.</li> 
+      <li>If you're sending data to a service (for example, if you're inserting a new entry), then transform the raw data into objects using the client library classes. (This step doesn't apply if you're just requesting a feed, as we're doing in this example.)</li> 
+      <li>Create a new <code>CalendarService</code> instance, setting your application's name (in the form <code><i>companyName</i>-<i>applicationName</i>-<i>versionID</i></code>).</li> 
+      <li>Set the appropriate credentials.</li> 
+      <li>Call a method to send the request and receive any results.</li> 
+    </ol> 
+    <h1><a name="Auth">Authenticating to the Calendar service</a></h1>
+    <p>The .NET client library can be used to work with either public or private feeds.  Public feeds are read-only, but do not require any authentication.  Private feeds require that you authenticate to the calendar servers.  This can be done via <a href="#AuthClientLogin">ClientLogin</a> username/password authentication or <a href="#AuthAuthSub">AuthSub</a> proxy authentication.  The calendar service also allows authentication to a read-only private feed using <a href="#AuthMagicCookie">magic cookie</a> authentication.</p>
+    <p>Please see the <a href="../gdata/auth.html">authentication documentation</a> for more information on AuthSub and ClientLogin.</p>
+    <h2><a name="AuthAuthSub" id="AuthAuthSub">AuthSub proxy authentication</a></h2>
+    <p>As of version 1.09 of the .NET client library, it is possible for applications to authenticate using the AuthSub login protocol.  This is useful, for example, if you have an ASP application that requires Calendar authentication.</p>
+    <p>To acquire an AuthSub token for a given user and a given service, your application must redirect the user to the AuthSubRequest URL, which prompts them to log into their Google account. (For more information on the AuthSubRequest URL, see the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">AuthSub documentation</a>.)</p>
+    <p>Supposing we have the following ASP hyperlink defined in our page:</p>
+    <pre>&lt;asp:HyperLink ID="GotoAuthSubLink" runat="server"/&gt;</pre>
+    <p>then to construct the AuthSubRequest URL for your application, make a .NET client library call as follows:</p>
+    <pre>GotoAuthSubLink.Text = "Login to your Google Account";
+GotoAuthSubLink.NavigateUrl = AuthSubUtil.getRequestUrl("http://www.example.com/RetrieveToken",
+                                                        "http://www.google.com/calendar/feeds/",
+                                                        false,
+                                                        true);</pre>
+     <p>The <code>getRequestUrl</code> method takes several parameters (corresponding to the query parameters used by the AuthSubRequest handler): the &quot;next&quot;  URL (which is the URL that Google  will redirect to after the user logs into their account and grants access); the scope (as determined in the previous section); and two Booleans, one to indicate whether the token will be used in registered mode or not, and one to indicate whether the token will later be exchanged for a session token or not. The above example shows a call in unregistered mode (the first Boolean is <code>false</code>), for a token that will be exchanged for a session token later (the second Boolean is <code>true</code>); adjust the Booleans appropriately for your application.</p>
+
+    <p>After the user follows the link to the AuthSub page at Google and logs in, the AuthSub system then redirects the user back to your application, using the &quot;next&quot; URL you provided.</p>
+    <p>When Google redirects back to your application, the token is appended to the &quot;next&quot; URL as a query parameter. So in the case of the above &quot;next&quot; URL, after the user logs in, Google redirects to a URL like <code>http://www.example.com/RetrieveToken?token=DQAADKEDE</code>. Therefore, the token is accessible as a variable in the ASP page's <code>Request.QueryString</code> object.</p>
+    <p>The token you initially retrieve is always a one-time use token. You can exchange this token for a session token using the AuthSubSessionToken URL, as described in the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html">AuthSub documentation</a>. Your application can make this exchange using the .NET client library as follows:</p>
+    <pre>SessionsessionToken = AuthSubUtil.exchangeForSessionToken(Request.QueryStringtoken, null);</pre>
+    <p>You pass your one-time use token to the <code>exchangeForSessionToken</a></code> method, along with either <code>null</code> (for unregistered mode) or a private key (for registered mode), and the AuthSub interface returns a session token. For more information about registered applications and private keys, refer to the <a href="http://code.google.com/apis/accounts/AuthForWebApps.html#signingrequests">"Signing requests"</a> section of the AuthSub documentation</a>.</p>
+    <p>Now you are ready to use the session token to authenticate requests to the Calendar server by placing the token in the Authorization header. To tell the .NET client library to automatically send the Authorization header (containing the session token) with each request, do the following:</p>
+    <pre>GAuthSubRequestFactory authFactory = new GAuthSubRequestFactory("cl","CalendarSampleApp");
+authFactory.Token = SessionsessionToken.ToString();
+Service service = new Service("cl", authFactory.ApplicationName);
+service.RequestFactory = authFactory;</pre>
+    <h2><a name="AuthClientLogin" id="AuthClientLogin">ClientLogin username/password authentication</a></h2>
+    <p>To use ClientLogin (also called &quot;Authentication for Installed Applications&quot;), invoke the <code><a href="http://code.google.com/apis/gdata/csdoc/Google.GData.Client.Service.setUserCredentials.html">setUserCredentials</a></code> method of <code>CalendarService</code>, specifying the ID and password of the user on whose behalf your client is sending the query. For example:</p>
+    <pre>CalendarService myService = new CalendarService("exampleCo-exampleApp-1");
+myService.setUserCredentials("jo@gmail.com", "mypassword");</pre>
+    <p>For more information about authentication systems, see the <a href="http://code.google.com/apis/accounts/Authentication.html">Google Account Authentication</a> documentation.</p> 
+    <h2><a name="AuthMagicCookie" id="AuthMagicCookie">Magic cookie authentication</a></h2>
+    <p>The simplest feed URL to use is that of the calendar's read-only so-called &quot;magic cookie&quot; private feed, because that URL doesn't require authentication. The usual procedure for determining that URL  involves using a JavaScript-enabled GUI browser to get the URL manually. If you can't or don't want to use such a browser, then you can instead interact with Calendar using one of the other feed URLs, which require authentication, but which you can construct without using a browser. Those URLs (and information on how to use authentication) are covered in later examples, but even if you aren't going to use the &quot;magic cookie&quot; URL, you should read through the first couple of examples to learn the basics of sending Calendar requests.</p>
+
+    <p>To find your calendar's &quot;magic cookie&quot; feed URL:</p>
+    <ol>
+      <li>In the list of calendars on the left side of the page, find the calendar you want to interact with. You can create a new calendar for this purpose if you want to.</li>
+      <li>Click the arrow button to the right of the calendar. Select &quot;Calendar settings&quot; from the drop-down menu. The Calendar Details page appears.</li>
+
+      <li>Scroll down to the Private Address section. There are two buttons; select the XML button. The feed URL appears.</li>
+      <li>Copy the URL. This is the URL of your calendar's read-only &quot;magic cookie&quot; private feed; it includes a special coded string that lets you read the private feed without having to do authentication. This is the URL you'll use to request a feed from Calendar, so you won't have to do authentication just to view the feed.</li>
+    </ol>
+    <p>The feed URL has the following form:</p>
+    <pre>http://www.google.com/calendar/feeds/<i>userID</i>/private-<i>magicCookie</i>/basic</pre>
+
+    <p>You can modify this URL in the following ways:</p>
+    <ul>
+      <li>If you want a private feed that requires authentication, convert
+        the &quot;private-{magic-cookie}&quot; part of this path to just &quot;private&quot;.</li>
+      <li>If you want the &quot;full&quot; calendar project, change the
+        last component 
+        from &quot;basic&quot; to &quot;full&quot; in the URL. Using
+        &quot;basic&quot; returns a basic Atom feed without any extension
+        elements. Using &quot;full&quot; returns a feed that includes all event
+        properties, but comments aren't included inline. Instead, they're
+        specified (in the <code>&lt;gd:feedLink&gt;</code> element)
+        as a link to a separate comment feed.</li>
+
+    </ul>
+    <p>The &quot;basic&quot; form of the feed holds event information that is formatted
+      for reading, more suited to human consumption of the feed. The
+      &quot;full&quot; form of the feed holds structured events that are represented
+      as &quot;Kinds", so they are more suited to computer processing.</p>
+    <p>If you're looking at settings for the user's main calendar, then <code>userID</code> is  the user's email address. If you're looking at settings for another calendar, then <code>userID</code> is a longer and more complicated email address. In either case, <code>magicCookie</code> is a special code that lets you read the private feed without having to do authentication. Here's an example of a feed URL:</p>
+
+    <pre>http://www.google.com/calendar/feeds/jo@gmail.com/private-08ce2fac8efa42f2a0d04eceb7d68cc9/full</pre>
+    <p>Under some circumstances, you may want to generate a new &quot;magic cookie&quot; URL. (Note that if someone else gets access to that URL, they can view your calendar without authentication.) To do that, click the &quot;Reset Private URLs&quot; link in the Calendar Details page.</p>
+    <h1><a name="RetrievingCalendars" id="RetrievingCalendars">Retrieving a list of calendars</a></h1>
+    <p>You can get a feed containing a list of the currently authenticated user's calendars by sending an authenticated <code>GET</code> request to the following URL:</p>
+    <pre>http://www.google.com/calendar/feeds/default</pre>
+
+    <p>The result is  a &quot;meta-feed,&quot; a feed that lists all of that user's calendars; each entry in the feed represents a calendar associated with the user. The list includes primary, secondary, and imported calendars, and all other calendars that the user has access to.</p>
+    <p>This feed is  accessible only using an authentication token. You cannot use a &ldquo;magicCookie&rdquo; URL to access the feed. For information on authentication, see the earlier <a href="#Auth">Authenticating to the Calendar service</a> section.</p>
+    <p>To request the feed using the .NET client library, you would use the same code that you might use to request any Calendar feed, except you give the meta-feed URL instead of an ordinary feed URL:</p>
+
+    <pre>FeedQuery query = new FeedQuery();
+query.Uri = new Uri("http://www.google.com/calendar/feeds/default");
+
+// Tell the service to query:
+AtomFeed calFeed = service.Query(query);</pre>
+    <h1><a name="RetrievingEvents" id="RetrievingEvents">Retrieving events</a></h2>
+    <h2><a name="RetrievingWithoutQuery" id="RetrievingWithoutQuery">Retrieving events without query parameters</a></h2> 
+    <p>To request a Calendar feed using the .NET client library, for a user with email address &quot;jo@gmail.com&quot;, use the following code:</p> 
+    <pre>// Create the query object:
+EventQuery query = new EventQuery();
+query.Uri = new Uri("http://www.google.com/calendar/feeds/jo@gmail.com/private/full");
+
+// Tell the service to query:
+EventFeed calFeed = service.Query(query);</pre>
+    <p>Again, this example assumes that <code>service</code> is a <code>CalendarService</code> object that has been properly authenticated using one of the methods described above.</p>
+    <h2><a name="RetrievingDateRange" id="RetrievingDateRange">Retrieving events for a specified date range</a></h2> 
+    <p>To view events on your calendar that overlap a particular date range, use the following .NET code:</p>
+    <pre>EventQuery myQuery = new EventQuery(feedUrl);
+myQuery.StartTime = new DateTime(2007, 1, 5);
+myQuery.EndTime = new DateTime(2007, 1, 7);
+
+EventFeed myResultsFeed = myService.Query(myQuery);</pre>
+    <p>The above code creates a new <code>EventQuery</code> for the feed whose URL is <code>feedUrl</code>. It specifies that we want to retrieve all events from January 5, 2007 (inclusive) to January 7, 2007 (exclusive). Finally, the query is executed by calling the <code>Query</code> method of <code>myService</code>, which we assume is an authenticated <code>CalendarService</code>.</p>
+    <h2><a name="RetrievingWithQuery" id="RetrievingWithQuery">Retrieving events matching a full text query</a></h2> 
+    <p>To retrieve the first match in a full-text search, use the following code:</p> 
+    <pre>EventQuery myQuery = new EventQuery(feedUrl);
+myQuery.Query = "Tennis";
+EventFeed myResultsFeed = myService.Query(myQuery);
+if (myResultsFeed.Entries.Count > 0) {
+  AtomEntry firstMatchEntry = myResultsFeed.Entries[0];
+  String myEntryTitle = firstMatchEntry.Title.Text;
+}</pre> 
+    <p>This example starts by constructing an <code><a href="csdoc/Google.GData.Client.EventQuery.html">EventQuery</a></code> object, which consists mostly of a URL plus associated query parameters. Each of the standard GData query parameters has a property.</p>
+
+    <p>After constructing the <code>EventQuery</code>, we pass it to the service's <code>Query</code> method, which returns a feed containing the query results. An alternative approach would be to construct a URL yourself (by appending query parameters to the feed URL) and then call the <code>Query</code> method, but the <code>EventQuery</code> method provides a useful layer of abstraction so that you don't have to construct the URL yourself.</p> 
+    <p>The feed's <code><a href="csdoc/Google.GData.Client.EventFeed.Entries.html">Entries</a></code> collection returns a list of the entries in the feed; <code>Entries.Count</code> returns the number of entries in the feed.</p> 
+    <p>In this case, if the query returned any results, we assign the first matching result to an <code>AtomEntry</code> object. Then we use the <code>AtomEntry</code> class's <code><a href="csdoc/Google.GData.Client.AtomEntry.Title.html">Title</a></code> property to retrieve the entry's title.</p> 
+    <p>The above code is equivalent to sending <code>GET http://www.google.com/calendar/feeds/jo@gmail.com/private/full?q=Tennis</code> to Calendar.</p> 
+    <h1><a name="CreatingEvents" id="CreatingEvents">Creating events</a></h1> 
+    <p>The Calendar Data API allows you to create two types of events: single-occurrence events and recurring events, which are set up to repeat on a predetermined schedule.</p>
+    <h2><a name="CreatingSingle" id="CreatingSingle">Creating single-occurrence events</a></h2>
+    <p>To insert a single-occurrence event into a Calendar feed, you might use the following code:</p> 
+    <pre>EventEntry entry = new EventEntry();
+
+// Set the title and content of the entry.
+entry.Title.Text = "Tennis with Beth";
+entry.Content.Content = "Meet for a quick lesson.";
+
+// Set a location for the event.
+Where eventLocation = new Where();
+eventLocation.ValueString = "South Tennis Courts";
+entry.Locations.Add(eventLocation);
+
+Uri postUri = new Uri("http://www.google.com/calendar/feeds/jo@gmail.com/private/full");
+
+// Send the request and receive the response:
+AtomEntry insertedEntry = service.Insert(postUri, entry);</pre> 
+    <p>In this example, we first construct an <code><a href="http://code.google.com/apis/gdata/csdoc/Google.GData.Calendar.EventEntry.html">EventEntry</a></code> object.  Then the code sets several properties of the entry we're adding: its <code><a href="http://code.google.com/apis/gdata/csdoc/Google.GData.Client.AtomEntry.Title.html">Title</a></code> and <code><a href="http://code.google.com/apis/gdata/csdoc/Google.GData.Client.AtomEntry.Content.html">Content</a></code> text, as well as its location. Note that to set the event's location, we must first construct a <code><a href="http://code.google.com/apis/gdata/csdoc/Google.GData.Extensions.Where.html">Where</a></code> object whose <code>ValueString</code> is the desired location text.</p>
+    <p>We're using the same <code>Service</code> object that we created in the previous example. In this case, the method to call is <code><a href="csdoc/Google.GData.Client.Service.Insert_overloads.html">Insert</a></code>, which sends an item to the specified insertion URL.</p> 
+    <p>The service returns the newly created entry, which may contain additional server-generated elements, such as an edit URL for the entry.</p> 
+    <p>The above code is equivalent to sending <code>POST http://www.google.com/calendar/feeds/jo@gmail.com/private/full</code> (with proper authentication) and providing an entry.</p> 
+    <h2><a name="CreatingRecurring" id="CreatingRecurring">Creating recurring events</a></h2>
+   <p>To create a recurring event, use code similar to the following:</p>
+    <pre>EventEntry myEntry = new EventEntry();
+
+String recurData =
+  "DTSTART;VALUE=DATE:20070501\r\n" +
+  "DTEND;VALUE=DATE:20070502\r\n" +
+  "RRULE:FREQ=WEEKLY;BYDAY=Tu;UNTIL=20070904\r\n";
+
+Recurrence recurrence = new Recurrence();
+recurrence.Value = recurData;
+myEntry.Recurrence = recurrence;</pre>
+    <p>In this example, we first create a string containing an iCal (<a href="http://tools.ietf.org/html/rfc2445">RFC 2445</a>) specification of the desired event recurrence.  Here, the all-day event occurs first on 2007/05/01 and repeats weekly on Tuesdays until 2007/09/04.  Next, a new <code>Recurrence</code> object is constructed and its <code>Value</code> is set to the recurrence string.  Finally, a new <code>EventEntry</code> is created and the recurrence added by setting its <code>Recurrence</code> property.</p>
+    <h1><a name="UpdatingEvents" id="UpdatingEvents">Updating events</a></h1> 
+    <p>To update an existing item, use the following code. In the following example, we're changing the previously retrieved entry's title from its old text ("Tennis with Beth") to &quot;Important meeting.&quot;</p> 
+    <pre>retrievedEntry.Title.Text = "Important meeting";
+retrievedEntry.Update();</pre> 
+    <p>First we set a new title for the entry we fetched earlier. Then we just call the <code>Update</code> method to send the updated entry to the service.</p> 
+    <p>The service returns the updated entry, including a new URL for this entry's new version. (For more information on entry versions, see the <a href="http://code.google.com/apis/gdata/reference.html#Optimistic-concurrency">Optimistic concurrency</a> section of the GData Protocol Reference.)</p> 
+    <p>The above code is roughly equivalent to sending <code>PUT http://www.google.com/calendar/feeds/jo@gmail.com/private/full/<i>entryID</i></code> to the service, along with the new entry (in Atom format) to replace the original entry.</p>
+    <h1><a name="DeletingEvents" id="DeletingEvents">Deleting events</a></h1>
+    <p>To delete an existing item, use the following code:</p> 
+    <pre>updateEntry.Delete();</pre> 
+    <p>The URL to use for deletion is the same as the edit URL, so this example is very similar to the previous one, except of course that we're calling the <code><a href="csdoc/Google.GData.Client.Service.Delete.html">Delete</a></code> method instead of <code>Update</code>.</p> 
+    <p>The above code is roughly equivalent to sending <code>DELETE http://www.google.com/calendar/feeds/jo@gmail.com/private/full/<i>entryID</i></code> to the service.</p> 
+    <h1><a name="SharingACalendar" id="SharingACalendar">Sharing calendars</a></h1>
+    <p>This section describes how to share calendars by retrieving and modifying Calendar access control lists (ACLs) with the .NET client library. An access control list identifies the set of users with whom a calendar is shared, and the access permissions (read-only access, full access, etc.) of each user or group of users. For more information, see <a href="developers_guide_protocol.html#ACL">the ACL topic</a> of the Protocol section.</p>
+    <h2><a name="RetrieveAcl" id="RetrieveAcl">Retrieving access control lists</a></h2>
+    <p>To retrieve and print the access control lists of all of your calendars, use the following code. Here <code>service</code> is an authenticated <code>CalendarService</code> object.</p>
+    <pre>FeedQuery query = new FeedQuery();
+query.Uri = new Uri("http://www.google.com/calendar/feeds/default");
+AtomFeed calFeed = service.Query(query);
+
+// Retrieve the meta-feed of all calendars.
+foreach (AtomEntry calendarEntry in calFeed.Entries)
+{
+    Console.WriteLine("Calendar: {0}", calendarEntry.Title.Text);
+    AtomLink link = calendarEntry.Links.FindService(
+        AclNameTable.LINK_REL_ACCESS_CONTROL_LIST, null);
+
+    // For each calendar, retrieve its ACL feed.
+    if (link != null)
+    {
+        AclFeed feed = service.Query(new AclQuery(link.HRef.ToString()));
+        foreach (AclEntry aclEntry in feed.Entries)
+        {
+            Console.WriteLine("\tScope: Type={0} ({1})", aclEntry.Scope.Type,
+                aclEntry.Scope.Value);
+            Console.WriteLine("\tRole: {0}", aclEntry.Role.Value);
+        }
+    }
+}</pre>
+    <p>After accessing the "meta-feed" to <a href="#RetrievingCalendars">retrieve a list of all calendars</a>, we extract the ACL link for each calendar and retrieve that feed. These links have the form <pre>http://www.google.com/calendar/feeds/&lt;userId&gt;/acl/full</pre>.</p>
+    <p>We then print each entry in the feed. An <code>AclEntry</code> consists of a <i>scope</i>, which defines a user with access to this calendar, and a <i>role</i>, which defines how much access he or she has. Valid roles are:</p>
+    <ul>
+      <li><code>AclRole.ACL_CALENDAR_FREEBUSY</code> &ndash; this user can only see free/busy information</li>
+      <li><code>AclRole.ACL_CALENDAR_READ</code> &ndash; this user can see all event details</li>
+      <li><code>AclRole.ACL_CALENDAR_EDITOR</code> &ndash; this user can make changes to events</li>
+      <li><code>AclRole.ACL_CALENDAR_OWNER</code> &ndash; this user can make changes <i>and</i> manage sharing</li>
+    </ul>
+    <p class="note"><strong>Note</strong>: Google data ACLs define scopes that encompass more than one user, though the examples here only use <code>AclScope.SCOPE_USER</code> for simplicity.  Specifically, <code>AclScope.SCOPE_DOMAIN</code> (available only in Google Apps) indicates that an access rule applies to all users with email addresses in the domain, while <code>AclScope.SCOPE_DEFAULT</code> specifies an access rule that applies to all users. For more information, see the <a href="reference.html#gacl_reference">GAcl namespace element reference</a>.</p>
+    <h2><a name="AddAcl" id="AddAcl">Adding a rule to an access control list</a></h2>
+    <p>To add a user to a calendar's access control list, you might do the following:</p>
+    <pre>AclEntry entry = new AclEntry();
+
+entry.Scope = new AclScope();
+entry.Scope.Type = AclScope.SCOPE_USER;
+entry.Scope.Value = "jdoe@gmail.com";
+
+entry.Role = AclRole.ACL_CALENDAR_READ;
+
+Uri aclUri = new Uri("http://www.google.com/calendar/feeds/jo@gmail.com/acl/full");
+
+AclEntry insertedEntry = service.Insert(feedUri, entry) as AclEntry;</pre>
+    <p>This code allows <code>jdoe@gmail.com</code> to have read-only access to <code>jo@gmail.com</code>'s calendar. Note that if an attempt is made to add an entry with a scope whose type and value match another entry already in the access control list, the operation will fail with error code 409 (Conflict).</p>
+    <h2><a name="UpdateAcl" id="UpdateAcl">Updating a rule in an access control list</a></h2>
+    <p>In order to change a user's access level to a calendar, update the <code>AclEntry</code> with the following code:</p>
+    <pre>entry.Role = AclRole.ACL_CALENDAR_OWNER;
+AclEntry updatedEntry = entry.Update() as AclEntry;</pre>
+    <p>This code changes <code>entry</code> to a rule indicating that the user defined in its scope has full (owner) access privileges.</p>
+    <p class="note"><strong>Note</strong>: It is not possible to modify the scope of an <code>AclEntry</code> when updating it; only the role can be modified. An attempt to update the scope will result in a 403 (Forbidden) error.</p>
+    <h2><a name="DeleteAcl" id="DeleteAcl">Removing a rule from an access control list</a></h2>
+    <p>To remove a user from a calendar's access control list, do the following:</p>
+    <pre>entry.Delete();</pre>
+    <p>Here <code>entry</code> is an <code>AclEntry</code> that was already defined as a variable or retrieved from an <code>AclFeed</code>. Executing this code will cause the user defined in <code>entry</code>'s scope to lose access to this calendar.</p>
+    <h1><a name="AdditionalOps" id="AdditionalOps">Additional operations</a></h1>
+    <p>This section describes other Calendar operations you can perform with the GData .NET client library.</p>
+    <h2><a name="ExtendedProps" id="ExtendedProps">Extended properties</a></h2>
+    <p>You can add extended properties (arbitrary name-value pairs) to Calendar events.  These can be used to store application-specific IDs or other small amounts of information your application needs when interacting with a Google Calendar.  Extended properties are only accessible through the API &ndash; they do not appear in the Calendar user interface.</p>
+    <p>In this example, we are adding an extended property <code>id</code> with value <code>1234</code> to the Calendar entry <code>myEntry</code>. It is recommended that you specify the complete schema URL to avoid namespace collisions with other applications that use the same property name:</p>
+    <pre>EventEntry myEntry = new EventEntry();
+
+ExtendedProperty property = new ExtendedProperty();
+property.Name = "http://www.example.com/schemas/2005#mycal.id";
+property.Value = "1234";
+
+entry.ExtensionElements.Add(property);</pre>
+    <h2><a name="Reminders" id="Reminders">Reminders and Notifications</a></h2>
+    <p>To set a reminder for a calendar event, you can do the following:</p>
+    <pre>EventEntry myEntry = new EventEntry();
+ 
+Reminder fifteenMinReminder = new Reminder();
+fifteenMinReminder.Minutes = 15;
+myEntry.Reminder = fifteenMinReminder;</pre>
+    <p>This code sets a 15-minute reminder for the entry <code>myEntry</code>. Note that reminders are currently only available on a user's primary calendar.</p>
+</div>
+  <!-- ########## END PAGE CONTENT ########## -->
+</div>
+<!-- end wrapper -->
+<!-- ########## PAGE FOOTER ########## -->
+<div id="footer">
+  <div id="footerlogo"><img src="http://www.google.com/images/art.gif" alt="" /></div>
+  <div id="copyright">
+    <p>&copy; Google Inc. 2006 - <a href="http://www.google.com/privacy.html">Privacy Policy</a> - <a href="http://www.google.com/terms_of_service.html">Terms and Conditions</a> - <a href="http://www.google.com/about.html">About Google</a></p>
+  </div>
+  <!-- end copyright -->
+</div>
+<!-- ########## END PAGE FOOTER ########## -->
+<p id="date">Last modified:
+<script type="text/javascript">
+  <!--
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+  //-->
+</script>
+</p>
+</body>
+</html>
