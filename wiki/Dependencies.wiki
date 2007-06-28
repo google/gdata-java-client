@@ -1,4 +1,4 @@
-#summary Dependencies
+#summary List of dependency packages for GData Java Client API library.
 #labels Featured
 
 = Introduction =
