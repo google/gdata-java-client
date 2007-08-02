@@ -8,6 +8,12 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.13.0 ==
+  * Added support for Google Documents List Data API.
+  * Added support for Calendar Gadgets in Calendar Data API.
+  * Added samples for interacting with read/write calendar feeds in Calendar Data API.
+  * Deprecated Geo format gd:geoPt from data model.
+
 == 1.12.0 ==
   * Added support for standard Geo formats including GeoRSS, W3C Semantic Web IG and GML format.  The use of gd:geoPt is discouraged.
   * Updated GData Java client library versioning to follow the standard format "<major_release>.<minor_release>.<patch_release>". In this release the version number changed from "1.0.11" to "1.12.0" to reflect the updated versioning scheme.
