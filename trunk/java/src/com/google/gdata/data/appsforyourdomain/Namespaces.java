@@ -29,13 +29,14 @@ public class Namespaces {
   public static final String APPS_PREFIX = APPS + "#";
 
   /** Describes the meaning of FeedLinks in the UserEntry */
-  public static final String USER_NICKNAME_REL = APPS_PREFIX + "user.nicknames";
-  public static final String USER_EMAILLIST_REL = APPS_PREFIX
-      + "user.emailLists";
-  
+  public static final String USER_NICKNAME_REL = 
+      APPS_PREFIX + "user.nicknames";
+  public static final String USER_EMAILLIST_REL = 
+      APPS_PREFIX + "user.emailLists"; 
+
   /** Describes the meaning of FeedLinks in the EmailListEntry */
-  public static final String EMAILLIST_RECIPIENT_REL = APPS_PREFIX
-      + "emailList.recipients";
+  public static final String EMAILLIST_RECIPIENT_REL = 
+      APPS_PREFIX + "emailList.recipients";
  
   /** Google data XML writer namespace. */
   public static final XmlWriter.Namespace APPS_NAMESPACE

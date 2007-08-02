@@ -1,5 +1,14 @@
-Google Data API v1.12 (Java) - Release Notes
-Jun 21, 2007
+Google Data API v1.13 (Java) - Release Notes
+Jul 30, 2007
+
+Notes for v1.13.0
+-----------------
+July 30, 2007
+o  Added support for Google Documents List Data API.
+o  Added support for Calendar Gadgets in Calendar Data API.
+o  Added samples for interacting with read/write calendar feeds in
+   Calendar Data API
+o  Deprecated Geo format gd:geoPt from data model.
 
 Notes for v1.12.0
 -----------------

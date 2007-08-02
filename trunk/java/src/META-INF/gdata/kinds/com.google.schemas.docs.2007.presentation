@@ -1,0 +1,2 @@
+# GData Kind Adaptors for http://schemas.google.com/docs/2007#presentation
+com.google.gdata.data.docs.PresentationEntry

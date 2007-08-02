@@ -15,7 +15,9 @@
 
 package com.google.api.gbase.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
@@ -42,6 +44,8 @@ public class GoogleBaseAttribute {
    * {@code gm:adjusted_value}, or null if none of these tags is specified.
    */
   private Adjustments adjustments;
+
+  private List<Thumbnail> thumbnails;
 
   /**
    * Creates a new GoogleBaseAttribute with a name and no type.
@@ -289,7 +293,25 @@ public class GoogleBaseAttribute {
     }
     return adjustments;
   }
-    
+   
+  /**
+   * Returns true if the attribute has thumbnails, false otherwise.
+   */
+  public boolean hasThumbnails() {
+    return thumbnails != null && thumbnails.size() > 0;
+  }
+
+  /**
+   * Gets the reference to the list of thumbnails for this attribute. The result
+   * might be empty, but never null.
+   */
+  public List<Thumbnail> getThumbnails() {
+    if (thumbnails == null) {
+      thumbnails = new ArrayList<Thumbnail>();
+    }
+    return thumbnails;
+  }
+
   @Override
   public int hashCode() {
     int retval = 27 + attributeId.hashCode();

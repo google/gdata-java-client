@@ -24,10 +24,8 @@ import com.google.gdata.data.extensions.When;
 import java.util.List;
 
 /**
- * This is used by com.google.calendar.forseti.CalendarsFeedProvider
- * to represent a single calendar, in a list of calendars.  Use
- * EventEntry to represent a single event, that would show up in a
- * CalendarEventEntry feed.
+ * This represents a single calendar in a list of calendars.  Use
+ * CalendarEventEntry to represent a single event from a calendar.
  *
  * 
  */

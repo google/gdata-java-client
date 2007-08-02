@@ -288,6 +288,12 @@ public class HttpGDataRequest implements GDataRequest {
     httpConn.setDoOutput(expectsInput);
   }
 
+  /**
+   * Protected default constructor for testing.
+   */
+  protected HttpGDataRequest() {
+  }
+
 
   /**
    * Obtains a connection to the GData service.
@@ -377,8 +383,11 @@ public class HttpGDataRequest implements GDataRequest {
 
   /**
    * Sets request method (and logs it, if enabled)
+   *
+   * @param method Http method name.
+   * @throws ProtocolException exception.
    */
-  private void setMethod(String method) throws ProtocolException {
+  public void setMethod(String method) throws ProtocolException {
     httpConn.setRequestMethod(method);
     if (logger.isLoggable(Level.FINE)) {
       logger.fine(method + " " + httpConn.getURL().toExternalForm());

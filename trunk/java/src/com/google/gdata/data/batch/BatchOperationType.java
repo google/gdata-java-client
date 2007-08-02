@@ -35,16 +35,16 @@ import java.util.Map;
 public enum BatchOperationType {
 
   /** Query for the entry by id. */
-  QUERY("query"),
+  QUERY("query", "GET"),
   
   /** Insert the current entry. */
-  INSERT("insert"),
+  INSERT("insert", "POST"),
 
   /** Update the current entry identified by its id. */
-  UPDATE("update"),
+  UPDATE("update", "PUT"),
 
   /** Delete the current entry identified by its id. */
-  DELETE("delete");
+  DELETE("delete", "DELETE");
 
   private static final Map<String, BatchOperationType> BY_NAME =
       new HashMap<String, BatchOperationType>();
@@ -55,8 +55,10 @@ public enum BatchOperationType {
   }
 
   private final String name;
-  private BatchOperationType(String name) {
+  private final String method;
+  private BatchOperationType(String name, String method) {
     this.name = name;
+    this.method = method;
   }
 
   /**
@@ -66,6 +68,15 @@ public enum BatchOperationType {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Gets the operation name as an HTTP method name.
+   * 
+   * @return HTTP method name
+   */
+  public String getMethod() {
+    return method;
   }
 
   public String toString() {

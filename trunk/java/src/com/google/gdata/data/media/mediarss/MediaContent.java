@@ -16,12 +16,10 @@
 
 package com.google.gdata.data.media.mediarss;
 
-import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.data.ExtensionDescription;
+import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
+import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.util.ParseException;
-
-import java.util.List;
 
 /**
  * {@code <media:content>}.
@@ -31,6 +29,11 @@ import java.util.List;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = MediaRssNamespace.PREFIX,
+    nsUri = MediaRssNamespace.URI,
+    localName = "content"
+)
 public class MediaContent extends AbstractMediaResource {
   private long fileSize;
   private String type;
@@ -44,10 +47,6 @@ public class MediaContent extends AbstractMediaResource {
   private int duration;
   private String language;
 
-  public MediaContent() {
-    super("content");
-  }
-
   /**
    * Describes the tag to an {@link com.google.gdata.data.ExtensionProfile}.
    *
@@ -56,7 +55,7 @@ public class MediaContent extends AbstractMediaResource {
    */
   public static ExtensionDescription getDefaultDescription(boolean repeat) {
     ExtensionDescription retval =
-        ExtensionUtils.getDefaultDescription("content", MediaContent.class);
+        ExtensionDescription.getDefaultDescription(MediaContent.class);
     retval.setRepeatable(repeat);
     return retval;
   }
@@ -151,27 +150,42 @@ public class MediaContent extends AbstractMediaResource {
   }
 
   @Override
-  protected void addAttributes(List<XmlWriter.Attribute> attrs) {
-    super.addAttributes(attrs);
+  protected void putAttributes(AttributeGenerator generator) {
+    super.putAttributes(generator);
 
-    ExtensionUtils.addAttribute(attrs, "fileSize", fileSize);
-    ExtensionUtils.addAttribute(attrs, "type", type);
-    ExtensionUtils.addAttribute(attrs, "medium", medium);
-    if (isDefault) {
-      ExtensionUtils.addAttribute(attrs, "isDefault", isDefault);
+    if (fileSize > 0) {
+      generator.put("fileSize", fileSize);
     }
-    ExtensionUtils.addAttribute(attrs, "expression", expression);
-    ExtensionUtils.addAttribute(attrs, "bitrate", bitrate);
-    ExtensionUtils.addAttribute(attrs, "framerate", framerate);
-    ExtensionUtils.addAttribute(attrs, "samplingrate", samplingrate);
-    ExtensionUtils.addAttribute(attrs, "channels", channels);
-    ExtensionUtils.addAttribute(attrs, "duration", duration);
-    ExtensionUtils.addAttribute(attrs, "language", language);
+
+    generator.put("type", type);
+    generator.put("medium", medium);
+    if (isDefault) {
+      generator.put("isDefault", isDefault);
+    }
+    generator.put("expression", expression,
+        new AttributeHelper.LowerCaseEnumToAttributeValue<Expression>());
+    if (bitrate > 0) {
+      generator.put("bitrate", bitrate);
+    }
+    if (framerate > 0) {
+      generator.put("framerate", framerate);
+    }
+    if (samplingrate > 0) {
+      generator.put("samplingrate", samplingrate);
+    }
+    if (channels > 0) {
+      generator.put("channels", channels);
+    }
+    if (duration > 0) {
+      generator.put("duration", duration);
+    }
+    generator.put("language", language);
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper attrsHelper)
       throws ParseException {
+    super.consumeAttributes(attrsHelper);
     fileSize = attrsHelper.consumeLong("fileSize", false);
     type = attrsHelper.consume("type", false);
     medium = attrsHelper.consume("medium", false);

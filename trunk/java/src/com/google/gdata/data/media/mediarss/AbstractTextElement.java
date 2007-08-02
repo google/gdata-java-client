@@ -61,6 +61,7 @@ public abstract class AbstractTextElement extends AbstractExtension {
     return content.getPlainText();
   }
 
+  @Override
   public void putAttributes(AttributeGenerator generator) {
     if (content != null) {
       String type =
@@ -77,6 +78,7 @@ public abstract class AbstractTextElement extends AbstractExtension {
     }
   }
 
+  @Override
   protected void consumeAttributes(AttributeHelper attrsHelper) throws
       ParseException {
   }

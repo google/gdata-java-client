@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 
 Name: com/google/gdata/client/
 Specification-Title: Google Data Protocol
-Specification-Version: 1.12
+Specification-Version: @client.spec.version@
 Specification-Vendor: Google Inc.
 Implementation-Title: GData client library for Java
-Implementation-Version: 1.12.0
+Implementation-Version: @client.impl.version@
 Implementation-Vendor: Google Inc.

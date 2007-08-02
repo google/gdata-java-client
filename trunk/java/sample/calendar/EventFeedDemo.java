@@ -16,61 +16,76 @@
 
 package sample.calendar;
 
-import com.google.gdata.client.*;
-import com.google.gdata.client.calendar.*;
-import com.google.gdata.data.*;
-import com.google.gdata.data.acl.*;
-import com.google.gdata.data.calendar.*;
-import com.google.gdata.data.extensions.*;
+import com.google.gdata.client.Query;
+import com.google.gdata.client.calendar.CalendarQuery;
+import com.google.gdata.client.calendar.CalendarService;
+import com.google.gdata.data.DateTime;
+import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.calendar.CalendarEntry;
+import com.google.gdata.data.calendar.CalendarEventEntry;
+import com.google.gdata.data.calendar.CalendarEventFeed;
+import com.google.gdata.data.calendar.CalendarFeed;
+import com.google.gdata.data.calendar.WebContent;
+import com.google.gdata.data.extensions.ExtendedProperty;
+import com.google.gdata.data.extensions.Recurrence;
+import com.google.gdata.data.extensions.Reminder;
+import com.google.gdata.data.extensions.When;
 import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
- * Demonstrates basic Calendar Data API operations using the Java client
- * library:
- *
- *    (1) Retrieving the list of all the user's calendars;
- *    (2) Retrieving all events on a single calendar;
- *    (3) Performing a full-text query on a calendar;
- *    (4) Performing a date-range query on a calendar;
- *    (5) Creating a single-occurrence event;
- *    (6) Creating a recurring event;
- *    (7) Creating a quick add event;
- *    (8) Creating a web content event;
- *    (9) Updating events;
- *    (10) Adding reminders and extended properties;
- *    (11) Deleting events;
- *    (12) Retrieving access control lists (ACLs);
- *    (13) Adding users to access control lists;
- *    (14) Updating users on access control lists;
- *    (15) Removing users from access control lists.
+ * Demonstrates basic Calendar Data API operations on the event feed using the
+ * Java client library:
+ * 
+ * <ul>
+ * <li>Retrieving the list of all the user's calendars</li>
+ * <li>Retrieving all events on a single calendar</li>
+ * <li>Performing a full-text query on a calendar</li>
+ * <li>Performing a date-range query on a calendar</li>
+ * <li>Creating a single-occurrence event</li>
+ * <li>Creating a recurring event</li>
+ * <li>Creating a quick add event</li>
+ * <li>Creating a web content event</li>
+ * <li>Updating events</li>
+ * <li>Adding reminders and extended properties</li>
+ * <li>Deleting events</li>
+ * </ul>
  */
-public class CalendarClient {
+public class EventFeedDemo {
 
-  private static String feedUri, aclFeedUri;
+  // The base URL for a user's calendar metafeed (needs a username appended).
+  private static final String METAFEED_URL_BASE = 
+      "http://www.google.com/calendar/feeds/";
 
-  // The meta-feed URL of all the user's calendars.
-  private static final String METAFEED_URL =
-      "http://www.google.com/calendar/feeds/default";
+  // The string to add to the user's metafeedUrl to access the event feed for
+  // their primary calendar.
+  private static final String EVENT_FEED_URL_SUFFIX = "/private/full";
+
+  // The URL for the metafeed of the specified user.
+  // (e.g. http://www.google.com/feeds/calendar/jdoe@gmail.com)
+  private static URL metafeedUrl = null;
+
+  // The URL for the event feed of the specified user's primary calendar.
+  // (e.g. http://www.googe.com/feeds/calendar/jdoe@gmail.com/private/full)
+  private static URL eventFeedUrl = null;
 
   /**
    * Prints a list of all the user's calendars.
-   *
+   * 
    * @param service An authenticated CalendarService object.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server
    */
   private static void printUserCalendars(CalendarService service)
       throws IOException, ServiceException {
-    URL feedUrl = new URL(METAFEED_URL);
-
     // Send the request and receive the response:
-    CalendarFeed resultFeed = service.getFeed(feedUrl, CalendarFeed.class);
+    CalendarFeed resultFeed = service.getFeed(metafeedUrl, CalendarFeed.class);
 
     System.out.println("Your calendars:");
     System.out.println();
@@ -84,18 +99,15 @@ public class CalendarClient {
   /**
    * Prints the titles of all events on the calendar specified by
    * {@code feedUri}.
-   *
+   * 
    * @param service An authenticated CalendarService object.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
   private static void printAllEvents(CalendarService service)
       throws ServiceException, IOException {
-    // Set up the URL and the object that will handle the connection:
-    URL feedUrl = new URL(feedUri);
-
     // Send the request and receive the response:
-    CalendarEventFeed resultFeed = service.getFeed(feedUrl,
+    CalendarEventFeed resultFeed = service.getFeed(eventFeedUrl,
         CalendarEventFeed.class);
 
     System.out.println("All events on your calendar:");
@@ -109,15 +121,15 @@ public class CalendarClient {
 
   /**
    * Prints the titles of all events matching a full-text query.
-   *
+   * 
    * @param service An authenticated CalendarService object.
    * @param query The text for which to query.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
   private static void fullTextQuery(CalendarService service, String query)
       throws ServiceException, IOException {
-    Query myQuery = new Query(new URL(feedUri));
+    Query myQuery = new Query(eventFeedUrl);
     myQuery.setFullTextQuery("Tennis");
 
     CalendarEventFeed resultFeed = service.query(myQuery,
@@ -134,19 +146,17 @@ public class CalendarClient {
 
   /**
    * Prints the titles of all events in a specified date/time range.
-   *
+   * 
    * @param service An authenticated CalendarService object.
    * @param startTime Start time (inclusive) of events to print.
    * @param endTime End time (exclusive) of events to print.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
   private static void dateRangeQuery(CalendarService service,
       DateTime startTime, DateTime endTime) throws ServiceException,
       IOException {
-    URL feedUrl = new URL(feedUri);
-
-    CalendarQuery myQuery = new CalendarQuery(feedUrl);
+    CalendarQuery myQuery = new CalendarQuery(eventFeedUrl);
     myQuery.setMinimumStartTime(startTime);
     myQuery.setMaximumStartTime(endTime);
 
@@ -165,27 +175,25 @@ public class CalendarClient {
   }
 
   /**
-   * Helper method to create either single-instance or recurring events.
-   * For simplicity, some values that might normally be passed as parameters
-   * (such as author name, email, etc.) are hard-coded.
-   *
+   * Helper method to create either single-instance or recurring events. For
+   * simplicity, some values that might normally be passed as parameters (such
+   * as author name, email, etc.) are hard-coded.
+   * 
    * @param service An authenticated CalendarService object.
    * @param eventTitle Title of the event to create.
    * @param eventContent Text content of the event to create.
    * @param recurData Recurrence value for the event, or null for
-   * single-instance events.
-   * @param isQuickAdd True if eventContent should be interpreted as the
-   * text of a quick add event.
+   *        single-instance events.
+   * @param isQuickAdd True if eventContent should be interpreted as the text of
+   *        a quick add event.
    * @param wc A WebContent object, or null if this is not a web content event.
    * @return The newly-created CalendarEventEntry.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
   private static CalendarEventEntry createEvent(CalendarService service,
       String eventTitle, String eventContent, String recurData,
-      boolean isQuickAdd, WebContent wc)
-      throws ServiceException, IOException {
-    URL postUrl = new URL(feedUri);
+      boolean isQuickAdd, WebContent wc) throws ServiceException, IOException {
     CalendarEventEntry myEntry = new CalendarEventEntry();
 
     myEntry.setTitle(new PlainTextConstruct(eventTitle));
@@ -198,11 +206,11 @@ public class CalendarClient {
     // of the event.
     if (recurData == null) {
       Calendar calendar = new GregorianCalendar();
-      DateTime startTime = new DateTime(calendar.getTime(),
-          TimeZone.getDefault());
+      DateTime startTime = new DateTime(calendar.getTime(), TimeZone
+          .getDefault());
 
       calendar.add(Calendar.MINUTE, 30);
-      DateTime endTime = new DateTime(calendar.getTime(),
+      DateTime endTime = new DateTime(calendar.getTime(), 
           TimeZone.getDefault());
 
       When eventTimes = new When();
@@ -216,44 +224,44 @@ public class CalendarClient {
     }
 
     // Send the request and receive the response:
-    return service.insert(postUrl, myEntry);
+    return service.insert(eventFeedUrl, myEntry);
   }
 
   /**
    * Creates a single-occurrence event.
-   *
+   * 
    * @param service An authenticated CalendarService object.
    * @param eventTitle Title of the event to create.
    * @param eventContent Text content of the event to create.
    * @return The newly-created CalendarEventEntry.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
   private static CalendarEventEntry createSingleEvent(CalendarService service,
-      String eventTitle, String eventContent)
-      throws ServiceException, IOException {
+      String eventTitle, String eventContent) throws ServiceException,
+      IOException {
     return createEvent(service, eventTitle, eventContent, null, false, null);
   }
 
   /**
    * Creates a quick add event.
-   *
+   * 
    * @param service An authenticated CalendarService object.
-   * @param quickAddContent The quick add text, including the event
-   * title, date and time.
+   * @param quickAddContent The quick add text, including the event title, date
+   *        and time.
    * @return The newly-created CalendarEventEntry.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
-  private static CalendarEventEntry createQuickAddEvent(CalendarService service,
-      String quickAddContent)
-      throws ServiceException, IOException {
+  private static CalendarEventEntry createQuickAddEvent(
+      CalendarService service, String quickAddContent) throws ServiceException,
+      IOException {
     return createEvent(service, null, quickAddContent, null, true, null);
   }
 
   /**
    * Creates a web content event.
-   *
+   * 
    * @param service An authenticated CalendarService object.
    * @param title The title of the web content event.
    * @param type The MIME type of the web content event, e.g. "image/gif"
@@ -263,11 +271,12 @@ public class CalendarClient {
    * @param height The height of the web content window.
    * @return The newly-created CalendarEventEntry.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
-  private static CalendarEventEntry createWebContentEvent(CalendarService
-      service, String title, String type, String url, String icon,
-      String width, String height) throws ServiceException, IOException {
+  private static CalendarEventEntry createWebContentEvent(
+      CalendarService service, String title, String type, String url,
+      String icon, String width, String height) throws ServiceException,
+      IOException {
     WebContent wc = new WebContent();
 
     wc.setHeight(height);
@@ -282,19 +291,19 @@ public class CalendarClient {
 
   /**
    * Creates a new recurring event.
-   *
+   * 
    * @param service An authenticated CalendarService object.
    * @param eventTitle Title of the event to create.
    * @param eventContent Text content of the event to create.
    * @return The newly-created CalendarEventEntry.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
-  private static CalendarEventEntry createRecurringEvent(CalendarService
-      service, String eventTitle, String eventContent)
+  private static CalendarEventEntry createRecurringEvent(
+      CalendarService service, String eventTitle, String eventContent)
       throws ServiceException, IOException {
     // Specify a recurring event that occurs every Tuesday from May 1,
-    // 2007 through September 4, 2007.  Note that we are using iCal (RFC 2445)
+    // 2007 through September 4, 2007. Note that we are using iCal (RFC 2445)
     // syntax; see http://www.ietf.org/rfc/rfc2445.txt for more information.
     String recurData = "DTSTART;VALUE=DATE:20070501\r\n"
         + "DTEND;VALUE=DATE:20070502\r\n"
@@ -306,12 +315,12 @@ public class CalendarClient {
 
   /**
    * Updates the title of an existing calendar event.
-   *
+   * 
    * @param entry The event to update.
    * @param newTitle The new title for this event.
    * @return The updated CalendarEventEntry object.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
   private static CalendarEventEntry updateTitle(CalendarEventEntry entry,
       String newTitle) throws ServiceException, IOException {
@@ -321,12 +330,12 @@ public class CalendarClient {
 
   /**
    * Adds a reminder to a calendar event.
-   *
+   * 
    * @param entry The event to update.
    * @param numMinutes Reminder time, in minutes.
    * @return The updated EventEntry object.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
   private static CalendarEventEntry addReminder(CalendarEventEntry entry,
       int numMinutes) throws ServiceException, IOException {
@@ -339,14 +348,14 @@ public class CalendarClient {
 
   /**
    * Adds an extended property to a calendar event.
-   *
+   * 
    * @param entry The event to update.
    * @return The updated EventEntry object.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException Error communicating with the server.
    */
-  private static CalendarEventEntry addExtendedProperty(CalendarEventEntry
-      entry) throws ServiceException, IOException {
+  private static CalendarEventEntry addExtendedProperty(CalendarEventEntry entry)
+      throws ServiceException, IOException {
     // Add an extended property "id" with value 1234 to the EventEntry entry.
     // We specify the complete schema URL to avoid namespace collisions with
     // other applications that use the same property name.
@@ -360,138 +369,35 @@ public class CalendarClient {
   }
 
   /**
-   * Prints the access control lists for each of the user's calendars.
-   *
-   * @param service An authenticated CalendarService object.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
-   */
-  private static void printAclList(CalendarService service) throws
-      ServiceException, IOException {
-    CalendarFeed calendarFeed =
-        service.getFeed(new URL(METAFEED_URL), CalendarFeed.class);
-
-    // After accessing the meta-feed, get the ACL link for each calendar.
-    System.out.println("Access control lists for your calendars:");
-    for (CalendarEntry calEntry : calendarFeed.getEntries()) {
-      Link link = calEntry.getLink(AclNamespace.LINK_REL_ACCESS_CONTROL_LIST,
-          Link.Type.ATOM);
-
-      // For each calendar that exposes an access control list, retrieve its ACL
-      // feed.  If link is null, then we are not the owner of that calendar
-      // (e.g., it is a public calendar) and its ACL feed cannot be accessed.
-      if (link != null) {
-        AclFeed aclFeed = service.getFeed(new URL(link.getHref()),
-            AclFeed.class);
-        System.out.println("\tCalendar \"" + calEntry.getTitle().getPlainText()
-            + "\":");
-        for (AclEntry aclEntry : aclFeed.getEntries()) {
-          System.out.println("\t\tScope: Type=" + aclEntry.getScope().getType()
-              + " (" + aclEntry.getScope().getValue() + ")");
-          System.out.println("\t\tRole: " + aclEntry.getRole().getValue());
-        }
-      }
-    }
-  }
-
-  /**
-   * Adds a user in the read-only role to the calendar's access control
-   * list.  Note that this method will not run by default.
-   *
-   * @param service An authenticated CalendarService object.
-   * @param userEmail The email address of the user with whom to share
-   * the calendar.
-   * @param role The access privileges to grant this user.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
-   */
-  private static void addAccessControl(CalendarService service,
-      String userEmail, AclRole role) throws ServiceException,
-      IOException {
-    AclEntry entry = new AclEntry();
-    entry.setScope(new AclScope(AclScope.Type.USER, userEmail));
-    entry.setRole(role);
-
-    URL url = new URL(aclFeedUri);
-
-    AclEntry insertedEntry = service.insert(url, entry);
-
-    System.out.println("Added user to access control list:");
-    System.out.println("\tScope: Type=" + insertedEntry.getScope().getType() +
-        " (" + insertedEntry.getScope().getValue() + ")");
-    System.out.println("\tRole: " + insertedEntry.getRole().getValue());
-  }
-
-  /**
-   * Updates a user to have new access permissions over a calendar.
-   * Note that this method will not run by default.
-   *
-   * @param service An authenticated CalendarService object.
-   * @param userEmail The email address of the user to update.
-   * @param newRole The new access privileges to grant this user.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
-   */
-  private static void updateAccessControl(CalendarService service,
-      String userEmail, AclRole newRole) throws ServiceException,
-      IOException {
-    URL url = new URL(aclFeedUri);
-    AclFeed aclFeed = service.getFeed(url, AclFeed.class);
-
-    for (AclEntry aclEntry : aclFeed.getEntries()) {
-      if (userEmail.equals(aclEntry.getScope().getValue())) {
-        aclEntry.setRole(newRole);
-        AclEntry updatedEntry = aclEntry.update();
-
-        System.out.println("Updated user's access control:");
-        System.out.println("\tScope: Type=" + updatedEntry.getScope().getType()
-            + " (" + updatedEntry.getScope().getValue() + ")");
-        System.out.println("\tRole: " + updatedEntry.getRole().getValue());
-
-        break;
-      }
-    }
-  }
-
-  /**
-   * Deletes a user from a calendar's access control list, preventing
-   * that user from accessing the calendar.  Note that this method will
-   * not run by default.
+   * Instantiates a CalendarService object and uses the command line arguments
+   * to authenticate. The CalendarService object is used to demonstrate
+   * interactions with the Calendar data API's event feed.
    * 
-   * @param service An authenticated CalendarService object.
-   * @param userEmail The email address of the user to remove from the ACL.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @param args Must be length 2 and contain a valid username/password
    */
-  private static void deleteAccessControl(CalendarService service,
-      String userEmail) throws ServiceException, IOException {
-    URL url = new URL(aclFeedUri);
-    AclFeed aclFeed = service.getFeed(url, AclFeed.class);
-
-    for (AclEntry aclEntry : aclFeed.getEntries()) {
-      if (userEmail.equals(aclEntry.getScope().getValue())) {
-        aclEntry.delete();
-        System.out.println("Deleted " + userEmail + "'s access control.");
-
-        break;
-      }
-    }
-  }
-
   public static void main(String[] args) {
     CalendarService myService = new CalendarService("exampleCo-exampleApp-1");
 
-    // Set username, password and feed URI from command-line arguments.
-    if (args.length != 4) {
-      System.err.println("Syntax: CalendarClient <username> <password>"
-          + " <calendar feed URI> <ACL feed URI>");
+    // Set username and password from command-line arguments.
+    if (args.length != 2) {
+      usage();
       return;
     }
 
     String userName = args[0];
     String userPassword = args[1];
-    feedUri = args[2];
-    aclFeedUri = args[3];
+
+    // Create the necessary URL objects.
+    try {
+      metafeedUrl = new URL(METAFEED_URL_BASE + userName);
+      eventFeedUrl = new URL(METAFEED_URL_BASE + userName
+          + EVENT_FEED_URL_SUFFIX);
+    } catch (MalformedURLException e) {
+      // Bad URL
+      System.err.println("Uh oh - you've got an invalid URL.");
+      e.printStackTrace();
+      return;
+    }
 
     try {
       myService.setUserCredentials(userName, userPassword);
@@ -521,7 +427,8 @@ public class CalendarClient {
 
       // Demonstrate creating a web content event.
       CalendarEventEntry webContentEvent = createWebContentEvent(myService,
-          "World Cup", "image/gif", "http://www.google.com/logos/worldcup06.gif",
+          "World Cup", "image/gif",
+          "http://www.google.com/logos/worldcup06.gif",
           "http://www.google.com/calendar/images/google-holiday.gif", "276",
           "120");
       System.out.println("Successfully created web content event "
@@ -554,10 +461,24 @@ public class CalendarClient {
       webContentEvent.delete();
       recurringEvent.delete();
 
-      // Demonstrate retrieving access control list feeds.
-      printAclList(myService);
-    } catch (Exception e) {
+    } catch (IOException e) {
+      // Communications error
+      System.err.println("There was a problem communicating with the service.");
+      e.printStackTrace();
+    } catch (ServiceException e) {
+      // Server side error
+      System.err.println("The server had a problem handling your request.");
       e.printStackTrace();
     }
   }
+  
+  /**
+   * Prints the command line usage of this sample application.
+   */
+  private static void usage() {
+    System.out.println("Syntax: EventFeedDemo <username> <password>");
+    System.out.println("\nThe username and password are used for "
+        + "authentication.  The sample application will modify the specified "
+        + "user's calendars so you may want to use a test account.");
+  }    
 }

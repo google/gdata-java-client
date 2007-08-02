@@ -19,44 +19,49 @@
 -->
 
   <property file="build.properties"/>
+  <property file="version.properties"/>
 
   <property name="build" value="."/>
   <property name="build.classes" value="${build}/classes"/>
   <property name="build.jars" value="${build}/lib"/>
-
-  <property name="version" value="1.0"/>
+  <property name="build.genfiles" value="${build}/genfiles"/>
+  <property name="build.genfiles.manifest" value="${build.genfiles}/manifest"/>
 
   <property name="gdata-client.jar"
-            value="${build.jars}/gdata-client-${version}.jar"/>
+            value="${build.jars}/gdata-client-${client.spec.version}.jar"/>
   <property name="gdata-appsforyourdomain.jar"
-            value="${build.jars}/gdata-appsforyourdomain-${version}.jar"/>          
+            value="${build.jars}/gdata-appsforyourdomain-${appsforyourdomain.spec.version}.jar"/>          
   <property name="gdata-base.jar"
-            value="${build.jars}/gdata-base-${version}.jar"/>
+            value="${build.jars}/gdata-base-${base.spec.version}.jar"/>
   <property name="gdata-calendar.jar"
-            value="${build.jars}/gdata-calendar-${version}.jar"/>
+            value="${build.jars}/gdata-calendar-${calendar.spec.version}.jar"/>
   <property name="gdata-codesearch.jar"
-            value="${build.jars}/gdata-codesearch-${version}.jar"/>
+            value="${build.jars}/gdata-codesearch-${codesearch.spec.version}.jar"/>
+  <property name="gdata-docs.jar"
+            value="${build.jars}/gdata-docs-${docs.spec.version}.jar"/>
   <property name="gdata-photos.jar"
-            value="${build.jars}/gdata-photos-${version}.jar"/>                     
+            value="${build.jars}/gdata-photos-${photos.spec.version}.jar"/>                     
   <property name="gdata-spreadsheet.jar"
-            value="${build.jars}/gdata-spreadsheet-${version}.jar"/>
+            value="${build.jars}/gdata-spreadsheet-${spreadsheet.spec.version}.jar"/>
           
   <property name="build.manifest"
             value="${build}/manifest"/>
   <property name="gdata-client.manifest"
-            value="${build.manifest}/client.manifest"/>
+            value="${build.genfiles.manifest}/client.manifest"/>
   <property name="gdata-appsforyourdomain.manifest"
-            value="${build.manifest}/appsforyourdomain.manifest"/>
+            value="${build.genfiles.manifest}/appsforyourdomain.manifest"/>
   <property name="gdata-base.manifest"
-            value="${build.manifest}/base.manifest"/>
+            value="${build.genfiles.manifest}/base.manifest"/>
   <property name="gdata-calendar.manifest"
-            value="${build.manifest}/calendar.manifest"/>
+            value="${build.genfiles.manifest}/calendar.manifest"/>
   <property name="gdata-codesearch.manifest"
-            value="${build.manifest}/codesearch.manifest"/>
+            value="${build.genfiles.manifest}/codesearch.manifest"/>
+  <property name="gdata-docs.manifest"
+            value="${build.genfiles.manifest}/docs.manifest"/>
   <property name="gdata-photos.manifest"
-            value="${build.manifest}/photos.manifest"/>                     
+            value="${build.genfiles.manifest}/photos.manifest"/>                     
   <property name="gdata-spreadsheet.manifest"
-            value="${build.manifest}/spreadsheet.manifest"/>
+            value="${build.genfiles.manifest}/spreadsheet.manifest"/>
    
   <property name="build.src" value="${build}/src"/>
   <property name="build.src.metadata.kinds" 
@@ -69,6 +74,7 @@
   <property name="build.classes.calendar" value="${build.classes}/calendar"/>
   <property name="build.classes.codesearch"
             value="${build.classes}/codesearch"/>
+  <property name="build.classes.docs" value="${build.classes}/docs"/>
   <property name="build.classes.photos" value="${build.classes}/photos"/>
   <property name="build.classes.spreadsheet"
             value="${build.classes}/spreadsheet"/>
@@ -93,12 +99,15 @@
   <target name="dirs">
     <mkdir dir="${build}"/>
     <mkdir dir="${build.jars}"/>
+    <mkdir dir="${build.genfiles}"/>
+    <mkdir dir="${build.genfiles.manifest}"/>
     <mkdir dir="${build.classes}"/>
     <mkdir dir="${build.classes.client}"/>
     <mkdir dir="${build.classes.appsforyourdomain}"/>
     <mkdir dir="${build.classes.base}"/>
     <mkdir dir="${build.classes.calendar}"/>
     <mkdir dir="${build.classes.codesearch}"/>
+    <mkdir dir="${build.classes.docs}"/>
     <mkdir dir="${build.classes.photos}"/>
     <mkdir dir="${build.classes.spreadsheet}"/>
   </target>
@@ -115,6 +124,25 @@
   <target name="build" depends="dirs">
     <antcall target="build.jars"/>
   </target>
+
+<!-- ==================== Build manifest ================================== -->
+
+<!--
+
+  Generates manifest files with appropriate version information.
+
+-->
+  <target name="build.manifest" depends="dirs">
+    <copy todir="${build.genfiles.manifest}">
+      <fileset dir="${build.manifest}">
+        <include name="*.manifest"/>
+      </fileset>
+      <filterset>
+        <filtersfile file="version.properties"/>
+      </filterset>
+    </copy>
+  </target>
+
 
 <!-- ==================== Build Client Target ============================= -->
 
@@ -178,6 +206,7 @@ Then save it under:
       <exclude name="**/Calendar**"/>
       <exclude name="**/codesearch/**"/>
       <exclude name="**/CodeSearch**"/>
+      <exclude name="**/docs/**"/>
       <exclude name="**/photos/**"/>
       <exclude name="**/Photos/**"/>
       <exclude name="**/spreadsheet/**"/>
@@ -245,6 +274,7 @@ Then save it under:
     <antcall target="build.vertical.base"/>
     <antcall target="build.vertical.calendar"/>
     <antcall target="build.vertical.codesearch"/>
+    <antcall target="build.vertical.docs"/>
     <antcall target="build.vertical.photos"/>
     <antcall target="build.vertical.spreadsheet"/>
   </target>
@@ -343,6 +373,27 @@ Then save it under:
   </target> 
 
 <!--
+  Build the GData Docs library.
+-->
+
+  <!-- Target: build.vertical.docs -->
+  <!-- Builds the GData Docs client library -->
+  <target name="build.vertical.docs" depends="build.vertical.spreadsheet">
+    <javac debug="false" sourcepath=""
+                         srcdir="${build.src}"
+                         destdir="${build.classes.docs}">
+      <classpath>
+        <path location="${gdata-client.jar}"/>
+        <path location="${gdata-spreadsheet.jar}"/>
+      </classpath>
+      <include name="**/docs/**"/>
+    </javac>
+    <jar destfile="${gdata-docs.jar}"
+         basedir="${build.classes.docs}"
+         manifest="${gdata-docs.manifest}" />
+  </target>
+  
+<!--
   Build the GData Spreadsheet library.
 -->
 
@@ -363,7 +414,7 @@ Then save it under:
 
 <!-- ==================== Build All Jars ================================== -->
 
-  <target name="build.jars">
+  <target name="build.jars" depends="build.manifest">
     <antcall target="build.client"/>
     <antcall target="build.services"/>
   </target>
@@ -372,6 +423,7 @@ Then save it under:
 <!-- ==================== Clean Target ==================================== -->
 
   <target name="clean">
+    <delete dir="${build.genfiles}"/>
     <delete dir="${build.classes}"/>
   </target>
 
@@ -389,6 +441,7 @@ Then save it under:
     <antcall target="sample.blogger.build"/>
     <antcall target="sample.calendar.build"/>
     <antcall target="sample.codesearch.build"/>
+    <antcall target="sample.docs.build"/>
     <antcall target="sample.photos.build"/>
     <antcall target="sample.spreadsheet.build"/>
     <antcall target="sample.tester.build"/>
@@ -402,6 +455,7 @@ Then save it under:
     <antcall target="sample.blogger.clean"/>
     <antcall target="sample.calendar.clean"/>
     <antcall target="sample.codesearch.clean"/>
+    <antcall target="sample.docs.clean"/>
     <antcall target="sample.photos.clean"/>
     <antcall target="sample.spreadsheet.clean"/>
     <antcall target="sample.tester.clean"/>
@@ -856,12 +910,16 @@ Then save it under:
 
 <!-- ==================== Calendar property names ========================== -->
 
-  <property name="sample.calendar.basedir"       value="${basedir}/sample/calendar"/>
-  <property name="sample.calendar.src.home"      value="${sample.calendar.basedir}"/>
-  <property name="sample.calendar.build.classes" value="${sample.calendar.basedir}/classes"/>
-  <property name="sample.calendar.build.lib"     value="${sample.calendar.basedir}/lib"/>
-  <property name="sample.calendar.jar"           value="${sample.calendar.build.lib}/CalendarClient.jar"/>
-  <property name="sample.calendar.main"          value="sample.calendar.CalendarClient"/>
+  <property name="sample.calendar.basedir"           value="${basedir}/sample/calendar"/>
+  <property name="sample.calendar.src.home"          value="${sample.calendar.basedir}"/>
+  <property name="sample.calendar.build.classes"     value="${sample.calendar.basedir}/classes"/>
+  <property name="sample.calendar.build.lib"         value="${sample.calendar.basedir}/lib"/>
+  <property name="sample.calendar.eventfeed.jar"     value="${sample.calendar.build.lib}/EventFeedDemo.jar"/>
+  <property name="sample.calendar.eventfeed.main"    value="sample.calendar.EventFeedDemo"/>
+  <property name="sample.calendar.calendarfeed.jar"  value="${sample.calendar.build.lib}/CalendarFeedDemo.jar"/>
+  <property name="sample.calendar.calendarfeed.main" value="sample.calendar.CalendarFeedDemo"/>
+  <property name="sample.calendar.aclfeed.jar"       value="${sample.calendar.build.lib}/AclFeedDemo.jar"/>
+  <property name="sample.calendar.aclfeed.main"      value="sample.calendar.AclFeedDemo"/>
 
 
 <!-- ==================== Calendar Clean Target ============================ -->
@@ -915,36 +973,90 @@ Then save it under:
 <!-- ==================== Calendar Build Target =========================== -->
 
   <target name="sample.calendar.build" depends="sample.calendar.compile"
-   description="Create binary distribution">
+   description="Create binary distribution for calendar demos">
 
     <!-- Create dist directory -->
     <mkdir   dir="${sample.calendar.build.lib}"/>
 
-    <!-- Create application JAR file -->
-    <jar jarfile="${sample.calendar.jar}"
+    <!-- Create EventFeedDemo application JAR file -->
+    <jar jarfile="${sample.calendar.eventfeed.jar}"
          basedir="${sample.calendar.build.classes}">
       <manifest>
-        <attribute name="Main-Class" value="${sample.calendar.main}"/>
+        <attribute name="Main-Class" value="${sample.calendar.eventfeed.main}"/>
+      </manifest>
+    </jar>
+
+    <!-- Create CalendarFeedDemo application JAR file -->
+    <jar jarfile="${sample.calendar.calendarfeed.jar}"
+         basedir="${sample.calendar.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.calendar.calendarfeed.main}"/>
+      </manifest>
+    </jar>
+
+    <!-- Create AclFeedDemo application JAR file -->
+    <jar jarfile="${sample.calendar.aclfeed.jar}"
+         basedir="${sample.calendar.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.calendar.aclfeed.main}"/>
       </manifest>
     </jar>
 
   </target>
 
-
-<!-- ==================== Calendar Run Target ============================= -->
+<!-- ==================== Calendar Run Targets ============================= -->
 
   <target name="sample.calendar.run" depends="sample.calendar.build"
-   description="Runs the Calendar sample">
+   description="Runs the Calendar samples">
 
-    <java fork="true" classname="${sample.calendar.main}">
-      <arg line="${sample.credentials.username} ${sample.credentials.password} ${sample.calendar.feedUrl} ${sample.calendar.aclFeedUrl}"/>
+    <antcall target="sample.calendar.eventfeed.run"/>
+    <antcall target="sample.calendar.calendarfeed.run"/>
+    <antcall target="sample.calendar.aclfeed.run"/>
+
+  </target>
+
+  <target name="sample.calendar.eventfeed.run" depends="sample.calendar.build"
+   description="Runs the Calendar event feed sample">
+
+    <!-- Run EventFeedDemo -->
+    <java fork="true" classname="${sample.calendar.eventfeed.main}">
+      <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
       <classpath>
         <path refid="sample.calendar.compile.classpath"/>
-        <path location="${sample.calendar.jar}"/>
+        <path location="${sample.calendar.eventfeed.jar}"/>
       </classpath>
     </java>
 
   </target>
+
+  <target name="sample.calendar.calendarfeed.run" depends="sample.calendar.build"
+   description="Runs the Calendar feed sample">
+
+    <!-- Run CalendarFeedDemo -->
+    <java fork="true" classname="${sample.calendar.calendarfeed.main}">
+      <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.calendar.compile.classpath"/>
+        <path location="${sample.calendar.calendarfeed.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.calendar.aclfeed.run" depends="sample.calendar.build"
+   description="Runs the Calendar ACL feed sample">
+
+    <!-- Run AclFeedDemo -->
+    <java fork="true" classname="${sample.calendar.aclfeed.main}">
+      <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.calendar.compile.classpath"/>
+        <path location="${sample.calendar.aclfeed.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
 
 
 <!--  ===================================================================== -->
@@ -1038,6 +1150,104 @@ Then save it under:
       <classpath>
         <path refid="sample.codesearch.compile.classpath"/>
         <path location="${sample.codesearch.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+
+<!--  ===================================================================== -->
+<!--                      Docs Sample Targets                  -->
+<!--  ===================================================================== -->
+
+<!-- ==================== Docs property names ================ -->
+
+  <property name="sample.docs.basedir"
+            value="${basedir}/sample/docs"/>
+  <property name="sample.docs.src.home"
+            value="${sample.docs.basedir}"/>
+  <property name="sample.docs.build.classes"
+            value="${sample.docs.basedir}/classes"/>
+  <property name="sample.docs.build.lib"
+            value="${sample.docs.basedir}/lib"/>
+  <property name="sample.docs.jar"
+            value="${sample.docs.build.lib}/DocumentListDemo.jar"/>
+  <property name="sample.docs.main"
+            value="sample.docs.DocumentListDemo"/>
+
+
+<!-- ==================== Docs Clean Target ================== -->
+
+
+  <target name="sample.docs.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.docs.build.classes}"/>
+  </target>
+
+
+
+<!-- ==================== Compilation class path ========================== -->
+
+  <path id="sample.docs.compile.classpath">
+
+    <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="samples.run.classpath"/>   
+    <pathelement location="${gdata-docs.jar}"/>
+    <pathelement location="${sample-util.jar}"/>
+
+  </path>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+  <target name="sample.docs.compile"
+   description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <mkdir    dir="${sample.docs.build.classes}"/>
+    <javac srcdir="${sample.docs.src.home}"
+           destdir="${sample.docs.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.docs.compile.classpath"/>
+    </javac>
+
+  </target>
+
+
+<!-- ==================== docs Docs Target ================== -->
+
+  <target name="sample.docs.build"
+          depends="sample.docs.compile"
+          description="Create binary distribution">
+
+    <!-- Create dist directory -->
+    <mkdir   dir="${sample.docs.build.lib}"/>
+
+    <!-- Create application JAR file -->
+    <jar jarfile="${sample.docs.jar}"
+         basedir="${sample.docs.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.docs.main}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+
+<!-- ==================== Docs Run Target ==================== -->
+
+  <target name="sample.docs.run"
+          depends="sample.docs.build"
+          description="Runs the docs sample">
+
+    <java fork="true" classname="${sample.docs.main}">
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.docs.compile.classpath"/>
+        <path location="${sample.docs.jar}"/>
       </classpath>
     </java>
 

@@ -60,7 +60,31 @@ public class MediaRestriction extends AbstractElementWithContent {
   }
 
   /**
-   * Gets the content as a comma-separated list of country codes.
+   * Sets the content as a space-separated list of country codes.
+   *
+   * @param a list of country codes
+   */
+  public void setContentAsCountryCodeList(List<String> codes) {
+    if (codes.isEmpty()) {
+      setContent(null);
+      return;
+    }
+
+    StringBuilder builder = new StringBuilder();
+    boolean isFirst = true;
+    for (String code : codes) {
+      if (isFirst) {
+        isFirst = false;
+      } else {
+        builder.append(' ');
+      }
+      builder.append(code);
+    }
+    setContent(builder.toString());
+  }
+
+  /**
+   * Gets the content as a space-separated list of country codes.
    *
    * Check the type before calling this method.
    *
@@ -71,7 +95,7 @@ public class MediaRestriction extends AbstractElementWithContent {
       return Collections.emptyList();
     }
     List<String> countries = new ArrayList<String>();
-    StringTokenizer tok = new StringTokenizer(getContent(), ",");
+    StringTokenizer tok = new StringTokenizer(getContent(), " ");
     while(tok.hasMoreTokens()) {
       countries.add(tok.nextToken().trim());
     }

@@ -37,7 +37,9 @@ import java.util.Date;
  * GData schema extension describing a geographic location.
  *
  * 
+ * @deprecated Use {@link com.google.gdata.data.geo.impl} package.
  */
+@Deprecated
 public class GeoPt extends ExtensionPoint implements Extension {
 
 
