@@ -55,7 +55,8 @@ public class Query {
 
 
   /**
-   * Defines the possible query return formats.
+   * Defines all query return formats.  Return format "json-xd" is
+   * not supported.
    */
   public static enum ResultFormat {
 
@@ -65,7 +66,8 @@ public class Query {
     JSON("json"),
     ATOM_IN_SCRIPT("atom-in-script"),
     RSS_IN_SCRIPT("rss-in-script"),
-    JSON_IN_SCRIPT("json-in-script");
+    JSON_IN_SCRIPT("json-in-script"),
+    JSON_XD("json-xd");
 
     /**
      * Value to use for the "alt" param.
@@ -608,6 +610,30 @@ public class Query {
     return matchList;
   }
 
+  /**
+   * Appends specified query (parameter, value) to provided query URL buffer.
+   *
+   * @param queryBuf    base URI buffer to append to.
+   * @param paramName   query parameter name.
+   * @param paramValue  query parameter value.
+   */
+  protected void appendQueryParameter(StringBuilder queryBuf, String paramName,
+      String paramValue) throws UnsupportedEncodingException {
+    queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
+    queryBuf.append(paramName);
+    queryBuf.append("=");
+    queryBuf.append(paramValue);
+  }
+
+  /**
+   * Check if current query state is supported.
+   *
+   * @return <code>true</code> if supported.
+   */
+  public boolean isValidState() {
+    // Check if requested ResultFormat is supported
+    return (resultFormat != ResultFormat.JSON_XD);
+  }
 
   /**
    * Returns the relative query URI that represents only the query
@@ -619,6 +645,10 @@ public class Query {
    * @return URI representing current query.
    */
   public URI getQueryUri() {
+
+    if (!isValidState()) {
+      throw new IllegalStateException("Unsupported Query");
+    }
 
     StringBuilder pathBuf = new StringBuilder();
 
@@ -635,62 +665,51 @@ public class Query {
 
       StringBuilder queryBuf = new StringBuilder();
       if (queryString != null) {
-        queryBuf.append('?');   // Unconditional since first
-        queryBuf.append("q=");
-        queryBuf.append(URLEncoder.encode(queryString, "UTF-8"));
+        appendQueryParameter(queryBuf, "q",
+            URLEncoder.encode(queryString, "UTF-8"));
       }
 
       if (author != null) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append("author=");
-        queryBuf.append(URLEncoder.encode(author, "UTF-8"));
+        appendQueryParameter(queryBuf, "author",
+            URLEncoder.encode(author, "UTF-8"));
       }
 
       if (resultFormat != ResultFormat.DEFAULT) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append("alt=");
-        queryBuf.append(resultFormat.paramValue());
+        appendQueryParameter(queryBuf, "alt", resultFormat.paramValue());
       }
 
       if (updatedMin != null) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append("updated-min=");
-        queryBuf.append(updatedMin.toString());
+        appendQueryParameter(queryBuf, "updated-min", updatedMin.toString());
       }
 
       if (updatedMax != null) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append("updated-max=");
-        queryBuf.append(updatedMax.toString());
+        appendQueryParameter(queryBuf, "updated-max", updatedMax.toString());
       }
 
       if (publishedMin != null) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append("published-min=");
-        queryBuf.append(publishedMin.toString());
+        appendQueryParameter(queryBuf, "published-min",
+            publishedMin.toString());
       }
 
       if (publishedMax != null) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append("published-max=");
-        queryBuf.append(publishedMax.toString());
+        appendQueryParameter(queryBuf, "published-max",
+            publishedMax.toString());
       }
 
       if (startIndex != UNDEFINED) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append("start-index=" + startIndex);
+        appendQueryParameter(queryBuf, "start-index",
+            Integer.toString(startIndex));
       }
 
       if (maxResults != UNDEFINED) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append("max-results=" + maxResults);
+        appendQueryParameter(queryBuf, "max-results",
+            Integer.toString(maxResults));
       }
 
       for (CustomParameter customParameter : customParameters) {
-        queryBuf.append(queryBuf.length() != 0 ? '&' : '?');
-        queryBuf.append(URLEncoder.encode(customParameter.name, "UTF-8"));
-        queryBuf.append('=');
-        queryBuf.append(URLEncoder.encode(customParameter.value, "UTF-8"));
+        appendQueryParameter(queryBuf,
+            URLEncoder.encode(customParameter.name, "UTF-8"),
+            URLEncoder.encode(customParameter.value, "UTF-8"));
       }
 
       return new URI(pathBuf.toString() + queryBuf.toString());

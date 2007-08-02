@@ -76,11 +76,12 @@ public class AttributeGenerator extends LinkedHashMap<String, String> {
    * @param key                  key with which the specified value is to be
    *                             associated
    * @param value                enum value to be associated with the specified
-   *                             key
+   *                             key or <code>null</code>
    * @param enumToAttributeValue custom mapping of enum to attribute value
    */
   public <T extends Enum<T>> void put(String key, T value,
       AttributeHelper.EnumToAttributeValue<T> enumToAttributeValue) {
-    put(key, enumToAttributeValue.getAttributeValue(value));
+    put(key, value == null
+        ? null : enumToAttributeValue.getAttributeValue(value));
   }
 }

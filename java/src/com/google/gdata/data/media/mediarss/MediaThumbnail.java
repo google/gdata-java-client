@@ -16,12 +16,11 @@
 
 package com.google.gdata.data.media.mediarss;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.util.ParseException;
 
-import java.util.List;
 
 /**
  * {@code <media:thumbnail>}.
@@ -31,20 +30,19 @@ import java.util.List;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = MediaRssNamespace.PREFIX,
+    nsUri = MediaRssNamespace.URI,
+    localName = "thumbnail",
+    isRepeatable = true
+)
 public class MediaThumbnail extends AbstractMediaResource {
 
   private NormalPlayTime time;
 
-  public MediaThumbnail() {
-    super("thumbnail");
-  }
-
   /** Describes the tag to an {@link com.google.gdata.data.ExtensionProfile}. */
   public static ExtensionDescription getDefaultDescription() {
-    ExtensionDescription retval
-        = ExtensionUtils.getDefaultDescription("thumbnail", MediaThumbnail.class);
-    retval.setRepeatable(true);
-    return retval;
+    return ExtensionDescription.getDefaultDescription(MediaThumbnail.class);
   }
 
 
@@ -57,9 +55,11 @@ public class MediaThumbnail extends AbstractMediaResource {
   }
 
   @Override
-  protected void addAttributes(List<XmlWriter.Attribute> attrs) {
-    super.addAttributes(attrs);
-    ExtensionUtils.addAttribute(attrs, "time", time);
+  protected void putAttributes(AttributeGenerator generate) {
+    super.putAttributes(generate);
+    if (time != null) {
+      generate.put("time", time.getNptHhmmssRepresentation());
+    }
   }
 
   @Override

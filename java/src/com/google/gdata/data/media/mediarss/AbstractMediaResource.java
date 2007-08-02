@@ -16,34 +16,28 @@
 
 package com.google.gdata.data.media.mediarss;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.Extension;
-import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.util.ParseException;
-import com.google.gdata.util.XmlParser;
 
 import org.xml.sax.Attributes;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An empty tag with a url, width and height attribute.
  *
  * 
  */
-public abstract class AbstractMediaResource 
+public abstract class AbstractMediaResource
     extends ExtensionPoint implements Extension {
-  private final String tagName;
   private String url;
   private int height;
   private int width;
 
-  AbstractMediaResource(String tagName) {
-    this.tagName = tagName;
+  /** Prevents this class from being extended outside of this package. */
+  AbstractMediaResource() {
   }
 
   public String getUrl() {
@@ -70,23 +64,19 @@ public abstract class AbstractMediaResource
     this.height = height;
   }
 
-  public final void generate(XmlWriter w, ExtensionProfile extProfile)
-      throws IOException {
-    List<XmlWriter.Attribute> attrs = new ArrayList<XmlWriter.Attribute>();
-    ExtensionUtils.addAttribute(attrs, "url", url);
-    ExtensionUtils.addAttribute(attrs, "height", height);
-    ExtensionUtils.addAttribute(attrs, "width", width);
-    addAttributes(attrs);
-    w.startElement(MediaRssNamespace.NS, tagName, attrs, null);
-    generateExtensions(w, extProfile);
-    w.endElement();
-  }
-
   /**
    * Subclasses can overwrite this method to add extra attributes.
    * @param attrs
    */
-  protected void addAttributes(List<XmlWriter.Attribute> attrs) {
+  @Override
+  protected void putAttributes(AttributeGenerator generator) {
+    generator.put("url", url);
+    if (height > 0) {
+      generator.put("height", height);
+    }
+    if (width > 0) {
+      generator.put("width", width);
+    }
   }
 
   /**
@@ -95,34 +85,11 @@ public abstract class AbstractMediaResource
    *
    * @param attrsHelper
    */
+  @Override
   protected void consumeAttributes(AttributeHelper attrsHelper)
       throws ParseException {
-  }
-
-  final public XmlParser.ElementHandler getHandler(
-      final ExtensionProfile extProfile, String namespace, String localName,
-      Attributes attrs) throws ParseException, IOException {
-    final AttributeHelper attrsHelper = new AttributeHelper(attrs);
     url = attrsHelper.consume("url", false);
     height = attrsHelper.consumeInteger("height", false);
     width = attrsHelper.consumeInteger("width", false);
-    consumeAttributes(attrsHelper);
-
-    return new XmlParser.ElementHandler() {
-      @Override
-      public XmlParser.ElementHandler getChildHandler(String namespace,
-          String localName, Attributes attrs)
-          throws ParseException, IOException {
-        return getExtensionHandler(extProfile, getClass(), namespace, localName,
-            attrs);
-      }
-
-      @Override
-      public void processEndElement() throws ParseException {
-        super.processEndElement();
-        attrsHelper.assertAllConsumed();
-      }
-    };
   }
-
 }

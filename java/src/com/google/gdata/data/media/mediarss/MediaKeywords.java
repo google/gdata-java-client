@@ -16,17 +16,12 @@
 
 package com.google.gdata.data.media.mediarss;
 
-import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.data.Extension;
+import com.google.gdata.data.AbstractExtension;
+import com.google.gdata.data.AttributeGenerator;
+import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionDescription;
-import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.media.mediarss.ExtensionUtils;
 import com.google.gdata.util.ParseException;
-import com.google.gdata.util.XmlParser;
 
-import org.xml.sax.Attributes;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -40,12 +35,17 @@ import java.util.Collection;
  *
  * 
  */
-public class MediaKeywords implements Extension {
+@ExtensionDescription.Default(
+    nsAlias = MediaRssNamespace.PREFIX,
+    nsUri = MediaRssNamespace.URI,
+    localName = "keywords"
+)
+public class MediaKeywords extends AbstractExtension {
   private final List<String> keywords = new ArrayList<String>();
 
   /** Describes the tag to an {@link com.google.gdata.data.ExtensionProfile}. */
   public static ExtensionDescription getDefaultDescription() {
-    return ExtensionUtils.getDefaultDescription("keywords", MediaKeywords.class);
+    return ExtensionDescription.getDefaultDescription(MediaKeywords.class);
   }
 
   public List<String> getKeywords() {
@@ -64,8 +64,8 @@ public class MediaKeywords implements Extension {
     keywords.clear();
   }
 
-  public void generate(XmlWriter w, ExtensionProfile extProfile)
-      throws IOException {
+  @Override
+  protected void putAttributes(AttributeGenerator generator) {
     StringBuffer content = new StringBuffer();
     boolean isFirst = true;
     for (String keyword: keywords) {
@@ -77,27 +77,20 @@ public class MediaKeywords implements Extension {
       content.append(keyword);
     }
 
-    w.startElement(MediaRssNamespace.NS, "keywords", null, null);
-    w.characters(content.toString());
-    w.endElement();
+    generator.setContent(content.toString());
   }
 
-  public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
-      String namespace, String localName, Attributes attrs)
-      throws ParseException, IOException {
-    return new XmlParser.ElementHandler() {
-      @Override
-      public void processEndElement() {
-        keywords.clear();
-        if (value != null) {
-          StringTokenizer tokenizer = new StringTokenizer(value, ",");
-          while(tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken().trim();
-            keywords.add(token);
-          }
-        }
+  @Override
+  protected void consumeAttributes(AttributeHelper attrsHelper) 
+      throws ParseException {
+    String value = attrsHelper.consumeContent(false);
+    keywords.clear();
+    if (value != null) {
+      StringTokenizer tokenizer = new StringTokenizer(value, ",");
+      while(tokenizer.hasMoreTokens()) {
+        String token = tokenizer.nextToken().trim();
+        keywords.add(token);
       }
-    };
+    }
   }
-
 }

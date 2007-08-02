@@ -18,7 +18,6 @@ package com.google.gdata.data.media.mediarss;
 
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.media.mediarss.AbstractMediaResource;
-import com.google.gdata.data.media.mediarss.ExtensionUtils;
 
 /**
  * {@code <media:player>}.
@@ -28,15 +27,15 @@ import com.google.gdata.data.media.mediarss.ExtensionUtils;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = MediaRssNamespace.PREFIX,
+    nsUri = MediaRssNamespace.URI,
+    localName = "player"
+)
 public class MediaPlayer extends AbstractMediaResource {
-
-  public MediaPlayer() {
-    super("player");
-  }
 
   /** Describes the tag to an {@link com.google.gdata.data.ExtensionProfile}. */
   public static ExtensionDescription getDefaultDescription() {
-    return ExtensionUtils.getDefaultDescription("player",
-        MediaPlayer.class);
+    return ExtensionDescription.getDefaultDescription(MediaPlayer.class);
   }
 }

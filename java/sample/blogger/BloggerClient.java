@@ -18,6 +18,7 @@ package sample.blogger;
 
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Query;
+import sample.util.SimpleCommandLineParser;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.Entry;
 import com.google.gdata.data.Feed;
@@ -25,14 +26,12 @@ import com.google.gdata.data.Person;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.util.ServiceException;
 
-import sample.util.SimpleCommandLineParser;
-
 import java.io.IOException;
 import java.net.URL;
 
 /**
- * This class demonstrates how to use the Google Data API's Java client library
- * to interface with the Blogger service. There are examples for the following
+ * Demonstrates how to use the Google Data API's Java client library to
+ * interface with the Blogger service. There are examples for the following
  * operations:
  * 
  * <ol>
@@ -46,20 +45,28 @@ import java.net.URL;
  * </ol>
  * 
  * 
- * 
  */
 public class BloggerClient {
 
-  private static final String METAFEED_URL =
+  private static final String METAFEED_URL = 
       "http://www.blogger.com/feeds/default/blogs";
 
   private static final String FEED_URI_BASE = "http://www.blogger.com/feeds";
+  private static final String POSTS_FEED_URI_SUFFIX = "/posts/default";
+  private static final String COMMENTS_FEED_URI_SUFFIX = "/comments/default";
 
   private static String feedUri;
 
   /**
-   * This method uses the metafeed to get the blog ID for the authenticated
-   * user's default blog.
+   * Utility classes should not have a public or default constructor.
+   */
+  private BloggerClient() {
+    // do nothing
+  }
+
+  /**
+   * Parses the metafeed to get the blog ID for the authenticated user's default
+   * blog.
    * 
    * @param myService An authenticated GoogleService object.
    * @return A String representation of the blog's ID.
@@ -71,7 +78,7 @@ public class BloggerClient {
     // Get the metafeed
     final URL feedUrl = new URL(METAFEED_URL);
     Feed resultFeed = myService.getFeed(feedUrl, Feed.class);
-    
+
     // If the user has a blog then return the id (which comes after 'blog-')
     if (resultFeed.getEntries().size() > 0) {
       Entry entry = resultFeed.getEntries().get(0);
@@ -104,11 +111,11 @@ public class BloggerClient {
   }
 
   /**
-   * This method creates a new post on a blog. The new post can be stored as a
-   * draft or published based on the value of the isDraft paramter. The method
-   * creates an Entry for the new post using the title, content, authorName and
-   * isDraft parameters. Then it uses the given GoogleService to insert the new
-   * post. If the insertion is successful, the added post will be returned.
+   * Creates a new post on a blog. The new post can be stored as a draft or
+   * published based on the value of the isDraft paramter. The method creates an
+   * Entry for the new post using the title, content, authorName and isDraft
+   * parameters. Then it uses the given GoogleService to insert the new post. If
+   * the insertion is successful, the added post will be returned.
    * 
    * @param myService An authenticated GoogleService object.
    * @param title Text for the title of the post to create.
@@ -132,13 +139,13 @@ public class BloggerClient {
     myEntry.setDraft(isDraft);
 
     // Ask the service to insert the new entry
-    URL postUrl = new URL(feedUri + "/posts/default");
+    URL postUrl = new URL(feedUri + POSTS_FEED_URI_SUFFIX);
     return myService.insert(postUrl, myEntry);
   }
 
   /**
-   * This methods displays the titles of all the posts in a blog. First it
-   * requests the posts feed for the blogs and then is prints the results.
+   * Displays the titles of all the posts in a blog. First it requests the posts
+   * feed for the blogs and then is prints the results.
    * 
    * @param myService An authenticated GoogleService object.
    * @throws ServiceException If the service is unable to handle the request.
@@ -147,7 +154,7 @@ public class BloggerClient {
   public static void printAllPosts(GoogleService myService)
       throws ServiceException, IOException {
     // Request the feed
-    URL feedUrl = new URL(feedUri + "/posts/default");
+    URL feedUrl = new URL(feedUri + POSTS_FEED_URI_SUFFIX);
     Feed resultFeed = myService.getFeed(feedUrl, Feed.class);
 
     // Print the results
@@ -160,10 +167,10 @@ public class BloggerClient {
   }
 
   /**
-   * This method displays the title and modification time for any posts that
-   * have been created or updated in the period between the startTime and
-   * endTime parameters. The method creates the query, submits it to the
-   * GoogleService, then displays the results.
+   * Displays the title and modification time for any posts that have been
+   * created or updated in the period between the startTime and endTime
+   * parameters. The method creates the query, submits it to the GoogleService,
+   * then displays the results.
    * 
    * Note that while the startTime is inclusive, the endTime is exclusive, so
    * specifying an endTime of '2007-7-1' will include those posts up until
@@ -181,7 +188,7 @@ public class BloggerClient {
       DateTime startTime, DateTime endTime) throws ServiceException,
       IOException {
     // Create query and submit a request
-    URL feedUrl = new URL(feedUri + "/posts/default");
+    URL feedUrl = new URL(feedUri + POSTS_FEED_URI_SUFFIX);
     Query myQuery = new Query(feedUrl);
     myQuery.setUpdatedMin(startTime);
     myQuery.setUpdatedMax(endTime);
@@ -199,9 +206,9 @@ public class BloggerClient {
   }
 
   /**
-   * This method updates the title of the given post. The Entry object is
-   * updated with the new title, then a request is sent to the GoogleService. If
-   * the insertion is successful, the updated post will be returned.
+   * Updates the title of the given post. The Entry object is updated with the
+   * new title, then a request is sent to the GoogleService. If the insertion is
+   * successful, the updated post will be returned.
    * 
    * Note that other characteristics of the post can also be modified by
    * updating the values of the entry object before submitting the request.
@@ -222,9 +229,9 @@ public class BloggerClient {
   }
 
   /**
-   * This method adds a comment to the specified post. First the comment feed's
-   * URI is built using the given post ID. Then an Entry is created for the
-   * comment and submitted to the GoogleService.
+   * Adds a comment to the specified post. First the comment feed's URI is built
+   * using the given post ID. Then an Entry is created for the comment and
+   * submitted to the GoogleService.
    * 
    * NOTE: This functionality is not officially supported yet.
    * 
@@ -238,7 +245,7 @@ public class BloggerClient {
   public static Entry createComment(GoogleService myService, String postId,
       String commentText) throws ServiceException, IOException {
     // Build the comment feed URI
-    String commentsFeedUri = feedUri + "/" + postId + "/comments/default";
+    String commentsFeedUri = feedUri + "/" + postId + COMMENTS_FEED_URI_SUFFIX;
     URL feedUrl = new URL(commentsFeedUri);
 
     // Create a new entry for the comment and submit it to the GoogleService
@@ -248,19 +255,19 @@ public class BloggerClient {
   }
 
   /**
-   * This method displays all the comments for the given post. First the comment
-   * feed's URI is built using the given post ID. Then the method requests the
-   * comments feed and displays the results.
+   * Displays all the comments for the given post. First the comment feed's URI
+   * is built using the given post ID. Then the method requests the comments
+   * feed and displays the results.
    * 
    * @param myService An authenticated GoogleService object.
    * @param postId The ID of the post to view comments on.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException If there is an error communicating with the server.
    */
   public static void printAllComments(GoogleService myService, String postId)
       throws ServiceException, IOException {
     // Build comment feed URI and request comments on the specified post
-    String commentsFeedUri = feedUri + "/" + postId + "/comments/default";
+    String commentsFeedUri = feedUri + "/" + postId + COMMENTS_FEED_URI_SUFFIX;
     URL feedUrl = new URL(commentsFeedUri);
     Feed resultFeed = myService.getFeed(feedUrl, Feed.class);
 
@@ -275,12 +282,12 @@ public class BloggerClient {
   }
 
   /**
-   * This method removes the comment specified by the given editLinkHref.
+   * Removes the comment specified by the given editLinkHref.
    * 
    * @param myService An authenticated GoogleService object.
    * @param editLinkHref The URI given for editing the comment.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException If there is an error communicating with the server.
    */
   public static void deleteComment(GoogleService myService, String editLinkHref)
       throws ServiceException, IOException {
@@ -289,12 +296,12 @@ public class BloggerClient {
   }
 
   /**
-   * This method removes the post specified by the given editLinkHref.
+   * Removes the post specified by the given editLinkHref.
    * 
    * @param myService An authenticated GoogleService object.
    * @param editLinkHref The URI given for editing the post.
    * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws IOException If there is an error communicating with the server.
    */
   public static void deletePost(GoogleService myService, String editLinkHref)
       throws ServiceException, IOException {
@@ -303,11 +310,82 @@ public class BloggerClient {
   }
 
   /**
-   * The main method uses the command line arguments to authenticate the
-   * GoogleService and build the basic feed URI, then invokes all the other
-   * methods to demonstrate how to interface with the Blogger service.
+   * Runs through all the examples using the given GoogleService instance.
    * 
-   * @param args See USAGE String.
+   * @param myService An authenticated GoogleService object.
+   * @param userName username of user to authenticate (e.g. jdoe@gmail.com).
+   * @param userPassword password to use for authentication.
+   * @throws ServiceException If the service is unable to handle the request.
+   * @throws IOException If there is an error communicating with the server.
+   */
+  public static void run(GoogleService myService, String userName,
+      String userPassword) throws ServiceException, IOException {
+    // Authenticate using ClientLogin
+    myService.setUserCredentials(userName, userPassword);
+
+    // Get the blog ID from the metatfeed.
+    String blogId = getBlogId(myService);
+    feedUri = FEED_URI_BASE + "/" + blogId;
+
+    // Demonstrate retrieving a list of the user's blogs.
+    printUserBlogs(myService);
+
+    // Demonstrate how to create a draft post.
+    Entry draftPost = createPost(myService, "Snorkling in Aruba",
+        "<p>We had so much fun snorkling in Aruba<p>", "Post author", userName,
+        true);
+    System.out.println("Successfully created draft post: "
+        + draftPost.getTitle().getPlainText());
+
+    // Demonstrate how to publish a public post.
+    Entry publicPost = createPost(myService, "Back from vacation",
+        "<p>I didn't want to leave Aruba, but I ran out of money :(<p>",
+        "Post author", userName, false);
+    System.out.println("Successfully created public post: "
+        + publicPost.getTitle().getPlainText());
+
+    // Demonstrate various feed queries.
+    printAllPosts(myService);
+    printDateRangeQueryResults(myService, DateTime.parseDate("2007-04-04"),
+        DateTime.parseDate("2007-04-06"));
+
+    // Demonstrate two ways of updating posts.
+    draftPost.setTitle(new PlainTextConstruct("Swimming with the fish"));
+    draftPost.update();
+    System.out.println("Post's new title is \""
+        + draftPost.getTitle().getPlainText() + "\".\n");
+    publicPost = updatePostTitle(myService, publicPost, "The party's over");
+    System.out.println("Post's new title is \""
+        + publicPost.getTitle().getPlainText() + "\".\n");
+
+    // Demonstrate how to add a comment on a post
+    // Get the post ID and build the comments feed URI for the specified post
+    System.out.println("Creating comment");
+    String selfLinkHref = publicPost.getSelfLink().getHref();
+    String[] tokens = selfLinkHref.split("/");
+    String postId = tokens[tokens.length - 1];
+    Entry comment = createComment(myService, postId, "Did you see any sharks?");
+
+    // Demonstrate how to retrieve the comments for a post
+    printAllComments(myService, postId);
+
+    // Demonstrate how to delete a comment from a post
+    System.out.println("Deleting comment");
+    deleteComment(myService, comment.getEditLink().getHref());
+
+    // Demonstrate two ways of deleting posts.
+    System.out.println("Deleting draft post");
+    draftPost.delete();
+    System.out.println("Deleting published post");
+    deletePost(myService, publicPost.getEditLink().getHref());
+  }
+
+  /**
+   * Uses the command line arguments to authenticate the GoogleService and build
+   * the basic feed URI, then invokes all the other methods to demonstrate how
+   * to interface with the Blogger service.
+   * 
+   * @param args See the usage method.
    */
   public static void main(String[] args) {
 
@@ -325,66 +403,7 @@ public class BloggerClient {
         "exampleCo-exampleApp-1");
 
     try {
-      // Authenticate using ClientLogin
-      myService.setUserCredentials(userName, userPassword);
-
-      // Get the blog ID from the metatfeed.
-      String blogId = getBlogId(myService);
-      feedUri = FEED_URI_BASE + "/" + blogId;
-
-      // Demonstrate retrieving a list of the user's blogs.
-      printUserBlogs(myService);
-
-      // Demonstrate how to create a draft post.
-      Entry draftPost = createPost(myService, "Snorkling in Aruba",
-          "<p>We had so much fun snorkling in Aruba<p>", "Post author",
-          userName, true);
-      System.out.println("Successfully created draft post: "
-          + draftPost.getTitle().getPlainText());
-
-      // Demonstrate how to publish a public post.
-      Entry publicPost = createPost(myService, "Back from vacation",
-          "<p>I didn't want to leave Aruba, but I ran out of money :(<p>",
-          "Post author", userName, false);
-      System.out.println("Successfully created public post: "
-          + publicPost.getTitle().getPlainText());
-
-      // Demonstrate various feed queries.
-      printAllPosts(myService);
-      printDateRangeQueryResults(myService, DateTime.parseDate("2007-04-04"),
-          DateTime.parseDate("2007-04-06"));
-
-      // Demonstrate two ways of updating posts.
-      draftPost.setTitle(new PlainTextConstruct("Swimming with the fish"));
-      draftPost.update();
-      System.out.println("Post's new title is \""
-          + draftPost.getTitle().getPlainText() + "\".\n");
-      publicPost = updatePostTitle(myService, publicPost, "The party's over");
-      System.out.println("Post's new title is \""
-          + publicPost.getTitle().getPlainText() + "\".\n");
-
-      // Demonstrate how to add a comment on a post
-      // Get the post ID and build the comments feed URI for the specified post
-      System.out.println("Creating comment");
-      String selfLinkHref = publicPost.getSelfLink().getHref();
-      String[] tokens = selfLinkHref.split("/");
-      String postId = tokens[tokens.length - 1];
-      Entry comment = createComment(myService, postId,
-          "Did you see any sharks?");
-
-      // Demonstrate how to retrieve the comments for a post
-      printAllComments(myService, postId);
-
-      // Demonstrate how to delete a comment from a post
-      System.out.println("Deleting comment");
-      deleteComment(myService, comment.getEditLink().getHref());
-
-      // Demonstrate two ways of deleting posts.
-      System.out.println("Deleting draft post");
-      draftPost.delete();
-      System.out.println("Deleting published post");
-      deletePost(myService, publicPost.getEditLink().getHref());
-
+      run(myService, userName, userPassword);
     } catch (ServiceException se) {
       se.printStackTrace();
     } catch (IOException ioe) {

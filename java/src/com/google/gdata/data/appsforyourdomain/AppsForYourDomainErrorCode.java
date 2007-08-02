@@ -55,7 +55,8 @@ public enum AppsForYourDomainErrorCode {
   InvalidEmailAddress(1406),
   InvalidQueryParameterValue(1407),
 
-  TooManyRecipientsOnEmailList(1500);
+  TooManyRecipientsOnEmailList(1500),
+  TooManyNicknamesForUser(1501);
 
   private int errorCode;
 

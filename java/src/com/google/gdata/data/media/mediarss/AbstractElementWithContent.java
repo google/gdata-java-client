@@ -40,10 +40,12 @@ abstract class AbstractElementWithContent extends AbstractExtension {
     this.content = content;
   }
 
+  @Override
   protected void putAttributes(AttributeGenerator generator) {
     generator.setContent(content);
   }
 
+  @Override
   protected void consumeAttributes(AttributeHelper helper)
       throws ParseException {
     content = helper.consumeContent(false);

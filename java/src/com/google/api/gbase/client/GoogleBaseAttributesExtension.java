@@ -220,12 +220,15 @@ public class GoogleBaseAttributesExtension implements Extension {
    */
   public static final String CUSTOMER_ID = "customer id";
 
-  /** Meta attribute {@code <gm:adjusted_name>}. */
+  /** Meta attribute {@code gm:adjusted_name}. */
   static final String GM_ADJUSTED_NAME_ATTRIBUTE = "adjusted_name";
   
-  /** Meta attribute {@code <gm:adjusted_value>}. */
+  /** Meta attribute {@code gm:adjusted_value}. */
   static final String GM_ADJUSTED_VALUE_ATTRIBUTE = "adjusted_value";
 
+  /** Meta attribute {@code gm:thumbnail}. */
+  static final String GM_THUMBNAIL_ATTRIBUTE = "thumbnail";
+  
   /**
    * All the attributes available for the current
    * {@link com.google.gdata.data.ExtensionPoint} in this extension
@@ -1710,8 +1713,11 @@ public class GoogleBaseAttributesExtension implements Extension {
     @Override
     public XmlParser.ElementHandler getChildHandler(final String uri, 
                                                     final String localName, 
-                                                    Attributes attrs) {      
+                                                    Attributes attrs) {
       return new XmlParser.ElementHandler() {
+        private int width = -1;
+        private int height = -1;
+       
         @Override
         public void processEndElement() {
           if (GoogleBaseNamespaces.GM_URI.equals(uri)) {
@@ -1719,11 +1725,37 @@ public class GoogleBaseAttributesExtension implements Extension {
               attribute.getAdjustments().setValue(super.value);
             } else if (GM_ADJUSTED_NAME_ATTRIBUTE.equals(localName)) {
               attribute.getAdjustments().setName(super.value);              
+            } else if (GM_THUMBNAIL_ATTRIBUTE.equals(localName)) {
+              Thumbnail thumbnail = new Thumbnail();
+              thumbnail.setUrl(super.value.trim());
+              if ((width > 0) && (height > 0)) {
+                thumbnail.setSize(width, height);
+              }
+              attribute.getThumbnails().add(thumbnail);
             }
             // if the uri is gm but the name is not recognized, we ignore it
           } else {
             // only non-gm uris are considered sub-elements
             attribute.setSubElement(localName, super.value);
+          }
+        }
+        
+        @Override
+        public void processAttribute(String namespace, String localName,
+            String value) throws ParseException {
+          if ("width".equals(localName)) {
+            width = parseInteger(value);
+          } else if ("height".equals(localName)) {
+            height = parseInteger(value);
+          }
+        }
+        
+        private int parseInteger(String value) throws ParseException {
+          try {
+            return Integer.parseInt(value);
+          } catch (NumberFormatException nfe) {
+            throw new ParseException(
+                "Invalid size value '" + value + "'", nfe);
           }
         }
       };        

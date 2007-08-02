@@ -16,17 +16,10 @@
 
 package com.google.gdata.data.media.mediarss;
 
-import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
-import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.util.ParseException;
-import com.google.gdata.util.XmlParser;
 
-import org.xml.sax.Attributes;
-
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -37,11 +30,16 @@ import java.util.List;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = MediaRssNamespace.PREFIX,
+    nsUri = MediaRssNamespace.URI,
+    localName = "group"
+)
 public class MediaGroup extends ExtensionPoint implements Extension {
 
   /** Describes the tag to an {@link com.google.gdata.data.ExtensionProfile}. */
   public static ExtensionDescription getDefaultDescription() {
-    return ExtensionUtils.getDefaultDescription("group", MediaGroup.class);
+    return ExtensionDescription.getDefaultDescription(MediaGroup.class);
   }
 
   public List<MediaContent> getContents() {
@@ -196,26 +194,6 @@ public class MediaGroup extends ExtensionPoint implements Extension {
     }
   }
 
-  public void generate(XmlWriter w, ExtensionProfile extProfile)
-      throws IOException {
-    w.startElement(MediaRssNamespace.NS, "group", null, null);
-    generateExtensions(w, extProfile);
-    w.endElement();
-  }
-
-  public XmlParser.ElementHandler getHandler(final ExtensionProfile extProfile,
-      String namespace, String localName, Attributes attrs)
-      throws ParseException, IOException {
-    return new XmlParser.ElementHandler() {
-      @Override
-      public XmlParser.ElementHandler getChildHandler(String namespace,
-          String localName, Attributes attrs) throws ParseException, IOException {
-        return getExtensionHandler(extProfile, MediaGroup.class, namespace,
-            localName, attrs);
-      }
-    };
-  }
-
   public void setTitle(MediaTitle title) {
     if (title == null) {
       removeExtension(MediaTitle.class);
@@ -223,6 +201,7 @@ public class MediaGroup extends ExtensionPoint implements Extension {
       setExtension(title);
     }
   }
+
   public MediaTitle getTitle() {
     return getExtension(MediaTitle.class);
   }
@@ -237,6 +216,4 @@ public class MediaGroup extends ExtensionPoint implements Extension {
   public MediaDescription getDescription() {
     return getExtension(MediaDescription.class);
   }
-
-
 }
