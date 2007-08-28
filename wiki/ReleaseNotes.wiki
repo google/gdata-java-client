@@ -8,6 +8,11 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.14.0 ==
+  * Added support for YouTube Data API.
+  * Refactored core GData code to remove dependency on, JavaMail and Java Activation Framework for non-media services. With this change, only media dependent services such as, Document List Data API, Picasa Web Album API and YouTube Data API require JavaMail and Java Activation Framework.
+  * Simplified ant build configuration into multiple files.  This may require updates to your IDE settings to point to new ant targets.  For the list of available build targets refer to java/build.xml ant build file.
+
 == 1.13.0 ==
   * Added support for Google Documents List Data API.
   * Added support for Calendar Gadgets in Calendar Data API.
