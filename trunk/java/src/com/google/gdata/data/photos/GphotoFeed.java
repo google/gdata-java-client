@@ -19,17 +19,18 @@ package com.google.gdata.data.photos;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.TextConstruct;
+import com.google.gdata.data.media.MediaFeed;
 import com.google.gdata.data.photos.impl.GphotoDataImpl;
 
 /**
- * This class customizes the generic BaseFeed class to define a feed of
+ * This class customizes the generic MediaFeed class to define a feed of
  * GphotoEntries. It also adds support for the GphotoData interface methods so
  * all subclasses have the base access methods available. In addition it
  * provides access to a consistent description field across both RSS and ATOM.
  *
  * 
  */
-public class GphotoFeed<F extends GphotoFeed> extends BaseFeed<F, GphotoEntry>
+public class GphotoFeed<F extends GphotoFeed> extends MediaFeed<F, GphotoEntry>
     implements GphotoData, AtomData {
 
   // The delegating instance to deal with extensions.

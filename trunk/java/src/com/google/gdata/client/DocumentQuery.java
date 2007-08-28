@@ -68,7 +68,7 @@ public class DocumentQuery extends Query {
   /**
    * Sets whether the title match should be exact (instead of keyword-based).
    * 
-   * By default, the match is exact.
+   * By default, the match is not exact.
    * 
    * @param exact whether the results should be exact
    */

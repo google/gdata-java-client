@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Class-Path: gdata-client-@client.spec.version@.jar gdata-media-@media.spec.version@.jar gdata-youtube-meta-@youtube.spec.version@.jar
+
+Name: com/google/gdata/client/youtube/
+Specification-Title: Google YouTube Data API
+Specification-Version: @youtube.spec.version@
+Specification-Vendor: Google Inc.
+Implementation-Title: youtube GData client extensions for Java
+Implementation-Version: @youtube.impl.version@
+Implementation-Vendor: Google Inc.

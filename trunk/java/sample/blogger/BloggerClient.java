@@ -24,6 +24,7 @@ import com.google.gdata.data.Entry;
 import com.google.gdata.data.Feed;
 import com.google.gdata.data.Person;
 import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.TextContent;
 import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
@@ -275,7 +276,8 @@ public class BloggerClient {
     System.out.println(resultFeed.getTitle().getPlainText());
     for (int i = 0; i < resultFeed.getEntries().size(); i++) {
       Entry entry = resultFeed.getEntries().get(i);
-      System.out.println("\t" + entry.getTitle().getPlainText());
+      System.out.println("\t" +
+          ((TextContent) entry.getContent()).getContent().getPlainText());
       System.out.println("\t" + entry.getUpdated().toStringRfc822());
     }
     System.out.println();

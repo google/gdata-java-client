@@ -22,6 +22,7 @@ import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.data.Kind.AdaptorException;
+import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.photos.impl.GphotoDataImpl;
 import com.google.gdata.util.ServiceException;
 
@@ -37,7 +38,7 @@ import java.net.URL;
  *
  * 
  */
-public class GphotoEntry<E extends GphotoEntry<E>> extends BaseEntry<E>
+public class GphotoEntry<E extends GphotoEntry<E>> extends MediaEntry<E>
     implements GphotoData, AtomData {
 
   // The gphoto data instance used as a delegate.

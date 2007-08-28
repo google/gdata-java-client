@@ -21,7 +21,8 @@ import com.google.gdata.data.Category;
 import com.google.gdata.data.Kind;
 
 /**
- * An entry representing a single presentation within a {@link DocumentlistFeed}.
+ * An entry representing a single presentation within a 
+ * {@link DocumentListFeed}.
  *
  * 
  */
@@ -38,7 +39,7 @@ public class PresentationEntry extends DocumentListEntry {
    * of document type.
    */
   public static final String KIND = DocumentListFeed.DOCUMENT_NAMESPACE
-      + "#" + LABEL;
+      + "#" + PresentationEntry.LABEL;
 
   /**
    * Category used to label entries which are of document type.

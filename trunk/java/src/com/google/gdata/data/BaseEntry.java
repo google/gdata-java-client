@@ -19,9 +19,6 @@ package com.google.gdata.data;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.client.Service;
-import com.google.gdata.data.media.MediaSource;
-import com.google.gdata.util.ContentType;
-import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ParseException;
@@ -60,7 +57,7 @@ import java.util.Vector;
  * <p>
  * An {@link Kind.Adaptor} subclass of BaseEntry should do the following:
  * <ul>
- * <li>Include a {@link Kind#Term} annotation on the class declaration that
+ * <li>Include a {@link Kind.Term} annotation on the class declaration that
  * defines the {@link Category} term value for the GData kind handled by the
  * adaptor.</li>
  * <li>Provide a constructor that takes a single BaseEntry parameter as an
@@ -96,13 +93,14 @@ import java.util.Vector;
  *     & extensionElement*)
  * </pre>
  *
+ * @param <E> the entry type associated with the bound subtype.
  * @see Kind.Adaptor
  * @see Kind.Adaptable
  *
  * 
  * 
  */
-abstract public class BaseEntry<E extends BaseEntry>
+public abstract class BaseEntry<E extends BaseEntry>
     extends ExtensionPoint
     implements Kind.Adaptable, Kind.Adaptor {
 
@@ -113,7 +111,7 @@ abstract public class BaseEntry<E extends BaseEntry>
    * copy if the entry is adapted to a more specific BaseEntry
    * {@link Kind.Adaptor} subtypes.
    *
-   * @see BaseEntry#newInstance(BaseEntry)
+   * @see BaseEntry#BaseEntry(BaseEntry)
    */
   protected static class EntryState {
 
@@ -229,7 +227,8 @@ abstract public class BaseEntry<E extends BaseEntry>
   public DateTime getPublished() { return state.published; }
   public void setPublished(DateTime v) {
     if (v != null && v.getTzShift() == null) {
-      throw new IllegalArgumentException("Entry.published must have a timezone.");
+      throw new IllegalArgumentException(
+          "Entry.published must have a timezone.");
     }
     state.published = v;
   }
@@ -259,32 +258,6 @@ abstract public class BaseEntry<E extends BaseEntry>
   public void setContent(TextConstruct tc) {
     state.content = new TextContent(tc);
   }
-
-  public void setMediaSource(MediaSource mediaSource) {
-    MediaContent content;
-    if (state.content == null) {
-      content = new MediaContent();
-      state.content = content;
-    } else if (state.content instanceof MediaContent) {
-      content = (MediaContent) state.content;
-    } else {
-      throw new IllegalArgumentException("Cannot set media source on entry "
-          + "with existing non-MediaContent: " + state.content);
-    }
-    content.setMediaSource(mediaSource);
-    content.setMimeType(new ContentType(mediaSource.getContentType()));
-  }
-
-  public MediaSource getMediaSource() {
-    if (state.content instanceof MediaContent) {
-      MediaContent mediaContent = (MediaContent) state.content;
-      if (mediaContent != null) {
-        return mediaContent.getMediaSource();
-      }
-    }
-    return null;
-  }
-
 
   public List<Link> getLinks() { return state.links; }
 
@@ -362,7 +335,7 @@ abstract public class BaseEntry<E extends BaseEntry>
    */
   public Link getLink(String rel, String type) {
 
-    for (Link link: state.links) {
+    for (Link link : state.links) {
 
       String linkRel = link.getRel();
       String linkType = link.getType();
@@ -450,7 +423,8 @@ abstract public class BaseEntry<E extends BaseEntry>
    */
   public E getSelf() throws IOException, ServiceException {
     if (state.service == null) {
-      throw new ServiceException("Entry is not associated with a GData service");
+      throw new ServiceException(
+          "Entry is not associated with a GData service");
     }
     Link selfLink = getSelfLink();
     if (selfLink == null) {
@@ -458,10 +432,10 @@ abstract public class BaseEntry<E extends BaseEntry>
     }
     URL entryUrl = new URL(selfLink.getHref());
     try {
-      return (E)state.service.getEntry(entryUrl, this.getClass(),
+      return (E) state.service.getEntry(entryUrl, this.getClass(),
           state.updated);
     } catch (NotModifiedException e) {
-      return (E)this;
+      return (E) this;
     }
   }
 
@@ -485,64 +459,16 @@ abstract public class BaseEntry<E extends BaseEntry>
   public E update() throws IOException, ServiceException {
 
     if (state.service == null) {
-      throw new ServiceException("Entry is not associated with a GData service");
+      throw new ServiceException(
+          "Entry is not associated with a GData service");
     }
     Link editLink = getEditLink();
     if (editLink == null) {
       throw new UnsupportedOperationException("Entry cannot be updated");
     }
     URL editUrl = new URL(editLink.getHref());
-    return (E)state.service.update(editUrl, this);
+    return (E) state.service.update(editUrl, this);
   }
-
-
-  /**
-   * Updates the media content associated with this entry by sending the
-   * data contained in the {@link MediaSource} of the entry to the associated
-   * GData service.  Can optionally update the entry content at the same time.
-   *
-   * @param  updateEntry  set to {code boolean} true if the current entry
-   *           content should be updated with the media.
-   *
-   * @return the updated entry returned by the Service.
-   *
-   * @throws ServiceException
-   *           If there is no associated GData service or the service is
-   *           unable to perform the update.
-   *
-   * @throws InvalidEntryException
-   *           If the entry does not contain {@code MediaContent} or
-   *           there is no {@MediaSource} associated with the content.
-   *
-   * @throws UnsupportedOperationException
-   *           If update is not supported for the target entry.
-   *
-   * @throws IOException
-   *           If there is an error communicating with the GData service.
-   */
-  public E updateMedia(boolean updateEntry)
-      throws IOException, ServiceException {
-
-    MediaSource media = getMediaSource();
-    if (media == null) {
-      throw new NullPointerException("Must supply media source");
-    }
-
-    if (state.service == null) {
-      throw new ServiceException("Entry is not associated with GData service");
-    }
-    Link mediaLink = getMediaEditLink();
-    if (mediaLink == null) {
-      throw new UnsupportedOperationException("Mdia cannot be updated");
-    }
-    URL mediaUrl = new URL(mediaLink.getHref());
-
-    if (!updateEntry) {
-      return (E)state.service.updateMedia(mediaUrl, getClass(), media);
-    }
-    return (E)state.service.updateMedia(mediaUrl, this);
-  }
-
 
   /**
    * Deletes this entry by sending a request to the associated GData
@@ -561,7 +487,8 @@ abstract public class BaseEntry<E extends BaseEntry>
   public void delete() throws IOException, ServiceException {
 
     if (state.service == null) {
-      throw new ServiceException("Entry is not associated with a GData service");
+      throw new ServiceException(
+          "Entry is not associated with a GData service");
     }
     Link editLink = getEditLink();
     if (editLink == null) {
@@ -611,7 +538,7 @@ abstract public class BaseEntry<E extends BaseEntry>
     }
 
     w.startRepeatingElement();
-    for (Category cat: state.categories) {
+    for (Category cat : state.categories) {
       cat.generateAtom(w);
     }
     w.endRepeatingElement();
@@ -633,19 +560,19 @@ abstract public class BaseEntry<E extends BaseEntry>
     }
 
     w.startRepeatingElement();
-    for (Link link: state.links) {
+    for (Link link : state.links) {
       link.generateAtom(w, extProfile);
     }
     w.endRepeatingElement();
 
     w.startRepeatingElement();
-    for (Person author: state.authors) {
+    for (Person author : state.authors) {
       author.generateAtom(extProfile, w, "author");
     }
     w.endRepeatingElement();
 
     w.startRepeatingElement();
-    for (Person contributor: state.contributors) {
+    for (Person contributor : state.contributors) {
       contributor.generateAtom(extProfile, w, "contributor");
     }
     w.endRepeatingElement();
@@ -716,7 +643,7 @@ abstract public class BaseEntry<E extends BaseEntry>
     }
 
     w.startRepeatingElement();
-    for (Category cat: state.categories) {
+    for (Category cat : state.categories) {
       cat.generateRss(w);
     }
     w.endRepeatingElement();
@@ -734,19 +661,19 @@ abstract public class BaseEntry<E extends BaseEntry>
     }
 
     w.startRepeatingElement();
-    for (Link link: state.links) {
+    for (Link link : state.links) {
       link.generateRss(w);
     }
     w.endRepeatingElement();
 
     w.startRepeatingElement();
-    for (Person author: state.authors) {
+    for (Person author : state.authors) {
       author.generateRss(w, "author");
     }
     w.endRepeatingElement();
 
     w.startRepeatingElement();
-    for (Person contributor: state.contributors) {
+    for (Person contributor : state.contributors) {
       contributor.generateRss(w, "author");
     }
     w.endRepeatingElement();
@@ -793,7 +720,7 @@ abstract public class BaseEntry<E extends BaseEntry>
     // Determine the parse entry type
     boolean isAdapting = (entryClass == null);
     if (isAdapting) {
-      entryClass = (Class<T>)Entry.class;
+      entryClass = (Class<T>) Entry.class;
     }
 
     // Create a new entry instance.
@@ -830,7 +757,7 @@ abstract public class BaseEntry<E extends BaseEntry>
     if (isAdapting) {
       BaseEntry adaptedEntry = entry.getAdaptedEntry();
       if (adaptedEntry != null) {
-        entry = (T)adaptedEntry;
+        entry = (T) adaptedEntry;
       }
     }
 
@@ -879,7 +806,6 @@ abstract public class BaseEntry<E extends BaseEntry>
    *
    * @param   extProfile
    *            Extension profile.
-   *            
    * @param   parser
    *            XML parser.
    */
@@ -891,6 +817,11 @@ abstract public class BaseEntry<E extends BaseEntry>
     parser.parse(handler, Namespaces.atom, "entry");
   }
 
+  /** Returns information about the content element processing. */
+  protected Content.ChildHandlerInfo getContentHandlerInfo(Attributes attrs)
+      throws ParseException, IOException {
+    return Content.getChildHandler(attrs);
+  }
 
   /** {@code <atom:entry>} parser. */
   public class AtomHandler extends ExtensionPoint.ExtensionHandler {
@@ -959,11 +890,11 @@ abstract public class BaseEntry<E extends BaseEntry>
 
         } else if (localName.equals("content")) {
 
-          Content.ChildHandlerInfo chi = Content.getChildHandler(attrs);
-
           if (state.content != null) {
             throw new ParseException("Duplicate content.");
           }
+
+          Content.ChildHandlerInfo chi = getContentHandlerInfo(attrs);
 
           state.content = chi.content;
           return chi.handler;
@@ -1067,14 +998,14 @@ abstract public class BaseEntry<E extends BaseEntry>
 
     // Find the BaseEntry adaptor instance that is most specific.
     for (Kind.Adaptor adaptor : getAdaptors()) {
-      if (! (adaptor instanceof BaseEntry)) {
+      if (!(adaptor instanceof BaseEntry)) {
         continue;
       }
       // If first matching adaptor or a narrower subtype of the current one,
       // then use it.
       if (adaptedEntry == null ||
           adaptedEntry.getClass().isAssignableFrom(adaptor.getClass())) {
-        adaptedEntry = (BaseEntry)adaptor;
+        adaptedEntry = (BaseEntry) adaptor;
       }
     }
 

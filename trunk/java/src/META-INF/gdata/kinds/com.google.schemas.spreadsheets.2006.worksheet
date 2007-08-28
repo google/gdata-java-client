@@ -1,3 +1,0 @@
-# GData Kind Adaptors for http://schemas.google.com/spreadsheets/2006#worksheet
-com.google.gdata.data.spreadsheet.WorksheetEntry
-com.google.gdata.data.spreadsheet.WorksheetFeed

@@ -21,7 +21,7 @@ import com.google.gdata.data.Category;
 import com.google.gdata.data.Kind;
 
 /**
- * An entry representing a single document within a {@link DocumentlistFeed}.
+ * An entry representing a single document within a {@link DocumentListFeed}.
  * 
  * 
  */
@@ -38,7 +38,7 @@ public class DocumentEntry extends DocumentListEntry {
    * of document type.
    */
   public static final String KIND = DocumentListFeed.DOCUMENT_NAMESPACE 
-      + "#" + LABEL;
+      + "#" + DocumentEntry.LABEL;
   
   /**
    * Category used to label entries which are of document type.

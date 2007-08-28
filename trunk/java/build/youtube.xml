@@ -1,0 +1,112 @@
+<project name="youtube" default="build.youtube" basedir=".">
+  <!-- Path containing core.xml -->
+  <dirname property="build_dir" file="${ant.file.core}"/>
+  <import file="${build_dir}/core.xml"/>
+
+
+  <!--  ===================================================================== -->
+  <!--                 Build GData youtube library.                            -->
+  <!--  ===================================================================== -->
+
+  <property name="gdata-youtube.jar" 
+    value="${build.jars}/gdata-youtube-${youtube.spec.version}.jar"/>
+
+  <target name="build.youtube" depends="core.build.core.media">
+    <antcall target="template.build.service">
+      <param name="template.service.name" value="youtube"/>
+      <param name="template.service.version" value="${youtube.spec.version}"/>
+      <param name="template.service.includes" value="**/youtube/**"/>
+      <param name="template.service.excludes" value="none"/>
+      <param name="template.service.classpath" value="build.service.media.classpath"/>
+      <param name="template.service.name" value="youtube"/>
+    </antcall>
+  </target>
+
+  <target name="clean.youtube">
+    <antcall target="template.clean.service">
+      <param name="template.service.name" value="youtube"/>
+    </antcall>
+  </target>
+ 
+
+
+  <!--  ===================================================================== -->
+  <!--                 Build the GData Codesearch samples.                    -->
+  <!--  ===================================================================== -->
+
+  <!-- samples build Properties --> 
+  <property name="sample.youtube.basedir"
+            value="${basedir}/sample/youtube"/>
+  <property name="sample.youtube.src.home"
+            value="${sample.youtube.basedir}"/>
+  <property name="sample.youtube.build.classes"
+            value="${sample.youtube.basedir}/classes"/>
+  <property name="sample.youtube.build.lib"
+            value="${sample.youtube.basedir}/lib"/>
+  <property name="sample.youtube.jar"
+            value="${sample.youtube.build.lib}/YouTubeClient.jar"/>
+  <property name="sample.youtube.main"
+            value="sample.youtube.YouTubeClient"/>
+
+  <target name="sample.youtube.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.youtube.build.classes}"/>
+  </target>
+
+  <!-- dependency check -->
+  <target name="sample.youtube.dependencies">
+    <antcall target="template.require.service.jar">
+      <param name="template.service.name" value="client"/>
+      <param name="template.service.version" value="${youtube.spec.version}"/>
+    </antcall>
+  </target>    
+  
+  <!-- samples dependencies -->
+  <path id="sample.youtube.compile.classpath">
+    <pathelement location="${activation.jar}"/>
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${sample-util.jar}"/>
+    <pathelement location="${gdata-youtube.jar}"/>
+  </path>
+
+  <!-- samples build -->
+  <target name="sample.youtube.build" 
+    depends="sample.youtube.dependencies,core.sample.core.util.build" 
+          description="Create binary distribution">
+
+    <mkdir   dir="${sample.youtube.build.lib}"/>
+    <mkdir    dir="${sample.youtube.build.classes}"/>
+
+    <javac srcdir="${sample.youtube.src.home}"
+           destdir="${sample.youtube.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.youtube.compile.classpath"/>
+    </javac>
+ 
+    <jar jarfile="${sample.youtube.jar}"
+         basedir="${sample.youtube.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.youtube.main}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- samples run -->
+  <target name="sample.youtube.run"
+          depends="sample.youtube.build"
+          description="Runs the youtube sample">
+
+    <java fork="true" classname="${sample.youtube.main}">
+      <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.youtube.compile.classpath"/>
+        <path location="${sample.youtube.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+ 
+  
+</project>

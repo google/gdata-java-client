@@ -66,7 +66,7 @@ public abstract class AbstractMediaResource
 
   /**
    * Subclasses can overwrite this method to add extra attributes.
-   * @param attrs
+   * @param generator used to output attributes.
    */
   @Override
   protected void putAttributes(AttributeGenerator generator) {

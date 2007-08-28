@@ -190,6 +190,86 @@ public class AttributeHelper {
   }
 
   /**
+   * Gets the value of a double attribute and remove it from the list.
+   *
+   * @param name         attribute name
+   * @param required     indicates attribute is required
+   * @param defaultValue the default value for an optional attribute (used if
+   *                     not present)
+   * @return the double value of this attribute
+   * @throws ParseException if required is set and the attribute is not defined,
+   *                        or if the attribute value is not a valid double
+   */
+  public double consumeDouble(
+      String name, boolean required, double defaultValue)
+      throws ParseException {
+    String value = consume(name, required);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Double.parseDouble(value);
+    } catch (NumberFormatException e) {
+      throw new ParseException("Invalid double value for attribute: '" +
+          name + "'", e);
+    }
+  }
+
+  /**
+   * Gets the value of a double attribute and remove it from the list.
+   *
+   * @param name     attribute name
+   * @param required indicates attribute is required
+   * @return the double value of this attribute, 0 by default
+   * @throws ParseException if required is set and the attribute is not defined,
+   *                        or if the attribute value is not a valid double
+   */
+  public double consumeDouble(String name, boolean required)
+      throws ParseException {
+    return consumeDouble(name, required, 0);
+  }
+
+  /**
+   * Gets the value of a float attribute and remove it from the list.
+   *
+   * @param name         attribute name
+   * @param required     indicates attribute is required
+   * @param defaultValue the default value for an optional attribute (used if
+   *                     not present)
+   * @return the float value of this attribute
+   * @throws ParseException if required is set and the attribute is not defined,
+   *                        or if the attribute value is not a valid float
+   */
+  public float consumeFloat(
+      String name, boolean required, float defaultValue)
+      throws ParseException {
+    String value = consume(name, required);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Float.parseFloat(value);
+    } catch (NumberFormatException e) {
+      throw new ParseException("Invalid float value for attribute: '" +
+          name + "'", e);
+    }
+  }
+
+  /**
+   * Gets the value of a float attribute and remove it from the list.
+   *
+   * @param name     attribute name
+   * @param required indicates attribute is required
+   * @return the float value of this attribute, 0 by default
+   * @throws ParseException if required is set and the attribute is not defined,
+   *                        or if the attribute value is not a valid float
+   */
+  public float consumeFloat(String name, boolean required)
+      throws ParseException {
+    return consumeFloat(name, required, 0);
+  }
+
+  /**
    * Gets the value of a boolean attribute and remove it from the list. The
    * accepted values are based upon xsd:boolean syntax (true, false, 1, 0).
    *
@@ -388,7 +468,7 @@ public class AttributeHelper {
         message.append('s');
       }
       message.append(':');
-      for(String dup: dups) {
+      for (String dup : dups) {
         message.append(" '");
         message.append(dup);
         message.append("' ");

@@ -1,0 +1,57 @@
+<project name="blogger" default="sample.blogger.build" basedir=".">
+  <!-- Path containing core.xml -->
+  <dirname property="build_dir" file="${ant.file.blogger}"/>
+  <import file="${build_dir}/core.xml"/>
+
+  <!--  ===================================================================== -->
+  <!--                 Build GData Blogger samples.                           -->
+  <!--  ===================================================================== -->
+
+  <!-- build Properties --> 
+  <property name="sample.blogger.basedir"       value="${build}/sample/blogger"/>
+  <property name="sample.blogger.src.home"      value="${sample.blogger.basedir}"/>
+  <property name="sample.blogger.build.classes" value="${sample.blogger.basedir}/classes"/>
+  <property name="sample.blogger.build.lib"     value="${sample.blogger.basedir}/lib"/>
+  <property name="sample.blogger.jar"           value="${sample.blogger.build.lib}/BloggerClient.jar"/>
+  <property name="sample.blogger.main"          value="sample.blogger.BloggerClient"/>
+
+  <path id="sample.blogger.compile.classpath">
+     <path location="${gdata-client.jar}"/>
+     <path location="${sample-util.jar}"/>
+  </path>   
+
+  <target name="sample.blogger.build" depends="sample.core.dependencies">
+    <mkdir dir="${sample.blogger.build.lib}"/>
+    <mkdir dir="${sample.blogger.build.classes}"/>
+    <javac srcdir="${sample.blogger.src.home}"
+           destdir="${sample.blogger.build.classes}"
+           debug="false"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.blogger.compile.classpath"/>
+    </javac>     
+    <jar jarfile="${sample.blogger.jar}"
+         basedir="${sample.blogger.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.blogger.main}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="sample.blogger.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.blogger.build.classes}"/>
+  </target>
+
+  <target name="sample.blogger.run" depends="sample.blogger.build">
+    <java fork="true" classname="${sample.blogger.main}">
+      <arg line="--username ${sample.credentials.username} --password ${sample.credentials.password}"/>
+      <classpath>
+        <path location="${gdata-client.jar}"/>
+        <path location="${sample-util.jar}"/>
+        <path location="${sample.blogger.jar}"/>
+      </classpath>
+    </java>
+  </target>
+  
+</project>

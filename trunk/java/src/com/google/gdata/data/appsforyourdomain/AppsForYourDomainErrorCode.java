@@ -62,16 +62,16 @@ public enum AppsForYourDomainErrorCode {
 
   private static Map<Integer, AppsForYourDomainErrorCode> errorMap
       = makeErrorMap();
-  
+
   private static Map<Integer, AppsForYourDomainErrorCode> makeErrorMap() {
     Map<Integer, AppsForYourDomainErrorCode> m
         = new HashMap<Integer, AppsForYourDomainErrorCode>();
     for (AppsForYourDomainErrorCode c : AppsForYourDomainErrorCode.values()) {
-      m.put(c.errorCode, c); 
+      m.put(c.errorCode, c);
     }
 
     return Collections.unmodifiableMap(m);
-  } 
+  }
 
   AppsForYourDomainErrorCode(int errorCode) {
     this.errorCode = errorCode;

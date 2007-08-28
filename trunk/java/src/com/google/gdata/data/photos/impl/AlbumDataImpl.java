@@ -39,7 +39,7 @@ import java.util.Date;
 /**
  * Implementation class for album data objects.  This class takes an
  * {@link ExtensionPoint} and uses it to provide all of the methods that
- * {@link AlbumGphotoData} specifies.  These methods are handled by using
+ * {@link AlbumData} specifies.  These methods are handled by using
  * extension classes to retrieve or set extensions of the appropriate type.
  *
  * 

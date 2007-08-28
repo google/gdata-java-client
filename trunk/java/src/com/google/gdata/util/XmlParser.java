@@ -57,8 +57,9 @@ import javax.xml.parsers.SAXParserFactory;
  * <p>
  * To use this parser, one must define an {@link
  * XmlParser.ElementHandler} type (usually one per XML schema type),
- * specify the root element handler, and pass a reader to the {@link
- * #parse} method.
+ * specify the root element handler, and pass a reader to the 
+ * {@link #parse(Reader, com.google.gdata.util.XmlParser.ElementHandler, String,
+ *               String)} method.
  * <p>
  *
  * 
@@ -208,7 +209,7 @@ public class XmlParser extends DefaultHandler {
     HashSet blobNamespaces = new HashSet();
 
 
-    /** String writer underlying {@link innerXml}. */
+    /** String writer underlying {@link #innerXml}. */
     StringWriter innerXmlStringWriter;
 
 
@@ -372,11 +373,11 @@ public class XmlParser extends DefaultHandler {
         return null;
       }
 
-      if (value.equals("false") || value.equals("0")) {
+      if (value.equalsIgnoreCase("false") || value.equals("0")) {
         return Boolean.FALSE;
       }
 
-      if (value.equals("true") || value.equals("1")) {
+      if (value.equalsIgnoreCase("true") || value.equals("1")) {
         return Boolean.TRUE;
       }
 
@@ -448,9 +449,6 @@ public class XmlParser extends DefaultHandler {
    * @throws  ParseException
    *            XML failed to validate against the schema implemented by
    *            {@code rootHandler}.
-   *
-   * @throws  ParserConfigurationException
-   * @throws  SAXException
    */
   public void parse(Reader reader,
                     ElementHandler rootHandler,
@@ -553,8 +551,6 @@ public class XmlParser extends DefaultHandler {
    *            XML failed to validate against the schema implemented by
    *            {@code rootHandler}.
    *
-   * @throws  ParserConfigurationException
-   * @throws  SAXException
    */
   protected void parse(InputSource is)
       throws IOException,

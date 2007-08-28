@@ -24,7 +24,7 @@ package com.google.gdata.data;
  * parsing of an entry where the extension model is unknown at the start of
  * the parsing process.  Using in combination with {@link ExtensionProfile}
  * auto-extension, the feed can be parsed generically, and then the
- * {@link #getAdaptedEntry} can be used to retrieve a more-specfic entry
+ * {@link #getAdaptedEntry()} can be used to retrieve a more-specfic entry
  * type based upon the {@link Category} kind elements founds within the
  * parsed entry content.
  *
@@ -65,30 +65,5 @@ public class Entry extends BaseEntry<Entry> {
     // Declare arbitrary XML support for the entry instances, so any
     // extensions not explicitly declared in the profile will be captured.
     extProfile.declareArbitraryXmlExtension(BaseEntry.class);
-  }
-
-  /**
-   * Locates and returns the most specific {@link Kind.Adaptor} BaseEntry
-   * subtype for this entry.  If none can be found for the current class,
-   * {@code null} will be returned.
-   */
-  public BaseEntry getAdaptedEntry() throws Kind.AdaptorException {
-
-    BaseEntry adaptedEntry = null;
-
-    // Find the BaseEntry adaptor instance that is most specific.
-    for (Kind.Adaptor adaptor : getAdaptors()) {
-      if (! (adaptor instanceof BaseEntry)) {
-        continue;
-      }
-      // If first matching adaptor or a narrower subtype of the current one,
-      // then use it.
-      if (adaptedEntry == null ||
-          adaptedEntry.getClass().isAssignableFrom(adaptor.getClass())) {
-        adaptedEntry = (BaseEntry)adaptor;
-      }
-    }
-
-    return adaptedEntry;
   }
 }

@@ -139,7 +139,7 @@ public class FeedURLFactory {
    * worksheets within a spreadsheet.
    *
    * This requires the spreadsheet key, which can be obtained from the
-   * URL of the AJAX page through {@link getSpreadsheetKeyFromUrl},
+   * URL of the AJAX page through {@link #getSpreadsheetKeyFromUrl(String)},
    * or via using the My Spreadsheets feed.
    *
    * @param spreadsheetKey a spreadsheet key, like o1123123.12312312
@@ -157,8 +157,8 @@ public class FeedURLFactory {
    * Creates a URL you can use to get a ListFeed, which treats
    * the spreadsheet as a list of rows.
    *
-   * Like {@link getWorksheetFeedUrl}, this requires the spreadsheet
-   * key.
+   * Like {@link #getWorksheetFeedUrl(String, String, String)}, this requires 
+   * the spreadsheet key.
    *
    * This also requires the worksheet identifier.  See the
    * documentation on how worksheets can be identified.
@@ -176,8 +176,8 @@ public class FeedURLFactory {
    * Creates a URL you can use to get a CellFeed, which treats
    * the spreadsheet like spatially oriented cells.
    *
-   * Like {@link getWorksheetFeedUrl}, this requires the spreadsheet
-   * key.
+   * Like {@link #getWorksheetFeedUrl(String, String, String)}, this requires 
+   * the spreadsheet key.
    *
    * This also requires the worksheet identifier.  See the
    * documentation on how worksheets can be identified.

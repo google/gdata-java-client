@@ -1,3 +1,0 @@
-# GData Kind Adaptors for http://schemas.google.com/spreadsheets/2006#spreadsheet
-com.google.gdata.data.spreadsheet.SpreadsheetEntry
-com.google.gdata.data.spreadsheet.SpreadsheetFeed

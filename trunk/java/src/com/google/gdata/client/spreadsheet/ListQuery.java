@@ -153,8 +153,6 @@ public class ListQuery extends Query {
   
   /**
    * Gets whether the query should be reversed.
-   * 
-   * @param reverse whether to reverse results
    */
   public boolean isReverse() {
     return getStringCustomParameter(REVERSE) != null;

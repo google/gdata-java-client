@@ -20,7 +20,6 @@ import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.Service;
-import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ParseException;
@@ -111,10 +110,12 @@ import java.util.Vector;
  * store/retrieve the extension data.
  * </ul>
  *
+ * @param   <F> feed type associated with bound subtype.
+ * @param   <E> entry type associated with bound subtype.
  * 
  * 
  */
-abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
+public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     extends Source
     implements Kind.Adaptable, Kind.Adaptor {
 
@@ -352,10 +353,10 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     }
     URL feedUrl = new URL(selfLink.getHref());
     try {
-      return (F)feedState.service.getFeed(feedUrl, this.getClass(),
+      return (F) feedState.service.getFeed(feedUrl, this.getClass(),
           srcState.updated);
     } catch (NotModifiedException e) {
-      return (F)this;
+      return (F) this;
     }
   }
 
@@ -391,57 +392,6 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   }
 
   /**
-   * Inserts a new media resource into the feed, if the feed is currently
-   * associated with a Service.
-   *
-   * @return the inserted media Entry returned by the Service.
-   *
-   * @throws ServiceException
-   *           If there is no associated GData service or the service is
-   *           unable to perform the insertion.
-   *
-   * @throws UnsupportedOperationException
-   *           If insert is not supported for the target feed.
-   *
-   * @throws IOException
-   *           If there is an error communicating with the GData service.
-   */
-  public E insert(MediaSource media) throws ServiceException, IOException {
-    return insert(media, entryClass);
-  }
-
-  /**
-   * Inserts a new media resource into the feed, if the feed is currently
-   * associated with a Service.  This method is meant for subclasses to
-   * use when they support heterogeneous feeds.
-   *
-   * @return the inserted media Entry returned by the Service.
-   *
-   * @throws ServiceException
-   *           If there is no associated GData service or the service is
-   *           unable to perform the insertion.
-   *
-   * @throws UnsupportedOperationException
-   *           If insert is not supported for the target feed.
-   *
-   * @throws IOException
-   *           If there is an error communicating with the GData service.
-   */
-  protected <T extends E> T insert(MediaSource media, Class<T> mediaEntryClass)
-      throws ServiceException, IOException {
-    if (feedState.service == null) {
-      throw new ServiceException(
-          "Entry is not associated with a GData service");
-    }
-    Link postLink = getEntryPostLink();
-    if (postLink == null) {
-      throw new UnsupportedOperationException("Media cannot be inserted");
-    }
-    URL postUrl = new URL(postLink.getHref());
-    return feedState.service.insert(postUrl, mediaEntryClass, media);
-  }
-
-  /**
    * Generates XML in the Atom format.
    *
    * @param   w
@@ -466,7 +416,7 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       IOException {
     // Generate all entries
     w.startRepeatingElement();
-    for (E entry: entries) {
+    for (E entry : entries) {
       entry.generateAtom(w, extProfile);
     }
     w.endRepeatingElement();
@@ -484,9 +434,8 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   }
 
   /**
-   * Generates everything that's in the feed up and not including to the entries.
-   *
-   * The idea is to use generateStart(), write the entries end then
+   * Generates everything that's in the feed up and not including to the
+   * entries.  The idea is to use generateStart(), write the entries end then
    * call {@link #generateFeedEnd(com.google.gdata.util.common.xml.XmlWriter)}
    * to avoid having to add entries to a list and keep them in memory.
    *
@@ -568,7 +517,7 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     }
 
     w.startRepeatingElement();
-    for (Category cat: srcState.categories) {
+    for (Category cat : srcState.categories) {
       cat.generateRss(w);
     }
     w.endRepeatingElement();
@@ -639,7 +588,7 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     generateExtensions(w, extProfile);
 
     w.startRepeatingElement();
-    for (E entry: entries) {
+    for (E entry : entries) {
       entry.generateRss(w, extProfile);
     }
     w.endRepeatingElement();
@@ -698,7 +647,7 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     // Determine the parse feed type
     boolean isAdapting = (feedClass == null);
     if (isAdapting) {
-      feedClass = (Class<F>)Feed.class;
+      feedClass = (Class<F>) Feed.class;
     }
 
     // Create a new feed instance.
@@ -733,7 +682,7 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
     // Adapt if requested and the feed contained a kind tag
     if (isAdapting) {
-      F adaptedFeed = (F)feed.getAdaptedFeed();
+      F adaptedFeed = (F) feed.getAdaptedFeed();
       if (adaptedFeed != null) {
         feed = adaptedFeed;
       }
@@ -825,7 +774,8 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
           E entry = createEntry();
           entries.add(entry);
-          return (ElementHandler)((BaseEntry)entry).new AtomHandler(extProfile);
+          return (ElementHandler) ((BaseEntry) entry).new AtomHandler(
+              extProfile);
         }
 
         // All other elements in the Atom namespace are handled by
@@ -928,20 +878,20 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * subtype for this feed.  If none can be found for the current class,
    * {@code null} will be returned.
    */
-  public BaseFeed<?,?> getAdaptedFeed() throws Kind.AdaptorException {
+  public BaseFeed<?, ?> getAdaptedFeed() throws Kind.AdaptorException {
 
     BaseFeed adaptedFeed = null;
 
     // Find the BaseFeed adaptor instance that is most specific.
     for (Kind.Adaptor adaptor : getAdaptors()) {
-      if (! (adaptor instanceof BaseFeed)) {
+      if (!(adaptor instanceof BaseFeed)) {
         continue;
       }
       // if first matching adaptor or a narrower subtype of the current one,
       // then use it.
       if (adaptedFeed == null ||
           adaptedFeed.getClass().isAssignableFrom(adaptor.getClass())) {
-        adaptedFeed = (BaseFeed)adaptor;
+        adaptedFeed = (BaseFeed) adaptor;
       }
     }
 
@@ -957,7 +907,7 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
         sourceEntries.addAll(entries);
       }
       adaptedFeed.getEntries().clear();
-      for (BaseEntry entry: sourceEntries) {
+      for (BaseEntry entry : sourceEntries) {
         adaptedFeed.getEntries().add(entry.getAdaptedEntry());
       }
     }
@@ -967,11 +917,11 @@ abstract public class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   /**
    * Gets a list of entries of a particular kind.
    */
-  public <T extends BaseEntry> List<T> getEntries(Class<T> entryClass) {
+  public <T extends BaseEntry> List<T> getEntries(Class<T> returnClass) {
     List<T> adaptedEntries = new ArrayList<T>();
 
     for (BaseEntry<?> entry : getEntries()) {
-      T adapted = entry.getAdaptor(entryClass);
+      T adapted = entry.getAdaptor(returnClass);
       if (adapted != null) {
         adaptedEntries.add(adapted);
       }

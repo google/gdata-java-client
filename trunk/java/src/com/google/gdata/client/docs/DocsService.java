@@ -14,18 +14,18 @@
  */
 package com.google.gdata.client.docs;
 
-import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.docs.DocumentListFeed;
 
 /**
- * The DocsService class extends the basic {@link GoogleService}
+ * The DocsService class extends the basic {@link MediaService}
  * abstraction to define a service that is preconfigured for access
  * to the Google Docs data API.
  *
  * 
  */
-public class DocsService extends GoogleService {
+public class DocsService extends MediaService {
 
   /**
    * The abbreviated name of Docs recognized by Google.  The service

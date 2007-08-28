@@ -80,7 +80,7 @@ public abstract class Content {
    * Parses XML in the Atom format.
    *
    * @param   attrs
-   *            XML attributes of the root TextConstruct node.
+   *            XML attributes of the Content node.
    *            Used to determine the type of this node.
    *
    * @return  a child handler
@@ -94,33 +94,34 @@ public abstract class Content {
     String type = attrs.getValue("", "type");
     ChildHandlerInfo childHandlerInfo = new ChildHandlerInfo();
 
-    if (type == null ||
-        type.equals("text") ||
-        type.equals("text/plain") ||
-        type.equals("html") ||
-        type.equals("text/html") ||
-        type.equals("xhtml")) {
+    String src = attrs.getValue("", "src");
+    if (src == null) {
+      // In-line content
 
-      TextContent tc = new TextContent();
-      TextConstruct.ChildHandlerInfo chi = TextConstruct.getChildHandler(attrs);
-      tc.setContent(chi.textConstruct);
-      childHandlerInfo.handler = chi.handler;
-      childHandlerInfo.content = tc;
+      if (type == null ||
+          type.equals("text") ||
+          type.equals("text/plain") ||
+          type.equals("html") ||
+          type.equals("text/html") ||
+          type.equals("xhtml")) {
 
-    } else {
+        TextContent tc = new TextContent();
+        TextConstruct.ChildHandlerInfo chi =
+            TextConstruct.getChildHandler(attrs);
+        tc.setContent(chi.textConstruct);
+        childHandlerInfo.handler = chi.handler;
+        childHandlerInfo.content = tc;
 
-      String src = attrs.getValue("", "src");
-      if (src == null) {
-        // In-line content
+      } else {
+
         OtherContent oc = new OtherContent();
         childHandlerInfo.handler = oc.new AtomHandler(attrs);
         childHandlerInfo.content = oc;
-      } else {
-        // Out-of-line content
-        MediaContent mc = new MediaContent();
-        childHandlerInfo.handler = mc.new AtomHandler();
-        childHandlerInfo.content = mc;
       }
+    } else {
+        OutOfLineContent oolc = new OutOfLineContent();
+        childHandlerInfo.handler = oolc.new AtomHandler();
+        childHandlerInfo.content = oolc;
     }
 
     return childHandlerInfo;
@@ -128,7 +129,7 @@ public abstract class Content {
 
 
   /**
-   * Return type for {@link #getChildHandler(Attributes)};
+   * Return type for {@link Content#getChildHandler(Attributes)}
    * contains an element handler and a text construct.
    */
   public static class ChildHandlerInfo {

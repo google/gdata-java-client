@@ -62,7 +62,7 @@ public class MediaRestriction extends AbstractElementWithContent {
   /**
    * Sets the content as a space-separated list of country codes.
    *
-   * @param a list of country codes
+   * @param codes a list of country codes
    */
   public void setContentAsCountryCodeList(List<String> codes) {
     if (codes.isEmpty()) {

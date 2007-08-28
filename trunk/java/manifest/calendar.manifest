@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Class-Path: gdata-client-@client.spec.version@.jar
+Class-Path: gdata-client-@client.spec.version@.jar gdata-calendar-meta-@calendar.spec.version@.jar
 
 Name: com/google/gdata/client/calendar/
 Specification-Title: Google Calendar Data API

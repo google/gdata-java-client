@@ -24,32 +24,20 @@ import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Feed;
-import com.google.gdata.data.MediaContent;
 import com.google.gdata.data.ParseSource;
 import com.google.gdata.data.batch.BatchInterrupted;
-import com.google.gdata.data.batch.BatchStatus;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.introspection.ServiceDocument;
-import com.google.gdata.data.media.MediaMultipart;
-import com.google.gdata.data.media.MediaSource;
-import com.google.gdata.data.media.MediaStreamSource;
 import com.google.gdata.util.ContentType;
-import com.google.gdata.util.NotModifiedException;
-import com.google.gdata.util.ParseException;
-import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
-import com.google.gdata.util.ServiceForbiddenException;
+import com.google.gdata.util.VersionRegistry.Version;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
 
 /**
  * The Service class represents a client connection to a GData service.
@@ -79,6 +67,19 @@ public class Service {
   private static final String SERVICE_VERSION =
       "GData-Java/" + Service.class.getPackage().getImplementationVersion() +
       "(gzip)";         // Necessary to get GZIP encoded responses
+  
+  /**
+   * The Alpha release of the GData core protocol that was released in
+   * May 2006 and is in use for all current GData services.
+   */
+  public static final Version ALPHA = new Version(Service.class, 1, 0);
+  
+  /**
+   * The upcoming Beta release of the GData core protocol that will bring
+   * full alignment with the now standard Atom Publishing Protocol
+   * specification, migration to OpenSearch 1.1, and other (TBD) features.
+   */
+  public static final Version BETA = new Version(Service.class, 2, 0);
 
   /**
    * The GDataRequest interface represents a streaming connection to a
@@ -206,7 +207,8 @@ public class Service {
      * Executes the GData service request.
      *
      * @throws IOException error writing to or reading from GData service.
-     * @throws ResourceNotFoundException invalid request target resource.
+     * @throws com.google.gdata.util.ResourceNotFoundException invalid request 
+     *         target resource.
      * @throws ServiceException system error executing request.
      */
     public void execute() throws IOException, ServiceException;
@@ -276,10 +278,25 @@ public class Service {
 
 
   /**
+   * Initializes the version information for a specific service type.
+   * Subclasses of {@link Service} will generally call this method from within
+   * their implementation of {@link #initVersionRegistry()} to bind
+   * version information for the associated service.
+   * @param version the service version expected by this client library.
+   */
+  protected static void initServiceVersion(Version version) {
+    ClientVersion.init(version);
+  }
+
+  /**
    * Constructs a new Service instance that is configured to accept arbitrary
    * extension data within feed or entry elements.
    */
   public Service() {
+
+    // Initialize the version registry information for this service (and its
+    // subclasses).
+    initVersionRegistry();
 
     // Set the default User-Agent value for requests
     requestFactory.setHeader("User-Agent", getServiceVersion());
@@ -291,6 +308,15 @@ public class Service {
     new Feed().declareExtensions(extProfile);
   }
 
+  /**
+   * Called at service instantion to initialize the {@link VersionRegistry}
+   * information for the service.  Service subclasses should override this
+   * method to define service-specific versioning information.
+   */
+  protected void initVersionRegistry() {
+    // Initialize version information for the GData core protocol.
+    initServiceVersion(ALPHA);
+  }
 
   /**
    * Returns information about the service version.
@@ -313,8 +339,8 @@ public class Service {
    * Sets the {@link ExtensionProfile} that defines any expected extensions
    * to the base RSS/Atom content model.
    */
-  public void setExtensionProfile(ExtensionProfile extProfile) {
-    this.extProfile = extProfile;
+  public void setExtensionProfile(ExtensionProfile v) {
+    this.extProfile = v;
   }
 
   /**
@@ -344,12 +370,12 @@ public class Service {
    * Creates a new GDataRequest for use by the service.
    */
   public GDataRequest createRequest(GDataRequest.RequestType type,
-                                       URL requestUrl,
-                                       ContentType contentType)
+                                    URL requestUrl,
+                                    ContentType inputType)
       throws IOException, ServiceException {
 
     GDataRequest request =
-      requestFactory.getRequest(type, requestUrl, contentType);
+      requestFactory.getRequest(type, requestUrl, inputType);
     if (connectTimeout >= 0) {
       request.setConnectTimeout(connectTimeout);
     }
@@ -433,8 +459,8 @@ public class Service {
   /**
    * Parse an entry of the specified class from an input stream.
    */
-  private <E extends BaseEntry> E parseEntry(Class<E> entryClass,
-                                             InputStream entryStream)
+  protected <E extends BaseEntry<?>> E parseEntry(Class<E> entryClass,
+                                               InputStream entryStream)
       throws IOException, ServiceException {
 
     E entry = BaseEntry.readEntry(new ParseSource(entryStream), entryClass,
@@ -446,7 +472,7 @@ public class Service {
   /**
    * Returns the Atom introspection Service Document associated with a
    * particular feed URL.  This document provides service metadata about
-   * the set of Atom services associatd with the target feed URL.
+   * the set of Atom services associated with the target feed URL.
    *
    * @param feedUrl the URL associated with a feed.   This URL can not include
    *        any query parameters.
@@ -454,8 +480,9 @@ public class Service {
    *
    * @return ServiceDocument resource referenced by the input URL.
    * @throws IOException error sending request or reading the feed.
-   * @throws ParseException error parsing the returned service data.
-   * @throws ResourceNotFoundException invalid feed URL.
+   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   *         service data.
+   * @throws com.google.gdata.util.ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving service document.
    */
   public <S extends ServiceDocument> S introspect(URL feedUrl,
@@ -477,7 +504,7 @@ public class Service {
       S serviceDoc = serviceClass.newInstance();
       serviceDoc.parse(extProfile, responseStream);
 
-      return serviceDoc ;
+      return serviceDoc;
 
     } catch (InstantiationException e) {
       throw new ServiceException("Unable to create service document instance",
@@ -485,8 +512,7 @@ public class Service {
     } catch (IllegalAccessException e) {
       throw new ServiceException("Unable to create service document instance",
                                  e);
-    }
-    finally {
+    } finally {
       if (responseStream != null) {
         responseStream.close();
       }
@@ -506,13 +532,15 @@ public class Service {
    *          specified date. A value of {@code null} indicates no precondition.
    * @return Feed resource referenced by the input URL.
    * @throws IOException error sending request or reading the feed.
-   * @throws NotModifiedException if the feed resource has not been modified
-   *          since the specified precondition date.
-   * @throws ParseException error parsing the returned feed data.
-   * @throws ResourceNotFoundException invalid feed URL.
+   * @throws com.google.gdata.util.NotModifiedException if the feed resource has
+   *         not been modified since the specified precondition date.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *         feed data.
+   * @throws com.google.gdata.util.ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving feed.
    */
-  public <F extends BaseFeed> F getFeed(URL feedUrl,
+  @SuppressWarnings("unchecked")
+  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl,
                                         Class<F> feedClass,
                                         DateTime ifModifiedSince)
       throws IOException, ServiceException {
@@ -524,12 +552,11 @@ public class Service {
       request.execute();
       feedStream = request.getResponseStream();
 
-      BaseFeed<?,?> feed =
+      BaseFeed<?, ?> feed =
           BaseFeed.readFeed(new ParseSource(feedStream), feedClass, extProfile);
       feed.setService(this);
       return (F) feed;
-    }
-    finally {
+    } finally {
       if (feedStream != null) {
         feedStream.close();
       }
@@ -545,11 +572,12 @@ public class Service {
    * @param feedClass the class used to represent a service Feed.
    * @return Feed resource referenced by the input URL.
    * @throws IOException error sending request or reading the feed.
-   * @throws ParseException error parsing the returned feed data.
-   * @throws ResourceNotFoundException invalid feed URL.
+   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   *         feed data.
+   * @throws com.google.gdata.util.ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving feed.
    */
-  public <F extends BaseFeed> F getFeed(URL feedUrl, Class<F> feedClass)
+  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl, Class<F> feedClass)
       throws IOException, ServiceException {
     return getFeed(feedUrl, feedClass, null);
   }
@@ -583,18 +611,22 @@ public class Service {
    *          specified date. A value of {@code null} indicates no precondition.
    * @return the entry referenced by the URL parameter.
    * @throws IOException error communicating with the GData service.
-   * @throws NotModifiedException if the entry resource has not been modified
+   * @throws com.google.gdata.util.NotModifiedException if the entry resource 
+   *         has not been modified
    *          after the specified precondition date.
-   * @throws ParseException error parsing the returned entry.
-   * @throws ResourceNotFoundException if the entry URL is not valid.
-   * @throws ServiceForbiddenException if the GData service cannot
+   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   *         entry.
+   * @throws com.google.gdata.util.ResourceNotFoundException if the entry URL 
+   *         is not valid.
+   * @throws com.google.gdata.util.ServiceForbiddenException if the GData 
+   *          service cannot
    *          get the entry resource due to access constraints.
    * @throws ServiceException if a system error occurred when retrieving
    *          the entry.
    */
-  public <E extends BaseEntry> E getEntry(URL entryUrl,
-                                          Class<E> entryClass,
-                                          DateTime ifModifiedSince)
+  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
+                                             Class<E> entryClass,
+                                             DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
     InputStream entryStream = null;
@@ -621,14 +653,17 @@ public class Service {
    * @param entryClass class used to represent service entries.
    * @return the entry referenced by the URL parameter.
    * @throws IOException error communicating with the GData service.
-   * @throws ParseException error parsing the returned entry.
-   * @throws ResourceNotFoundException if the entry URL is not valid.
-   * @throws ServiceForbiddenException if the GData service cannot
-   *          get the entry resource due to access constraints.
+   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   *         entry.
+   * @throws com.google.gdata.util.ResourceNotFoundException if the entry URL 
+   *         is not valid.
+   * @throws com.google.gdata.util.ServiceForbiddenException if the GData 
+   *         service cannot
+   *         get the entry resource due to access constraints.
    * @throws ServiceException if a system error occurred when retrieving
    *          the entry.
    */
-  public <E extends BaseEntry> E getEntry(URL entryUrl, Class<E> entryClass)
+  public <E extends BaseEntry<?>> E getEntry(URL entryUrl, Class<E> entryClass)
       throws IOException, ServiceException {
     return getEntry(entryUrl, entryClass, null);
   }
@@ -650,75 +685,29 @@ public class Service {
 
 
   /**
-   * Returns a {@link MediaSource} that can be used to read the external
-   * media content of an entry.
-   *
-   * @param mediaContent the media content describing the media
-   * @param ifModifiedSince used to set a precondition date that indicates the
-   *          media should be returned only if it has been modified after the
-   *          specified date. A value of {@code null} indicates no precondition.
-   * @return media source that can be used to access the media content.
-   * @throws IOException error communicating with the GData service.
-   * @throws ServiceException entry request creation failed.
-   */
-  public MediaSource getMedia(MediaContent mediaContent,
-                              DateTime ifModifiedSince)
-      throws IOException, ServiceException {
-
-    try {
-      GDataRequest request =
-          createRequest(GDataRequest.RequestType.QUERY,
-              new URL(mediaContent.getUri()),
-              mediaContent.getMimeType());
-      request.setIfModifiedSince(ifModifiedSince);
-      request.execute();
-      InputStream resultStream = request.getResponseStream();
-      MediaSource mediaSource =
-          new MediaStreamSource(resultStream,
-              request.getResponseContentType().toString());
-      return mediaSource;
-    } catch (MalformedURLException mue) {
-      throw new ServiceException("Invalid media source URI", mue);
-    }
-  }
-
-
-  /**
-   * Returns a {@link MediaSource} that can be used to read the external
-   * media content of an entry.
-   *
-   * @param mediaContent the media content describing the media
-   * @return GData request instance that can be used to read the entry.
-   * @throws IOException error communicating with the GData service.
-   * @throws ServiceException entry request creation failed.
-   */
-  public MediaSource getMedia(MediaContent mediaContent)
-      throws IOException, ServiceException {
-    return getMedia(mediaContent, null);
-  }
-
-
-  /**
    * Executes a GData query against the target service and returns the
-   * {@link Feed} containing entries that match the query result, if
-   * it's been modified since the specified date.
-   *
+   * {@link Feed} containing entries that match the query result, if it's been
+   * modified since the specified date.
+   * 
    * @param query Query instance defining target feed and query parameters.
    * @param feedClass the Class used to represent a service Feed.
    * @param ifModifiedSince used to set a precondition date that indicates the
-   *          query result feed should be returned only if contains entries
-   *          that have been modified after the specified date.  A value of
-   *          {@code null} indicates no precondition.
+   *        query result feed should be returned only if contains entries that
+   *        have been modified after the specified date. A value of {@code null}
+   *        indicates no precondition.
    * @throws IOException error communicating with the GData service.
-   * @throws NotModifiedException if the query resource does not contain
-   *          entries modified since the specified precondition date.
-   * @throws ServiceForbiddenException feed does not support the query.
-   * @throws ParseException error parsing the returned feed data.
+   * @throws com.google.gdata.util.NotModifiedException if the query resource
+   *         does not contain entries modified since the specified precondition
+   *         date.
+   * @throws com.google.gdata.util.ServiceForbiddenException feed does not
+   *         support the query.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *         feed data.
    * @throws ServiceException query request failed.
    */
-  public <F extends BaseFeed> F query(Query query,
-                                      Class<F> feedClass,
-                                      DateTime ifModifiedSince)
+  public <F extends BaseFeed<?, ?>> F query(Query query,
+                                            Class<F> feedClass,
+                                            DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
     // A query is really same as getFeed against the combined feed + query URL
@@ -733,56 +722,41 @@ public class Service {
    * @param query Query instance defining target feed and query parameters.
    * @param feedClass the Class used to represent a service Feed.
    * @throws IOException error communicating with the GData service.
-   * @throws ServiceForbiddenException feed does not support the query.
-   * @throws ParseException error parsing the returned feed data.
+   * @throws com.google.gdata.util.ServiceForbiddenException feed does not 
+   *         support the query.
+   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   *         feed data.
    * @throws ServiceException query request failed.
    */
-  public <F extends BaseFeed> F query(Query query, Class<F> feedClass)
+  public <F extends BaseFeed<?, ?>> F query(Query query, Class<F> feedClass)
       throws IOException, ServiceException {
 
     // A query is really same as getFeed against the combined feed + query URL
     return query(query, feedClass, null);
   }
 
-  /**
-   * Initializes the attributes of a media request.
-   */
-  private void initMediaRequest(MediaSource media, GDataRequest request)
-      throws IOException {
-    String name = media.getName();
-    if (name != null) {
-      request.setHeader("Slug", MimeUtility.encodeText(name, "utf-8", null));
-    }
-  }
 
   /**
    * Inserts a new {@link com.google.gdata.data.Entry} into a feed associated
    * with the target service.  It will return the inserted Entry, including
    * any additional attributes or extensions set by the GData server.
    *
-   * If the Entry has been associated with a {@link MediaSource} through the
-   * {@link BaseEntry#setMediaSource(MediaSource)} method then both the entry
-   * and the media resource will be inserted into the media feed associated
-   * with the target service.
-   * If the media source has a name ({@link MediaSource#getName()} that is
-   * non-null), the name will be provided as a Slug header that is sent
-   * along with request and <i>may</i> be used as a hint when determining
-   * the ID, url, and/or title of the inserted resource.
-   * <p>
-   * To insert only media content, use
-   * {@link #insert(URL, Class, MediaSource)}.
-   *
    * @param feedUrl the POST URI associated with the target feed.
    * @param entry the new entry to insert into the feed.
    * @return the newly inserted Entry returned by the service.
    * @throws IOException error communicating with the GData service.
-   * @throws ParseException error parsing the return entry data.
+   * @throws com.google.gdata.util.ParseException error parsing the return entry
+   *         data.
+   * @throws com.google.gdata.util.ServiceForbiddenException the inserted Entry
+   *         has associated media
+   *         content and can only be inserted using a media service.
    * @throws ServiceException insert request failed due to system error.
    *
    * @see BaseFeed#getEntryPostLink()
    * @see BaseFeed#insert(BaseEntry)
    */
-  public <E extends BaseEntry> E insert(URL feedUrl, E entry)
+  @SuppressWarnings("unchecked")
+  public <E extends BaseEntry<?>> E insert(URL feedUrl, E entry)
       throws IOException, ServiceException {
 
     if (entry == null) {
@@ -792,32 +766,18 @@ public class Service {
     InputStream resultStream = null;
     try {
       GDataRequest request;
-      MediaSource media = entry.getMediaSource();
-      if (media == null) {
-        request = createInsertRequest(feedUrl);
-        OutputStream entryStream = request.getRequestStream();
-        Writer entryWriter = new OutputStreamWriter(entryStream, "utf-8");
-        XmlWriter xw = new XmlWriter(entryWriter);
-        entry.generateAtom(xw, extProfile);
-        entryWriter.flush();
-      } else {
-        // Write as MIME multipart containing the entry and media
-        MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
-        request =
-            createRequest(GDataRequest.RequestType.INSERT, feedUrl,
-                new ContentType(mediaMultipart.getContentType()));
-        initMediaRequest(media, request);
-        OutputStream outputStream = request.getRequestStream();
-        mediaMultipart.writeTo(outputStream);
-      }
+      request = createInsertRequest(feedUrl);
+      OutputStream entryStream = request.getRequestStream();
+      Writer entryWriter = new OutputStreamWriter(entryStream, "utf-8");
+      XmlWriter xw = new XmlWriter(entryWriter);
+      entry.generateAtom(xw, extProfile);
+      entryWriter.flush();
 
       request.execute();
 
       resultStream = request.getResponseStream();
-      return (E)parseEntry(entry.getClass(), resultStream);
+      return (E) parseEntry(entry.getClass(), resultStream);
 
-    } catch (MessagingException e) {
-        throw new ServiceException("Unable to write MIME multipart message", e);
     } finally {
       if (resultStream != null) {
         resultStream.close();
@@ -825,59 +785,6 @@ public class Service {
     }
   }
 
-  /**
-   * Inserts a new media resource read from {@link MediaSource} into a
-   * media feed associated with the target service.  It will return the
-   * resulting entry that describes the inserted media, including
-   * any additional attributes or extensions set by the GData server.
-   * To insert both the entry and the media content in a single request, use
-   * {@link #insert(URL, BaseEntry)}.
-   * <p>
-   * If the media source has a name ({@link MediaSource#getName()} that is
-   * non-null), the name will be provided as a Slug header that is sent
-   * along with request and <i>may</i> be used as a hint when determining
-   * the ID, url, and/or title of the inserted resource.
-   *
-   * @param feedUrl the POST URI associated with the target feed.
-   * @param entryClass the class used to parse the returned entry.
-   * @param media the media source that contains the media content to insert.
-   * @return the newly inserted entry returned by the service.
-   * @throws IOException error communicating with the GData service.
-   * @throws ParseException error parsing the returned entry data.
-   * @throws ServiceException insert request failed due to system error.
-   *
-   * @see BaseFeed#getEntryPostLink()
-   * @see BaseFeed#insert(MediaSource)
-   */
-  public <E extends BaseEntry> E insert(URL feedUrl, Class<E> entryClass,
-                                        MediaSource media)
-      throws IOException, ServiceException {
-
-    if (media == null) {
-      throw new NullPointerException("Must supply media source");
-    }
-
-    InputStream resultStream = null;
-    GDataRequest request;
-    try {
-      // Write media content only.
-      request =
-          createRequest(GDataRequest.RequestType.INSERT, feedUrl,
-              new ContentType(media.getContentType()));
-      initMediaRequest(media, request);
-
-      // Write the media data
-      MediaSource.Output.writeTo(media, request.getRequestStream());
-      request.execute();
-      resultStream = request.getResponseStream();
-      return (E)parseEntry(entryClass, resultStream);
-
-    } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
-    }
-  }
 
   /**
    * Executes several operations (insert, update or delete) on the entries
@@ -888,7 +795,8 @@ public class Service {
    * operations have worked, so this method won't throw a ServiceException
    * unless something really wrong is going on. You need to check the
    * entries in the returned feed to know which operations succeeded
-   * and which operations failed (see {@link BatchStatus}
+   * and which operations failed (see
+   * {@link com.google.gdata.data.batch.BatchStatus}
    * and {@link com.google.gdata.data.batch.BatchInterrupted} extensions.)
    *
    * @param feedUrl the POST URI associated with the target feed.
@@ -897,7 +805,8 @@ public class Service {
    * @return a feed with the result of each operation in a separate
    *   entry
    * @throws IOException error communicating with the GData service.
-   * @throws ParseException error parsing the return entry data.
+   * @throws com.google.gdata.util.ParseException error parsing the return 
+   *         entry data.
    * @throws ServiceException insert request failed due to system error.
    * @throws BatchInterruptedException if something really wrong was detected
    *   by the server while parsing the request, like invalid XML data. Some
@@ -907,7 +816,8 @@ public class Service {
    * @see BaseFeed#getEntryPostLink()
    * @see BaseFeed#insert(BaseEntry)
    */
-  public <F extends BaseFeed> F batch(URL feedUrl, F inputFeed)
+  @SuppressWarnings("unchecked")
+  public <F extends BaseFeed<?, ?>> F batch(URL feedUrl, F inputFeed)
       throws IOException, ServiceException, BatchInterruptedException {
     InputStream resultStream = null;
     GDataRequest request = createInsertRequest(feedUrl);
@@ -929,7 +839,7 @@ public class Service {
       // Detect BatchInterrupted
       int count = resultFeed.getEntries().size();
       if (count > 0) {
-        BaseEntry entry = (BaseEntry)resultFeed.getEntries().get(count - 1);
+        BaseEntry<?> entry = resultFeed.getEntries().get(count - 1);
         BatchInterrupted interrupted = BatchUtils.getBatchInterrupted(entry);
         if (interrupted != null) {
           throw new BatchInterruptedException(resultFeed, interrupted);
@@ -986,13 +896,15 @@ public class Service {
    * @param entry the modified Entry to be written to the server.
    * @return the updated Entry returned by the service.
    * @throws IOException error communicating with the GData service.
-   * @throws ParseException error parsing the updated entry data.
+   * @throws com.google.gdata.util.ParseException error parsing the updated 
+   *         entry data.
    * @throws ServiceException update request failed due to system error.
    *
    * @see BaseEntry#getEditLink()
    * @see BaseEntry#update()
    */
-  public <E extends BaseEntry> E update(URL entryUrl, E entry)
+  @SuppressWarnings("unchecked")
+  public <E extends BaseEntry<?>> E update(URL entryUrl, E entry)
       throws IOException, ServiceException {
 
     InputStream resultStream = null;
@@ -1010,7 +922,7 @@ public class Service {
 
       // Handle the update
       resultStream = request.getResponseStream();
-      return (E)parseEntry(entry.getClass(), resultStream);
+      return (E) parseEntry(entry.getClass(), resultStream);
 
     } finally {
       if (resultStream != null) {
@@ -1019,111 +931,6 @@ public class Service {
     }
   }
 
-  /**
-   * Updates an existing entry and associated media resource by writing it
-   * to the specified media edit URL.  The resulting entry (after update) will
-   * be returned.  To update only the media content, use
-   * {@link #updateMedia(URL, Class, MediaSource)}.
-   *
-   * @param mediaUrl the media edit URL associated with the resource.
-   * @param entry the updated entry to be written to the server.
-   * @return the updated entry returned by the service.
-   * @throws IOException error communicating with the GData service.
-   * @throws ParseException error parsing the updated entry data.
-   * @throws ServiceException update request failed due to system error.
-   *
-   * @see BaseEntry#getMediaEditLink()
-   * @see BaseEntry#updateMedia(boolean)
-   */
-  public <E extends BaseEntry> E updateMedia(URL mediaUrl, E entry)
-      throws IOException, ServiceException {
-
-    if (entry == null) {
-      throw new NullPointerException("Must supply entry");
-    }
-
-    // Since the input parameter is a media-edit URL, this method should
-    // not be used to post Atom-only entries.  These entries should be
-    // sent to the edit URL.
-    MediaSource media = entry.getMediaSource();
-    if (media == null) {
-      throw new NullPointerException("Must supply media source");
-    }
-
-    InputStream resultStream = null;
-    GDataRequest request;
-    try {
-      // Write as MIME multipart containing the entry and media
-      MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
-      request =
-          createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
-              new ContentType(mediaMultipart.getContentType()));
-      OutputStream outputStream = request.getRequestStream();
-      mediaMultipart.writeTo(outputStream);
-      request.execute();
-
-      resultStream = request.getResponseStream();
-      return (E)parseEntry(entry.getClass(), resultStream);
-
-    } catch (MessagingException e) {
-      throw new ServiceException("Unable to write MIME multipart message", e);
-    } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
-    }
-  }
-
-
-  /**
-   * Updates an existing media resource with data read from the
-   * {@link MediaSource} by writing it it to the specified media edit URL.
-   * The resulting entry (after update) will be returned.  To update both
-   * the entry and the media content in a single request, use
-   * {@link #updateMedia(URL, BaseEntry)}.
-   *
-   * @param mediaUrl the media edit URL associated with the resource.
-   * @param entryClass the class that will be used to represent the
-   *        resulting entry.
-   * @param media the media source data to be written to the server.
-   * @return the updated Entry returned by the service.
-   * @throws IOException error communicating with the GData service.
-   * @throws ParseException error parsing the updated entry data.
-   * @throws ServiceException update request failed due to system error.
-   *
-   * @see BaseEntry#getMediaEditLink()
-   * @see BaseEntry#updateMedia(boolean)
-   */
-  public <E extends BaseEntry> E updateMedia(URL mediaUrl,
-                                        Class<E> entryClass,
-                                        MediaSource media)
-      throws IOException, ServiceException {
-
-    // Since the input parameter is a media-edit URL, this method should
-    // not be used to post Atom-only entries.  These entries should be
-    // sent to the edit URL.
-    if (media == null) {
-      throw new NullPointerException("Must supply media source");
-    }
-
-    InputStream resultStream = null;
-    GDataRequest request;
-    try {
-      request =
-          createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
-              new ContentType(media.getContentType()));
-      MediaSource.Output.writeTo(media, request.getRequestStream());
-      request.execute();
-
-      resultStream = request.getResponseStream();
-      return (E)parseEntry(entryClass, resultStream);
-
-    } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
-    }
-  }
 
   /**
    * Creates a new GDataRequest that can be used to update an existing
@@ -1138,7 +945,8 @@ public class Service {
   public GDataRequest createUpdateRequest(URL entryUrl)
       throws IOException, ServiceException {
 
-    return createRequest(GDataRequest.RequestType.UPDATE, entryUrl, contentType);
+    return createRequest(GDataRequest.RequestType.UPDATE, entryUrl,
+        contentType);
   }
 
 
@@ -1149,7 +957,7 @@ public class Service {
    * @param resourceUrl the edit or medit edit url associated with the
    *        resource.
    * @throws IOException error communicating with the GData service.
-   * @throws ResourceNotFoundException invalid entry URL.
+   * @throws com.google.gdata.util.ResourceNotFoundException invalid entry URL.
    * @throws ServiceException delete request failed due to system error.
    */
   public void delete(URL resourceUrl) throws IOException, ServiceException {
@@ -1171,6 +979,7 @@ public class Service {
   public GDataRequest createDeleteRequest(URL entryUrl)
       throws IOException, ServiceException {
 
-    return createRequest(GDataRequest.RequestType.DELETE, entryUrl, contentType);
+    return createRequest(GDataRequest.RequestType.DELETE, entryUrl,
+        contentType);
   }
 }
