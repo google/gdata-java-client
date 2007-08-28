@@ -70,7 +70,7 @@ public class Source extends ExtensionPoint {
    * copy if the entry is adapted to a more specific Source
    * {@link Kind.Adaptor} subtypes.
    *
-   * @see Source#newInstance(Source)
+   * @see Source#Source(Source)
    */
   protected static class SourceState {
 

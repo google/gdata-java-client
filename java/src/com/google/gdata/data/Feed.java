@@ -24,7 +24,7 @@ package com.google.gdata.data;
  * parsing of feeds where the extension model is unknown at the start of
  * the parsing process.  Using in combination with {@link ExtensionProfile}
  * auto-extension, the feed can be parsed generically, and then the
- * {@link #getAdaptedFeed} can be used to retrieve a more-specfic feed
+ * {@link #getAdaptedFeed()} can be used to retrieve a more-specfic feed
  * type based upon the {@link Category} kind elements founds within the
  * parsed feed content.
  *
@@ -49,38 +49,5 @@ public class Feed extends BaseFeed<Feed, Entry> {
     extProfile.declareArbitraryXmlExtension(BaseFeed.class);
 
     super.declareExtensions(extProfile);
-  }
-
-  /**
-   * Locates and returns the most specific {@link Kind.Adaptor} feed
-   * subtype for this feed.  If none can be found for the current class,
-   * {@code null} will be returned.
-   */
-  public BaseFeed getAdaptedFeed() throws Kind.AdaptorException {
-
-    BaseFeed adaptedFeed = null;
-
-    // Find the BaseFeed adaptor instance that is most specific.
-    for (Kind.Adaptor adaptor : getAdaptors()) {
-      if (! (adaptor instanceof BaseFeed)) {
-        continue;
-      }
-      // if first matching adaptor or a narrower subtype of the current one,
-      // then use it.
-      if (adaptedFeed == null ||
-          adaptedFeed.getClass().isAssignableFrom(adaptor.getClass())) {
-        adaptedFeed = (BaseFeed)adaptor;
-      }
-    }
-
-    // If an adapted feed was found, then also synchronize the current set
-    // of entries into it, adapting them as well.
-    if (adaptedFeed != null) {
-      adaptedFeed.getEntries().clear();
-      for (Entry entry: entries) {
-        adaptedFeed.getEntries().add(entry.getAdaptedEntry());
-      }
-    }
-    return adaptedFeed;
   }
 }

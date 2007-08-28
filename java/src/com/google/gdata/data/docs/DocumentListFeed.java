@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.docs;
 
-import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.media.MediaFeed;
 import com.google.gdata.data.ExtensionProfile;
 
 /**
@@ -25,10 +25,10 @@ import com.google.gdata.data.ExtensionProfile;
  *
  * 
  */
-public class DocumentListFeed 
-    extends BaseFeed<DocumentListFeed, DocumentListEntry> {
+public class DocumentListFeed
+    extends MediaFeed<DocumentListFeed, DocumentListEntry> {
 
-  public static final String DOCUMENT_NAMESPACE 
+  public static final String DOCUMENT_NAMESPACE
       = "http://schemas.google.com/docs/2007";
 
   /**

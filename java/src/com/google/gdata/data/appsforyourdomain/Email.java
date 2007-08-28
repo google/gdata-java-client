@@ -21,13 +21,8 @@ import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.util.ParseException;
-import com.google.gdata.util.XmlParser;
-
-import org.xml.sax.Attributes;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 /**
@@ -38,15 +33,29 @@ import java.util.ArrayList;
  * 
  */
 public class Email extends ExtensionPoint implements Extension {
-  
+
+  public static final String EXTENSION_LOCAL_NAME = "email";
+
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
     ExtensionDescription desc = new ExtensionDescription();
     desc.setExtensionClass(Email.class);
     desc.setNamespace(Namespaces.APPS_NAMESPACE);
-    desc.setLocalName("email");
+    desc.setLocalName(EXTENSION_LOCAL_NAME);
     desc.setRepeatable(false);
     return desc;
   }
-  
+
+  @Override
+  public void generate(XmlWriter w, ExtensionProfile extensionProfile)
+      throws IOException {
+    generateStartElement(
+        w, Namespaces.APPS_NAMESPACE, EXTENSION_LOCAL_NAME, null, null);
+
+    // Invoke ExtensionPoint.
+    generateExtensions(w, extensionProfile);
+
+    w.endElement(Namespaces.APPS_NAMESPACE, EXTENSION_LOCAL_NAME);
+  }
+
 }

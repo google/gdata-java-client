@@ -91,13 +91,12 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <E extends BaseEntry> E insert(URL feedUrl, E entry)
+  public <E extends BaseEntry<?>> E insert(URL feedUrl, E entry)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.insert(feedUrl, entry);
     } catch (ServiceException se) {
-      AppsForYourDomainException ae
-	  = AppsForYourDomainException.narrow(se);
+      AppsForYourDomainException ae = AppsForYourDomainException.narrow(se);
       throw (ae != null) ? ae : se;
     }
   }
@@ -110,8 +109,8 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <E extends BaseEntry> E getEntry(URL entryUrl,
-                                          Class<E> entryClass)
+  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
+                                             Class<E> entryClass)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.getEntry(entryUrl, entryClass);
@@ -130,7 +129,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <F extends BaseFeed> F getFeed(URL feedUrl, Class<F> feedClass)
+  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl, Class<F> feedClass)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.getFeed(feedUrl, feedClass);
@@ -149,7 +148,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <F extends BaseFeed> F query(Query query, Class<F> feedClass)
+  public <F extends BaseFeed<?, ?>> F query(Query query, Class<F> feedClass)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.query(query, feedClass);
@@ -165,7 +164,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <E extends BaseEntry> E update(URL entryUrl, E entry)
+  public <E extends BaseEntry<?>> E update(URL entryUrl, E entry)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.update(entryUrl, entry);
@@ -208,18 +207,21 @@ public abstract class AppsForYourDomainService extends GoogleService {
    *          precondition.
    * @return the entry referenced by the URL parameter.
    * @throws IOException error communicating with the GData service.
-   * @throws NotModifiedException if the entry resource has not been modified
-   *          after the specified precondition date.
-   * @throws ParseException error parsing the returned entry.
-   * @throws ResourceNotFoundException if the entry URL is not valid.
-   * @throws ServiceForbiddenException if the GData service cannot
-   *          get the entry resource due to access constraints.
+   * @throws com.google.gdata.util.NotModifiedException if the entry resource 
+   *          has not been modified after the specified precondition date.
+   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   *         entry.
+   * @throws com.google.gdata.util.ResourceNotFoundException if the entry URL 
+   *         is not valid.
+   * @throws com.google.gdata.util.ServiceForbiddenException if the GData 
+   *         service cannot get the entry resource due to access constraints.
    * @throws ServiceException if a system error occurred when retrieving
    *          the entry.
    */
-  public <E extends BaseEntry> E getEntry(URL entryUrl,
-                                          Class<E> entryClass,
-                                          DateTime ifModifiedSince)
+  @Override
+  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
+                                             Class<E> entryClass,
+                                             DateTime ifModifiedSince)
       throws IOException, ServiceException {
     try {
       return super.getEntry(entryUrl, entryClass, null);
@@ -232,28 +234,31 @@ public abstract class AppsForYourDomainService extends GoogleService {
 
   /**
    * Executes a GData query against the target service and returns the
-   * {@link Feed} containing entries that match the query result, if
+   * {@link BaseFeed} containing entries that match the query result, if
    * it's been modified since the specified date.  Note that this method is
-   * overriden to prevent the usage of a non-null if-modified-since value.  The
+   * overridden to prevent the usage of a non-null if-modified-since value.  The
    * Google Apps for Your Domain Provisioning API does not support the use of
    * the if-modified-since value.
    *
-   * @param query Query instance defining target feed and query parameters.
    * @param feedClass the Class used to represent a service Feed.
    * @param ifModifiedSince used to set a precondition date that indicates the
    *          query result feed should be returned only if contains entries
    *          that have been modified after the specified date.  A value of
    *          {@code null} indicates no precondition.
    * @throws IOException error communicating with the GData service.
-   * @throws NotModifiedException if the query resource does not contain
-   *          entries modified since the specified precondition date.
-   * @throws ServiceForbiddenException feed does not support the query.
-   * @throws ParseException error parsing the returned feed data.
+   * @throws com.google.gdata.util.NotModifiedException if the query resource 
+   *         does not contain entries modified since the specified precondition
+   *         date.
+   * @throws com.google.gdata.util.ServiceForbiddenException feed does not 
+   *         support the query.
+   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   *         feed data.
    * @throws ServiceException query request failed.
    */
-  public <F extends BaseFeed> F getFeed(URL feedUrl,
-                                        Class<F> feedClass,
-                                        DateTime ifModifiedSince)
+  @Override
+  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl,
+                                              Class<F> feedClass,
+                                              DateTime ifModifiedSince)
       throws IOException, ServiceException {
     try {
       return super.getFeed(feedUrl, feedClass, null);

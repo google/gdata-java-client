@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Class-Path: gdata-client-@client.spec.version@.jar gdata-spreadsheet-@spreadsheet.spec.version@.jar
+Class-Path: gdata-client-@client.spec.version@.jar gdata-media-@docs.spec.version@.jar gdata-spreadsheet-@spreadsheet.spec.version@.jar gdata-docs-meta-@docs.spec.version@.jar
 
 Name: com/google/gdata/client/docs/
 Specification-Title: Google Documents Data API

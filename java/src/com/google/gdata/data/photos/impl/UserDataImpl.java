@@ -29,7 +29,7 @@ import com.google.gdata.data.photos.impl.Extensions.GphotoUsername;
 /**
  * Implementation class for user data objects.  This class takes an
  * {@link ExtensionPoint} and uses it to provide all of the methods that
- * {@link UserGphotoData} specifies.  These methods are handled by using
+ * {@link UserData} specifies.  These methods are handled by using
  * extension classes to retrieve or set extensions of the appropriate type.
  *
  * 

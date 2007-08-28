@@ -86,7 +86,8 @@ public class GoogleService extends Service {
   /**
    * Authentication failed, invalid credentials presented to server.
    */
-  public static class InvalidCredentialsException extends AuthenticationException {
+  public static class InvalidCredentialsException 
+      extends AuthenticationException {
     public InvalidCredentialsException(String message) {
       super(message);
     }
@@ -419,7 +420,7 @@ public class GoogleService extends Service {
     }
     String postOutput;
     try {
-      URL url = new URL(loginProtocol + "://"+ domainName + GOOGLE_LOGIN_PATH);
+      URL url = new URL(loginProtocol + "://" + domainName + GOOGLE_LOGIN_PATH);
       postOutput = makePostRequest(url, params);
     } catch (IOException e) {
       AuthenticationException ae =
@@ -467,13 +468,13 @@ public class GoogleService extends Service {
     // Form the POST parameters
     StringBuilder content = new StringBuilder();
     boolean first = true;
-    for (Map.Entry<String,String> parameter : parameters.entrySet()) {
+    for (Map.Entry<String, String> parameter : parameters.entrySet()) {
       if (!first) {
         content.append("&");
       }
       content.append(
           URLEncoder.encode(parameter.getKey(), "UTF-8")).append("=");
-      content.append(URLEncoder.encode(parameter.getValue(),"UTF-8"));
+      content.append(URLEncoder.encode(parameter.getValue(), "UTF-8"));
       first = false;
     }
 
@@ -520,7 +521,7 @@ public class GoogleService extends Service {
    * Returns the respective {@code AuthenticationException} given the return
    * values from the login URI handler.
    *
-   * @param pairs the name/value pairs returned as a result of a bad authentication
+   * @param pairs name/value pairs returned as a result of a bad authentication
    * @return the respective {@code AuthenticationException} for the given error
    */
   private AuthenticationException getAuthException(Map<String, String> pairs) {
@@ -589,7 +590,7 @@ public class GoogleService extends Service {
   /**
    * Returns  {@code true} if the GoogleService is handling cookies.
    */
-  public boolean handlesCookies() { return handlesCookies; };
+  public boolean handlesCookies() { return handlesCookies; }
 
 
   /**
@@ -639,14 +640,14 @@ public class GoogleService extends Service {
                                        ContentType contentType)
       throws IOException, ServiceException {
     GoogleGDataRequest request =
-      (GoogleGDataRequest)super.createRequest(type, requestUrl, contentType);
+      (GoogleGDataRequest) super.createRequest(type, requestUrl, contentType);
     request.setService(this);
     return request;
   }
 
 
   @Override
-  public <E extends BaseEntry> E getEntry(URL entryUrl,
+  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
                                           Class<E> entryClass,
                                           DateTime ifModifiedSince)
       throws IOException, ServiceException {
@@ -664,7 +665,7 @@ public class GoogleService extends Service {
 
 
   @Override
-  public <E extends BaseEntry> E update(URL entryUrl, E entry)
+  public <E extends BaseEntry<?>> E update(URL entryUrl, E entry)
       throws IOException, ServiceException {
 
     try {
@@ -680,7 +681,7 @@ public class GoogleService extends Service {
 
 
   @Override
-  public <E extends BaseEntry> E insert(URL feedUrl, E entry)
+  public <E extends BaseEntry<?>> E insert(URL feedUrl, E entry)
       throws IOException, ServiceException {
 
     try {
@@ -696,9 +697,9 @@ public class GoogleService extends Service {
 
 
   @Override
-  public <F extends BaseFeed> F getFeed(URL feedUrl,
-                                        Class<F> feedClass,
-                                        DateTime ifModifiedSince)
+  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl,
+                                              Class<F> feedClass,
+                                              DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
     try {
@@ -733,7 +734,8 @@ public class GoogleService extends Service {
    * Handles a session expired exception by obtaining a new authentication
    * token and updating the token in the request factory.
    */
-  private void handleSessionExpiredException(SessionExpiredException sessionExpired)
+  private void handleSessionExpiredException(
+      SessionExpiredException sessionExpired)
       throws SessionExpiredException, AuthenticationException {
 
     if (username != null && password != null) {

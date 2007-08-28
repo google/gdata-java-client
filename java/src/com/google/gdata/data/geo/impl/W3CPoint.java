@@ -155,7 +155,7 @@ public class W3CPoint extends ExtensionPoint implements Point {
   }
 
   /**
-   * @returns a handler for processing a W3C geo:Point element.  All
+   * @return a handler for processing a W3C geo:Point element.  All
    * points must have a latitude and longitude element.
    */
   public ElementHandler getHandler(ExtensionProfile extProfile,

@@ -17,6 +17,7 @@
 package com.google.gdata.data.docs;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
@@ -28,14 +29,14 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * An entry representing a single document of any type within a 
- * {@link DocumentlistFeed}.
+ * An entry representing a single document of any type within a
+ * {@link DocumentListFeed}.
  *
  * 
  * 
  */
 @Kind.Term(DocumentListEntry.UNKNOWN_KIND)
-public class DocumentListEntry extends BaseEntry<DocumentListEntry> {
+public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
   public enum MediaType {
     CSV("text/comma-separated-values"),

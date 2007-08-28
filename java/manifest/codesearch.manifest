@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Class-Path: gdata-client-@client.spec.version@.jar
+Class-Path: gdata-client-@client.spec.version@.jar gdata-codesearch-meta-@codesearch.spec.version@.jar
 
 Name: com/google/gdata/client/codesearch/
 Specification-Title: Google Code Search Data API

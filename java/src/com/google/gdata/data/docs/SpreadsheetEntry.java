@@ -49,7 +49,7 @@ public class SpreadsheetEntry extends DocumentListEntry {
    * of document type.
    */
   public static final String KIND = DocumentListFeed.DOCUMENT_NAMESPACE 
-      + "#" + LABEL;
+      + "#" + SpreadsheetEntry.LABEL;
 
   /**
    * Category used to label entries that contain spreadsheet data.

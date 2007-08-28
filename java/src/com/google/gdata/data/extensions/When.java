@@ -50,6 +50,10 @@ public class When extends ExtensionPoint implements Extension {
   /** XML "valueString" attribute name */
   private static final String VALUE_STRING = "valueString";
 
+  protected String rel;
+  public String getRel() { return rel; }
+  public void setRel(String v) { rel = v; }  
+  
   /** Event start time (required). */
   protected DateTime startTime;
   public DateTime getStartTime() { return startTime; }

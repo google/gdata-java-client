@@ -67,9 +67,7 @@ public class Cell implements Extension {
    * 
    * @param inRow row number
    * @param inCol column number
-   * @param inColumnHead column header name
-   * @param inInputValue the input of the cell
-   * @param inCalculatedValue the calculated pure-number result, not rounded
+   * @param inNumericValue the input of the cell
    * @param inValue the result of its calculation
    */
   private Cell(int inRow, int inCol,

@@ -27,7 +27,7 @@ import com.google.gdata.util.ParseException;
 /**
  * Implementation class for tag data objects.  This class takes an
  * {@link ExtensionPoint} and uses it to provide all of the methods that
- * {@link TagGphotoData} specifies.  These methods are handled by using
+ * {@link TagData} specifies.  These methods are handled by using
  * extension classes to retrieve or set extensions of the appropriate type.
  *
  * 

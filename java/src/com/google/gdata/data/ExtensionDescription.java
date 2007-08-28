@@ -16,11 +16,11 @@
 
 package com.google.gdata.data;
 
-import com.google.gdata.util.Namespaces;
-import com.google.gdata.util.ParseException;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.util.Namespaces;
+import com.google.gdata.util.ParseException;
 
 import org.xml.sax.Attributes;
 
@@ -82,12 +82,12 @@ public class ExtensionDescription extends ExtensionPoint
 
   /**
    * The Default interface defines a simple annotation model for describing
-   * the default {@link ExtensionDescription} of an {@Extension} class.  If
+   * the default {@link ExtensionDescription} of an {@link Extension} class.  If
    * this annotation is place on an @{link Extension} class, the
-   * @{link #getDefaultDescription(Class)} method can be used to retrieve 
-   * default description for the class.
+   * {@link ExtensionDescription#getDefaultDescription(Class)} method can be
+   * used to retrieve default description for the class.
    *
-   * @see #getDefaultDescription(Class)
+   * @see ExtensionDescription#getDefaultDescription(Class)
    */
   @Retention(RetentionPolicy.RUNTIME)
   public @interface Default {
@@ -253,12 +253,6 @@ public class ExtensionDescription extends ExtensionPoint
 
   /**
    * Reads the ExtensionDescription XML format
-   *
-   * @param   configProfile
-   *            ExtensionProfile defining configuration extensions.
-   *
-   * @param   targetProfile
-   *            ExtensionPoint
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {
 

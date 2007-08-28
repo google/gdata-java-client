@@ -108,11 +108,11 @@ public class Kind {
      * Declares the {@link ExtensionDescription} of each {@link Extension}
      * expected by the implementing {@link ExtensionPoint} in the target
      * profile.  This API should generally not be called directly by clients;
-     * the {@link ExtensionProfile#addDeclarations(Adaptor)} method should
+     * the {@link ExtensionProfile#addDeclarations(Kind.Adaptor)} method should
      * be used to declare extensions.
      *
      * @param extProfile the profile that should be extended.
-     * @see ExtensionProfile#addDeclarations(Adaptor)
+     * @see ExtensionProfile#addDeclarations(Kind.Adaptor)
      */
     void declareExtensions(ExtensionProfile extProfile);
   }

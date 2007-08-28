@@ -1,3 +1,0 @@
-# GData Kind Adaptors for http://schemas.google.com/codesearch/2006#result
-com.google.gdata.data.codesearch.CodeSearchEntry
-com.google.gdata.data.codesearch.CodeSearchFeed

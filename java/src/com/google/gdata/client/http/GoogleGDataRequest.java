@@ -287,7 +287,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
   /**
    * Implements a scoped cookie handling mechanism for GData services.  This
    * handler is a singleton class that is registered to globally listen and
-   * set cookies using {@link CookieHandler.setDefault(CookieHandler)}.  It
+   * set cookies using {@link CookieHandler#setDefault(CookieHandler)}.  It
    * will only process HTTP headers and responses associated with GData
    * services, and will delegate the processing of any other cookie headers
    * to the previously registered {@link CookieHandler} (if any).  When

@@ -19,6 +19,7 @@ package com.google.gdata.data.spreadsheet;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.batch.BatchUtils;
 
 /**
  * The feed for spreadsheet cells of Google Spreadsheets.
@@ -46,6 +47,7 @@ public class CellFeed
     extProfile.declare(CellFeed.class, RowCount.getDefaultDescription());
     extProfile.declare(CellFeed.class, ColCount.getDefaultDescription());
     super.declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
   }
 
   /**

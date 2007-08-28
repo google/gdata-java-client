@@ -100,8 +100,7 @@ public abstract class AbstractExtension implements Extension {
   }
 
   /**
-   * Puts attributes into the attribute generator.  May also use
-   * {@link#setContent(String)} to set the element's text content.  Called from
+   * Puts attributes into the attribute generator.  Called from
    * {@link #generate(XmlWriter,ExtensionProfile)}.  Default implementation
    * does nothing, though generally this is discouraged unless there really are
    * no attributes.

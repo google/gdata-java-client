@@ -1,3 +1,0 @@
-# GData Kind Adaptors for http://schemas.google.com/apps/2006#nickname
-com.google.gdata.data.appsforyourdomain.provisioning.NicknameFeed
-com.google.gdata.data.appsforyourdomain.provisioning.NicknameEntry

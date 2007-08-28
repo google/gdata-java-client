@@ -29,14 +29,18 @@ public class Namespaces {
   public static final String APPS_PREFIX = APPS + "#";
 
   /** Describes the meaning of FeedLinks in the UserEntry */
-  public static final String USER_NICKNAME_REL = 
-      APPS_PREFIX + "user.nicknames";
-  public static final String USER_EMAILLIST_REL = 
-      APPS_PREFIX + "user.emailLists"; 
+  public static final String USER_NICKNAME_REL
+      = APPS_PREFIX + "user.nicknames";
+  public static final String USER_EMAILLIST_REL
+      = APPS_PREFIX + "user.emailLists"; 
 
   /** Describes the meaning of FeedLinks in the EmailListEntry */
-  public static final String EMAILLIST_RECIPIENT_REL = 
-      APPS_PREFIX + "emailList.recipients";
+  public static final String EMAILLIST_RECIPIENT_REL
+      = APPS_PREFIX + "emailList.recipients";
+
+  /** Describes the meaning of Who extensions in the EmailListRecipientEntry */
+  public static final String EMAILLISTRECIPIENT_WHO_REL
+      = APPS_PREFIX + "emailList.recipient";
  
   /** Google data XML writer namespace. */
   public static final XmlWriter.Namespace APPS_NAMESPACE
@@ -47,6 +51,7 @@ public class Namespaces {
   public static final String DESTINATION_REL = APPS + "/rel/destinationAccount";
   public static final String MIGRATION_REL = APPS + "/rel/migration";
   public static final String TRANSFER_REL = MIGRATION_REL + "/transfer";
+  public static final String DELIVERY_TIME_REL = APPS + "/rel/deliveryTime";
 
   private Namespaces() {
   }

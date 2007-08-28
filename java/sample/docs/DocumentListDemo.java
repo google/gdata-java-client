@@ -16,35 +16,41 @@
 
 package sample.docs;
 
-import sample.util.SimpleCommandLineParser;
-import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.util.ServiceException;
-import com.google.gdata.data.docs.DocumentListEntry;
-import com.google.gdata.data.docs.DocumentEntry;
-import com.google.gdata.data.docs.DocumentListFeed;
-import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.client.Query;
-import java.io.File;
-import java.io.PrintStream;
+import com.google.gdata.client.docs.DocsService;
+import sample.util.SimpleCommandLineParser;
+import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.docs.DocumentEntry;
+import com.google.gdata.data.docs.DocumentListEntry;
+import com.google.gdata.data.docs.DocumentListFeed;
+import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ServiceException;
+
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *  An application that serves as a sample to show how the Documents List
- *  Service can be used to search your documents and upload files.
+ * An application that serves as a sample to show how the Documents List
+ * Service can be used to search your documents and upload files.
  *  
- *  
+ * 
  */
 public class DocumentListDemo {
   
   /** The message for displaying the usage parameters. */
   private static final String[] USAGE_MESSAGE = {
-      "Usage: java DocumentListDemo.jar --username [user] --password [pass] ", 
-      ""
+    "Usage: java DocumentListDemo.jar --username <user> --password <pass>",
+    "    [--server <host:port>]  Where is the feed (default = docs.google.com)",
+    "    [--log]                 Enable logging of requests",
+    ""
   };
 
   /** Welcome message, introducing the program. */
@@ -65,15 +71,15 @@ public class DocumentListDemo {
       " search <search_text>          [[full text query]]",
       " exit                          [[quit sample]]"};
 
-  private static final String DOCUMENT_FEED_URL = 
-      "http://docs.google.com/feeds/documents/private/full";
+  private static final String DEF_FEED_HOST = "docs.google.com";
+  private static final String FEED_URL_PATH = "/feeds/documents/private/full";
   private static final String DOCUMENT_CATEGORY = "/-/document";
   private static final String SPREADSHEET_CATEGORY = "/-/spreadsheet";
 
-  /** Our view of Google Spreadsheets as an authenticated Google user. */
+  /** Our view of doclist service as an authenticated Google user. */
   private DocsService service;
 
-  /** The URL of the cells feed. */
+  /** The URL of the doclist feed. */
   private URL documentListFeedUrl;
 
   /** The output stream. */
@@ -91,11 +97,10 @@ public class DocumentListDemo {
       throws MalformedURLException {
     this.service = service;
     this.out = outputStream;
-    this.documentListFeedUrl = new URL(DOCUMENT_FEED_URL);
   }
   
   /**
-   * Log in to Google, under the Google Spreadsheets account.
+   * Log in to Google, under the Google Docs account.
    *
    * @param username name of user to authenticate (e.g. yourname@gmail.com)
    * @param password password to use for authentication
@@ -116,8 +121,8 @@ public class DocumentListDemo {
    */
   public void printDocumentEntry(DocumentListEntry doc) {
     String shortId = doc.getId().substring(doc.getId().lastIndexOf('/') + 1);
-    out.println(" -- Document(" + doc.getTitle().getPlainText() + "/" + shortId 
-        + ")");
+    out.println(
+        " -- Document(" + doc.getTitle().getPlainText() + "/" + shortId + ")");
   }
 
   
@@ -148,8 +153,8 @@ public class DocumentListDemo {
    *         Docs service.
    */
   public void showAllDocuments() throws IOException, ServiceException {
-    DocumentListFeed feed = service.getFeed(new URL(
-          documentListFeedUrl.toString() + DOCUMENT_CATEGORY), 
+    DocumentListFeed feed = service.getFeed(
+        new URL(documentListFeedUrl.toString() + DOCUMENT_CATEGORY), 
         DocumentListFeed.class);
 
     out.println("List of all word documents:");
@@ -167,8 +172,8 @@ public class DocumentListDemo {
    *         Docs service.
    */
   public void showAllSpreadsheets() throws IOException, ServiceException {
-    DocumentListFeed feed = service.getFeed(new URL(
-          documentListFeedUrl.toString() + SPREADSHEET_CATEGORY), 
+    DocumentListFeed feed = service.getFeed(
+        new URL(documentListFeedUrl.toString() + SPREADSHEET_CATEGORY), 
         DocumentListFeed.class);
 
     out.println("List of all spreadsheets:");
@@ -182,13 +187,13 @@ public class DocumentListDemo {
    *
    * @param fullTextSearchString a full text search string, with space-separated
    *        keywords
-   * @throws ServiceException when the request causes an error in the Google
-   *         Spreadsheets service.
-   * @throws IOException when an error occurs in communication with the Google
-   *         Spreadsheets service.
+   * @throws ServiceException when the request causes an error in the Doclist
+   *         service.
+   * @throws IOException when an error occurs in communication with the Doclis
+   *         service.
    */
-  public void search(String fullTextSearchString) throws IOException,
-      ServiceException {
+  public void search(String fullTextSearchString)
+      throws IOException, ServiceException {
     Query query = new Query(documentListFeedUrl);
     query.setFullTextQuery(fullTextSearchString);
     DocumentListFeed feed = service.query(query, DocumentListFeed.class);
@@ -205,21 +210,22 @@ public class DocumentListDemo {
    *
    * @param filePath path to uploaded file. 
    * 
-   * @throws ServiceException when the request causes an error in the Google
-   *         Spreadsheets service.
-   * @throws IOException when an error occurs in communication with the Google
-   *         Spreadsheets service.
+   * @throws ServiceException when the request causes an error in the Doclist
+   *         service.
+   * @throws IOException when an error occurs in communication with the Doclist
+   *         service.
    */
-  public void uploadFile(String filePath) throws IOException,
-      ServiceException {
+  public void uploadFile(String filePath)
+      throws IOException, ServiceException {
     DocumentEntry newDocument = new DocumentEntry();
     File documentFile = new File(filePath);
     newDocument.setFile(documentFile);
+
     // Set the title for the new document. For this example we just use the
     // filename of the uploaded file.
     newDocument.setTitle(new PlainTextConstruct(documentFile.getName()));
-    DocumentListEntry uploaded = service.insert(documentListFeedUrl, 
-        newDocument);
+    DocumentListEntry uploaded =
+        service.insert(documentListFeedUrl, newDocument);
     printDocumentEntry(uploaded);
   }
   
@@ -269,19 +275,22 @@ public class DocumentListDemo {
    *
    * @param username name of user to authenticate (e.g. yourname@gmail.com)
    * @param password password to use for authentication
+   * @param feedUrl URL of the feed to connect to
    * @throws AuthenticationException if the service is unable to validate the
    *         username and password.
    */
-  public void run(String username, String password)
+  public void run(String username, String password, URL feedUrl)
       throws AuthenticationException {
     for (String s : WELCOME_MESSAGE) {
       out.println(s);
     }
 
-    BufferedReader reader = new BufferedReader(
-        new InputStreamReader(System.in));
+    documentListFeedUrl = feedUrl;
 
-    // Login and prompt the user to pick a sheet to use.
+    BufferedReader reader =
+        new BufferedReader(new InputStreamReader(System.in));
+
+    // Login and prompt the user to enter a command
     login(username, password);
     
     while (executeCommand(reader)) {
@@ -302,6 +311,7 @@ public class DocumentListDemo {
     SimpleCommandLineParser parser = new SimpleCommandLineParser(args);
     String username = parser.getValue("username", "user", "u");
     String password = parser.getValue("password", "pass", "p");
+    String server = parser.getValue("server", "s");
     boolean help = parser.containsKey("help", "h");
 
     if (help || username == null || password == null) {
@@ -309,10 +319,33 @@ public class DocumentListDemo {
       System.exit(1);
     }
 
-    DocumentListDemo demo = new DocumentListDemo(new DocsService(
-        "Document List Demo"),  System.out);
+    DocumentListDemo demo = new DocumentListDemo(
+        new DocsService("Document List Demo"), System.out);
+    if (server == null) {
+      server = DEF_FEED_HOST;
+    }
 
-    demo.run(username, password);
+    if (parser.containsKey("log", "l")) {
+      turnOnLogging();
+    }
+
+    demo.run(username, password, new URL("http://" + server + FEED_URL_PATH));
+  }
+
+  private static void turnOnLogging() {
+
+    // Configure the logging mechanisms
+    Logger httpLogger =
+        Logger.getLogger("com.google.gdata.client.http.HttpGDataRequest");
+    httpLogger.setLevel(Level.ALL);
+    Logger xmlLogger = Logger.getLogger("com.google.gdata.util.XmlParser");
+    xmlLogger.setLevel(Level.ALL);
+
+    // Create a log handler which prints all log events to the console
+    ConsoleHandler logHandler = new ConsoleHandler();
+    logHandler.setLevel(Level.ALL);
+    httpLogger.addHandler(logHandler);
+    xmlLogger.addHandler(logHandler);
   }
 
   /**

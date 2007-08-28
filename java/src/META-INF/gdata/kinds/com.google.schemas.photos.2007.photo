@@ -1,3 +1,0 @@
-# GData Kind Adaptors for http://schemas.google.com/photos/2007#photo
-com.google.gdata.data.photos.PhotoEntry
-com.google.gdata.data.photos.PhotoFeed

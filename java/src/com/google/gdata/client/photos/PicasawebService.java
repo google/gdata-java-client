@@ -16,7 +16,7 @@
 
 package com.google.gdata.client.photos;
 
-import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.photos.AlbumFeed;
 import com.google.gdata.data.photos.CommentEntry;
 import com.google.gdata.data.photos.PhotoFeed;
@@ -24,13 +24,13 @@ import com.google.gdata.data.photos.TagEntry;
 import com.google.gdata.data.photos.UserFeed;
 
 /**
- * The PicasawebService class extends the basic {@link GoogleService}
+ * The PicasawebService class extends the basic {@link MediaService}
  * abstraction to define a service that is preconfigured for access
  * to the Google Picasaweb data API.
  *
  * 
  */
-public class PicasawebService extends GoogleService {
+public class PicasawebService extends MediaService {
 
   /**
    * The abbreviated name of Picasaweb recognized by Google.  The service

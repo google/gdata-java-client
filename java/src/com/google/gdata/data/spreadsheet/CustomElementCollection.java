@@ -178,7 +178,6 @@ public class CustomElementCollection implements Extension {
   
   /**
    * Returns the suggested extension description.
-   * @param repeats whether this cell might be repeated in parent context
    */
   public static ExtensionDescription getDefaultDescription() {
     ExtensionDescription desc = new ExtensionDescription();
