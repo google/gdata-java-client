@@ -7,10 +7,10 @@ GData Java Client package depends on several third party libraries.  This page l
 
 = Dependency Packages =
 == Required ==
-  * Apache ANT version 1.7.0 or higher.  This is required only if you are rebuilding the Core API libraries.  Apache's ANT binary is available for download from http://ant.apache.org.
-  * mail.jar in Sun's Java Mail API (version 1.4 or greater).  Sun's Java Mail package available for download from "http://java.sun.com/products/javamail".  This is only required for APIs dependent on Media capabilities which includes Document List Data API, Picasa Web Album API and YouTube Data API.
-  * activation.jar in Sun's Java Beans Activation Framework.  This is required only if using JDK version 1.5 or less. Sun's Java Beans Activation Framework is available for download from "http://java.sun.com/products/javabeans/jaf". This is only required for APIs dependent on Media capabilities which includes Document List Data API, Picasa Web Album API and YouTube Data API. 
+  * [[http://ant.apache.org][Apache ANT]] version 1.7.0 or higher.  This is required only if you are rebuilding the Core API libraries.
+  * mail.jar in Sun's [[http://java.sun.com/products/javamail][Java Mail API]] (version 1.4 or greater).  This is only required for APIs dependent on Media capabilities which includes [[http://code.google.com/apis/documents/overview.html][Document List Data API]], [[http://code.google.com/apis/picasaweb/overview.html][Picasa Web Album API]] and [[http://code.google.com/apis/youtube/overview.html][YouTube Data API]].
+  * activation.jar in Sun's [[http://java.sun.com/products/javabeans/jaf][Java Beans Activation Framework]].  This is required only if using JDK version 1.5 or less and for Data APIs dependent on Media capabilities which includes [[http://code.google.com/apis/documents/overview.html][Document List Data API]], [[http://code.google.com/apis/picasaweb/overview.html][Picasa Web Album API]] and [[http://code.google.com/apis/youtube/overview.html][YouTube Data API]]. 
 
 == Optional ==
-  * servlet.jar in Sun's Servlet API (version 2.3 or greater).  This is required only for code samples 'sample.authsub' and 'sample.gbase.recipe' packages. Sun's Servlet package is available for download from "http://java.sun.com/products/servlet"
+  * servlet.jar in Sun's [[http://java.sun.com/products/servlet][Servlet API]] (version 2.3 or greater).  This is required only for code samples 'sample.authsub' and 'sample.gbase.recipe' packages.
 
