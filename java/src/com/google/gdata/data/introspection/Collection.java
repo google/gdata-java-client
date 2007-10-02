@@ -17,6 +17,7 @@
 package com.google.gdata.data.introspection;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.TextConstruct;
@@ -39,13 +40,15 @@ import java.util.ArrayList;
  */
 public class Collection extends ExtensionPoint {
 
+  private Namespace atomPubNs = Namespaces.getAtomPubNs();
+
   /**
    * Value of "accept" element used to indicate that a Collection
    * accepts "entry" objects.
    */
   public static final String ATOM_ENTRY_ACCEPT_VALUE = "entry";
 
-  public Collection() {};
+  public Collection() {}
 
   public Collection(String href) {
     this(null, href, null);
@@ -77,7 +80,7 @@ public class Collection extends ExtensionPoint {
    * Atom entries are supported. 
    */
   private String accept;
-  public String getAccept() { return accept; };
+  public String getAccept() { return accept; }
   public void setAccept(String accept) { this.accept = accept; }
 
 
@@ -89,22 +92,23 @@ public class Collection extends ExtensionPoint {
    *
    * @throws  IOException
    */
-  public void generate(XmlWriter w, ExtensionProfile extProfile) 
+  @Override
+  public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
-    ArrayList<XmlWriter.Attribute> attrs = 
+    ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(1);
     attrs.add(new XmlWriter.Attribute("href", href));
-    w.startElement(Namespaces.atomPubNs, "collection", attrs, null);
+    w.startElement(atomPubNs, "collection", attrs, null);
     if (title != null) {
       title.generateAtom(w, "title");
     }
     if (accept != null) {
-      w.simpleElement(Namespaces.atomPubNs, "accept", null, accept);
+      w.simpleElement(atomPubNs, "accept", null, accept);
     }
     generateExtensions(w, extProfile);
-    
-    w.endElement(Namespaces.atomPubNs, "collection");
+
+    w.endElement(atomPubNs, "collection");
   }
 
 
@@ -119,6 +123,7 @@ public class Collection extends ExtensionPoint {
     }
 
 
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
@@ -144,7 +149,7 @@ public class Collection extends ExtensionPoint {
                                    ",localName: " + localName);
         }
 
-      } else if (namespace.equals(Namespaces.atomPub)) {
+      } else if (namespace.equals(atomPubNs.getUri())) {
 
         if (localName.equals("accept")) {
           return new AcceptHandler();
@@ -164,6 +169,7 @@ public class Collection extends ExtensionPoint {
     /** app:accept element parser. */
     class AcceptHandler extends XmlParser.ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (accept != null) {

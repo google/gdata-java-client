@@ -17,6 +17,7 @@
 package com.google.gdata.data.introspection;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.util.Namespaces;
@@ -38,6 +39,9 @@ import java.util.List;
  * 
  */
 public class Workspace extends ExtensionPoint {
+
+  // Locally cache the version-appropriate AtomPub namespace information.
+  private Namespace atomPubNs = Namespaces.getAtomPubNs();
 
   public Workspace(String title) {
     this.title = title;
@@ -63,10 +67,10 @@ public class Workspace extends ExtensionPoint {
   public void generate(XmlWriter w, ExtensionProfile extProfile) 
       throws IOException {
 
-    ArrayList<XmlWriter.Attribute> attrs = 
+    ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(1);
     attrs.add(new XmlWriter.Attribute("title", title));
-    w.startElement(Namespaces.atomPubNs, "workspace", attrs, null);
+    w.startElement(atomPubNs, "workspace", attrs, null);
 
     w.startRepeatingElement();
     for (Collection collection : collections) {
@@ -75,8 +79,8 @@ public class Workspace extends ExtensionPoint {
     w.endRepeatingElement();
 
     generateExtensions(w, extProfile);
-    
-    w.endElement(Namespaces.atomPubNs, "workspace");
+
+    w.endElement(atomPubNs, "workspace");
   }
 
 
@@ -96,7 +100,7 @@ public class Workspace extends ExtensionPoint {
                                                     Attributes attrs)
         throws ParseException, IOException {
 
-      if (namespace.equals(Namespaces.atomPub)) {
+      if (namespace.equals(atomPubNs.getUri())) {
 
         if (localName.equals("collection")) {
 

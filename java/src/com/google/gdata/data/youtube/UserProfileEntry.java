@@ -20,6 +20,7 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.extensions.FeedLink;
 import com.google.gdata.data.media.mediarss.MediaThumbnail;
 
@@ -58,7 +59,7 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
       return null;
     }
   }
-
+  
   public void setAge(Integer age) {
     if (age == null) {
       removeExtension(YtAge.class);
@@ -75,7 +76,7 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
       return age.getAge();
     }
   }
-
+  
   public void setThumbnail(MediaThumbnail thumb) {
     if (thumb == null) {
       removeExtension(MediaThumbnail.class);
@@ -308,6 +309,11 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.CONTACTS_REL);
   }
 
+  /** Returns a link to the user inbox feed. */
+  public FeedLink getInboxFeedLink() {
+    return EntryUtils.getFeedLink(this, YouTubeNamespace.INBOX_REL);
+  }
+
   /** Returns a link to the user playlists feed. */
   public FeedLink getPlaylistsFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.PLAYLISTS_REL);
@@ -321,6 +327,11 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
   /** Returns a link to the user uploads feed. */
   public FeedLink getUploadsFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.UPLOADS_REL);
+  }
+
+  /** Returns a link to the playlist defined by the user as video log. */
+  public Link getVideoLogLink() {
+    return getLink(YouTubeNamespace.VLOG_REL, Link.Type.ATOM);
   }
 
   @Override
@@ -344,7 +355,7 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
     extProfile.declare(UserProfileEntry.class, YtSchool.class);
     extProfile.declare(UserProfileEntry.class, YtUsername.class);
     extProfile.declare(UserProfileEntry.class, MediaThumbnail.class);
-
+    
     ExtensionDescription feedLinkDescription = FeedLink.getDefaultDescription();
     feedLinkDescription.setRepeatable(true);
     extProfile.declare(UserProfileEntry.class, feedLinkDescription);

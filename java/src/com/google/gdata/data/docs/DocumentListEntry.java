@@ -16,17 +16,25 @@
 
 package com.google.gdata.data.docs;
 
+import com.google.gdata.util.common.base.StringUtil;
 import com.google.gdata.data.BaseEntry;
-import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.MediaContent;
+import com.google.gdata.data.Person;
+import com.google.gdata.data.extensions.Labels;
+import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.media.MediaFileSource;
 import com.google.gdata.util.ContentType;
+import com.google.gdata.util.Namespaces;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * An entry representing a single document of any type within a
@@ -38,6 +46,9 @@ import java.io.IOException;
 @Kind.Term(DocumentListEntry.UNKNOWN_KIND)
 public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
+  /**
+   * Represents the MIME types supported by the doclist GData feed
+   */
   public enum MediaType {
     CSV("text/comma-separated-values"),
     DOC("application/msword"),
@@ -63,7 +74,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     public static MediaType fromFileName(String fileName) {
       int index = fileName.indexOf('.');
       if (index > 0) {
-        return valueOf(fileName.substring(index+1).toUpperCase());
+        return valueOf(fileName.substring(index + 1).toUpperCase());
       } else {
         return valueOf(fileName);
       }
@@ -88,10 +99,12 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   /**
    * Category used to label entries which are of document type.
    */
-  public static final Category UNKNOWN_CATEGORY =
-    new Category(com.google.gdata.util.Namespaces.gKind, UNKNOWN_KIND, 
-        UNKNOWN_LABEL);
-  
+  public static final Category UNKNOWN_CATEGORY = new Category(
+      Namespaces.gKind, UNKNOWN_KIND, UNKNOWN_LABEL);
+
+  public static final String FOLDERS_NAMESPACE =
+      DOCUMENT_NAMESPACE + "/folders";
+
   /**
    * Constructs a new uninitialized entry, to be populated by the
    * GData parsers.
@@ -152,5 +165,79 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     content.setMediaSource(fileSource);
     content.setMimeType(new ContentType(mediaType.getMimeType()));
     setContent(content);
+  }
+
+  /**
+   * Sets the starred status of this document for the user this feed request
+   * has been authenticated under.
+   *
+   * @param starred true if the document should be starred
+   */
+  public void setStarred(boolean starred) {
+    if (starred) {
+      this.getCategories().add(Labels.STARRED);
+    } else {
+      this.getCategories().remove(Labels.STARRED);
+    }
+  }
+
+  /**
+   * @return true if the document represented by this entry has been starred
+   * by the user this feed request has been authenticated under.
+   */
+  public boolean isStarred() {
+    return this.getCategories().contains(Labels.STARRED);
+  }
+
+  /**
+   * Sets the trashed status of this document for the user this feed request
+   * has been authenticated under.
+   *
+   * @param trashed true if the document should be trashed
+   */
+  public void setTrashed(boolean trashed) {
+    if (trashed) {
+      this.getCategories().add(Labels.TRASHED);
+    } else {
+      this.getCategories().remove(Labels.TRASHED);
+    }
+  }
+
+  /**
+   * @return true if the document represented by this entry has been trashed
+   * by the user this feed request has been authenticated under.
+   */
+  public boolean isTrashed() {
+    return this.getCategories().contains(Labels.TRASHED);
+  }
+
+  /**
+   * Adds a user-specific folder that parents this document
+   *
+   * @param owner the owner of the folder
+   * @param folderName the name of the folder
+   */
+  public void addFolder(Person owner, String folderName) {
+    String scheme = FOLDERS_NAMESPACE + "/" + owner.getEmail();
+    Category folderCategory = new Category(scheme, folderName, folderName);
+    this.getCategories().add(folderCategory);
+  }
+
+  private static final Pattern FOLDER_PATTERN =
+      Pattern.compile("^" + Pattern.quote(FOLDERS_NAMESPACE) + "(:?/[^/]+)?$");
+
+  public Set<String> getFolders() {
+    Set<String> folders = new HashSet<String>();
+    for (Category category : this.getCategories()) {
+      Matcher matcher = FOLDER_PATTERN.matcher(category.getScheme());
+      if (matcher.matches()) {
+        String folderName = category.getLabel();
+        if (StringUtil.isEmpty(folderName)) {
+          folderName = category.getTerm();
+        }
+        folders.add(folderName);
+      }
+    }
+    return folders;
   }
 }

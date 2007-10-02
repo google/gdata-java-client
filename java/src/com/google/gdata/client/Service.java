@@ -17,6 +17,7 @@
 package com.google.gdata.client;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.AuthTokenFactory.AuthToken;
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.http.HttpGDataRequest;
 import com.google.gdata.data.BaseEntry;
@@ -30,13 +31,12 @@ import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.introspection.ServiceDocument;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.VersionRegistry;
 import com.google.gdata.util.VersionRegistry.Version;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.URL;
 
 /**
@@ -69,23 +69,43 @@ public class Service {
       "(gzip)";         // Necessary to get GZIP encoded responses
   
   /**
-   * The Alpha release of the GData core protocol that was released in
+   * The major version number of the Alpha version of the GData core protocol.
+   */
+  public static final int ALPHA_MAJOR = 1;
+  
+  /**
+   * The Alpha version of the GData core protocol that was released in
    * May 2006 and is in use for all current GData services.
    */
-  public static final Version ALPHA = new Version(Service.class, 1, 0);
+  public static final Version ALPHA =
+      new Version(Service.class, ALPHA_MAJOR, 0);
   
+  /**
+   * The major version number of the Beta version of the GData core protocol.
+   */
+  public static final int BETA_MAJOR = 2;
+    
   /**
    * The upcoming Beta release of the GData core protocol that will bring
    * full alignment with the now standard Atom Publishing Protocol
    * specification, migration to OpenSearch 1.1, and other (TBD) features.
    */
-  public static final Version BETA = new Version(Service.class, 2, 0);
+  public static final Version BETA =
+      new Version(Service.class, BETA_MAJOR, 0);
 
+  static {
+    // Initialize version information for the GData core protocol.
+    initServiceVersion(ALPHA);
+  }
+  
+
+  
   /**
    * The GDataRequest interface represents a streaming connection to a
    * GData service that can be used either to send request data to the
-   * service using an OutputStream or to receive response data from the
-   * service as an InputStream.   The calling client then has full control
+   * service using an OutputStream (or XmlWriter for XML content) or to
+   * receive response data from the service as an InputStream (or
+   * ParseSource for XML data).   The calling client then has full control
    * of the request data generation and response data parsing.  This can
    * be used to integrate GData services with an external Atom or RSS
    * parsing library, such as Rome.
@@ -204,6 +224,16 @@ public class Service {
     public OutputStream getRequestStream() throws IOException;
 
     /**
+     * Returns an XML writer that can be used to write XML request data
+     * to the GData service.
+     *
+     * @return XmlWriter that can be used to write GData XML request data.
+     * @throws IOException error obtaining the request writer.
+     * @throws ServiceException error obtaining the request writer.
+     */
+    public XmlWriter getRequestWriter() throws IOException, ServiceException;
+
+    /**
      * Executes the GData service request.
      *
      * @throws IOException error writing to or reading from GData service.
@@ -222,22 +252,42 @@ public class Service {
      * @throws IllegalStateException attempt to read content type without
      *                               first calling {@link #execute()}.
      * @throws IOException error obtaining the response content type.
+     * @throws ServiceException error obtaining the response content type.
      */
-    public ContentType getResponseContentType() throws IOException;
+    public ContentType getResponseContentType()
+        throws IOException, ServiceException;
 
     /**
-     * Returns a stream that can be used to read response data from the
-     * GData service.
+     * Returns an input stream that can be used to read response data from the
+     * GData service. Returns null if response data cannot be read as
+     * an input stream. Use {@link getParseSource()} instead.
      * <p>
-     * <b>The caller is responsible for ensuring that the response stream is
+     * <b>The caller is responsible for ensuring that the input stream is
      * properly closed after the response has been read.</b>
      *
-     * @return InputStream providing access to GData response data.
+     * @return InputStream providing access to GData response input stream.
      * @throws IllegalStateException attempt to read response without
      *                               first calling {@link #execute()}.
      * @throws IOException error obtaining the response input stream.
      */
     public InputStream getResponseStream() throws IOException;
+
+    /**
+     * Returns a parse source that can be used to read response data from the
+     * GData service. Parse source is an abstraction over input streams,
+     * readers, and other forms of input.
+     * <p>
+     * <b>The caller is responsible for ensuring that input streams and
+     * readers contained in the parse source are properly closed after
+     * the response has been read.</b>
+     *
+     * @return ParseSource providing access to GData response data.
+     * @throws IllegalStateException attempt to read response without
+     *                               first calling {@link #execute()}.
+     * @throws IOException error obtaining the response data.
+     * @throws ServiceException error obtaining the response data.
+     */
+    public ParseSource getParseSource() throws IOException, ServiceException;
   }
 
 
@@ -267,6 +317,20 @@ public class Service {
      * @param value the value of the header.  If null, then unset that header.
      */
     public void setPrivateHeader(String header, String value);
+
+    /**
+     * Set authentication token to be used on subsequent requests created via
+     * {@link #getRequest(
+     * com.google.gdata.client.Service.GDataRequest.RequestType, URL,
+     * ContentType)}.
+     * 
+     * An {@link IllegalArgumentException} is thrown if an auth token
+     * of the wrong type is passed, or if authentication is not supported.
+     * 
+     * @param authToken Authentication token.
+     */
+    public void setAuthToken(AuthToken authToken);
+
     /**
      * Creates a new GDataRequest instance of the specified RequestType.
      */
@@ -274,13 +338,23 @@ public class Service {
                                    URL requestUrl,
                                    ContentType contentType)
       throws IOException, ServiceException;
+
+    /**
+     * Creates a new GDataRequest instance for querying a service.
+     * This method pushes the query parameters down to the factory
+     * method instead of serializing them as a URL. Some factory
+     * implementations prefer to get access to query parameters
+     * in their original form, not as a URL.
+     */
+    public GDataRequest getRequest(Query query, ContentType contentType)
+      throws IOException, ServiceException;
   }
 
 
   /**
    * Initializes the version information for a specific service type.
    * Subclasses of {@link Service} will generally call this method from within
-   * their implementation of {@link #initVersionRegistry()} to bind
+   * their static initializers to bind
    * version information for the associated service.
    * @param version the service version expected by this client library.
    */
@@ -289,14 +363,18 @@ public class Service {
   }
 
   /**
+   * Returns the current {@link Version} of the GData core protocol.
+   * @return protocol version.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(Service.class);
+  }
+
+  /**
    * Constructs a new Service instance that is configured to accept arbitrary
    * extension data within feed or entry elements.
    */
   public Service() {
-
-    // Initialize the version registry information for this service (and its
-    // subclasses).
-    initVersionRegistry();
 
     // Set the default User-Agent value for requests
     requestFactory.setHeader("User-Agent", getServiceVersion());
@@ -306,16 +384,6 @@ public class Service {
     // foreign markup, so capture everything even if not explicitly
     // understood.
     new Feed().declareExtensions(extProfile);
-  }
-
-  /**
-   * Called at service instantion to initialize the {@link VersionRegistry}
-   * information for the service.  Service subclasses should override this
-   * method to define service-specific versioning information.
-   */
-  protected void initVersionRegistry() {
-    // Initialize version information for the GData core protocol.
-    initServiceVersion(ALPHA);
   }
 
   /**
@@ -368,24 +436,50 @@ public class Service {
 
   /**
    * Creates a new GDataRequest for use by the service.
+   * 
+   * For query requests, use
+   * {@link #createRequest(
+   * com.google.gdata.client.Service.GDataRequest.RequestType,
+   * URL, Query, ContentType)}
+   * instead.
    */
   public GDataRequest createRequest(GDataRequest.RequestType type,
                                     URL requestUrl,
                                     ContentType inputType)
       throws IOException, ServiceException {
 
-    GDataRequest request =
-      requestFactory.getRequest(type, requestUrl, inputType);
+    GDataRequest request = 
+        requestFactory.getRequest(type, requestUrl, inputType);
+    setTimeouts(request);
+    return request;
+  }
+
+
+  /**
+   * Creates a new GDataRequest for querying the service.
+   */
+  private GDataRequest createRequest(Query query, ContentType inputType)
+      throws IOException, ServiceException {
+
+    GDataRequest request = requestFactory.getRequest(query, inputType);
+    setTimeouts(request);
+    return request;
+  }
+
+
+  /**
+   * Sets timeout value for GDataRequest.
+   */
+  public void setTimeouts(GDataRequest request) {
     if (connectTimeout >= 0) {
       request.setConnectTimeout(connectTimeout);
     }
     if (readTimeout >= 0) {
       request.setReadTimeout(readTimeout);
     }
-    return request;
   }
 
-
+  
   /**
    * Content type of data posted to the GData service.
    * Defaults to Atom using UTF-8 character set.
@@ -457,14 +551,13 @@ public class Service {
   }
 
   /**
-   * Parse an entry of the specified class from an input stream.
+   * Parse an entry of the specified class from a parse source.
    */
   protected <E extends BaseEntry<?>> E parseEntry(Class<E> entryClass,
-                                               InputStream entryStream)
+                                                  ParseSource entrySource)
       throws IOException, ServiceException {
 
-    E entry = BaseEntry.readEntry(new ParseSource(entryStream), entryClass,
-        extProfile);
+    E entry = BaseEntry.readEntry(entrySource, entryClass, extProfile);
     entry.setService(this);
     return entry;
   }
@@ -500,6 +593,9 @@ public class Service {
     try {
       request.execute();
       responseStream = request.getResponseStream();
+      if (responseStream == null) {
+        throw new ServiceException("Unable to obtain service document");
+      }
 
       S serviceDoc = serviceClass.newInstance();
       serviceDoc.parse(extProfile, responseStream);
@@ -544,22 +640,71 @@ public class Service {
                                         Class<F> feedClass,
                                         DateTime ifModifiedSince)
       throws IOException, ServiceException {
-
-    InputStream feedStream = null;
     GDataRequest request = createFeedRequest(feedUrl);
+    return getFeed(request, feedClass, ifModifiedSince);
+  }
+
+
+  /**
+   * Returns the Feed associated with a particular query, if it's
+   * been modified since the specified date.
+   *
+   * @param query feed query.
+   * @param feedClass the class used to represent a service Feed.
+   * @param ifModifiedSince used to set a precondition date that indicates the
+   *          feed should be returned only if it has been modified after the
+   *          specified date. A value of {@code null} indicates no precondition.
+   * @return Feed resource referenced by the input URL.
+   * @throws IOException error sending request or reading the feed.
+   * @throws NotModifiedException if the feed resource has not been modified
+   *          since the specified precondition date.
+   * @throws ParseException error parsing the returned feed data.
+   * @throws ResourceNotFoundException invalid feed URL.
+   * @throws ServiceException system error retrieving feed.
+   */
+  public <F extends BaseFeed<?, ?>> F getFeed(Query query,
+                                              Class<F> feedClass,
+                                              DateTime ifModifiedSince)
+      throws IOException, ServiceException {
+    GDataRequest request = createFeedRequest(query);
+    return getFeed(request, feedClass, ifModifiedSince);
+  }
+
+
+  /**
+   * Returns the Feed associated with a particular feed URL, if it's
+   * been modified since the specified date.
+   *
+   * @param request the GData request.
+   * @param feedClass the class used to represent a service Feed.
+   * @param ifModifiedSince used to set a precondition date that indicates the
+   *          feed should be returned only if it has been modified after the
+   *          specified date. A value of {@code null} indicates no precondition.
+   * @return Feed resource referenced by the input URL.
+   * @throws IOException error sending request or reading the feed.
+   * @throws NotModifiedException if the feed resource has not been modified
+   *          since the specified precondition date.
+   * @throws ParseException error parsing the returned feed data.
+   * @throws ResourceNotFoundException invalid feed URL.
+   * @throws ServiceException system error retrieving feed.
+   */
+  private <F extends BaseFeed<?, ?>> F getFeed(GDataRequest request,
+                                               Class<F> feedClass,
+                                               DateTime ifModifiedSince)
+      throws IOException, ServiceException {
+
+    ParseSource feedSource = null;
     try {
       request.setIfModifiedSince(ifModifiedSince);
       request.execute();
-      feedStream = request.getResponseStream();
+      feedSource = request.getParseSource();
 
       BaseFeed<?, ?> feed =
-          BaseFeed.readFeed(new ParseSource(feedStream), feedClass, extProfile);
+          BaseFeed.readFeed(feedSource, feedClass, extProfile);
       feed.setService(this);
       return (F) feed;
     } finally {
-      if (feedStream != null) {
-        feedStream.close();
-      }
+      closeSource(feedSource);
     }
   }
 
@@ -584,19 +729,54 @@ public class Service {
 
 
   /**
-   * Executes a GData query against the target service and returns the
+   * Returns the Feed associated with a particular query.
+   *
+   * @param query feed query.
+   * @param feedClass the class used to represent a service Feed.
+   * @return Feed resource referenced by the input URL.
+   * @throws IOException error sending request or reading the feed.
+   * @throws ParseException error parsing the returned feed data.
+   * @throws ResourceNotFoundException invalid feed URL.
+   * @throws ServiceException system error retrieving feed.
+   */
+  public <F extends BaseFeed<?, ?>> F getFeed(Query query, Class<F> feedClass)
+      throws IOException, ServiceException {
+    return getFeed(query, feedClass, null);
+  }
+
+
+  /**
+   * Executes a GData feed request against the target service and returns the
    * resulting feed results via an input stream.
    *
-   * @param queryUrl URL that defines target feed and any query parameters.
+   * @param feedUrl URL that defines target feed.
    * @return GData request instance that can be used to read the feed data.
    * @throws IOException error communicating with the GData service.
    * @throws ServiceException creation of query feed request failed.
    *
    * @see Query#getUrl()
    */
-  public GDataRequest createFeedRequest(URL queryUrl)
+  public GDataRequest createFeedRequest(URL feedUrl)
       throws IOException, ServiceException {
-    return createRequest(GDataRequest.RequestType.QUERY, queryUrl, contentType);
+    return createRequest(GDataRequest.RequestType.QUERY, feedUrl,
+                         contentType);
+  }
+
+
+  /**
+   * Executes a GData query request against the target service and returns the
+   * resulting feed results via an input stream.
+   *
+   * @param query feed query.
+   * @return GData request instance that can be used to read the feed data.
+   * @throws IOException error communicating with the GData service.
+   * @throws ServiceException creation of query feed request failed.
+   *
+   * @see Query#getUrl()
+   */
+  public GDataRequest createFeedRequest(Query query)
+      throws IOException, ServiceException {
+    return createRequest(query, contentType);
   }
 
 
@@ -629,19 +809,17 @@ public class Service {
                                              DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
-    InputStream entryStream = null;
+    ParseSource entrySource = null;
     GDataRequest request = createEntryRequest(entryUrl);
     try {
 
       request.setIfModifiedSince(ifModifiedSince);
       request.execute();
-      entryStream = request.getResponseStream();
-      return parseEntry(entryClass, entryStream);
+      entrySource = request.getParseSource();
+      return parseEntry(entryClass, entrySource);
 
     } finally {
-      if (entryStream != null) {
-        entryStream.close();
-      }
+      closeSource(entrySource);
     }
   }
 
@@ -680,7 +858,8 @@ public class Service {
    */
   public GDataRequest createEntryRequest(URL entryUrl)
       throws IOException, ServiceException {
-    return createRequest(GDataRequest.RequestType.QUERY, entryUrl, contentType);
+    return createRequest(GDataRequest.RequestType.QUERY, entryUrl,
+                         contentType);
   }
 
 
@@ -711,7 +890,7 @@ public class Service {
       throws IOException, ServiceException {
 
     // A query is really same as getFeed against the combined feed + query URL
-    return getFeed(query.getUrl(), feedClass, ifModifiedSince);
+    return getFeed(query, feedClass, ifModifiedSince);
   }
 
 
@@ -763,25 +942,20 @@ public class Service {
       throw new NullPointerException("Must supply entry");
     }
 
-    InputStream resultStream = null;
+    ParseSource resultEntrySource = null;
     try {
-      GDataRequest request;
-      request = createInsertRequest(feedUrl);
-      OutputStream entryStream = request.getRequestStream();
-      Writer entryWriter = new OutputStreamWriter(entryStream, "utf-8");
-      XmlWriter xw = new XmlWriter(entryWriter);
+      GDataRequest request = createInsertRequest(feedUrl);
+      XmlWriter xw = request.getRequestWriter();
       entry.generateAtom(xw, extProfile);
-      entryWriter.flush();
+      xw.flush();
 
       request.execute();
 
-      resultStream = request.getResponseStream();
-      return (E) parseEntry(entry.getClass(), resultStream);
+      resultEntrySource = request.getParseSource();
+      return (E) parseEntry(entry.getClass(), resultEntrySource);
 
     } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
+      closeSource(resultEntrySource);
     }
   }
 
@@ -819,20 +993,18 @@ public class Service {
   @SuppressWarnings("unchecked")
   public <F extends BaseFeed<?, ?>> F batch(URL feedUrl, F inputFeed)
       throws IOException, ServiceException, BatchInterruptedException {
-    InputStream resultStream = null;
+    ParseSource resultFeedSource = null;
     GDataRequest request = createInsertRequest(feedUrl);
     try {
-      OutputStream entryStream = request.getRequestStream();
-      Writer entryWriter = new OutputStreamWriter(entryStream, "utf-8");
-      XmlWriter xw = new XmlWriter(entryWriter);
+      XmlWriter xw = request.getRequestWriter();
       inputFeed.generateAtom(xw, extProfile);
-      entryWriter.flush();
+      xw.flush();
 
       request.execute();
 
-      resultStream = request.getResponseStream();
+      resultFeedSource = request.getParseSource();
       F resultFeed = (F)
-          BaseFeed.readFeed(new ParseSource(resultStream), inputFeed.getClass(),
+          BaseFeed.readFeed(resultFeedSource, inputFeed.getClass(),
               extProfile);
       resultFeed.setService(this);
 
@@ -849,9 +1021,7 @@ public class Service {
       return resultFeed;
 
     } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
+      closeSource(resultFeedSource);
     }
   }
 
@@ -907,27 +1077,23 @@ public class Service {
   public <E extends BaseEntry<?>> E update(URL entryUrl, E entry)
       throws IOException, ServiceException {
 
-    InputStream resultStream = null;
+    ParseSource resultEntrySource = null;
     GDataRequest request = createUpdateRequest(entryUrl);
     try {
       // Send the entry
-      OutputStream entryStream = request.getRequestStream();
-      Writer entryWriter = new OutputStreamWriter(entryStream, "utf-8");
-      XmlWriter xw = new XmlWriter(entryWriter);
+      XmlWriter xw = request.getRequestWriter();
       entry.generateAtom(xw, extProfile);
-      entryWriter.flush();
+      xw.flush();
 
       // Execute the request
       request.execute();
 
       // Handle the update
-      resultStream = request.getResponseStream();
-      return (E) parseEntry(entry.getClass(), resultStream);
+      resultEntrySource = request.getParseSource();
+      return (E) parseEntry(entry.getClass(), resultEntrySource);
 
     } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
+      closeSource(resultEntrySource);
     }
   }
 
@@ -981,5 +1147,23 @@ public class Service {
 
     return createRequest(GDataRequest.RequestType.DELETE, entryUrl,
         contentType);
+  }
+
+
+  /**
+   * Closes streams and readers associated with a parse source.
+   * 
+   * @param source    Parse source.
+   * @throws IOException
+   */
+  protected void closeSource(ParseSource source) throws IOException {
+    if (source != null) {
+      if (source.getInputStream() != null) {
+        source.getInputStream().close();
+      }
+      if (source.getReader() != null) {
+        source.getReader().close();
+      }
+    }
   }
 }

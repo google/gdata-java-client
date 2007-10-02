@@ -16,11 +16,17 @@
 
 package com.google.gdata.data.photos;
 
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
+import com.google.gdata.data.TextConstruct;
 
 /**
  * Shared comment data object, this contains all setters/getters of fields that
- * are specific to a comment.
+ * are specific to a comment.  Currently comments must have both an albumid and
+ * a photoid when created, as we don't yet allow comments on an album by itself.
+ *
+ * The actual content of the comment should be set using the
+ * {@link BaseEntry#setContent(TextConstruct)} method.
  *
  * 
  */
@@ -38,12 +44,14 @@ public interface CommentData extends GphotoData {
       = new Category(com.google.gdata.util.Namespaces.gKind, COMMENT_KIND);
 
   /**
+   * Gets the albumid of the album the comment is contained in.
+   * 
    * @return the albumId of the album this comment is on.
    */
   public String getAlbumId();
 
   /**
-   * Set the albumId for the album this comment is on.
+   * Set the albumId of the album this comment is contained in.
    *
    * @param albumId the albumId of the comment.
    */
@@ -57,6 +65,8 @@ public interface CommentData extends GphotoData {
   public void setAlbumId(String albumId);
 
   /**
+   * Gets the id of the photo this comment is about.
+   * 
    * @return the photoId of the photo this comment is on.
    */
   public String getPhotoId();
@@ -67,7 +77,6 @@ public interface CommentData extends GphotoData {
    * @param photoId the photoId of the comment.
    */
   public void setPhotoId(Long photoId);
-
 
   /**
    * Set the photoId as a string for the photo this comment is on.

@@ -1,6 +1,16 @@
 Google Data API v1.14 (Java) - Release Notes
 Aug 28, 2007
 
+Notes for v1.14.1
+-----------------
+Oct 02, 2007
+o  Added batch support for Event Feed in Calendar Data API.
+o  Added batch support for Cells Feed in Spreadsheet Data API.
+o  Added support to handle foreign markup constraints as specified in RFC4287
+   sec 6.3 and AtomPub section 6.2.
+o  Lowered visibility of log messages reporting on unrecognized foreign markup
+   in xml feeds from INFO level to FINE level.
+
 Notes for v1.14.0
 -----------------
 Aug 28, 2007

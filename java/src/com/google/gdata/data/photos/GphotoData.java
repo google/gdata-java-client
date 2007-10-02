@@ -28,19 +28,27 @@ package com.google.gdata.data.photos;
 public interface GphotoData extends Extensible {
 
   /**
+   * Gets the gphoto:id of the data object.  The gphoto:id is the
+   * photos-specific system id of the object, provided by the server at object
+   * creation time.
+   * 
    * @return the Gphoto id.
    */
   public String getGphotoId();
 
   /**
-   * Sets the id of this feed or entry.
-   *
+   * Sets the id of this feed or entry.  This field is normally read-only, but
+   * can be used on the client to perform a copy operation when creating a new
+   * object based on an existing object.
+   * 
    * @param id the long version of the id of this feed or entry.
    */
   public void setGphotoId(Long id);
 
   /**
-   * Sets the id of this feed or entry.
+   * Sets the id of this feed or entry.  This field is normally read-only, but
+   * can be used on the client to perform a copy operation when creating a new
+   * object based on an existing object.
    *
    * @param id the string version of the id of this feed or entry.
    */

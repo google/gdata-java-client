@@ -21,6 +21,10 @@ import com.google.gdata.client.spreadsheet.CellQuery;
 import com.google.gdata.client.spreadsheet.FeedURLFactory;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.Link;
+import com.google.gdata.data.batch.BatchOperationType;
+import com.google.gdata.data.batch.BatchStatus;
+import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
@@ -37,14 +41,11 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Very minimalist demo of the cell feed.
- * 
  * Using this demo, you can see how GData can read and write to individual cells
- * based on their position.
+ * based on their position or send a batch of update commands in one HTTP
+ * request.
  * 
- * Usage: java CellDemo username http://spreadsheets.google.com/ccc?id=.....
- * 
- * 
+ * Usage: java CellDemo --username [user] --password [pass] 
  */
 public class CellDemo {
 
@@ -67,8 +68,8 @@ public class CellDemo {
       " range minRow maxRow minCol maxCol [[rectangle]]",
       " set row# col# formula             [[sets a cell]]",
       "   example: set 1 3 =R1C2+1",
-      " search adam                       [[full text query]]"};
-
+      " search adam                       [[full text query]]",
+      " batch                             [[batch request]]"};
 
   /** Our view of Google Spreadsheets as an authenticated Google user. */
   private SpreadsheetService service;
@@ -81,7 +82,6 @@ public class CellDemo {
 
   /** A factory that generates the appropriate feed URLs. */
   private FeedURLFactory factory;
-
 
   /**
    * Constructs a cell demo from the specified spreadsheet service, which is
@@ -118,7 +118,7 @@ public class CellDemo {
    * 
    * @param reader to read input from the keyboard
    * @param entries the list of entries to display
-   * @param type describes the tyoe of things the list contains
+   * @param type describes the type of things the list contains
    * @return the 0-based index of the user's selection
    * @throws IOException if an I/O error occurs while getting input from user
    */
@@ -147,7 +147,7 @@ public class CellDemo {
   }
 
   /**
-   * Uses the user's creadentials to get a list of spreadsheets. Then asks the
+   * Uses the user's credentials to get a list of spreadsheets. Then asks the
    * user which spreadsheet to load. If the selected spreadsheet has multiple
    * worksheets then the user will also be prompted to select what sheet to use.
    * 
@@ -282,6 +282,119 @@ public class CellDemo {
   }
 
   /**
+   * Writes (to stdout) a list of the entries in the batch request in a human
+   * readable format.
+   * 
+   * @param batchRequest the CellFeed containing entries to display.
+   */
+  private void printBatchRequest(CellFeed batchRequest) {
+    System.out.println("Current operations in batch");
+    for (CellEntry entry : batchRequest.getEntries()) {
+      String msg = "\tID: " + BatchUtils.getBatchId(entry) + " - "
+          + BatchUtils.getBatchOperationType(entry) + " row: "
+          + entry.getCell().getRow() + " col: " + entry.getCell().getCol()
+          + " value: " + entry.getCell().getInputValue();
+      System.out.println(msg);
+    }
+  }
+
+  /**
+   * Returns a CellEntry with batch id and operation type that will tell the
+   * server to update the specified cell with the given value. The entry is
+   * fetched from the server in order to get the current edit link (for
+   * optimistic concurrency).
+   * 
+   * @param row the row number of the cell to operate on
+   * @param col the column number of the cell to operate on
+   * @param value the value to set in case of an update the cell to operate on
+   * 
+   * @throws ServiceException when the request causes an error in the Google
+   *         Spreadsheets service.
+   * @throws IOException when an error occurs in communication with the Google
+   *         Spreadsheets service.
+   */
+  private CellEntry createUpdateOperation(int row, int col, String value)
+      throws ServiceException, IOException {
+    String batchId = "R" + row + "C" + col;
+    URL entryUrl = new URL(cellFeedUrl.toString() + "/" + batchId);
+    CellEntry entry = service.getEntry(entryUrl, CellEntry.class);
+    entry.changeInputValueLocal(value);
+    BatchUtils.setBatchId(entry, batchId);
+    BatchUtils.setBatchOperationType(entry, BatchOperationType.UPDATE);
+
+    return entry;
+  }
+
+  /**
+   * Prompts the user for a set of operations and submits them in a batch
+   * request.
+   * 
+   * @param reader to read input from the keyboard.
+   * 
+   * @throws ServiceException when the request causes an error in the Google
+   *         Spreadsheets service.
+   * @throws IOException when an error occurs in communication with the Google
+   *         Spreadsheets service.
+   */
+  public void processBatchRequest(BufferedReader reader) 
+      throws IOException, ServiceException {
+
+    final String BATCH_PROMPT = "Enter set operations one by one, "
+        + "then enter submit to send the batch request:\n"
+        + " set row# col# value  [[add a set operation]]\n"
+        + " submit               [[submit the request]]";
+
+    CellFeed batchRequest = new CellFeed();
+
+    // Prompt user for operation
+    System.out.println(BATCH_PROMPT);
+    String operation = reader.readLine();
+    while (!operation.startsWith("submit")) {
+      String[] s = operation.split(" ", 4);
+      if (s.length != 4 || !s[0].equals("set")) {
+        System.out.println("Invalid command: " + operation);
+        operation = reader.readLine();
+        continue;
+      }
+
+      // Create a new cell entry and add it to the batch request.
+      int row = Integer.parseInt(s[1]);
+      int col = Integer.parseInt(s[2]);
+      String value = s[3];
+      CellEntry batchOperation = createUpdateOperation(row, col, value);
+      batchRequest.getEntries().add(batchOperation);
+
+      // Display the current entries in the batch request.
+      printBatchRequest(batchRequest);
+
+      // Prompt for another operation.
+      System.out.println(BATCH_PROMPT);
+      operation = reader.readLine();
+    }
+
+    // Get the batch feed URL and submit the batch request
+    CellFeed feed = service.getFeed(cellFeedUrl, CellFeed.class);
+    Link batchLink = feed.getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
+    URL batchUrl = new URL(batchLink.getHref());
+    CellFeed batchResponse = service.batch(batchUrl, batchRequest);
+
+    // Print any errors that may have happened.
+    boolean isSuccess = true;
+    for (CellEntry entry : batchResponse.getEntries()) {
+      String batchId = BatchUtils.getBatchId(entry);
+      if (!BatchUtils.isSuccess(entry)) {
+        isSuccess = false;
+        BatchStatus status = BatchUtils.getBatchStatus(entry);
+        System.out.println("\n" + batchId + " failed (" + status.getReason()
+            + ") " + status.getContent());
+      }
+    }
+    if (isSuccess) {
+      System.out.println("Batch operations successful.");
+    }
+  }
+
+  /**
    * Reads and executes one command.
    * 
    * @param reader to read input from the keyboard
@@ -313,6 +426,8 @@ public class CellDemo {
       } else if (name.equals("set")) {
         String[] s = parameters.split(" ", 3);
         setCell(Integer.parseInt(s[0]), Integer.parseInt(s[1]), s[2]);
+      } else if (name.equals("batch")) {
+        processBatchRequest(reader);
       } else if (name.startsWith("q") || name.startsWith("exit")) {
         return false;
       } else {

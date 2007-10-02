@@ -50,6 +50,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(ExifTags.class, ExifTag.getDefaultDescription());
+    extProfile.declareArbitraryXmlExtension(ExifTags.class);
     super.declareExtensions(extProfile);
   }
 
@@ -91,6 +92,15 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
     return tag == null ? null : tag.getValue();
   }
 
+  /**
+   * Convenience method to set an exif tag based on a float value.
+   */
+  public void setExifTagValue(String name, Number value) {
+    if (value != null && value.floatValue() != 0.0F) {
+      setExifTagValue(name, value.toString());
+    }
+  }
+  
   /**
    * Sets the value of a particular exif tag by name.
    */
@@ -155,7 +165,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
    * Set the iso equivalent value used.
    */
   public void setIsoEquivalent(Integer iso) {
-    setExifTagValue("iso", iso == null ? null : iso.toString());
+    setExifTagValue("iso", iso);
   }
 
   /**
@@ -178,7 +188,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
    * Set the exposure time used.
    */
   public void setExposureTime(Float exposure) {
-    setExifTagValue("exposure", exposure == null ? null : exposure.toString());
+    setExifTagValue("exposure", exposure);
   }
 
   /**
@@ -202,7 +212,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
    * Set the fstop value used.
    */
   public void setApetureFNumber(Float fstop) {
-    setExifTagValue("fstop", fstop == null ? null : fstop.toString());
+    setExifTagValue("fstop", fstop);
   }
 
   /**
@@ -226,7 +236,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
    * Set the distance to the subject.
    */
   public void setDistance(Float distance) {
-    setExifTagValue("distance", distance == null ? null : distance.toString());
+    setExifTagValue("distance", distance);
   }
 
   /**
@@ -250,7 +260,8 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
    * Set the date/time the photo was taken.
    */
   public void setTime(Date time) {
-    setExifTagValue("time", time == null ? null : Long.toString(time.getTime()));
+    setExifTagValue("time",
+        time == null ? null : Long.toString(time.getTime()));
   }
 
   /**
@@ -274,8 +285,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
    * Set the focal length used.
    */
   public void setFocalLength(Float focalLength) {
-    setExifTagValue("focallength",
-        focalLength == null ? null : focalLength.toString());
+    setExifTagValue("focallength", focalLength);
   }
 
   /**
@@ -312,6 +322,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
    * Generate the xml for this element.  This is hacked to support including
    * arbitrary exif fields as nested elements.
    */
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
     w.startElement(Namespaces.EXIF_NAMESPACE, "tags", null, null);
@@ -325,6 +336,7 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
   /*
    * Get a handler for parsing this element.
    */
+  @Override
   public ElementHandler getHandler(final ExtensionProfile extProfile,
       String namespace, String localName, Attributes attrs) {
     return new XmlParser.ElementHandler() {

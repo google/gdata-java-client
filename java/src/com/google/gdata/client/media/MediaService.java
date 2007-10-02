@@ -21,6 +21,7 @@ import com.google.gdata.client.Service.GDataRequest;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.MediaContent;
+import com.google.gdata.data.ParseSource;
 import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.media.MediaMultipart;
 import com.google.gdata.data.media.MediaSource;
@@ -203,13 +204,11 @@ public class MediaService extends GoogleService {
       return super.insert(feedUrl, entry);
     }
 
-    InputStream resultStream = null;
+    ParseSource resultEntrySource = null;
     try {
-      GDataRequest request;
-
       // Write as MIME multipart containing the entry and media
       MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
-      request =
+      GDataRequest request =
           createRequest(GDataRequest.RequestType.INSERT, feedUrl,
               new ContentType(mediaMultipart.getContentType()));
       initMediaRequest(media, request);
@@ -218,15 +217,13 @@ public class MediaService extends GoogleService {
 
       request.execute();
 
-      resultStream = request.getResponseStream();
-      return (E) parseEntry(entry.getClass(), resultStream);
+      resultEntrySource = request.getParseSource();
+      return (E) parseEntry(entry.getClass(), resultEntrySource);
 
     } catch (MessagingException e) {
         throw new ServiceException("Unable to write MIME multipart message", e);
     } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
+      closeSource(resultEntrySource);
     }
   }
 
@@ -264,11 +261,10 @@ public class MediaService extends GoogleService {
       throw new NullPointerException("Must supply media source");
     }
 
-    InputStream resultStream = null;
-    GDataRequest request;
+    ParseSource resultEntrySource = null;
     try {
       // Write media content only.
-      request =
+      GDataRequest request =
           createRequest(GDataRequest.RequestType.INSERT, feedUrl,
               new ContentType(media.getContentType()));
       initMediaRequest(media, request);
@@ -276,13 +272,11 @@ public class MediaService extends GoogleService {
       // Write the media data
       MediaSource.Output.writeTo(media, request.getRequestStream());
       request.execute();
-      resultStream = request.getResponseStream();
-      return parseEntry(entryClass, resultStream);
+      resultEntrySource = request.getParseSource();
+      return parseEntry(entryClass, resultEntrySource);
 
     } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
+      closeSource(resultEntrySource);
     }
   }
 
@@ -320,27 +314,24 @@ public class MediaService extends GoogleService {
       throw new NullPointerException("Must supply media source");
     }
 
-    InputStream resultStream = null;
-    GDataRequest request;
+    ParseSource resultEntrySource = null;
     try {
       // Write as MIME multipart containing the entry and media
       MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
-      request =
+      GDataRequest request =
           createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
               new ContentType(mediaMultipart.getContentType()));
       OutputStream outputStream = request.getRequestStream();
       mediaMultipart.writeTo(outputStream);
       request.execute();
 
-      resultStream = request.getResponseStream();
-      return (E) parseEntry(entry.getClass(), resultStream);
+      resultEntrySource = request.getParseSource();
+      return (E) parseEntry(entry.getClass(), resultEntrySource);
 
     } catch (MessagingException e) {
       throw new ServiceException("Unable to write MIME multipart message", e);
     } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
+      closeSource(resultEntrySource);
     }
   }
 
@@ -378,22 +369,19 @@ public class MediaService extends GoogleService {
       throw new NullPointerException("Must supply media source");
     }
 
-    InputStream resultStream = null;
-    GDataRequest request;
+    ParseSource resultEntrySource = null;
     try {
-      request =
+      GDataRequest request =
           createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
               new ContentType(media.getContentType()));
       MediaSource.Output.writeTo(media, request.getRequestStream());
       request.execute();
 
-      resultStream = request.getResponseStream();
-      return parseEntry(entryClass, resultStream);
+      resultEntrySource = request.getParseSource();
+      return parseEntry(entryClass, resultEntrySource);
 
     } finally {
-      if (resultStream != null) {
-        resultStream.close();
-      }
+      closeSource(resultEntrySource);
     }
   }
 }

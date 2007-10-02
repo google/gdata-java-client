@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,6 +49,8 @@ import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
+import com.google.gdata.util.httputil.FastURLEncoder;
+
 
 /**
  * Publisher for pushing events from Spreadsheets to Calendar and Base
@@ -242,7 +243,7 @@ public class EventPublisher {
       HashMap<String, String> hm = new HashMap<String, String>();
       hm.put("title", ssEntry.getTitle().getPlainText());
       try {
-        hm.put("wsFeed", URLEncoder.encode(
+        hm.put("wsFeed", FastURLEncoder.encode(
             ssEntry.getWorksheetFeedUrl().toString(),
         "UTF-8"));
       } catch (UnsupportedEncodingException e) {
@@ -270,7 +271,7 @@ public class EventPublisher {
       HashMap<String, String> hm = new HashMap<String, String>();
       hm.put("title", wsEntry.getTitle().getPlainText());
       try {
-        hm.put("cellFeed", URLEncoder.encode(
+        hm.put("cellFeed", FastURLEncoder.encode(
             wsEntry.getCellFeedUrl().toString(),
             "UTF-8"));
       } catch (UnsupportedEncodingException e) {

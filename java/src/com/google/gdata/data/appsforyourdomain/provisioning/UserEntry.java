@@ -77,15 +77,15 @@ public class UserEntry extends BaseEntry<UserEntry> {
     extensionProfile.declare(UserEntry.class, Email.getDefaultDescription());
     extensionProfile.declare(UserEntry.class, Name.getDefaultDescription());
     extensionProfile.declare(UserEntry.class, Quota.getDefaultDescription());
-    
+
     // FeedLink extension is not repeatable by default.
     ExtensionDescription desc = FeedLink.getDefaultDescription();
     desc.setRepeatable(true);
     extensionProfile.declare(UserEntry.class, desc);
-    
+
     // Declare our "apps" namespace
     extensionProfile.declareAdditionalNamespace(
-	com.google.gdata.data.appsforyourdomain.Namespaces.APPS_NAMESPACE);
+        com.google.gdata.data.appsforyourdomain.Namespaces.APPS_NAMESPACE);
   }
 
   public Login getLogin() {
@@ -99,9 +99,9 @@ public class UserEntry extends BaseEntry<UserEntry> {
   public Quota getQuota() {
     return getExtension(Quota.class);
   }
-  
+
   public Email getEmail() {
     return getExtension(Email.class);
   }
-  
+
 }

@@ -18,13 +18,13 @@ package com.google.gdata.client;
 
 import com.google.gdata.data.Category;
 import com.google.gdata.data.DateTime;
+import com.google.gdata.util.httputil.FastURLEncoder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -171,6 +171,16 @@ public class Query {
 
 
   /**
+   * Returns the feed URL of this query.
+   * 
+   * @return Feed URL.
+   */
+  public URL getFeedUrl() {
+    return feedUrl;
+  }
+  
+  
+  /**
    * Sets the full text query string that will be used for the query.
    *
    * @param query the full text search query string.  A value of
@@ -211,10 +221,11 @@ public class Query {
 
     /** List of categories that returned entries must match. */
     private final List<Category> categories;
-
+    public List<Category> getCategories() { return categories; }
 
     /** List of categories that returned entries must match. */
     private final List<Category> excludeCategories;
+    public List<Category> getExcludeCategories() { return excludeCategories; }
 
 
     /**
@@ -659,19 +670,20 @@ public class Query {
         pathBuf.append("-");   // signals beginning of query path elements
         for (CategoryFilter categoryFilter : categoryFilters) {
           pathBuf.append("/");
-          pathBuf.append(URLEncoder.encode(categoryFilter.toString(),"UTF-8"));
+          pathBuf.append(
+              FastURLEncoder.encode(categoryFilter.toString(),"UTF-8"));
         }
       }
 
       StringBuilder queryBuf = new StringBuilder();
       if (queryString != null) {
         appendQueryParameter(queryBuf, "q",
-            URLEncoder.encode(queryString, "UTF-8"));
+            FastURLEncoder.encode(queryString, "UTF-8"));
       }
 
       if (author != null) {
         appendQueryParameter(queryBuf, "author",
-            URLEncoder.encode(author, "UTF-8"));
+            FastURLEncoder.encode(author, "UTF-8"));
       }
 
       if (resultFormat != ResultFormat.DEFAULT) {
@@ -708,8 +720,8 @@ public class Query {
 
       for (CustomParameter customParameter : customParameters) {
         appendQueryParameter(queryBuf,
-            URLEncoder.encode(customParameter.name, "UTF-8"),
-            URLEncoder.encode(customParameter.value, "UTF-8"));
+            FastURLEncoder.encode(customParameter.name, "UTF-8"),
+            FastURLEncoder.encode(customParameter.value, "UTF-8"));
       }
 
       return new URI(pathBuf.toString() + queryBuf.toString());

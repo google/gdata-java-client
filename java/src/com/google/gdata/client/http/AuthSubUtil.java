@@ -19,13 +19,13 @@ package com.google.gdata.client.http;
 import com.google.gdata.util.common.base.StringUtil;
 import com.google.gdata.util.common.util.Base64;
 import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.httputil.FastURLEncoder;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -421,8 +421,8 @@ public class AuthSubUtil {
                                    String value) {
 
     try {
-      name = URLEncoder.encode(name, "UTF-8");
-      value = URLEncoder.encode(value, "UTF-8");
+      name = FastURLEncoder.encode(name, "UTF-8");
+      value = FastURLEncoder.encode(value, "UTF-8");
     } catch (UnsupportedEncodingException uee) {
       throw new IllegalStateException("Unable to encode parameters", uee);
     }

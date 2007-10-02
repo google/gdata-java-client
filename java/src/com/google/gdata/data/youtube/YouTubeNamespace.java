@@ -41,6 +41,11 @@ public class YouTubeNamespace {
   public static final String KIND_VIDEO = URI + "#video";
 
   /**
+   * Kind linked to {@link ComplaintEntry}.
+   */
+  public static final String KIND_COMPLAINT = URI + "#complaint";
+
+  /**
    * Kind linked to {@link CommentEntry}.
    */
   public static final String KIND_COMMENT = URI + "#comment";
@@ -61,6 +66,11 @@ public class YouTubeNamespace {
   public static final String KIND_FRIEND = URI + "#friend";
 
   /**
+   * Kind linked to {@link RatingEntry}.
+   */
+  public static final String KIND_RATING = URI + "#rating";
+
+  /**
    * Kind linked to {@link UserProfileEntry}.
    */
   public static final String KIND_USER_PROFILE = URI + "#userProfile";
@@ -69,6 +79,11 @@ public class YouTubeNamespace {
    * Kind linked to {@link PlaylistEntry}.
    */
   public static final String KIND_PLAYLIST = URI + "#playlist";
+
+  /**
+   * Kind linked to {@link VideoMessageEntry}.
+   */
+  public static final String KIND_VIDEO_MESSAGE = URI + "#videoMessage";
 
   /**
    * Scheme used for atom:categories and media:categories.
@@ -91,11 +106,22 @@ public class YouTubeNamespace {
   public static final String CONTACT_LIST_SCHEME = URI + "/contact.cat";
 
   /**
+   * Scheme used for atom:categories which corresponds to channels
+   * on the user profile feed.
+   */
+  public static final String CHANNELTYPE_SCHEME = URI + "/channeltypes.cat";
+
+  /**
    * Scheme used for atom:categories which describes the type of subscription
    * defined in the entry.
    */
   public static final String SUBSCRIPTIONTYPE_SCHEME = URI
       + "/subscriptiontypes.cat";
+
+  /**
+   * Scheme used for atom:categories which contain developer-specific tags.
+   */
+  public static final String DEVELOPER_TAG_SCHEME = URI + "/developertags.cat";
 
   /**
    * Link Rel value for the feed of a playlist (containing playlist entries)
@@ -127,14 +153,29 @@ public class YouTubeNamespace {
   public static final String CONTACTS_REL = URI + "#user.contacts";
 
   /**
+   * Link Rel value for user inbox links.
+   */
+  public static final String INBOX_REL = URI + "#user.inbox";
+
+  /**
    * Link Rel value for video responses links.
    */
   public static final String RESPONSES_REL = URI + "#video.responses";
 
   /**
+   * Link Rel value for video ratings links.
+   */
+  public static final String RATINGS_REL = URI + "#video.ratings";
+
+  /**
    * Link Rel value for video comments links.
    */
   public static final String COMMENTS_REL = URI + "#comments";
+
+  /**
+   * Link Rel value for video complaints links.
+   */
+  public static final String COMPLAINTS_REL = URI + "#video.complaints";
 
   /**
    * Link Rel value for related videos links.
@@ -151,4 +192,8 @@ public class YouTubeNamespace {
    */
   public static final String VIDEO_QUERY_REL = URI + "#video.query";
 
+  /**
+   * Link Rel value for a user's video log link.
+   */
+  public static final String VLOG_REL = URI + "#user.vlog";
 }

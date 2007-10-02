@@ -17,6 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -36,7 +37,10 @@ import java.io.IOException;
  * 
  */
 public class PubControl extends ExtensionPoint {
+
   private Boolean draft;
+  private Namespace atomPubNs = Namespaces.getAtomPubNs();
+
 
   /** Creates an empty app:control tag. */
   public PubControl() {
@@ -64,9 +68,9 @@ public class PubControl extends ExtensionPoint {
   /** Generates the atom representation for this tag. */
   public void generateAtom(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
-    w.startElement(Namespaces.atomPubNs, "control", null, null);
+    w.startElement(atomPubNs, "control", null, null);
     if (isDraft()) {
-      w.simpleElement(Namespaces.atomPubNs, "draft", null, "yes");
+      w.simpleElement(atomPubNs, "draft", null, "yes");
     }
     generateExtensions(w, extProfile);
     w.endElement();
@@ -80,10 +84,11 @@ public class PubControl extends ExtensionPoint {
       super(profile, PubControl.class);
     }
 
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
         String localName, Attributes attrs)
         throws ParseException, IOException {
-      if (namespace.equals(Namespaces.atomPub)) {
+      if (namespace.equals(atomPubNs.getUri())) {
         if (localName.equals("draft")) {
           return new DraftHandler();
         }
@@ -96,6 +101,7 @@ public class PubControl extends ExtensionPoint {
 
   /** {@code <app:draft>} parser. */
   private class DraftHandler extends XmlParser.ElementHandler {
+    @Override
     public void processEndElement() throws ParseException {
       if (draft != null) {
         throw new ParseException("Duplicate draft element");

@@ -66,7 +66,7 @@ public class ClientVersion extends VersionRegistry {
   }
 
   /**
-   * Resets all version state as if the {@link #init(Version)} method had
+   * Resets all version state as if the {@link #init} method had
    * never been called.   Used only for unit testing.
    */
   public static void reset() {

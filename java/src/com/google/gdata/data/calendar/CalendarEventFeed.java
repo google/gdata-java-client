@@ -17,6 +17,7 @@
 package com.google.gdata.data.calendar;
 
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.extensions.BaseEventFeed;
 
 /**
@@ -47,6 +48,7 @@ public class CalendarEventFeed
     extProfile.declare(CalendarEventFeed.class,
         TimeZoneProperty.getDefaultDescription());
     // extProfile.declareFeedExtension(When.getDefaultDescription());
+    BatchUtils.declareExtensions(extProfile);
   }
 
   /** TimeZone associated with the feed. */

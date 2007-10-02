@@ -21,17 +21,14 @@ import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Person;
 import com.google.gdata.data.ValueConstruct;
-import com.google.gdata.data.media.mediarss.MediaContent;
-import com.google.gdata.data.media.mediarss.MediaCredit;
-import com.google.gdata.data.media.mediarss.MediaDescription;
-import com.google.gdata.data.media.mediarss.MediaGroup;
-import com.google.gdata.data.media.mediarss.MediaKeywords;
-import com.google.gdata.data.media.mediarss.MediaThumbnail;
-import com.google.gdata.data.media.mediarss.MediaTitle;
 import com.google.gdata.data.photos.GphotoData;
 import com.google.gdata.data.photos.Namespaces;
 import com.google.gdata.data.photos.impl.Extensions.GphotoConstruct;
+import com.google.gdata.data.photos.impl.Extensions.GphotoNickname;
+import com.google.gdata.data.photos.impl.Extensions.GphotoThumbnail;
+import com.google.gdata.data.photos.impl.Extensions.GphotoUsername;
 import com.google.gdata.util.ParseException;
 
 import java.util.Date;
@@ -68,6 +65,12 @@ public class GphotoDataImpl implements GphotoData {
     declare(extProfile, GphotoId.getDefaultDescription());
     declare(extProfile, GphotoType.getDefaultDescription());
     declare(extProfile, GphotoRssLink.getDefaultDescription());
+    extProfile.declareArbitraryXmlExtension(extClass);
+
+    // Declare that the person extension point can have user, nick, or thumb.
+    extProfile.declare(Person.class, GphotoUsername.getDefaultDescription());
+    extProfile.declare(Person.class, GphotoNickname.getDefaultDescription());
+    extProfile.declare(Person.class, GphotoThumbnail.getDefaultDescription());
   }
 
   /**
@@ -83,26 +86,6 @@ public class GphotoDataImpl implements GphotoData {
     if (BaseEntry.class.isAssignableFrom(extClass)) {
       extProfile.declare(BaseEntry.class, description);
     }
-  }
-
-  /**
-   * Helper method for subclasses to declare that they accept media extensions.
-   */
-  protected void declareMediaExtensions(ExtensionProfile extProfile) {
-    declare(extProfile, MediaGroup.getDefaultDescription());
-
-    extProfile.declare(MediaGroup.class, MediaContent
-        .getDefaultDescription(true));
-    extProfile.declare(MediaGroup.class,
-        ExtensionDescription.getDefaultDescription(MediaTitle.class));
-    extProfile.declare(MediaGroup.class,
-        ExtensionDescription.getDefaultDescription(MediaDescription.class));
-    extProfile.declare(MediaGroup.class, MediaKeywords.getDefaultDescription());
-    ExtensionDescription thumbDesc = MediaThumbnail.getDefaultDescription();
-    thumbDesc.setRepeatable(true);
-    extProfile.declare(MediaGroup.class, thumbDesc);
-    extProfile.declare(MediaGroup.class,
-        ExtensionDescription.getDefaultDescription(MediaCredit.class));
   }
 
   /**

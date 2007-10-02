@@ -49,6 +49,7 @@ public interface PointData {
 
   /**
    * Gets the geo-location of the entity.
+   * 
    * @return a Point that contains the geo-coordinates (latitude and longitude).
    */
   public Point getGeoLocation();

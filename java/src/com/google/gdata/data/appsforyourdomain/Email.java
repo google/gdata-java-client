@@ -47,6 +47,8 @@ public class Email extends ExtensionPoint implements Extension {
   }
 
   @Override
+
+
   public void generate(XmlWriter w, ExtensionProfile extensionProfile)
       throws IOException {
     generateStartElement(
@@ -59,3 +61,4 @@ public class Email extends ExtensionPoint implements Extension {
   }
 
 }
+

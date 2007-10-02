@@ -450,8 +450,12 @@ public class ExtensionPoint extends AbstractExtension {
                                         ElementHandler handler)
       throws IOException {
 
-    ExtensionManifest manifest = getManifest(profile, extPoint);
-    if (manifest != null && manifest.arbitraryXml) {
+    boolean arbitraryXml = profile.allowsArbitraryXml();
+    if (!arbitraryXml) {
+      ExtensionManifest manifest = getManifest(profile, extPoint);
+      arbitraryXml = manifest != null && manifest.arbitraryXml;
+    }
+    if (arbitraryXml) {
       handler.initializeXmlBlob(xmlBlob,
                                 /* mixedContent */ false,
                                 /* fullTextIndex */ false);
@@ -517,8 +521,6 @@ public class ExtensionPoint extends AbstractExtension {
         manifest.supportedExtensions.get(new Pair(namespaceUri, "*"));
 
       if (extDescription == null) {
-
-        // extension point) could just live here.
         return null;
       }
     }
@@ -637,17 +639,11 @@ public class ExtensionPoint extends AbstractExtension {
       this.extProfile = profile;
       this.extendedClass = extendedClass;
 
-      // If the extended class is defined within the profile, then enable
-      // extension handling and arbitrary XML handling.
       this.manifest = profile.getManifest(extendedClass);
       if (this.manifest != null) {
-
         hasExtensions = true;
-
-        if (manifest.arbitraryXml) {
-          initializeArbitraryXml(extProfile, extendedClass, this);
-        }
       }
+      initializeArbitraryXml(extProfile, extendedClass, this);
     }
 
 

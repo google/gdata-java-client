@@ -258,7 +258,6 @@ public class ExtensionDescription extends ExtensionPoint
 
     private ClassLoader configLoader;
     private Class extensionPointClass;
-    private boolean arbitraryXml;
 
     public Handler(ExtensionProfile configProfile, ClassLoader configLoader,
                    List<XmlWriter.Namespace> namespaces, Attributes attrs)

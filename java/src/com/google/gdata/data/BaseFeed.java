@@ -119,6 +119,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     extends Source
     implements Kind.Adaptable, Kind.Adaptor {
 
+
   /**
    * The FeedState class provides a simple structure that encapsulates
    * the attributes of an Atom feed that should be shared with a shallow
@@ -448,8 +449,12 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
                                 XmlWriter w,
                                 Collection<Namespace> namespaces) throws
       IOException {
-    Vector<Namespace> nsDecls =
-      new Vector<Namespace>(namespaceDeclsAtom);
+
+    Namespace openSearchNs = Namespaces.getOpenSearchNs();
+
+    Vector<Namespace> nsDecls = new Vector<Namespace>();
+    nsDecls.add(Namespaces.atomNs);
+    nsDecls.add(openSearchNs);
     nsDecls.addAll(extProfile.getNamespaceDecls());
 
     generateStartElement(w, Namespaces.atomNs, "feed", null, nsDecls);
@@ -459,17 +464,17 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
     // Generate OpenSearch elements
     if (feedState.totalResults != Query.UNDEFINED) {
-      w.simpleElement(Namespaces.openSearchNs, "totalResults", null,
+      w.simpleElement(openSearchNs, "totalResults", null,
                       String.valueOf(feedState.totalResults));
     }
 
     if (feedState.startIndex != Query.UNDEFINED) {
-      w.simpleElement(Namespaces.openSearchNs, "startIndex", null,
+      w.simpleElement(openSearchNs, "startIndex", null,
                       String.valueOf(feedState.startIndex));
     }
 
     if (feedState.itemsPerPage != Query.UNDEFINED) {
-      w.simpleElement(Namespaces.openSearchNs, "itemsPerPage", null,
+      w.simpleElement(openSearchNs, "itemsPerPage", null,
                       String.valueOf(feedState.itemsPerPage));
     }
 
@@ -492,8 +497,11 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   public void generateRss(XmlWriter w,
                           ExtensionProfile extProfile) throws IOException {
 
-    Vector<XmlWriter.Namespace> nsDecls =
-      new Vector<XmlWriter.Namespace>(namespaceDeclsRss);
+    Namespace openSearchNs = Namespaces.getOpenSearchNs();
+
+    Vector<XmlWriter.Namespace> nsDecls = new Vector<XmlWriter.Namespace>();
+    nsDecls.add(Namespaces.atomNs);
+    nsDecls.add(openSearchNs);
     nsDecls.addAll(extProfile.getNamespaceDecls());
 
     w.startElement(Namespaces.rssNs, "rss", rssHeaderAttrs, nsDecls);
@@ -570,17 +578,17 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     }
 
     if (feedState.totalResults != Query.UNDEFINED) {
-      w.simpleElement(Namespaces.openSearchNs, "totalResults", null,
+      w.simpleElement(openSearchNs, "totalResults", null,
                       String.valueOf(feedState.totalResults));
     }
 
     if (feedState.startIndex != Query.UNDEFINED) {
-      w.simpleElement(Namespaces.openSearchNs, "startIndex", null,
+      w.simpleElement(openSearchNs, "startIndex", null,
                       String.valueOf(feedState.startIndex));
     }
 
     if (feedState.itemsPerPage != Query.UNDEFINED) {
-      w.simpleElement(Namespaces.openSearchNs, "itemsPerPage", null,
+      w.simpleElement(openSearchNs, "itemsPerPage", null,
                       String.valueOf(feedState.itemsPerPage));
     }
 
@@ -597,25 +605,11 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     w.endElement(Namespaces.rssNs, "rss");
   }
 
-
-  /** Top-level namespace declarations for generated XML. */
-  private static final Collection<XmlWriter.Namespace> namespaceDeclsAtom =
-    new Vector<XmlWriter.Namespace>(2);
-
-  private static final Collection<XmlWriter.Namespace> namespaceDeclsRss =
-    new Vector<XmlWriter.Namespace>(2);
-
+  /** Headers that are added to all RSS output */
   private static final Collection<XmlWriter.Attribute> rssHeaderAttrs =
     new Vector<XmlWriter.Attribute>(1);
 
   static {
-
-    namespaceDeclsAtom.add(Namespaces.atomNs);
-    namespaceDeclsAtom.add(Namespaces.openSearchNs);
-
-    namespaceDeclsRss.add(Namespaces.atomNs);
-    namespaceDeclsRss.add(Namespaces.openSearchNs);
-
     rssHeaderAttrs.add(new XmlWriter.Attribute("version", "2.0"));
   }
 
@@ -749,6 +743,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   /** {@code <atom:feed>} parser. */
   public class FeedHandler extends SourceHandler {
 
+    private Namespace openSearchNs = Namespaces.getOpenSearchNs();
 
     public FeedHandler(ExtensionProfile extProfile) throws IOException {
       super(extProfile, BaseFeed.this.getClass());
@@ -782,7 +777,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
         // the SourceHandler superclass
         return super.getChildHandler(namespace, localName, attrs);
 
-      } else if (namespace.equals(Namespaces.openSearch)) {
+      } else if (namespace.equals(openSearchNs.getUri())) {
 
         if (localName.equals("totalResults")) {
           return new TotalResultsHandler();

@@ -16,9 +16,13 @@
 
 package com.google.gdata.client.http;
 
+import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.AuthTokenFactory;
+import com.google.gdata.client.Query;
 import com.google.gdata.client.Service.GDataRequest;
 import com.google.gdata.client.Service.GDataRequestFactory;
 import com.google.gdata.data.DateTime;
+import com.google.gdata.data.ParseSource;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.InvalidEntryException;
@@ -32,6 +36,8 @@ import com.google.gdata.util.VersionConflictException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -85,13 +91,20 @@ public class HttpGDataRequest implements GDataRequest {
    */
   public static class Factory implements GDataRequestFactory {
 
-    protected AuthToken authToken;
+    protected HttpAuthToken authToken;
     protected Map<String, String> headerMap
         = new LinkedHashMap<String, String>();
     protected Map<String, String> privateHeaderMap
         = new LinkedHashMap<String, String>();
 
-    public void setAuthToken(AuthToken authToken) {
+    public void setAuthToken(AuthTokenFactory.AuthToken authToken) {
+      if (authToken != null && !(authToken instanceof HttpAuthToken)) {
+        throw new IllegalArgumentException("Invalid token type");
+      }
+      setAuthToken((HttpAuthToken) authToken);
+    }
+
+    public void setAuthToken(HttpAuthToken authToken) {
       this.authToken = authToken;
     }
 
@@ -119,6 +132,14 @@ public class HttpGDataRequest implements GDataRequest {
       return new HttpGDataRequest(type, requestUrl, contentType,
                                   authToken, headerMap, privateHeaderMap);
     }
+
+    public GDataRequest getRequest(Query query,
+                                   ContentType contentType)
+        throws IOException, ServiceException {
+      return new HttpGDataRequest(RequestType.QUERY, query.getUrl(),
+                                  contentType, authToken, headerMap,
+                                  privateHeaderMap);
+    }
   }
 
 
@@ -126,19 +147,11 @@ public class HttpGDataRequest implements GDataRequest {
    * The HttpGDataRequest.AuthToken interface represents a token used to
    * authenticate a request.  It encapsulates the functionality to create
    * the "Authorization" header to be appended to a HTTP request.
+   * 
+   * @deprecated This interface has been deprecated. Please use
+   * {@link HttpAuthToken} instead.
    */
-  public static interface AuthToken {
-
-    /**
-     * Returns an authorization header to be used for a HTTP request
-     * for the respective authentication token.
-     *
-     * @param requestUrl the URL being requested
-     * @param requestMethod the HTTP method of the request
-     * @return the "Authorization" header to be used for the request
-     */
-    public String getAuthorizationHeader(URL requestUrl,
-                                         String requestMethod);
+  public static interface AuthToken extends HttpAuthToken {
   }
 
 
@@ -153,7 +166,7 @@ public class HttpGDataRequest implements GDataRequest {
   protected URL requestUrl;
 
   /**
-   * The GData request "verb", one of GET, QUERY, INSERT, UPDATE or DELETE
+   * The GData request type.
    */
   protected RequestType type;
 
@@ -212,7 +225,7 @@ public class HttpGDataRequest implements GDataRequest {
   protected HttpGDataRequest(RequestType type,
                              URL requestUrl,
                              ContentType contentType,
-                             AuthToken authToken,
+                             HttpAuthToken authToken,
                              Map<String, String> headerMap,
                              Map<String, String> privateHeaderMap)
       throws IOException {
@@ -305,7 +318,7 @@ public class HttpGDataRequest implements GDataRequest {
       throw new UnsupportedOperationException("Unsupported scheme:" +
                                               requestUrl.getProtocol());
     }
-    HttpURLConnection uc = (HttpURLConnection)requestUrl.openConnection();
+    HttpURLConnection uc = (HttpURLConnection) requestUrl.openConnection();
 
     // Should never cache GData requests/responses
     uc.setUseCaches(false);
@@ -378,6 +391,20 @@ public class HttpGDataRequest implements GDataRequest {
       throw new IllegalStateException("Request doesn't accept input");
     }
     return httpConn.getOutputStream();
+  }
+
+
+  /**
+   * Returns an XML writer that can be used to write XML request data
+   * to the GData service.
+   *
+   * @return XmlWriter that can be used to write GData XML request data.
+   * @throws IOException error obtaining the request writer.
+   */
+  public XmlWriter getRequestWriter() throws IOException {
+    OutputStream requestStream = getRequestStream();
+    Writer writer = new OutputStreamWriter(requestStream, "utf-8");
+    return new XmlWriter(writer);
   }
 
 
@@ -462,9 +489,9 @@ public class HttpGDataRequest implements GDataRequest {
         logger.fine(httpConn.getResponseCode() + " " +
                     httpConn.getResponseMessage());
         if (logger.isLoggable(Level.FINER)) {
-          for (Map.Entry<String,List<String>> headerField:
+          for (Map.Entry<String, List<String>> headerField :
                httpConn.getHeaderFields().entrySet()) {
-            for (String value: headerField.getValue()) {
+            for (String value : headerField.getValue()) {
               logger.finer(headerField.getKey() + ": " + value);
             }
           }
@@ -564,7 +591,7 @@ public class HttpGDataRequest implements GDataRequest {
    * GData service.
    *
    * @return InputStream providing access to GData response data.
-   * @throws IllegalStateException if attemping to read response without
+   * @throws IllegalStateException if attempting to read response without
    *                               first calling {@link #execute()}.
    * @throws IOException error obtaining the response input stream.
    */
@@ -584,6 +611,19 @@ public class HttpGDataRequest implements GDataRequest {
       responseStream = new GZIPInputStream(responseStream);
     }
     return responseStream;
+  }
+
+  /**
+   * Returns a parse source that can be used to read response data from the
+   * GData service.
+   *
+   * @return ParseSource providing access to GData response data.
+   * @throws IllegalStateException if attemping to read response without
+   *                               first calling {@link #execute()}.
+   * @throws IOException error obtaining the response data.
+   */
+  public ParseSource getParseSource() throws IOException {
+    return new ParseSource(getResponseStream());
   }
 
   /**

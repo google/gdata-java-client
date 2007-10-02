@@ -18,8 +18,8 @@ package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
-
 
 /**
  * Entries that appear on the publisher playlist feed.
@@ -100,5 +100,55 @@ public class SubscriptionEntry extends FeedLinkEntry<SubscriptionEntry>{
       }
     }
     return null;
+  }
+  
+  /**
+   * Set the optional username.
+   * @param username content of the yt:username tag
+   */
+  public void setUsername(String username) {
+    if (username != null) {
+      addExtension(new YtUsername(username));
+    } else {
+      removeExtension(YtUsername.class);
+    }
+  }
+  
+  /**
+   * Get the value of the optional username
+   * @return the username
+   */
+  public String getUsername() {
+    YtUsername username = getExtension(YtUsername.class);
+    return username == null ? null : username.getContent();
+  }
+  
+  /**
+   * Set the optional query string of a subscription with the type query.
+   * @param query the query string
+   */
+  public void setQueryString(String query) {
+    if (query != null) {
+      addExtension(new YtQueryString(query));
+    } else {
+      removeExtension(YtQueryString.class);
+    }
+  }
+  
+  /**
+   * Get the query string of the subscription.
+   * @return the query string
+   */
+  public String getQueryString() {
+    YtQueryString query = getExtension(YtQueryString.class);
+    return query == null ? null : query.getContent();
+  }
+  
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    
+    extProfile.declare(SubscriptionEntry.class, YtUsername.class);
+    extProfile.declare(SubscriptionEntry.class, YtQueryString.class);
   }
 }
