@@ -17,11 +17,14 @@
 package com.google.gdata.data.photos;
 
 import com.google.gdata.data.Extension;
+import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 
 /**
  * Basic interface for all extendable objects.  This is just an interface for
- * a subset of the methods on ExtensionPoint.
+ * a subset of the methods on ExtensionPoint.  Any class implementing this
+ * interface will forward these methods on to the {@link ExtensionPoint} it is
+ * using for storing the actual extension information.
  *
  * 
  */
@@ -29,7 +32,8 @@ public interface Extensible {
 
   /**
    * Declares the set of expected Extension types for an Extensible
-   * within the target extension profile.
+   * within the target extension profile. Forwards to
+   * {@link ExtensionPoint#declareExtensions(ExtensionProfile)}.
    *
    * @param extProfile
    *          the ExtensionProfile to initialize.
@@ -38,21 +42,25 @@ public interface Extensible {
 
   /**
    * Sets an extension object. If one exists of this type, it's replaced.
+   * Forwards to {@link ExtensionPoint#setExtension(Extension)}.
    */
   public void setExtension(Extension extension);
 
   /**
-   * Adds an extension object.
+   * Adds an extension object.  Forwards to
+   * {@link ExtensionPoint#addExtension(Extension)}.
    */
   public void addExtension(Extension extension);
 
   /**
-   * Removes an extension object.
+   * Removes an extension object. Forwards to
+   * {@link ExtensionPoint#removeExtension(Extension)}.
    */
   public void removeExtension(Extension extension);
 
   /**
-   * Removes an extension object based on its class.
+   * Removes an extension object based on its class. Forwards to
+   * {@link ExtensionPoint#removeExtension(Class)}.
    */
   public void removeExtension(Class<? extends Extension> extensionClass);
 }

@@ -21,6 +21,12 @@ import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.geo.Point;
 import com.google.gdata.data.geo.impl.PointDataImpl;
+import com.google.gdata.data.media.mediarss.MediaCategory;
+import com.google.gdata.data.media.mediarss.MediaContent;
+import com.google.gdata.data.media.mediarss.MediaCredit;
+import com.google.gdata.data.media.mediarss.MediaGroup;
+import com.google.gdata.data.media.mediarss.MediaKeywords;
+import com.google.gdata.data.media.mediarss.MediaThumbnail;
 import com.google.gdata.data.photos.AlbumData;
 import com.google.gdata.data.photos.Namespaces;
 import com.google.gdata.data.photos.impl.Extensions.GphotoCommentCount;
@@ -35,6 +41,7 @@ import com.google.gdata.util.ParseException;
 import com.google.gdata.util.ServiceException;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Implementation class for album data objects.  This class takes an
@@ -46,7 +53,8 @@ import java.util.Date;
  */
 public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
 
-  private PointDataImpl geoData;
+  private final PointDataImpl geoData;
+  private final MediaDataImpl mediaData;
   
   /**
    * Construct a new implementation of AlbumGphotoData with the given
@@ -55,12 +63,16 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
   public AlbumDataImpl(ExtensionPoint extensionPoint) {
     super(extensionPoint);
     geoData = new PointDataImpl(extensionPoint);
+    mediaData = new MediaDataImpl(extensionPoint);
   }
 
   /*
    * Declare the extensions that album objects use.
    */
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    
     declare(extProfile, PheedThumbnail.getDefaultDescription());
     declare(extProfile, PheedImageUrl.getDefaultDescription());
 
@@ -80,9 +92,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
     declare(extProfile,
         GphotoCommentCount.getDefaultDescription());
     
-    declareMediaExtensions(extProfile);
-    
     geoData.declareExtensions(extProfile);
+    mediaData.declareExtensions(extProfile);
+    
   }
 
   /**
@@ -343,33 +355,52 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
     }
   }
   
-  /**
-   * Sets the geo-location of the album.
-   * 
-   * @param lat The latitude coordinate, between -90 and 90 degrees.
-   * @param lon The longitude coordinate, between -180 and 180 degrees.
+  /*
+   * These delegate to the backing geo data.
    */
   public void setGeoLocation(Double lat, Double lon) {
     geoData.setGeoLocation(lat, lon);
   }
   
-  /**
-   * Sets the geo-location of the album.
-   * 
-   * @param point A point containing the latitude and longitude coordinates.
-   */
   public void setGeoLocation(Point point) {
     geoData.setGeoLocation(point);
   }
   
-  /**
-   * Gets the geo-location of the album.
-   * @return a Point that contains the geo-coordinates (latitude and longitude).
-   */
   public Point getGeoLocation() {
     return geoData.getGeoLocation();
   }
 
+  /*
+   * These delegate to the backing media data.
+   */
+  public MediaGroup getMediaGroup() {
+    return mediaData.getMediaGroup();
+  }
+  
+  public List<MediaContent> getMediaContents() {
+    return mediaData.getMediaContents();
+  }
+
+  public List<MediaCategory> getMediaCategories() {
+    return mediaData.getMediaCategories();
+  }
+  
+  public List<MediaCredit> getMediaCredits() {
+    return mediaData.getMediaCredits();
+  }
+  
+  public List<MediaThumbnail> getMediaThumbnails() {
+    return mediaData.getMediaThumbnails();
+  }
+
+  public MediaKeywords getMediaKeywords() {
+    return mediaData.getMediaKeywords();
+  }
+  
+  public void setKeywords(MediaKeywords keywords) {
+    mediaData.setKeywords(keywords);
+  }
+  
   /**
    * The gphoto:name element.
    */

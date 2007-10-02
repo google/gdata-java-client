@@ -23,18 +23,22 @@ REQUIREMENTS:
 -------------
 GData Java Client depends on following external utilities/libraries on top of standard 
 Java installation.
-1. Apache ANT version 1.7 or greater.  Apache's ANT binary is available for
+1. Java Development Kit version 5.0 or greater.  Latest version of JDK
+   available for download from http://java.sun.com.
+2. Apache ANT version 1.7 or greater.  Apache's ANT binary is available for
    download from http://ant.apache.org.
-2. mail.jar in Sun's JavaMail API (version 1.4 or greater).
+3. mail.jar in Sun's JavaMail API (version 1.4 or greater).
    Sun's JavaMail package available for download from 
-   "http://java.sun.com/products/javamail/downloads/index.html".
-3. activation.jar in Sun's JavaBeansActivationFramewrok.
-   This is required only if using JDK version 1.5 or less.
+   "http://java.sun.com/products/javamail/downloads/index.html". This is only
+   required for media specific APIs including Document List Data API, Picasa
+   Web Album API and YouTube Data API.
+4. activation.jar in Sun's JavaBeans Activation Framewrok.
+   This is required only if using JDK version 1.5.
    Sun's JavaBeansActivationFramework is available for download from 
    "http://java.sun.com/products/javabeans/jaf/downloads/index.html".  This is
    only required for media specific APIs including Document List Data API, 
    Picasa Web Album API and YouTube Data API.
-4. servlet.jar in Sun's Servlet API (version 2.3 or greater).
+5. servlet.jar in Sun's Servlet API (version 2.3 or greater).
    This is required only if executing code samples in 'sample.authsub' or
    'sample.gbase.recipe' packages.  Sun's Servlet API package can be
    downloaded from "http://java.sun.com/products/servlet/download.html".  This

@@ -74,7 +74,7 @@ public class GmAttributes implements Extension {
    * @param type attribute type, may be null
    * @throws NullPointerException if name is null
    * @deprecated use 
-   *    {@link #addAttribute(String, GoogleBaseAttributeType, Importance)} 
+   *    {@link #addAttribute(GoogleBaseAttributeId, GmAttribute.Importance)} 
    *    instead. This method will be removed in a future release
    */
   public void addAttribute(String name, GoogleBaseAttributeType type) {

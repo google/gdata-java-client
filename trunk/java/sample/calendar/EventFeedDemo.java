@@ -20,7 +20,11 @@ import com.google.gdata.client.Query;
 import com.google.gdata.client.calendar.CalendarQuery;
 import com.google.gdata.client.calendar.CalendarService;
 import com.google.gdata.data.DateTime;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.batch.BatchOperationType;
+import com.google.gdata.data.batch.BatchStatus;
+import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.calendar.CalendarEntry;
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.data.calendar.CalendarEventFeed;
@@ -29,14 +33,17 @@ import com.google.gdata.data.calendar.WebContent;
 import com.google.gdata.data.extensions.ExtendedProperty;
 import com.google.gdata.data.extensions.Recurrence;
 import com.google.gdata.data.extensions.Reminder;
+import com.google.gdata.data.extensions.Reminder.Method;
 import com.google.gdata.data.extensions.When;
 import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -54,7 +61,7 @@ import java.util.TimeZone;
  * <li>Creating a web content event</li>
  * <li>Updating events</li>
  * <li>Adding reminders and extended properties</li>
- * <li>Deleting events</li>
+ * <li>Deleting events via batch request</li>
  * </ul>
  */
 public class EventFeedDemo {
@@ -333,16 +340,18 @@ public class EventFeedDemo {
    * 
    * @param entry The event to update.
    * @param numMinutes Reminder time, in minutes.
+   * @param methodType Method of notification (e.g. email, alert, sms).
    * @return The updated EventEntry object.
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException Error communicating with the server.
    */
   private static CalendarEventEntry addReminder(CalendarEventEntry entry,
-      int numMinutes) throws ServiceException, IOException {
+      int numMinutes, Method methodType) throws ServiceException, IOException {
     Reminder reminder = new Reminder();
     reminder.setMinutes(numMinutes);
+    reminder.setMethod(methodType);
     entry.getReminder().add(reminder);
-
+   
     return entry.update();
   }
 
@@ -354,8 +363,8 @@ public class EventFeedDemo {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException Error communicating with the server.
    */
-  private static CalendarEventEntry addExtendedProperty(CalendarEventEntry entry)
-      throws ServiceException, IOException {
+  private static CalendarEventEntry addExtendedProperty(
+      CalendarEventEntry entry) throws ServiceException, IOException {
     // Add an extended property "id" with value 1234 to the EventEntry entry.
     // We specify the complete schema URL to avoid namespace collisions with
     // other applications that use the same property name.
@@ -366,6 +375,59 @@ public class EventFeedDemo {
     entry.addExtension(property);
 
     return entry.update();
+  }
+
+  /**
+   * Makes a batch request to delete all the events in the given list. If any of
+   * the operations fails, the errors returned from the server are displayed.
+   * The CalendarEntry objects in the list given as a parameters must be entries
+   * returned from the server that contain valid edit links (for optimistic
+   * concurrency to work). Note: You can add entries to a batch request for the
+   * other operation types (INSERT, QUERY, and UPDATE) in the same manner as
+   * shown below for DELETE operations.
+   * 
+   * @param service An authenticated CalendarService object.
+   * @param eventsToDelete A list of CalendarEventEntry objects to delete.
+   * @throws ServiceException If the service is unable to handle the request.
+   * @throws IOException Error communicating with the server.
+   */
+  private static void deleteEvents(CalendarService service,
+      List<CalendarEventEntry> eventsToDelete) throws ServiceException,
+      IOException {
+
+    // Add each item in eventsToDelete to the batch request.
+    CalendarEventFeed batchRequest = new CalendarEventFeed();
+    for (int i = 0; i < eventsToDelete.size(); i++) {
+      CalendarEventEntry toDelete = eventsToDelete.get(i);
+      // Modify the entry toDelete with batch ID and operation type.
+      BatchUtils.setBatchId(toDelete, String.valueOf(i));
+      BatchUtils.setBatchOperationType(toDelete, BatchOperationType.DELETE);
+      batchRequest.getEntries().add(toDelete);
+    }
+
+    // Get the URL to make batch requests to
+    CalendarEventFeed feed = service.getFeed(eventFeedUrl,
+        CalendarEventFeed.class);
+    Link batchLink = feed.getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
+    URL batchUrl = new URL(batchLink.getHref());
+
+    // Submit the batch request
+    CalendarEventFeed batchResponse = service.batch(batchUrl, batchRequest);
+
+    // Ensure that all the operations were successful.
+    boolean isSuccess = true;
+    for (CalendarEventEntry entry : batchResponse.getEntries()) {
+      String batchId = BatchUtils.getBatchId(entry);
+      if (!BatchUtils.isSuccess(entry)) {
+        isSuccess = false;
+        BatchStatus status = BatchUtils.getBatchStatus(entry);
+        System.out.println("\n" + batchId + " failed (" + status.getReason()
+            + ") " + status.getContent());
+      }
+    }
+    if (isSuccess) {
+      System.out.println("Successfully deleted all events via batch request.");
+    }
   }
 
   /**
@@ -447,19 +509,23 @@ public class EventFeedDemo {
 
       // Demonstrate adding a reminder. Note that this will only work on a
       // primary calendar.
-      singleEvent = addReminder(singleEvent, 15);
+      singleEvent = addReminder(singleEvent, 15, Method.EMAIL);
       System.out.println("Set a "
           + singleEvent.getReminder().get(0).getMinutes()
-          + " minute reminder for the event.");
+          + " minute " + singleEvent.getReminder().get(0).getMethod()
+          + " reminder for the event.");
 
       // Demonstrate adding an extended property.
       singleEvent = addExtendedProperty(singleEvent);
 
-      // Demonstrate deleting the entries.
-      singleEvent.delete();
-      quickAddEvent.delete();
-      webContentEvent.delete();
-      recurringEvent.delete();
+      // Demonstrate deleting the entries with a batch request.
+      List<CalendarEventEntry> eventsToDelete = 
+          new ArrayList<CalendarEventEntry>();
+      eventsToDelete.add(singleEvent);
+      eventsToDelete.add(quickAddEvent);
+      eventsToDelete.add(webContentEvent);
+      eventsToDelete.add(recurringEvent);
+      deleteEvents(myService, eventsToDelete);
 
     } catch (IOException e) {
       // Communications error
@@ -471,7 +537,7 @@ public class EventFeedDemo {
       e.printStackTrace();
     }
   }
-  
+
   /**
    * Prints the command line usage of this sample application.
    */
@@ -480,5 +546,5 @@ public class EventFeedDemo {
     System.out.println("\nThe username and password are used for "
         + "authentication.  The sample application will modify the specified "
         + "user's calendars so you may want to use a test account.");
-  }    
+  }
 }

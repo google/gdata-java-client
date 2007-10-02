@@ -17,8 +17,10 @@
 package com.google.gdata.client.http;
 
 import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.Query;
 import com.google.gdata.client.GoogleService.SessionExpiredException;
 import com.google.gdata.client.Service.GDataRequest;
+import com.google.gdata.client.Service.GDataRequest.RequestType;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.RedirectRequiredException;
@@ -66,6 +68,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
    */
   public static class Factory extends HttpGDataRequest.Factory {
 
+    @Override
     public GDataRequest getRequest(RequestType type,
                                   URL requestUrl,
                                   ContentType contentType)
@@ -77,9 +80,21 @@ public class GoogleGDataRequest extends HttpGDataRequest {
                                     headerMap,
                                     privateHeaderMap);
     }
+
+    @Override
+    public GDataRequest getRequest(Query query,
+                                   ContentType contentType)
+        throws IOException, ServiceException {
+      return new GoogleGDataRequest(RequestType.QUERY, query.getUrl(),
+                                    contentType, authToken, headerMap,
+                                    privateHeaderMap);
+    }
   }
 
 
+  /**
+   * Google cookie.
+   */
   public static class GoogleCookie {
 
     // Cookie state.  All fields have public accessors, except for cookie
@@ -126,19 +141,19 @@ public class GoogleGDataRequest extends HttpGDataRequest {
         throw new IllegalArgumentException("Cookie is not a name/value pair");
       }
       this.name = nameValue.substring(0, equals);
-      this.value = nameValue.substring(equals+1);
+      this.value = nameValue.substring(equals + 1);
       this.path = "/";
       this.domain = uri.getHost();
 
       // Process optional cookie attributes
-      for (int i=1; i < attributes.length; i++) {
+      for (int i = 1; i < attributes.length; i++) {
         nameValue = attributes[i].trim();
         equals = nameValue.indexOf('=');
         if (equals == -1) {
           continue;
         }
         String name = nameValue.substring(0, equals);
-        String value = nameValue.substring(equals+1);
+        String value = nameValue.substring(equals + 1);
         if (name.equalsIgnoreCase("domain")) {
           String uriDomain = uri.getHost();
           if (uriDomain.equals(value)) {
@@ -250,7 +265,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
       if (o == null || !(o instanceof GoogleCookie)) {
           return false;
       }
-      GoogleCookie cookie = (GoogleCookie)o;
+      GoogleCookie cookie = (GoogleCookie) o;
       if (!name.equals(cookie.name) || !domain.equals(cookie.domain)) {
         return false;
       }
@@ -265,9 +280,9 @@ public class GoogleGDataRequest extends HttpGDataRequest {
 
     public int hashCode() {
       int result = 17;
-      result = 37*result + name.hashCode();
-      result = 37*result + domain.hashCode();
-      result = 37*result + (path != null ? path.hashCode() : 0);
+      result = 37 * result + name.hashCode();
+      result = 37 * result + domain.hashCode();
+      result = 37 * result + (path != null ? path.hashCode() : 0);
       return result;
     }
 
@@ -315,12 +330,12 @@ public class GoogleGDataRequest extends HttpGDataRequest {
 
 
     @Override
-    public Map<String,List<String>> get(URI uri,
-                                        Map<String,List<String>> requestHeaders)
+    public Map<String, List<String>> get(
+        URI uri, Map<String, List<String>> requestHeaders)
         throws IOException {
 
-      Map<String,List<String>> cookieHeaders =
-        new HashMap<String,List<String>>();
+      Map<String, List<String>> cookieHeaders =
+        new HashMap<String, List<String>>();
 
       // Only service requests initiated by GData services with cookie
       // handling enabled.
@@ -360,7 +375,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
 
 
     public void put(URI uri,
-                    Map<String,List<String>> responseHeaders)
+                    Map<String, List<String>> responseHeaders)
         throws IOException {
 
       // Only service requests initiated by GData services with cookie
@@ -419,7 +434,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
   protected GoogleGDataRequest(RequestType type,
                                URL requestUrl,
                                ContentType contentType,
-                               AuthToken authToken,
+                               HttpAuthToken authToken,
                                Map<String, String> headerMap,
                                Map<String, String> privateHeaderMap)
       throws IOException {

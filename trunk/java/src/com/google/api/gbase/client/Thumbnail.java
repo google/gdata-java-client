@@ -19,7 +19,7 @@ package com.google.api.gbase.client;
 /**
  * Class representing parsed information for one thumbnail: the size (in pixels)
  * and the Url for accessing the image. This class is mutable through its 
- * {@link #setUrl(String)} and {@link #setSize(int)} methods. 
+ * {@link #setUrl(String)} and {@link #setSize(int, int)} methods. 
  * 
  * 
  */

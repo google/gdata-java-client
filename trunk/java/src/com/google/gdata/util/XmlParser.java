@@ -254,8 +254,8 @@ public class XmlParser extends DefaultHandler {
       if (xmlBlob == null) {
         throw new ParseException("Unrecognized element '" + localName + "'.");
       } else {
-        logger.info("No child handler for " + localName +
-                    ". Treating as an extension element.");
+        logger.fine("No child handler for " + localName +
+                    ". Treating as arbitrary foreign XML.");
         return null;
       }
     }
@@ -836,11 +836,14 @@ public class XmlParser extends DefaultHandler {
 
       if (curHandler.xmlBlob != null) {
 
-        curHandler.xmlBlob.setBlob(curHandler.innerXmlStringWriter.toString());
+        StringBuffer blob = curHandler.innerXmlStringWriter.getBuffer();
+        if (blob.length() != 0) {
+          curHandler.xmlBlob.setBlob(blob.toString());
 
-        if (curHandler.fullTextIndex) {
-          curHandler.xmlBlob.setFullText(
-            curHandler.fullTextIndexWriter.toString());
+          if (curHandler.fullTextIndex) {
+            curHandler.xmlBlob.setFullText(
+              curHandler.fullTextIndexWriter.toString());
+          }
         }
       }
 

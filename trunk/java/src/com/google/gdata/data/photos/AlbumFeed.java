@@ -21,6 +21,12 @@ import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.geo.Point;
 import com.google.gdata.data.media.MediaSource;
+import com.google.gdata.data.media.mediarss.MediaCategory;
+import com.google.gdata.data.media.mediarss.MediaContent;
+import com.google.gdata.data.media.mediarss.MediaCredit;
+import com.google.gdata.data.media.mediarss.MediaGroup;
+import com.google.gdata.data.media.mediarss.MediaKeywords;
+import com.google.gdata.data.media.mediarss.MediaThumbnail;
 import com.google.gdata.data.photos.impl.AlbumDataImpl;
 import com.google.gdata.util.ServiceException;
 
@@ -196,5 +202,33 @@ public class AlbumFeed extends GphotoFeed<AlbumFeed>
   
   public Point getGeoLocation() {
     return delegate.getGeoLocation();
+  }
+  
+  public MediaGroup getMediaGroup() {
+    return delegate.getMediaGroup();
+  }
+
+  public List<MediaContent> getMediaContents() {
+    return delegate.getMediaContents();
+  }
+
+  public List<MediaCategory> getMediaCategories() {
+    return delegate.getMediaCategories();
+  }
+  
+  public List<MediaCredit> getMediaCredits() {
+    return delegate.getMediaCredits();
+  }
+  
+  public List<MediaThumbnail> getMediaThumbnails() {
+    return delegate.getMediaThumbnails();
+  }
+  
+  public MediaKeywords getMediaKeywords() {
+    return delegate.getMediaKeywords();
+  }
+  
+  public void setKeywords(MediaKeywords keywords) {
+    delegate.setKeywords(keywords);
   }
 }

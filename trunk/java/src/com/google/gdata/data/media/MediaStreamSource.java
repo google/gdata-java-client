@@ -35,6 +35,7 @@ import javax.mail.internet.SharedInputStream;
 public class MediaStreamSource extends BaseMediaSource {
 
   private InputStream mediaStream;
+  private long sharedMediaStreamStart;
 
   public MediaStreamSource(InputStream mediaStream,
                             String mediaType,
@@ -45,6 +46,10 @@ public class MediaStreamSource extends BaseMediaSource {
     this.mediaStream = mediaStream;
     this.lastModified = lastModified;
     this.contentLength = contentLength;
+
+    if (mediaStream instanceof SharedInputStream) {
+      sharedMediaStreamStart = ((SharedInputStream)mediaStream).getPosition();
+    }
   }
 
   public MediaStreamSource(InputStream mediaStream,
@@ -57,7 +62,7 @@ public class MediaStreamSource extends BaseMediaSource {
     // If the underlying stream implements SharedInputStream, then get
     // a new stream so the stream source can be read multiple times.
     InputStream returnStream = (mediaStream instanceof SharedInputStream)
-        ? ((SharedInputStream)mediaStream).newStream(0, -1)
+        ? ((SharedInputStream)mediaStream).newStream(sharedMediaStreamStart, -1)
         : mediaStream;
 
     return returnStream;

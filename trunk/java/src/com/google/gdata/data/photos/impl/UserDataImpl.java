@@ -47,7 +47,10 @@ public class UserDataImpl extends GphotoDataImpl implements UserData {
   /*
    * Declare the extensions the user object uses.
    */
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+
     declare(extProfile, GphotoUsername.getDefaultDescription());
     declare(extProfile, GphotoNickname.getDefaultDescription());
     declare(extProfile, GphotoThumbnail.getDefaultDescription());

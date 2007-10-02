@@ -44,6 +44,10 @@
             value="${sample.spreadsheet.build.lib}/ListDemo.jar"/>
   <property name="sample.spreadsheet.listdemo.main"
             value="sample.spreadsheet.list.ListDemo"/>
+  <property name="sample.spreadsheet.worksheetdemo.jar"
+            value="${sample.spreadsheet.build.lib}/WorksheetDemo.jar"/>
+  <property name="sample.spreadsheet.worksheetdemo.main"
+            value="sample.spreadsheet.worksheet.WorksheetDemo"/>
   <property name="sample.spreadsheet.guidemo.jar"
             value="${sample.spreadsheet.build.lib}/GUIDemo.jar"/>
   <property name="sample.spreadsheet.guidemo.main"
@@ -109,6 +113,15 @@
       </manifest>
     </jar>
 
+    <!-- Create WorksheetDemo JAR file -->
+    <jar jarfile="${sample.spreadsheet.worksheetdemo.jar}"
+         basedir="${sample.spreadsheet.build.classes}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="${sample.spreadsheet.worksheetdemo.main}"/>
+      </manifest>
+    </jar>
+
     <!-- Create GUIDemo JAR file -->
     <jar jarfile="${sample.spreadsheet.guidemo.jar}"
          basedir="${sample.spreadsheet.build.classes}">
@@ -166,6 +179,19 @@
       <classpath>
         <path refid="sample.spreadsheet.compile.classpath"/>
         <path location="${sample.spreadsheet.listdemo.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.spreadsheet.worksheetdemo.run"
+          depends="sample.spreadsheet.build"
+   description="Runs the Spreadsheet WorksheetDemo sample">
+    <java fork="true" classname="${sample.spreadsheet.worksheetdemo.main}">
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.spreadsheet.compile.classpath"/>
+        <path location="${sample.spreadsheet.worksheetdemo.jar}"/>
       </classpath>
     </java>
 

@@ -16,12 +16,16 @@
 
 package com.google.gdata.data.photos;
 
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
+import com.google.gdata.data.TextConstruct;
 import com.google.gdata.util.ParseException;
 
 /**
  * Basic extension to include tag-specific data, this is the shared interface
- * for all tag objects in the Picasaweb GData api.
+ * for all tag objects in the Picasaweb GData api.  To view or set the actual
+ * content of a tag clients should use {@link BaseEntry#getContent()} and
+ * {@link BaseEntry#setContent(TextConstruct)}.
  *
  * 
  */
@@ -38,12 +42,18 @@ public interface TagData extends GphotoData {
       = new Category(com.google.gdata.util.Namespaces.gKind, TAG_KIND);
 
   /**
+   * The weight of the tag is the number of times the tag appears in the
+   * collection of tags currently being viewed.  This is a server-provided
+   * context sensitive measure of how often the tag is used, and can be used
+   * to implement tag-cloud like views.
+   * 
    * @return the weight of the tag, or null if it doesn't have one.
    */
   public Integer getWeight() throws ParseException;
 
   /**
-   * Set the weight of the tag.
+   * Set the weight of the tag.  Used by the server, this field is read only
+   * on the client.
    */
   public void setWeight(Integer weight);
 }

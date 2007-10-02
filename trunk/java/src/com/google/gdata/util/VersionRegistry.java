@@ -28,7 +28,7 @@ import java.util.List;
  * singleton instance of a VersionRegistry subclass that is being used to
  * manage version information.   This instance is initialized by subclasses
  * via the {@link #initSingleton(VersionRegistry)} method.   The active
- * VersionRegistry instance can be retrieved using the {@link get()} method.
+ * VersionRegistry instance can be retrieved using the {@link #get()} method.
  * 
  * Clients of the API can use the {@link VersionRegistry#getVersions()}
  * method to get a list of all services with version information or the 
@@ -42,6 +42,11 @@ public abstract class VersionRegistry {
    * a particular type of service.
    */
   public static class Version {
+    
+    /**
+     * The ANY value indicates a version component that will match any revision.
+     */
+    public static final int ANY = -1;
     
     private Class<? extends Service> serviceClass;
     private int major;
@@ -62,8 +67,11 @@ public abstract class VersionRegistry {
       if (serviceClass == null) {
         throw new NullPointerException("Null service class");
       }
-      if (major < 0 || minor < 0) {
-        throw new IllegalArgumentException("Invalid version");
+      if (major < 0 && major != ANY) {
+        throw new IllegalArgumentException("Invalid major version:" + major);
+      }
+      if (minor < 0 && minor != ANY) {
+        throw new IllegalArgumentException("Invalid minor version:" + minor);
       }
       this.serviceClass = serviceClass;
       this.major = major;
@@ -104,7 +112,8 @@ public abstract class VersionRegistry {
      * major revision.
      */
     public final boolean isCompatible(Version v) {
-      return isSameService(v) && major == v.major;
+      return isSameService(v) && 
+         (major == v.major || major == ANY || v.major == ANY);
     }
     
     @Override 
@@ -224,11 +233,29 @@ public abstract class VersionRegistry {
   
   /**
    * Returns the version of a service.
+   * 
    * @param serviceClass of the service to return.
-   * @return version of the service, or {@code -1} if no version found.
+   * @return version of the service.
+   * @throws IllegalStateException if no version information could be found for
+   *         the requested service.
    */
   public Version getVersion(Class<? extends Service> serviceClass) {
+    
     List<Version> versions = getVersions();
-    return getVersion(versions, serviceClass);
+    Version v = getVersion(versions, serviceClass);
+    if (v == null) {
+      // This should never happen for client, server, or code running in a
+      // unit test context.   Missing version information indicates that the
+      // version registry has not been properly initialized to meet the
+      // expectations of version-dependent code.   In the case of test
+      // execution, this generally means the test should be annotated to
+      // indicate a version dependency (see the TestVersion annotation) and
+      // also should be run in the context of a VersionedTestSuite that
+      // ensures all supported versions are tested.
+      throw new IllegalStateException(
+          "Attempt to access version information for unversioned service:" +
+          serviceClass);
+    }
+    return v;
   }
 }

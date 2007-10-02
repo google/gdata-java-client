@@ -304,6 +304,36 @@ public class ExtensionProfile {
   public void setAutoExtending(boolean v) { isAutoExtending = v; }
   public boolean isAutoExtending() { return isAutoExtending; }
 
+  /**
+   * When {@code true}, indicates that arbitrary XML is acceptable on any
+   * {@link ExtensionPoint} when parsing using this profile.  The default
+   * value is {@code true} to provide compliance with sections 6.3 of
+   * RFC4287 (Atom Syntax) and section 6.2 of the AtomPub spec.
+   */
+  private boolean allowsArbitraryXml = true;
+
+  /**
+   * Configures the extension profile to specify whether any foreign XML
+   * elements found when parsing within an {@link ExtensionPoint} should
+   * be preserved.  If {@code false}, the presence of foreign XML will result
+   * in parsing errors.  Arbitrary XML support is enabled by default in a
+   * newly created profile.
+   *
+   * @param v {@code true} to enable foreign XML preservation, {@code false}
+   *          otherwise.
+   *
+   * #see ExtensionPoint.getXmlBlob()
+   */
+  public void setArbitraryXml(boolean v) { allowsArbitraryXml = v; }
+
+  /**
+   * Returns whether foreign XML elements will be preserved within any
+   * {@link ExtensionPoint}.
+   *
+   * @return {@code true} if foreign XML elements are preserved, {@code false}
+   * otherwise.
+   */
+  public boolean allowsArbitraryXml() { return allowsArbitraryXml; }
 
   /** Internal helper routine. */
   private ExtensionManifest getOrCreateManifest(
@@ -384,12 +414,26 @@ public class ExtensionProfile {
     private List<XmlWriter.Namespace> namespaces =
               new ArrayList<XmlWriter.Namespace>();
 
-    public Handler(ExtensionProfile configProfile, ClassLoader configLoader)
-        throws IOException {
+    public Handler(ExtensionProfile configProfile, ClassLoader configLoader,
+                   Attributes attrs) throws IOException, ParseException {
       this.configProfile = configProfile;
       this.configLoader = configLoader;
-    }
 
+      if (attrs != null) {
+        String arbitraryXmlAttr = attrs.getValue("", "arbitraryXml");
+        if (arbitraryXmlAttr != null) {
+          if (arbitraryXmlAttr.equals("true") || arbitraryXmlAttr.equals("1")) {
+            allowsArbitraryXml = true;
+          } else if (arbitraryXmlAttr.equals("false") ||
+                     arbitraryXmlAttr.equals("0")) {
+            allowsArbitraryXml = false;
+          } else {
+            throw new ParseException("Invalid value for arbitaryXml: " +
+                                     arbitraryXmlAttr);
+          }
+        }
+      }
+    }
 
     public void validate() throws ServiceConfigurationException {
     }
@@ -546,7 +590,7 @@ public class ExtensionProfile {
                           InputStream stream) throws IOException,
                                                    ParseException {
 
-    Handler handler = new Handler(configProfile, classLoader);
+    Handler handler = new Handler(configProfile, classLoader, null);
     new XmlParser().parse(stream, handler, Namespaces.gdataConfig,
                           "extensionProfile");
   }
@@ -565,7 +609,11 @@ public class ExtensionProfile {
   public void generateConfig(XmlWriter w,
                              ExtensionProfile extProfile) throws IOException {
 
-    w.startElement(Namespaces.gdataConfigNs, "extensionProfile", null, nsDecls);
+
+    List<Attribute> epAttrs = new ArrayList<Attribute>();
+    epAttrs.add(new Attribute("arbitraryXml", allowsArbitraryXml));
+    w.startElement(Namespaces.gdataConfigNs, "extensionProfile", epAttrs,
+        nsDecls);
 
     for (XmlWriter.Namespace namespace : additionalNamespaces) {
 

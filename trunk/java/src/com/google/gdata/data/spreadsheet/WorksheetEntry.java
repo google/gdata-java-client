@@ -53,6 +53,17 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
   public WorksheetEntry() {
     getCategories().add(CATEGORY);
   }
+  
+  /**
+   * Constructs a new entry with the given row count and column count
+   * @param rowCount the number of rows in the worksheet
+   * @param colCount the number of columns in a worksheet
+   */
+  public WorksheetEntry(int rowCount, int colCount) {
+    getCategories().add(CATEGORY);
+    addExtension(new RowCount(rowCount));
+    addExtension(new ColCount(colCount));
+  }
 
   /**
    * Constructs a new entry by doing a shallow copy from another BaseEntry
@@ -117,6 +128,20 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
   public int getRowCount() {
     return getExtension(RowCount.class).getCount();
   }
+
+  /**
+   * Sets the total number of rows.
+   *
+   * If the new number of rows is greater than the old, (new-old)
+   * blank rows will be appended to the end.  If the new number of
+   * rows is less than the old, then (old-new) rows will be removed 
+   * from the end which will DELETE ALL DATE IN DELETED ROWS.
+   *
+   * @param count the new row count.
+   */
+  public void setRowCount(int count) {
+    setExtension(new RowCount(count));
+  }
   
   /**
    * Gets the total number of columns.
@@ -129,5 +154,19 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
    */
   public int getColCount() {
     return getExtension(ColCount.class).getCount();
+  }
+
+  /**
+   * Sets the total number of columns.
+   *
+   * If the new number of columns is greater than the old, (new-old)
+   * blank columns will be appended to the end.  If the new number of
+   * columns is less than the old, then (old-new) columns will be removed 
+   * from the end which will DELETE ALL DATE IN DELETED COLUMNS.
+   *
+   * @param count the new column count.
+   */
+  public void setColCount(int count) {
+    setExtension(new ColCount(count));
   }
 }

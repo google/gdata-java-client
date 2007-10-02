@@ -16,11 +16,10 @@
 
 package com.google.gdata.client;
 
-import com.google.gdata.util.common.base.StringUtil;
-import com.google.gdata.client.http.AuthSubUtil;
+import com.google.gdata.client.AuthTokenFactory.AuthToken;
+import com.google.gdata.client.AuthTokenFactory.TokenListener;
 import com.google.gdata.client.http.GoogleGDataRequest;
 import com.google.gdata.client.http.GoogleGDataRequest.GoogleCookie;
-import com.google.gdata.client.http.HttpGDataRequest.AuthToken;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.DateTime;
@@ -29,64 +28,34 @@ import com.google.gdata.util.ContentType;
 import com.google.gdata.util.RedirectRequiredException;
 import com.google.gdata.util.ServiceException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * The GoogleService class extends the basic GData {@link Service}
- * abstraction to add support for authentication.
+ * abstraction to add support for authentication and cookies.
  *
  * 
  */
-public class GoogleService extends Service {
+public class GoogleService extends Service implements TokenListener {
 
-  // Name of client application accessing Google service
-  private String applicationName;
+  
+  // Authentication token factory used to access Google services
+  private AuthTokenFactory authTokenFactory;
 
-  // Name of Google service being accessed
-  private String serviceName;
 
-  // Login name of the user
-  private String username;
-
-  // Password of the user
-  private String password;
-
-  // The Google domain name used for authentication
-  private String domainName;
-
-  // The protocol used for authentication
-  private String loginProtocol;
-
-  /**
-   * The path name of the Google accounts management handler.
-   */
-  public static final String GOOGLE_ACCOUNTS_PATH = "/accounts";
-
-  /**
-   * The path name of the Google login handler.
-   */
-  public static final String GOOGLE_LOGIN_PATH = "/accounts/ClientLogin";
+  // Cookie manager.
+  private CookieManager cookieManager;
 
 
   /**
    * Authentication failed, invalid credentials presented to server.
    */
-  public static class InvalidCredentialsException 
+  public static class InvalidCredentialsException
       extends AuthenticationException {
     public InvalidCredentialsException(String message) {
       super(message);
@@ -175,30 +144,18 @@ public class GoogleService extends Service {
     }
   }
 
-
+  
   /**
    * The UserToken encapsulates the token retrieved as a result of
    * authenticating to Google using a user's credentials.
+   * 
+   * @deprecated This class has been deprecated. Please use
+   * {@link com.google.gdata.client.GoogleAuthTokenFactory.UserToken}
+   * instead.
    */
-  public static class UserToken implements AuthToken {
-
-    private String token;
-
+  public static class UserToken extends GoogleAuthTokenFactory.UserToken {
     public UserToken(String token) {
-      this.token = token;
-    }
-
-    /**
-     * Returns an authorization header to be used for a HTTP request
-     * for the respective authentication token.
-     *
-     * @param requestUrl the URL being requested
-     * @param requestMethod the HTTP method of the request
-     * @return the "Authorization" header to be used for the request
-     */
-    public String getAuthorizationHeader(URL requestUrl,
-                                         String requestMethod) {
-      return "GoogleLogin auth=" + token;
+      super(token);
     }
   }
 
@@ -206,42 +163,24 @@ public class GoogleService extends Service {
   /**
    * Encapsulates the token used by web applications to login on behalf of
    * a user.
+   * 
+   * @deprecated This class has been deprecated. Please use
+   * {@link com.google.gdata.client.GoogleAuthTokenFactory.AuthSubToken}
+   * instead.
    */
-  public static class AuthSubToken implements AuthToken {
-
-    private String token;
-    private PrivateKey key;
-
+  public static class AuthSubToken extends GoogleAuthTokenFactory.AuthSubToken {
     public AuthSubToken(String token, PrivateKey key) {
-      this.token = token;
-      this.key = key;
-    }
-
-    /**
-     * Returns an authorization header to be used for a HTTP request
-     * for the respective authentication token.
-     *
-     * @param requestUrl the URL being requested
-     * @param requestMethod the HTTP method of the request
-     * @return the "Authorization" header to be used for the request
-     */
-    public String getAuthorizationHeader(URL requestUrl,
-                                         String requestMethod) {
-      try {
-        return AuthSubUtil.formAuthorizationHeader(token, key, requestUrl,
-                                                   requestMethod);
-      } catch (GeneralSecurityException e) {
-        throw new RuntimeException(e.getMessage());
-      }
+      super(token, key);
     }
   }
 
-
+  
   /**
    * Constructs a GoogleService instance connecting to the service with name
    * {@code serviceName} for an application with the name
-   * {@code applicationName}. The default domain (www.google.com) will be
-   * used to authenticate.
+   * {@code applicationName}. The default domain (www.google.com) and the
+   * default Google authentication methods will be used to authenticate.
+   * A simple cookie manager is used.
    *
    * @param serviceName     the name of the Google service to which we are
    *                        connecting. Sample names of services might include
@@ -264,7 +203,8 @@ public class GoogleService extends Service {
    * Constructs a GoogleService instance connecting to the service with name
    * {@code serviceName} for an application with the name
    * {@code applicationName}.  The service will authenticate at the provided
-   * {@code domainName}.
+   * {@code domainName}. The default Google authentication methods will be
+   * used to authenticate. A simple cookie manager is used.
    *
    * @param serviceName     the name of the Google service to which we are
    *                        connecting. Sample names of services might include
@@ -283,18 +223,62 @@ public class GoogleService extends Service {
                        String applicationName,
                        String protocol,
                        String domainName) {
-
-    this.serviceName = serviceName;
-    this.applicationName = applicationName;
-    this.domainName = domainName;
-    this.loginProtocol = protocol;
     requestFactory = new GoogleGDataRequest.Factory();
-
+    authTokenFactory =
+        new GoogleAuthTokenFactory(serviceName, applicationName,
+                                   protocol, domainName, this);
+    cookieManager = new SimpleCookieManager();
+    
     if (applicationName != null) {
       requestFactory.setHeader("User-Agent",
           applicationName + " " + getServiceVersion());
     } else {
       requestFactory.setHeader("User-Agent", getServiceVersion());
+    }
+  }
+
+
+  /**
+   * Returns the {@link AuthTokenFactory} currently associated with the service.
+   */
+  public AuthTokenFactory getAuthTokenFactory() {
+    return authTokenFactory;
+  }
+
+
+  /**
+   * Sets the {@link AuthTokenFactory} currently associated with the service.
+   * 
+   * @param authTokenFactory Authentication factory
+   */
+  public void setAuthTokenFactory(AuthTokenFactory authTokenFactory) {
+    this.authTokenFactory = authTokenFactory;
+  }
+
+
+  /**
+   * Returns the {@link CookieManager} currently associated with the service.
+   */
+  public CookieManager getCookieManager() {
+    return cookieManager;
+  }
+
+
+  /**
+   * Sets the {@link CookieManager} currently associated with the service.
+   * 
+   * @param cookieManager Cookie manager
+   */
+  public void setCookieManager(CookieManager cookieManager) {
+    this.cookieManager = cookieManager;
+  }
+
+
+  public void tokenChanged(AuthToken newToken) {
+    if (cookieManager != null) {
+      // Flush any cookies that might contain session info for the
+      // previous user.
+      cookieManager.clearCookies();
     }
   }
 
@@ -331,11 +315,10 @@ public class GoogleService extends Service {
                                  String captchaAnswer)
       throws AuthenticationException {
 
-    this.username = username;
-    this.password = password;
-    String token = getAuthToken(username, password, captchaToken, captchaAnswer,
-                                serviceName, applicationName);
-    setUserToken(token);
+    GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
+    googleAuthTokenFactory.setUserCredentials(username, password,
+                                              captchaToken, captchaAnswer);
+    requestFactory.setAuthToken(authTokenFactory.getAuthToken());
   }
 
   /**
@@ -347,12 +330,10 @@ public class GoogleService extends Service {
    * @param token the AuthToken in ascii form
    */
   public void setUserToken(String token) {
-    GoogleGDataRequest.Factory factory =
-      (GoogleGDataRequest.Factory) requestFactory;
-    factory.setAuthToken(new UserToken(token));
-
-    // Flush any cookies that might contain session info for the previous user
-    cookies.clear();
+    
+    GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
+    googleAuthTokenFactory.setUserToken(token);
+    requestFactory.setAuthToken(authTokenFactory.getAuthToken());
   }
 
 
@@ -377,14 +358,12 @@ public class GoogleService extends Service {
   public void setAuthSubToken(String token,
                               PrivateKey key) {
 
-    GoogleGDataRequest.Factory factory =
-      (GoogleGDataRequest.Factory) requestFactory;
-    factory.setAuthToken(new AuthSubToken(token, key));
-
-    // Flush any cookies that might contain session info for the previous user
-    cookies.clear();
+    GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
+    googleAuthTokenFactory.setAuthSubToken(token, key);
+    requestFactory.setAuthToken(authTokenFactory.getAuthToken());
   }
 
+  
   /**
    * Retrieves the authentication token for the provided set of credentials.
    *
@@ -405,38 +384,10 @@ public class GoogleService extends Service {
                              String applicationName)
       throws AuthenticationException {
 
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("Email", username);
-    params.put("Passwd", password);
-    params.put("source", applicationName);
-    params.put("service", serviceName);
-    params.put("accountType", "HOSTED_OR_GOOGLE");
-
-    if (captchaToken != null) {
-      params.put("logintoken", captchaToken);
-    }
-    if (captchaAnswer != null) {
-      params.put("logincaptcha", captchaAnswer);
-    }
-    String postOutput;
-    try {
-      URL url = new URL(loginProtocol + "://" + domainName + GOOGLE_LOGIN_PATH);
-      postOutput = makePostRequest(url, params);
-    } catch (IOException e) {
-      AuthenticationException ae =
-        new AuthenticationException("Error connecting with login URI");
-      ae.initCause(e);
-      throw ae;
-    }
-
-    // Parse the output
-    Map<String, String> tokenPairs =
-      StringUtil.string2Map(postOutput.trim(), "\n", "=", true);
-    String token = tokenPairs.get("Auth");
-    if (token == null) {
-      throw getAuthException(tokenPairs);
-    }
-    return token;
+    GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
+    return googleAuthTokenFactory.getAuthToken(username, password, captchaToken,
+                                               captchaAnswer, serviceName,
+                                               applicationName);
   }
 
 
@@ -455,156 +406,42 @@ public class GoogleService extends Service {
                                        Map<String, String> parameters)
       throws IOException {
 
-    // Open connection
-    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-    // Set properties of the connection
-    urlConnection.setDoInput(true);
-    urlConnection.setDoOutput(true);
-    urlConnection.setUseCaches(false);
-    urlConnection.setRequestProperty("Content-Type",
-                                     "application/x-www-form-urlencoded");
-
-    // Form the POST parameters
-    StringBuilder content = new StringBuilder();
-    boolean first = true;
-    for (Map.Entry<String, String> parameter : parameters.entrySet()) {
-      if (!first) {
-        content.append("&");
-      }
-      content.append(
-          URLEncoder.encode(parameter.getKey(), "UTF-8")).append("=");
-      content.append(URLEncoder.encode(parameter.getValue(), "UTF-8"));
-      first = false;
-    }
-
-    OutputStream outputStream = null;
-    try {
-      outputStream = urlConnection.getOutputStream();
-      outputStream.write(content.toString().getBytes("utf-8"));
-      outputStream.flush();
-    } finally {
-      if (outputStream != null) {
-        outputStream.close();
-      }
-    }
-
-    // Retrieve the output
-    InputStream inputStream = null;
-    StringBuilder outputBuilder = new StringBuilder();
-    try {
-      int responseCode = urlConnection.getResponseCode();
-      if (responseCode == HttpURLConnection.HTTP_OK) {
-        inputStream = urlConnection.getInputStream();
-      } else {
-        inputStream = urlConnection.getErrorStream();
-      }
-
-      String string;
-      if (inputStream != null) {
-        BufferedReader reader =
-          new BufferedReader(new InputStreamReader(inputStream));
-        while (null != (string = reader.readLine())) {
-          outputBuilder.append(string).append('\n');
-        }
-      }
-    } finally {
-      if (inputStream != null) {
-        inputStream.close();
-      }
-    }
-    return outputBuilder.toString();
+    return GoogleAuthTokenFactory.makePostRequest(url, parameters);
   }
-
-
-  /**
-   * Returns the respective {@code AuthenticationException} given the return
-   * values from the login URI handler.
-   *
-   * @param pairs name/value pairs returned as a result of a bad authentication
-   * @return the respective {@code AuthenticationException} for the given error
-   */
-  private AuthenticationException getAuthException(Map<String, String> pairs) {
-
-    String errorName = pairs.get("Error");
-
-    if ("BadAuthentication".equals(errorName)) {
-      return new InvalidCredentialsException("Invalid credentials");
-
-    } else if ("AccountDeleted".equals(errorName)) {
-      return new AccountDeletedException("Account deleted");
-
-    } else if ("AccountDisabled".equals(errorName)) {
-      return new AccountDisabledException("Account disabled");
-
-    } else if ("NotVerified".equals(errorName)) {
-      return new NotVerifiedException("Not verified");
-
-    } else if ("TermsNotAgreed".equals(errorName)) {
-      return new TermsNotAgreedException("Terms not agreed");
-
-    } else if ("ServiceUnavailable".equals(errorName)) {
-      return new ServiceUnavailableException("Service unavailable");
-
-    } else if ("CaptchaRequired".equals(errorName)) {
-
-      String captchaPath = pairs.get("CaptchaUrl");
-      StringBuilder captchaUrl = new StringBuilder();
-      captchaUrl.append(loginProtocol).append("://").append(domainName)
-                .append(GOOGLE_ACCOUNTS_PATH).append('/').append(captchaPath);
-      return new CaptchaRequiredException("Captcha required",
-                                          captchaUrl.toString(),
-                                          pairs.get("CaptchaToken"));
-
-    } else {
-      return new AuthenticationException("Error authenticating " +
-                                         "(check service name)");
-    }
-  }
-
-
-  /**
-   * Stores the set of GoogleCookies that have been issued during previous
-   * requests.
-   */
-  protected Set<GoogleCookie> cookies = new HashSet<GoogleCookie>();
-
-
-  /**
-   * Indicates whether the GoogleService should implement a local cache
-   * for cookies returned by the GData service.  If true (the default
-   * value), then the GoogleService instance will maintain the cache and
-   * return cookies on subsequent requests.
-   */
-  protected boolean handlesCookies = true;
 
 
   /**
    * Enables or disables cookie handling.
    */
   public void setHandlesCookies(boolean handlesCookies) {
-    this.handlesCookies = handlesCookies;
+    if (cookieManager == null) {
+      if (handlesCookies) {
+        throw new IllegalArgumentException("No cookie manager defined");
+      }
+      return;
+    }
+    cookieManager.setCookiesEnabled(handlesCookies);
   }
 
 
   /**
    * Returns  {@code true} if the GoogleService is handling cookies.
    */
-  public boolean handlesCookies() { return handlesCookies; }
+  public boolean handlesCookies() {
+    if (cookieManager == null) {
+      return false;
+    }
+    return cookieManager.cookiesEnabled();
+  }
 
 
   /**
    * Adds a new GoogleCookie instance to the cache.
    */
   public void addCookie(GoogleCookie cookie) {
-    assert handlesCookies;
-
-    // Remove any previous value of this cookie, since expiration and
-    // and cookie value are not part of the hashCode/equals algorithm
-    // for GoogleCookie.  This ensures that we always replace with the
-    // most recently received cookie state.
-    cookies.remove(cookie);
-    cookies.add(cookie);
+    if (cookieManager != null) {
+      cookieManager.addCookie(cookie);
+    }
   }
 
 
@@ -612,44 +449,30 @@ public class GoogleService extends Service {
    * Returns the set of associated cookies returned by previous requests.
    */
   public Set<GoogleCookie> getCookies() {
-
-    // Lazy flushing of expired cookies
-    Iterator<GoogleCookie> cookieIter = cookies.iterator();
-    while (cookieIter.hasNext()) {
-      GoogleCookie cookie = cookieIter.next();
-      if (cookie.hasExpired())
-        cookieIter.remove();
+    if (cookieManager == null) {
+      throw new IllegalArgumentException("No cookie manager defined");
     }
-    return cookies;
-  }
-
-
-  @Override
-  public void setRequestFactory(GDataRequestFactory requestFactory) {
-
-    if (!(requestFactory instanceof GoogleGDataRequest.Factory)) {
-      throw new IllegalArgumentException("Invalid factory");
-    }
-    this.requestFactory = requestFactory;
+    return cookieManager.getCookies();
   }
 
 
   @Override
   public GDataRequest createRequest(GDataRequest.RequestType type,
-                                       URL requestUrl,
-                                       ContentType contentType)
+                                    URL requestUrl,
+                                    ContentType contentType)
       throws IOException, ServiceException {
-    GoogleGDataRequest request =
-      (GoogleGDataRequest) super.createRequest(type, requestUrl, contentType);
-    request.setService(this);
+    GDataRequest request = super.createRequest(type, requestUrl, contentType);
+    if (request instanceof GoogleGDataRequest) {
+      ((GoogleGDataRequest) request).setService(this);
+    }
     return request;
   }
 
 
   @Override
   public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
-                                          Class<E> entryClass,
-                                          DateTime ifModifiedSince)
+                                             Class<E> entryClass,
+                                             DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
     try {
@@ -657,7 +480,7 @@ public class GoogleService extends Service {
     } catch (RedirectRequiredException e) {
       entryUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      handleSessionExpiredException(e);
+      authTokenFactory.handleSessionExpiredException(e);
     }
 
     return super.getEntry(entryUrl, entryClass, ifModifiedSince);
@@ -673,7 +496,7 @@ public class GoogleService extends Service {
     } catch (RedirectRequiredException e) {
       entryUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      handleSessionExpiredException(e);
+      authTokenFactory.handleSessionExpiredException(e);
     }
 
     return super.update(entryUrl, entry);
@@ -689,7 +512,7 @@ public class GoogleService extends Service {
     } catch (RedirectRequiredException e) {
       feedUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      handleSessionExpiredException(e);
+      authTokenFactory.handleSessionExpiredException(e);
     }
 
     return super.insert(feedUrl, entry);
@@ -707,10 +530,28 @@ public class GoogleService extends Service {
     } catch (RedirectRequiredException e) {
       feedUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      handleSessionExpiredException(e);
+      authTokenFactory.handleSessionExpiredException(e);
     }
 
     return super.getFeed(feedUrl, feedClass, ifModifiedSince);
+  }
+
+
+  @Override
+  public <F extends BaseFeed<?, ?>> F getFeed(Query query,
+                                              Class<F> feedClass,
+                                              DateTime ifModifiedSince)
+      throws IOException, ServiceException {
+
+    try {
+      return super.getFeed(query, feedClass, ifModifiedSince);
+    } catch (RedirectRequiredException e) {
+      query = new Query(handleRedirectException(e));
+    } catch (SessionExpiredException e) {
+      authTokenFactory.handleSessionExpiredException(e);
+    }
+
+    return super.getFeed(query, feedClass, ifModifiedSince);
   }
 
 
@@ -723,30 +564,10 @@ public class GoogleService extends Service {
     } catch (RedirectRequiredException e) {
       entryUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      handleSessionExpiredException(e);
+      authTokenFactory.handleSessionExpiredException(e);
     }
 
     super.delete(entryUrl);
-  }
-
-
-  /**
-   * Handles a session expired exception by obtaining a new authentication
-   * token and updating the token in the request factory.
-   */
-  private void handleSessionExpiredException(
-      SessionExpiredException sessionExpired)
-      throws SessionExpiredException, AuthenticationException {
-
-    if (username != null && password != null) {
-      String token = getAuthToken(username, password, null, null, serviceName,
-                                  applicationName);
-      GoogleGDataRequest.Factory factory =
-        (GoogleGDataRequest.Factory) requestFactory;
-      factory.setAuthToken(new UserToken(token));
-    } else {
-      throw sessionExpired;
-    }
   }
 
 
@@ -762,5 +583,20 @@ public class GoogleService extends Service {
       throw new ServiceException("Invalid redirected-to URL - "
                                  + redirect.getRedirectLocation());
     }
+  }
+
+
+  /**
+   * Get the {@link GoogleAuthTokenFactory} current associated with this
+   * service. If an auth token factory of a different type is configured,
+   * an {@link IllegalStateException} is thrown.
+   * 
+   * @return Google authentication token factory.
+   */
+  private GoogleAuthTokenFactory getGoogleAuthTokenFactory() {
+    if (!(authTokenFactory instanceof GoogleAuthTokenFactory)) {
+      throw new IllegalStateException("Invalid authentication token factory");
+    }
+    return (GoogleAuthTokenFactory) authTokenFactory;
   }
 }

@@ -42,6 +42,8 @@ public class PlaylistFeed extends BaseFeed<PlaylistFeed, PlaylistEntry> {
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
     extProfile.declareFeedExtension(YtPrivate.class);
+    extProfile.declareFeedExtension(YouTubeMediaGroup.class);
+    new YouTubeMediaGroup().declareExtensions(extProfile);
   }
 
   /** Gets the private field of the feed. */
@@ -56,5 +58,18 @@ public class PlaylistFeed extends BaseFeed<PlaylistFeed, PlaylistEntry> {
     } else {
       removeExtension(YtPrivate.class);
     }
+  }
+
+  public YouTubeMediaGroup getMediaGroup() {
+    return getExtension(YouTubeMediaGroup.class);
+  }
+
+  public YouTubeMediaGroup getOrCreateMediaGroup() {
+    YouTubeMediaGroup group = getMediaGroup();
+    if (group == null) {
+      group = new YouTubeMediaGroup();
+      setExtension(group);
+    }
+    return group;
   }
 }

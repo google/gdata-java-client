@@ -930,7 +930,7 @@ public abstract class BaseEntry<E extends BaseEntry>
 
         }
 
-      } else if (namespace.equals(Namespaces.atomPub)) {
+      } else if (namespace.equals(Namespaces.getAtomPubNs().getUri())) {
 
         if (localName.equals("control")) {
 
