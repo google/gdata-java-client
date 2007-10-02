@@ -8,6 +8,12 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.14.1 ==
+  * Added batch support for Event Feed in Calendar Data API.
+  * Added batch support for Cells Feed in Spreadsheet Data API.
+  * Added support to handle foreign markup constraints as specified in RFC4287 sec 6.3 and AtomPub section 6.2.
+  * Lowered visibility of log messages reporting on unrecognized foreign markup in xml feeds from INFO level to FINE level. 
+
 == 1.14.0 ==
   * Added support for [http://code.google.com/apis/youtube/overview.html YouTube Data API].
   * Refactored core GData code to remove dependency on, [http://java.sun.com/products/javamail JavaMail] and [http://java.sun.com/products/javabeans/jaf Java Activation Framework] for non-media services. With this change, only media dependent services such as, [http://code.google.com/apis/documents/overview.html Document List Data API], [http://code.google.com/apis/picasaweb/overview.html Picasa Web Album API] and [http://code.google.com/apis/youtube/overview.html YouTube Data API] require Java Mail and Java Activation Framework.
