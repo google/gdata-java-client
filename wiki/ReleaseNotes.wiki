@@ -8,6 +8,10 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.15.0 ==
+  * Added Java client support for Google Apps Email Migration API.
+  * Removed GData API documentation from the release package.  Online documentation is available at http://code.google.com/apis/gdata.
+
 == 1.14.1 ==
   * Added batch support for Event Feed in Calendar Data API.
   * Added batch support for Cells Feed in Spreadsheet Data API.
