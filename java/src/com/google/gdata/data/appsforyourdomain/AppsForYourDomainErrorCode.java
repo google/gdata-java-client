@@ -32,6 +32,7 @@ import java.util.Map;
 
 public enum AppsForYourDomainErrorCode {
   UnknownError(1000),
+  ServerBusy(1001),
 
   UserDeletedRecently(1100),
   UserSuspended(1101),
@@ -56,7 +57,14 @@ public enum AppsForYourDomainErrorCode {
   InvalidQueryParameterValue(1407),
 
   TooManyRecipientsOnEmailList(1500),
-  TooManyNicknamesForUser(1501);
+  TooManyNicknamesForUser(1501),
+
+  DuplicateDestinations(1601),
+  TooManyDestinations(1602),
+  InvalidRouteAddress(1603),
+
+  // Some methods (e.g., create or delete) are not supported in our APIs.
+  ApiMethodNotSupported(1701);
 
   private int errorCode;
 
@@ -77,6 +85,7 @@ public enum AppsForYourDomainErrorCode {
     this.errorCode = errorCode;
   }
 
+  @Override
   public String toString() {
     return name() + "(" + errorCode + ")";
   }

@@ -16,6 +16,8 @@
 
 package com.google.gdata.util;
 
+import com.google.gdata.client.Service;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,7 +29,7 @@ import java.util.regex.Pattern;
  *
  * 
  */
-public final class ContentType {
+public class ContentType {
 
   private static String TOKEN =
     "[\\p{ASCII}&&[^\\p{Cntrl} ;/=\\[\\]\\(\\)\\<\\>\\@\\,\\:\\\"\\?\\=]]+";
@@ -74,16 +76,69 @@ public final class ContentType {
   private static final String DEFAULT_CHARSET = ATTR_CHARSET + "=UTF-8";
 
   /**
-   * A ContentType constant that describes the Atom feed/entry content type.
+   * A ContentType constant that describes the base unqualified Atom content
+   * type.
    */
   public static final ContentType ATOM =
     new ContentType("application/atom+xml;" + DEFAULT_CHARSET);
 
   /**
+   * A ContentType constant that describes the qualified Atom entry content
+   * type.
+   *
+   * @see #getAtomEntry()
+   */
+  static final ContentType ATOM_ENTRY =
+    new ContentType("application/atom+xml;type=entry;" + DEFAULT_CHARSET) {
+      @Override
+      public boolean match(ContentType acceptedContentType) {
+        String type = acceptedContentType.getAttribute("type");
+        return super.match(acceptedContentType) &&
+            (type == null || type.equals("entry"));
+      }
+    };
+
+  /**
+   * A ContentType constant that describes the qualified Atom feed content
+   * type.
+   *
+   * @see #getAtomFeed()
+   */
+  static final ContentType ATOM_FEED =
+    new ContentType("application/atom+xml;type=feed;" + DEFAULT_CHARSET) {
+      @Override
+      public boolean match(ContentType acceptedContentType) {
+        String type = acceptedContentType.getAttribute("type");
+        return super.match(acceptedContentType) &&
+            (type == null || type.equals("feed"));
+      }
+    };
+
+  /**
+   * Returns the ContentType that should be used in contexts that expect
+   * an Atom entry.
+   */
+  public static ContentType getAtomEntry() {
+    // Use the unqualifed type for Alpha, the qualifed one for later versions
+    return Service.getVersion().isCompatible(Service.ALPHA) ?
+        ATOM : ATOM_ENTRY;
+  }
+
+  /**
+   * Returns the ContentType that should be used in contexts that expect
+   * an Atom feed.
+   */
+  public static ContentType getAtomFeed() {
+    // Use the unqualifed type for Alpha, the qualifed one for later versions
+    return Service.getVersion().isCompatible(Service.ALPHA) ?
+        ATOM : ATOM_FEED;
+  }
+
+  /**
    * A ContentType constant that describes the Atom Service content type.
    */
   public static final ContentType ATOM_SERVICE =
-    new ContentType("application/atomserv+xml;" + DEFAULT_CHARSET);
+    new ContentType("application/atomsvc+xml;" + DEFAULT_CHARSET);
 
   /**
    * A ContentType constant that describes the RSS channel/item content type.
@@ -350,6 +405,7 @@ public final class ContentType {
   /**
    * Generates the Content-Type value
    */
+  @Override
   public String toString() {
 
     StringBuffer sb = new StringBuffer();

@@ -48,6 +48,9 @@ public class ServiceDocument extends ExtensionPoint {
   /** The list of workspaces associated with the service */
   List<Workspace> workspaces = new ArrayList<Workspace>();
   public List<Workspace> getWorkspaces() { return workspaces; }
+  public void addWorkspace(Workspace workspace) {
+    workspaces.add(workspace);
+  }
 
 
   /**
@@ -117,7 +120,12 @@ public class ServiceDocument extends ExtensionPoint {
                           atomPubNs.getUri(), "service");
   }
 
-
+  @Override
+  public XmlParser.ElementHandler getHandler(ExtensionProfile p,
+      String namespace, String localName, Attributes attrs)
+      throws IOException {
+    return new Handler(p);
+  }
 
   /*
    * XmlParser ElementHandler for {@code app:service}
@@ -139,24 +147,12 @@ public class ServiceDocument extends ExtensionPoint {
 
         if (localName.equals("workspace")) {
 
-          String title = attrs.getValue("", "title");
-          if (title == null) {
-            throw new ParseException("Title missing for app:workspace element");
-          }
-          Workspace workspace = new Workspace(title);
+          Workspace workspace = new Workspace();
           workspaces.add(workspace);
-          return workspace.new Handler(extProfile);
-
-        } else {
-          throw new ParseException("Unrecognized element: " +
-                                   "namespace: " + namespace + 
-                                   ",localName: " + localName);
+          return workspace.new Handler(extProfile, attrs);
         }
-      } else {
-
-        return super.getChildHandler(namespace, localName, attrs);
-
-      }
+      } 
+      return super.getChildHandler(namespace, localName, attrs);
     }
   }
 

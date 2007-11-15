@@ -278,18 +278,21 @@ public class GoogleBaseService extends GoogleService {
     return query(query, GoogleBaseFeed.class);
   }
 
+  @Override
   public <E extends BaseEntry<?>> E update(URL url, E e)
       throws IOException, ServiceException {
     addApplicationAttribute(e);
     return super.update(url, e);
   }
 
+  @Override
   public <E extends BaseEntry<?>> E insert(URL url, E e)
       throws IOException, ServiceException {
     addApplicationAttribute(e);
     return super.insert(url, e);
   }
 
+  @Override
   public <F extends BaseFeed<?, ?>> F batch(URL url, F f)
       throws IOException, ServiceException, BatchInterruptedException {
     addApplicationAttribute(f);

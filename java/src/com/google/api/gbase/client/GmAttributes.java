@@ -190,19 +190,25 @@ public class GmAttributes implements Extension {
      
      /**
       * The attribute is important for providing good quality for an item, but
-      * the item is meaningfull even if this attribute is not specified. 
+      * the item is meaningful even if this attribute is not specified. 
       * Providing a value for a recommended attribute increases the chances of
       * showing the item in a Google search.   
       */
      RECOMMENDED,
      
      /** 
-      * The attribute usually provides behavioural or other meta information for
+      * The attribute usually provides behavioral or other meta information for
       * the item it belongs to. This information is not very important for 
       * direct attribute searches, but can affect where and when an attribute
       * is shown.
       */
-     OPTIONAL;
+     OPTIONAL,
+     
+     /**
+      * The attribute is deprecated and should not be used when creating new
+      * items.
+      */
+     DEPRECATED;
 
      /** The string defining this instance in an Xml document. */
      private final String xmlValue;

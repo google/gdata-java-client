@@ -25,6 +25,7 @@ import com.google.gdata.util.ParseException;
 import org.xml.sax.Attributes;
 
 import java.io.IOException;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -90,6 +91,7 @@ public class ExtensionDescription extends ExtensionPoint
    * @see ExtensionDescription#getDefaultDescription(Class)
    */
   @Retention(RetentionPolicy.RUNTIME)
+  @Inherited
   public @interface Default {
 
     /**

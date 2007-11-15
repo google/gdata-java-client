@@ -38,8 +38,8 @@ public class Namespaces {
   public static final XmlWriter.Namespace EXIF_NAMESPACE
       = new XmlWriter.Namespace("exif", EXIF);
 
-  public static final String SLIDESHOW_REL =
-      PHOTOS_PREFIX + "slideshow";
+  public static final String SLIDESHOW_REL = PHOTOS_PREFIX + "slideshow";
+  public static final String REPORT_REL = PHOTOS_PREFIX + "report";
   
   private Namespaces() {}
 }

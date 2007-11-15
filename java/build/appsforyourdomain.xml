@@ -3,6 +3,7 @@
   <!-- Path containing appsforyourdomain.xml -->
   <dirname property="build_dir" file="${ant.file.appsforyourdomain}"/>
   <import file="${build_dir}/core.xml"/>
+  <import file="${build_dir}/calendar.xml"/>
 
   <!--  ===================================================================== -->
   <!--                 Build GData AppsForYourDomain library.                 -->
@@ -11,13 +12,18 @@
   <property name="gdata-appsforyourdomain.jar" 
     value="${build.jars}/gdata-appsforyourdomain-${appsforyourdomain.spec.version}.jar"/>
 
-  <target name="build.appsforyourdomain" depends="core.build.core.client">
+  <path id="build.service.appsforyourdomain.classpath">
+    <pathelement location="${gdata-client.jar}"/>
+    <pathelement location="${gdata-calendar.jar}"/>
+  </path>
+  
+  <target name="build.appsforyourdomain" depends="calendar.build.calendar">
     <antcall target="template.build.service">
       <param name="template.service.name" value="appsforyourdomain"/>
       <param name="template.service.version" value="${appsforyourdomain.spec.version}"/>
       <param name="template.service.includes" value="**/appsforyourdomain/**"/>
       <param name="template.service.excludes" value="none"/>
-      <param name="template.service.classpath" value="build.service.core.classpath"/>
+      <param name="template.service.classpath" value="build.service.appsforyourdomain.classpath"/>
       <param name="template.service.name" value="appsforyourdomain"/>
     </antcall>
   </target>
@@ -46,6 +52,8 @@
             value="${sample.appsforyourdomain.build.lib}/AppsForYourDomainClient.jar"/>
   <property name="sample.appsforyourdomain.main"
             value="sample.appsforyourdomain.AppsForYourDomainClient"/>
+  <property name="sample.appsforyourdomain.migration.main"
+            value="sample.appsforyourdomain.migration.AppsForYourDomainMigrationClient"/>
 
 
   <!-- dependency check -->
@@ -101,5 +109,16 @@
     </java>
   </target>
 
+  <target name="sample.appsforyourdomain.migration.run"
+          depends="sample.appsforyourdomain.build"
+          description="Runs the AppsForYourDomain Migration sample">
+    <java fork="true" classname="${sample.appsforyourdomain.migration.main}">
+      <arg line="--username ${sample.appsforyourdomain.migration.username} --password ${sample.appsforyourdomain.migration.password} --domain ${sample.appsforyourdomain.migration.domain}"/>
+      <classpath>
+        <path refid="sample.appsforyourdomain.compile.classpath"/>
+        <path location="${sample.appsforyourdomain.jar}"/>
+      </classpath>
+    </java>
+  </target>    
 
 </project>

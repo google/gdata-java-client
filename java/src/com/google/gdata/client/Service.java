@@ -94,8 +94,12 @@ public class Service {
       new Version(Service.class, BETA_MAJOR, 0);
 
   static {
-    // Initialize version information for the GData core protocol.
-    initServiceVersion(ALPHA);
+    // Initialize default version information for the GData client core.
+    Version coreVersion = VersionRegistry.getVersionFromProperty(Service.class);
+    if (coreVersion == null) {
+      coreVersion = ALPHA;
+    }
+    initServiceVersion(coreVersion);
   }
   
 

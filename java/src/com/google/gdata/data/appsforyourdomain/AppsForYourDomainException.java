@@ -19,12 +19,6 @@ package com.google.gdata.data.appsforyourdomain;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.ServiceException;
 
-import java.io.IOException;
-import java.io.StringReader;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -32,6 +26,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * The AppsForYourDomainException indicates a failure in the use of the 
@@ -67,49 +69,67 @@ public class AppsForYourDomainException extends ServiceException {
   public String getInvalidInput() {
     return invalidInput;
   }
+  
+  @Override
+  public String toString() {
+    return errorCode.toString() + ": " + invalidInput;
+  }
 
   /**
    * This is a helper method for Clients to use to obtain specific information
-   * regarding a ServiceException.  Method will return an
+   * regarding a ServiceException. Method will return an
    * AppsForYourDomainException with populated errorCode and invalidInput
    * values, or it will return null if the ServiceException is not an
    * AppsForYourDomainException.
    */
   public static AppsForYourDomainException narrow(ServiceException se) {
-    if ((se.getResponseContentType() == null) || (se.getResponseBody() == null)) {
+    if ((se.getResponseContentType() == null) ||
+        (se.getResponseBody() == null)) {
       return null;
     }
     
+    if (se.getHttpErrorCodeOverride() == HttpURLConnection.HTTP_BAD_GATEWAY) {
+      return new AppsForYourDomainException(
+          AppsForYourDomainErrorCode.ServerBusy,
+          "The server is busy and could not complete your request.  Please "
+              + "try again in 30 seconds.");
+    }
+
     // Check contentType and contentBody
     if ((se.getResponseContentType().equals(new ContentType("text/xml")))
         && (se.getResponseBody().contains("AppsForYourDomainErrors"))) {
       try {
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(new InputSource(new StringReader(se.getResponseBody())));
-	Element root = document.getDocumentElement(); 
-	NodeList errorList = root.getElementsByTagName("error");
-	Node error = errorList.item(0);	
-	NamedNodeMap attributes = error.getAttributes();
+        Document document =
+            builder.parse(new InputSource(
+                new StringReader(se.getResponseBody())));
+        Element root = document.getDocumentElement();
+        NodeList errorList = root.getElementsByTagName("error");
+        Node error = errorList.item(0);
+        NamedNodeMap attributes = error.getAttributes();
 
-	// Create AppsForYourDomainException from Response Body.
-	int errorCode = Integer.parseInt(attributes.getNamedItem("errorCode").getNodeValue());
-	String invalidInput = attributes.getNamedItem("invalidInput").getNodeValue();
-	AppsForYourDomainException exception
-	    = new AppsForYourDomainException(
-		AppsForYourDomainErrorCode.getEnumFromInt(errorCode), invalidInput);
-	return exception;
-	
-      // If any exceptions occur, method will return null; 
+        // Create AppsForYourDomainException from Response Body.
+        int errorCode =
+            Integer.parseInt(attributes.getNamedItem("errorCode")
+                .getNodeValue());
+        String invalidInput =
+            attributes.getNamedItem("invalidInput").getNodeValue();
+        AppsForYourDomainException exception =
+            new AppsForYourDomainException(AppsForYourDomainErrorCode
+                .getEnumFromInt(errorCode), invalidInput);
+        return exception;
+
+        // If any exceptions occur, method will return null;
       } catch (NumberFormatException e) {
-	return null;	
+        return null;
       } catch (ParserConfigurationException e) {
-	return null;
+        return null;
       } catch (SAXException e) {
-	return null;
+        return null;
       } catch (IOException e) {
-	return null;
+        return null;
       }
-    }      
+    }
 
     return null;
   }

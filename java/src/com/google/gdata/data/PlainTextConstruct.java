@@ -17,6 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.Service;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -58,7 +59,10 @@ public class PlainTextConstruct extends TextConstruct {
 
 
   /** @return the type (TEXT) of this text construct */
+  @Override
   public int getType() { return Type.TEXT; }
+  
+  @Override
   /** @return {@code true} if this text construct has no contents */
   public boolean isEmpty() { return getText() == null; }
 
@@ -72,6 +76,7 @@ public class PlainTextConstruct extends TextConstruct {
 
 
   /** @return a plain-text representation of this text construct */
+  @Override
   public String getPlainText() {
     return new String(text);
   }
@@ -88,13 +93,17 @@ public class PlainTextConstruct extends TextConstruct {
    *
    * @throws  IOException
    */
+  @Override
   public void generateAtom(XmlWriter w,
                            String elementName) throws IOException {
 
     ArrayList<XmlWriter.Attribute> attrs =
-      new ArrayList<XmlWriter.Attribute>(2);
+      new ArrayList<XmlWriter.Attribute>();
 
-    attrs.add(new XmlWriter.Attribute("type", "text"));
+    // For BETA and later, optimize out the text attribute since it is implied.
+    if (Service.getVersion().isCompatible(Service.ALPHA)) {
+      attrs.add(new XmlWriter.Attribute("type", "text"));
+    }
 
     if (lang != null) {
       attrs.add(new XmlWriter.Attribute("xml:lang", lang));
@@ -118,6 +127,7 @@ public class PlainTextConstruct extends TextConstruct {
    *
    * @throws  IOException
    */
+  @Override
   public void generateRss(XmlWriter w,
                           String elementName,
                           RssFormat rssFormat) throws IOException {
@@ -134,6 +144,7 @@ public class PlainTextConstruct extends TextConstruct {
      *
      * @throws ParseException
      */
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
@@ -150,6 +161,7 @@ public class PlainTextConstruct extends TextConstruct {
     /**
      * Processes this element; overrides inherited method.
      */
+    @Override
     public void processEndElement() throws ParseException {
 
       if (value == null) {
@@ -161,4 +173,3 @@ public class PlainTextConstruct extends TextConstruct {
     }
   }
 }
-

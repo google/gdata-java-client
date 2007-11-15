@@ -82,23 +82,26 @@ public class AttributeHelper {
    *   is not defined
    */
   public String consumeContent(boolean required) throws ParseException {
-    if (content == null && required) {
-      throw new ParseException("Missing required text content");
-    }
-    contentConsumed = true;
-    return content;
+    return consume(null, required);
   }
 
   /**
    * Gets the value of an attribute and remove it from the list.
    *
-   * @param name attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required indicates attributes is required
    * @return attribute value or null if not available
    * @exception ParseException if required is set and the attribute
    *   is not defined
    */
   public String consume(String name, boolean required) throws ParseException {
+    if (name == null) {
+      if (content == null && required) {
+        throw new ParseException("Missing required text content");
+      }
+      contentConsumed = true;
+      return content;
+    }
     String value = attrs.get(name);
     if (value == null) {
       if (required) {
@@ -113,7 +116,7 @@ public class AttributeHelper {
   /**
    * Gets the value of an integer attribute and remove it from the list.
    *
-   * @param name attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required indicates attribute is required
    * @param defaultValue the default value for an optional attribute (used
    *        if not present)
@@ -152,7 +155,7 @@ public class AttributeHelper {
   /**
    * Gets the value of a long attribute and remove it from the list.
    *
-   * @param name attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required indicates attribute is required
    * @param defaultValue the default value for an optional attribute (used
    *        if not present)
@@ -192,7 +195,7 @@ public class AttributeHelper {
   /**
    * Gets the value of a double attribute and remove it from the list.
    *
-   * @param name         attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required     indicates attribute is required
    * @param defaultValue the default value for an optional attribute (used if
    *                     not present)
@@ -232,7 +235,7 @@ public class AttributeHelper {
   /**
    * Gets the value of a float attribute and remove it from the list.
    *
-   * @param name         attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required     indicates attribute is required
    * @param defaultValue the default value for an optional attribute (used if
    *                     not present)
@@ -273,7 +276,7 @@ public class AttributeHelper {
    * Gets the value of a boolean attribute and remove it from the list. The
    * accepted values are based upon xsd:boolean syntax (true, false, 1, 0).
    *
-   * @param name attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required indicates attribute is required
    * @param defaultValue the default value for an optional attribute (used
    *        if not present)
@@ -319,7 +322,7 @@ public class AttributeHelper {
   /**
    * Gets the value of a {@link DateTime} attribute and remove it from the list.
    *
-   * @param name attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required indicates attribute is required
    * @return the date-time value of this attribute, {@code null} by default
    * @exception ParseException if required is set and the attribute
@@ -362,7 +365,7 @@ public class AttributeHelper {
    * Gets the value of an enumerated attribute and remove it from the list,
    * using a custom mapping of enum to attribute value.
    *
-   * @param name                 attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required             indicates attribute is required
    * @param enumClass            enumeration class
    * @param defaultValue         the default value for an optional attribute
@@ -394,7 +397,7 @@ public class AttributeHelper {
    *
    * Enumerated values are case-insensitive.
    *
-   * @param name attribute name
+   * @param name attribute name or <code>null</code> for text content
    * @param required indicates attribute is required
    * @param enumClass enumeration class
    * @param defaultValue the default value for an optional attribute (used
