@@ -188,7 +188,7 @@ public class YouTubeNamespace {
   public static final String IN_REPLY_TO = URI + "#in-reply-to";
 
   /**
-   * Link Rel value for video queries (eg. /feeds/videos/-/Tag1/Tag2?vq=dog)
+   * Link Rel value for video queries (eg. /feeds/videos?vq=dog)
    */
   public static final String VIDEO_QUERY_REL = URI + "#video.query";
 

@@ -18,7 +18,6 @@ package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.BaseEntry;
-import com.google.gdata.data.BaseEntry.AtomHandler;
 import com.google.gdata.data.Entry;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
@@ -32,7 +31,6 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -40,6 +38,10 @@ import java.util.List;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = Namespaces.gAlias,
+    nsUri = Namespaces.g,
+    localName = "entryLink")
 public class EntryLink extends ExtensionPoint implements Extension {
 
 
@@ -163,7 +165,7 @@ public class EntryLink extends ExtensionPoint implements Extension {
             nestedExtProfile = extProfile;
           }
           entry = new Entry();
-          return (ElementHandler)entry.new AtomHandler(nestedExtProfile);
+          return entry.new AtomHandler(nestedExtProfile);
         }
       }
 

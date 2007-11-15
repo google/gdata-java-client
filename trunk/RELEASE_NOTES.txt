@@ -1,5 +1,11 @@
-Google Data API v1.14 (Java) - Release Notes
-Aug 28, 2007
+Google Data API - Release Notes
+
+Notes for v1.15.0
+-----------------
+Nov 15, 2007
+o  Added Java client support for Google Apps Email Migration API.
+o  Removed GData API documentation from the release package.  Online 
+   documentation is available at http://code.google.com/apis/gdata.
 
 Notes for v1.14.1
 -----------------

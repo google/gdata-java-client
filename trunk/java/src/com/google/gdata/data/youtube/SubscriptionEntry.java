@@ -51,7 +51,7 @@ public class SubscriptionEntry extends FeedLinkEntry<SubscriptionEntry>{
 
     /**
      * Given a term of a category with scheme
-     * {@link YouTubeNamespace.KIND_SUBSCRIPTION}, look for
+     * {@link YouTubeNamespace#KIND_SUBSCRIPTION}, look for
      * the corresponding {@code Type} enum value.
      *
      * @return corresponding enum value or null if none exists

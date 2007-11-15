@@ -39,6 +39,11 @@ import java.util.ArrayList;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = Namespaces.gAlias,
+    nsUri = Namespaces.g,
+    localName = "feedLink",
+    isRepeatable = true)
 public class FeedLink<F extends BaseFeed>
     extends ExtensionPoint implements Extension {
 

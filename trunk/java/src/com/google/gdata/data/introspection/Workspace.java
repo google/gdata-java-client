@@ -17,12 +17,18 @@
 package com.google.gdata.data.introspection;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.Service;
+import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.TextConstruct;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
+import com.google.gdata.util.VersionRegistry.Version;
 
 import org.xml.sax.Attributes;
 
@@ -32,48 +38,58 @@ import java.util.List;
 
 
 /**
- * The Workspace class defines the basic Java object model 
+ * The Workspace class defines the basic Java object model
  * representation and XML parsing/generation support for an
- * APP workspace.
+ * AtomPub workspace.
+ *
+ * The implementation is versioned to support the AtomPub draft version 9
+ * introspection format (used for the GData Alpha implementation) as well
+ * as the final RFC5023 format (used for all other versions).  The key
+ * difference between the two is that draft used an attribute for the
+ * workspace title where the final version uses an atom:title element.
+ * elements.
  *
  * 
  */
 public class Workspace extends ExtensionPoint {
 
-  // Locally cache the version-appropriate AtomPub namespace information.
+  // Locally case version-dependent information.   The assumption here is that
+  // a single instance isn't used with multiple version of the protocol.
+  private Version coreVersion = Service.getVersion();
   private Namespace atomPubNs = Namespaces.getAtomPubNs();
 
-  public Workspace(String title) {
+  public Workspace() {}
+
+  public Workspace(TextConstruct title) {
     this.title = title;
   }
 
-  /** The title of the workspace */
-  private String title;
-  public String getTitle() { return title; }
+  /** Title of workspace */
+  private TextConstruct title;
+  public TextConstruct getTitle() { return title; }
+  public void setTitle(TextConstruct v) { title = v; }
 
   /** The list of collections associated with the workspace */
-  List<Collection> collections = new ArrayList<Collection>();
-  public List<Collection> getCollections() { return collections; }
+  private List<Collection> collectionList = new ArrayList<Collection>();
+  public List<Collection> getCollections() { return collectionList; }
+  public void addCollection(Collection coll) { collectionList.add(coll); }
 
-
-  /**
-   * Generates XML.
-   *
-   * @param   w
-   *            output writer
-   *
-   * @throws  IOException
-   */
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile) 
       throws IOException {
 
-    ArrayList<XmlWriter.Attribute> attrs =
-      new ArrayList<XmlWriter.Attribute>(1);
-    attrs.add(new XmlWriter.Attribute("title", title));
+    ArrayList<Attribute> attrs = new ArrayList<Attribute>();
+    if (coreVersion.isCompatible(Service.ALPHA)) {
+      attrs.add(new Attribute("title", title.getPlainText()));
+    }
     w.startElement(atomPubNs, "workspace", attrs, null);
 
+    if (!coreVersion.isCompatible(Service.ALPHA)) {
+      title.generateAtom(w, "title");
+    }
+
     w.startRepeatingElement();
-    for (Collection collection : collections) {
+    for (Collection collection : collectionList) {
       collection.generate(w, extProfile);
     }
     w.endRepeatingElement();
@@ -82,19 +98,34 @@ public class Workspace extends ExtensionPoint {
 
     w.endElement(atomPubNs, "workspace");
   }
+  
+  @Override
+  public void consumeAttributes(AttributeHelper attrHelper) 
+      throws ParseException {
+    if (coreVersion.isCompatible(Service.ALPHA)) {
+      String titleAttr = attrHelper.consume("title", true);
+      title = new PlainTextConstruct(titleAttr);
+    }
+  }
 
-
+  @Override
+  public XmlParser.ElementHandler getHandler(ExtensionProfile p,
+      String namespace, String localName, Attributes attrs)
+      throws IOException {
+    return new Handler(p, attrs);
+  }
+ 
   /*
    * XmlParser ElementHandler for {@code app:workspace}
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile) throws IOException {
-      super(extProfile, Workspace.class);
+    public Handler(ExtensionProfile extProfile, Attributes attrs)
+        throws IOException {
+      super(extProfile, Workspace.class, attrs);
     }
 
-
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
@@ -104,34 +135,34 @@ public class Workspace extends ExtensionPoint {
 
         if (localName.equals("collection")) {
 
-          String colHref = attrs.getValue("", "href");
-          if (colHref == null) {
-            throw new ParseException(
-              "href missing for app:collection element");
-          }
-          Collection collection = new Collection(colHref);
-          collections.add(collection);
-          return collection.new Handler(extProfile);
 
-        } else {
-
-          throw new ParseException("Unrecognized element: " +
-                                   "namespace: " + namespace + 
-                                   ",localName: " + localName);
+          Collection collection = new Collection();
+          addCollection(collection);
+          return collection.new Handler(extProfile, attrs);
         }
+      } else if (namespace.equals(Namespaces.atom)) {
+        if (localName.equals("title") && 
+            !coreVersion.isCompatible(Service.ALPHA)) {
 
-      } else {
+          if (title != null) {
+            throw new ParseException("Duplicate title.");
+          }
 
-        return super.getChildHandler(namespace, localName, attrs);
-
+          TextConstruct.ChildHandlerInfo chi =
+              TextConstruct.getChildHandler(attrs);
+          title = chi.textConstruct;
+          return chi.handler;
+        }
       }
+      return super.getChildHandler(namespace, localName, attrs);
     }
   }
 
   public void processEndElement() throws ParseException {
-    if (collections.size() == 0) {
+
+    if (title == null) {
       throw new ParseException(
-        "Workspace must contain at least one collection");
+        "Workspace must contain a title");
     }
   }
 }

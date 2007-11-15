@@ -757,7 +757,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
       // Try ExtensionPoint. It returns {@code null} if there's no handler.
       ElementHandler extensionHandler =
-        getExtensionHandler(extProfile, Feed.class,
+        getExtensionHandler(extProfile, BaseFeed.this.getClass(),
                             namespace, localName, attrs);
       if (extensionHandler != null) {
         return extensionHandler;

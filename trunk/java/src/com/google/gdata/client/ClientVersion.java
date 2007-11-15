@@ -51,14 +51,17 @@ public class ClientVersion extends VersionRegistry {
    */
   /* package*/ static void init(Version serviceVersion)
       throws IllegalStateException, IllegalArgumentException {
-    
+
     // Initialize the global registry on first use.
-    VersionRegistry registry = VersionRegistry.get();
-    if (registry == null) {
+    VersionRegistry registry;
+    try {
+      registry = VersionRegistry.get();
+    } catch (IllegalStateException ise) {
+      // No existing registry
       VersionRegistry.initSingleton(clientRegistry);
       registry = clientRegistry;
     }
-    
+
     // Merge this serviceVersion into the global list, since init() may be
     // called multiple times for different services.
     mergeVersions(registry.getVersions(),

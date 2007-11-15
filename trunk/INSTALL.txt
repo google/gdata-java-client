@@ -15,14 +15,13 @@ libraries for interacting with GData-enabled services.  This package includes
   1. GData Java client source under "gdata/java/src".
   2. GData Java client libraries under "gdata/java/lib".
   3. Ant build configuration to compile the source code.
-  4. GData API documentation under "gdata/doc".
-  5. Javadoc for client source under "gdata/java/doc".
-  6. GData-enabled service specific samples under "gdata/java/sample".
+  4. Javadoc for client source under "gdata/java/doc".
+  5. GData-enabled service specific samples under "gdata/java/sample".
 
 REQUIREMENTS:
 -------------
-GData Java Client depends on following external utilities/libraries on top of standard 
-Java installation.
+GData Java Client depends on following external utilities/libraries on top of 
+standard Java installation.
 1. Java Development Kit version 5.0 or greater.  Latest version of JDK
    available for download from http://java.sun.com.
 2. Apache ANT version 1.7 or greater.  Apache's ANT binary is available for
@@ -49,7 +48,7 @@ INSTALLATION:
 -------------
 Update ant build configuration to point to right path for dependency jars.
 1. Unpack gdata.java.zip package to local folder.
-2. Edit the following lines in "gdata/java/build.properties" to point to 
+2. Edit the following lines in "gdata/java/build/build.properties" to point to 
    correct path for dependency jar files
     activation.jar=<path to activation.jar file>
     mail.jar=<path to mail.jar file>
@@ -57,11 +56,12 @@ Update ant build configuration to point to right path for dependency jars.
     
 EXECUTING SAMPLES:
 ------------------
-GData-enabled service specific samples can be executed through ant build targets.
-1. Edit "gdata/java/build.properties" file to specify input data
+GData-enabled service specific samples can be executed through ant build 
+targets.
+1. Edit "gdata/java/build/build.properties" file to specify input data
    for samples. This step is required only for samples that use user data
    from build.properties file.
-2. To run a specific sample execute the ant run target corresponding to the sample.
-   For example to execute calendar sample, run command "ant sample.calendar.run"
-   from folder "gdata/java".
+2. To run a specific sample execute the ant run target corresponding to the 
+   sample.  For example to execute calendar sample, run command 
+   "ant sample.calendar.run" from folder "gdata/java".
 

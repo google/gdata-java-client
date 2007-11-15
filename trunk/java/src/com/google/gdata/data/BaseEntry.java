@@ -18,6 +18,7 @@ package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
+import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.Service;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
@@ -138,6 +139,9 @@ public abstract class BaseEntry<E extends BaseEntry>
 
     /** Last updated timestamp. */
     public DateTime updated;
+    
+    /** Last edit timestamp */
+    public DateTime edited;
 
     /** Categories of entry. */
     public HashSet<Category> categories = new HashSet<Category>();
@@ -194,6 +198,16 @@ public abstract class BaseEntry<E extends BaseEntry>
     state = new EntryState();
   }
 
+  // Locally cache the atomPub namespace value, which is dynamic based upon
+  // the in-use version but constant for any instance.
+  private Namespace atomPubNs;
+  private Namespace getAtomPubNs() {
+    if (atomPubNs == null) {
+      atomPubNs = Namespaces.getAtomPubNs();
+    }
+    return atomPubNs;
+  }
+  
   /**
    * Copy constructor that initializes a new BaseEntry instance to have
    * identical contents to another instance, using a shared reference to
@@ -240,7 +254,16 @@ public abstract class BaseEntry<E extends BaseEntry>
     }
     state.updated = v;
   }
-
+  
+  
+  public DateTime getEdited() { return state.edited; }
+  public void setEdited(DateTime v) {
+    if (v != null && v.getTzShift() == null) {
+      throw new IllegalArgumentException("Entry.edited must have a timezone.");
+    }
+    state.edited = v;
+  }
+  
   public Set<Category> getCategories() { return state.categories; }
 
   public TextConstruct getTitle() { return state.title; }
@@ -433,7 +456,7 @@ public abstract class BaseEntry<E extends BaseEntry>
     URL entryUrl = new URL(selfLink.getHref());
     try {
       return (E) state.service.getEntry(entryUrl, this.getClass(),
-          state.updated);
+          (state.edited != null ? state.edited : state.updated));
     } catch (NotModifiedException e) {
       return (E) this;
     }
@@ -531,6 +554,11 @@ public abstract class BaseEntry<E extends BaseEntry>
     if (state.updated != null) {
       w.simpleElement(Namespaces.atomNs, "updated", null,
           state.updated.toString());
+    }
+    
+    if (state.edited != null) {
+      w.simpleElement(getAtomPubNs(), "edited", null,
+          state.edited.toString());
     }
 
     if (state.pubControl != null) {
@@ -930,13 +958,17 @@ public abstract class BaseEntry<E extends BaseEntry>
 
         }
 
-      } else if (namespace.equals(Namespaces.getAtomPubNs().getUri())) {
+      } else if (namespace.equals(getAtomPubNs().getUri())) {
 
         if (localName.equals("control")) {
 
           state.pubControl = new PubControl();
           return state.pubControl.new AtomHandler(extProfile);
 
+        } else if (localName.equals("edited")) {
+
+          return new EditedHandler();
+          
         }
 
       } else {
@@ -984,7 +1016,13 @@ public abstract class BaseEntry<E extends BaseEntry>
       }
     }
 
-
+    /** {@code <app:edited>} parser. */
+    class EditedHandler extends Rfc3339Handler {
+      public void processEndElement() throws ParseException {
+        super.processEndElement();
+        state.edited = getDateTime();
+      }
+    }
   }
 
   /**

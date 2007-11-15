@@ -94,15 +94,19 @@ public class DateTime implements Comparable {
     return new Long(value).hashCode();
   }
 
-
+  /**
+   * Compares instance with DateTime or Date objects.
+   *
+   * Does not take the tzShift value into account.
+   * Therefore, two DateTime objects are equal independent to 
+   * the time zone they refer to. 
+   * Equals with a instance of java.util.Date is asymmetric.
+   */
   public boolean equals(Object o) {
 
     if (o instanceof DateTime) {
 
-      DateTime other = (DateTime) o;
-      return this.value == other.value &&
-             ((this.tzShift == null && other.tzShift == null) ||
-              (this.tzShift != null && this.tzShift.equals(other.tzShift)));
+      return this.value == ((DateTime) o).value;
 
     } else if (o instanceof Date) {
 

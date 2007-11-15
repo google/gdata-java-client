@@ -17,51 +17,81 @@
 package com.google.gdata.data.introspection;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.Service;
+import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
+import com.google.gdata.util.VersionRegistry.Version;
 
 import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
- * The Collection class defines the basic Java object model 
+ * The Collection class defines the basic Java object model
  * representation and XML parsing/generation support for an
  * APP collection.
+ *
+ * The implementation is versioned to support the AtomPub draft version 9
+ * introspection format (used for the GData Alpha implementation) as well
+ * as the final RFC5023 format (used for all other versions).  The key
+ * difference between the two is that draft used an attribute for the
+ * collection title and a comma-delimited list for accepted MIME types,
+ * where the final version uses atom:title and repeating app:accept
+ * elements.
  *
  * 
  */
 public class Collection extends ExtensionPoint {
 
+  private Version coreVersion = Service.getVersion();
   private Namespace atomPubNs = Namespaces.getAtomPubNs();
 
-  /**
-   * Value of "accept" element used to indicate that a Collection
-   * accepts "entry" objects.
-   */
-  public static final String ATOM_ENTRY_ACCEPT_VALUE = "entry";
-
-  public Collection() {}
+  public Collection() {
+  }
 
   public Collection(String href) {
-    this(null, href, null);
+    this(href, null);
   }
 
-  public Collection(TextConstruct title, String href) {
-    this(title, href, null);
-  }
-
-  public Collection(TextConstruct title, String href, String accept) {
-    this.title = title;
+  public Collection(String href, TextConstruct title) {
     this.href = href;
-    this.accept = accept;
+    this.title = title;
+  }
+
+  public Collection(String href, TextConstruct title, String ... accepts) {
+    this(href, title);
+    this.accepts = Arrays.asList(accepts);
+  }
+
+  /**
+   * Returns the accept type used in Atom service document to represent
+   * the fact that the service accepts Atom entry posting.
+   */
+  public static String getAtomEntryAcceptType() {
+
+    // Earlier versions of the AtomPub spec (upon which GData Alpha was
+    // based) used a hardcoded constant, later versions use the Atom
+    // entry MIME type.
+    if (Service.getVersion().isCompatible(Service.ALPHA)) {
+      return "entry";
+    }
+    // We don't use the return value of ContentType.getAtomEntry because it
+    // contains charset encoding information that is misleading in this
+    // context, as we don't require utf-8 encoding of POSTed entries, we'll
+    // just always return them with this encoding.
+    return "application/atom+xml;type=entry";
   }
 
   /** The title of the collection */
@@ -75,14 +105,21 @@ public class Collection extends ExtensionPoint {
   public String getHref() { return href; }
   public void setHref(String href) { this.href = href; }
 
-  /** 
-   * The media types accepted by the collection.  If null, then only 
-   * Atom entries are supported. 
+  /**
+   * The media types accepted by the collection.  If null, then only
+   * Atom entries are supported.
    */
-  private String accept;
-  public String getAccept() { return accept; }
-  public void setAccept(String accept) { this.accept = accept; }
+  private List<String> accepts = new ArrayList<String>();
+  public List<String> getAcceptList() { return accepts; }
+  public void addAccept(String accept) {
+    accepts.add(accept);
+  }
 
+  private List<Categories> categoriesList = new ArrayList<Categories>();
+  public List<Categories> getCategoriesList() { return categoriesList; }
+  public void addCategories(Categories c) {
+    categoriesList.add(c);
+  }
 
   /**
    * Generates XML.
@@ -98,19 +135,57 @@ public class Collection extends ExtensionPoint {
 
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(1);
+    if (coreVersion.isCompatible(Service.ALPHA)) {
+      attrs.add(new Attribute("title", title.getPlainText()));
+    }
     attrs.add(new XmlWriter.Attribute("href", href));
     w.startElement(atomPubNs, "collection", attrs, null);
-    if (title != null) {
-      title.generateAtom(w, "title");
-    }
-    if (accept != null) {
-      w.simpleElement(atomPubNs, "accept", null, accept);
+
+    if (coreVersion.isCompatible(Service.ALPHA)) {
+      if (accepts != null) {
+        StringBuffer acceptBuf = new StringBuffer();
+        for (String accept : accepts) {
+          if (acceptBuf.length() != 0) {
+            acceptBuf.append(',');
+          }
+          acceptBuf.append(accept);
+        }
+        w.simpleElement(atomPubNs, "accept", null, acceptBuf.toString());
+      }
+    } else {
+      if (title != null) {
+        title.generateAtom(w, "title");
+      }
+      for (String accept : accepts) {
+        if (accepts != null) {
+          w.simpleElement(atomPubNs, "accept", null, accept);
+        }
+      }
+      for (Categories categories : getCategoriesList()) {
+        categories.generate(w, extProfile);
+      }
     }
     generateExtensions(w, extProfile);
 
     w.endElement(atomPubNs, "collection");
   }
 
+  @Override
+  public void consumeAttributes(AttributeHelper attrHelper)
+      throws ParseException {
+    href = attrHelper.consume("href", true);
+    if (coreVersion.isCompatible(Service.ALPHA)) {
+      String titleAttr = attrHelper.consume("title", true);
+      title = new PlainTextConstruct(titleAttr);
+    }
+  }
+
+  @Override
+  public XmlParser.ElementHandler getHandler(ExtensionProfile p,
+      String namespace, String localName, Attributes attrs)
+      throws IOException {
+    return new Handler(p, attrs);
+  }
 
   /*
    * XmlParser ElementHandler for {@code app:workspace}
@@ -118,10 +193,10 @@ public class Collection extends ExtensionPoint {
   public class Handler extends ExtensionPoint.ExtensionHandler {
 
 
-    public Handler(ExtensionProfile extProfile) throws IOException {
-      super(extProfile, Collection.class);
+    public Handler(ExtensionProfile extProfile, Attributes attrs)
+        throws IOException {
+      super(extProfile, Collection.class, attrs);
     }
-
 
     @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
@@ -131,7 +206,8 @@ public class Collection extends ExtensionPoint {
 
       if (namespace.equals(Namespaces.atom)) {
 
-        if (localName.equals("title")) {
+        if (localName.equals("title")  &&
+            !coreVersion.isCompatible(Service.ALPHA)) {
 
           TextConstruct.ChildHandlerInfo chi =
             TextConstruct.getChildHandler(attrs);
@@ -143,26 +219,29 @@ public class Collection extends ExtensionPoint {
           title = chi.textConstruct;
           return chi.handler;
 
-        } else {
-          throw new ParseException("Unrecognized element: " +
-                                   "namespace: " + namespace + 
-                                   ",localName: " + localName);
         }
-
       } else if (namespace.equals(atomPubNs.getUri())) {
 
         if (localName.equals("accept")) {
           return new AcceptHandler();
-        } else {
-          throw new ParseException("Unrecognized element: " +
-                                   "namespace: " + namespace + 
-                                   ",localName: " + localName);
         }
+        if (localName.equals("categories")) {
+          Categories newCategories = new Categories();
+          addCategories(newCategories);
+          return newCategories.new Handler(extProfile, attrs);
+        }
+      }
+      return super.getChildHandler(namespace, localName, attrs);
+    }
 
-      } else {
 
-        return super.getChildHandler(namespace, localName, attrs);
+    @Override
+    public void processEndElement() throws ParseException {
 
+      super.processEndElement();
+      if (title == null) {
+        throw new ParseException(
+          "Collection must contain a title");
       }
     }
 
@@ -170,16 +249,16 @@ public class Collection extends ExtensionPoint {
     class AcceptHandler extends XmlParser.ElementHandler {
 
       @Override
-      public void processEndElement() throws ParseException {
-
-        if (accept != null) {
-          throw new ParseException("Duplicate accept elements.");
-        }
+      public void processEndElement() {
 
         if (value == null) {
-          throw new ParseException("accept must have a value.");
+          value = "";
         }
-        accept = value;
+        if (coreVersion.isCompatible(Service.ALPHA)) {
+          accepts = Arrays.asList(value.split(","));
+        } else {
+          addAccept(value);
+        }
       }
     }
   }

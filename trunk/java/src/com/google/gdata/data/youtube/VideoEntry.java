@@ -23,7 +23,11 @@ import com.google.gdata.data.Link;
 import com.google.gdata.data.extensions.Comments;
 import com.google.gdata.data.extensions.FeedLink;
 import com.google.gdata.data.extensions.Rating;
+import com.google.gdata.data.geo.impl.GeoRssWhere;
+import com.google.gdata.data.geo.impl.GmlPoint;
 import com.google.gdata.data.media.MediaEntry;
+import com.google.gdata.data.media.mediarss.MediaRssNamespace;
+import com.google.gdata.util.Namespaces;
 
 import java.util.List;
 
@@ -102,6 +106,20 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     return racy != null;
   }
 
+  /** Adds a georss:where tag. */
+  public void setLocation(GeoRssWhere where) {
+    if (where == null) {
+      removeExtension(GeoRssWhere.class);
+    } else {
+      setExtension(where);
+    }
+  }
+
+  /** Gets the georss:where tag. */
+  public GeoRssWhere getLocation() {
+    return getExtension(GeoRssWhere.class);
+  }
+
   /** Gets all gd:feedLink tags. */
   public List<FeedLink> getFeedLinks() {
     return getRepeatingExtension(FeedLink.class);
@@ -124,6 +142,16 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
   /** Returns a link to the video responses feed. */
   public Link getVideoResponsesLink() {
     return getLink(YouTubeNamespace.RESPONSES_REL, Link.Type.ATOM);
+  }
+
+  /** Returns a link to the video rating feed. */
+  public Link getRatingLink() {
+    return getLink(YouTubeNamespace.RATINGS_REL, Link.Type.ATOM);
+  }
+
+  /** Returns a link to the video complaints feed. */
+  public Link getComplaintsLink() {
+    return getLink(YouTubeNamespace.COMPLAINTS_REL, Link.Type.ATOM);
   }
 
   /** Gets the gd:rating tag. */
@@ -156,6 +184,7 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(VideoEntry.class, Comments.getDefaultDescription());
     extProfile.declare(VideoEntry.class, Rating.getDefaultDescription(false));
+    extProfile.declareAdditionalNamespace(Namespaces.gNs);
     extProfile.declareAdditionalNamespace(YouTubeNamespace.NS);
 
     extProfile.declare(VideoEntry.class, YtRacy.class);
@@ -164,6 +193,15 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
 
     extProfile.declare(VideoEntry.class, YouTubeMediaGroup.class);
     new YouTubeMediaGroup().declareExtensions(extProfile);
+    extProfile.declareAdditionalNamespace(MediaRssNamespace.NS);
+
+    extProfile.declare(VideoEntry.class, GeoRssWhere.getDefaultDescription(false));
+    extProfile.declareAdditionalNamespace(
+        com.google.gdata.data.geo.Namespaces.GEO_RSS_NAMESPACE);
+    
+    extProfile.declare(GeoRssWhere.class, GmlPoint.getDefaultDescription(false));
+    extProfile.declareAdditionalNamespace(
+        com.google.gdata.data.geo.Namespaces.GML_NAMESPACE);
 
     // Ignore unsupported XML tags instead of rejecting them.
     // Very useful in a client.

@@ -35,6 +35,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -155,6 +156,8 @@ public class XmlParser extends DefaultHandler {
     /** This element's text() value. */
     public String value;
 
+    /** Temporary buffer for building up the text() value. */
+    private StringBuffer buffer;
 
     /**
      * The current state of {@code xml:lang}.
@@ -180,8 +183,8 @@ public class XmlParser extends DefaultHandler {
      * output.
      */
     XmlBlob xmlBlob = null;
-
-
+    
+    
     /**
      * Flag indicating whether it's still OK to call {@link #initializeXmlBlob}.
      */
@@ -206,7 +209,7 @@ public class XmlParser extends DefaultHandler {
 
 
     /** Namespaces used by this blob. */
-    HashSet blobNamespaces = new HashSet();
+    Set<String> blobNamespaces = new HashSet<String>();
 
 
     /** String writer underlying {@link #innerXml}. */
@@ -669,6 +672,7 @@ public class XmlParser extends DefaultHandler {
 
 
   /** SAX callback. */
+  @Override
   public void startElement(String namespace,
                            String localName,
                            String qName,
@@ -815,6 +819,7 @@ public class XmlParser extends DefaultHandler {
 
 
   /** SAX callback. */
+  @Override
   public void endElement(String namespace, String localName, String qName)
       throws SAXException {
 
@@ -848,6 +853,12 @@ public class XmlParser extends DefaultHandler {
       }
 
       try {
+        if (curHandler.buffer != null) {
+          curHandler.value = curHandler.buffer.toString();
+
+          // Free the memory associated with the buffer.
+          curHandler.buffer = null;
+        }
         curHandler.processEndElement();
       } catch (ParseException e) {
         throw new SAXException(e);
@@ -859,16 +870,18 @@ public class XmlParser extends DefaultHandler {
 
 
   /** SAX callback. */
+  @Override
   public void characters(char[] text, int start, int len) throws SAXException {
-
+    
     if (curHandler != null) {
 
       if (unrecognizedElements == 0) {
-
-        if (curHandler.value == null) {
-          curHandler.value = new String();
+        
+        if (curHandler.buffer == null) {
+          curHandler.buffer = new StringBuffer();
         }
-        curHandler.value += new String(text, start, len);
+        
+        curHandler.buffer.append(text, start, len);
       }
 
       if (curHandler.innerXml != null &&
@@ -890,6 +903,7 @@ public class XmlParser extends DefaultHandler {
 
 
   /** SAX callback. */
+  @Override
   public void ignorableWhitespace(char[] text, int start, int len)
       throws SAXException {
 
@@ -906,12 +920,14 @@ public class XmlParser extends DefaultHandler {
 
 
   /** SAX callback. */
+  @Override
   public void setDocumentLocator(Locator locator) {
     this.locator = locator;
   }
 
 
   /** SAX callback. */
+  @Override
   public void startPrefixMapping(String alias, String uri) {
 
     Stack<XmlWriter.Namespace> mapping = namespaceMap.get(alias);
@@ -927,6 +943,7 @@ public class XmlParser extends DefaultHandler {
 
 
   /** SAX callback. */
+  @Override
   public void endPrefixMapping(String alias) {
     namespaceMap.get(alias).pop();
   }

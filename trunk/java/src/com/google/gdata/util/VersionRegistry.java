@@ -19,6 +19,8 @@ import com.google.gdata.client.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** 
  * The VersionRegistry class is an abstract base class used to manage and 
@@ -164,14 +166,25 @@ public abstract class VersionRegistry {
   }
   
   /**
-   * Returns the current version registry being used to manage version
-   * information, or {@code null} if uninitialized.
-   * @return the current version registry or {@code null}.
+   * Returns the version registry being used to manage version information.
+   * @return the active version registry instance.
+   * @throws IllegalStateException if the registry has not been initialized.
    */
   public static final VersionRegistry get() {
+    if (versionRegistry == null) {
+      // This should never happen for client, server, or code running in a
+      // unit test context.   Missing version information indicates that the
+      // version registry has not been properly initialized to meet the
+      // expectations of version-dependent code.   In the case of test
+      // execution, this generally means the test should be annotated to
+      // indicate a version dependency (see the TestVersion annotation) and
+      // also should be run in the context of a VersionedTestSuite that
+      // ensures all supported versions are tested.
+      throw new IllegalStateException("Uninitialized version registry");
+    }
     return versionRegistry;
   }
-  
+
   /**
    * Finds a matching version for {@code serviceClass} in a list of versions,
    * or returns {@code null} otherwise.
@@ -257,5 +270,41 @@ public abstract class VersionRegistry {
           serviceClass);
     }
     return v;
+  }
+
+  private static final Pattern VERSION_PROPERTY_PATTERN = 
+    Pattern.compile("(\\d+)(\\.\\d+)?");
+
+  /**
+   * Constructs a new Version instance based upon the value of a Java system
+   * property associated with a {@link Service} class. The system property name
+   * is computed from the service class name with ".version" appended. The
+   * syntax of the property value is {@code "<major>[.<minor>]"} where the minor
+   * revision will be assumed to be zero if not present. If the associated
+   * system property is not set, the method will return {@code null}.
+   * 
+   * @param serviceClass service class to use in computing the version property
+   *        name.
+   * @return the {@link Version} computed from the property of {@code null} if
+   *         the property is not set.
+   * @throws NumberFormatException if the property value does not contain valid
+   *         revision information.
+   */
+  public static Version getVersionFromProperty(
+      Class<? extends Service> serviceClass) {
+    String propertyName = serviceClass.getName() + ".version";
+    String versionProperty = System.getProperty(propertyName);
+    if (versionProperty == null) {
+      return null;
+    }
+    Matcher matcher = VERSION_PROPERTY_PATTERN.matcher(versionProperty);
+    if (!matcher.matches()) {
+      throw new NumberFormatException("Property " + propertyName +
+          " is not in <major>[.<minor>] format:" + versionProperty);
+    }
+    String minor = matcher.group(2);
+    return new Version(serviceClass,
+        Integer.parseInt(matcher.group(1)),
+        (minor != null) ? Integer.parseInt(minor.substring(1)) : 0);
   }
 }
