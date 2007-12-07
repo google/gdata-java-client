@@ -16,13 +16,19 @@
 
 
   <!-- build Google Base API -->
-  <target name="build.gbase" depends="core.build.core.client">
+  <path id="build.gbase.classpath">
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${activation.jar}"/>
+    <pathelement location="${gdata-media.jar}"/>
+  </path>
+  
+  <target name="build.gbase" depends="core.build.core.media">
     <mkdir dir="${build.classes.base}"/>
     <javac debug="false" sourcepath=""
                          srcdir="${build.src}"
-                         destdir="${build.classes.base}"
-                         classpath="${gdata-client.jar}">
+                         destdir="${build.classes.base}">
       <include name="**/gbase/client/*.java"/>
+      <classpath refid="build.gbase.classpath"/>
     </javac>
     <jar destfile="${gdata-base.jar}"
          basedir="${build.classes.base}"
@@ -65,6 +71,19 @@
   </target>
 
   <!-- samples compile -->
+  <path id="sample.gbase.cmdline.compile.classpath">
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${activation.jar}"/>
+    <pathelement location="${gdata-base.jar}"/>
+  </path>
+
+  <path id="sample.gbase.recipe.compile.classpath">
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${activation.jar}"/>     
+    <pathelement location="${servlet.jar}"/>
+    <pathelement location="${gdata-base.jar}"/>
+  </path>
+  
   <target name="sample.gbase.cmdline.compile" depends="sample.gbase.dirs,sample.gbase.dependencies"
    description="Compile Java sources">
     <javac srcdir="${sample.gbase.cmdlinedir}"
@@ -93,17 +112,6 @@
   </target>
 
   <!-- samples build -->
-  <path id="sample.gbase.cmdline.compile.classpath">
-    <pathelement location="${gdata-client.jar}"/>
-    <pathelement location="${gdata-base.jar}"/>
-  </path>
-
-  <path id="sample.gbase.recipe.compile.classpath">
-    <pathelement location="${gdata-client.jar}"/>
-    <pathelement location="${gdata-base.jar}"/>
-    <pathelement location="${servlet.jar}"/>
-  </path>
-
   <target name="sample.gbase.cmdline.build" depends="sample.gbase.cmdline.compile"
     description="build the command-line tools ${gdata-base-cmdline.jar}">
     <jar destfile="${sample.gbase.cmdline.jar}"

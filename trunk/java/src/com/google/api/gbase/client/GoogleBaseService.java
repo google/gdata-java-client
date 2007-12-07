@@ -15,9 +15,9 @@
 
 package com.google.api.gbase.client;
 
-import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.batch.BatchInterruptedException;
+import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.DateTime;
@@ -47,7 +47,7 @@ import java.util.List;
  * GoogleBaseFeed feed = service.query(query);
  * </pre>
  */
-public class GoogleBaseService extends GoogleService {
+public class GoogleBaseService extends MediaService {
 
   /**
    * The official name of the service.
@@ -139,7 +139,7 @@ public class GoogleBaseService extends GoogleService {
 
   /**
    * Returns the Google Base feed associated with a particular feed URL, if
-   * it's been modified since th especified date.
+   * it's been modified since the specified date.
    *
    * @param feedUrl         the URL associated with a feed. This URL can include
    *                        GData query parameters.
@@ -180,6 +180,49 @@ public class GoogleBaseService extends GoogleService {
     return getFeed(feedUrl, GoogleBaseFeed.class);
   }
 
+  /**
+   * Returns the Google base media feed associated with the specified feed URL.
+   * For the call to be valid, the user must be authenticated and own the item. 
+   * The Google Base item has the link to its media feed registered as a
+   * {@link com.google.gdata.data.extensions.FeedLink} extension with the 
+   * {@code media} relation. 
+   * 
+   * @throws IOException error sending request or reading the feed.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *             feed data.
+   * @throws com.google.gdata.util.ResourceNotFoundException invalid feed URL.
+   * @throws ServiceException system error retrieving feed.
+   * @see #getFeed(java.net.URL, Class, com.google.gdata.data.DateTime)
+   */
+  public GoogleBaseMediaFeed getMediaFeed(URL feedUrl) throws IOException, ServiceException {
+    return getFeed(feedUrl, GoogleBaseMediaFeed.class, null);
+  }
+  
+  /**
+   * Returns the Google Base media feed associated with a particular feed URL,
+   * if it's been modified since the specified date.
+   * 
+   * @param feedUrl the URL associated with a media feed for one particular 
+   *            item.
+   * @param ifModifiedSince used to set a precondition date that indicates the
+   *            feed should be returned only if it has been modified after the
+   *            specified date. A value of {@code null} indicates no
+   *            precondition.
+   * @return Feed resource referenced by the input URL.
+   * @throws IOException error sending request or reading the feed.
+   * @throws com.google.gdata.util.NotModifiedException if the feed resource has
+   *             not been modified since the specified precondition date.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *             feed data.
+   * @throws com.google.gdata.util.ResourceNotFoundException invalid feed URL.
+   * @throws ServiceException system error retrieving feed.
+   * @see #getFeed(java.net.URL, Class, com.google.gdata.data.DateTime)
+   */
+  public GoogleBaseMediaFeed getMediaFeed(URL feedUrl, DateTime ifModifiedSince) 
+      throws IOException, ServiceException {
+    return getFeed(feedUrl, GoogleBaseMediaFeed.class, ifModifiedSince);
+  }
+  
   /**
    * Returns an Google Base entry instance, given the URL of the entry and an
    * if-modified-since date.
@@ -229,6 +272,54 @@ public class GoogleBaseService extends GoogleService {
     return getEntry(entryUrl, GoogleBaseEntry.class);
   }
 
+  /**
+   * Returns the media entry referenced by the entryUrl. If the URL is not
+   * pointing to a media entry, an exception will be thrown.
+   * 
+   * @param entryUrl the url to the media entry.
+   * @return a media entry object representing the meta-data for the referenced
+   *         media object (item image or attachment).
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *             entry.
+   * @throws com.google.gdata.util.ResourceNotFoundException if the entry URL is
+   *             not valid.
+   * @throws com.google.gdata.util.ServiceForbiddenException if the GData
+   *             service cannot get the entry resource due to access
+   *             constraints.
+   * @throws ServiceException if a system error occurred when retrieving the
+   *             entry
+   */
+  public GoogleBaseMediaEntry getMediaEntry(URL entryUrl) 
+      throws IOException, ServiceException {
+    return getEntry(entryUrl, GoogleBaseMediaEntry.class, null);
+  }
+  
+  /**
+   * Returns the media entry referenced by the entryUrl, if it's been modified
+   * since the specified date.
+   * 
+   * @param entryUrl the url to the media entry.
+   * @return a media entry object representing the meta-data for the referenced
+   *         media object (item image or attachment).
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.NotModifiedException if the entry resource
+   *             has not been modified after the specified precondition date.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *             entry.
+   * @throws com.google.gdata.util.ResourceNotFoundException if the entry URL is
+   *             not valid.
+   * @throws com.google.gdata.util.ServiceForbiddenException if the GData
+   *             service cannot get the entry resource due to access
+   *             constraints.
+   * @throws ServiceException if a system error occurred when retrieving the
+   *             entry
+   */
+  public GoogleBaseMediaEntry getMediaEntry(URL entryUrl, DateTime ifModifiedSince) 
+      throws IOException, ServiceException {
+    return getEntry(entryUrl, GoogleBaseMediaEntry.class, ifModifiedSince);
+  }
+  
   /**
    * Executes a GData query against the target service and returns the
    * {@link GoogleBaseFeed} containing entries that match the query result, if
@@ -306,7 +397,7 @@ public class GoogleBaseService extends GoogleService {
    *
    * @param e
    */
-  private void addApplicationAttribute(BaseEntry e) {
+  private void addApplicationAttribute(BaseEntry<?> e) {
     GoogleBaseAttributesExtension attrs = e.getExtension(GoogleBaseAttributesExtension.class);
     if (attrs == null) {
       return;
@@ -320,6 +411,7 @@ public class GoogleBaseService extends GoogleService {
    *
    * @param batchFeed
    */
+  @SuppressWarnings("unchecked")
   private void addApplicationAttribute(BaseFeed batchFeed) {
     BatchOperationType defaultType = BatchUtils.getBatchOperationType(batchFeed);
     if (defaultType == null) {

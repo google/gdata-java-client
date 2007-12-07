@@ -16,6 +16,7 @@
 package sample.gbase.cmdline;
 
 import java.net.MalformedURLException;
+import java.util.Arrays;
 
 /**
  * Creates and initializes commands given command-line
@@ -61,6 +62,16 @@ class CommandFactory {
       return createGetCommand(args);
     } else if("batch".equals(commandName)) {
       return createBatchCommand(args);
+    } else if("query-media".equals(commandName)) {
+      return createQueryMediaCommand(args);
+    } else if("insert-media".equals(commandName)) {
+      return createInsertMediaCommand(args);      
+    } else if("update-media".equals(commandName)) {
+      return createUpdateMediaCommand(args);      
+    } else if("delete-media".equals(commandName)) {
+      return createDeleteMediaCommand(args);      
+    } else if("get-media".equals(commandName)) {
+      return createGetMediaCommand(args);      
     } else {
       throw error("Unknown command: " + commandName +
                   ". Available commands: " + ALL_COMMANDS);
@@ -83,7 +94,7 @@ class CommandFactory {
   }
 
   /**
-   * Creates and initializes a {@link QueryCommand}.
+   * Creates and initializes a {@link InsertCommand}.
    */
   private static Command createInsertCommand(String[] args) {
     InsertCommand command = new InsertCommand();
@@ -122,7 +133,7 @@ class CommandFactory {
   private static Command createDeleteCommand(String[] args) {
     DeleteCommand command = new DeleteCommand();
     args = parseAndSetCommonArguments(command, args);
-
+    
     command.setItemId(getItemId(args));
 
     return command;
@@ -134,11 +145,86 @@ class CommandFactory {
   private static Command createGetCommand(String[] args) {
     GetCommand command = new GetCommand();
     args = parseAndSetCommonArguments(command, args);
+    
     command.setItemId(getItemId(args));
+
+    return command;
+  }  
+  
+  /**
+   * Creates and initializes a {@link QueryMediaCommand}.
+   */
+  private static Command createQueryMediaCommand(String[] args) {
+    QueryMediaCommand command = new QueryMediaCommand();
+    args = parseAndSetCommonArguments(command, args);
+
+    if (args.length == 1) {
+      command.setItemMediaUrl(args[0]);
+    } else {
+      throw error("Expected [item_media_feed_url], got " + Arrays.toString(args));
+    }
+    
+    return command;
+  }
+
+  /**
+   * Creates and initializes a {@link InsertMediaCommand}.
+   */
+  private static Command createInsertMediaCommand(String[] args) {
+    InsertMediaCommand command = new InsertMediaCommand();
+    args = parseAndSetCommonArguments(command, args);
+    
+    if (args.length < 3 || args.length > 4) {
+      throw error("Expected four arguments: [item_media_feed_url attachment_path_to_file " +
+      		"attachment_mime_type caption?], got " + Arrays.toString(args));
+    }
+    
+    command.setItemMediaUrl(args[0]);
+    command.setAttachmentFile(args[1]);
+    command.setAttachmentMimeType(args[2]);
+    if (args.length == 4) {
+      command.setCaption(args[3]);
+    }
 
     return command;
   }
 
+  /**
+   * Creates and initializes a {@link UpdateMediaCommand}.
+   */
+  private static Command createUpdateMediaCommand(String[] args) {
+    UpdateMediaCommand command = new UpdateMediaCommand();
+    args = parseAndSetCommonArguments(command, args);
+
+    command.setAttachmentId(getItemId(args));
+
+    return command;
+  }
+
+  /**
+   * Creates and initializes a {@link DeleteMediaCommand}.
+   */
+  private static Command createDeleteMediaCommand(String[] args) {
+    DeleteMediaCommand command = new DeleteMediaCommand();
+    args = parseAndSetCommonArguments(command, args);
+
+    command.setAttachmentId(getItemId(args));
+
+    return command;
+  }
+
+  /**
+   * Creates and initializes a {@link GetMediaCommand).
+   */
+  private static Command createGetMediaCommand(String[] args) {
+    GetMediaCommand command = new GetMediaCommand();
+    args = parseAndSetCommonArguments(command, args);
+    
+    command.setAttachmentId(getItemId(args));
+
+    return command;
+  }
+  
   /**
    * Get the item id from the command line and make sure it's the
    * only argument left.

@@ -18,6 +18,9 @@ package com.google.api.gbase.client;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.PubControl;
+import com.google.gdata.data.extensions.FeedLink;
+import com.google.gdata.data.media.mediarss.MediaContent;
+import com.google.gdata.data.media.mediarss.MediaThumbnail;
 
 /**
  * Constants for GoogleBase-specific namespaces.
@@ -64,6 +67,7 @@ class GoogleBaseNamespaces {
   public static void declareAllExtensions(ExtensionProfile extProfile) {
     declareGExtensions(extProfile);
     declareGMExtensions(extProfile);
+    declareMediaExtensions(extProfile);
   }
 
   /**
@@ -75,6 +79,7 @@ class GoogleBaseNamespaces {
   public static void declareGExtensions(ExtensionProfile extProfile) {
     extProfile.declareEntryExtension(GoogleBaseAttributesExtension.DESCRIPTION);
     extProfile.declareFeedExtension(GoogleBaseAttributesExtension.DESCRIPTION);
+    extProfile.declare(GoogleBaseEntry.class, FeedLink.class);
   }
 
   /**
@@ -88,5 +93,10 @@ class GoogleBaseNamespaces {
     extProfile.declareEntryExtension(GmAttributes.class);
     extProfile.declareEntryExtension(GmItemType.class);
     extProfile.declare(PubControl.class, GmDisapproved.getDefaultDescription());
+  }
+  
+  public static void declareMediaExtensions(ExtensionProfile extProfile) {
+    extProfile.declare(GoogleBaseMediaEntry.class, MediaContent.class);
+    extProfile.declare(MediaContent.class, MediaThumbnail.class);
   }
 }

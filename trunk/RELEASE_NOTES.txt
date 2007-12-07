@@ -1,5 +1,14 @@
 Google Data API - Release Notes
 
+
+Notes for v1.15.1
+-----------------
+Dec 6, 2007
+o  Added support for media feed in Google Base data API.  With the media feed 
+   support you can manage binary attachments to your Google Base items.  With
+   this change you will require Java Mail and Java Activation Framework to
+   use Google Base data API.
+
 Notes for v1.15.0
 -----------------
 Nov 15, 2007
