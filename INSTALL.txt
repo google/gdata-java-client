@@ -29,14 +29,14 @@ standard Java installation.
 3. mail.jar in Sun's JavaMail API (version 1.4 or greater).
    Sun's JavaMail package available for download from 
    "http://java.sun.com/products/javamail/downloads/index.html". This is only
-   required for media specific APIs including Document List Data API, Picasa
-   Web Album API and YouTube Data API.
+   required for media specific APIs including Google Base data API, 
+   Document List data API, Picasa Web Album API and YouTube data API.
 4. activation.jar in Sun's JavaBeans Activation Framewrok.
    This is required only if using JDK version 1.5.
    Sun's JavaBeansActivationFramework is available for download from 
    "http://java.sun.com/products/javabeans/jaf/downloads/index.html".  This is
-   only required for media specific APIs including Document List Data API, 
-   Picasa Web Album API and YouTube Data API.
+   only required for media specific APIs including Google Base data API, 
+   Document List data API, Picasa Web Album API and YouTube data API.
 5. servlet.jar in Sun's Servlet API (version 2.3 or greater).
    This is required only if executing code samples in 'sample.authsub' or
    'sample.gbase.recipe' packages.  Sun's Servlet API package can be

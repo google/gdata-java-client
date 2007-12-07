@@ -58,7 +58,10 @@ public class XmlBlob {
   public void setBase(String v) { base = v; }
 
 
-  /** Namespace declarations inherited when this blob was parsed. */
+  /**
+   * Namespace declarations inherited when this blob was parsed but used
+   * within it.
+   */
   protected LinkedList<XmlNamespace> namespaces =
     new LinkedList<XmlNamespace>();
   public List<XmlNamespace> getNamespaces() { return namespaces; }
@@ -137,7 +140,7 @@ public class XmlBlob {
         // we want the additional namespace to get an arbitrarily generated
         // alias, not the blob's.
 
-        for (XmlNamespace blobNs: blobNamespaces) {
+        for (XmlNamespace blobNs : blobNamespaces) {
           namespaces.add(new XmlWriter.Namespace(blobNs.getAlias(),
                                                  blobNs.getUri()));
         }
@@ -169,4 +172,3 @@ public class XmlBlob {
     w.endElement(namespace, elementName);
   }
 }
-

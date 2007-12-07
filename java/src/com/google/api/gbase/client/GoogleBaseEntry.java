@@ -17,6 +17,9 @@ package com.google.api.gbase.client;
 
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.extensions.FeedLink;
+
+import java.util.List;
 
 /**
  * An object corresponding to one entry in a Google Base Atom XML file.
@@ -76,6 +79,25 @@ public class GoogleBaseEntry extends BaseEntry<GoogleBaseEntry> {
     return metadata;
   }
 
+  /**
+   * Returns the {@link FeedLink} object pointing to the media feed,
+   * or null if the media feed link is not provided (e.g. the entry
+   * is obtained from the {@code /snippets} feed).
+   * 
+   * @return the feed link pointing to the media feed, or null if
+   *   link is not provided
+   */
+  @SuppressWarnings("unchecked")
+  public FeedLink<GoogleBaseMediaFeed> getMediaFeedLink() {
+    List<FeedLink> extensions = getRepeatingExtension(FeedLink.class);
+    for (FeedLink extension : extensions) {
+      if ("media".equals(extension.getRel())) {
+        return extension;
+      } 
+    }
+    return null;
+  }
+  
   /**
    * Declares extensions for the g: and gm: namespaces to an extension profile.
    * 

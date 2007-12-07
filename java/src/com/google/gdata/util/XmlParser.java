@@ -77,50 +77,11 @@ public class XmlParser extends DefaultHandler {
   // The SAXParserFactory used to create underlying SAXParser instances.
   private static SAXParserFactory parserFactory;
 
-  /**
-   * Defines a Java system property that can be set to override the
-   * default JAXP SAX parser factory mechanism and guarantee that a
-   * specific parser will be used.  If set, the value should be the
-   * name of the SAXParserFactory implementation that should be used.
-   */
-  public static final String SAX_PARSER_PROPERTY =
-    "com.google.gdata.SAXParserFactory";
-
-
-  // The JDK system property for JAXP parser configuration.
-  private static final String JDK_PARSER_PROPERTY =
-    "javax.xml.parsers.SAXParserFactory";
-
-
-  // This method must be synchronized because it is not otherwise thread
-  // safe due to system property manipulation;  this is expensive, but
-  // the method will only be used once (or a small number of times)
-  // during XmlParser initialization.
-  private static synchronized SAXParserFactory getSAXParserFactory()
+  // Always return secure SAX parser, which is secured against XXE attacks
+  private static SAXParserFactory getSAXParserFactory()
       throws ParserConfigurationException, SAXException {
 
-    String saxParserFactory = System.getProperty(SAX_PARSER_PROPERTY);
-    if (saxParserFactory == null)
-      return SAXParserFactory.newInstance();
-
-    // Temporarily override the JDK parser selection system property
-    // and create a parser based upon the request implementation.
-    // Doing transient setting of a system property is unfortunate,
-    // but JAXP provides no other explicit way to influence the
-    // factory selection.   This should only happen once (or a very
-    // small number of times) around the first usage(s) of XmlParser.
-    String origParserFactory = System.getProperty(JDK_PARSER_PROPERTY);
-    try {
-      System.setProperty(JDK_PARSER_PROPERTY, saxParserFactory);
-      return SAXParserFactory.newInstance();
-
-    } finally {
-      if (origParserFactory == null) {
-        System.clearProperty(JDK_PARSER_PROPERTY);
-      }  else {
-        System.setProperty(JDK_PARSER_PROPERTY, origParserFactory);
-      }
-    }
+    return SAXParserFactory.newInstance();
   }
 
   /**
@@ -183,8 +144,8 @@ public class XmlParser extends DefaultHandler {
      * output.
      */
     XmlBlob xmlBlob = null;
-    
-    
+
+
     /**
      * Flag indicating whether it's still OK to call {@link #initializeXmlBlob}.
      */
@@ -413,20 +374,38 @@ public class XmlParser extends DefaultHandler {
   /** Document locator used to get line and column numbers for SAX events. */
   Locator locator;
 
+  /**
+   * Used to track namespace declarations seen within the current parse
+   * stream.
+   */
+  private static class NamespaceDecl {
+
+    private NamespaceDecl(XmlWriter.Namespace ns) {
+      this.ns = ns;
+    }
+
+    /** The declared namespace */
+    XmlWriter.Namespace ns;
+
+    /**
+     * {@code true} if the namespace declaration occurs inside an XmlBlob.
+     */
+    boolean inBlob;
+  }
 
   /**
    * Set of all namespace declarations valid at the current location.
    * Includes namespace declarations from all ancestor elements.
    */
-  protected HashMap<String, Stack<XmlWriter.Namespace>> namespaceMap =
-    new HashMap<String, Stack<XmlWriter.Namespace>>();
+  protected HashMap<String, Stack<NamespaceDecl>> namespaceMap =
+    new HashMap<String, Stack<NamespaceDecl>>();
 
 
   /**
    * Namespace declarations for the current element.
    * Valid during {@link #startElement}.
    */
-  ArrayList<XmlWriter.Namespace> namespaceDecls =
+  ArrayList<XmlWriter.Namespace> elementNamespaces =
     new ArrayList<XmlWriter.Namespace>();
 
 
@@ -776,6 +755,15 @@ public class XmlParser extends DefaultHandler {
 
       ++unrecognizedElements;
 
+      // Flag all namespace declarations on the current element as occurring
+      // within a blob
+      for (XmlWriter.Namespace ns : elementNamespaces) {
+        Stack<NamespaceDecl> nsDecls = namespaceMap.get(ns.getAlias());
+        if (nsDecls != null && nsDecls.size() > 0) {
+          nsDecls.peek().inBlob = true;
+        }
+      }
+
       if (curHandler == null) {
         curHandler = parentHandler;
       }
@@ -806,7 +794,7 @@ public class XmlParser extends DefaultHandler {
         try {
           ensureBlobNamespace(curHandler, qName);
           curHandler.innerXml.startElement(null, qName, attrList,
-                                           namespaceDecls);
+                                           elementNamespaces);
         } catch (IOException e) {
           throw new SAXException(e);
         }
@@ -814,7 +802,7 @@ public class XmlParser extends DefaultHandler {
     }
 
     // Make way for next element's state.
-    namespaceDecls.clear();
+    elementNamespaces.clear();
   }
 
 
@@ -930,15 +918,16 @@ public class XmlParser extends DefaultHandler {
   @Override
   public void startPrefixMapping(String alias, String uri) {
 
-    Stack<XmlWriter.Namespace> mapping = namespaceMap.get(alias);
+    Stack<NamespaceDecl> mapping = namespaceMap.get(alias);
     if (mapping == null) {
-      mapping = new Stack<XmlWriter.Namespace>();
+      mapping = new Stack<NamespaceDecl>();
       namespaceMap.put(alias, mapping);
     }
 
     XmlWriter.Namespace ns = new XmlWriter.Namespace(alias, uri);
-    mapping.push(ns);
-    namespaceDecls.add(ns);
+    NamespaceDecl nsDecl = new NamespaceDecl(ns);
+    mapping.push(nsDecl);
+    elementNamespaces.add(ns);
   }
 
 
@@ -953,26 +942,29 @@ public class XmlParser extends DefaultHandler {
   private void ensureBlobNamespace(ElementHandler handler, String qName) {
 
     // Get the namespace.
-    XmlWriter.Namespace ns = null;
+    NamespaceDecl nsDecl = null;
     String alias = qName.substring(0, Math.max(0, qName.indexOf(":")));
     if (alias.equals("xml")) {
       // "xml:" doesn't need a declaration.
       return;
     }
 
-    Stack<XmlWriter.Namespace> mapping = namespaceMap.get(alias);
+    Stack<NamespaceDecl> mapping = namespaceMap.get(alias);
     if (mapping != null) {
-      ns = mapping.peek();
+      nsDecl = mapping.peek();
     }
 
     // The namespace might be null for a namespace-less element.
-    assert alias.length() == 0 || ns != null :
+    assert alias.length() == 0 || nsDecl != null :
       "Namespace alias '" + alias + "' should be mapped in 'namespaceMap'.";
 
-    // Make sure the namespace described within the blob.
-    if (ns != null && !handler.blobNamespaces.contains(alias)) {
+    // Make sure the namespace is described within the blob if it was
+    // originally declared externally to it
+    if (nsDecl != null && !nsDecl.inBlob && nsDecl.ns != null &&
+        !handler.blobNamespaces.contains(alias)) {
       handler.blobNamespaces.add(alias);
-      handler.xmlBlob.namespaces.add(new XmlNamespace(alias, ns.getUri()));
+      handler.xmlBlob.namespaces.add(
+          new XmlNamespace(alias, nsDecl.ns.getUri()));
     }
   }
 }

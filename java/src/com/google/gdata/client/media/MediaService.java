@@ -17,7 +17,6 @@
 package com.google.gdata.client.media;
 
 import com.google.gdata.client.GoogleService;
-import com.google.gdata.client.Service.GDataRequest;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.MediaContent;
@@ -28,6 +27,7 @@ import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.media.MediaStreamSource;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.RedirectRequiredException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -100,6 +100,34 @@ public class MediaService extends GoogleService {
 
 
   /**
+   * Returns a {@link MediaSource} that can be used to read the media pointed
+   * to by the media url.
+   *
+   * @param mediaUrl the media content describing the media
+   * @param contentType media content type
+   * @param ifModifiedSince used to set a precondition date that indicates the
+   *          media should be returned only if it has been modified after the
+   *          specified date. A value of {@code null} indicates no precondition.
+   * @return media source that can be used to access the media content.
+   * @throws IOException error communicating with the GData service.
+   * @throws ServiceException entry request creation failed.
+   */
+  private MediaSource getMediaResource(URL mediaUrl, ContentType contentType,
+      DateTime ifModifiedSince)
+      throws IOException, ServiceException {
+
+    GDataRequest request =
+        createRequest(GDataRequest.RequestType.QUERY,
+            mediaUrl, contentType);
+    request.setIfModifiedSince(ifModifiedSince);
+    request.execute();
+    InputStream resultStream = request.getResponseStream();
+    return new MediaStreamSource(resultStream,
+        request.getResponseContentType().toString());
+  }
+
+
+  /**
    * Returns a {@link MediaSource} that can be used to read the external
    * media content of an entry.
    *
@@ -115,21 +143,20 @@ public class MediaService extends GoogleService {
                               DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
+    URL mediaUrl = null;
     try {
-      GDataRequest request =
-          createRequest(GDataRequest.RequestType.QUERY,
-              new URL(mediaContent.getUri()),
-              mediaContent.getMimeType());
-      request.setIfModifiedSince(ifModifiedSince);
-      request.execute();
-      InputStream resultStream = request.getResponseStream();
-      MediaSource mediaSource =
-          new MediaStreamSource(resultStream,
-              request.getResponseContentType().toString());
-      return mediaSource;
+      mediaUrl = new URL(mediaContent.getUri());
+      return getMediaResource(mediaUrl,
+          mediaContent.getMimeType(), ifModifiedSince);
     } catch (MalformedURLException mue) {
       throw new ServiceException("Invalid media source URI", mue);
+    } catch (RedirectRequiredException e) {
+      mediaUrl = handleRedirectException(e);
+    } catch (SessionExpiredException e) {
+      handleSessionExpiredException(e);
     }
+    return getMediaResource(mediaUrl,
+        mediaContent.getMimeType(), ifModifiedSince);
   }
 
 

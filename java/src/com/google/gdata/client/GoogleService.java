@@ -480,7 +480,7 @@ public class GoogleService extends Service implements TokenListener {
     } catch (RedirectRequiredException e) {
       entryUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      authTokenFactory.handleSessionExpiredException(e);
+      handleSessionExpiredException(e);
     }
 
     return super.getEntry(entryUrl, entryClass, ifModifiedSince);
@@ -496,7 +496,7 @@ public class GoogleService extends Service implements TokenListener {
     } catch (RedirectRequiredException e) {
       entryUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      authTokenFactory.handleSessionExpiredException(e);
+      handleSessionExpiredException(e);
     }
 
     return super.update(entryUrl, entry);
@@ -512,7 +512,7 @@ public class GoogleService extends Service implements TokenListener {
     } catch (RedirectRequiredException e) {
       feedUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      authTokenFactory.handleSessionExpiredException(e);
+      handleSessionExpiredException(e);
     }
 
     return super.insert(feedUrl, entry);
@@ -530,7 +530,7 @@ public class GoogleService extends Service implements TokenListener {
     } catch (RedirectRequiredException e) {
       feedUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      authTokenFactory.handleSessionExpiredException(e);
+      handleSessionExpiredException(e);
     }
 
     return super.getFeed(feedUrl, feedClass, ifModifiedSince);
@@ -548,7 +548,7 @@ public class GoogleService extends Service implements TokenListener {
     } catch (RedirectRequiredException e) {
       query = new Query(handleRedirectException(e));
     } catch (SessionExpiredException e) {
-      authTokenFactory.handleSessionExpiredException(e);
+      handleSessionExpiredException(e);
     }
 
     return super.getFeed(query, feedClass, ifModifiedSince);
@@ -564,7 +564,7 @@ public class GoogleService extends Service implements TokenListener {
     } catch (RedirectRequiredException e) {
       entryUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
-      authTokenFactory.handleSessionExpiredException(e);
+      handleSessionExpiredException(e);
     }
 
     super.delete(entryUrl);
@@ -575,7 +575,7 @@ public class GoogleService extends Service implements TokenListener {
    * Handles a redirect exception by generating the new URL to use for the
    * redirect.
    */
-  private URL handleRedirectException(RedirectRequiredException redirect)
+  protected URL handleRedirectException(RedirectRequiredException redirect)
       throws ServiceException {
     try {
       return new URL(redirect.getRedirectLocation());
@@ -583,6 +583,14 @@ public class GoogleService extends Service implements TokenListener {
       throw new ServiceException("Invalid redirected-to URL - "
                                  + redirect.getRedirectLocation());
     }
+  }
+
+  /**
+   * Delegates session expired exception to  {@link AuthTokenFactory}.
+   */
+  protected void handleSessionExpiredException(SessionExpiredException e)
+      throws ServiceException {
+    authTokenFactory.handleSessionExpiredException(e);
   }
 
 

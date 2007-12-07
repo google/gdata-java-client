@@ -69,6 +69,12 @@ import java.util.List;
 public class YouTubeClient {
 
   /**
+   * Input stream for reading user input.
+   */
+  private static final  BufferedReader bufferedReader = new BufferedReader(
+        new InputStreamReader(System.in)); 
+
+  /**
    * The name of the server hosting the YouTube GDATA feeds
    */
   public static final String YOUTUBE_GDATA_SERVER = "http://gdata.youtube.com";
@@ -77,7 +83,7 @@ public class YouTubeClient {
    * The prefix common to all standard feeds
    */
   public static final String STANDARD_FEED_PREFIX = YOUTUBE_GDATA_SERVER
-      + "/feeds/standardfeeds/";
+      + "/feeds/api/standardfeeds/";
 
   /**
    * The URL of the "Most Recent" feed
@@ -113,13 +119,13 @@ public class YouTubeClient {
    * The URL of the "Videos" feed
    */
   public static final String VIDEOS_FEED = YOUTUBE_GDATA_SERVER
-      + "/feeds/videos";
+      + "/feeds/api/videos";
 
   /**
    * The prefix of the User Feeds
    */
   public static final String USER_FEED_PREFIX = YOUTUBE_GDATA_SERVER
-      + "/feeds/users/";
+      + "/feeds/api/users/";
 
   /**
    * The URL suffix of the test user's uploads feed
@@ -387,8 +393,6 @@ public class YouTubeClient {
    * @return a line of text read from the standard input
    */
   private static String readLine() throws IOException {
-    BufferedReader bufferedReader = new BufferedReader(
-        new InputStreamReader(System.in));
     return bufferedReader.readLine();
   }
 
