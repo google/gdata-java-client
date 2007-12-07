@@ -8,6 +8,9 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.15.1 ==
+  * Added support for media feed in Google Base data API.  With the media feed support you can manage binary attachments to your Google Base items.  With this change you will require Java Mail and Java Activation Framework to use Google Base data API.
+
 == 1.15.0 ==
   * Added Java client support for Google Apps Email Migration API.
   * Removed GData API documentation from the release package.  Online documentation is available at http://code.google.com/apis/gdata.
