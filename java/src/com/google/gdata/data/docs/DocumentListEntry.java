@@ -50,16 +50,26 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * Represents the MIME types supported by the doclist GData feed
    */
   public enum MediaType {
-    CSV("text/comma-separated-values"),
-    DOC("application/msword"),
-    ODS("application/vnd.oasis.opendocument.spreadsheet"),
+    JPG("image/jpeg"),
+    JPEG("image/jpeg"),
+    PNG("image/png"),
+    BMP("image/bmp"),
+    GIF("image/gif"),
+    TXT("text/plain"),
+    HTML("text/html"),
+    HTM("text/html"),
     ODT("application/vnd.oasis.opendocument.text"),
+    SXW("application/vnd.sun.xml.writer"),
+    DOC("application/msword"),
+    RTF("application/rtf"),
     PPS("application/vnd.ms-powerpoint"),
     PPT("application/vnd.ms-powerpoint"),
-    RTF("application/rtf"),
-    SXW("application/vnd.sun.xml.writer"),
-    TXT("text/plain"),
-    XLS("application/vnd.ms-excel");
+    XLS("application/vnd.ms-excel"),
+    ODS("application/x-vnd.oasis.opendocument.spreadsheet"),
+    CSV("text/csv"),
+    TAB("text/tab-separated-value"),
+    TSV("text/tab-separated-value"),
+    ;
 
     private String mimeType;
 
@@ -79,6 +89,18 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
         return valueOf(fileName);
       }
     }
+  }
+
+  /**
+   * Returns the mime type given a file name.  Not intended for extenal
+   * use, see setFile(File, String) instead.  protected access for
+   * testing.
+   *
+   * @throws IllegalArgumentException if the mime type is not known
+   * given the file name
+   */
+  protected static String getMimeTypeFromFileName(String fileName) {
+    return MediaType.fromFileName(fileName).getMimeType();
   }
 
   public static final String DOCUMENT_NAMESPACE
@@ -157,13 +179,25 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     return result;
   }
 
+  /**
+   * Associate a File with this entry, implicitly determining the mime type
+   * from the file's extension.
+   *
+   * @deprecated Prefer setFile(File, String)
+   */
+  @Deprecated
   public void setFile(File file) throws IOException {
-    MediaType mediaType = MediaType.fromFileName(file.getName());
-    MediaFileSource fileSource = new MediaFileSource(file,
-        mediaType.getMimeType());
+    setFile(file, getMimeTypeFromFileName(file.getName()));
+  }
+
+  /**
+   * Associate a File with this entry with the specified mime type
+   */
+  public void setFile(File file, String mimeType) throws IOException {
+    MediaFileSource fileSource = new MediaFileSource(file, mimeType);
     MediaContent content = new MediaContent();
     content.setMediaSource(fileSource);
-    content.setMimeType(new ContentType(mediaType.getMimeType()));
+    content.setMimeType(new ContentType(mimeType));
     setContent(content);
   }
 
