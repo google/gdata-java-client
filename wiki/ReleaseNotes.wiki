@@ -1,4 +1,4 @@
-#summary The current release notes
+﻿#summary The current release notes
 #labels Featured
 
 = Introduction =
@@ -7,6 +7,9 @@ The release notes show bugfixes and feature additions over the course of the pro
 The wiki page shows the release notes for the current binary download, the subversion project contains a text version with the most recent changes.
 
 = Details =
+
+== 1.15.2 ==
+  * Added support to upload image files using Document List Feed Data API.
 
 == 1.15.1 ==
   * Added support for media feed in Google Base data API.  With the media feed support you can manage binary attachments to your Google Base items.  With this change you will require Java Mail and Java Activation Framework to use Google Base data API.
@@ -19,7 +22,7 @@ The wiki page shows the release notes for the current binary download, the subve
   * Added batch support for Event Feed in Calendar Data API.
   * Added batch support for Cells Feed in Spreadsheet Data API.
   * Added support to handle foreign markup constraints as specified in RFC4287 sec 6.3 and AtomPub section 6.2.
-  * Lowered visibility of log messages reporting on unrecognized foreign markup in xml feeds from INFO level to FINE level. 
+  * Lowered visibility of log messages reporting on unrecognized foreign markup in xml feeds from INFO level to FINE level.
 
 == 1.14.0 ==
   * Added support for [http://code.google.com/apis/youtube/overview.html YouTube Data API].
