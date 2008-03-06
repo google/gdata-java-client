@@ -8,6 +8,10 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.16.0 ==
+  * Added Java client support for Google Contacts API.
+  * Samples are packaged separately from source code.  With this change, there will be two packages, gdata-src.java.zip which contains the API source and gdata-samples.java.zip which contains samples and precompiled lib.
+
 == 1.15.2 ==
   * Added support to upload image files using Document List Feed Data API.
 
