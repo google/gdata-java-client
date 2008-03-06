@@ -55,4 +55,8 @@ public class MediaFileSource extends BaseMediaSource {
   public OutputStream getOutputStream() throws IOException {
     throw new UnsupportedOperationException("Cannot write to MediaFileSource");
   }
+  
+  public File getMediaFile() {
+    return mediaFile;
+  }
 }

@@ -20,9 +20,9 @@ import com.google.gdata.data.ValueConstruct;
 import com.google.gdata.data.appsforyourdomain.Namespaces;
 
 /**
- * Google Apps name space element: <apps:mailItemProperty>. Used to model an
- * enumerable property about a mail item, such as whether it is to be marked
- * as starred, read, trash, etc. when migrated into Gmail.
+ * Google Apps name space element: {@code <apps:mailItemProperty>}. Used to
+ * model an enumerable property about a mail item, such as whether it is to be
+ * marked as starred, read, trash, etc. when migrated into Gmail.
  * 
  * 
  */

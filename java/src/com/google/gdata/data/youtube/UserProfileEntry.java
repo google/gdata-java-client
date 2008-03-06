@@ -17,6 +17,7 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
@@ -25,6 +26,7 @@ import com.google.gdata.data.extensions.FeedLink;
 import com.google.gdata.data.media.mediarss.MediaThumbnail;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * An atom entry containing a user profile.
@@ -278,6 +280,36 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
       setExtension(new YtUsername(name));
     }
   }
+  
+  /** Gets the first name of the youtube user */
+  public String getFirstName() {
+    YtFirstName firstname = getExtension(YtFirstName.class);
+    return firstname == null ? null : firstname.getContent();
+  }
+  
+  /** Sets the first name of the youtube user */
+  public void setFirstName(String firstname) {
+    if (firstname == null) {
+      removeExtension(YtFirstName.class);
+    } else {
+      setExtension(new YtFirstName(firstname));
+    }
+  }
+  
+  /** Gets the last name of the youtube user */
+  public String getLastName() {
+    YtLastName lastname = getExtension(YtLastName.class);
+    return lastname == null ? null : lastname.getContent();
+  }
+  
+  /** Sets the last name of the youtube user */
+  public void setLastName(String lastname) {
+    if (lastname == null) {
+      removeExtension(YtLastName.class);
+    } else {
+      setExtension(new YtLastName(lastname));
+    }
+  }
 
   /** Gets the channel description. */
   public String getDescription() {
@@ -294,6 +326,60 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
     }
   }
 
+  public YtUserProfileStatistics getStatistics() {
+    return getExtension(YtUserProfileStatistics.class);
+  }
+  
+  public void setStatistics(YtUserProfileStatistics ups) {
+    if (ups == null) {
+      removeExtension(YtUserProfileStatistics.class);
+    } else {
+      setExtension(ups);
+    }    
+  }
+  
+  /**
+   * Returns the category with the given scheme
+   * @param categories the set of categories.
+   * @param scheme the scheme that the return value should have
+   * @return the category or null if not found
+   */
+  private Category getCategoryForScheme(Set<Category> categories, 
+      String scheme) {
+    for (Category c : categories) {
+      if (c.getScheme().equals(scheme)) {
+        return c;
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Returns the term of the channel type category. 
+   * If no category with scheme channel type is found, null is returned.
+   * 
+   * @return term of the category with the channel type scheme.
+   */
+  public String getChannelType() {
+    return getCategoryForScheme(this.getCategories(), 
+        YouTubeNamespace.CHANNELTYPE_SCHEME).getTerm();
+  }
+
+  /**
+   * Set channel type of category tag.
+   * @param channelTypeTerm If null, the channel type category is removed. 
+   */
+  public void setChannelType(String channelTypeTerm) {
+    if (channelTypeTerm == null) {
+      this.getCategories().remove(getCategoryForScheme(this.getCategories(),
+          YouTubeNamespace.CHANNELTYPE_SCHEME));
+      return;
+    } else {
+      getCategories().add(
+          new Category(YouTubeNamespace.CHANNELTYPE_SCHEME, channelTypeTerm));
+    }
+  }
+  
   /** Returns a modifiable list of {@link FeedLink}s. */
   public List<FeedLink> getFeedLinks() {
     return getRepeatingExtension(FeedLink.class);
@@ -333,7 +419,12 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
   public Link getVideoLogLink() {
     return getLink(YouTubeNamespace.VLOG_REL, Link.Type.ATOM);
   }
-
+  
+  /** Returns a link to the featured video of the user's profile. */
+  public Link getFeaturedVideoLink() {
+    return getLink(YouTubeNamespace.FEATURED_VIDEO_REL, Link.Type.ATOM);
+  }  
+  
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
@@ -354,11 +445,20 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
     extProfile.declare(UserProfileEntry.class, YtRelationship.class);
     extProfile.declare(UserProfileEntry.class, YtSchool.class);
     extProfile.declare(UserProfileEntry.class, YtUsername.class);
-    extProfile.declare(UserProfileEntry.class, MediaThumbnail.class);
+
+    ExtensionDescription mediaThumbnailDescription =
+        ExtensionDescription.getDefaultDescription(MediaThumbnail.class);
+    mediaThumbnailDescription.setRepeatable(false);
+    extProfile.declare(UserProfileEntry.class, mediaThumbnailDescription);
+    
+    extProfile.declare(UserProfileEntry.class, YtUserProfileStatistics.class);
     
     ExtensionDescription feedLinkDescription = FeedLink.getDefaultDescription();
     feedLinkDescription.setRepeatable(true);
     extProfile.declare(UserProfileEntry.class, feedLinkDescription);
+    
+    extProfile.declare(UserProfileEntry.class, YtFirstName.class);
+    extProfile.declare(UserProfileEntry.class, YtLastName.class);
 
     extProfile.declareArbitraryXmlExtension(UserProfileEntry.class);
   }

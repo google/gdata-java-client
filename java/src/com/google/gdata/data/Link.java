@@ -26,12 +26,13 @@ import java.util.ArrayList;
 
 /**
  * External link type.
- *
- * 
  */
 public class Link extends ExtensionPoint {
 
 
+  /**
+   * The Rel class defines constants for some common link relation types.
+   */
   public static final class Rel {
 
     /**
@@ -117,9 +118,12 @@ public class Link extends ExtensionPoint {
   }
 
 
+  /**
+   * The Type class contains several common link content types.
+   */
   public static final class Type {
 
-
+    
     /** Defines the link type used for Atom content. */
     public static final String ATOM = "application/atom+xml";
 
@@ -129,7 +133,7 @@ public class Link extends ExtensionPoint {
   }
 
 
-  public Link() {};
+  public Link() {}
 
 
   public Link(String rel, String type, String href) {
@@ -137,7 +141,7 @@ public class Link extends ExtensionPoint {
     this.type = type;
     setHref(href);
   }
-
+  
   /**
    * Link relation type.  Possible values include {@code self}, {@code
    * prev}, {@code next}, {@code enclosure}, etc.
@@ -286,11 +290,24 @@ public class Link extends ExtensionPoint {
   public class AtomHandler extends ExtensionPoint.ExtensionHandler {
 
 
+    /**
+     * {@code true if the 'href' attribute is required.
+     */
+    private final boolean linkRequired;
+    
     public AtomHandler(ExtensionProfile extProfile) throws IOException {
       super(extProfile, Link.class);
+      linkRequired = true;
+    }
+    
+    protected AtomHandler(ExtensionProfile extProfile,
+        Class<? extends Link> extendedClass) throws IOException {
+      super(extProfile, extendedClass);
+      linkRequired = false;
     }
 
 
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
@@ -316,9 +333,10 @@ public class Link extends ExtensionPoint {
     }
 
 
+    @Override
     public void processEndElement() throws ParseException {
 
-      if (href == null) {
+      if (linkRequired && href == null) {
         throw new ParseException(
           "Link must have an 'href' attribute.");
       }

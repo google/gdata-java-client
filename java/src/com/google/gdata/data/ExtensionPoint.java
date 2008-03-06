@@ -44,25 +44,25 @@ import java.util.Map;
  * {@code <gd:when>}.
  * <p>
  * The set of accepted extensions is defined within {@link ExtensionManifest}.
- *
- * 
- * 
  */
 public class ExtensionPoint extends AbstractExtension {
 
+  /**
+   * Collection of non-repeating extensions. Uses {@link LinkedHashMap} in order
+   * to provide a predictable generation output order based upon insertion
+   * order.
+   */
+  private Map<Class<? extends Extension>, Extension> nonRepeatingExtensionMap =
+      new LinkedHashMap<Class<? extends Extension>, Extension>();
 
-  /** Collection of non-repeating extensions.  Uses {@link LinkedHashMap} in
-   * order to provide a predictable generation output order based upon
-   * insertion order. */
-  private Map<Class, Extension> nonRepeatingExtensionMap =
-    new LinkedHashMap<Class, Extension>();
 
-
-  /** Collection of repeating extensions.  Uses {@link LinkedHashMap} in
-   * order to provide a predictable generation output order based upon
-   * insertion order. */
-  private Map<Class, List<Extension>> repeatingExtensionMap =
-    new LinkedHashMap<Class, List<Extension>>();
+  /**
+   * Collection of repeating extensions. Uses {@link LinkedHashMap} in order to
+   * provide a predictable generation output order based upon insertion order.
+   */
+  private Map<Class<? extends Extension>, List<Extension>> 
+      repeatingExtensionMap =
+          new LinkedHashMap<Class<? extends Extension>, List<Extension>>();
 
 
   /** Arbitrary XML (unrecognized extensions). */
@@ -76,13 +76,12 @@ public class ExtensionPoint extends AbstractExtension {
   /**
    * Simple constructor to create a new (empty) ExtensionPoint.
    */
-  public ExtensionPoint() {};
+  public ExtensionPoint() {}
 
 
   /**
-   * Simple copy constructor that does a shallow copy of extension and
-   * manifest data from an existing ExtensionPoint to the constructed
-   * instance.
+   * Simple copy constructor that does a shallow copy of extension and manifest
+   * data from an existing ExtensionPoint to the constructed instance.
    */
   protected ExtensionPoint(ExtensionPoint sourcePoint) {
 
@@ -95,22 +94,35 @@ public class ExtensionPoint extends AbstractExtension {
 
 
   /**
-   * Declares the set of expected Extension types for an ExtensionPoint
-   * within the target extension profile.   The base implementation
-   * does not declare any extensions, but can be overridden by specific
-   * types of ExtensionPoints that always contain a well-defined set
-   * of extensions.
-   *
-   * @param extProfile
-   *          the ExtensionProfile to initialize.
+   * Declares the set of expected Extension types for an ExtensionPoint within
+   * the target extension profile. The base implementation does not declare any
+   * extensions, but can be overridden by specific types of ExtensionPoints that
+   * always contain a well-defined set of extensions.
+   * 
+   * @param extProfile the ExtensionProfile to initialize.
    */
   public void declareExtensions(ExtensionProfile extProfile) {
     // The default implementation does not register any extensions.
   }
 
+  /** Returns whether the non-repeating extension is present. */
+  public final <T extends Extension> boolean hasExtension(
+      Class<T> extensionClass) {
+    return nonRepeatingExtensionMap.containsKey(extensionClass);
+  }
+
+  /** Returns whether the repeating extension is present. */
+  @SuppressWarnings("unchecked")
+  public final <T extends Extension> boolean hasRepeatingExtension(
+      Class<T> extensionClass) {
+    List<T> ret = (List<T>) repeatingExtensionMap.get(extensionClass);
+    return ret != null && !ret.isEmpty();
+  }
+
   /** Retrieves a non-repeating extension or {@code null} if not present. */
+  @SuppressWarnings("unchecked")
   public <T extends Extension> T getExtension(Class<T> extensionClass) {
-    return (T)nonRepeatingExtensionMap.get(extensionClass);
+    return (T) nonRepeatingExtensionMap.get(extensionClass);
   }
 
   /**
@@ -120,36 +132,37 @@ public class ExtensionPoint extends AbstractExtension {
    * @return Collection of non-repeating extensions.
    */
   public Collection<Extension> getExtensions() {
-    return Collections.unmodifiableCollection(
-        nonRepeatingExtensionMap.values());
+    return Collections
+        .unmodifiableCollection(nonRepeatingExtensionMap.values());
   }
 
   /** Retrieves a repeating extension list (an empty list if not present). */
+  @SuppressWarnings("unchecked")
   public <T extends Extension> List<T> getRepeatingExtension(
       Class<T> extensionClass) {
 
-    List<T> ret = (List<T>)repeatingExtensionMap.get(extensionClass);
+    List<T> ret = (List<T>) repeatingExtensionMap.get(extensionClass);
     if (ret == null) {
       ret = new ArrayList<T>();
-      repeatingExtensionMap.put(extensionClass, (List<Extension>)ret);
+      repeatingExtensionMap.put(extensionClass, (List<Extension>) ret);
     }
     return ret;
   }
 
   /**
-   * Returns an unmodifiable collection of lists of  repeating extensions in
-   * this ExtensionPoint. The Extensions that are of the same type
-   * are grouped together in lists within the collection.
+   * Returns an unmodifiable collection of lists of repeating extensions in this
+   * ExtensionPoint. The Extensions that are of the same type are grouped
+   * together in lists within the collection.
    * 
    * @return Collection of lists of repeating extensions.
    */
   public Collection<List<Extension>> getRepeatingExtensions() {
-    return Collections.unmodifiableCollection(
-        repeatingExtensionMap.values());
+    return Collections.unmodifiableCollection(repeatingExtensionMap.values());
   }
- 
+
   /** Internal helper method. */
-  protected boolean addExtension(Extension ext, Class extClass) {
+  protected boolean addExtension(Extension ext,
+      Class<? extends Extension> extClass) {
 
     if (nonRepeatingExtensionMap.containsKey(extClass)) {
       return false;
@@ -171,9 +184,10 @@ public class ExtensionPoint extends AbstractExtension {
     nonRepeatingExtensionMap.remove(ext.getClass());
     addExtension(ext, ext.getClass());
   }
-  
+
   /** Internal helper method. */
-  protected void addRepeatingExtension(Extension ext, Class extClass) {
+  protected void addRepeatingExtension(Extension ext,
+      Class<? extends Extension> extClass) {
 
     List<Extension> extList = repeatingExtensionMap.get(extClass);
     if (extList == null) {
@@ -198,7 +212,7 @@ public class ExtensionPoint extends AbstractExtension {
 
 
   /** Removes an extension object based on its class. */
-  public void removeExtension(Class extensionClass) {
+  public void removeExtension(Class<? extends Extension> extensionClass) {
     nonRepeatingExtensionMap.remove(extensionClass);
   }
 
@@ -214,10 +228,66 @@ public class ExtensionPoint extends AbstractExtension {
     extList.remove(ext);
   }
 
+  /**
+   * Called to visit a child of this extension point.
+   * @param ev the extension visitor
+   * @param child the child extension
+   */
+  protected void visitChild(ExtensionVisitor ev, Extension child) 
+      throws ExtensionVisitor.StoppedException {
+
+    // Recurse for nested extension points or do a visit for simple extensions
+    if (child instanceof ExtensionPoint) {
+      ((ExtensionPoint) child).visit(ev, this);
+    } else {
+      ev.visit(this, child);
+    }
+  }
+  
+  /**
+   * Called to visit all children of this extension point.
+   * 
+   * @param ev the extension visitor.
+   */
+  protected void visitChildren(ExtensionVisitor ev) 
+      throws ExtensionVisitor.StoppedException {
+
+    // Visit children
+    for (Extension ext : nonRepeatingExtensionMap.values()) {
+      visitChild(ev, ext);
+    }
+
+    for (List<Extension> extList : repeatingExtensionMap.values()) {
+      for (Extension ext : extList) {
+        visitChild(ev, ext);
+      }
+    }
+  }
 
   /**
-   * Retrieves the XML blob containing arbitrary (unrecognized)
-   * extensions.
+   * Visits the tree of extension data associated with this extension point
+   * instance using the specified {@link ExtensionVisitor}, starting at this
+   * extension point.
+   * 
+   * @param ev the extension visitor instance to use.
+   * @param parent the parent of this extension point (or {@code null} if no
+   *        parent or unspecified.
+   * @returns the action to take for sibling nodes.
+   */
+  public void visit(ExtensionVisitor ev, ExtensionPoint parent)
+      throws ExtensionVisitor.StoppedException {
+
+    // Visit the current extension point
+    boolean visitChildren = ev.visit(parent, this);
+    if (visitChildren) {
+      visitChildren(ev);
+    }
+    ev.visitComplete(this);
+  }
+
+
+  /**
+   * Retrieves the XML blob containing arbitrary (unrecognized) extensions.
    */
   public XmlBlob getXmlBlob() {
     return xmlBlob;
@@ -232,9 +302,9 @@ public class ExtensionPoint extends AbstractExtension {
 
   /**
    * Generates an XML blob containing all recognized and unrecognized
-   * extensions. This can be used by applications that persist data in
-   * a store that might be accessed by other applications--ones that
-   * don't necessarily recognize the same set of extensions.
+   * extensions. This can be used by applications that persist data in a store
+   * that might be accessed by other applications--ones that don't necessarily
+   * recognize the same set of extensions.
    */
   public XmlBlob generateCumulativeXmlBlob(ExtensionProfile extProfile)
       throws IOException {
@@ -253,7 +323,7 @@ public class ExtensionPoint extends AbstractExtension {
     }
 
     if (manifest != null) {
-      for (XmlWriter.Namespace ns: manifest.getNamespaceDecls()) {
+      for (XmlWriter.Namespace ns : manifest.getNamespaceDecls()) {
         XmlNamespace newNs = new XmlNamespace(ns.getAlias(), ns.getUri());
         if (!namespaces.contains(newNs)) {
           namespaces.add(newNs);
@@ -261,13 +331,13 @@ public class ExtensionPoint extends AbstractExtension {
       }
     }
 
-    for (Extension ext: nonRepeatingExtensionMap.values()) {
+    for (Extension ext : nonRepeatingExtensionMap.values()) {
       ext.generate(xw, extProfile);
     }
 
-    for (List<Extension> extList: repeatingExtensionMap.values()) {
+    for (List<Extension> extList : repeatingExtensionMap.values()) {
       xw.startRepeatingElement();
-      for (Extension ext: extList) {
+      for (Extension ext : extList) {
         ext.generate(xw, extProfile);
       }
       xw.endRepeatingElement();
@@ -279,13 +349,12 @@ public class ExtensionPoint extends AbstractExtension {
 
 
   /**
-   * Reverses {@link #generateCumulativeXmlBlob(ExtensionProfile)}.
-   * This operation overwrites the current contents of this extension
-   * point.
+   * Reverses {@link #generateCumulativeXmlBlob(ExtensionProfile)}. This
+   * operation overwrites the current contents of this extension point.
    */
-  public void parseCumulativeXmlBlob(XmlBlob xmlBlob,
-                                     ExtensionProfile extProfile,
-                                     Class extendedClass)
+  public void parseCumulativeXmlBlob(XmlBlob blob,
+      ExtensionProfile extProfile, 
+      Class<? extends ExtensionPoint> extendedClass)
       throws IOException, ParseException {
 
     this.xmlBlob = new XmlBlob();
@@ -295,14 +364,14 @@ public class ExtensionPoint extends AbstractExtension {
     // Prepare a fake XML document from the blob.
     StringWriter sw = new StringWriter();
     XmlWriter w = new XmlWriter(sw);
-    XmlBlob.startElement(w, null, "CUMULATIVE_BLOB", xmlBlob, null, null);
-    XmlBlob.endElement(w, null, "CUMULATIVE_BLOB", xmlBlob);
+    XmlBlob.startElement(w, null, "CUMULATIVE_BLOB", blob, null, null);
+    XmlBlob.endElement(w, null, "CUMULATIVE_BLOB", blob);
 
     // Now parse it.
     StringReader sr = new StringReader(sw.toString());
     XmlParser parser = new XmlParser();
-    parser.parse(sr, new CumulativeBlobHandler(extProfile, extendedClass),
-                 "", "CUMULATIVE_BLOB");
+    parser.parse(sr, new CumulativeBlobHandler(extProfile, extendedClass), "",
+        "CUMULATIVE_BLOB");
   }
 
 
@@ -311,7 +380,7 @@ public class ExtensionPoint extends AbstractExtension {
 
 
     public CumulativeBlobHandler(ExtensionProfile extProfile,
-                                 Class extendedClass) throws IOException {
+        Class<? extends ExtensionPoint> extendedClass) throws IOException {
 
       this.extProfile = extProfile;
       this.extendedClass = extendedClass;
@@ -320,17 +389,15 @@ public class ExtensionPoint extends AbstractExtension {
 
 
     private final ExtensionProfile extProfile;
-    private final Class extendedClass;
+    private final Class<? extends ExtensionPoint> extendedClass;
 
-
-    public ElementHandler getChildHandler(String namespace,
-                                          String localName,
-                                          Attributes attrs)
-        throws ParseException, IOException {
+    @Override
+    public ElementHandler getChildHandler(String namespace, String localName,
+        Attributes attrs) throws ParseException, IOException {
       // Try ExtensionPoint. It returns {@code null} if there's no handler.
       ElementHandler extensionHandler =
-        getExtensionHandler(extProfile, extendedClass,
-                            namespace, localName, attrs);
+          getExtensionHandler(extProfile, extendedClass, namespace, localName,
+              attrs);
       if (extensionHandler != null) {
         return extensionHandler;
       }
@@ -342,8 +409,7 @@ public class ExtensionPoint extends AbstractExtension {
 
 
   /** Retrieves the manifest for the specified class. */
-  protected ExtensionManifest getManifest(
-      ExtensionProfile extProfile,
+  protected ExtensionManifest getManifest(ExtensionProfile extProfile,
       Class<? extends ExtensionPoint> extendedClass) {
 
     if (manifest == null) {
@@ -365,9 +431,9 @@ public class ExtensionPoint extends AbstractExtension {
           "No content allowed on an extension point");
     }
     try {
-      ExtensionManifest manifest = p.getManifest(this.getClass());
-      if (manifest != null) {
-        checkRequiredExtensions(manifest);
+      ExtensionManifest profManifest = p.getManifest(this.getClass());
+      if (profManifest != null) {
+        checkRequiredExtensions(profManifest);
       }
     } catch (ParseException e) {
       throw new IllegalStateException(e.getMessage());
@@ -379,6 +445,7 @@ public class ExtensionPoint extends AbstractExtension {
     w.endElement(namespace, localName);
   }
 
+  @SuppressWarnings("unused")
   @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile p,
       String namespace, String localName, Attributes attrs)
@@ -386,22 +453,18 @@ public class ExtensionPoint extends AbstractExtension {
     return new ExtensionHandler(p, this.getClass(), attrs);
   }
 
- /**
+  /**
    * Generates XML corresponding to the type implementing {@link
-   * ExtensionPoint}. The reason this routine is necessary is that the
-   * embedded XML blob may contain namespace declarations.
+   * ExtensionPoint}. The reason this routine is necessary is that the embedded
+   * XML blob may contain namespace declarations.
    */
   protected void generateStartElement(XmlWriter w,
-                                      XmlWriter.Namespace namespace,
-                                      String elementName,
-                                      Collection<XmlWriter.Attribute>
-                                       additionalAttrs,
-                                      Collection<XmlWriter.Namespace>
-                                       additionalNs)
-      throws IOException {
+      XmlWriter.Namespace namespace, String elementName,
+      Collection<XmlWriter.Attribute> additionalAttrs,
+      Collection<XmlWriter.Namespace> additionalNs) throws IOException {
 
-    XmlBlob.startElement(w, namespace, elementName, xmlBlob,
-                         additionalAttrs, additionalNs);
+    XmlBlob.startElement(w, namespace, elementName, xmlBlob, additionalAttrs,
+        additionalNs);
   }
 
 
@@ -409,26 +472,23 @@ public class ExtensionPoint extends AbstractExtension {
    * Generates XML corresponding to extended properties. Implementations in
    * extended classes should always call the base class to allow for nested
    * extensions.
-   *
-   * @param   w
-   *            Output writer.
-   *
-   * @param   extProfile
-   *            Extension profile for use by nested extensions.
-   *
-   * @throws  IOException
+   * 
+   * @param w Output writer.
+   * 
+   * @param extProfile Extension profile for use by nested extensions.
+   * 
+   * @throws IOException
    */
-  protected void generateExtensions(XmlWriter w,
-                                    ExtensionProfile extProfile)
+  protected void generateExtensions(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
-    for (Extension ext: nonRepeatingExtensionMap.values()) {
+    for (Extension ext : nonRepeatingExtensionMap.values()) {
       ext.generate(w, extProfile);
     }
 
-    for (List<Extension> extList: repeatingExtensionMap.values()) {
+    for (List<Extension> extList : repeatingExtensionMap.values()) {
       w.startRepeatingElement();
-      for (Extension ext: extList) {
+      for (Extension ext : extList) {
         ext.generate(w, extProfile);
       }
       w.endRepeatingElement();
@@ -441,84 +501,73 @@ public class ExtensionPoint extends AbstractExtension {
 
 
   /**
-   * Initializes parser handler's XML blob state.
-   * Should be called by the handler's constructor in order to honor
+   * Initializes parser handler's XML blob state. Should be called by the
+   * handler's constructor in order to honor
    * {@link ExtensionProfile#declareArbitraryXmlExtension(Class)}.
    */
   protected void initializeArbitraryXml(ExtensionProfile profile,
-                                        Class extPoint,
-                                        ElementHandler handler)
+      Class<? extends ExtensionPoint> extPoint, ElementHandler handler)
       throws IOException {
 
     boolean arbitraryXml = profile.allowsArbitraryXml();
     if (!arbitraryXml) {
-      ExtensionManifest manifest = getManifest(profile, extPoint);
-      arbitraryXml = manifest != null && manifest.arbitraryXml;
+      ExtensionManifest profManifest = getManifest(profile, extPoint);
+      arbitraryXml = profManifest != null && profManifest.arbitraryXml;
     }
     if (arbitraryXml) {
       handler.initializeXmlBlob(xmlBlob,
-                                /* mixedContent */ false,
-                                /* fullTextIndex */ false);
+          /* mixedContent */false,
+          /* fullTextIndex */false);
     }
   }
 
 
   /**
-   * XML parser callback for extended properties. Implementations in
-   * extended classes should always call the base class to allow for
-   * nested extensions.
-   *
-   * @param   extProfile
-   *            Extension profile for use by nested element handlers.
-   *
-   * @param   extPoint
-   *            Current active ExtensionPoint class within which you're
-   *            looking for a handler for a nested extension element.
-   *
-   * @param   namespaceUri
-   *            Namespace URI of the XML element.
-   *
-   * @param   localName
-   *            Name of the XML element.
-   *
-   * @param   attrs
-   *            Child element attributes. These attributes will be
-   *            communicated to the returned {@link ElementHandler}
-   *            through its {@link
-   *            ElementHandler#processAttribute(String, String,
-   *            String)} method. They are passed here because sometimes
-   *            the value of some attribute determines the element's
-   *            content type, so different element handlers may be
-   *            needed.
-   *
-   * @return  Element handler for the custom tag or {@code null} if the tag
-   *          is not recognized. Unrecognized tags are stored in the XML blob.
-   *
-   * @throws  ParseException
-   *            XML schema error. Could be a result of having a
-   *            duplicate entry, illegal contents (such as unrecognized
-   *            attributes or nested elements), etc.
+   * XML parser callback for extended properties. Implementations in extended
+   * classes should always call the base class to allow for nested extensions.
+   * 
+   * @param extProfile Extension profile for use by nested element handlers.
+   * 
+   * @param extPoint Current active ExtensionPoint class within which you're
+   *        looking for a handler for a nested extension element.
+   * 
+   * @param namespaceUri Namespace URI of the XML element.
+   * 
+   * @param localName Name of the XML element.
+   * 
+   * @param attrs Child element attributes. These attributes will be
+   *        communicated to the returned {@link ElementHandler} through its
+   *        {@link ElementHandler#processAttribute(String, String, String)}
+   *        method. They are passed here because sometimes the value of some
+   *        attribute determines the element's content type, so different
+   *        element handlers may be needed.
+   * 
+   * @return Element handler for the custom tag or {@code null} if the tag is
+   *         not recognized. Unrecognized tags are stored in the XML blob.
+   * 
+   * @throws ParseException XML schema error. Could be a result of having a
+   *         duplicate entry, illegal contents (such as unrecognized attributes
+   *         or nested elements), etc.
    */
   protected ElementHandler getExtensionHandler(ExtensionProfile extProfile,
-                                               Class extPoint,
-                                               String namespaceUri,
-                                               String localName,
-                                               Attributes attrs)
-      throws ParseException, IOException {
+      Class<? extends ExtensionPoint> extPoint, String namespaceUri,
+      String localName, Attributes attrs) throws ParseException, IOException {
 
-    ExtensionManifest manifest = getManifest(extProfile, extPoint);
-    if (manifest == null) {
+    ExtensionManifest profManifest = getManifest(extProfile, extPoint);
+    if (profManifest == null) {
       return null;
     }
 
     // Look for an explicit match, followed by a wildcarded namespace match.
     ExtensionDescription extDescription =
-      manifest.supportedExtensions.get(new Pair(namespaceUri, localName));
+        profManifest.supportedExtensions.get(
+            new Pair<String, String>(namespaceUri, localName));
 
     if (extDescription == null) {
 
       extDescription =
-        manifest.supportedExtensions.get(new Pair(namespaceUri, "*"));
+          profManifest.supportedExtensions.get(new Pair<String, String>(
+              namespaceUri, "*"));
 
       if (extDescription == null) {
         return null;
@@ -552,8 +601,8 @@ public class ExtensionPoint extends AbstractExtension {
     }
 
     // Retrieve the handler.
-    ElementHandler handler = extension.getHandler(extProfile, namespaceUri,
-                                                  localName, attrs);
+    ElementHandler handler =
+        extension.getHandler(extProfile, namespaceUri, localName, attrs);
 
     // Store the new extension instance.
     if (needsAdd) {
@@ -563,8 +612,8 @@ public class ExtensionPoint extends AbstractExtension {
       } else {
         boolean added = addExtension(extension, extClass);
         if (!added) {
-          throw new ParseException(
-            "Duplicate extension element " + namespaceUri + ":" + localName);
+          throw new ParseException("Duplicate extension element "
+              + namespaceUri + ":" + localName);
         }
       }
     }
@@ -573,22 +622,23 @@ public class ExtensionPoint extends AbstractExtension {
 
 
   /** Checks whether all required extensions are present. */
-  protected void checkRequiredExtensions(ExtensionManifest manifest)
+  protected void checkRequiredExtensions(ExtensionManifest profManifest)
       throws ParseException {
 
-    for (ExtensionDescription extDescription:
-         manifest.supportedExtensions.values()) {
+    for (ExtensionDescription extDescription : profManifest.supportedExtensions
+        .values()) {
 
       if (extDescription.isRequired()) {
-        Class extClass = extDescription.getExtensionClass();
-        boolean found = (extDescription.isRepeatable()
-                         ? repeatingExtensionMap.containsKey(extClass)
-                         : nonRepeatingExtensionMap.containsKey(extClass));
+        Class<? extends Extension> extClass =
+            extDescription.getExtensionClass();
+        boolean found =
+            (extDescription.isRepeatable() ? repeatingExtensionMap
+                .containsKey(extClass) : nonRepeatingExtensionMap
+                .containsKey(extClass));
         if (!found) {
-          throw new ParseException(
-            "Required extension element " +
-            extDescription.getNamespace().getUri() + ":" +
-            extDescription.getLocalName() + " not found.");
+          throw new ParseException("Required extension element "
+              + extDescription.getNamespace().getUri() + ":"
+              + extDescription.getLocalName() + " not found.");
         }
       }
     }
@@ -596,69 +646,67 @@ public class ExtensionPoint extends AbstractExtension {
 
   /**
    * ElementHandler implementation for handlers associated with an
-   * ExtensionPoint class. Provides common initialization and
-   * code for looking up handlers defined within the ExtensionProfile
-   * associated with the ExtensionPoint.
+   * ExtensionPoint class. Provides common initialization and code for looking
+   * up handlers defined within the ExtensionProfile associated with the
+   * ExtensionPoint.
    */
   public class ExtensionHandler extends AbstractExtension.AttributesHandler {
 
     protected ExtensionProfile extProfile;
-    protected Class extendedClass;
+    protected Class<? extends ExtensionPoint> extendedClass;
     protected boolean hasExtensions;
-    protected ExtensionManifest manifest;
+    protected ExtensionManifest extManifest;
 
 
     /**
      * Constructs a new Handler instance that process extensions on a class
-     * associated with the ExtensionPoint.
-     *
-     * @param profile       The extension profile associatd with the Handler.
+     * associated with the ExtensionPoint. e
+     * 
+     * @param profile The extension profile associatd with the Handler.
      * @param extendedClass The extended class within the profile for this
-     *                      handler
+     *        handler
      */
-    public ExtensionHandler(ExtensionProfile profile, Class extendedClass)
-        throws IOException {
+    public ExtensionHandler(ExtensionProfile profile,
+        Class<? extends ExtensionPoint> extendedClass) throws IOException {
       this(profile, extendedClass, null);
     }
 
     /**
      * Constructs a new Handler instance that process extensions on a class
      * associated with the ExtensionPoint, and consumes the attributes.
-     *
-     * @param profile       The extension profile associatd with the Handler.
+     * 
+     * @param profile The extension profile associatd with the Handler.
      * @param extendedClass The extended class within the profile for this
-     *                      handler
-     * @param attrs         XML attributes or <code>null</code> to suppress the
-     *                      use of {@link AttributeHelper}
+     *        handler
+     * @param attrs XML attributes or <code>null</code> to suppress the use of
+     *        {@link AttributeHelper}
      */
-    public ExtensionHandler(ExtensionProfile profile, Class extendedClass,
-        Attributes attrs)
+    public ExtensionHandler(ExtensionProfile profile,
+        Class<? extends ExtensionPoint> extendedClass, Attributes attrs)
         throws IOException {
       super(attrs);
 
       this.extProfile = profile;
       this.extendedClass = extendedClass;
 
-      this.manifest = profile.getManifest(extendedClass);
-      if (this.manifest != null) {
+      this.extManifest = profile.getManifest(extendedClass);
+      if (this.extManifest != null) {
         hasExtensions = true;
       }
       initializeArbitraryXml(extProfile, extendedClass, this);
     }
 
-
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
-                                                    String localName,
-                                                    Attributes attrs)
-        throws ParseException, IOException {
+        String localName, Attributes attrs) throws ParseException, IOException {
 
       // If extensions have been defined for the extended class, then
       // look for a handler.
       if (hasExtensions) {
 
         XmlParser.ElementHandler extensionHandler =
-          getExtensionHandler(extProfile, extendedClass,
-                              namespace, localName, attrs);
+            getExtensionHandler(extProfile, extendedClass, namespace,
+                localName, attrs);
         if (extensionHandler != null) {
           return extensionHandler;
         }
@@ -667,13 +715,13 @@ public class ExtensionPoint extends AbstractExtension {
       return super.getChildHandler(namespace, localName, attrs);
     }
 
-
+    @Override
     public void processEndElement() throws ParseException {
 
       super.processEndElement();
 
-      if (this.manifest != null) {
-        checkRequiredExtensions(this.manifest);
+      if (this.extManifest != null) {
+        checkRequiredExtensions(this.extManifest);
       }
 
       //
@@ -681,7 +729,7 @@ public class ExtensionPoint extends AbstractExtension {
       // to validate against the full ExtensionPoint state (including
       // sibling Extension instances).
       //
-      for (Extension extension :  nonRepeatingExtensionMap.values()) {
+      for (Extension extension : nonRepeatingExtensionMap.values()) {
         if (extension instanceof ValidatingExtension) {
           ((ValidatingExtension) extension).validate(ExtensionPoint.this);
         }

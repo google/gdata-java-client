@@ -1,0 +1,3 @@
+# GData Kind Adaptors for http://schemas.google.com/g/2005#message
+com.google.gdata.data.extensions.MessageEntry
+com.google.gdata.data.extensions.MessageFeed

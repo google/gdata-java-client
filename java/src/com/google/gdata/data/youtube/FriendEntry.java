@@ -17,9 +17,12 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.extensions.Email;
+import com.google.gdata.util.Namespaces;
 
 /**
  * An entry that corresponds to a youtube contact/friend as 
@@ -39,13 +42,13 @@ public class FriendEntry extends BaseEntry<FriendEntry> {
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_FRIEND);
   }
   
-  /** Gets the youtube username of the contact. */
+  /** Gets the youtube username of the contact (for youtube user contacts). */
   public String getUsername() {
     YtUsername username = getExtension(YtUsername.class);
     return username == null ? null : username.getContent();
   }
 
-  /** Sets the youtube username of the contact. */
+  /** Sets the youtube username of the contact (for youtube user contacts). */
   public void setUsername(String name) {
     if (name == null) {
       removeExtension(YtUsername.class);
@@ -84,11 +87,31 @@ public class FriendEntry extends BaseEntry<FriendEntry> {
     getLinks().add(link);
   }
 
+  /** Gets the contact e-mail address (for e-mail contacts.) */
+  public Email getEmail() {
+    return getExtension(Email.class);
+  }
+
+  /** Sets the contact e-mail address (for e-mail contacs.) */
+  public void setEmail(Email email) {
+    if (email == null) {
+      removeExtension(Email.class);
+    } else {
+      setExtension(email);
+    }
+  }
+
   /** Declares extensions used in this entry. */
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(FriendEntry.class, YtStatus.class);
     extProfile.declare(FriendEntry.class, YtUsername.class);
+    
+    ExtensionDescription emailExtension = Email.getDefaultDescription();
+    emailExtension.setRepeatable(false);
+    extProfile.declare(FriendEntry.class, emailExtension);
+    extProfile.declareAdditionalNamespace(Namespaces.gNs);
+
     extProfile.declareArbitraryXmlExtension(FriendEntry.class);
   }
 }

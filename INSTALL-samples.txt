@@ -1,0 +1,57 @@
+Installing GData Java Client API library
+========================================
+
+Table of Contents
+------------------
+  1. Package Contents
+  2. Requirements
+  3. Installation
+
+PACKAGE CONTENTS:
+-----------------
+Google Data APIs ("GData" for short) Java client provides source code and
+libraries for interacting with GData-enabled services.  This package includes
+  1. Precompile java libraries under "gdata/java/lib".
+  2. Third party dependencies under "gdata/java/third_party".
+  3. GData-enabled service specific samples under "gdata/java/sample".
+  4. Ant build configuration to run the sample code.
+  5. Javadoc for client source under "gdata/java/doc".
+
+REQUIREMENTS:
+-------------
+GData Java Client depends on following tools/platforms.
+1. Java Development Kit version 5.0 or greater.  Latest version of JDK
+   available for download from http://java.sun.com.
+2. Apache ANT version 1.7 or greater.  Apache's ANT binary is available for
+   download from http://ant.apache.org.
+
+Following third_party dependency libraries are required to compile/run the
+samples.
+1. mail.jar in Sun's JavaMail API (version 1.4 or greater).
+   Sun's JavaMail package available for download from
+   "http://java.sun.com/products/javamail/downloads/index.html". This is only
+   required for media specific APIs including Google Base data API,
+   Document List data API, Picasa Web Album API and YouTube data API.
+2. activation.jar in Sun's JavaBeans Activation Framewrok.
+   This is required only if using JDK version 1.5.
+   Sun's JavaBeansActivationFramework is available for download from
+   "http://java.sun.com/javase/technologies/desktop/javabeans/jaf/downloads/index.html".
+   This is only required for media specific APIs including
+   Google Base data API, Document List data API, Picasa Web Album API and
+   YouTube data API.
+3. servlet.jar in Sun's Servlet API (version 2.3 or greater).
+   This is required only if executing code samples in 'sample.authsub' or
+   'sample.gbase.recipe' packages.  Sun's Servlet API package can be
+   downloaded from "http://java.sun.com/products/servlet/download.html".
+Download above mentioned third_party jar files and save under
+"gdata/java/third_party".
+
+INSTALLATION:
+-------------
+1. Unpack gdata-samples.zip package to local folder.
+2. Edit "gdata/java/build-samples/build.properties" file to specify location
+   of required third_party jar files. Also specify applicable input data
+   for samples.
+3. To run a specific sample, execute the ant run target corresponding to the
+   sample.  For example to execute calendar sample, run command
+   "ant -f build-samples.xml sample.calendar.run" from folder "gdata/java".

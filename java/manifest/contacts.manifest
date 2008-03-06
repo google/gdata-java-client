@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Class-Path: gdata-client-@client.spec.version@.jar gdata-contacts-meta-@contacts.spec.version@.jar
+
+Name: com/google/gdata/client/contacts/
+Specification-Title: Google Contacts Data API
+Specification-Version: @contacts.spec.version@
+Specification-Vendor: Google Inc.
+Implementation-Title: Contacts GData client extensions for Java
+Implementation-Version: @contacts.impl.version@
+Implementation-Vendor: Google Inc.

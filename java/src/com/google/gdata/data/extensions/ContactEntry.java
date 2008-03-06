@@ -27,9 +27,12 @@ import java.util.List;
 /**
  * Extension class for manipulating entries of the Contact kind.
  *
+ * @deprecated Please use {@link com.google.gdata.data.contacts.ContactEntry}
+ *     instead.
  * 
  */
 @Kind.Term(ContactEntry.CONTACT_KIND)
+@Deprecated
 public class ContactEntry extends BaseEntry<ContactEntry> {
 
   /**
@@ -69,10 +72,13 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
    */
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(ContactEntry.class, Email.getDefaultDescription());
-    extProfile.declare(ContactEntry.class, Im.getDefaultDescription());
+    extProfile.declare(ContactEntry.class,
+        Im.getDefaultDescription(false, true));
     extProfile.declare(ContactEntry.class, PhoneNumber.getDefaultDescription());
     extProfile.declare(ContactEntry.class,
         PostalAddress.getDefaultDescription());
+    extProfile.declare(ContactEntry.class,
+        Organization.getDefaultDescription(false, false));
     extProfile.declare(ContactEntry.class, GeoPt.getDefaultDescription());
     extProfile.declare(ContactEntry.class, Deleted.class);
   }
@@ -109,6 +115,12 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     getPostalAddresses().add(postalAddress);
   }
 
+  public Organization getOrganization() {
+    return getExtension(Organization.class);
+  }
+  public void setOrganization(Organization org) {
+    setExtension(org);
+  }
   public List<GeoPt> getLocations() {
     return getRepeatingExtension(GeoPt.class);
   }

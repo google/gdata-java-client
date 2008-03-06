@@ -20,7 +20,10 @@ import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * {@code <media:group>}.
@@ -58,6 +61,28 @@ public class MediaGroup extends ExtensionPoint implements Extension {
     return getRepeatingExtension(MediaCategory.class);
   }
 
+  
+  /**
+   * Returns all the found categories of the given scheme. If the given scheme
+   * parameter is null it returns all the categories that do not have a scheme
+   * set.
+   * 
+   * @param scheme scheme to search for, can be null.
+   * @return the found categories that are of the given scheme, it may be an
+   *         empty set if no such categories were specified, but never null.
+   */
+  public Set<MediaCategory> getCategoriesWithScheme(String scheme) {
+    Set<MediaCategory> result = new HashSet<MediaCategory>();
+    for (MediaCategory category : getCategories()) {
+      if (category.getScheme() == scheme
+          || (category.getScheme() != null && category.getScheme().equals(scheme))) {
+        result.add(category);
+      }
+    }
+
+    return Collections.unmodifiableSet(result);
+  }
+  
   public void clearCategories() {
     getCategories().clear();
   }

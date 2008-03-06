@@ -16,6 +16,7 @@
 package com.google.api.gbase.client;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.PubControl;
 
 /**
  * Handle gm: attributes found in histogram and item types feeds.
@@ -35,7 +36,7 @@ import com.google.gdata.data.BaseEntry;
  */
 public class MetadataEntryExtension {
 
-  private final BaseEntry owner;
+  private final BaseEntry<?> owner;
 
   /**
    * Item type description information, if it is set.
@@ -52,7 +53,7 @@ public class MetadataEntryExtension {
    *
    * @param owner entry this object is linked to
    */
-  public MetadataEntryExtension(BaseEntry owner) {
+  public MetadataEntryExtension(BaseEntry<?> owner) {
     this.owner = owner;
     this.itemType = new ItemTypeDescription(owner);
   }
@@ -141,5 +142,44 @@ public class MetadataEntryExtension {
   public boolean hasGmDisapproved() {
     return owner.getPubControl() != null 
         && owner.getPubControl().getExtension(GmDisapproved.class) != null;
+  }
+
+  /**
+   * Returns the publishing priority for the entry or {@code null} if 
+   * the entry doesn't contain this information.
+   * 
+   * @return the value for the {@code publishing_priority} parameter, 
+   *     or {@code null} if this information is not available.
+   */
+  public GmPublishingPriority.Value getGmPublishingPriority() {
+    PubControl pubControl = owner.getPubControl();
+    if (pubControl == null) {
+      return null;
+    }
+    
+    GmPublishingPriority priority = pubControl.getExtension(
+        GmPublishingPriority.class);
+    if (priority == null) {
+      return null;
+    }
+    
+    return priority.getValue();
+  }
+  
+  /**
+   * Sets the publishing priority for the entry. 
+   * 
+   * @param value the value for the publish priority
+   */
+  public void setGmPublishingPriority(GmPublishingPriority.Value value) {
+    GmPublishingPriority priority = new GmPublishingPriority();
+    priority.setValue(value);
+    
+    PubControl pubControl = owner.getPubControl();
+    if (pubControl == null) {
+      pubControl = new PubControl();
+      owner.setPubControl(pubControl);
+    }
+    pubControl.setExtension(priority);
   }
 }

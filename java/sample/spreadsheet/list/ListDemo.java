@@ -77,7 +77,8 @@ public class ListDemo {
       " delete <id>            [[deletes; use 'list' first]]",
       " update <id> day=Wed    [[modifies]",
       " search Rosie Tue       [[full-text search]]",
-      " query name = 'Rosie'   [[structured query]]"};
+      " query name = 'Rosie'   [[structured query]]",
+      " exit"};
 
   /** Our view of Google Spreadsheets as an authenticated Google user. */
   private SpreadsheetService service;

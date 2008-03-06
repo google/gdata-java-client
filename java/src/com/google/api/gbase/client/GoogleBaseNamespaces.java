@@ -16,6 +16,7 @@
 package com.google.api.gbase.client;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.PubControl;
 import com.google.gdata.data.extensions.FeedLink;
@@ -79,7 +80,11 @@ class GoogleBaseNamespaces {
   public static void declareGExtensions(ExtensionProfile extProfile) {
     extProfile.declareEntryExtension(GoogleBaseAttributesExtension.DESCRIPTION);
     extProfile.declareFeedExtension(GoogleBaseAttributesExtension.DESCRIPTION);
-    extProfile.declare(GoogleBaseEntry.class, FeedLink.class);
+    
+    ExtensionDescription feedLinkExtDesc = 
+        ExtensionDescription.getDefaultDescription(FeedLink.class);
+    feedLinkExtDesc.setRepeatable(true);
+    extProfile.declare(GoogleBaseEntry.class, feedLinkExtDesc);
   }
 
   /**
@@ -93,6 +98,8 @@ class GoogleBaseNamespaces {
     extProfile.declareEntryExtension(GmAttributes.class);
     extProfile.declareEntryExtension(GmItemType.class);
     extProfile.declare(PubControl.class, GmDisapproved.getDefaultDescription());
+    extProfile.declare(PubControl.class, 
+        GmPublishingPriority.getDefaultDescription());
   }
   
   public static void declareMediaExtensions(ExtensionProfile extProfile) {

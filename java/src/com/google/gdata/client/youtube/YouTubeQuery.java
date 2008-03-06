@@ -25,6 +25,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A helper class that helps building queries for the
@@ -45,7 +47,13 @@ public class YouTubeQuery extends Query {
   private static final String RACY = "racy";
   private static final String RACY_INCLUDE = "include";
   private static final String RACY_EXCLUDE = "exclude";
+  private static final String LANGUAGE_RESTRICT = "lr";
+  private static final String RESTRICTION = "restriction";
 
+  private static final Pattern COUNTRY_CODE_PATTERN = Pattern.compile("[a-zA-Z]{2}");
+  private static final Pattern IP_V4_PATTERN
+      = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+  
   /**
    * Standard values for the {@code time} parameter.
    */
@@ -92,9 +100,14 @@ public class YouTubeQuery extends Query {
    */
   public static enum OrderBy {
     RELEVANCE("relevance"),
+    /**
+     * @deprecated use {@link #PUBLISHED} instead.
+     */
+    @Deprecated
     UPDATED("updated"),
     VIEW_COUNT("viewCount"),
-    RATING("rating");
+    RATING("rating"),
+    PUBLISHED("published");
 
     private final String value;
 
@@ -128,6 +141,12 @@ public class YouTubeQuery extends Query {
       PARAMETER_TO_ORDERBY = Collections.unmodifiableMap(map);
     }
   }
+
+  /**
+   * Prefix for specifying relevance by language.
+   */
+
+  private static final Pattern RELEVANCE_LANGUAGE_PATTERN = Pattern.compile("_lang_([^_]+)");
 
 
   /**
@@ -258,6 +277,32 @@ public class YouTubeQuery extends Query {
   }
 
   /**
+   * Sets the value of the {@code lr} parameter.
+   *
+   * This parameters restricts the videos that are returned
+   * to videos with its title, description and tags mostly
+   * in the specified language.
+   * It might be different from the language of the video itself.
+   *
+   * @param languageCode <a
+   *   href="http://www.loc.gov/standards/iso639-2/php/code_list.php">
+   *   ISO 639-1 2-letter language code</a>. {@code zh-Hans} for simplified
+   *   chinese, {@code zh-Hant} for traditional chinese.
+   */
+  public void setLanguageRestrict(String languageCode) {
+    overwriteCustomParameter(LANGUAGE_RESTRICT, languageCode);
+  }
+
+  /**
+   * Gets the value of the {@code lr} parameter.
+   *
+   * @return value of the {@code lr} parameter; a language code
+   */
+  public String getLanguageRestrict() {
+    return getCustomParameterValue(LANGUAGE_RESTRICT);
+  }
+
+  /**
    * Gets the value of the {@code orderby} parameter.
    *
    * @return value of the {@code orderby} parameter.
@@ -265,7 +310,11 @@ public class YouTubeQuery extends Query {
    *   query that cannot be transformed into {@link YouTubeQuery.OrderBy}
    */
   public OrderBy getOrderby() {
-    return OrderBy.fromParameterValue(getCustomParameterValue(ORDERBY));
+    String stringValue = getCustomParameterValue(ORDERBY);
+    if (stringValue != null && stringValue.startsWith("relevance_")) {
+      return OrderBy.RELEVANCE;
+    }
+    return OrderBy.fromParameterValue(stringValue);
   }
 
   /**
@@ -280,8 +329,53 @@ public class YouTubeQuery extends Query {
   }
 
   /**
-   * Gest the value of the {@code racy} parameter.
+   * Sets order by relevance with results optimized for a specific
+   * language.
    *
+   * @param languageCode {@code null} or <a
+   *   href="http://www.loc.gov/standards/iso639-2/php/code_list.php">
+   *   ISO 639-1 2-letter language code</a>. {@code zh-Hans} for simplified
+   *   chinese, {@code zh-Hant} for traditional chinese.
+   */
+  public void setOrderByRelevanceForLanguage(String languageCode) {
+    overwriteCustomParameter(ORDERBY,
+        languageCode == null
+        ? OrderBy.RELEVANCE.toParameterValue() : "relevance_lang_" + languageCode);
+  }
+
+  /**
+   * Gets the language for which relevance ordering is optimized.
+   *
+   * @return a language code as specified to
+   *   {@link #setOrderByRelevanceForLanguage} or {@code null}
+   * @throws IllegalStateException if ordering is not set to relevance
+   */
+  public String getOrderByRelevanceForLanguage() {
+    String stringValue = getCustomParameterValue(ORDERBY);
+
+    if (stringValue == null) {
+      // Default: order by relevance, no specific language
+      return null;
+    }
+
+    if (getOrderby() != OrderBy.RELEVANCE) {
+      throw new IllegalStateException("Not ordering by relevance. Please" 
+          + " check with getOrderBy() first");
+    }
+
+    if (stringValue == null) {
+      return null;
+    }
+    Matcher matcher = RELEVANCE_LANGUAGE_PATTERN.matcher(stringValue);
+    if (matcher.find()) {
+      return matcher.group(1);
+    }
+    return null;
+  }
+
+  /**
+   * Gets the value of the {@code racy} parameter.
+   * 
    * @return true if the {@code racy=include}
    */
   public boolean getIncludeRacy() {
@@ -303,6 +397,86 @@ public class YouTubeQuery extends Query {
     }
 
     overwriteCustomParameter(RACY, stringValue);
+  }
+  
+  /**
+   * Retrieves the country restriction set on the current query, if any.
+   * 
+   * @return the current country restriction as a two letter ISO 3166 country
+   *         code, or {@code null} if no country restriction is set.
+   *         
+   * @see #getIpRestriction()
+   */
+  public String getCountryRestriction() {
+    String restriction = getCustomParameterValue(RESTRICTION);
+    if (restriction == null) {
+      return null;
+    }
+    
+    return COUNTRY_CODE_PATTERN.matcher(restriction).matches() ? restriction : null;
+  }
+  
+  /**
+   * Sets the {@code restriction} parameter to a country code.
+   * <p>
+   * This parameter restricts the returned results to content available for
+   * clients in the specified country.
+   * <p>
+   * Only one of the {@link #setCountryRestriction(String)} or
+   * {@link #setIpRestriction(String)} should be used, using both will only take
+   * into consideration the last used.
+   * 
+   * @param countryCode a two letter ISO-3166 country code, may be {@code null}
+   *        to mean no restriction at all.
+   * @throws IllegalArgumentException if the given country code is not a well
+   *         formated two letter country code.
+   */
+  public void setCountryRestriction(String countryCode) {
+    if (countryCode != null && !COUNTRY_CODE_PATTERN.matcher(countryCode).matches()) {
+      throw new IllegalArgumentException("Invalid country code: " + countryCode);
+    }
+    
+    overwriteCustomParameter(RESTRICTION, countryCode);
+  }
+  
+  /**
+   * Retrieves the IP restriction set on the current query, if any.
+   * 
+   * @return the current IP v4 restriction or {@code null} if no IP restriction
+   *         is set.
+   *         
+   * @see #getCountryRestriction()
+   */
+  public String getIpRestriction() {
+    String restriction = getCustomParameterValue(RESTRICTION);
+    if (restriction == null) {
+      return null;
+    }
+    
+    return IP_V4_PATTERN.matcher(restriction).matches() ? restriction : null;
+  }
+  
+  /**
+   * Sets the {@code restriction} parameter to an IP v4 address.
+   * <p>
+   * This parameter restricts the returned results to content available for
+   * clients in the country that the provided IP address belongs to.
+   * <p>
+   * Only one of the {@link #setCountryRestriction(String)} or
+   * {@link #setIpRestriction(String)} should be used, using both will only take
+   * into consideration the last used.
+   * 
+   * @param ip a v4 IP address and may be {@code null} to mean no restriction at
+   *        all.
+   * @throws IllegalArgumentException if the given address is not a well
+   *         formated IP v4 address.
+   */
+  public void setIpRestriction(String ip) {
+    if (ip != null && !IP_V4_PATTERN.matcher(ip).matches()) {
+      throw new IllegalArgumentException("Invalid IP v4 address: " + ip);
+    }
+    
+    overwriteCustomParameter(RESTRICTION, ip);
   }
 
   void overwriteCustomParameter(String name, String value) {

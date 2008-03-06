@@ -21,6 +21,8 @@ import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 
+import java.util.Iterator;
+
 /**
  * Entries that appear on the publisher playlist feed.
  *
@@ -100,6 +102,34 @@ public class SubscriptionEntry extends FeedLinkEntry<SubscriptionEntry>{
       }
     }
     return null;
+  }
+
+  /**
+   * Sets the type category of this entry.
+   *
+   * If a type category already exists, it will be removed.
+   *
+   * @param type new subscription type or {@code null}
+   */
+  public void setSubscriptionType(Type type) {
+    clearSubscriptionType();
+    if (type != null) {
+      addSubscriptionType(type);
+    }
+  }
+
+  /**
+   * Removes all categories with scheme {@link YouTubeNamespace.SUBSCRIPTIONTYPE_SCHEME}.
+   */
+  private void clearSubscriptionType() {
+    for (Iterator<Category> categories = getCategories().iterator(); 
+        categories.hasNext(); ) {
+      Category category = categories.next();
+      if (YouTubeNamespace.SUBSCRIPTIONTYPE_SCHEME.equals(
+          category.getScheme())) {
+        categories.remove();
+      }
+    } 
   }
   
   /**

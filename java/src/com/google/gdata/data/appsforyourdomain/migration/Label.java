@@ -31,14 +31,13 @@ import java.util.ArrayList;
 
 
 /**
- * Google Apps name space element: <apps:Label>. Used to model the labels that 
- * should be supplied after a migrated message is inserted into GMail
- * 
+ * Google Apps name space element: {@code <apps:label>}. Used to model the
+ * labels that should be supplied after a migrated message is inserted into
+ * GMail
  * 
  * 
  */
-public class Label extends ExtensionPoint 
-    implements Extension {
+public class Label extends ExtensionPoint implements Extension {
 
   public static final String EXTENSION_LOCAL_NAME = "label";
   public static final String ATTRIBUTE_LABEL_NAME = "labelName";
@@ -59,7 +58,7 @@ public class Label extends ExtensionPoint
 
   
   public Label() {
-    labelName = null;
+    this(null);
   }
   
   public Label(String labelName) {

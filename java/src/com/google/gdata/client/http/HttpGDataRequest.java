@@ -26,6 +26,8 @@ import com.google.gdata.data.ParseSource;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.InvalidEntryException;
+import com.google.gdata.util.LoggableInputStream;
+import com.google.gdata.util.LoggableOutputStream;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ResourceNotFoundException;
@@ -41,25 +43,24 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 
 /**
- * The HttpGDataRequest class provides a basic implemention of the
+ * The HttpGDataRequest class provides a basic implementation of the
  * <code>GDataRequest</code> interface over HTTP.
  *
  * @see GDataRequest
  */
 public class HttpGDataRequest implements GDataRequest {
 
-  private static final Logger logger =
+  static final Logger logger =
           Logger.getLogger(HttpGDataRequest.class.getName());
-
 
   /**
    * If this system property is set to <code>true</code>, the GData HTTP
@@ -84,6 +85,13 @@ public class HttpGDataRequest implements GDataRequest {
    */
   public static final String METHOD_OVERRIDE_HEADER =
     "X-HTTP-Method-Override";
+
+  /**
+   * Name of HTTP header that is used to request a specific service version be
+   * used to handle a GData request.
+   */
+  public static final String VERSION_HEADER = "GData-Version";
+
 
   /**
    * The HttpGDataRequest.Factory class is a factory class for constructing
@@ -125,6 +133,7 @@ public class HttpGDataRequest implements GDataRequest {
       extendHeaderMap(this.privateHeaderMap, header, value);
     }
 
+    @SuppressWarnings("unused")
     public GDataRequest getRequest(RequestType type,
                                    URL requestUrl,
                                    ContentType contentType)
@@ -133,6 +142,7 @@ public class HttpGDataRequest implements GDataRequest {
                                   authToken, headerMap, privateHeaderMap);
     }
 
+    @SuppressWarnings("unused")
     public GDataRequest getRequest(Query query,
                                    ContentType contentType)
         throws IOException, ServiceException {
@@ -147,7 +157,7 @@ public class HttpGDataRequest implements GDataRequest {
    * The HttpGDataRequest.AuthToken interface represents a token used to
    * authenticate a request.  It encapsulates the functionality to create
    * the "Authorization" header to be appended to a HTTP request.
-   * 
+   *
    * @deprecated This interface has been deprecated. Please use
    * {@link HttpAuthToken} instead.
    */
@@ -284,14 +294,14 @@ public class HttpGDataRequest implements GDataRequest {
     }
 
     if (headerMap != null) {
-      for (String h : headerMap.keySet()) {
-        setHeader(h, headerMap.get(h));
+      for (Map.Entry<String, String> e : headerMap.entrySet()) {
+        setHeader(e.getKey(), e.getValue());
       }
     }
 
     if (privateHeaderMap != null) {
-      for (String h : privateHeaderMap.keySet()) {
-        setPrivateHeader(h, privateHeaderMap.get(h));
+      for (Map.Entry<String, String> e : privateHeaderMap.entrySet()) {
+        setPrivateHeader(e.getKey(), e.getValue());
       }
     }
 
@@ -326,7 +336,7 @@ public class HttpGDataRequest implements GDataRequest {
     // Always follow redirects
     uc.setInstanceFollowRedirects(true);
 
-    return (HttpURLConnection) uc;
+    return uc;
   }
 
 
@@ -389,6 +399,9 @@ public class HttpGDataRequest implements GDataRequest {
 
     if (!expectsInput) {
       throw new IllegalStateException("Request doesn't accept input");
+    }
+    if (logger.isLoggable(Level.FINEST)){
+      return new LoggableOutputStream(logger, httpConn.getOutputStream());
     }
     return httpConn.getOutputStream();
   }
@@ -573,6 +586,7 @@ public class HttpGDataRequest implements GDataRequest {
    *                               first calling {@link #execute()}.
    * @throws IOException error obtaining the response content type.
    */
+  @SuppressWarnings("unused")
   public ContentType getResponseContentType() throws IOException {
 
     if (!executed) {
@@ -609,6 +623,9 @@ public class HttpGDataRequest implements GDataRequest {
     InputStream responseStream = httpConn.getInputStream();
     if ("gzip".equalsIgnoreCase(httpConn.getContentEncoding())) {
       responseStream = new GZIPInputStream(responseStream);
+    }
+    if (logger.isLoggable(Level.FINEST)){
+      return new LoggableInputStream(logger, responseStream);
     }
     return responseStream;
   }

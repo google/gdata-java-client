@@ -43,11 +43,16 @@ public class AclScope extends AbstractExtension {
   /** XML "value" attribute name */
   private static final String VALUE = "value";
 
+  /** helper to produce lower case name from Type value */
+  private static final AttributeHelper.LowerCaseEnumToAttributeValue<Type>
+      TYPE_ENUM_TO_ATTRIBUTE_VALUE =
+          new AttributeHelper.LowerCaseEnumToAttributeValue<Type>();
+
   /** predefined values for the "type" attribute */
   public enum Type {
     USER,
     DOMAIN,
-    DEFAULT;
+    DEFAULT
   }
 
   public AclScope() {
@@ -77,6 +82,40 @@ public class AclScope extends AbstractExtension {
     this.value = value;
   }
 
+  /**
+   * Return a standard external representation of this scope, suitable
+   * for use as an Acl Entry identifier.
+   */
+  public String toExternalForm() {
+    if (type == Type.DEFAULT) {
+      return getTypeIdentifier(type);
+    }
+    return getTypeIdentifier(type) + ":" + value;
+  }
+
+  /**
+   * Given a standard external representation, return the scope that it
+   * represents or null if an invalid representation.  This is the inverse
+   * operation of toExternalForm.
+   */
+  public static AclScope fromExternalForm(String externalForm) {
+    if (externalForm == null) {
+      return null;
+    }
+    if (externalForm.equals(getTypeIdentifier(Type.DEFAULT))) {
+      return new AclScope(Type.DEFAULT, null);
+    }
+    String[] components = externalForm.split(":");
+    if (components.length != 2) {
+      return null;
+    }
+    Type type = getType(components[0]);
+    if (type == null || type == Type.DEFAULT) {
+      return null;
+    }
+    return new AclScope(type, components[1]);
+  }
+
   @Override
   protected void validate() {
     if (type == null) {
@@ -94,17 +133,30 @@ public class AclScope extends AbstractExtension {
 
   @Override
   public void putAttributes(AttributeGenerator generator) {
-    generator.put(TYPE, type,
-        new AttributeHelper.LowerCaseEnumToAttributeValue<AclScope.Type>());
+    generator.put(TYPE, type, TYPE_ENUM_TO_ATTRIBUTE_VALUE);
     generator.put(VALUE, value);
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper helper)
       throws ParseException {
-    type = helper.consumeEnum(TYPE, true, AclScope.Type.class, null, 
-        new AttributeHelper.LowerCaseEnumToAttributeValue<AclScope.Type>());
+    type = helper.consumeEnum(TYPE, true, AclScope.Type.class, null,
+        TYPE_ENUM_TO_ATTRIBUTE_VALUE);
     value = helper.consume(VALUE, false);
+  }
+
+  private static String getTypeIdentifier(Type type) {
+    return TYPE_ENUM_TO_ATTRIBUTE_VALUE.getAttributeValue(type);
+  }
+
+  private static Type getType(String identifier) {
+    for (Type type : Type.values()) {
+      if (TYPE_ENUM_TO_ATTRIBUTE_VALUE.getAttributeValue(type)
+          .equals(identifier)) {
+        return type;
+      }
+    }
+    return null;
   }
 
   @Override

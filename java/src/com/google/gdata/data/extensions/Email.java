@@ -68,6 +68,10 @@ public class Email extends ExtensionPoint implements Extension {
   public String getQuota() { return quota; }
   public void setQuota(String v) { quota = v; }
 
+  /** Whether this is the primary email address */
+  protected boolean primary;
+  public boolean getPrimary() { return primary; }
+  public void setPrimary(boolean p) { primary = p; }
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -99,6 +103,10 @@ public class Email extends ExtensionPoint implements Extension {
 
     if (quota != null) {
       attrs.add(new XmlWriter.Attribute("quota", quota));
+    }
+
+    if (primary) {
+      attrs.add(new XmlWriter.Attribute("primary", true));
     }
 
     generateStartElement(w, Namespaces.gNs, "email", attrs, null);
@@ -143,6 +151,9 @@ public class Email extends ExtensionPoint implements Extension {
           address = value;
         } else if (localName.equals("quota")) {
           quota = value;
+        } else if (localName.equals("primary")) {
+          Boolean pr = parseBooleanValue(value);
+          primary = (pr != null) ? pr : false;
         }
       }
     }

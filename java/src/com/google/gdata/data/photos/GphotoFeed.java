@@ -16,11 +16,19 @@
 
 package com.google.gdata.data.photos;
 
+import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.data.media.MediaFeed;
 import com.google.gdata.data.photos.impl.GphotoDataImpl;
+import com.google.gdata.util.XmlParser.ElementHandler;
+
+import org.xml.sax.Attributes;
+
+import java.io.IOException;
 
 /**
  * This class customizes the generic MediaFeed class to define a feed of
@@ -84,6 +92,51 @@ public class GphotoFeed<F extends GphotoFeed> extends MediaFeed<F, GphotoEntry>
     super.declareExtensions(extProfile);
   }
 
+  /*
+   * Override generating rss to add some extra atom fields into the rss output
+   * that we want, in particular some links that are useful for api access.
+   */
+  @Override
+  public void generateRss(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException {
+    // Add atom:link elements for next and previous.
+    Link prevLink = getLink(Link.Rel.PREVIOUS, Link.Type.ATOM);
+    Link nextLink = getLink(Link.Rel.NEXT, Link.Type.ATOM);
+    if (prevLink != null) {
+      delegate.addRepeatingExtension(new RssLink(prevLink));
+    }
+    if (nextLink != null) {
+      delegate.addRepeatingExtension(new RssLink(nextLink));
+    }
+    
+    super.generateRss(w, extProfile);
+  }
+  
+  /**
+   * Wrapper around a regular link that will generate the atom:link for
+   * rss feeds correctly.  Generate just calls to the
+   * {@link Link#generateAtom(XmlWriter, ExtensionProfile)} method to generate
+   * the output.
+   */
+  private static final class RssLink implements Extension {
+    
+    private final Link link;
+    
+    public RssLink(Link link) {
+      this.link = link;
+    }
+    
+    public void generate(XmlWriter w, ExtensionProfile extProfile)
+        throws IOException {
+      link.generateAtom(w, extProfile);
+    }
+    
+    public ElementHandler getHandler(ExtensionProfile extProfile,
+        String namespace, String localName, Attributes attrs) {
+      return null;
+    }
+  }
+  
   /**
    * Description on a feed is just the subtitle.
    */

@@ -1,10 +1,22 @@
 Google Data API - Release Notes
 
+Notes for v1.16.0
+-----------------
+Mar 05, 2008
+o  Added Java client support for Google Contacts API.
+o  Samples are packaged separately from source code.  With this change, there
+   will be two packages, gdata-src.java.zip which contains the API source
+   and gdata-samples.java.zip which contains samples and precompiled lib.
+
+Notes for v1.15.2
+-----------------
+Dec 27, 2007
+o  Added support to upload image files using Document List Feed Data API.
 
 Notes for v1.15.1
 -----------------
 Dec 6, 2007
-o  Added support for media feed in Google Base data API.  With the media feed 
+o  Added support for media feed in Google Base data API.  With the media feed
    support you can manage binary attachments to your Google Base items.  With
    this change you will require Java Mail and Java Activation Framework to
    use Google Base data API.
@@ -13,7 +25,7 @@ Notes for v1.15.0
 -----------------
 Nov 15, 2007
 o  Added Java client support for Google Apps Email Migration API.
-o  Removed GData API documentation from the release package.  Online 
+o  Removed GData API documentation from the release package.  Online
    documentation is available at http://code.google.com/apis/gdata.
 
 Notes for v1.14.1
@@ -30,10 +42,10 @@ Notes for v1.14.0
 -----------------
 Aug 28, 2007
 o  Added support for YouTube Data API.
-o  Refactored core GData code to remove dependency on 
-   JavaMail, Java Activation Framework for non-media services. 
-   With this change, only media dependent services such as, 
-   Document List Data API, Picasa Web Album API and YouTube Data API require 
+o  Refactored core GData code to remove dependency on
+   JavaMail, Java Activation Framework for non-media services.
+   With this change, only media dependent services such as,
+   Document List Data API, Picasa Web Album API and YouTube Data API require
    JavaMail and Java Activation Framework.
 o  Simplified ant build configuration into multiple files.  This may require
    updates to your IDE settings to point to new ant targets.  For the list of

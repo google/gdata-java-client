@@ -55,12 +55,19 @@ public abstract class EnumConstruct extends ValueConstruct {
                           Set<String> values,
                           String initialValue) {
     super(namespace, tagName, attrName, initialValue);
+    if (values == null) {
+      throw new NullPointerException("Null values set");
+    }
+    if (initialValue != null && !values.contains(initialValue)) {
+      throw new IllegalArgumentException("Invalid " + localName + " value:"
+          + initialValue);
+    }
     this.values = values;
   }
 
   @Override
   public void setValue(String v) throws IllegalArgumentException {
-    if (!values.contains(v)) {
+    if (values != null && !values.contains(v)) {
       throw new IllegalArgumentException("Invalid " + localName + " value:" +v);
     }
     super.setValue(v);

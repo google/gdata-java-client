@@ -15,7 +15,9 @@
 
 package com.google.gdata.data.geo.impl;
 
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Extension;
+import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.geo.Point;
@@ -95,11 +97,25 @@ public class PointDataImpl implements PointData {
     // in the context of extClass.
 
     // Declare our various point extensions, none are repeatable.
-    extProfile.declare(extClass, W3CPoint.getDefaultDescription(false));
+    declare(extProfile, extClass, W3CPoint.getDefaultDescription(false));
+    declare(extProfile, extClass, GeoRssPoint.getDefaultDescription(false));
+    declare(extProfile, extClass, GeoRssWhere.getDefaultDescription(false));
+    
     new W3CPoint().declareExtensions(extProfile);
-    extProfile.declare(extClass, GeoRssPoint.getDefaultDescription(false));
-    extProfile.declare(extClass, GeoRssWhere.getDefaultDescription(false));
     new GeoRssWhere().declareExtensions(extProfile);
+  }
+
+  /**
+   * Helper method to add the description to the BaseEntry as well as to the
+   * extension class, so auto extension works properly.
+   */
+  private void declare(ExtensionProfile extProfile,
+      Class<? extends ExtensionPoint> extClass, ExtensionDescription desc) {
+    extProfile.declare(extClass, desc);
+    
+    if (BaseEntry.class.isAssignableFrom(extClass)) {
+      extProfile.declare(BaseEntry.class, desc);
+    }
   }
 
   /**

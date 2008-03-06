@@ -18,16 +18,21 @@ package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.data.ExtensionDescription;
+import com.google.gdata.data.media.mediarss.MediaRating;
 
 /**
  * Object representation for the yt:racy tag.
- *
+ * 
+ * @deprecated in favor of {@link MediaRating} with
+ *             {@link YouTubeNamespace#MEDIA_RATING_SCHEME}.
+ * 
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = YouTubeNamespace.PREFIX,
     nsUri = YouTubeNamespace.URI,
     localName = "racy")
+@Deprecated
 public class YtRacy extends AbstractExtension {
 
 }

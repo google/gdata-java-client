@@ -19,7 +19,7 @@ package com.google.gdata.util;
 import java.net.HttpURLConnection;
 
 /**
- * The ParseException indicates a failure parsing GData XML content.
+ * The ParseException indicates a failure parsing GData request content.
  *
  * 
  */

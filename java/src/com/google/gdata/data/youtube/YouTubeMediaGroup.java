@@ -24,13 +24,16 @@ import com.google.gdata.data.media.mediarss.MediaDescription;
 import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaKeywords;
 import com.google.gdata.data.media.mediarss.MediaPlayer;
+import com.google.gdata.data.media.mediarss.MediaRating;
 import com.google.gdata.data.media.mediarss.MediaRestriction;
 import com.google.gdata.data.media.mediarss.MediaRssNamespace;
 import com.google.gdata.data.media.mediarss.MediaThumbnail;
 import com.google.gdata.data.media.mediarss.MediaTitle;
 
 import java.util.AbstractList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Subset of {@code <media:group>}.
@@ -153,6 +156,53 @@ public class YouTubeMediaGroup extends MediaGroup {
       removeExtension(YtPrivate.class);
     }
   }
+  
+  /**
+   * A YouTube media group can have only one YouTube category defined by this
+   * scheme: {@link YouTubeNamespace#CATEGORY_SCHEME} and this method is a
+   * helper for retrieving it. See also: {@link #getCategories()}.
+   * <p>
+   * If two or more such categories are specified it cannot be determined which
+   * is the right one so this method will return null.
+   * 
+   * @return the YouTube category of this video, if such a category cannot be
+   *         found or determined it returns null.
+   */
+  public MediaCategory getYouTubeCategory() {
+    Set<MediaCategory> found = getCategoriesWithScheme(YouTubeNamespace.CATEGORY_SCHEME);
+    if (found.size() == 1) {
+      return found.iterator().next();
+    } else if (found.size() > 1) {
+      // could not determine the YouTube video category.
+      return null;
+    } else {
+      // the default scheme is the YouTube category scheme,
+      // so search for a category with no scheme (=default scheme) next.
+      Set<MediaCategory> withNoScheme = getCategoriesWithScheme(null);
+      if (withNoScheme.size() == 1) {
+        return withNoScheme.iterator().next();
+      } else {
+        // could not determine the YouTube video category.
+        return null;
+      }
+    }
+  }
+  
+  /**
+   * Sets or changes the previously set YouTube category.
+   * 
+   * @param name the new category name to set.
+   */
+  public void setYouTubeCategory(String name) {
+    for (Iterator<MediaCategory> iterator = getCategories().iterator(); iterator.hasNext();) {
+      MediaCategory category = iterator.next();
+      if (YouTubeNamespace.CATEGORY_SCHEME.equals(category.getScheme())) {
+        iterator.remove();
+      }
+    }
+    
+    addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME, name));
+  }
 
   /**
    * Declare extensions available in media:group on youtube feeds.
@@ -169,6 +219,7 @@ public class YouTubeMediaGroup extends MediaGroup {
     extProfile.declare(YouTubeMediaGroup.class, MediaRestriction.class);
     extProfile.declare(YouTubeMediaGroup.class, MediaCategory.class);
     extProfile.declare(YouTubeMediaGroup.class, MediaThumbnail.class);
+    extProfile.declare(YouTubeMediaGroup.class, MediaRating.class);
     extProfile.declareArbitraryXmlExtension(YouTubeMediaGroup.class);
   }
 }

@@ -27,8 +27,8 @@ import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.Version;
 import com.google.gdata.util.XmlParser;
-import com.google.gdata.util.VersionRegistry.Version;
 
 import org.xml.sax.Attributes;
 
@@ -44,7 +44,7 @@ import java.util.List;
  * APP collection.
  *
  * The implementation is versioned to support the AtomPub draft version 9
- * introspection format (used for the GData Alpha implementation) as well
+ * introspection format (used for the GData v1 implementation) as well
  * as the final RFC5023 format (used for all other versions).  The key
  * difference between the two is that draft used an attribute for the
  * collection title and a comma-delimited list for accepted MIME types,
@@ -81,10 +81,10 @@ public class Collection extends ExtensionPoint {
    */
   public static String getAtomEntryAcceptType() {
 
-    // Earlier versions of the AtomPub spec (upon which GData Alpha was
+    // Earlier versions of the AtomPub spec (upon which GData v1 was
     // based) used a hardcoded constant, later versions use the Atom
     // entry MIME type.
-    if (Service.getVersion().isCompatible(Service.ALPHA)) {
+    if (Service.getVersion().isCompatible(Service.Versions.V1)) {
       return "entry";
     }
     // We don't use the return value of ContentType.getAtomEntry because it
@@ -135,13 +135,13 @@ public class Collection extends ExtensionPoint {
 
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(1);
-    if (coreVersion.isCompatible(Service.ALPHA)) {
+    if (coreVersion.isCompatible(Service.Versions.V1)) {
       attrs.add(new Attribute("title", title.getPlainText()));
     }
     attrs.add(new XmlWriter.Attribute("href", href));
     w.startElement(atomPubNs, "collection", attrs, null);
 
-    if (coreVersion.isCompatible(Service.ALPHA)) {
+    if (coreVersion.isCompatible(Service.Versions.V1)) {
       if (accepts != null) {
         StringBuffer acceptBuf = new StringBuffer();
         for (String accept : accepts) {
@@ -174,7 +174,7 @@ public class Collection extends ExtensionPoint {
   public void consumeAttributes(AttributeHelper attrHelper)
       throws ParseException {
     href = attrHelper.consume("href", true);
-    if (coreVersion.isCompatible(Service.ALPHA)) {
+    if (coreVersion.isCompatible(Service.Versions.V1)) {
       String titleAttr = attrHelper.consume("title", true);
       title = new PlainTextConstruct(titleAttr);
     }
@@ -207,7 +207,7 @@ public class Collection extends ExtensionPoint {
       if (namespace.equals(Namespaces.atom)) {
 
         if (localName.equals("title")  &&
-            !coreVersion.isCompatible(Service.ALPHA)) {
+            !coreVersion.isCompatible(Service.Versions.V1)) {
 
           TextConstruct.ChildHandlerInfo chi =
             TextConstruct.getChildHandler(attrs);
@@ -254,7 +254,7 @@ public class Collection extends ExtensionPoint {
         if (value == null) {
           value = "";
         }
-        if (coreVersion.isCompatible(Service.ALPHA)) {
+        if (coreVersion.isCompatible(Service.Versions.V1)) {
           accepts = Arrays.asList(value.split(","));
         } else {
           addAccept(value);

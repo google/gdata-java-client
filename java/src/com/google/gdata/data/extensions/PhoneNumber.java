@@ -77,6 +77,10 @@ public class PhoneNumber implements Extension {
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String v) { phoneNumber = v; }
 
+  /** Whether this is the primary phone number */
+  protected boolean primary;
+  public boolean getPrimary() { return primary; }
+  public void setPrimary(boolean p) { primary = p; }
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -104,6 +108,10 @@ public class PhoneNumber implements Extension {
 
     if (uri != null) {
       attrs.add(new XmlWriter.Attribute("uri", uri));
+    }
+
+    if (primary) {
+      attrs.add(new XmlWriter.Attribute("primary", true));
     }
 
     w.simpleElement(Namespaces.gNs, "phoneNumber", attrs, phoneNumber);
@@ -136,6 +144,9 @@ public class PhoneNumber implements Extension {
           label = value;
         } else if (localName.equals("uri")) {
           uri = value;
+        } else if (localName.equals("primary")) {
+          Boolean pr = parseBooleanValue(value);
+          primary = (pr != null) ? pr : false;
         }
       }
     }

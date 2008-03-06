@@ -16,6 +16,7 @@
 
 package com.google.gdata.client;
 
+import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
 
 import java.util.ArrayList;
