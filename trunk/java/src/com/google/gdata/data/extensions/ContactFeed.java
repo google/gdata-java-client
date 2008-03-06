@@ -26,9 +26,12 @@ import com.google.gdata.data.Kind;
  * The Contact class customizes the generic BaseEntry class to define
  * a feed of Contact entries.
  *
+ * @deprecated Please use {@link com.google.gdata.data.contacts.ContactFeed}
+ *     instead.
  * 
  */
 @Kind.Term(ContactEntry.CONTACT_KIND)
+@Deprecated
 public class ContactFeed extends BaseFeed<ContactFeed, ContactEntry> {
 
   /**

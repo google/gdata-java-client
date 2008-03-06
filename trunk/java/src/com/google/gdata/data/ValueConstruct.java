@@ -16,8 +16,8 @@
 
 package com.google.gdata.data;
 
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
 
@@ -132,7 +132,7 @@ public abstract class ValueConstruct extends AbstractExtension {
     super(namespace, localName);
     this.attrName = attrName;
     if (value != null) {
-      this.value = value;
+      setValue(value);
       setImmutable(true);
     }
   }
@@ -147,13 +147,22 @@ public abstract class ValueConstruct extends AbstractExtension {
    * Sets the value.  Subclasses can override this method to do
    * additional validation of the value.
    *
-   * @param v new value for the value construct.
+   * @param v new value for the value construct or <code>null</code> to reset.
    * @throws IllegalArgumentException if the value is invalid for the construct.
    * @throws IllegalStateException if the value construct is read only
    */
   public void setValue(String v) {
     throwExceptionIfImmutable();
-    value = v;
+    value = v;  }
+
+
+  /**
+   * Returns whether it has the value.
+   *
+   * @return whether it has the value
+   */
+  public boolean hasValue() {
+    return value != null;
   }
 
   @Override
@@ -207,7 +216,7 @@ public abstract class ValueConstruct extends AbstractExtension {
     if (!sameClassAs(o)) {
       return false;
     }
-    ValueConstruct vc = (ValueConstruct)o;
+    ValueConstruct vc = (ValueConstruct) o;
     return eq(value, vc.value);
   }
 

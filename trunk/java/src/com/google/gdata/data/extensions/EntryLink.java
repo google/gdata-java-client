@@ -19,10 +19,10 @@ package com.google.gdata.data.extensions;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Entry;
-import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
-import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.ExtensionVisitor;
+import com.google.gdata.data.Link;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser.ElementHandler;
@@ -34,30 +34,36 @@ import java.util.ArrayList;
 
 
 /**
- * GData schema extension describing a nested entry link.
- *
+ * The EntryLink class defines the object model for a link entity that refers to
+ * a GData entry.   The entry content may be included inline via child elements 
+ * of the entry link or only included by reference.
  * 
+ * @param <E>   Nested entry type.
  */
 @ExtensionDescription.Default(
     nsAlias = Namespaces.gAlias,
     nsUri = Namespaces.g,
     localName = "entryLink")
-public class EntryLink extends ExtensionPoint implements Extension {
+public class EntryLink<E extends BaseEntry<?>> extends Link {
 
 
   /**
-   * Rel value that describes the type of entry link.
+   * Constructs an entry link that points to an {@link Entry}.
    */
-  protected String rel;
-  public String getRel() { return rel; }
-  public void setRel(String v) { rel = v; }
+  @SuppressWarnings("unchecked")
+  public EntryLink() {
+    this((Class<E>) Entry.class);
+  }
+
 
   /**
-   * Entry URI.
+   * Constructs an entry link that points to the given entry type.
+   *
+   * @param entryClass  Entry class.
    */
-  protected String href;
-  public String getHref() { return href; }
-  public void setHref(String v) { href = v; }
+  public EntryLink(Class<E> entryClass) {
+    this.entryClass = entryClass;
+  }
 
 
   /** Read only flag. */
@@ -67,21 +73,33 @@ public class EntryLink extends ExtensionPoint implements Extension {
 
 
   /** Nested entry (optional). */
-  protected BaseEntry entry;
-  public BaseEntry getEntry() { return entry; }
-  public void setEntry(BaseEntry v) { entry = v; }
+  protected BaseEntry<?> entry;
+  @SuppressWarnings("unchecked")
+  public E getEntry() { return (E) entry; }
+  public void setEntry(E v) { entry = v; }
+
+
+  /** Nested entry class. */
+  protected final Class<E> entryClass;
+  public Class<E> getEntryClass() { return entryClass; }
 
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
-    ExtensionDescription desc = new ExtensionDescription();
-    desc.setExtensionClass(EntryLink.class);
-    desc.setNamespace(Namespaces.gNs);
-    desc.setLocalName("entryLink");
-    return desc;
+    return ExtensionDescription.getDefaultDescription(EntryLink.class);
   }
 
-
+  @Override
+  protected void visitChildren(ExtensionVisitor ev) 
+    throws ExtensionVisitor.StoppedException {
+    
+    if (entry != null) {
+      this.visitChild(ev, entry);
+    }
+    super.visitChildren(ev);
+  } 
+  
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -116,43 +134,42 @@ public class EntryLink extends ExtensionPoint implements Extension {
   }
 
 
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace,
                                    String localName,
                                    Attributes attrs)
-      throws ParseException, IOException {
+      throws IOException {
 
     return new Handler(extProfile);
   }
 
 
   /** <gd:entryLink> parser. */
-  private class Handler extends ExtensionPoint.ExtensionHandler {
+  private class Handler extends Link.AtomHandler {
 
 
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
+    public Handler(ExtensionProfile extProfile) throws IOException {
       super(extProfile, EntryLink.class);
     }
 
 
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
+                                 String value) throws ParseException {
 
       if (namespace.equals("")) {
-        if (localName.equals("rel")) {
-          rel = value;
-        } else if (localName.equals("href")) {
-          href = value;
-        } else if (localName.equals("readOnly")) {
+        if (localName.equals("readOnly")) {
           readOnly = value.equals("true");
+        } else {
+          super.processAttribute(namespace, localName, value);
         }
       }
     }
 
 
+    @Override
     public ElementHandler getChildHandler(String namespace,
                                           String localName,
                                           Attributes attrs)
@@ -164,7 +181,13 @@ public class EntryLink extends ExtensionPoint implements Extension {
           if (nestedExtProfile == null) {
             nestedExtProfile = extProfile;
           }
-          entry = new Entry();
+          try {
+            entry = entryClass.newInstance();
+          } catch (IllegalAccessException iae) {
+            throw new ParseException("Unable to create entry", iae);
+          } catch (InstantiationException ie) {
+            throw new ParseException("Unable to create entry", ie);
+          }
           return entry.new AtomHandler(nestedExtProfile);
         }
       }

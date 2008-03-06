@@ -331,8 +331,31 @@ public class XmlParser extends DefaultHandler {
      */
     public Boolean getBooleanAttribute(Attributes attrs, String attrName)
         throws ParseException {
-
+      Boolean result = null;
       String value = attrs.getValue("", attrName);
+
+      try {
+        result = parseBooleanValue(value);
+      } catch (ParseException ex) {
+        throw new ParseException("Invalid value for " + attrName +
+                                 " attribute: " + value);
+      }
+
+      return result;
+    }
+
+    /**
+     * Utility method to parse provided xsd:boolean value.
+     *
+     * @param value
+     *          xsd:boolean value to parse
+     *
+     * @return the Boolean value or {@code null}
+     *
+     * @throws ParseException if value is not valid xsd:boolean.
+     */
+    protected Boolean parseBooleanValue(String value)
+        throws ParseException {
       if (value == null) {
         return null;
       }
@@ -345,8 +368,7 @@ public class XmlParser extends DefaultHandler {
         return Boolean.TRUE;
       }
 
-      throw new ParseException("Invalid value for " + attrName +
-                               " attribute: " + value);
+      throw new ParseException("Invalid value for boolean attribute: " + value);
     }
   }
 
@@ -561,12 +583,12 @@ public class XmlParser extends DefaultHandler {
 
       if (rootException instanceof ParseException) {
 
-        throwParseException((ParseException)rootException);
+        throwParseException((ParseException) rootException);
 
       } else if (rootException instanceof IOException) {
 
         LogUtils.logException(logger, Level.WARNING, null, e);
-        throw (IOException)rootException;
+        throw (IOException) rootException;
 
       } else {
 
@@ -598,7 +620,7 @@ public class XmlParser extends DefaultHandler {
 
       LogUtils.logException(logger, Level.WARNING, location, e);
 
-      throw new ParseException(location + e.getMessage());
+      throw new ParseException(location + e.getMessage(), e);
 
     } else {
 

@@ -80,7 +80,7 @@ public final class Namespaces {
    * Protocol.
    */
   public static final XmlWriter.Namespace getAtomPubNs() {
-    return Service.getVersion().isCompatible(Service.ALPHA) ?
+    return Service.getVersion().isCompatible(Service.Versions.V1) ?
         atomPubNs :
         atomPubStandardNs;
   }
@@ -124,7 +124,7 @@ public final class Namespaces {
    * Returns the XML writer namespace associated with OpenSearch.
    */
   public static final XmlWriter.Namespace getOpenSearchNs() {
-    return Service.getVersion().isCompatible(Service.ALPHA) ?
+    return Service.getVersion().isCompatible(Service.Versions.V1) ?
         openSearchNs :
         openSearch1_1Ns;
   }
@@ -165,7 +165,7 @@ public final class Namespaces {
    * Returns the XML writer namespace associated with OpenSearch Description.
    */
   public static final XmlWriter.Namespace getOpenSearchDescNs() {
-    return Service.getVersion().isCompatible(Service.ALPHA) ?
+    return Service.getVersion().isCompatible(Service.Versions.V1) ?
         openSearchDescNs :
         openSearchDesc1_1Ns;
   }

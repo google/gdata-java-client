@@ -69,7 +69,8 @@ public class CellDemo {
       " set row# col# formula             [[sets a cell]]",
       "   example: set 1 3 =R1C2+1",
       " search adam                       [[full text query]]",
-      " batch                             [[batch request]]"};
+      " batch                             [[batch request]]",
+      " exit"};
 
   /** Our view of Google Spreadsheets as an authenticated Google user. */
   private SpreadsheetService service;

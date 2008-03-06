@@ -16,6 +16,7 @@
 
 package com.google.gdata.data.photos.impl;
 
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
@@ -60,6 +61,11 @@ public class MediaDataImpl implements MediaData {
     Class<? extends ExtensionPoint> extClass = extPoint.getClass();
     extProfile.declare(extClass, MediaGroup.getDefaultDescription());
     extProfile.declareArbitraryXmlExtension(MediaGroup.class);
+    
+    // Declare that BaseEntry gets the media extensions as well.
+    if (BaseEntry.class.isAssignableFrom(extClass)) {
+      extProfile.declare(BaseEntry.class, MediaGroup.getDefaultDescription());
+    }
 
     extProfile.declare(MediaGroup.class, MediaContent
         .getDefaultDescription(true));
@@ -166,6 +172,10 @@ public class MediaDataImpl implements MediaData {
   public void setExtension(Extension extension) {
     extPoint.setExtension(extension);
   }
+  
+  public void addRepeatingExtension(Extension extension) {
+    extPoint.addRepeatingExtension(extension);
+  }
 
   public void removeExtension(Class<? extends Extension> extensionClass) {
     extPoint.removeExtension(extensionClass);
@@ -173,5 +183,9 @@ public class MediaDataImpl implements MediaData {
   
   public void removeExtension(Extension extension) {
     extPoint.removeExtension(extension);
+  }
+  
+  public void removeRepeatingExtension(Extension extension) {
+    extPoint.removeRepeatingExtension(extension);
   }
 }

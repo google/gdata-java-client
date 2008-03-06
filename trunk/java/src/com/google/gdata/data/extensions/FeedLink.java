@@ -17,13 +17,13 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.data.BaseFeed.FeedHandler;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
-import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.ExtensionVisitor;
 import com.google.gdata.data.Feed;
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.Link;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser.ElementHandler;
@@ -32,34 +32,39 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
- * GData schema extension describing a nested feed link.
- *
+ * The FeedLink class defines the object model for a link entity that refers to
+ * a GData feed.   The feed content may be included inline via child elements of
+ * the feed link or only included by reference.
  * 
+ * @param <F>   Nested feed type.
  */
 @ExtensionDescription.Default(
     nsAlias = Namespaces.gAlias,
     nsUri = Namespaces.g,
-    localName = "feedLink",
-    isRepeatable = true)
-public class FeedLink<F extends BaseFeed>
-    extends ExtensionPoint implements Extension {
+    localName = "feedLink")
+public class FeedLink<F extends BaseFeed<?, ?>> extends Link {
 
   /**
-   * Rel value that describes the type of feed link.
+   * Constructs a feed link that points to a {@link Feed}.
    */
-  protected String rel;
-  public String getRel() { return rel; }
-  public void setRel(String v) { rel = v; }
+  @SuppressWarnings("unchecked")
+  public FeedLink() {
+    this((Class<F>) Feed.class);
+  }
+
 
   /**
-   * Feed URI.
+   * Constructs a feed link that points to the given feed type.
+   *
+   * @param feedClass   Feed class.
    */
-  protected String href;
-  public String getHref() { return href; }
-  public void setHref(String v) { href = v; }
+  public FeedLink(Class<F> feedClass) {
+    this.feedClass = feedClass;
+  }
 
 
   /** Read only flag. */
@@ -75,21 +80,32 @@ public class FeedLink<F extends BaseFeed>
 
 
   /** Nested feed (optional). */
-  protected BaseFeed feed;
-  public BaseFeed getFeed() { return feed; }
-  public void setFeed(BaseFeed v) { feed = v; }
+  protected BaseFeed<?, ?> feed;
+  @SuppressWarnings("unchecked")
+  public F getFeed() { return (F) feed; }
+  public void setFeed(F v) { feed = v; }
+
+
+  /** Nested feed class. */
+  protected final Class<F> feedClass;
+  public Class<F> getFeedClass() { return feedClass; }
 
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
-    ExtensionDescription desc = new ExtensionDescription();
-    desc.setExtensionClass(FeedLink.class);
-    desc.setNamespace(Namespaces.gNs);
-    desc.setLocalName("feedLink");
-    return desc;
+    return ExtensionDescription.getDefaultDescription(FeedLink.class);
+  }
+  
+  @Override
+  protected void visitChildren(ExtensionVisitor ev)
+      throws ExtensionVisitor.StoppedException {
+    if (feed != null) {
+      this.visitChild(ev, feed);
+    }
+    super.visitChildren(ev);
   }
 
-
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -128,39 +144,33 @@ public class FeedLink<F extends BaseFeed>
   }
 
 
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace,
                                    String localName,
-                                   Attributes attrs)
-      throws ParseException, IOException {
+                                   Attributes attrs) throws IOException {
 
     return new Handler(extProfile);
   }
 
 
   /** <gd:feedLink> parser. */
-  private class Handler extends ExtensionPoint.ExtensionHandler {
+  private class Handler extends Link.AtomHandler {
 
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
+    public Handler(ExtensionProfile extProfile) throws IOException {
 
       super(extProfile, FeedLink.class);
     }
 
 
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
+                                 String value) throws ParseException {
 
       if (namespace.equals("")) {
 
-        if (localName.equals("rel")) {
-          rel = value;
-        } else if (localName.equals("href")) {
-          href = value;
-        } else if (localName.equals("readOnly")) {
+        if (localName.equals("readOnly")) {
           readOnly = value.equals("true");
         } else if (localName.equals("countHint")) {
           try {
@@ -168,11 +178,14 @@ public class FeedLink<F extends BaseFeed>
           } catch (NumberFormatException e) {
             throw new ParseException("Invalid gd:feedLink/@countHint.", e);
           }
+        } else {
+          super.processAttribute(namespace, localName, value);
         }
       }
     }
 
 
+    @Override
     public ElementHandler getChildHandler(String namespace,
                                           String localName,
                                           Attributes attrs)
@@ -184,8 +197,14 @@ public class FeedLink<F extends BaseFeed>
           if (nestedExtProfile == null) {
             nestedExtProfile = extProfile;
           }
-          feed = new Feed();
-          return (ElementHandler)feed.new FeedHandler(nestedExtProfile);
+          try {
+            feed = feedClass.newInstance();
+          } catch (IllegalAccessException iae) {
+            throw new ParseException("Unable to create feed", iae);
+          } catch (InstantiationException ie) {
+            throw new ParseException("Unable to create feed", ie);
+          }
+          return feed.new FeedHandler(nestedExtProfile);
         }
       }
 

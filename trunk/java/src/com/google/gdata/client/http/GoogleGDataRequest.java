@@ -20,18 +20,18 @@ import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.GoogleService.SessionExpiredException;
 import com.google.gdata.client.Service.GDataRequest;
-import com.google.gdata.client.Service.GDataRequest.RequestType;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.RedirectRequiredException;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -55,6 +55,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
   private static final Logger logger =
           Logger.getLogger(GoogleGDataRequest.class.getName());
 
+
   /**
    * If set, this System property will globally disable interception and
    * handling of cookies for all GData services.
@@ -68,6 +69,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
    */
   public static class Factory extends HttpGDataRequest.Factory {
 
+    @SuppressWarnings("unused")
     @Override
     public GDataRequest getRequest(RequestType type,
                                   URL requestUrl,
@@ -81,6 +83,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
                                     privateHeaderMap);
     }
 
+    @SuppressWarnings("unused")
     @Override
     public GDataRequest getRequest(Query query,
                                    ContentType contentType)
@@ -115,14 +118,6 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     public Date getExpires() {
       return (expires != null) ? (Date) expires.clone() : null;
     }
-
-
-    private static DateFormat expiresFormat1
-       = new SimpleDateFormat("E, dd-MMM-yyyy k:m:s 'GMT'", Locale.US);
-
-    private static DateFormat expiresFormat2
-       = new SimpleDateFormat("E, dd MMM yyyy k:m:s 'GMT'", Locale.US);
-
 
     /**
      * Constructs a new GoogleCookie instance.
@@ -169,10 +164,14 @@ public class GoogleGDataRequest extends HttpGDataRequest {
           this.path = value;
          } else if (name.equalsIgnoreCase("expires")) {
           try {
-            this.expires = expiresFormat1.parse(value);
+            this.expires =
+                new SimpleDateFormat("E, dd-MMM-yyyy k:m:s 'GMT'", Locale.US)
+                    .parse(value);
           } catch (java.text.ParseException e) {
             try {
-              this.expires = expiresFormat2.parse(value);
+              this.expires =
+                  new SimpleDateFormat("E, dd MMM yyyy k:m:s 'GMT'", Locale.US)
+                      .parse(value);
             } catch (java.text.ParseException e2) {
               throw new IllegalArgumentException(
                 "Bad date format in header: " + value);
@@ -261,6 +260,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
      * domain and path as this cookie.   Cookie expiration and value
      * <b>are not</b> taken into account when considering equivalence.
      */
+    @Override
     public boolean equals(Object o) {
       if (o == null || !(o instanceof GoogleCookie)) {
           return false;
@@ -278,6 +278,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
       return path.equals(cookie.path);
     }
 
+    @Override
     public int hashCode() {
       int result = 17;
       result = 37 * result + name.hashCode();
@@ -286,6 +287,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
       return result;
     }
 
+    @Override
     public String toString() {
       StringBuilder buf = new StringBuilder("GoogleCookie(");
       buf.append(domain);
@@ -316,7 +318,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
 
     private CookieHandler nextHandler;
 
-    // This is a singleton, only constructed once at class loadtime.
+    // This is a singleton, only constructed once at class load time.
     private GoogleCookieHandler() {
 
       // Install the global GoogleCookieHandler instance, chaining to any
@@ -374,6 +376,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     }
 
 
+    @Override
     public void put(URI uri,
                     Map<String, List<String>> responseHeaders)
         throws IOException {
@@ -409,13 +412,9 @@ public class GoogleGDataRequest extends HttpGDataRequest {
   /**
    * The global CookieHandler instance for GData services.
    */
+  @SuppressWarnings("unused") // instance init installs global hooks.
   private static final GoogleCookieHandler googleCookieHandler =
     new GoogleCookieHandler();
-
-  /**
-   * The GoogleService instance that constructed the request.
-   */
-  private GoogleService service;
 
 
   /**
@@ -442,14 +441,65 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     super(type, requestUrl, contentType, authToken,
         headerMap, privateHeaderMap);
   }
+  
+  
+  /**
+   * The GoogleService instance that constructed the request.
+   */
+  private GoogleService service;
+  
+  /**
+   * The version associated with this request.
+   */
+  private Version requestVersion;
+  
+  /**
+   * Returns the {@link Version} that will be used to execute the request on the
+   * target service or {@code null} if the service is not versioned.
+   * 
+   * @return version sent with the request or {@code null}.
+   */
+  public Version getRequestVersion() {
+    return requestVersion;
+  }
+  
+  /**
+   * The version associated with the response.
+   */
+  private Version responseVersion;
 
-
+  /**
+   * Returns the {@link Version} that was used by the target service to execute
+   * the request or {@code null} if the service is not versioned.
+   * 
+   * @return version returned with the response or {@code null}.
+   */
+  public Version getResponseVersion() {
+    if (!executed) {
+      throw new IllegalStateException("Request has not been executed");
+    }
+    return responseVersion;
+  }
+  
   /**
    * Sets the GoogleService associated with the request.
    */
   public void setService(GoogleService service) {
     this.service = service;
+    
+    // Look up the active version for the type of service initiating the
+    // request, and set the version header if found.
+    try {
+      requestVersion = VersionRegistry.get().getVersion(service.getClass());
+      if (requestVersion != null) {
+        setHeader(VERSION_HEADER, requestVersion.getVersionString());
+      }
+    } catch (IllegalStateException iae) {
+      // Service may not be versioned.
+    }
   }
+  
+ 
 
 
   @Override
@@ -462,6 +512,16 @@ public class GoogleGDataRequest extends HttpGDataRequest {
       // request (like URL dependant authentication headers)
       httpConn.setInstanceFollowRedirects(false);
       super.execute();
+      
+      // Capture the version used to process the request
+      String versionHeader = httpConn.getHeaderField(VERSION_HEADER);
+      if (versionHeader != null) {
+        GoogleService service = activeService.get();
+        if (service != null) {
+          responseVersion = new Version(service.getClass(), versionHeader);
+        }
+        
+      }
     } finally {
       activeService.set(null);
     }

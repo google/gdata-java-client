@@ -18,9 +18,8 @@ package com.google.gdata.util;
 import com.google.gdata.client.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** 
  * The VersionRegistry class is an abstract base class used to manage and 
@@ -40,115 +39,13 @@ import java.util.regex.Pattern;
 public abstract class VersionRegistry {
   
   /**
-   * The Version class is a helper class that versioning information about
-   * a particular type of service.
-   */
-  public static class Version {
-    
-    /**
-     * The ANY value indicates a version component that will match any revision.
-     */
-    public static final int ANY = -1;
-    
-    private Class<? extends Service> serviceClass;
-    private int major;
-    private int minor;
-    
-    /**
-     * Creates a new Version instance for the specified service and defines
-     * the major and minor versions for the service.
-     * @param serviceClass the service type.
-     * @param major the major revision number of the service.
-     * @param minor the minor revision number of the service.
-     * @throws NullPointerException if the service type is {@code null}.
-     * @throws IllegalArgumentException if revision values are invalid.
-     */
-    public Version(Class<? extends Service> serviceClass, int major, int minor)
-        throws NullPointerException, IllegalArgumentException {
-      
-      if (serviceClass == null) {
-        throw new NullPointerException("Null service class");
-      }
-      if (major < 0 && major != ANY) {
-        throw new IllegalArgumentException("Invalid major version:" + major);
-      }
-      if (minor < 0 && minor != ANY) {
-        throw new IllegalArgumentException("Invalid minor version:" + minor);
-      }
-      this.serviceClass = serviceClass;
-      this.major = major;
-      this.minor = minor;
-    }
-    
-    /**
-     * Returns the service type of the version.
-     * @return service type.
-     */
-    public final Class<? extends Service> getServiceClass() { 
-      return serviceClass; 
-    }
-    
-    /**
-     * Returns the major revision of the version.
-     * @return major revision.
-     */
-    public final int getMajor() { return major; }
-   
-    /**
-     * Returns the minor revision of the version.
-     * @return minor revision.
-     */
-    public final int getMinor() { return minor; }
-    
-    /**
-     * Returns {@code true} if the target version is for the same service.
-     * @param v target version to check.
-     * @return {@code true} if service matches.
-     */
-    public final boolean isSameService(Version v) {
-      return v != null && serviceClass.equals(v.serviceClass);
-    }
-    
-    /**
-     * Returns {@code true} if the target version is for the same service and
-     * major revision.
-     */
-    public final boolean isCompatible(Version v) {
-      return isSameService(v) && 
-         (major == v.major || major == ANY || v.major == ANY);
-    }
-    
-    @Override 
-    public boolean equals(Object o) {
-      if (!(o instanceof Version)) {
-        return false;
-      }
-      Version v = (Version) o;
-      return isSameService(v) && major == v.major && minor == v.minor;
-    }
-    
-    @Override
-    public int hashCode() {
-      int result = serviceClass.hashCode();
-      result = 37 * result + major;
-      result = 37 * result + minor;
-      return result;
-    }
-    
-    @Override
-    public String toString() {
-      return serviceClass.getName() + ":" + major + "." + minor;
-    }
-  }
- 
-
-  /**
    * Singleton registry instance.
    */
   private static VersionRegistry versionRegistry;
   
   /**
    * Initializes the VersionRegistry instance.
+   * @param registry initialization version registry
    * @throws IllegalStateException if the registry is already initialized.
    */
   protected static void initSingleton(VersionRegistry registry) {
@@ -208,7 +105,7 @@ public abstract class VersionRegistry {
    * is a compatible version.
    * @param target the target list of versions to merge into.
    * @param source the source list of versions that will be merged.
-   * @throws IllegalArgumentException if the source list contains a version that
+   * @throws IllegalStateException if the source list contains a version that
    *            is incompatible with an existing version for the same service in
    *            the target list.
    */
@@ -235,6 +132,21 @@ public abstract class VersionRegistry {
     
     // Add all of the new versions.
     target.addAll(newVersions);   
+  }
+  
+  /**
+   * Takes a {@link Version} instance and merges it into another
+   * list, validating that any duplicate information for a given service
+   * is a compatible version.
+   * @param target the target list of versions to merge into.
+   * @param source the source version that will be merged.
+   * @throws IllegalStateException if the source list contains a version that
+   *            is incompatible with an existing version for the same service in
+   *            the target list.
+   */
+  protected static void mergeVersion(List<Version> target, Version source)
+      throws IllegalStateException {   
+    mergeVersions(target, Arrays.asList(new Version [] { source }));
   }
   
   /**
@@ -272,16 +184,16 @@ public abstract class VersionRegistry {
     return v;
   }
 
-  private static final Pattern VERSION_PROPERTY_PATTERN = 
-    Pattern.compile("(\\d+)(\\.\\d+)?");
 
   /**
    * Constructs a new Version instance based upon the value of a Java system
    * property associated with a {@link Service} class. The system property name
    * is computed from the service class name with ".version" appended. The
-   * syntax of the property value is {@code "<major>[.<minor>]"} where the minor
-   * revision will be assumed to be zero if not present. If the associated
-   * system property is not set, the method will return {@code null}.
+   * syntax of the property value is {@code "[service]<major>[.<minor>]"}. The
+   * default value of the service is assumed to be the initiating or target
+   * service and the minor revision will be assumed to be zero if not present.
+   * If the associated system property is not set, the method will return
+   * {@code null}.
    * 
    * @param serviceClass service class to use in computing the version property
    *        name.
@@ -297,14 +209,12 @@ public abstract class VersionRegistry {
     if (versionProperty == null) {
       return null;
     }
-    Matcher matcher = VERSION_PROPERTY_PATTERN.matcher(versionProperty);
-    if (!matcher.matches()) {
-      throw new NumberFormatException("Property " + propertyName +
-          " is not in <major>[.<minor>] format:" + versionProperty);
+    try {
+      return new Version(serviceClass, versionProperty);
+    } catch (IllegalArgumentException iae) {
+      throw new IllegalStateException(
+          "Invalid version property value: " + propertyName, iae);
     }
-    String minor = matcher.group(2);
-    return new Version(serviceClass,
-        Integer.parseInt(matcher.group(1)),
-        (minor != null) ? Integer.parseInt(minor.substring(1)) : 0);
+
   }
 }

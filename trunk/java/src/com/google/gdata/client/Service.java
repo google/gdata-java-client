@@ -31,8 +31,8 @@ import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.introspection.ServiceDocument;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
-import com.google.gdata.util.VersionRegistry.Version;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,40 +69,30 @@ public class Service {
       "(gzip)";         // Necessary to get GZIP encoded responses
   
   /**
-   * The major version number of the Alpha version of the GData core protocol.
+   * The Versions class defines {@link Version} constants representing the
+   * set of active versions of the GData core protocol and common data model
+   * classes.
    */
-  public static final int ALPHA_MAJOR = 1;
-  
-  /**
-   * The Alpha version of the GData core protocol that was released in
-   * May 2006 and is in use for all current GData services.
-   */
-  public static final Version ALPHA =
-      new Version(Service.class, ALPHA_MAJOR, 0);
-  
-  /**
-   * The major version number of the Beta version of the GData core protocol.
-   */
-  public static final int BETA_MAJOR = 2;
-    
-  /**
-   * The upcoming Beta release of the GData core protocol that will bring
-   * full alignment with the now standard Atom Publishing Protocol
-   * specification, migration to OpenSearch 1.1, and other (TBD) features.
-   */
-  public static final Version BETA =
-      new Version(Service.class, BETA_MAJOR, 0);
+  public static class Versions {
 
-  static {
-    // Initialize default version information for the GData client core.
-    Version coreVersion = VersionRegistry.getVersionFromProperty(Service.class);
-    if (coreVersion == null) {
-      coreVersion = ALPHA;
-    }
-    initServiceVersion(coreVersion);
+    /**
+     * The V1 version of the GData core protocol that was released in
+     * May 2006 and is in use for all current GData services.
+     */
+    public static final Version V1 = new Version(Service.class, 1, 0);
+    /**
+     * The upcoming V2 release of the GData core protocol that will bring
+     * full alignment with the now standard Atom Publishing Protocol
+     * specification, migration to OpenSearch 1.1, and other (TBD) features.
+     */
+    public static final Version V2 = new Version(Service.class, 2, 0);  
   }
   
-
+  /**
+   * Initializes the default client version for the GData core protocol.
+   */
+  private static final Version CORE_VERSION = 
+    initServiceVersion(Service.class, Versions.V1);
   
   /**
    * The GDataRequest interface represents a streaming connection to a
@@ -143,7 +133,6 @@ public class Service {
    */
   public interface GDataRequest {
 
-
     /**
      * The RequestType enumeration defines the set of expected GData
      * request types.  These correspond to the four operations of the
@@ -159,7 +148,6 @@ public class Service {
     public enum RequestType {
       QUERY, INSERT, UPDATE, DELETE, BATCH
     }
-
 
     /**
      * Sets the number of milliseconds to wait for a connection to the
@@ -264,7 +252,7 @@ public class Service {
     /**
      * Returns an input stream that can be used to read response data from the
      * GData service. Returns null if response data cannot be read as
-     * an input stream. Use {@link getParseSource()} instead.
+     * an input stream. Use {@link #getParseSource()} instead.
      * <p>
      * <b>The caller is responsible for ensuring that the input stream is
      * properly closed after the response has been read.</b>
@@ -327,10 +315,10 @@ public class Service {
      * {@link #getRequest(
      * com.google.gdata.client.Service.GDataRequest.RequestType, URL,
      * ContentType)}.
-     * 
+     *
      * An {@link IllegalArgumentException} is thrown if an auth token
      * of the wrong type is passed, or if authentication is not supported.
-     * 
+     *
      * @param authToken Authentication token.
      */
     public void setAuthToken(AuthToken authToken);
@@ -356,14 +344,23 @@ public class Service {
 
 
   /**
-   * Initializes the version information for a specific service type.
-   * Subclasses of {@link Service} will generally call this method from within
-   * their static initializers to bind
-   * version information for the associated service.
-   * @param version the service version expected by this client library.
+   * Initializes the version information for a specific service type. Subclasses
+   * of {@link Service} will generally call this method from within their static
+   * initializers to bind version information for the associated service.
+   * 
+   * @param serviceClass the service type being initialized.
+   * @param defaulVersion the service version expected by this client library.
    */
-  protected static void initServiceVersion(Version version) {
-    ClientVersion.init(version);
+  protected static Version initServiceVersion(
+      Class<? extends Service> serviceClass, Version defaultVersion) {
+
+    // Allow override via a Java system property
+    Version v = VersionRegistry.getVersionFromProperty(serviceClass);
+    if (v == null) {
+      v = defaultVersion;
+    }
+    ClientVersion.init(v);
+    return v;
   }
 
   /**
@@ -441,11 +438,7 @@ public class Service {
   /**
    * Creates a new GDataRequest for use by the service.
    * 
-   * For query requests, use
-   * {@link #createRequest(
-   * com.google.gdata.client.Service.GDataRequest.RequestType,
-   * URL, Query, ContentType)}
-   * instead.
+   * For query requests, use {@link #createRequest(Query, ContentType)} instead.
    */
   public GDataRequest createRequest(GDataRequest.RequestType type,
                                     URL requestUrl,
@@ -483,7 +476,7 @@ public class Service {
     }
   }
 
-  
+
   /**
    * Content type of data posted to the GData service.
    * Defaults to Atom using UTF-8 character set.

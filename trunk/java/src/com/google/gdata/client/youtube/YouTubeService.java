@@ -19,9 +19,11 @@ package com.google.gdata.client.youtube;
 import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.youtube.CommentFeed;
+import com.google.gdata.data.youtube.ComplaintFeed;
 import com.google.gdata.data.youtube.FriendFeed;
 import com.google.gdata.data.youtube.PlaylistFeed;
 import com.google.gdata.data.youtube.PlaylistLinkFeed;
+import com.google.gdata.data.youtube.RatingFeed;
 import com.google.gdata.data.youtube.SubscriptionFeed;
 import com.google.gdata.data.youtube.UserProfileFeed;
 import com.google.gdata.data.youtube.VideoFeed;
@@ -57,7 +59,20 @@ public class YouTubeService extends MediaService {
    *        [company-id]-[app-name]-[app-version].
    */
   public YouTubeService(String applicationName) {
-    this(applicationName, DEFAULT_AUTH_URL);
+    this(applicationName, null, DEFAULT_AUTH_URL);
+  }
+
+  /**
+   * Creates a new instance of the service with the given application name.
+   * 
+   * @param applicationName should be a string identifying the application using
+   *        the API, usually in this format:
+   *        [company-id]-[app-name]-[app-version].
+   * @param developerId the developer id to send in every request made through
+   *        this client, can be null.
+   */
+  public YouTubeService(String applicationName, String developerId) {
+    this(applicationName, developerId, DEFAULT_AUTH_URL);
   }
 
   /**
@@ -67,19 +82,22 @@ public class YouTubeService extends MediaService {
    * @param applicationName should be a string identifying the application using
    *        the API, usually in this format:
    *        [company-id]-[app-name]-[app-version].
+   * @param developerId the developer id to send in every request made through
+   *        this client, can be null.
    * @param authBaseUrl the base URL pointing to the authentication server.
    */
-  public YouTubeService(String applicationName, URL authBaseUrl) {
+  protected YouTubeService(String applicationName, String developerId, URL authBaseUrl) {
     super(SERVICE_NAME, applicationName, authBaseUrl.getProtocol(),
-        authBaseUrl.getHost() + ":" + authBaseUrl.getPort()
-            + authBaseUrl.getPath());
-
+        authBaseUrl.getHost() + ":" + authBaseUrl.getPort() + authBaseUrl.getPath());
+    getRequestFactory().setHeader("X-GData-Key", developerId != null ? "key=" + developerId : null);
+    
     ExtensionProfile profile = getExtensionProfile();
-
+    profile.addDeclarations(new ComplaintFeed());
     profile.addDeclarations(new CommentFeed());
     profile.addDeclarations(new FriendFeed());
     profile.addDeclarations(new PlaylistFeed());
     profile.addDeclarations(new PlaylistLinkFeed());
+    profile.addDeclarations(new RatingFeed());
     profile.addDeclarations(new SubscriptionFeed());
     profile.addDeclarations(new UserProfileFeed());
     profile.addDeclarations(new VideoFeed());

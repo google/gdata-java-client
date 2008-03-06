@@ -35,6 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -133,6 +134,15 @@ public abstract class BaseEntry<E extends BaseEntry>
      * parsed (either from requests or from arbitrary XML).
      */
     public String versionId;
+
+    /**
+     * ETag.  See RFC 2616, Section 3.11.
+     * If there is no entity tag, this variable is null.
+     * Etags are provided not only on top-level entries,
+     * but also on entries within feeds (in the form of
+     * a gd:etag attribute).
+     */
+    public String etag;
 
     /** Creation timestamp. Ignored on updates. */
     public DateTime published;
@@ -238,6 +248,9 @@ public abstract class BaseEntry<E extends BaseEntry>
   public String getVersionId() { return state.versionId; }
   public void setVersionId(String v) { state.versionId = v; }
 
+  public String getEtag() { return state.etag; }
+  public void setEtag(String v) { state.etag = v; }
+
   public DateTime getPublished() { return state.published; }
   public void setPublished(DateTime v) {
     if (v != null && v.getTzShift() == null) {
@@ -277,6 +290,41 @@ public abstract class BaseEntry<E extends BaseEntry>
 
   public Content getContent() { return state.content; }
   public void setContent(Content v) { state.content = v; }
+
+  /**
+   * Assumes the content element's contents are text and
+   * returns them as a TextContent.
+   *
+   * @return A TextContent containing the value of the content tag.
+   *
+   * @throws IllegalStateException
+   *            If the content element is not a text type.
+   */
+  public TextContent getTextContent() {
+    Content content = getContent();
+    if(!(content instanceof TextContent)) {
+      throw new IllegalStateException("Content object is not a TextContent");
+    }
+    return (TextContent) getContent();
+  }
+
+  /**
+   * Assumes the <content> element's contents are plain-text and
+   * returns its value as a string
+   *
+   * @return A string containing the plain-text value of the content tag.
+   *
+   * @throws IllegalStateException
+   *            If the content element is not a text type.
+   */
+  public String getPlainTextContent() {
+    TextConstruct textConstruct = getTextContent().getContent();
+    if(!(textConstruct instanceof PlainTextConstruct)) {
+      throw new IllegalStateException(
+          "TextConstruct object is not a PlainTextConstruct");
+    }
+    return textConstruct.getPlainText();
+  }
 
   public void setContent(TextConstruct tc) {
     state.content = new TextContent(tc);
@@ -521,6 +569,16 @@ public abstract class BaseEntry<E extends BaseEntry>
     state.service.delete(editUrl);
   }
 
+  @Override
+  protected void visitChildren(ExtensionVisitor ev)
+      throws ExtensionVisitor.StoppedException {
+    
+    // Add nested links to the visitor pattern
+    for (Link link : getLinks()) {
+      this.visitChild(ev, link);
+    }
+    super.visitChildren(ev);
+  } 
 
   /**
    * Generates XML in the Atom format.
@@ -536,11 +594,18 @@ public abstract class BaseEntry<E extends BaseEntry>
   public void generateAtom(XmlWriter w,
                            ExtensionProfile extProfile) throws IOException {
 
-    Vector<XmlWriter.Namespace> nsDecls =
-      new Vector<XmlWriter.Namespace>(namespaceDeclsAtom);
+    Set<XmlWriter.Namespace> nsDecls =
+      new LinkedHashSet<XmlWriter.Namespace>(namespaceDeclsAtom);
     nsDecls.addAll(extProfile.getNamespaceDecls());
 
-    generateStartElement(w, Namespaces.atomNs, "entry", null, nsDecls);
+    ArrayList<XmlWriter.Attribute> attrs =
+      new ArrayList<XmlWriter.Attribute>(3);
+
+    if (state.etag != null) {
+      nsDecls.add(Namespaces.gNs);
+      attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", state.etag));
+    }
+    generateStartElement(w, Namespaces.atomNs, "entry", attrs, nsDecls);
 
     if (state.id != null) {
       w.simpleElement(Namespaces.atomNs, "id", null, state.id);

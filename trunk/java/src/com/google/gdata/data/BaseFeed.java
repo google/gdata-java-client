@@ -35,9 +35,12 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
+import java.util.Set;
 
 /**
  * The BaseFeed class is an abstract base class that represents a
@@ -112,8 +115,6 @@ import java.util.Vector;
  *
  * @param   <F> feed type associated with bound subtype.
  * @param   <E> entry type associated with bound subtype.
- * 
- * 
  */
 public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     extends Source
@@ -154,6 +155,12 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
     /** Adaptable helper */
     public Kind.Adaptable adaptable = new Kind.AdaptableHelper();
+
+    /** Etag.  
+     * ETag.  See RFC 2616, Section 3.11.
+     * If there is no entity tag, this variable is null.
+     */
+    public String etag;
   }
 
   /**
@@ -208,6 +215,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * The implementation of this method for BaseFeed will declare any
    * extensions associated with the contained entry type.
    */
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
 
     // Create an instance of the associated entry class and declare its
@@ -244,6 +252,16 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * to the feed.
    */
   public void setCanPost(boolean v) { feedState.canPost = v; }
+
+  /**
+   * Gets the ETag.
+   */
+  public String getEtag() { return feedState.etag; }
+
+  /**
+   * Sets the ETag.
+   */
+  public void setEtag(String v) { feedState.etag = v; }
 
   /**
    * Gets the total number of results associated with this feed.  The value
@@ -344,6 +362,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    *
    * @return the current state of the feed.
    */
+  @SuppressWarnings("unchecked")
   public F getSelf() throws IOException, ServiceException {
     if (feedState.service == null) {
       throw new ServiceException("Feed is not associated with a GData service");
@@ -353,7 +372,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       throw new UnsupportedOperationException("Feed cannot be retrieved");
     }
     URL feedUrl = new URL(selfLink.getHref());
-    try {
+    try {  
       return (F) feedState.service.getFeed(feedUrl, this.getClass(),
           srcState.updated);
     } catch (NotModifiedException e) {
@@ -391,6 +410,20 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     URL postUrl = new URL(postLink.getHref());
     return feedState.service.insert(postUrl, newEntry);
   }
+  
+  @Override
+  protected void visitChildren(ExtensionVisitor ev)
+      throws ExtensionVisitor.StoppedException {
+    
+    // Add nested entries and links to the visitor pattern
+    for (BaseEntry<E> entry : entries) {
+      this.visitChild(ev, entry);
+    }
+    for (Link link : getLinks()) {
+      this.visitChild(ev, link);
+    }
+    super.visitChildren(ev);
+  } 
 
   /**
    * Generates XML in the Atom format.
@@ -403,6 +436,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    *
    * @throws  IOException
    */
+  @Override
   public void generateAtom(XmlWriter w,
                            ExtensionProfile extProfile) throws IOException {
 
@@ -452,12 +486,20 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
     Namespace openSearchNs = Namespaces.getOpenSearchNs();
 
-    Vector<Namespace> nsDecls = new Vector<Namespace>();
+    Set<Namespace> nsDecls = new LinkedHashSet<Namespace>();
     nsDecls.add(Namespaces.atomNs);
     nsDecls.add(openSearchNs);
     nsDecls.addAll(extProfile.getNamespaceDecls());
 
-    generateStartElement(w, Namespaces.atomNs, "feed", null, nsDecls);
+
+    ArrayList<XmlWriter.Attribute> attrs =
+      new ArrayList<XmlWriter.Attribute>(3);
+
+    if (feedState.etag != null) {
+      nsDecls.add(Namespaces.gNs);
+      attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", feedState.etag));
+    }
+    generateStartElement(w, Namespaces.atomNs, "feed", attrs, nsDecls);
 
     // Generate base feed elements
     generateInnerAtom(w, extProfile);
@@ -619,7 +661,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * based upon any {@link Kind} category tag found in the input content. If
    * no kind tag is found a {@link Feed} instance will be returned.
    */
-  public static BaseFeed readFeed(ParseSource source)
+  public static BaseFeed<?, ?> readFeed(ParseSource source)
       throws IOException, ParseException, ServiceException {
     return readFeed(source, null, null);
   }
@@ -695,6 +737,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * @param   input
    *            XML input stream.
    */
+  @Override
   public void parseAtom(ExtensionProfile extProfile,
                         InputStream input) throws IOException,
                                               ParseException {
@@ -750,6 +793,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     }
 
 
+    @Override
     public ElementHandler getChildHandler(String namespace,
                                           String localName,
                                           Attributes attrs)
@@ -798,6 +842,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     /** {@code <opensearch:totalResults>} parser. */
     private class TotalResultsHandler extends ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (feedState.totalResults != Query.UNDEFINED) {
@@ -820,6 +865,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     /** {@code <opensearch:startIndex>} parser. */
     private class StartIndexHandler extends ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (feedState.startIndex != Query.UNDEFINED) {
@@ -842,6 +888,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     /** {@code <opensearch:itemsPerPage>} parser. */
     private class ItemsPerPageHandler extends ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (feedState.itemsPerPage != Query.UNDEFINED) {
@@ -860,6 +907,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       }
     }
 
+    @Override
     public void processEndElement() throws ParseException {
 
       // Set the canPost flag based upon the presence of an entry post

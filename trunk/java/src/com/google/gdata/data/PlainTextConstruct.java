@@ -100,8 +100,8 @@ public class PlainTextConstruct extends TextConstruct {
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>();
 
-    // For BETA and later, optimize out the text attribute since it is implied.
-    if (Service.getVersion().isCompatible(Service.ALPHA)) {
+    // For v2 and later, optimize out the text attribute since it is implied.
+    if (Service.getVersion().isCompatible(Service.Versions.V1)) {
       attrs.add(new XmlWriter.Attribute("type", "text"));
     }
 

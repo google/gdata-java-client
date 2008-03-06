@@ -257,6 +257,13 @@ public class GphotoDataImpl implements GphotoData {
     extPoint.removeExtension(extension);
   }
 
+  /*
+   * Remove a repeating extension from the delegate.
+   */
+  public void removeRepeatingExtension(Extension ext) {
+    extPoint.removeRepeatingExtension(ext);
+  }
+
   /**
    * An extension that represents a gphoto:id, which is a string that is the
    * system-id for a particular item. This is distinguished from the atom:id,

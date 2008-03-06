@@ -17,7 +17,6 @@
 package com.google.gdata.data.docs;
 
 import com.google.gdata.data.media.MediaFeed;
-import com.google.gdata.data.ExtensionProfile;
 
 /**
  * A feed for managing lists of documents from the Google Docs &amp;
@@ -36,13 +35,5 @@ public class DocumentListFeed
    */
   public DocumentListFeed() {
     super(DocumentListEntry.class);
-  }
-
-  /**
-   * Declares feed-level extensions into the extension profile.
-   */
-   public void declareExtensions(ExtensionProfile extProfile) {
-    // No feed-level extensions.
-    super.declareExtensions(extProfile);
   }
 }

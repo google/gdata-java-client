@@ -95,7 +95,7 @@ public class GoogleBaseAttributesExtension implements Extension {
    *
    * @see #getImageLink()
    * @see #getImageLinks()
-   * @see #addImageLink()
+   * @see #addImageLink(String)
    */
   public static final String IMAGE_LINK_ATTRIBUTE = "image link";
 
@@ -111,7 +111,7 @@ public class GoogleBaseAttributesExtension implements Extension {
    * Attribute {@code <g:price>}.
    *
    * @see #getPrice()
-   * @see #setPrice(NumberUnit<Float>)
+   * @see #setPrice(NumberUnit)
    * @see #setPrice(float, String)
    */
   public static final String PRICE_ATTRIBUTE = "price";
@@ -176,7 +176,7 @@ public class GoogleBaseAttributesExtension implements Extension {
    * Attribute {@code <g:delivery_radius>}.
    *
    * @see #getDeliveryRadius()
-   * @see #setDeliveryRadius(NumberUnit<Float>)
+   * @see #setDeliveryRadius(NumberUnit)
    * @see #setDeliveryRadius(float, String)
    */
   public static final String DELIVERY_RADIUS_ATTRIBUTE = "delivery radius";

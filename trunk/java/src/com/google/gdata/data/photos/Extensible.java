@@ -53,6 +53,12 @@ public interface Extensible {
   public void addExtension(Extension extension);
 
   /**
+   * Adds a repeating extension object.  Forwards to
+   * {@link ExtensionPoint#addRepeatingExtension(Extension)}.
+   */
+  public void addRepeatingExtension(Extension extension);
+  
+  /**
    * Removes an extension object. Forwards to
    * {@link ExtensionPoint#removeExtension(Extension)}.
    */
@@ -63,4 +69,10 @@ public interface Extensible {
    * {@link ExtensionPoint#removeExtension(Class)}.
    */
   public void removeExtension(Class<? extends Extension> extensionClass);
+  
+  /**
+   * Removes a repeating extension object.  Forwards to
+   * {@link ExtensionPoint#removeRepeatingExtension(Extension)}.
+   */
+  public void removeRepeatingExtension(Extension ext);
 }

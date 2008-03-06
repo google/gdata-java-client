@@ -96,6 +96,11 @@ public class YouTubeNamespace {
   public static final String KEYWORD_SCHEME = URI + "/keywords.cat";
 
   /**
+   * Scheme used for keywords in atom:categories.
+   */
+  public static final String MEDIA_RATING_SCHEME = URI + "#mediarating";
+
+  /**
    * Scheme used for atom:categories, which is mapped to playlist tags.
    */
   public static final String TAG_SCHEME = URI + "/tags.cat";
@@ -111,6 +116,11 @@ public class YouTubeNamespace {
    */
   public static final String CHANNELTYPE_SCHEME = URI + "/channeltypes.cat";
 
+  /**
+   * Scheme used for atom:categories which correspond to complaint reasons.
+   */
+  public static final String COMPLAINT_REASON_SCHEME = URI + "/complaint-reasons.cat";
+  
   /**
    * Scheme used for atom:categories which describes the type of subscription
    * defined in the entry.
@@ -131,6 +141,11 @@ public class YouTubeNamespace {
    * Link Rel value for user upload links.
    */
   public static final String UPLOADS_REL = URI + "#user.uploads";
+
+  /**
+   * Link Rel for the featured video of a feed (currently the user feed).
+   */
+  public static final String FEATURED_VIDEO_REL = URI + "#featured-video";
 
   /**
    * Link Rel value for user subscriptions links.

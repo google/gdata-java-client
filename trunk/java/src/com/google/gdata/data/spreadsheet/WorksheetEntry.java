@@ -126,7 +126,12 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
    * Column positions 1 to getRowCount() are valid.
    */
   public int getRowCount() {
-    return getExtension(RowCount.class).getCount();
+    RowCount count = getExtension(RowCount.class);
+    if (count != null) {
+      return count.getCount();
+    } else {
+      return 0;
+    }
   }
 
   /**
@@ -153,7 +158,12 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
    * Column positions 1 to getColCount() are valid.
    */
   public int getColCount() {
-    return getExtension(ColCount.class).getCount();
+    ColCount count = getExtension(ColCount.class);
+    if (count != null) {
+      return count.getCount();
+    } else {
+      return 0;
+    }
   }
 
   /**

@@ -119,8 +119,8 @@ public class ContentType {
    * an Atom entry.
    */
   public static ContentType getAtomEntry() {
-    // Use the unqualifed type for Alpha, the qualifed one for later versions
-    return Service.getVersion().isCompatible(Service.ALPHA) ?
+    // Use the unqualifed type for v1, the qualifed one for later versions
+    return Service.getVersion().isCompatible(Service.Versions.V1) ?
         ATOM : ATOM_ENTRY;
   }
 
@@ -129,8 +129,8 @@ public class ContentType {
    * an Atom feed.
    */
   public static ContentType getAtomFeed() {
-    // Use the unqualifed type for Alpha, the qualifed one for later versions
-    return Service.getVersion().isCompatible(Service.ALPHA) ?
+    // Use the unqualifed type for v1, the qualifed one for later versions
+    return Service.getVersion().isCompatible(Service.Versions.V1) ?
         ATOM : ATOM_FEED;
   }
 

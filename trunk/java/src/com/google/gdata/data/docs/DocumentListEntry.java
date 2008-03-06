@@ -19,10 +19,13 @@ package com.google.gdata.data.docs;
 import com.google.gdata.util.common.base.StringUtil;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.MediaContent;
 import com.google.gdata.data.Person;
+import com.google.gdata.data.acl.AclFeed;
+import com.google.gdata.data.acl.AclNamespace;
 import com.google.gdata.data.extensions.Labels;
 import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.media.MediaFileSource;
@@ -32,6 +35,7 @@ import com.google.gdata.util.Namespaces;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -142,7 +146,12 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   public DocumentListEntry(BaseEntry sourceEntry) {
     super(sourceEntry);
   }
-  
+
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    extProfile.declare(DocumentListEntry.class, DocumentListAclFeedLink.class);
+  }
+
   /**
    * Gets the link with which you can open up the document in a Web
    * browser.  This is a link to the full document-specific UI (for
@@ -166,7 +175,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * 
    * @return the Google Docs &amp; Spreadsheets id
    */
-  public String getId() {
+  public String getKey() {
     String result = state.id;
     if (result != null) {
       int position = result.lastIndexOf("/");
@@ -273,5 +282,21 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
       }
     }
     return folders;
+  }
+
+  public DocumentListAclFeedLink getAclFeedLink() {
+    List<DocumentListAclFeedLink> links =
+        getRepeatingExtension(DocumentListAclFeedLink.class);
+    for (DocumentListAclFeedLink feedLink : links) {
+      if (AclNamespace.LINK_REL_ACCESS_CONTROL_LIST.equals(feedLink.getRel())) {
+        return feedLink;
+      }
+    }
+    return null;
+  }
+
+  public AclFeed getAclFeed() {
+    DocumentListAclFeedLink feedLink = getAclFeedLink();
+    return (feedLink != null) ? feedLink.getFeed() : null;
   }
 }

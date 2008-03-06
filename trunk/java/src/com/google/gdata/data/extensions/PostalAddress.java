@@ -61,6 +61,10 @@ public class PostalAddress implements Extension {
   public String getValue() { return value; }
   public void setValue(String v) { value = v; }
 
+  /** Whether this is the primary postal address */
+  protected boolean primary;
+  public boolean getPrimary() { return primary; }
+  public void setPrimary(boolean p) { primary = p; }
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -84,6 +88,10 @@ public class PostalAddress implements Extension {
 
     if (label != null) {
       attrs.add(new XmlWriter.Attribute("label", label));
+    }
+
+    if (primary) {
+      attrs.add(new XmlWriter.Attribute("primary", primary));
     }
 
     w.simpleElement(Namespaces.gNs, "postalAddress", attrs, value);
@@ -114,6 +122,9 @@ public class PostalAddress implements Extension {
           rel = value;
         } else if (localName.equals("label")) {
           label = value;
+        } else if (localName.equals("primary")) {
+          Boolean pr = parseBooleanValue(value);
+          primary = (pr != null) ? pr : false;
         }
       }
     }

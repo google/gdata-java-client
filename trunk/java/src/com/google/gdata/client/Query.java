@@ -691,21 +691,23 @@ public class Query {
       }
 
       if (updatedMin != null) {
-        appendQueryParameter(queryBuf, "updated-min", updatedMin.toString());
+        appendQueryParameter(queryBuf, "updated-min",
+            FastURLEncoder.encode(updatedMin.toString()));
       }
 
       if (updatedMax != null) {
-        appendQueryParameter(queryBuf, "updated-max", updatedMax.toString());
+        appendQueryParameter(queryBuf, "updated-max",
+            FastURLEncoder.encode(updatedMax.toString()));
       }
 
       if (publishedMin != null) {
         appendQueryParameter(queryBuf, "published-min",
-            publishedMin.toString());
+            FastURLEncoder.encode(publishedMin.toString()));
       }
 
       if (publishedMax != null) {
         appendQueryParameter(queryBuf, "published-max",
-            publishedMax.toString());
+            FastURLEncoder.encode(publishedMax.toString()));
       }
 
       if (startIndex != UNDEFINED) {

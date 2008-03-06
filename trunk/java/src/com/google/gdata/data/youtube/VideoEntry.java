@@ -20,12 +20,15 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.PubControl;
 import com.google.gdata.data.extensions.Comments;
 import com.google.gdata.data.extensions.FeedLink;
 import com.google.gdata.data.extensions.Rating;
 import com.google.gdata.data.geo.impl.GeoRssWhere;
 import com.google.gdata.data.geo.impl.GmlPoint;
+import com.google.gdata.data.geo.impl.GmlPos;
 import com.google.gdata.data.media.MediaEntry;
+import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaRssNamespace;
 import com.google.gdata.util.Namespaces;
 
@@ -91,7 +94,13 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     }
   }
 
-  /** Sets the yt:racy flag. */
+  /**
+   * Sets the yt:racy flag.
+   * 
+   * @deprecated in favor of {@link MediaGroup#getRatings()} with scheme
+   *             {@link YouTubeNamespace#MEDIA_RATING_SCHEME}.
+   */
+  @Deprecated
   public void setRacy(boolean racy) {
     if (racy) {
       setExtension(new YtRacy());
@@ -100,14 +109,20 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     }
   }
 
-  /** Checks the yt:racy flag. */
+  /**
+   * Checks the yt:racy flag.
+   * 
+   * @deprecated in favor of {@link MediaGroup#getRatings()} with scheme
+   *             {@link YouTubeNamespace#MEDIA_RATING_SCHEME}.
+   */
+  @Deprecated
   public boolean isRacy() {
     YtRacy racy = getExtension(YtRacy.class);
     return racy != null;
   }
 
   /** Adds a georss:where tag. */
-  public void setLocation(GeoRssWhere where) {
+  public void setGeoCoordinates(GeoRssWhere where) {
     if (where == null) {
       removeExtension(GeoRssWhere.class);
     } else {
@@ -116,8 +131,23 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
   }
 
   /** Gets the georss:where tag. */
-  public GeoRssWhere getLocation() {
+  public GeoRssWhere getGeoCoordinates() {
     return getExtension(GeoRssWhere.class);
+  }
+
+  /** Sets the yt:location tag. */
+  public String getLocation() {
+    YtLocation tag = getExtension(YtLocation.class);
+    return tag == null ? null : tag.getContent();
+  }
+
+  /** Gets the yt:location tag. */
+  public void setLocation(String location) {
+    if (location == null) {
+      removeExtension(YtLocation.class);
+    } else {
+      setExtension(new YtLocation(location));
+    }
   }
 
   /** Gets all gd:feedLink tags. */
@@ -154,6 +184,11 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     return getLink(YouTubeNamespace.COMPLAINTS_REL, Link.Type.ATOM);
   }
 
+  /** Returns a link to the related videos feed. */
+  public Link getRelatedVideosLink() {
+    return getLink(YouTubeNamespace.RELATED_REL, Link.Type.ATOM);
+  }
+
   /** Gets the gd:rating tag. */
   public Rating getRating() {
     return getExtension(Rating.class);
@@ -166,6 +201,39 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     } else {
       setExtension(rating);
     }
+  }
+
+  /**
+   * Sets the publication state of this entry, using the tag
+   * app:control/yt:status.
+   *
+   * @param state publication state or {@code null}
+   */
+  public void setPublicationState(YtPublicationState state) {
+    PubControl control = getPubControl();
+    if (state == null) {
+      if (control != null) {
+        control.removeExtension(YtPublicationState.class);
+      }
+    } else {
+      if (control == null) {
+        control = new PubControl();
+        setPubControl(control);
+      }
+      control.setExtension(state);
+    }
+  }
+
+  /**
+   * Gets the publication state of this entry from the tag
+   * app:control/yt:status.
+   *
+   * @return publication state or {@code null}, in which case
+   *     the video is live
+   */
+  public YtPublicationState getPublicationState() {
+    PubControl control  = getPubControl();
+    return control == null ? null : control.getExtension(YtPublicationState.class);
   }
 
   public YouTubeMediaGroup getMediaGroup() {
@@ -181,7 +249,15 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     return group;
   }
 
+  public YtToken getMediaEditToken() {
+    Link mediaEditLink = getMediaEditLink();
+    return mediaEditLink != null ? mediaEditLink.getExtension(YtToken.class) : null;
+  }
+
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    extProfile.declare(PubControl.class, YtPublicationState.class);
+
     extProfile.declare(VideoEntry.class, Comments.getDefaultDescription());
     extProfile.declare(VideoEntry.class, Rating.getDefaultDescription(false));
     extProfile.declareAdditionalNamespace(Namespaces.gNs);
@@ -190,6 +266,7 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     extProfile.declare(VideoEntry.class, YtRacy.class);
     extProfile.declare(VideoEntry.class, YtStatistics.class);
     extProfile.declare(VideoEntry.class, YtNoEmbed.class);
+    extProfile.declare(VideoEntry.class, YtLocation.class);
 
     extProfile.declare(VideoEntry.class, YouTubeMediaGroup.class);
     new YouTubeMediaGroup().declareExtensions(extProfile);
@@ -200,9 +277,12 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
         com.google.gdata.data.geo.Namespaces.GEO_RSS_NAMESPACE);
     
     extProfile.declare(GeoRssWhere.class, GmlPoint.getDefaultDescription(false));
+    extProfile.declare(GmlPoint.class, GmlPos.getDefaultDescription(false));
     extProfile.declareAdditionalNamespace(
         com.google.gdata.data.geo.Namespaces.GML_NAMESPACE);
 
+    extProfile.declare(Link.class, YtToken.class);
+    
     // Ignore unsupported XML tags instead of rejecting them.
     // Very useful in a client.
     extProfile.declareArbitraryXmlExtension(VideoEntry.class);

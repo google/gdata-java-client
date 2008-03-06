@@ -47,8 +47,8 @@ public class MediaMultipart extends MimeMultipart {
     loadMimeMappings();
   }
 
-  private MediaBodyPart atomPart;
-  private MediaBodyPart mediaPart;
+  protected MediaBodyPart atomPart;
+  protected MediaBodyPart mediaPart;
 
   /**
    * Loads the default set of Java activation MIME mappings required by
@@ -78,7 +78,13 @@ public class MediaMultipart extends MimeMultipart {
     }
   }
 
-
+  /**
+   * Constructor for subclasses.
+   */
+  protected MediaMultipart(String subType) {
+    super(subType);
+  }
+  
   /**
    * Constructs a new MediaMultipart instance by parsing MIME content from
    * the provided input stream.
@@ -103,7 +109,7 @@ public class MediaMultipart extends MimeMultipart {
     atomPart = (MediaBodyPart)getBodyPart(atomFirst ? 0 : 1);
     mediaPart = (MediaBodyPart)getBodyPart(atomFirst ? 1 : 0);
   }
-
+  
   /**
    * Constructs a new MediaMultipart instance from an Atom entry instance
    * and a media source.

@@ -1,0 +1,101 @@
+
+/* The main chrome containing the calendar is spaced this far from the side */
+.datePickerDiv {
+  background: #c3d9ff;
+  padding: 0px 0px 9px 9px;
+  line-height: 1em;
+}
+
+.DP_monthtable {
+  width: 100%;
+  background: #fff;
+  padding: 0px;
+  border-bottom: 1px #A2BBDD solid;
+  font-size: 83%;
+}
+
+.DP_monthtable TD {
+  text-align: center;
+  padding: 2px;
+  font-family: Verdana;
+  font-size: 85%;
+}
+
+.DP_heading {
+  cursor: pointer;
+  background: rgb(195, 217, 255);
+  color: #112ABB;
+  vertical-align: middle;
+}
+
+.DP_days {
+  background: rgb(195, 217, 255);
+}
+
+.DP_dayh {
+  cursor: default;
+  font-size: 78%;
+}
+
+.DP_cur {
+  font:bold 78%/1em Verdana,Sans-serif;
+  padding-bottom: 4px;
+  text-align: center;
+}
+.DP_prev, .DP_next {
+  font-size: 125%;
+  padding-bottom: 6px;
+  cursor: pointer;
+}
+
+.DP_prev { text-align: right; }
+.DP_next { text-align: left; }
+
+/* today  */
+.DP_today {
+  background :  #9ab !important;
+  border:       1px solid !important;
+  border-color: #567 #abc #abc #567 !important;
+  color:        #fff;
+}
+.DP_today_selected {
+  background :  #579 !important;
+  border:       1px solid !important;
+  border-color: #246 #9bd #9bd #246 !important;
+  color:        #fff;
+}
+
+/* weekday is Gmail blue when selected */
+.DP_weekday {
+  background: rgb(255, 255, 255);
+}
+.DP_weekday_selected {
+  background: rgb(170, 204, 238);
+}
+
+/* weekend goes from gray to dark blue when selected */
+.DP_weekend {
+  background: #E8EEF7;
+}
+.DP_weekend_selected {
+  background: rgb(153, 187, 221);
+}
+
+.DP_onmonth {
+}
+
+.DP_offmonth {
+  color: #888;
+}
+
+.DP_day_top {
+  border-top: 1px #A2BBDD solid;
+}
+
+.DP_day_right {
+  border-right: 1px #A2BBDD solid;
+}
+
+.DP_day_left {
+  border-left: 1px #A2BBDD solid;
+}

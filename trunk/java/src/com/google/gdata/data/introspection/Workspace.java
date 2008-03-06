@@ -27,8 +27,8 @@ import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.Version;
 import com.google.gdata.util.XmlParser;
-import com.google.gdata.util.VersionRegistry.Version;
 
 import org.xml.sax.Attributes;
 
@@ -43,7 +43,7 @@ import java.util.List;
  * AtomPub workspace.
  *
  * The implementation is versioned to support the AtomPub draft version 9
- * introspection format (used for the GData Alpha implementation) as well
+ * introspection format (used for the GData v1 implementation) as well
  * as the final RFC5023 format (used for all other versions).  The key
  * difference between the two is that draft used an attribute for the
  * workspace title where the final version uses an atom:title element.
@@ -79,12 +79,12 @@ public class Workspace extends ExtensionPoint {
       throws IOException {
 
     ArrayList<Attribute> attrs = new ArrayList<Attribute>();
-    if (coreVersion.isCompatible(Service.ALPHA)) {
+    if (coreVersion.isCompatible(Service.Versions.V1)) {
       attrs.add(new Attribute("title", title.getPlainText()));
     }
     w.startElement(atomPubNs, "workspace", attrs, null);
 
-    if (!coreVersion.isCompatible(Service.ALPHA)) {
+    if (!coreVersion.isCompatible(Service.Versions.V1)) {
       title.generateAtom(w, "title");
     }
 
@@ -102,7 +102,7 @@ public class Workspace extends ExtensionPoint {
   @Override
   public void consumeAttributes(AttributeHelper attrHelper) 
       throws ParseException {
-    if (coreVersion.isCompatible(Service.ALPHA)) {
+    if (coreVersion.isCompatible(Service.Versions.V1)) {
       String titleAttr = attrHelper.consume("title", true);
       title = new PlainTextConstruct(titleAttr);
     }
@@ -142,7 +142,7 @@ public class Workspace extends ExtensionPoint {
         }
       } else if (namespace.equals(Namespaces.atom)) {
         if (localName.equals("title") && 
-            !coreVersion.isCompatible(Service.ALPHA)) {
+            !coreVersion.isCompatible(Service.Versions.V1)) {
 
           if (title != null) {
             throw new ParseException("Duplicate title.");
