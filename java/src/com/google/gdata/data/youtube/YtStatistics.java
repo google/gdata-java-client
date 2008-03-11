@@ -34,6 +34,7 @@ import com.google.gdata.util.ParseException;
 )
 public class YtStatistics extends AbstractExtension {
   private long viewCount;
+  private long favoriteCount;
 
 
   /** Gets view count, 0 by default. */
@@ -46,10 +47,23 @@ public class YtStatistics extends AbstractExtension {
     this.viewCount = viewCount;
   }
 
+  /** Gets favorite count, 0 by default. */
+  public long getFavoriteCount() {
+    return favoriteCount;
+  }
+
+  /** Sets favorite count. */
+  public void setFavoriteCount(long favoriteCount) {
+    this.favoriteCount = favoriteCount;
+  }
+
   @Override
   protected void putAttributes(AttributeGenerator generator) {
     if (viewCount > 0) {
       generator.put("viewCount", viewCount);
+    }
+    if (favoriteCount > 0) {
+      generator.put("favoriteCount", favoriteCount);
     }
   }
 
@@ -57,5 +71,6 @@ public class YtStatistics extends AbstractExtension {
   protected void consumeAttributes(AttributeHelper helper)
       throws ParseException {
     viewCount = helper.consumeLong("viewCount", false, 0L);
+    favoriteCount = helper.consumeLong("favoriteCount", false, 0L);
   }
 }
