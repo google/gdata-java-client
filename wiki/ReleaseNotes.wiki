@@ -8,8 +8,11 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.16.2 ==
+  * Added write support including video upload feature in [http://code.google.com/apis/youtube/overview.html YouTube Data API].
+
 == 1.16.1 ==
-  * Fixed YouTube video feed parsing error related to unknown attribute 'favouriteCount'.
+  * Fixed [http://code.google.com/apis/youtube/overview.html YouTube Data API] video feed parsing error related to unknown attribute 'favouriteCount'.
 
 == 1.16.0 ==
   * Added Java client support for Google Contacts API.
