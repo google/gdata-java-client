@@ -24,10 +24,14 @@
             value="${sample.youtube.basedir}/classes"/>
   <property name="sample.youtube.build.lib"
             value="${sample.youtube.basedir}/lib"/>
-  <property name="sample.youtube.jar"
-            value="${sample.youtube.build.lib}/YouTubeClient.jar"/>
-  <property name="sample.youtube.main"
-            value="sample.youtube.YouTubeClient"/>
+  <property name="sample.youtube.read.jar"
+            value="${sample.youtube.build.lib}/YouTubeReadonlyClient.jar"/>
+  <property name="sample.youtube.write.jar"
+            value="${sample.youtube.build.lib}/YouTubeWriteClient.jar"/>
+  <property name="sample.youtube.read.main"
+            value="sample.youtube.YouTubeReadonlyClient"/>
+  <property name="sample.youtube.write.main"
+            value="sample.youtube.YouTubeWriteClient"/>
 
   <target name="sample.youtube.clean"
    description="Delete old build and dist directories">
@@ -66,27 +70,42 @@
         <classpath refid="sample.youtube.compile.classpath"/>
     </javac>
 
-    <jar jarfile="${sample.youtube.jar}"
+    <jar jarfile="${sample.youtube.read.jar}"
          basedir="${sample.youtube.build.classes}">
       <manifest>
-        <attribute name="Main-Class" value="${sample.youtube.main}"/>
+        <attribute name="Main-Class" value="${sample.youtube.read.main}"/>
+      </manifest>
+    </jar>
+    <jar jarfile="${sample.youtube.write.jar}"
+         basedir="${sample.youtube.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.youtube.write.main}"/>
       </manifest>
     </jar>
   </target>
 
   <!-- samples run -->
-  <target name="sample.youtube.run"
+  <target name="sample.youtube.read.run"
           depends="sample.youtube.build"
-          description="Runs the youtube sample">
-
-    <java fork="true" classname="${sample.youtube.main}">
-      <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
+          description="Runs the youtube read-only sample">
+    <java fork="true" classname="${sample.youtube.read.main}">
       <classpath>
         <path refid="sample.youtube.compile.classpath"/>
-        <path location="${sample.youtube.jar}"/>
+        <path location="${sample.youtube.read.jar}"/>
       </classpath>
     </java>
+  </target>
 
+  <target name="sample.youtube.write.run"
+          depends="sample.youtube.build"
+          description="Runs the youtube read-write sample">
+    <java fork="true" classname="${sample.youtube.write.main}">
+      <arg line="-u ${sample.youtube.username} -p ${sample.youtube.password} -k ${sample.youtube.key}"/>
+      <classpath>
+        <path refid="sample.youtube.compile.classpath"/>
+        <path location="${sample.youtube.write.jar}"/>
+      </classpath>
+    </java>
   </target>
 
 </project>

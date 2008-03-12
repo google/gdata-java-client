@@ -129,7 +129,7 @@ public class ContentType {
    * an Atom feed.
    */
   public static ContentType getAtomFeed() {
-    // Use the unqualifed type for v1, the qualifed one for later versions
+    // Use the unqualified type for v1, the qualified one for later versions
     return Service.getVersion().isCompatible(Service.Versions.V1) ?
         ATOM : ATOM_FEED;
   }
@@ -363,12 +363,12 @@ public class ContentType {
     return sb.toString();
   }
 
-  private HashMap<String,String> attributes = new HashMap<String,String>();
+  private HashMap<String, String> attributes = new HashMap<String, String>();
 
   /**
    * Returns the additional attributes of the content type.
    */
-  public HashMap<String,String> getAttributes() { return attributes; }
+  public HashMap<String, String> getAttributes() { return attributes; }
 
 
   /**

@@ -10,14 +10,14 @@ of each entry returned. If --update is specified, it will insert
 an entry, update it, and then delete it.
 
 The application can be built and run using the provided Ant build file found at
-gdata/java/build.xml.  The sample can be run in the following manner:
+gdata/java/build-samples.xml.  The sample can be run in the following manner:
 
-1.  Edit gdata/java/build.properties to enter your Google Account username and
+1.  Edit gdata/java/build-samples/build.properties to enter your Google Account username and
     password.
 
 2.  Invoke the sample using the following commandline:
 
-    ant -f gdata/java/build.xml sample.tester.run
+    ant -f gdata/java/build-samples.xml sample.tester.run
 
 NOTE: This sample will insert, update, and delete an entry if --update
       is specified. If you don't specify --update, the tester will not

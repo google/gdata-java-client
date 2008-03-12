@@ -7,12 +7,12 @@ GData Java client library.
 
 
 The applications can be built and run using the provided Ant build file found at
-gdata/java/build.xml.  The sample can be run in the following manner:
+gdata/java/build-samples.xml.  The sample can be run in the following manner:
 
 
 1.  Invoke the samples using the appropriate command:
 
-    ant -f gdata/java/build.xml sample.contacts.run --username <username> --password <password>
+    ant -f gdata/java/build-samples.xml sample.contacts.run --username <username> --password <password>
 
 NOTE: These samples will insert, update, and delete contact entries using
 read-write feed for the account specified.  They will clean up after

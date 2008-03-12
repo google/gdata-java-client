@@ -81,7 +81,9 @@ public class XmlParser extends DefaultHandler {
   private static SAXParserFactory getSAXParserFactory()
       throws ParserConfigurationException, SAXException {
 
-    return SAXParserFactory.newInstance();
+    SAXParserFactory factory =  SAXParserFactory.newInstance();
+    factory.setNamespaceAware(true);
+    return factory; 
   }
 
   /**

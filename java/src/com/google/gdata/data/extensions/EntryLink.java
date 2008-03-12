@@ -23,6 +23,7 @@ import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.ExtensionVisitor;
 import com.google.gdata.data.Link;
+import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser.ElementHandler;
@@ -87,6 +88,10 @@ public class EntryLink<E extends BaseEntry<?>> extends Link {
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
     return ExtensionDescription.getDefaultDescription(EntryLink.class);
+  }
+  
+  public String getType() {
+    return ContentType.getAtomEntry().toString();
   }
 
   @Override

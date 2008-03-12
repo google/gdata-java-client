@@ -20,6 +20,7 @@ import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.ExtensionVisitor;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -52,6 +53,16 @@ public class ServiceDocument extends ExtensionPoint {
     workspaces.add(workspace);
   }
 
+  @Override
+  protected void visitChildren(ExtensionVisitor ev)
+      throws ExtensionVisitor.StoppedException {
+    
+    // Add nested workspaces to the visitor pattern
+    for (Workspace workspace : workspaces) {
+      this.visitChild(ev, workspace);
+    }
+    super.visitChildren(ev);
+  } 
 
   /**
    * Generates XML.
@@ -127,7 +138,7 @@ public class ServiceDocument extends ExtensionPoint {
     return new Handler(p);
   }
 
-  /*
+  /**
    * XmlParser ElementHandler for {@code app:service}
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {

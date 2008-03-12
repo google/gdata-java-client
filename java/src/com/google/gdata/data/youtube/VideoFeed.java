@@ -17,6 +17,7 @@ package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.media.MediaFeed;
 
 /**
@@ -36,5 +37,20 @@ public class VideoFeed extends MediaFeed<VideoFeed, VideoEntry> {
   public VideoFeed(BaseFeed base) {
     super(VideoEntry.class, base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO);
+  }
+
+  /**
+   * Gets a link to the "Get Upload Token" action.
+   *
+   * @return a link with rel {@link YouTubeNamespace#GET_UPLOAD_TOKEN_REL} 
+   *   or {@code null}.
+   */
+  public Link getGetUploadTokenActionLink() {
+    for (Link link : getLinks()) {
+      if (YouTubeNamespace.GET_UPLOAD_TOKEN_REL.equals(link.getRel())) {
+        return link;
+      }
+    }
+    return null;
   }
 }

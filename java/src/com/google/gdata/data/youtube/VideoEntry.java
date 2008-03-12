@@ -17,6 +17,7 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
@@ -119,6 +120,21 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
   public boolean isRacy() {
     YtRacy racy = getExtension(YtRacy.class);
     return racy != null;
+  }
+
+  /** Sets the value of the yt:recorded tag. */
+  public void setRecorded(DateTime date) {
+    if (date == null) {
+      removeExtension(YtRecorded.class);
+    } else {
+      setExtension(new YtRecorded(date));
+    }
+  }
+
+  /** Gets the value of the yt:recorded tag. */
+  public DateTime getRecorded() {
+    YtRecorded recorded = getExtension(YtRecorded.class);
+    return recorded == null ? null : recorded.getDate();
   }
 
   /** Adds a georss:where tag. */
@@ -249,11 +265,6 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     return group;
   }
 
-  public YtToken getMediaEditToken() {
-    Link mediaEditLink = getMediaEditLink();
-    return mediaEditLink != null ? mediaEditLink.getExtension(YtToken.class) : null;
-  }
-
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(PubControl.class, YtPublicationState.class);
@@ -264,6 +275,7 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     extProfile.declareAdditionalNamespace(YouTubeNamespace.NS);
 
     extProfile.declare(VideoEntry.class, YtRacy.class);
+    extProfile.declare(VideoEntry.class, YtRecorded.class);
     extProfile.declare(VideoEntry.class, YtStatistics.class);
     extProfile.declare(VideoEntry.class, YtNoEmbed.class);
     extProfile.declare(VideoEntry.class, YtLocation.class);

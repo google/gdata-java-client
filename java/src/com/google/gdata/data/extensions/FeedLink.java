@@ -17,13 +17,13 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.ExtensionVisitor;
 import com.google.gdata.data.Feed;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.Link;
+import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser.ElementHandler;
@@ -32,7 +32,6 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -94,6 +93,10 @@ public class FeedLink<F extends BaseFeed<?, ?>> extends Link {
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
     return ExtensionDescription.getDefaultDescription(FeedLink.class);
+  }
+  
+  public String getType() {
+    return ContentType.getAtomFeed().toString();
   }
   
   @Override
