@@ -24,7 +24,9 @@ import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.Reference;
 import com.google.gdata.data.TextConstruct;
+import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.Version;
@@ -53,7 +55,7 @@ import java.util.List;
  *
  * 
  */
-public class Collection extends ExtensionPoint {
+public class Collection extends ExtensionPoint implements Reference {
 
   private Version coreVersion = Service.getVersion();
   private Namespace atomPubNs = Namespaces.getAtomPubNs();
@@ -104,6 +106,11 @@ public class Collection extends ExtensionPoint {
   private String href;
   public String getHref() { return href; }
   public void setHref(String href) { this.href = href; }
+  
+  /** The mime type of the collection */
+  public String getType() {
+    return ContentType.getAtomFeed().toString();
+  }
 
   /**
    * The media types accepted by the collection.  If null, then only
@@ -187,7 +194,7 @@ public class Collection extends ExtensionPoint {
     return new Handler(p, attrs);
   }
 
-  /*
+  /**
    * XmlParser ElementHandler for {@code app:workspace}
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {

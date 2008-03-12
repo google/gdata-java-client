@@ -66,7 +66,7 @@ import java.util.List;
  * <li> Retrieve a user's profile
  * </ol>
  */
-public class YouTubeClient {
+public class YouTubeReadonlyClient {
 
   /**
    * Input stream for reading user input.
@@ -151,13 +151,6 @@ public class YouTubeClient {
    * The default user if the user does not enter one.
    */
   private static String defaultTestUser = "YTdebates";
-
-  /**
-   *
-   */
-  private YouTubeClient() {
-
-  }
 
   /**
    * Prints a list of all standard feeds.
@@ -711,8 +704,9 @@ public class YouTubeClient {
   }
 
   /**
-   * YouTubeClient is a sample command line application that demonstrates
-   * many features of the YouTube data API using the Java Client library.
+   * YouTubeReadonlyClient is a sample command line application that
+   * demonstrates many features of the YouTube data API using
+   * the Java Client library.
    *
    * @param args not used
    */

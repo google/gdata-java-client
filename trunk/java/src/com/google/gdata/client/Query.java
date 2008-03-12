@@ -555,6 +555,10 @@ public class Query {
     return resultFormat;
   }
 
+  /**
+   * The CustomParameter class defines a base representation for custom query
+   * parameters.
+   */
   public static class CustomParameter {
 
     private String name;
@@ -671,52 +675,53 @@ public class Query {
         for (CategoryFilter categoryFilter : categoryFilters) {
           pathBuf.append("/");
           pathBuf.append(
-              FastURLEncoder.encode(categoryFilter.toString(),"UTF-8"));
+              FastURLEncoder.encode(categoryFilter.toString(), "UTF-8"));
         }
       }
 
       StringBuilder queryBuf = new StringBuilder();
       if (queryString != null) {
-        appendQueryParameter(queryBuf, "q",
+        appendQueryParameter(queryBuf, GDataProtocol.Query.FULL_TEXT,
             FastURLEncoder.encode(queryString, "UTF-8"));
       }
 
       if (author != null) {
-        appendQueryParameter(queryBuf, "author",
+        appendQueryParameter(queryBuf, GDataProtocol.Query.AUTHOR,
             FastURLEncoder.encode(author, "UTF-8"));
       }
 
       if (resultFormat != ResultFormat.DEFAULT) {
-        appendQueryParameter(queryBuf, "alt", resultFormat.paramValue());
+        appendQueryParameter(queryBuf, GDataProtocol.Parameter.ALT, 
+            resultFormat.paramValue());
       }
 
       if (updatedMin != null) {
-        appendQueryParameter(queryBuf, "updated-min",
+        appendQueryParameter(queryBuf, GDataProtocol.Query.UPDATED_MIN,
             FastURLEncoder.encode(updatedMin.toString()));
       }
 
       if (updatedMax != null) {
-        appendQueryParameter(queryBuf, "updated-max",
+        appendQueryParameter(queryBuf, GDataProtocol.Query.UPDATED_MAX,
             FastURLEncoder.encode(updatedMax.toString()));
       }
 
       if (publishedMin != null) {
-        appendQueryParameter(queryBuf, "published-min",
+        appendQueryParameter(queryBuf, GDataProtocol.Query.PUBLISHED_MIN,
             FastURLEncoder.encode(publishedMin.toString()));
       }
 
       if (publishedMax != null) {
-        appendQueryParameter(queryBuf, "published-max",
+        appendQueryParameter(queryBuf, GDataProtocol.Query.PUBLISHED_MAX,
             FastURLEncoder.encode(publishedMax.toString()));
       }
 
       if (startIndex != UNDEFINED) {
-        appendQueryParameter(queryBuf, "start-index",
+        appendQueryParameter(queryBuf, GDataProtocol.Query.START_INDEX,
             Integer.toString(startIndex));
       }
 
       if (maxResults != UNDEFINED) {
-        appendQueryParameter(queryBuf, "max-results",
+        appendQueryParameter(queryBuf, GDataProtocol.Query.MAX_RESULTS,
             Integer.toString(maxResults));
       }
 

@@ -36,8 +36,8 @@ at the '/authsub_sample' path of your Tomcat server
 (eg. 'http://localhost:8080/authsub_sample').
 
 Note: If the application needs to be rebuilt, the servlet.jar property defined
-in the build.properties file should be updated to point to the jar file with
-the servlet definitions.
+in the build-samples/build.properties file should be updated to point to the
+jar file with the servlet definitions.
 
 
 Securing against URL command attacks

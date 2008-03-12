@@ -23,6 +23,7 @@ import com.google.gdata.client.Service;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.ExtensionVisitor;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.util.Namespaces;
@@ -75,6 +76,17 @@ public class Workspace extends ExtensionPoint {
   public void addCollection(Collection coll) { collectionList.add(coll); }
 
   @Override
+  protected void visitChildren(ExtensionVisitor ev)
+      throws ExtensionVisitor.StoppedException {
+    
+    // Add nested collections to the visitor pattern
+    for (Collection collection : collectionList) {
+      this.visitChild(ev, collection);
+    }
+    super.visitChildren(ev);
+  } 
+  
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile) 
       throws IOException {
 
@@ -115,7 +127,7 @@ public class Workspace extends ExtensionPoint {
     return new Handler(p, attrs);
   }
  
-  /*
+  /**
    * XmlParser ElementHandler for {@code app:workspace}
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {

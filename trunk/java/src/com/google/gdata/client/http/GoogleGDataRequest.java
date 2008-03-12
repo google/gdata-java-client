@@ -16,6 +16,7 @@
 
 package com.google.gdata.client.http;
 
+import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.GoogleService.SessionExpiredException;
@@ -492,7 +493,8 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     try {
       requestVersion = VersionRegistry.get().getVersion(service.getClass());
       if (requestVersion != null) {
-        setHeader(VERSION_HEADER, requestVersion.getVersionString());
+        setHeader(GDataProtocol.Header.VERSION, 
+            requestVersion.getVersionString());
       }
     } catch (IllegalStateException iae) {
       // Service may not be versioned.
@@ -514,7 +516,8 @@ public class GoogleGDataRequest extends HttpGDataRequest {
       super.execute();
       
       // Capture the version used to process the request
-      String versionHeader = httpConn.getHeaderField(VERSION_HEADER);
+      String versionHeader = 
+        httpConn.getHeaderField(GDataProtocol.Header.VERSION);
       if (versionHeader != null) {
         GoogleService service = activeService.get();
         if (service != null) {

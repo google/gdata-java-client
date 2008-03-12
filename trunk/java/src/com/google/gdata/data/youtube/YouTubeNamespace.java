@@ -211,4 +211,9 @@ public class YouTubeNamespace {
    * Link Rel value for a user's video log link.
    */
   public static final String VLOG_REL = URI + "#user.vlog";
+
+  /**
+   * Link Rel value for get upload token action.
+   */
+  public static final String GET_UPLOAD_TOKEN_REL = URI + "#action.getUploadToken";
 }

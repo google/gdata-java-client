@@ -1,5 +1,15 @@
 Google Data API - Release Notes
 
+Notes for v1.16.1
+-----------------
+Mar 12, 2008
+o  Added write support including video upload feature in YouTube API.
+
+Notes for v1.16.1
+-----------------
+Mar 11, 2008
+o  Fixed bug related to YouTube video feed parsing error.
+
 Notes for v1.16.0
 -----------------
 Mar 05, 2008
@@ -63,29 +73,29 @@ o  Deprecated Geo format gd:geoPt from data model.
 Notes for v1.12.0
 -----------------
 June 21, 2007
-o  Added support for standard Geo formats including GeoRSS, W3C Semantic Web IG 
+o  Added support for standard Geo formats including GeoRSS, W3C Semantic Web IG
    and GML format.  The use of gd:geoPt is discouraged.
 o  Updated GData Java client library versioning to follow the standard format
-   "<major_release>.<minor_release>.<patch_release>". In this release the 
-   version number changed from "1.0.11" to "1.12.0" to reflect the updated 
-   versioning scheme.  
+   "<major_release>.<minor_release>.<patch_release>". In this release the
+   version number changed from "1.0.11" to "1.12.0" to reflect the updated
+   versioning scheme.
 
 Notes for v1.0.11
 -----------------
 May 15, 2007
-o  Added event publisher mashup sample that demonstrates how to retrieve and 
-   publish structured data from one google service to another google service. 
-   This sample retrieves list of events stored in a Google Spreadsheet and 
-   publish those events to Google Calendar and Google Base. 
+o  Added event publisher mashup sample that demonstrates how to retrieve and
+   publish structured data from one google service to another google service.
+   This sample retrieves list of events stored in a Google Spreadsheet and
+   publish those events to Google Calendar and Google Base.
 
 Notes for v1.0.10
 -----------------
 May 1, 2007
-o  Added Java client support and extenstions for Google Calendar 
+o  Added Java client support and extenstions for Google Calendar
    access control lists (ACLs).
 o  Added Blogger GData API sample.
 o  Changed inheritance hierarchy for CalendarEventFeed.  As a side effect,
-   getEntries() method for Calendar event feed will return list of 
+   getEntries() method for Calendar event feed will return list of
    objects of type CalendarEventEntry instead of EventEntry.
 o  Changed participant types for CalendarEventEntry.  As a side effect,
    getParticipants() method for Calendar event entry will return list of
@@ -96,11 +106,11 @@ Notes for v1.0.9
 March 21, 2007
 o  Added Java client support and extensions for GData Picasa Web Album API.
 o  Added Java client support and extensions for GData Apps For Your Domain API.
-o  Added "method" attribute to <gd:reminder>.  The "method" attribute can be 
-   used to specify notification method for Calendar event related reminders.  
+o  Added "method" attribute to <gd:reminder>.  The "method" attribute can be
+   used to specify notification method for Calendar event related reminders.
    The "method" value can be one of ALERT, EMAIL, SMS, ALL or NONE.
 o  Introduced dependency on Sun's JavaMail API.  To use client package,
-   download and install activation.jar, mail.jar libraries from Sun's JavaMail 
+   download and install activation.jar, mail.jar libraries from Sun's JavaMail
    API package version 1.4 or later.
 
 Notes for v1.0.8
