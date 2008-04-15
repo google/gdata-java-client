@@ -8,6 +8,11 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.16.3 ==
+  * Added support to enable Authentication to Proxy Service for hosted Google Apps.  See AuthSub for Web Application documentation for details http://code.google.com/apis/accounts/docs/AuthForWebApps.html.
+  * Added support for RFC 822 text message encoding in Email Migration API.
+  * Fixed issue related to handling YouTube video entries with empty description.
+
 == 1.16.2 ==
   * Added write support including video upload feature in [http://code.google.com/apis/youtube/overview.html YouTube Data API].
 
