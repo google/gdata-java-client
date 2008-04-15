@@ -25,7 +25,7 @@
     <mkdir dir="${sample.blogger.build.classes}"/>
     <javac srcdir="${sample.blogger.src.home}"
            destdir="${sample.blogger.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.blogger.compile.classpath"/>

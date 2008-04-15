@@ -1,6 +1,16 @@
 Google Data API - Release Notes
 
-Notes for v1.16.1
+Notes for v1.16.3
+-----------------
+Apr 03, 2008
+o  Added support to enable Authentication to Proxy Service for hosted
+   Google Apps.  See AuthSub for Web Application documentation for details
+   http://code.google.com/apis/accounts/docs/AuthForWebApps.html.
+o  Added support for RFC 822 text message encoding in Email Migration API.
+o  Fixed issue related to handling YouTube video entries with empty
+   description.
+
+Notes for v1.16.2
 -----------------
 Mar 12, 2008
 o  Added write support including video upload feature in YouTube API.

@@ -24,7 +24,7 @@
 
   <target name="build.gbase" depends="core.build.core.media">
     <mkdir dir="${build.classes.base}"/>
-    <javac debug="false" sourcepath=""
+    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" sourcepath=""
                          srcdir="${build.src}"
                          destdir="${build.classes.base}">
       <include name="**/gbase/client/*.java"/>

@@ -53,7 +53,7 @@
 
     <javac srcdir="${sample.docs.src.home}"
            destdir="${sample.docs.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.docs.compile.classpath"/>

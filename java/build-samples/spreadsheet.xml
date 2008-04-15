@@ -69,7 +69,7 @@
     <mkdir    dir="${sample.spreadsheet.build.classes}"/>
     <javac srcdir="${sample.spreadsheet.src.home}"
            destdir="${sample.spreadsheet.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.spreadsheet.compile.classpath"/>

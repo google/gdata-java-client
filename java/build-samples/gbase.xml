@@ -60,7 +60,7 @@
    description="Compile Java sources">
     <javac srcdir="${sample.gbase.cmdlinedir}"
            destdir="${sample.gbase.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.gbase.cmdline.compile.classpath"/>

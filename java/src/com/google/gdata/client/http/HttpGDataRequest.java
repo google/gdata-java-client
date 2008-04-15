@@ -104,6 +104,7 @@ public class HttpGDataRequest implements GDataRequest {
         = new LinkedHashMap<String, String>();
     protected Map<String, String> privateHeaderMap
         = new LinkedHashMap<String, String>();
+    protected boolean useSsl = false;
 
     public void setAuthToken(AuthTokenFactory.AuthToken authToken) {
       if (authToken != null && !(authToken instanceof HttpAuthToken)) {
@@ -114,6 +115,10 @@ public class HttpGDataRequest implements GDataRequest {
 
     public void setAuthToken(HttpAuthToken authToken) {
       this.authToken = authToken;
+    }
+
+    public void useSsl() {
+      this.useSsl = true;
     }
 
     private void extendHeaderMap(Map<String, String> headerMap,
@@ -138,6 +143,10 @@ public class HttpGDataRequest implements GDataRequest {
                                    URL requestUrl,
                                    ContentType contentType)
         throws IOException, ServiceException {
+      if (this.useSsl && !requestUrl.getProtocol().startsWith("https")) {
+        requestUrl = new URL(
+            requestUrl.toString().replaceFirst("http", "https"));
+      }
       return new HttpGDataRequest(type, requestUrl, contentType,
                                   authToken, headerMap, privateHeaderMap);
     }
@@ -146,9 +155,7 @@ public class HttpGDataRequest implements GDataRequest {
     public GDataRequest getRequest(Query query,
                                    ContentType contentType)
         throws IOException, ServiceException {
-      return new HttpGDataRequest(RequestType.QUERY, query.getUrl(),
-                                  contentType, authToken, headerMap,
-                                  privateHeaderMap);
+      return getRequest(RequestType.QUERY, query.getUrl(), contentType);
     }
   }
 

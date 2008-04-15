@@ -61,10 +61,7 @@ public enum AppsForYourDomainErrorCode {
 
   DuplicateDestinations(1601),
   TooManyDestinations(1602),
-  InvalidRouteAddress(1603),
-
-  // Some methods (e.g., create or delete) are not supported in our APIs.
-  ApiMethodNotSupported(1701);
+  InvalidRouteAddress(1603);
 
   private int errorCode;
 

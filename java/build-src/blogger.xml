@@ -23,7 +23,7 @@
   <target name="sample.blogger.build" depends="sample.core.dependencies">
     <mkdir dir="${sample.blogger.build.lib}"/>
     <mkdir dir="${sample.blogger.build.classes}"/>
-    <javac srcdir="${sample.blogger.src.home}"
+    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" srcdir="${sample.blogger.src.home}"
            destdir="${sample.blogger.build.classes}"
            debug="false"
            deprecation="false"

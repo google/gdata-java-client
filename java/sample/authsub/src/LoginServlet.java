@@ -25,6 +25,7 @@ import java.security.SecureRandom;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,13 +48,44 @@ public class LoginServlet extends HttpServlet {
 
   private static final SecureRandom srng = new SecureRandom();
 
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
+
+    // State to indicate if the user parameters have changed.
+    boolean stateChanged = false;
+
+    // Retrieve user specified hosted domain.
+    boolean useDefaultDomain = 
+        Boolean.parseBoolean(req.getParameter("defaultdomain"));
+    boolean useSsl = 
+        Boolean.parseBoolean(req.getParameter("secure"));
+    String userDomain = req.getParameter("domain");
+
+    // Save any persistent data to user session
+    String calendarFeedRootUrl =  CalendarService.CALENDAR_ROOT_URL;
+    if (useSsl && !calendarFeedRootUrl.startsWith("https")) {
+      calendarFeedRootUrl = calendarFeedRootUrl.replaceFirst("http", "https");
+    }
+
+    HttpSession userSession = req.getSession(true);
+
+    String currentRootUrl = 
+        (String) userSession.getAttribute("feedRootUrl");
+    String currentDomain = 
+        (String) userSession.getAttribute("userDomain");
+
+    if ((currentRootUrl != null && !currentRootUrl.equals(calendarFeedRootUrl))
+        || (currentDomain != null && !currentDomain.equals(userDomain))) {
+      stateChanged = true;
+    }
+
+    userSession.putValue("feedRootUrl", calendarFeedRootUrl);
+    userSession.putValue("userDomain", userDomain);
 
     String authSubToken = null;
     String principal =
       Utility.getCookieValueWithName(req.getCookies(), Utility.LOGIN_COOKIE_NAME);
-    if (principal != null) {
+    if (!stateChanged && (principal != null)) {
       authSubToken = TokenManager.retrieveToken(principal);
     }
 
@@ -68,12 +100,22 @@ public class LoginServlet extends HttpServlet {
     if (authSubToken == null) {
       continueUrl.append("/HandleTokenServlet");
 
+      // Check whether to use https for authentication
       boolean secure = (Utility.getPrivateKey() != null);
-      String authSubLogin =
-        AuthSubUtil.getRequestUrl(continueUrl.toString(),
-                                  CalendarService.CALENDAR_ROOT_URL,
+
+      String authSubLogin;
+      if (useDefaultDomain) {
+        authSubLogin = AuthSubUtil.getRequestUrl(continueUrl.toString(),
+                                  calendarFeedRootUrl,
                                   secure,
                                   true /*session*/);
+      } else {
+        authSubLogin = AuthSubUtil.getRequestUrl(req.getParameter("domain"),
+                                  continueUrl.toString(),
+                                  calendarFeedRootUrl,
+                                  secure,
+                                  true /*session*/);
+      }
 
       // Set "authentication" cookie.  Typically, a user would have an
       // login-cookie for the web service which should be associated to the

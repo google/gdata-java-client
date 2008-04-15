@@ -44,7 +44,7 @@
 
     <javac srcdir="${sample.contacts.src.home}"
            destdir="${sample.contacts.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.contacts.compile.classpath"/>

@@ -48,7 +48,7 @@
     <!-- Compile Calendar samples -->
     <javac srcdir="${sample.calendar.src.home}"
            destdir="${sample.calendar.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.calendar.compile.classpath"/>

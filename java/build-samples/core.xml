@@ -89,7 +89,7 @@
     <mkdir dir="${sample.core.util.build.classes}"/>
     <javac srcdir="${sample.core.util.basedir}"
            destdir="${sample.core.util.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.core.util.compile.classpath"/>

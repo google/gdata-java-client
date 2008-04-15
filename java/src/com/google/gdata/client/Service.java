@@ -349,7 +349,7 @@ public class Service {
    * initializers to bind version information for the associated service.
    * 
    * @param serviceClass the service type being initialized.
-   * @param defaulVersion the service version expected by this client library.
+   * @param defaultVersion the service version expected by this client library.
    */
   protected static Version initServiceVersion(
       Class<? extends Service> serviceClass, Version defaultVersion) {
@@ -432,6 +432,17 @@ public class Service {
    */
   public void setRequestFactory(GDataRequestFactory requestFactory) {
     this.requestFactory = requestFactory;
+  }
+
+  /**
+   * Sets the HttpGDataRequest.Factory associate with the service
+   * to use secure connections.
+   */
+  public void useSsl() {
+    if (!(this.requestFactory instanceof HttpGDataRequest.Factory)) {
+      throw new UnsupportedOperationException("Not a http transport");
+    }
+    ((HttpGDataRequest.Factory) this.requestFactory).useSsl();
   }
 
 
@@ -653,10 +664,6 @@ public class Service {
    *          specified date. A value of {@code null} indicates no precondition.
    * @return Feed resource referenced by the input URL.
    * @throws IOException error sending request or reading the feed.
-   * @throws NotModifiedException if the feed resource has not been modified
-   *          since the specified precondition date.
-   * @throws ParseException error parsing the returned feed data.
-   * @throws ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving feed.
    */
   public <F extends BaseFeed<?, ?>> F getFeed(Query query,
@@ -679,10 +686,6 @@ public class Service {
    *          specified date. A value of {@code null} indicates no precondition.
    * @return Feed resource referenced by the input URL.
    * @throws IOException error sending request or reading the feed.
-   * @throws NotModifiedException if the feed resource has not been modified
-   *          since the specified precondition date.
-   * @throws ParseException error parsing the returned feed data.
-   * @throws ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving feed.
    */
   private <F extends BaseFeed<?, ?>> F getFeed(GDataRequest request,
@@ -732,8 +735,6 @@ public class Service {
    * @param feedClass the class used to represent a service Feed.
    * @return Feed resource referenced by the input URL.
    * @throws IOException error sending request or reading the feed.
-   * @throws ParseException error parsing the returned feed data.
-   * @throws ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving feed.
    */
   public <F extends BaseFeed<?, ?>> F getFeed(Query query, Class<F> feedClass)

@@ -68,6 +68,10 @@ public abstract class AbstractFreeTextExtension extends AbstractExtension {
       throws ParseException {
     super.consumeAttributes(helper);
 
-    content = helper.consumeContent(true);
+    // Accept empty text
+    content = helper.consumeContent(false);
+    if (content == null) {
+      content = "";
+    }
   }
 }
