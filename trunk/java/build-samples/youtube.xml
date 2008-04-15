@@ -64,7 +64,7 @@
 
     <javac srcdir="${sample.youtube.src.home}"
            destdir="${sample.youtube.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.youtube.compile.classpath"/>

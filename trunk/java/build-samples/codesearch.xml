@@ -42,7 +42,7 @@
     <mkdir    dir="${sample.codesearch.build.classes}"/>
     <javac srcdir="${sample.codesearch.src.home}"
            destdir="${sample.codesearch.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.codesearch.compile.classpath"/>

@@ -116,7 +116,7 @@
 
     <!-- Build the service jar -->
     <mkdir dir="${template.service.classes}"/>
-    <javac debug="false"
+    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}"
                          sourcepath=""
                          srcdir="${build.src}"
                          destdir="${template.service.classes}"
@@ -217,7 +217,8 @@
   <target name="build.core.base" depends="dirs,build.manifest">
     <mkdir dir="${build.classes.core}"/>
 
-    <javac debug="false" sourcepath=""
+    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}"
+                         sourcepath=""
                          srcdir="${build.src.gdata}"
                          destdir="${build.classes.core}">
       <include name="client/*.java"/>
@@ -263,7 +264,7 @@
   <!-- build gdata-client.jar -->
   <target name="build.core.client" depends="build.core.client.meta">
     <mkdir dir="${build.classes.client}"/>
-    <javac debug="false" sourcepath=""
+    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" sourcepath=""
                          srcdir="${build.src.gdata}"
                          destdir="${build.classes.client}">
         <include name="data/extensions/*.java"/>
@@ -290,7 +291,7 @@
   <target name="build.core.media"
       depends="require.client.dependencies,build.core.client">
     <mkdir dir="${build.classes.media}"/>
-    <javac debug="false" sourcepath=""
+    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" sourcepath=""
                          srcdir="${build.src}"
                          destdir="${build.classes.media}">
       <classpath refid="build.media.classpath"/>

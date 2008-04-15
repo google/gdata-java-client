@@ -129,6 +129,63 @@ public class AuthSubUtil {
     return url.toString();
   }
 
+  /**
+   * Creates the request URL to be used to retrieve an AuthSub token for
+   * hosted applications.
+   * <p>
+   * On success, the user will be redirected to the next URL with the
+   * AuthSub token appended to the URL.  Use {@link #getTokenFromReply(String)}
+   * to retrieve the token from the reply.
+   *
+   * @param hostedDomain hosted domain name, for example 
+   *                     <code>mydomain.example.com</code>
+   * @param nextUrl the URL to redirect to on successful token retrieval
+   * @param scope the scope of the requested AuthSub token
+   * @param secure <code>true</code> if the token will be used securely
+   * @param session <code>true</code> if the token will be exchanged for a
+   *                session cookie
+   * @return the URL to be used to retrieve the AuthSub token
+   */
+  public static String getRequestUrl(String hostedDomain,
+                                     String nextUrl,
+                                     String scope,
+                                     boolean secure,
+                                     boolean session) {
+    return getRequestUrl(DEFAULT_PROTOCOL, DEFAULT_DOMAIN, hostedDomain,
+                         nextUrl, scope, secure, session);
+  }
+
+  /**
+   * Creates the request URL for to be used to retrieve an AuthSub token for
+   * hosted applications.
+   * <p>
+   * On success, the user will be redirected to the next URL with the
+   * AuthSub token appended to the URL.  Use {@link #getTokenFromReply(String)}
+   * to retrieve the token from the reply.
+   *
+   * @param protocol the protocol to use to communicate with the server
+   * @param domain the domain at which the authentication server exists
+   * @param hostedDomain hosted domain name, for example
+   *                     <code>mydomain.example.com</code>
+   * @param nextUrl the URL to redirect to on successful token retrieval
+   * @param scope the scope of the requested AuthSub token
+   * @param secure <code>true</code> if the token will be used securely
+   * @param session <code>true</code> if the token will be exchanged for a
+   *                session cookie
+   * @return the URL to be used to retrieve the AuthSub token
+   */
+  public static String getRequestUrl(String protocol,
+                                     String domain,
+                                     String hostedDomain,
+                                     String nextUrl,
+                                     String scope,
+                                     boolean secure,
+                                     boolean session) {
+    StringBuffer url = new StringBuffer(
+        getRequestUrl(protocol, domain, nextUrl, scope, secure, session));
+    addParameter(url, "hd", hostedDomain);
+    return url.toString();
+  }
 
   /**
    * Parses and returns the AuthSub token returned by Google on a successful

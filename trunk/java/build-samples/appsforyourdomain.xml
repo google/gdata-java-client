@@ -50,7 +50,7 @@
 
     <javac srcdir="${sample.appsforyourdomain.src.home}"
            destdir="${sample.appsforyourdomain.build.classes}"
-           debug="false"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
            deprecation="false"
            optimize="true">
         <classpath refid="sample.appsforyourdomain.compile.classpath"/>

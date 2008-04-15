@@ -54,7 +54,8 @@ import javax.servlet.http.HttpServletResponse;
 public class RetrieveFeedServlet extends HttpServlet {
 
   private static String[] acceptedFeedPrefixList = {
-    "http://www.google.com/calendar/feeds"
+    "http://www.google.com/calendar/feeds",
+    "https://www.google.com/calendar/feeds"
   };
 
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -143,7 +144,11 @@ public class RetrieveFeedServlet extends HttpServlet {
     // Handle error from remote server
     if (respCode != HttpServletResponse.SC_OK) {
       Map<String, List<String>> headers = connection.getHeaderFields();
-      String errorMessage = connection.getResponseMessage();
+      StringBuffer errorMessage = new StringBuffer(
+          "Failed to retrive calendar feed from: ");
+      errorMessage.append(queryUri);
+      errorMessage.append(".\nServer Error Response:\n");
+      errorMessage.append(connection.getResponseMessage());
 
       for (Iterator<String> iter = headers.keySet().iterator() ;
            iter.hasNext();) {
@@ -153,11 +158,11 @@ public class RetrieveFeedServlet extends HttpServlet {
         for (Iterator<String> headerIter = headerValues.iterator() ;
              headerIter.hasNext(); ) {
           String headerVal = headerIter.next();
-          errorMessage += (header + ": " + headerVal + ", ");
+          errorMessage.append(header + ": " + headerVal + ", ");
         }
       }
 
-      resp.sendError(respCode, errorMessage);
+      resp.sendError(respCode, errorMessage.toString());
       return;
     }
 

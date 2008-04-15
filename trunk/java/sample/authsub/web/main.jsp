@@ -47,16 +47,14 @@
       Saturday : 6
     };
 
-    var protoC = "http://www.google.com/calendar/";
-    var CALENDAR_DEFAULT_FEED = "http://www.google.com/calendar/feeds/default/private/full";
 
     // The following function generates the URL for the proxy.  A secure token
     // is first generated using JSP.  The token is appended as a query
     // parameter to the RetrieveFeed request
     function formProxyFeedUrl() {
       <%
-      String CALENDAR_DEFAULT_FEED =
-          "http://www.google.com/calendar/feeds/default/private/full";
+      String feedUrl = (String)(request.getSession(false)).getAttribute("feedRootUrl")
+          + "default/private/full";
 
       // Secure the URL by generating a secure token before sending the request
       // to the proxy server
@@ -65,13 +63,15 @@
         request.getCookies(), sample.authsub.src.Utility.LOGIN_COOKIE_NAME);
 
       String token = sample.authsub.src.SecureUrl.generateToken(cookie,
-                                                                CALENDAR_DEFAULT_FEED,
+                                                                feedUrl,
                                                                 "GET",
                                                                  currentTimeSeconds);
+      // Pass values to javascript
+      feedUrl = "\"" + feedUrl + "\"";
       token = "\"" + token + "\"";
       %>
 
-      return "/authsub_sample/RetrieveFeedServlet?href=\"" + CALENDAR_DEFAULT_FEED
+      return "/authsub_sample/RetrieveFeedServlet?href=\"" +  <%=feedUrl%> 
         + "\"&timestamp=\"" + <%=currentTimeSeconds%> + "\"&token=\"" +
           <%=token%> +"\"";
     }
