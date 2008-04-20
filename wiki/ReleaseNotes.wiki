@@ -8,6 +8,9 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.16.4 ==
+  * Fixed compiled libraries in 1.16.3 to be compatible with Java 5.  No code change introduced in this release.
+
 == 1.16.3 ==
   * Added support to enable Authentication to Proxy Service for hosted Google Apps.  See AuthSub for Web Application documentation for details http://code.google.com/apis/accounts/docs/AuthForWebApps.html.
   * Added support for RFC 822 text message encoding in Email Migration API.
