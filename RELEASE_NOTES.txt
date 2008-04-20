@@ -1,5 +1,10 @@
 Google Data API - Release Notes
 
+Notes for v1.16.4
+-----------------
+Apr 19, 2008
+o  Fixed compiled jars to be compatible with Java 5.
+
 Notes for v1.16.3
 -----------------
 Apr 03, 2008
