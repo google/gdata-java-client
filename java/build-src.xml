@@ -17,6 +17,7 @@
   <import file="build-src/contacts.xml"/>
   <import file="build-src/docs.xml"/>
   <import file="build-src/gbase.xml"/>
+  <import file="build-src/health.xml"/>
   <import file="build-src/photos.xml"/>
   <import file="build-src/spreadsheet.xml"/>
   <import file="build-src/youtube.xml"/>
@@ -35,6 +36,7 @@
     <antcall target="contacts.build.contacts"/>
     <antcall target="docs.build.docs"/>
     <antcall target="gbase.build.gbase"/>
+    <antcall target="health.build.health"/>
     <antcall target="photos.build.photos"/>
     <antcall target="spreadsheet.build.spreadsheet"/>
     <antcall target="youtube.build.youtube"/>
@@ -48,6 +50,7 @@
     <antcall target="contacts.clean.contacts"/>
     <antcall target="docs.clean.docs"/>
     <antcall target="gbase.clean.gbase"/>
+    <antcall target="health.clean.health"/>
     <antcall target="photos.clean.photos"/>
     <antcall target="youtube.clean.youtube"/>
   </target>

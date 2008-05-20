@@ -55,13 +55,17 @@ public enum AppsForYourDomainErrorCode {
   InvalidHashDigestLength(1405),
   InvalidEmailAddress(1406),
   InvalidQueryParameterValue(1407),
+  InvalidSsoSigningKey(1408),
 
   TooManyRecipientsOnEmailList(1500),
   TooManyNicknamesForUser(1501),
 
   DuplicateDestinations(1601),
   TooManyDestinations(1602),
-  InvalidRouteAddress(1603);
+  InvalidRouteAddress(1603),
+  
+  InvalidDomainEdition(1800),
+  InvalidValue(1801);
 
   private int errorCode;
 
