@@ -1,5 +1,13 @@
 Google Data API - Release Notes
 
+Notes for v1.17.0
+-----------------
+May 20, 2008
+o  Added support for Google Health GData API.  This provides minimal interface
+   to interact with Google Health Service.  This API does not include data
+   model classes for CCR health records.
+o  Added new error types in Google Apps API.
+
 Notes for v1.16.4
 -----------------
 Apr 19, 2008

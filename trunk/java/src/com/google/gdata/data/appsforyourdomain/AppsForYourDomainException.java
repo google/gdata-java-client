@@ -30,6 +30,8 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,10 +50,24 @@ public class AppsForYourDomainException extends ServiceException {
       = DocumentBuilderFactory.newInstance();
 
   public AppsForYourDomainException(AppsForYourDomainErrorCode errorCode,
-      String invalidInput) {
+      String invalidInput, int httpReturnCode) {
     super("AppsForYourDomainException");
-    this.errorCode = errorCode;
+    if (errorCode == null) {
+      if (httpReturnCode >= HTTP_BAD_REQUEST
+          && httpReturnCode < HTTP_INTERNAL_ERROR) {
+        this.errorCode = AppsForYourDomainErrorCode.InvalidValue; 
+      } else {
+        this.errorCode = AppsForYourDomainErrorCode.UnknownError;
+      }
+    } else {
+      this.errorCode = errorCode;  
+    }
     this.invalidInput = invalidInput;
+  }
+  
+  public AppsForYourDomainException(AppsForYourDomainErrorCode errorCode,
+      String invalidInput) {
+    this(errorCode, invalidInput, 0);
   }
 
   public AppsForYourDomainException(AppsForYourDomainErrorCode errorCode) {
@@ -116,7 +132,7 @@ public class AppsForYourDomainException extends ServiceException {
             attributes.getNamedItem("invalidInput").getNodeValue();
         AppsForYourDomainException exception =
             new AppsForYourDomainException(AppsForYourDomainErrorCode
-                .getEnumFromInt(errorCode), invalidInput);
+                .getEnumFromInt(errorCode), invalidInput, se.getHttpErrorCodeOverride());
         return exception;
 
         // If any exceptions occur, method will return null;
