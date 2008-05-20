@@ -8,6 +8,10 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.17.0 ==
+  * Added support for [http://code.google.com/apis/health Google Health GData API].  This provides minimal interface to interact with Google Health Service.  This API does not include data model classes for CCR health records.
+  * Added new error types in Google Apps API.
+
 == 1.16.4 ==
   * Fixed compiled libraries in 1.16.3 to be compatible with Java 5.  No code change introduced in this release.
 
