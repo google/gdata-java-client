@@ -17,7 +17,6 @@
 package com.google.gdata.data.health;
 
 import com.google.gdata.data.BaseFeed;
-import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
 
@@ -55,23 +54,6 @@ public class RegisterFeed extends BaseHealthFeed<RegisterFeed, RegisterEntry> {
    */
   public Link getEditLink() {
     return getLink(Link.Rel.ENTRY_EDIT, Link.Type.ATOM);
-  }
-
-  /**
-   * Returns the extension description, specifying whether it is required, and
-   * whether it is repeatable.
-   *
-   * @param required   whether it is required
-   * @param repeatable whether it is repeatable
-   * @return extension description
-   */
-  public static ExtensionDescription getDefaultDescription(boolean required,
-      boolean repeatable) {
-    ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(RegisterFeed.class);
-    desc.setRequired(required);
-    desc.setRepeatable(repeatable);
-    return desc;
   }
 
   @Override

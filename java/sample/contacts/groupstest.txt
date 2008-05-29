@@ -1,0 +1,4 @@
+--action=add --name=TestScriptGroup4
+--action=query --orderby=lastmodified --sortorder=descending --max-results=1
+--action=update --name=changegroup
+--action=delete

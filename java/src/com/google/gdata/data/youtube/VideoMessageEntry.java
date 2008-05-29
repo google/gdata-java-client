@@ -56,17 +56,30 @@ public class VideoMessageEntry extends VideoEntry {
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
 
+    // yt:description only in version 1
     extProfile.declare(VideoMessageEntry.class, YtDescription.class);
     extProfile.declareArbitraryXmlExtension(PlaylistEntry.class);
   }
 
-  /** Gets the message sent together with the video. */
+  /** 
+   * Gets the message sent together with the video. 
+   *
+   * @deprecated Valid only in version 1. Replaced version 2.0 with
+   *             atom:summary.
+   */
+  @Deprecated
   public String getDescription() {
     YtDescription description = getExtension(YtDescription.class);
     return description == null ? null : description.getContent();
   }
 
-  /** Sets the message sent together with the video. */
+  /** 
+   * Sets the message sent together with the video. 
+   *
+   * @deprecated Valid only in version 1. Replaced version 2.0 with
+   *             atom:summary.
+   */
+  @Deprecated
   public void setDescription(String description) {
     if (description == null) {
       removeExtension(YtDescription.class);

@@ -13,10 +13,13 @@
  * limitations under the License.
  */
 
+
 package com.google.gdata.client.contacts;
 
 import com.google.gdata.client.GoogleService;
+import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.contacts.ContactFeed;
+import com.google.gdata.data.contacts.ContactGroupFeed;
 
 /**
  * The ContactsService class extends the basic {@link GoogleService} abstraction
@@ -74,6 +77,8 @@ public class ContactsService extends GoogleService {
 
     // Declare the extensions of the feeds
     new ContactFeed().declareExtensions(getExtensionProfile());
+    new ContactGroupFeed().declareExtensions(getExtensionProfile());
+    BatchUtils.declareExtensions(getExtensionProfile());
   }
 
   public String getServiceVersion() {

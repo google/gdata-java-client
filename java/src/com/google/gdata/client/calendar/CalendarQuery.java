@@ -255,8 +255,9 @@ public class CalendarQuery extends Query {
 
 
   /**
-   * Sets the minimum start time for events returned by the query.  Only
-   * events that start on or after this time will be returned.
+   * Sets the minimum start time for events returned by the query.  Together
+   * with {@link #setMaximumStartTime} creates a timespan such that only events
+   * that are within the timespan are returned.
    *
    * @param minStart the minimum start time.   A value of {@code null}
    *        disables querying by minimum start time.
@@ -296,8 +297,9 @@ public class CalendarQuery extends Query {
 
 
   /**
-   * Sets the maximum start time for events returned by the query.  Only
-   * events that start before this time will be returned.
+   * Sets the maximum start time for events returned by the query.  Together
+   * with {@link #setMinimumStartTime} creates a timespan such that only events
+   * that are within the timespan are returned.
    *
    * @param maxStart the maximum start time.   A value of {@code null}
    *        disables querying by maximum start time.

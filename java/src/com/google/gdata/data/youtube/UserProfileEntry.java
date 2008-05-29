@@ -311,18 +311,55 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
     }
   }
 
-  /** Gets the channel description. */
+  /**
+   * Gets the channel description.
+   *
+   * @deprecated Valid only in version 1. Replaced in version 2.0 with
+   *             yt:aboutMe for the user self description and atom:summary for
+   *             the user channel description
+   */
+  @Deprecated
   public String getDescription() {
     YtDescription description = getExtension(YtDescription.class);
     return description == null ? null : description.getContent();
   }
 
-  /** Sets the channel description. */
+  /**
+   * Sets the channel description.
+   *
+   * @deprecated Valid only in version 1. Replaced in version 2.0 with
+   *             yt:aboutMe for the user self description and atom:summary for
+   *             the user channel description
+   */
+  @Deprecated
   public void setDescription(String description) {
     if (description == null) {
       removeExtension(YtDescription.class);
     } else {
       setExtension(new YtDescription(description));
+    }
+  }
+
+  /**
+   * Gets the user description.
+   *
+   * @since version 2.0 of the protocol
+   */
+  public String getAboutMe() {
+    YtAboutMe aboutMe = getExtension(YtAboutMe.class);
+    return aboutMe == null ? null : aboutMe.getContent();
+  }
+
+  /**
+   * Sets the user description.
+   *
+   * @since version 2.0 of the protocol
+   */
+  public void setAboutMe(String aboutMe) {
+    if (aboutMe == null) {
+      removeExtension(YtAboutMe.class);
+    } else {
+      setExtension(new YtAboutMe(aboutMe));
     }
   }
 
@@ -431,9 +468,12 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
 
     extProfile.declareAdditionalNamespace(YouTubeNamespace.NS);
 
+    // yt:aboutMe only in version 2
+    extProfile.declare(UserProfileEntry.class, YtAboutMe.class);
     extProfile.declare(UserProfileEntry.class, YtAge.class);
     extProfile.declare(UserProfileEntry.class, YtBooks.class);
     extProfile.declare(UserProfileEntry.class, YtCompany.class);
+    // yt:description only in version 1
     extProfile.declare(UserProfileEntry.class, YtDescription.class);
     extProfile.declare(UserProfileEntry.class, YtGender.class);
     extProfile.declare(UserProfileEntry.class, YtHobbies.class);

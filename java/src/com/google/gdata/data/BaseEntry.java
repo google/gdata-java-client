@@ -19,6 +19,7 @@ package com.google.gdata.data;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.Service;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
@@ -40,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.Iterator;
 
 
 /**
@@ -136,7 +138,7 @@ public abstract class BaseEntry<E extends BaseEntry>
     public String versionId;
 
     /**
-     * ETag.  See RFC 2616, Section 3.11.
+     * Etag.  See RFC 2616, Section 3.11.
      * If there is no entity tag, this variable is null.
      * Etags are provided not only on top-level entries,
      * but also on entries within feeds (in the form of
@@ -302,7 +304,7 @@ public abstract class BaseEntry<E extends BaseEntry>
    */
   public TextContent getTextContent() {
     Content content = getContent();
-    if(!(content instanceof TextContent)) {
+    if (!(content instanceof TextContent)) {
       throw new IllegalStateException("Content object is not a TextContent");
     }
     return (TextContent) getContent();
@@ -319,7 +321,7 @@ public abstract class BaseEntry<E extends BaseEntry>
    */
   public String getPlainTextContent() {
     TextConstruct textConstruct = getTextContent().getContent();
-    if(!(textConstruct instanceof PlainTextConstruct)) {
+    if (!(textConstruct instanceof PlainTextConstruct)) {
       throw new IllegalStateException(
           "TextConstruct object is not a PlainTextConstruct");
     }
@@ -407,18 +409,51 @@ public abstract class BaseEntry<E extends BaseEntry>
   public Link getLink(String rel, String type) {
 
     for (Link link : state.links) {
-
-      String linkRel = link.getRel();
-      String linkType = link.getType();
-
-      if ((rel == null || (linkRel != null && linkRel.equals(rel))) &&
-          (type == null || (linkType != null && linkType.equals(type)))) {
-
+      if (link.matches(rel, type)) {
         return link;
       }
     }
 
     return null;
+  }
+
+
+  /**
+   * Return the links that match the given {@code rel} and {@code type} values.
+   *
+   * @param relToMatch  {@code rel} value to match or {@code null} to match any
+   *                    {@code rel} value.
+   * @param typeToMatch {@code type} value to match or {@code null} to match any
+   *                    {@code type} value.
+   * @return matching links.
+   */
+  public List<Link> getLinks(String relToMatch, String typeToMatch) {
+    List<Link> result = new ArrayList<Link>();
+    for (Link link : state.links) {
+      if (link.matches(relToMatch, typeToMatch)) {
+        result.add(link);
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Remove all links that match the given {@code rel} and {@code type} values.
+   *
+   * @param relToMatch  {@code rel} value to match or {@code null} to match any
+   *                    {@code rel} value.
+   * @param typeToMatch {@code type} value to match or {@code null} to match any
+   *                    {@code type} value.
+   */
+  public void removeLinks(String relToMatch, String typeToMatch) {
+    for (Iterator<Link> iterator = state.links.iterator();
+        iterator.hasNext();) {
+      Link link = iterator.next();
+      if (link.matches(relToMatch, typeToMatch)) {
+        iterator.remove();
+      }
+    }
   }
 
 
@@ -503,8 +538,15 @@ public abstract class BaseEntry<E extends BaseEntry>
     }
     URL entryUrl = new URL(selfLink.getHref());
     try {
-      return (E) state.service.getEntry(entryUrl, this.getClass(),
-          (state.edited != null ? state.edited : state.updated));
+      // If an etag is available, use it to conditionalize the retrieval,
+      // otherwise, use time of last edit or update.
+      if (state.etag != null) {
+        return (E) state.service.getEntry(entryUrl, this.getClass(), 
+            state.etag);
+      } else {
+        return (E) state.service.getEntry(entryUrl, this.getClass(),
+            (state.edited != null ? state.edited : state.updated));
+      }
     } catch (NotModifiedException e) {
       return (E) this;
     }
@@ -536,7 +578,8 @@ public abstract class BaseEntry<E extends BaseEntry>
     Link editLink = getEditLink();
     if (editLink == null) {
       throw new UnsupportedOperationException("Entry cannot be updated");
-    }
+    } 
+    
     URL editUrl = new URL(editLink.getHref());
     return (E) state.service.update(editUrl, this);
   }
@@ -565,8 +608,11 @@ public abstract class BaseEntry<E extends BaseEntry>
     if (editLink == null) {
       throw new UnsupportedOperationException("Entry cannot be deleted");
     }
+    
+    // Delete the entry, using strong etag (if available) as a precondition.
     URL editUrl = new URL(editLink.getHref());
-    state.service.delete(editUrl);
+    state.service.delete(editUrl, 
+        GDataProtocol.isWeakEtag(state.etag) ? null : state.etag);
   }
 
   @Override
@@ -601,7 +647,8 @@ public abstract class BaseEntry<E extends BaseEntry>
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(3);
 
-    if (state.etag != null) {
+    if (state.etag != null &&
+        !Service.getVersion().isCompatible(Service.Versions.V1)) {
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", state.etag));
     }
@@ -924,6 +971,17 @@ public abstract class BaseEntry<E extends BaseEntry>
       super(extProfile, BaseEntry.this.getClass());
     }
 
+    @Override
+    public void processAttribute(String namespace, String localName,
+        String value) throws ParseException {
+      if (namespace.equals(Namespaces.g)) {
+        if (localName.equals("etag")) {
+          setEtag(value);
+          return;
+        }
+      }
+      super.processAttribute(namespace, localName, value);
+    }
 
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,

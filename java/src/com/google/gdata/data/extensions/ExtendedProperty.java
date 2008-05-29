@@ -17,12 +17,12 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.XmlBlob;
 import com.google.gdata.util.XmlParser.ElementHandler;
 
 import org.xml.sax.Attributes;
@@ -36,7 +36,7 @@ import java.util.List;
  *
  * 
  */
-public class ExtendedProperty extends ExtensionPoint implements Extension {
+public class ExtendedProperty extends ExtensionPoint {
 
   /**
    * Property name expressed as an URI (required). Extended property
@@ -66,6 +66,10 @@ public class ExtendedProperty extends ExtensionPoint implements Extension {
     val = v;
   }
 
+  public boolean hasValue() {
+    return val != null;
+  }
+
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -76,7 +80,6 @@ public class ExtendedProperty extends ExtensionPoint implements Extension {
     desc.setRepeatable(true);
     return desc;
   }
-
 
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
@@ -109,6 +112,19 @@ public class ExtendedProperty extends ExtensionPoint implements Extension {
     return new Handler(extProfile);
   }
 
+  /**
+   * Overrides arbitrary XML initialization - ExtendedProperty needs
+   * mixed content as well.
+   */
+  @Override
+  protected void initializeArbitraryXml(ExtensionProfile profile,
+      Class<? extends ExtensionPoint> extPoint, ElementHandler handler)
+      throws IOException {
+
+      handler.initializeXmlBlob(xmlBlob,
+          /* mixedContent */ true,
+          /* fullTextIndex */ false);
+  }
 
   /** <g:extendedProperty> parser */
   private class Handler extends ExtensionPoint.ExtensionHandler {
@@ -118,7 +134,6 @@ public class ExtendedProperty extends ExtensionPoint implements Extension {
 
       super(extProfile, ExtendedProperty.class);
     }
-
 
     public void processAttribute(String namespace,
                                  String localName,
@@ -133,15 +148,20 @@ public class ExtendedProperty extends ExtensionPoint implements Extension {
       }
     }
 
-
     public void processEndElement() throws ParseException {
 
       if (name == null) {
         throw new ParseException("g:extendedProperty/@name is required.");
       }
 
-      if (val == null) {
-        throw new ParseException("g:extendedProperty/@value is required.");
+      XmlBlob xmlBlob = getXmlBlob();
+
+      if (val != null && xmlBlob.getBlob() != null) {
+        throw new ParseException("g:extendedProperty/@value and XML are mutually exclusive.");
+      }
+
+      if (val == null && xmlBlob.getBlob() == null) {
+        throw new ParseException("exactly one of g:extendedProperty/@value, XML is required.");
       }
     }
   }

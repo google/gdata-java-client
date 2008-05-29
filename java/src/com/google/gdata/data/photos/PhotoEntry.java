@@ -95,7 +95,11 @@ public class PhotoEntry extends GphotoEntry<PhotoEntry> implements PhotoData,
   public String getAlbumId() {
     return delegate.getAlbumId();
   }
-
+  
+  public String getVideoStatus() {
+    return delegate.getVideoStatus();
+  }
+  
   public String getChecksum() {
     return delegate.getChecksum();
   }
@@ -152,6 +156,10 @@ public class PhotoEntry extends GphotoEntry<PhotoEntry> implements PhotoData,
     delegate.setAlbumId(albumId);
   }
 
+  public void setVideoStatus(String videoStatus) {
+    delegate.setVideoStatus(videoStatus);
+  }  
+  
   public void setChecksum(String checksum) {
     delegate.setChecksum(checksum);
   }

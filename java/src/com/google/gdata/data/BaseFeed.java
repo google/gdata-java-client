@@ -35,7 +35,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -157,7 +156,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     public Kind.Adaptable adaptable = new Kind.AdaptableHelper();
 
     /** Etag.  
-     * ETag.  See RFC 2616, Section 3.11.
+     * Etag.  See RFC 2616, Section 3.11.
      * If there is no entity tag, this variable is null.
      */
     public String etag;
@@ -176,7 +175,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
 
   /** Feed entries. */
-  protected LinkedList<E> entries = new LinkedList<E>();
+  protected List<E> entries = new LinkedList<E>();
 
   /**
    * Copy constructor that initializes a new BaseFeed instance to have
@@ -254,12 +253,14 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   public void setCanPost(boolean v) { feedState.canPost = v; }
 
   /**
-   * Gets the ETag.
+   * Returns the current entity tag value for this feed.  A value of
+   * {@code null} indicates the value is unknown.
    */
   public String getEtag() { return feedState.etag; }
 
   /**
-   * Sets the ETag.
+   * Sets the current entity tag value (for this feed.  A value of
+   * {@code null} indicates the value is unknown.
    */
   public void setEtag(String v) { feedState.etag = v; }
 
@@ -303,7 +304,11 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    */
   public void setItemsPerPage(int v) { feedState.itemsPerPage = v; }
 
+  /** Returns the list of entries in this feed */
   public List<E> getEntries() { return entries; }
+
+  /** Sets the list to use for storing the entry list */
+  public void setEntries(List<E> entryList) { this.entries = entryList; }
 
   // Implementation of Adaptable methods
   //
@@ -355,6 +360,41 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     return postLink;
   }
 
+  
+  /**
+   * Returns the link that provides the URI of next page in a paged feed.
+   *
+   * @return Link that provides the URI of next page in a paged feed or {@code
+   *     null} for none.
+   */
+  public Link getNextLink() {
+    return getLink(Link.Rel.NEXT, Link.Type.ATOM);
+  }
+
+
+  /**
+   * Returns the link that provides the URI of previous page in a paged feed.
+   *
+   * @return Link that provides the URI of previous page in a paged feed or
+   *     {@code null} for none.
+   */
+  public Link getPreviousLink() {
+    return getLink(Link.Rel.PREVIOUS, Link.Type.ATOM);
+  }
+
+
+  /**
+   * Returns the link that provides the URI that can be used to batch operations
+   * to query, insert, update and delete entries on this feed.
+   *
+   * @return Link that provides the URI that can be used to batch operations to
+   *     query, insert, update and delete entries on this feed or {@code null}
+   *     for none.
+   */
+  public Link getFeedBatchLink() {
+    return getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
+  }
+
 
   /**
    * Returns the current representation of the feed by requesting it from
@@ -372,9 +412,16 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       throw new UnsupportedOperationException("Feed cannot be retrieved");
     }
     URL feedUrl = new URL(selfLink.getHref());
-    try {  
-      return (F) feedState.service.getFeed(feedUrl, this.getClass(),
-          srcState.updated);
+    try {
+      // Use Etag if available to conditionalize the retrieval, otherwise use
+      // the updated value.
+      if (feedState.etag != null) {
+        return (F) feedState.service.getFeed(feedUrl, this.getClass(),
+            feedState.etag);
+      } else {
+        return (F) feedState.service.getFeed(feedUrl, this.getClass(),
+            srcState.updated);
+      }
     } catch (NotModifiedException e) {
       return (F) this;
     }
@@ -447,8 +494,8 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     generateFeedEnd(w);
   }
 
-  private void generateEntries(XmlWriter w, ExtensionProfile extProfile) throws
-      IOException {
+  private void generateEntries(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException {
     // Generate all entries
     w.startRepeatingElement();
     for (E entry : entries) {
@@ -495,7 +542,8 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(3);
 
-    if (feedState.etag != null) {
+    if (feedState.etag != null &&
+        !Service.getVersion().isCompatible(Service.Versions.V1)) {
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", feedState.etag));
     }
@@ -505,17 +553,17 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     generateInnerAtom(w, extProfile);
 
     // Generate OpenSearch elements
-    if (feedState.totalResults != Query.UNDEFINED) {
+    if (getTotalResults() != Query.UNDEFINED) {
       w.simpleElement(openSearchNs, "totalResults", null,
                       String.valueOf(feedState.totalResults));
     }
 
-    if (feedState.startIndex != Query.UNDEFINED) {
+    if (getStartIndex() != Query.UNDEFINED) {
       w.simpleElement(openSearchNs, "startIndex", null,
                       String.valueOf(feedState.startIndex));
     }
 
-    if (feedState.itemsPerPage != Query.UNDEFINED) {
+    if (getItemsPerPage() != Query.UNDEFINED) {
       w.simpleElement(openSearchNs, "itemsPerPage", null,
                       String.valueOf(feedState.itemsPerPage));
     }
@@ -619,24 +667,23 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       }
     }
 
-    if (feedState.totalResults != Query.UNDEFINED) {
+    if (getTotalResults() != Query.UNDEFINED) {
       w.simpleElement(openSearchNs, "totalResults", null,
                       String.valueOf(feedState.totalResults));
     }
 
-    if (feedState.startIndex != Query.UNDEFINED) {
+    if (getStartIndex() != Query.UNDEFINED) {
       w.simpleElement(openSearchNs, "startIndex", null,
                       String.valueOf(feedState.startIndex));
     }
 
-    if (feedState.itemsPerPage != Query.UNDEFINED) {
+    if (getItemsPerPage() != Query.UNDEFINED) {
       w.simpleElement(openSearchNs, "itemsPerPage", null,
                       String.valueOf(feedState.itemsPerPage));
     }
 
     // Invoke ExtensionPoint.
     generateExtensions(w, extProfile);
-
     w.startRepeatingElement();
     for (E entry : entries) {
       entry.generateRss(w, extProfile);
@@ -792,6 +839,17 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       super(extProfile, BaseFeed.this.getClass());
     }
 
+    @Override
+    public void processAttribute(String namespace, String localName,
+        String value) throws ParseException {
+      if (namespace.equals(Namespaces.g)) {
+        if (localName.equals("etag")) {
+          setEtag(value);
+          return;
+        }
+      }
+      super.processAttribute(namespace, localName, value);
+    }
 
     @Override
     public ElementHandler getChildHandler(String namespace,

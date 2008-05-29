@@ -92,6 +92,8 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
     declare(extProfile, GphotoExifTime.getDefaultDescription());
     declare(extProfile, GphotoStreamId.getDefaultDescription());
 
+    declare(extProfile, GphotoVideoStatus.getDefaultDescription());
+    
     declare(extProfile, ExifTags.getDefaultDescription());
     new ExifTags().declareExtensions(extProfile);
 
@@ -194,6 +196,24 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
     }
   }
 
+  /**
+   * @return the gphoto:videostatus of the video/photo.
+   */
+  public String getVideoStatus() {
+    return getSimpleValue(GphotoVideoStatus.class);
+  }
+
+  /**
+   * Sets the video status of the video/photo entry.
+   */
+  public void setVideoStatus(String videoStatus) {
+    if (videoStatus != null) {
+      setExtension(new GphotoVideoStatus(videoStatus));
+    } else {
+      removeExtension(GphotoVideoStatus.class);
+    }
+  } 
+  
   /**
    * @return the gphoto:width of the photo.
    */
@@ -624,7 +644,25 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
           Namespaces.PHOTOS_NAMESPACE, "videosrc");
     }
   }
+  
+  /**
+   * The gphoto:videostatus field.
+   */
+  public static class GphotoVideoStatus extends GphotoConstruct {
+    public GphotoVideoStatus() {
+      this((String) null);
+    }
 
+    public GphotoVideoStatus(String videoStatus) {
+      super("videostatus", videoStatus);
+    }
+
+    public static ExtensionDescription getDefaultDescription() {
+      return new ExtensionDescription(GphotoVideoStatus.class,
+          Namespaces.PHOTOS_NAMESPACE, "videostatus");
+    }
+  }
+  
   public static class GphotoStreamId extends GphotoConstruct {
     public GphotoStreamId() {
       this(null);

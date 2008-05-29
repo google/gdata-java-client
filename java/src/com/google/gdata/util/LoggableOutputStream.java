@@ -14,69 +14,48 @@
  */
 package com.google.gdata.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.logging.Logger;
 
 /**
  *
- * Note! The class is used only for logging - it provides a feature to get
- * content of the XML data sent in the logger.
+ * Logs content of the data sent to the stream if log level is
+ * set to FINEST.
  *
  * 
  *
  */
-public class LoggableOutputStream extends OutputStream {
-
-
-  private OutputStream stream;
-
-  StringWriter sw = new StringWriter();
+public class LoggableOutputStream extends FilterOutputStream {
+  private ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
   private Logger logger;
 
   public LoggableOutputStream(Logger logger, OutputStream stream) {
+    super(stream);
     this.logger = logger;
-    this.stream = stream;
   }
 
   @Override
   public void write(int b) throws IOException {
     // Write to the original stream
-    stream.write(b);
+    super.write(b);
     // Write also to log
-    sw.write(b);
+    bos.write(b);
   }
 
   @Override
   public void close() throws IOException {
-    stream.close();
-    sw.flush();
-    logger.finest(sw.toString());
-    sw = new StringWriter();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    return stream.equals(obj);
+    super.close();
+    logger.finest(bos.toString()); //convert using the default charset
   }
 
   @Override
   public void flush() throws IOException {
-    stream.flush();
-    sw.flush();
-    logger.finest(sw.toString());
-    sw = new StringWriter();
-  }
-
-  @Override
-  public int hashCode() {
-    return stream.hashCode();
-  }
-
-  @Override
-  public String toString() {
-    return stream.toString();
+    super.flush();
+    logger.finest(bos.toString());
+    bos = new ByteArrayOutputStream();
   }
 }

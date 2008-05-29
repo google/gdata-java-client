@@ -34,6 +34,8 @@ import com.google.gdata.data.youtube.UserProfileFeed;
 import com.google.gdata.data.youtube.VideoFeed;
 import com.google.gdata.data.youtube.YouTubeNamespace;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -58,6 +60,31 @@ public class YouTubeService extends MediaService {
       throw new IllegalStateException(abnormal);
     }
   }
+
+  /**
+   * All released version of the YouTube API.
+   */
+  public static class Versions {
+    /**
+     * Initial version of the API, based on GData version 1.
+     */
+    public static final Version V1 =
+        new Version(YouTubeService.class, "1.0", Service.Versions.V1);
+
+    /**
+     * Newer version of the API, based on GData version 2.
+     */
+    public static final Version V2 =
+        new Version(YouTubeService.class, "2.0", Service.Versions.V2);
+
+    public static final Version[] ALL = { V1, V2 };
+  }
+
+  /**
+   * Version 1 is currently the default version for clients.
+   */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(YouTubeService.class, YouTubeService.Versions.V1);
 
   /**
    * Creates a new instance of the service with the given application name.
@@ -123,6 +150,16 @@ public class YouTubeService extends MediaService {
         .append(super.getServiceVersion())
         .toString();
   }
+
+  /**
+   * Returns the current {@link Version} of the YouTube GData API.
+   * 
+   * @return version.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(YouTubeService.class);
+  }
+
 
   /**
    * Generate a form-upload token given the XML description of a new media entry.

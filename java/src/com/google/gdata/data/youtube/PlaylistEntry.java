@@ -57,6 +57,7 @@ public class PlaylistEntry extends VideoEntry {
     super.declareExtensions(extProfile);
     
     extProfile.declare(PlaylistEntry.class, YtPosition.class);
+    // yt:description only in version 1
     extProfile.declare(PlaylistEntry.class, YtDescription.class);
     extProfile.declareArbitraryXmlExtension(PlaylistEntry.class);
   }
@@ -84,13 +85,25 @@ public class PlaylistEntry extends VideoEntry {
     }
   }
 
-  /** Gets the playlist description. */
+  /** 
+   * Gets the playlist description. 
+   *
+   * @deprecated Valid only in version 1. Replaced version 2.0 with
+   *             atom:summary.
+   */
+  @Deprecated
   public String getDescription() {
     YtDescription description = getExtension(YtDescription.class);
     return description == null ? null : description.getContent();
   }
 
-  /** Sets the playlist description. */
+  /** 
+   * Sets the playlist description. 
+   *
+   * @deprecated Valid only in version 1. Replaced version 2.0 with
+   *             atom:summary.
+   */
+  @Deprecated
   public void setDescription(String description) {
     if (description == null) {
       removeExtension(YtDescription.class);

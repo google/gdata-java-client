@@ -58,7 +58,7 @@ import javax.xml.parsers.SAXParserFactory;
  * <p>
  * To use this parser, one must define an {@link
  * XmlParser.ElementHandler} type (usually one per XML schema type),
- * specify the root element handler, and pass a reader to the 
+ * specify the root element handler, and pass a reader to the
  * {@link #parse(Reader, com.google.gdata.util.XmlParser.ElementHandler, String,
  *               String)} method.
  * <p>
@@ -83,7 +83,7 @@ public class XmlParser extends DefaultHandler {
 
     SAXParserFactory factory =  SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
-    return factory; 
+    return factory;
   }
 
   /**
@@ -472,7 +472,7 @@ public class XmlParser extends DefaultHandler {
   }
 
 
-  
+
   /**
    * Parses XML.
    *
@@ -686,13 +686,17 @@ public class XmlParser extends DefaultHandler {
     ElementHandler parentHandler = curHandler;
 
     if (curHandler == null &&
+        // Edge case, parsing the root element.
         namespace.equals(rootNamespace) &&
         localName.equals(rootElementName)) {
 
       curHandler = rootHandler;
 
     } else if (curHandler != null && unrecognizedElements == 0) {
-
+      // Common case, parsing an XML element. Event signals
+      // the start of a child element.  Looks for child element
+      // handler. If no handler is found, then parses element as
+      // XML Blob (if enabled).
       try {
         curHandler = curHandler.getChildHandler(namespace, localName, attrs);
       } catch (ParseException e) {
@@ -703,7 +707,7 @@ public class XmlParser extends DefaultHandler {
     }
 
     if (curHandler != null && unrecognizedElements == 0) {
-
+      // Common case: A child handler was found.  Keep parsing.
       curHandler.parent = parentHandler;
       curHandler.qName = qName;
 
@@ -776,6 +780,15 @@ public class XmlParser extends DefaultHandler {
       }
 
     } else { // curHandler == null || unrecognizedElements > 0
+
+      // INVARIANT: We're processing an unrecognized (blob) element.
+
+      // If curHandler == null, we just encountered our first
+      // unrecognized element, so make this element part of the
+      // XmlBlob of the parent element.  Otherwise,
+      // unrecognizedElements > 0 (&& curHandler != NULL), and we're
+      // processing an element nested inside an unrecognized element
+      // (ie.a structured XmlBlob).
 
       ++unrecognizedElements;
 
@@ -884,15 +897,15 @@ public class XmlParser extends DefaultHandler {
   /** SAX callback. */
   @Override
   public void characters(char[] text, int start, int len) throws SAXException {
-    
+
     if (curHandler != null) {
 
       if (unrecognizedElements == 0) {
-        
+
         if (curHandler.buffer == null) {
           curHandler.buffer = new StringBuffer();
         }
-        
+
         curHandler.buffer.append(text, start, len);
       }
 

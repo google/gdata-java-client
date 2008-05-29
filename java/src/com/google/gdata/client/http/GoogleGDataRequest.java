@@ -151,6 +151,13 @@ public class GoogleGDataRequest extends HttpGDataRequest {
         String name = nameValue.substring(0, equals);
         String value = nameValue.substring(equals + 1);
         if (name.equalsIgnoreCase("domain")) {
+          if (uri.getPort() > 0) {
+            // ignore port
+            int colon = value.lastIndexOf(':');
+            if (colon > 0) {
+              value = value.substring(0, colon);
+            }
+          }
           String uriDomain = uri.getHost();
           if (uriDomain.equals(value)) {
             this.domain = value;
@@ -231,12 +238,12 @@ public class GoogleGDataRequest extends HttpGDataRequest {
         return false;
       }
 
-     String uriDomain = uri.getHost();
-     if (!matchDomain(uriDomain, domain)) {
-       return false;
-     }
+      String uriDomain = uri.getHost();
+      if (!matchDomain(uriDomain, domain)) {
+        return false;
+      }
 
-     String path = uri.getPath();
+      String path = uri.getPath();
       if (path == null) {
         path = "/";
       }

@@ -32,13 +32,15 @@ import java.net.HttpURLConnection;
  */
 public class VersionConflictException extends ServiceException {
 
-
+  public VersionConflictException() {
+    this((BaseEntry) null);
+  }
+  
   public VersionConflictException(BaseEntry currentEntry) {
     super("Version conflict.");
     this.currentEntry = currentEntry;
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_CONFLICT);
   }
-
 
   public VersionConflictException(HttpURLConnection httpConn) 
       throws IOException {
@@ -53,6 +55,7 @@ public class VersionConflictException extends ServiceException {
    */
   private BaseEntry currentEntry;
   public BaseEntry getCurrentEntry() { return currentEntry; }
+  public void setCurrentEntry(BaseEntry entry) { currentEntry = entry; }
 
 
   /**

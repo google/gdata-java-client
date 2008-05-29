@@ -148,7 +148,15 @@ public class Query {
    */
   private ResultFormat resultFormat = ResultFormat.DEFAULT;
 
-
+  
+  /**
+   * The strictness of the query parameter parsing on the server.  If strict
+   * mode is enabled any unknown query parameters will be rejected.  The
+   * default value is false.
+   */
+  private boolean strict = false;
+  
+  
   /**
    * The list of custom parameters associated with the query.
    */
@@ -310,7 +318,7 @@ public class Query {
      * Returns a string representation for the category conditions in
      * the CategoryFilter, in the format used by a Query URI.
      */
-    public String toString() {
+    @Override public String toString() {
       StringBuilder sb = new StringBuilder();
       boolean isFirst = true;
       for (Category category : categories) {
@@ -554,6 +562,24 @@ public class Query {
   public ResultFormat getResultFormat() {
     return resultFormat;
   }
+  
+  /**
+   * Sets the strictness of parameter parsing.
+   * 
+   * @param strict true if strict parsing should be enabled for this query.
+   */
+  public void setStrict(boolean strict) {
+    this.strict = strict;
+  }
+  
+  /**
+   * Returns the strictness setting for query parameter parsing on the server.
+   * 
+   * @return true if strict parsing is enabled for this query.
+   */
+  public boolean isStrict() {
+    return strict;
+  }
 
   /**
    * The CustomParameter class defines a base representation for custom query
@@ -723,6 +749,10 @@ public class Query {
       if (maxResults != UNDEFINED) {
         appendQueryParameter(queryBuf, GDataProtocol.Query.MAX_RESULTS,
             Integer.toString(maxResults));
+      }
+      
+      if (strict) {
+        appendQueryParameter(queryBuf, GDataProtocol.Parameter.STRICT, "true");
       }
 
       for (CustomParameter customParameter : customParameters) {
