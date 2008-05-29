@@ -8,6 +8,14 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.18.0 ==
+  * Added support to handle GData Protocol Version 2.  This provides capability for the APIs to be fully compliant with [http://bitworking.org/projects/atom/rfc5023.html Atom Publishing Protocol]. This introduces a new HTTP request header "GData-Version" which indicates whether a request/response is v1 or v2.  Not all services are v2 compatible yet.  As of this release only Blogger API is v2 compatible.  By default all requests will use GData Protocol Version 1.
+  * Added support to handle ETags and if-match, if-none-match, if-modified-since conditional headers as defined in [http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19 RFC 2616].  This is applicable only for services that support GData Protocol Version 2.
+  * Added several new features in Contacts API.  For details refer to [http://code.google.com/apis/contacts/ Contacts API docs].
+    * Added support to group contacts.
+    * Added support to access/update contact photos.
+    * Added ability to append custom contact fields.
+
 == 1.17.0 ==
   * Added support for [http://code.google.com/apis/health Google Health GData API].  This provides minimal interface to interact with Google Health Service.  This API does not include data model classes for CCR health records.
   * Added new error types in Google Apps API.
