@@ -12,8 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.google.gdata.util;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -21,95 +23,56 @@ import java.util.logging.Logger;
 
 /**
  *
- * Note! The class is used only for logging in verbose mode - it provides a
- * feature to get content of the XML data sent.
+ * Logs content of the data sent to the stream if log level is
+ * set to FINEST.
  *
  * 
- *
  */
-public class LoggableInputStream extends InputStream {
-  StringWriter sw = new StringWriter();
-  private InputStream stream;
-  private Logger logger;
+
+public class LoggableInputStream extends FilterInputStream {
+  private final StringWriter sw = new StringWriter();
+  private final Logger logger;
+  private boolean closed = false;
 
   public LoggableInputStream(Logger logger, InputStream stream) {
+    super(stream);
     this.logger = logger;
-    this.stream = stream;
-  }
-
-  @Override
-  public int available() throws IOException {
-    return stream.available();
   }
 
   @Override
   public void close() throws IOException {
-    logger.finest(sw.toString());
-    sw = new StringWriter();
-    stream.close();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    return stream.equals(obj);
-  }
-
-  @Override
-  public int hashCode() {
-    return stream.hashCode();
-  }
-
-  @Override
-  public void mark(int readlimit) {
-    stream.mark(readlimit);
-  }
-
-  @Override
-  public boolean markSupported() {
-    return stream.markSupported();
+    // circumvent double close
+    if (!closed){
+      logger.finest(sw.toString());
+      closed = true;
+    }
+    super.close();
   }
 
   @Override
   public int read() throws IOException {
-    int readInt = stream.read();
+    int readInt = super.read();
     sw.write(readInt);
     return readInt;
   }
 
   @Override
   public int read(byte[] b, int off, int len) throws IOException {
-    int read = stream.read(b, off, len);
+    int read = super.read(b, off, len);
     if (read > 0) {
-      for (int i = off; i < off + read; i++) {
-        sw.write(b[i]);
-      }
+      String s = new String(b, off, read);
+      sw.write(s);
     }
     return read;
   }
 
   @Override
   public int read(byte[] b) throws IOException {
-    int read = stream.read(b);
+    int read = super.read(b);
     if (read > 0) {
-      for (int i = 0; i < read; i++) {
-        sw.write(b[i]);
-      }
+      String s = new String(b, 0, read);
+      sw.write(s);
     }
     return read;
-  }
-
-  @Override
-  public void reset() throws IOException {
-    stream.reset();
-  }
-
-  @Override
-  public long skip(long n) throws IOException {
-    return stream.skip(n);
-  }
-
-  @Override
-  public String toString() {
-    return stream.toString();
   }
 }

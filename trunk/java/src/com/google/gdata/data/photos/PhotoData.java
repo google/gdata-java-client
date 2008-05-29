@@ -101,6 +101,18 @@ public interface PhotoData extends GphotoData, PointData, MediaData {
   public void setAlbumId(Long albumId);
 
   /**
+   * The video status in case the photo entry is a video.
+   * 
+   * @return the gphoto:videostatus of the video/photo.
+   */
+  public String getVideoStatus();
+
+  /**
+   * Set the video status of the photo entry.
+   */
+  public void setVideoStatus(String videoStatus);
+  
+  /**
    * The width of the photo in pixels.  This is the width of the original image
    * stored in the database, but not necessarily the width of the image returned
    * by querying the image url (depending on image size).

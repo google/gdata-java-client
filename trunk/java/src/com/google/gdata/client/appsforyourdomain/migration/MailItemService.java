@@ -16,11 +16,13 @@
 
 package com.google.gdata.client.appsforyourdomain.migration;
 
+import com.google.gdata.client.Service;
 import com.google.gdata.client.appsforyourdomain.AppsForYourDomainService;
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.data.appsforyourdomain.migration.MailItemFeed;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.Version;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -32,6 +34,30 @@ import java.net.URL;
  * MailItem Feed in the Google Apps Migration GData API.
  */
 public class MailItemService extends AppsForYourDomainService {
+  
+  public static class Versions {
+    
+    /**
+     * Version 1 of the Email Migration API. This is the initial version of the
+     * API and is based upon Version 1 of the GData Protocol.
+     */
+    public static final Version V1 = new Version(MailItemService.class,
+        "1.0", Service.Versions.V1);
+    
+    /**
+     * Version 2 of the Email Migration API. This version of the API adds full
+     * compliance with the Atom Publishing Protocol and is based upon Version 2
+     * of the GData protocol.
+     */
+    public static final Version V2 = new Version(MailItemService.class,
+        "2.0", Service.Versions.V2);
+  }
+  
+  /**
+   * Version 1 is the current default version for MailItemService.
+   */
+  public static final Version DEFAULT_VERSION = Service.initServiceVersion(
+      MailItemService.class, Versions.V1);
   
   /**
    * Domain for sending API requests.
@@ -67,20 +93,19 @@ public class MailItemService extends AppsForYourDomainService {
   
   /**
    * Inserts one or more MailItem entries in a single batch operation.  Using
-   * {@code batch} instead of repeated calls to {@code #insert} is helpful in
+   * {@code batch} instead of repeated calls to {@code insert} is helpful in
    * reducing HTTP overhead.
    * 
    * @param domain the domain into which mail is being migrated
-   * @param feed a feed containing one or more {@link MailItemEntry} objects,
+   * @param feed a feed containing one or more {@code MailItemEntry} objects,
    *             each of which has been tagged with
    *             {@link BatchUtils#setBatchId(com.google.gdata.data.BaseEntry,
    *             String)}.  The batch operation type of each entry must be
-   *             {@link BatchOperationType#INSERT}; however, there should be no
-   *             need to call {@link BatchUtils#setBatchOperationType(
-   *             com.google.gdata.data.BaseEntry, BatchOperationType)} on each
+   *             {@code BatchOperationType.INSERT}; however, there should be no
+   *             need to call {@code BatchUtils.setBatchOperationType} on each
    *             entry, as this operation is already the default.
    * @return a feed with the result of each operation in a separate
-   *         {@link MailItemEntry} object.
+   *         {@code MailItemEntry} object.
    * @throws IOException if an error occurs while communicating with the GData
    *                     service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.

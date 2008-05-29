@@ -17,10 +17,13 @@
 package com.google.gdata.client;
 
 /**
- * The GDataProtocol interface defines various constant values used within the
+ * The GDataProtocol class defines various constant values used within the
  * Google Data API.
  */
-public interface GDataProtocol {
+public class GDataProtocol {
+  
+  // Not instantiable, container class only
+  private GDataProtocol() {}
 
   /**
    * The Header interface defines various header names used within the GData
@@ -34,6 +37,30 @@ public interface GDataProtocol {
      * will be interpreted relative to the version model of the target service.
      */
     public static final String VERSION = "GData-Version";
+
+    /**
+     * The IF_MATCH header is used to request specific entity versions. The
+     * value of the parameter will be a space-separated list of Etags.
+     */
+    public static final String IF_MATCH = "If-Match";
+
+    /**
+     * The IF_MODIFIED_SINCE header is used to reject requests unmodified
+     * since the given date.
+     */
+    public static final String IF_MODIFIED_SINCE = "If-Modified-Since";
+
+    /**
+     * The IF_UNMODIFIED_SINCE header is used to reject requests modified
+     * since the given date.
+     */
+    public static final String IF_UNMODIFIED_SINCE = "If-Unmodified-Since";
+
+    /**
+     * The IF_NONE_MATCH header is used to disallow specific entity versions. The
+     * value of the parameter will be a space-separated list of Etags.
+     */
+    public static final String IF_NONE_MATCH = "If-None-Match";
 
     /**
      * The METHOD_OVERRIDE parameter overrides the normal HTTP method. The value
@@ -65,6 +92,12 @@ public interface GDataProtocol {
      * precedence.
      */
     public static final String VERSION = "v";
+    
+    /**
+     * The STRICT parameter is used to tell the server to parse in strict mode,
+     * which will reject any unknown query parameters or xml content.
+     */
+    public static final String STRICT = "strict";
   }
 
   /**
@@ -118,5 +151,18 @@ public interface GDataProtocol {
      * matches that should be returned from a query request.
      */
     public static final String MAX_RESULTS = "max-results";
+  }
+  
+  /**
+   * Returns {@code true} if an entity tag value is a weak Etag, as defined in
+   * {@code RFC2616, Section 3.11}.   Weak Etags can be used for weak 
+   * comparisons, such as in some caching scenarios, but may not be used for
+   * strong validation (like update preconditions).
+   * 
+   * @param etag entity tag value.
+   * @return {@code true} if value is a weak Etag.
+   */
+  public static boolean isWeakEtag(String etag) {
+    return etag != null && etag.startsWith("W/");
   }
 }

@@ -17,6 +17,8 @@
 package sample.contacts;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -26,16 +28,41 @@ import java.util.TreeMap;
  */
 
 public class ContactsExampleParameters {
-  private static final String DEFAULT_FEED = "http://www.google.com/m8/feeds/";
-  // Note! Tree Map is used to keep sequence of fields.
-  private TreeMap<String, String> map;
+  /**
+   * Actions that can be executed with the sample application.
+   * They are all lowercase because they are passed as parameters
+   * and then converted using valueOf() method.
+   */
+  public enum Actions  {
+    LIST,
+    QUERY,
+    ADD,
+    DELETE,
+    UPDATE;
+  }
 
+  private static final String DEFAULT_FEED = "http://www.google.com/m8/feeds/";
+  private static final String DEFAULT_PROJECTION = "thin";
+
+  /**
+   * Keeps map of parameter -> value.
+   * Note! Tree Map is used to keep sequence of fields.
+   */
+  private SortedMap<String, String> parameterValueMap =
+    new TreeMap<String,String>();
+
+  /**
+   * Stores names of parameters and whether they are
+   * multiple parameters.
+   */
   public enum ParameterNames {
     SCRIPT("script"),
     ACTION("action"),
     BASE_URL("base-url"),
     USERNAME("username"),
     PASSWORD("password"),
+    CONTACTFEED("contactfeed"),
+    GROUPFEED("groupfeed"),
     SHOWDELETED("showdeleted"),
     UPDATED_MIN("updated-min"),
     OREDERBY("orderby"),
@@ -46,12 +73,16 @@ public class ContactsExampleParameters {
     NAME("name"),
     NOTES("notes"),
     ID("id"),
-    EMAIL("email",true),
-    PHONE("phone",true),
-    IM("im",true),
+    GROUP("querygroupid"),
+    PROJECTION("projection"),
+    EMAIL("email", true),
+    PHONE("phone", true),
+    IM("im", true),
     VERBOSE("verbose"),
-    ORGANIZATION("organization",true),
-    POSTAL("postal",true),
+    ORGANIZATION("organization", true),
+    POSTAL("postal", true),
+    GROUPS("groupid", true),
+    EXTENDEDPROPERTY("extendedProperty", true),
     ;
 
     private final String parameterName;
@@ -63,7 +94,7 @@ public class ContactsExampleParameters {
     }
 
     ParameterNames(String parameterName) {
-      this(parameterName,false);
+      this(parameterName, false);
     }
 
     public String getParameterName() {
@@ -75,29 +106,26 @@ public class ContactsExampleParameters {
     }
   }
   /**
-   * Constructor used in script case
+   * Constructor used in case script parameter is used.
    *
    * @param commandLineParams command line parameters
    * @param scriptLine line read from a file
    */
   public ContactsExampleParameters(ContactsExampleParameters commandLineParams,
       String scriptLine) {
-    map = new TreeMap<String, String>();
-    map.putAll(commandLineParams.map);
+    parameterValueMap.putAll(commandLineParams.parameterValueMap);
     fillMapFromArguments(scriptLine.split(" "));
   }
 
   /**
-   * Constructor used by command line execution
+   * Constructor used when no script is passed at command line
+   * only the command line parameters are used.
    *
    * @param arguments arguments in form of array
-   *
    */
   public ContactsExampleParameters(String arguments[]) {
-    map = new TreeMap<String, String>();
     fillMapFromArguments(arguments);
   }
-
 
   private void fillMapFromArguments(String[] arguments) {
     for (String string : arguments) {
@@ -105,20 +133,23 @@ public class ContactsExampleParameters {
         String param = string.substring(2);
         String params[] = param.split("=");
         if (params.length > 1) {
-          map.put(params[0], params[1]);
+          parameterValueMap.put(params[0], params[1]);
         } else if (params.length == 1) {
-          map.put(params[0], "");
+          parameterValueMap.put(params[0], "");
         }
       }
     }
-    verifyAllParameters();
+    verifyAllParameters();    
   }
 
   /**
-   * Verify if we understand all parameters
+   * Verify if we understand all parameters.
+   *
+   * @throws RuntimeException in case there
+   * is a parameter which is not expected.
    */
   private void verifyAllParameters() {
-    for (String parameter: map.keySet()) {
+    for (String parameter : parameterValueMap.keySet()) {
       verifyParameter(parameter);
     }
   }
@@ -129,23 +160,32 @@ public class ContactsExampleParameters {
           && name.equals(parameter.getParameterName())) {
         return;
       } else if (parameter.isMultipleParametersAllowed()
-          && name.startsWith(parameter.getParameterName())) {
+          && name.startsWith(parameter.getParameterName())
+          && name.length() > parameter.getParameterName().length()) {
         return;
       }
     }
     throw new RuntimeException("Parameter " + name + " is not correct.");
   }
-
-  String getScript() {
-    return map.get(ParameterNames.SCRIPT.getParameterName());
+  
+  String getParameter(ParameterNames parameters) {
+    return parameterValueMap.get(parameters.getParameterName());
   }
 
-  String getAction() {
-    return map.get(ParameterNames.ACTION.getParameterName());
+  String getScript() {
+    return getParameter(ParameterNames.SCRIPT);
+  }
+
+  Actions getAction() {
+    String actionString = getParameter(ParameterNames.ACTION);
+    if (actionString == null) {
+      return null;
+    }
+    return Actions.valueOf(actionString.toUpperCase());
   }
 
   String getBaseUrl() {
-    String url = map.get(ParameterNames.BASE_URL.getParameterName());
+    String url = getParameter(ParameterNames.BASE_URL);
     if (url == null) {
       url = DEFAULT_FEED;
     }
@@ -153,36 +193,44 @@ public class ContactsExampleParameters {
   }
 
   String getUserName() {
-    return map.get(ParameterNames.USERNAME.getParameterName());
+    return getParameter(ParameterNames.USERNAME);
   }
 
   String getPassword() {
-    return map.get(ParameterNames.PASSWORD.getParameterName());
+    return getParameter(ParameterNames.PASSWORD);
+  }
+  
+  boolean isContactFeed() {
+    return getParameter(ParameterNames.CONTACTFEED) != null;
   }
 
+  boolean isGroupFeed() {
+    return getParameter(ParameterNames.GROUPFEED) != null;
+  }
+  
   boolean isShowDeleted() {
-    return (map.get(ParameterNames.SHOWDELETED.getParameterName()) != null);
+    return getParameter(ParameterNames.SHOWDELETED) != null;
   }
 
   String getUpdatedMin() {
-    return map.get(ParameterNames.UPDATED_MIN.getParameterName());
+    return getParameter(ParameterNames.UPDATED_MIN);
   }
 
   String getOrderBy() {
-    return map.get(ParameterNames.OREDERBY.getParameterName());
+    return getParameter(ParameterNames.OREDERBY);
   }
 
   String getSortorder() {
-    return map.get(ParameterNames.SORTORDER.getParameterName());
+    return getParameter(ParameterNames.SORTORDER);
   }
 
   Integer getMaxResults() {
-    String maxResString = map.get(ParameterNames.MAX_RESULTS.getParameterName());
+    String maxResString = getParameter(ParameterNames.MAX_RESULTS);
     if (maxResString != null) {
       Integer val = Integer.parseInt(maxResString);
       if (val.intValue() < 1) {
         throw new RuntimeException(
-            ParameterNames.MAX_RESULTS.getParameterName() + " should be > 0" );
+            ParameterNames.MAX_RESULTS + " should be > 0" );
       }
       return val;
     }
@@ -190,12 +238,12 @@ public class ContactsExampleParameters {
   }
 
   Integer getStartIndex() {
-    String startIndexString = map.get(ParameterNames.START_INDEX.getParameterName());
+    String startIndexString = getParameter(ParameterNames.START_INDEX);
     if (startIndexString != null) {
       Integer val = Integer.parseInt(startIndexString);
       if (val.intValue() < 1) {
         throw new RuntimeException(
-            ParameterNames.START_INDEX.getParameterName() + " should be > 0" );
+            ParameterNames.START_INDEX + " should be > 0" );
       }
       return val;
     }
@@ -203,81 +251,81 @@ public class ContactsExampleParameters {
   }
 
   boolean isHelp() {
-    return (map.get(ParameterNames.HELP.getParameterName()) != null);
+    return (getParameter(ParameterNames.HELP) != null);
   }
 
   boolean isVerbose() {
-    return (map.get(ParameterNames.VERBOSE.getParameterName()) != null);
+    return (getParameter(ParameterNames.VERBOSE) != null);
   }
 
   String getName() {
-    return map.get(ParameterNames.NAME.getParameterName());
+    return getParameter(ParameterNames.NAME);
   }
 
   String getNotes() {
-    return map.get(ParameterNames.NOTES.getParameterName());
+    return getParameter(ParameterNames.NOTES);
   }
 
   String getId() {
-    return map.get(ParameterNames.ID.getParameterName());
+    return getParameter(ParameterNames.ID);
   }
 
   void setId(String id) {
-    map.put(ParameterNames.ID.getParameterName(), id);
+    parameterValueMap.put(ParameterNames.ID.getParameterName(), id);
+  }
+  
+  String getProjection() {
+    String projection = getParameter(ParameterNames.PROJECTION);
+    if (projection == null) {
+      projection = DEFAULT_PROJECTION;
+    }
+    return projection;
+  }
+  
+  String getGroup() {
+    return getParameter(ParameterNames.GROUP);
   }
 
-  LinkedList<String> getEmails() {
-    LinkedList<String> emailList = new LinkedList<String>();
-    for (String key : map.keySet()) {
-      if (key.startsWith(ParameterNames.EMAIL.getParameterName())) {
-        emailList.add(map.get(key));
+  List<String> getParameterList(ParameterNames parameterName){
+    LinkedList<String> parameterList = new LinkedList<String>();
+    for (String key : parameterValueMap.keySet()) {
+      if (key.startsWith(parameterName.getParameterName())
+          && key.length() > parameterName.getParameterName().length()) {
+        parameterList.add(parameterValueMap.get(key));
       }
     }
-    return emailList;
+    return parameterList;
+  }
+  
+  List<String> getEmails() {
+    return getParameterList(ParameterNames.EMAIL);
   }
 
-  LinkedList<String> getPhones() {
-    LinkedList<String> phoneList = new LinkedList<String>();
-    for (String key : map.keySet()) {
-      if (key.startsWith(ParameterNames.PHONE.getParameterName())) {
-        phoneList.add(map.get(key));
-      }
-    }
-    return phoneList;
+  List<String> getPhones() {
+    return getParameterList(ParameterNames.PHONE);
   }
 
-  LinkedList<String> getIms() {
-    LinkedList<String> imList = new LinkedList<String>();
-    for (String key : map.keySet()) {
-      if (key.startsWith(ParameterNames.IM.getParameterName())) {
-        imList.add(map.get(key));
-      }
-    }
-    return imList;
+  List<String> getIms() {
+    return getParameterList(ParameterNames.IM);
   }
 
-  LinkedList<String> getOrganizations() {
-    LinkedList<String> organizationList = new LinkedList<String>();
-    for (String key : map.keySet()) {
-      if (key.startsWith(ParameterNames.ORGANIZATION.getParameterName())) {
-        organizationList.add(map.get(key));
-      }
-    }
-    return organizationList;
+  List<String> getOrganizations() {
+    return getParameterList(ParameterNames.ORGANIZATION);
   }
 
-  LinkedList<String> getPostal() {
-    LinkedList<String> postalList = new LinkedList<String>();
-    for (String key : map.keySet()) {
-      if (key.startsWith(ParameterNames.POSTAL.getParameterName())) {
-        postalList.add(map.get(key));
-      }
-    }
-    return postalList;
+  List<String> getPostal() {
+    return getParameterList(ParameterNames.POSTAL);
   }
-
+  
+  List<String> getGroups() {
+    return getParameterList(ParameterNames.GROUPS);
+  }
+  
+  List<String> getExtendedProperties() {
+    return getParameterList(ParameterNames.EXTENDEDPROPERTY);
+  }
+  
   int numberOfParameters() {
-    return map.size();
+    return parameterValueMap.size();
   }
-
 }

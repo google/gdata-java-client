@@ -110,7 +110,7 @@ public final class Namespaces {
    * @deprecated Use {@code getOpenSearchNs().getUri()} instead.
    */
   public static final String openSearch1_1 =
-    "http://a9.com/-/spec/opensearchrss/1.1/";
+    "http://a9.com/-/spec/opensearch/1.1/";
 
   /**
    * Amazon OpenSearch 1.1 XML writer namespace.

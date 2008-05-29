@@ -64,7 +64,14 @@ public class XmlBlob {
    */
   protected LinkedList<XmlNamespace> namespaces =
     new LinkedList<XmlNamespace>();
-  public List<XmlNamespace> getNamespaces() { return namespaces; }
+
+  public List<XmlNamespace> getNamespaces() {
+    return namespaces;
+  }
+
+  public boolean addNamespace(XmlNamespace namespace) {
+    return namespaces.add(namespace);
+  }
 
 
   /**

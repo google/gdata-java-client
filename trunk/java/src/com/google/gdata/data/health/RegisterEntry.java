@@ -18,7 +18,6 @@ package com.google.gdata.data.health;
 
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
-import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.Kind;
 import com.google.gdata.util.Namespaces;
 
@@ -56,23 +55,6 @@ public class RegisterEntry extends BaseHealthEntry<RegisterEntry> {
    */
   public RegisterEntry(BaseEntry sourceEntry) {
     super(sourceEntry);
-  }
-
-  /**
-   * Returns the extension description, specifying whether it is required, and
-   * whether it is repeatable.
-   *
-   * @param required   whether it is required
-   * @param repeatable whether it is repeatable
-   * @return extension description
-   */
-  public static ExtensionDescription getDefaultDescription(boolean required,
-      boolean repeatable) {
-    ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(RegisterEntry.class);
-    desc.setRequired(required);
-    desc.setRepeatable(repeatable);
-    return desc;
   }
 
   @Override

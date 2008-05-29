@@ -1,7 +1,7 @@
---action=add --name=TestChange4 --notes=Notes --phone=456,rel:http://schemas.google.com/g/2005#home,primary:true
+--action=add --name=TestChange4 --notes=Notes --phone1=456,rel:http://schemas.google.com/g/2005#home,primary:true
 --action=query --orderby=lastmodified --sortorder=descending --max-results=1
---action=update --phone=456,rel:http://schemas.google.com/g/2005#home,primary:false
+--action=update --phone1=456,rel:http://schemas.google.com/g/2005#home,primary:false
 --action=query --orderby=lastmodified --sortorder=descending --max-results=1
---action=update --phone=456,rel:http://schemas.google.com/g/2005#home,primary:true
+--action=update --phone1=456,rel:http://schemas.google.com/g/2005#home,primary:true
 --action=query --orderby=lastmodified --sortorder=descending --max-results=1
 --action=delete

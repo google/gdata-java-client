@@ -95,7 +95,11 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
   public String getAlbumId() {
     return delegate.getAlbumId();
   }
-
+  
+  public String getVideoStatus() {
+    return delegate.getVideoStatus();
+  }
+  
   public String getChecksum() {
     return delegate.getChecksum();
   }
@@ -152,6 +156,10 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
     delegate.setAlbumId(albumId);
   }
 
+  public void setVideoStatus(String videoId) {
+    delegate.setVideoStatus(videoId);
+  } 
+  
   public void setChecksum(String checksum) {
     delegate.setChecksum(checksum);
   }

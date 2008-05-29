@@ -79,13 +79,25 @@ public abstract class FeedLinkEntry<T extends BaseEntry> extends BaseEntry<T> {
     }
   }
 
-  /** Gets the plaintext user-provided description. */
+  /**
+   * Gets the plaintext user-provided description.
+   *
+   * @deprecated Valid only in version 1. Replaced in version 2.0 with
+   *             atom:summary.
+   */
+  @Deprecated
   public String getDescription() {
     YtDescription description = getExtension(YtDescription.class);
     return description == null ? null : description.getContent();
   }
 
-  /** Sets the plaintext user-provided description. */
+  /**
+   * Sets the plaintext user-provided description.
+   *
+   * @deprecated Valid only in version 1. Replaced in version 2.0 with
+   *             atom:summary.
+   */
+  @Deprecated
   public void setDescription(String description) {
     if (description == null) {
       removeExtension(YtDescription.class);
@@ -104,6 +116,8 @@ public abstract class FeedLinkEntry<T extends BaseEntry> extends BaseEntry<T> {
     thumbnailDescription.setRepeatable(false);
     extProfile.declare(concreteClass, thumbnailDescription);
     extProfile.declare(concreteClass, YtPrivate.class);
+
+    // Only in version 1
     extProfile.declare(concreteClass, YtDescription.class);
 
     extProfile.declare(concreteClass, FeedLink.getDefaultDescription());

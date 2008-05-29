@@ -195,7 +195,7 @@ public class GoogleBaseService extends MediaService {
    * @see #getFeed(java.net.URL, Class, com.google.gdata.data.DateTime)
    */
   public GoogleBaseMediaFeed getMediaFeed(URL feedUrl) throws IOException, ServiceException {
-    return getFeed(feedUrl, GoogleBaseMediaFeed.class, null);
+    return getFeed(feedUrl, GoogleBaseMediaFeed.class);
   }
   
   /**
@@ -292,7 +292,7 @@ public class GoogleBaseService extends MediaService {
    */
   public GoogleBaseMediaEntry getMediaEntry(URL entryUrl) 
       throws IOException, ServiceException {
-    return getEntry(entryUrl, GoogleBaseMediaEntry.class, null);
+    return getEntry(entryUrl, GoogleBaseMediaEntry.class);
   }
   
   /**

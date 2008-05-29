@@ -16,10 +16,10 @@
 
 package com.google.gdata.data.extensions;
 
-import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionDescription;
+import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 
@@ -32,7 +32,7 @@ import com.google.gdata.util.ParseException;
     nsAlias = Namespaces.gAlias,
     nsUri = Namespaces.g,
     localName = Im.XML_NAME)
-public class Im extends AbstractExtension {
+public class Im extends ExtensionPoint {
 
   /** XML element name */
   static final String XML_NAME = "im";

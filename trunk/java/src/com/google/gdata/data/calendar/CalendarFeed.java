@@ -17,32 +17,46 @@
 package com.google.gdata.data.calendar;
 
 import com.google.gdata.data.BaseFeed;
-import com.google.gdata.data.ExtensionProfile;
-
+import com.google.gdata.data.Link;
 
 /**
- * The CalendarFeed class customizes the generic BaseFeed class to define
- * a feed of calendars.
+ * Describes a feed of Calendars.
  *
  * 
  */
 public class CalendarFeed extends BaseFeed<CalendarFeed, CalendarEntry> {
 
   /**
-   * Constructs a new {@code CalendarFeed} instance that is parameterized to
-   * contain {@code CalendarEntry} instances.
+   * Default mutable constructor.
    */
-  public CalendarFeed() { super(CalendarEntry.class); }
-
-
-  @Override
-  public void declareExtensions(ExtensionProfile extProfile) {
-
-    // Add any feed-level extension declarations here.
-
-    super.declareExtensions(extProfile);
+  public CalendarFeed() {
+    super(CalendarEntry.class);
   }
 
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link BaseFeed} instance.
+   *
+   * @param sourceFeed source feed
+   */
+  public CalendarFeed(BaseFeed sourceFeed) {
+    super(CalendarEntry.class, sourceFeed);
+  }
 
-  // Any feed-level extension accessor APIs would go here
+  /**
+   * Returns the link that provides the URI of the full feed (without any query
+   * parameters).
+   *
+   * @return Link that provides the URI of the full feed (without any query
+   *     parameters) or {@code null} for none.
+   */
+  public Link getFeedLink() {
+    return getLink(Link.Rel.FEED, Link.Type.ATOM);
+  }
+
+  @Override
+  public String toString() {
+    return "{CalendarFeed " + super.toString() + "}";
+  }
+
 }

@@ -1,5 +1,25 @@
 Google Data API - Release Notes
 
+Notes for v1.18.0
+-----------------
+May 29, 2008
+o  Added support to handle GData Protocol Version 2.  This provides capability
+   for the APIs to be fully compliant with Atom Publishing Protocol
+   (http://bitworking.org/projects/atom/rfc5023.html).  This introduces a new
+   HTTP request header "GData-Version" which indicates whether a
+   request/response is v1 or v2.  Not all services are v2 compatible yet.
+   Only Blogger API is v2 compatible as of this release.  By default all requests
+   will use GData Protocol Version 1.
+o  Added support to handle ETags and if-match, if-none-match,
+   if-modified-since conditional headers as defined in
+   http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19.  This is
+   applicable only for GData Protocol Version 2.
+o  Added several new features in Contacts API
+   o  Added support to group contacts.
+   o  Added support to access/update contact photos.
+   o  Added ability to append custom contact fields.
+   For details refer to http://code.google.com/apis/contacts/.
+
 Notes for v1.17.0
 -----------------
 May 20, 2008

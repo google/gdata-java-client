@@ -14,6 +14,7 @@
  */
 package com.google.gdata.client.docs;
 
+import com.google.gdata.client.Service;
 import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.acl.AclEntry;
@@ -22,6 +23,7 @@ import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
 import com.google.gdata.data.docs.DocumentListFeed;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.Version;
 
 import java.io.IOException;
 import java.net.URI;
@@ -49,6 +51,32 @@ public class DocsService extends MediaService {
   public static final String DOCS_SERVICE_VERSION =
       "GDocs-Java/" +
       DocsService.class.getPackage().getImplementationVersion();
+
+  /**
+   * The Versions class contains all released versions of the Doclist Google
+   * Data API
+   */
+  public static class Versions {
+
+    /**
+     * Version 1 of the Doclist Google Data API.  This is the initial version
+     * of the API and is based on Version 1 of the GData protocol.
+     */
+    public static final Version V1 =
+        new Version(DocsService.class, "1.0", Service.Versions.V1);
+
+    /**
+     * Version 2 of the Doclist Google Data API.  This version of the API adds
+     * full compliance with the Atom Publishing Protocol and is based on
+     * Version 2 of the GData protocol.
+     */
+    public static final Version V2 =
+        new Version(DocsService.class, "2.0", Service.Versions.V1);
+  }
+
+  /** Version 1 is the current default version of DocsService. */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(DocsService.class, DocsService.Versions.V1);
 
   /**
    * Constructs a DocsService instance connecting to the

@@ -19,35 +19,49 @@ package sample.contacts;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.contacts.ContactsService;
 import com.google.gdata.client.http.HttpGDataRequest;
+import sample.contacts.ContactsExampleParameters.Actions;
 import com.google.gdata.data.DateTime;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.contacts.ContactFeed;
+import com.google.gdata.data.contacts.ContactGroupEntry;
+import com.google.gdata.data.contacts.ContactGroupFeed;
+import com.google.gdata.data.contacts.GroupMembershipInfo;
 import com.google.gdata.data.extensions.Email;
+import com.google.gdata.data.extensions.ExtendedProperty;
 import com.google.gdata.data.extensions.Im;
 import com.google.gdata.data.extensions.OrgName;
 import com.google.gdata.data.extensions.OrgTitle;
 import com.google.gdata.data.extensions.Organization;
 import com.google.gdata.data.extensions.PhoneNumber;
 import com.google.gdata.data.extensions.PostalAddress;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.XmlBlob;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  * Example command-line utility that demonstrates how to use the Google Data API
  * Java client libraries for Contacts. The example allows to run all the basic
  * contact related operations such as adding new contact, listing all contacts,
  * updating existing contacts, deleting the contacts.
- *
+ * <p/>
  * Full documentation about the API can be found at:
  * http://code.google.com/apis/contacts/
  *
@@ -55,34 +69,157 @@ import java.util.logging.Logger;
  * 
  */
 public class ContactsExample {
+  /**
+   * Components used in parsing contact attributes
+   */
+  private static final String TITLE = "title:";
+  private static final String PRIMARY_FALSE = "primary:false";
+  private static final String PRIMARY_TRUE = "primary:true";
+  private static final String PROTOCOL = "protocol:";
+  private static final String LABEL = "label:";
+  private static final String REL = "rel:";
+  private static final String EXT_PROPERTY_FILE = "file:";
+  private static final String EXT_PROPERTY_TEXT = "text:";
+
+  /**
+   * Reusable componentiser that parses element specification.
+   */
+  public static class ComponentParser {
+    private String value;
+    private String rel;
+    private String label;
+    private boolean primary;
+    private String title;
+    private String protocol;
+    private String extPropertyFile;
+    private String extPropertyText;
+
+    public ComponentParser(String specification) {
+      String s[] = specification.split(",");
+      value = s[0];
+      boolean first = true;
+      for (String component : s) {
+        if (first) {
+          first = false;
+          continue;
+        }
+        if (component.startsWith(REL)) {
+          rel = component.substring(REL.length());
+        } else if (component.startsWith(LABEL)) {
+          label = component.substring(LABEL.length());
+        } else if (component.equals(PRIMARY_TRUE)) {
+          primary = true;
+        } else if (component.equals(PRIMARY_FALSE)){
+          primary = false;
+        } else if (component.equals(PROTOCOL)){
+          protocol = component.substring(PROTOCOL.length());
+        } else if (component.startsWith(TITLE)) {
+          title = component.substring(TITLE.length());
+        } else if (component.startsWith(EXT_PROPERTY_FILE)) {
+          extPropertyFile = component.substring(EXT_PROPERTY_FILE.length());
+        } else if (component.startsWith(EXT_PROPERTY_TEXT)) {
+          extPropertyText = component.substring(EXT_PROPERTY_TEXT.length());
+        } else {
+          printWarning(component, specification);
+        }
+      }
+    }
+
+    public String getRel() {
+      return rel;
+    }
+
+    public String getLabel() {
+      return label;
+    }
+
+    public boolean isPrimary() {
+      return primary;
+    }
+
+    public String getTitle() {
+      return title;
+    }
+
+    public String getProtocol() {
+      return protocol;
+    }
+
+    public String getValue() {
+      return value;
+    }
+    
+    public String getExtPropertyFile() {
+      return extPropertyFile;
+    }
+    
+    public String getExtPropertyText() {
+      return extPropertyText;
+    }
+
+    public boolean isSetRel() {
+      return rel != null;
+    }
+
+    public boolean isSetLabel() {
+      return label != null;
+    }
+
+    public boolean isSetTitle() {
+      return title != null;
+    }
+
+    public boolean isSetProtocol() {
+      return protocol != null;
+    }
+    
+    public boolean isSetExtPropertyFile() {
+      return extPropertyFile != null;
+    }
+    
+    public boolean isSetExtPropertyText() {
+      return extPropertyText != null;
+    }
+
+    public void printWarning(String component, String specification) {
+      System.err.println("WARNING! Wrong component " + component +
+          " in field specification:" + specification);
+    }
+  }
 
   /**
    * Base URL for the feed
    */
   private final URL feedUrl;
-  private final ContactsService service;
 
   /**
-   * The ID that of last added contact.
+   * Service used to communicate with contacts feed.
+   */
+  private final ContactsService service;
+  
+  /**
+   * Projection used for the feed
+   */
+  private final String projection;
+
+  /**
+   * The ID of the last added contact or group.
    * Used in case of script execution - you can add and remove contact just
    * created.
    */
   private static String lastAddedId;
 
-
   /**
    * Contacts Example.
    *
    * @param parameters command line parameters
-   * @throws IOException
-   * @throws ServiceException
    */
   public ContactsExample(ContactsExampleParameters parameters)
-      throws IOException, ServiceException {
-
-    String url =
-        parameters.getBaseUrl() + "contacts/" + parameters.getUserName()
-            + "/base";
+      throws MalformedURLException, AuthenticationException {
+    projection = parameters.getProjection();
+    String url = parameters.getBaseUrl()
+        + (parameters.isGroupFeed() ? "groups/" : "contacts/")
+        + parameters.getUserName() + "/" + projection;
 
     feedUrl = new URL(url);
     service = new ContactsService("Google-contactsExampleApp-1");
@@ -95,73 +232,113 @@ public class ContactsExample {
   }
 
   /**
-   * Deletes a contact
+   * Deletes a contact or a group
    *
    * @param parameters the parameters determining contact to delete.
-   * @throws IOException
-   * @throws ServiceException
    */
-  private void deleteContact(ContactsExampleParameters parameters)
-      throws IOException, ServiceException {
-    // get the contact then delete them
-    ContactEntry contact = getContactInternal(parameters.getId());
-    if (contact == null) {
-      System.err.println("No contact found with id: " + parameters.getId());
+  private void deleteEntry(ContactsExampleParameters parameters)
+    throws IOException, ServiceException {
+    URL entryURL;
+    if (parameters.isGroupFeed()) {
+      // get the Group then delete it
+      ContactGroupEntry group = getGroupInternal(parameters.getId());
+      if (group == null) {
+        System.err.println("No Group found with id: " + parameters.getId());
+        return;
+      }
+      entryURL = new URL(group.getEditLink().getHref());
+    } else {
+      // get the contact then delete them
+      ContactEntry contact = getContactInternal(parameters.getId());
+      if (contact == null) {
+        System.err.println("No contact found with id: " + parameters.getId());
+        return;
+      }
+      entryURL = new URL(contact.getEditLink().getHref());
     }
-    URL entryUrl = new URL(contact.getEditLink().getHref());
-    service.delete(entryUrl);
+    service.delete(entryURL);
   }
 
   /**
-   * Updates a contact. Presence of any property of a given kind (im, phone,
-   * mail, etc.) causes the existing properties of that kind to be replaced.
+   * Updates a contact or a group. Presence of any property of a given kind 
+   * (im, phone, mail, etc.) causes the existing properties of that kind to be 
+   * replaced.
    *
    * @param parameters parameters storing updated contact values.
-   * @throws IOException
-   * @throws ServiceException
    */
-  public void updateContact(ContactsExampleParameters parameters)
+  public void updateEntry(ContactsExampleParameters parameters)
       throws IOException, ServiceException {
+    if (parameters.isGroupFeed()) {
+      ContactGroupEntry group = buildGroup(parameters);
+      // get the group then update it
+      ContactGroupEntry canonicalGroup = getGroupInternal(parameters.getId());
+  
+      canonicalGroup.setTitle(group.getTitle());
+      canonicalGroup.setContent(group.getContent());
+      // update fields
+      List<ExtendedProperty> extendedProperties = 
+          canonicalGroup.getExtendedProperties();
+      extendedProperties.clear();
+      if (group.hasExtendedProperties()) {
+        extendedProperties.addAll(group.getExtendedProperties());
+      }
+      URL entryUrl = new URL(canonicalGroup.getEditLink().getHref());
+      printGroup(service.update(entryUrl, canonicalGroup)); 
+    } else {
+      ContactEntry contact = buildContact(parameters);
+      // get the contact then update it
+      ContactEntry canonicalContact = getContactInternal(parameters.getId());
+  
+      canonicalContact.setTitle(contact.getTitle());
+      canonicalContact.setContent(contact.getContent());
+      // update fields
+      List<Email> emails = canonicalContact.getEmailAddresses();
+      emails.clear();
+      if (contact.hasEmailAddresses()) {
+        emails.addAll(contact.getEmailAddresses());
+      }
+  
+      List<Im> ims = canonicalContact.getImAddresses();
+      ims.clear();
+      if (contact.hasImAddresses()) {
+        ims.addAll(contact.getImAddresses());
+      }
 
-    ContactEntry contact = buildContact(parameters);
-    // get the contact then update it
-    ContactEntry canonicalContact = getContactInternal(parameters.getId());
+      List<Organization> organizations = canonicalContact.getOrganizations();
+      organizations.clear();
+      if (contact.hasOrganizations()) {
+        organizations.addAll(contact.getOrganizations());
+      }
 
-    canonicalContact.setTitle(contact.getTitle());
-    canonicalContact.setContent(contact.getContent());
-    // update fields
-    List<Email> emails = canonicalContact.getEmailAddresses();
-    emails.clear();
-    if (contact.hasEmailAddresses()) {
-      emails.addAll(contact.getEmailAddresses());
+      List<PhoneNumber> phones = canonicalContact.getPhoneNumbers();
+      phones.clear();
+      if (contact.hasPhoneNumbers()) {
+        phones.addAll(contact.getPhoneNumbers());
+      }
+
+      List<PostalAddress> addresses = canonicalContact.getPostalAddresses();
+      addresses.clear();
+      if (contact.hasPostalAddresses()) {
+        addresses.addAll(contact.getPostalAddresses());
+      }
+    
+      List<GroupMembershipInfo> groups = 
+          canonicalContact.getGroupMembershipInfos();
+      groups.clear();
+      if (contact.hasGroupMembershipInfos()) {
+        groups.addAll(contact.getGroupMembershipInfos());
+      }
+    
+      List<ExtendedProperty> extendedProperties = 
+          canonicalContact.getExtendedProperties();
+      extendedProperties.clear();
+      if (contact.hasExtendedProperties()) {
+        extendedProperties.addAll(contact.getExtendedProperties());
+      }
+
+      URL entryUrl = new URL(canonicalContact.getEditLink().getHref());
+      printContact(service.update(entryUrl, canonicalContact));  
     }
-
-    List<Im> ims = canonicalContact.getImAddresses();
-    ims.clear();
-    if (contact.hasImAddresses()) {
-      ims.addAll(contact.getImAddresses());
-    }
-
-    List<Organization> organizations = canonicalContact.getOrganizations();
-    organizations.clear();
-    if (contact.hasOrganizations()) {
-      organizations.addAll(contact.getOrganizations());
-    }
-
-    List<PhoneNumber> phones = canonicalContact.getPhoneNumbers();
-    phones.clear();
-    if (contact.hasPhoneNumbers()) {
-      phones.addAll(contact.getPhoneNumbers());
-    }
-
-    List<PostalAddress> addresses = canonicalContact.getPostalAddresses();
-    addresses.clear();
-    if (contact.hasPostalAddresses()) {
-      addresses.addAll(contact.getPostalAddresses());
-    }
-
-    URL entryUrl = new URL(canonicalContact.getEditLink().getHref());
-    printContact(service.update(entryUrl, canonicalContact));
   }
 
   /**
@@ -169,23 +346,32 @@ public class ContactsExample {
    *
    * @param id the id of the contact.
    * @return the ContactEntry or null if not found.
-   * @throws IOException
-   * @throws ServiceException
    */
-  private ContactEntry getContactInternal(String id) throws IOException,
-      ServiceException {
-    return service.getEntry(new URL(feedUrl.toExternalForm() + "/" + id),
-            ContactEntry.class);
+  private ContactEntry getContactInternal(String id)
+      throws IOException, ServiceException {
+    return service.getEntry(new URL(id.replace("/base/", "/" + projection + "/")),
+        ContactEntry.class);
   }
 
+  /**
+   * Gets a Group by it's id.
+   *
+   * @param id the id of the group.
+   * @return the GroupEntry or null if not found.
+   */
+  private ContactGroupEntry getGroupInternal(String id)
+      throws IOException, ServiceException {
+    return service.getEntry(new URL(id.replace("/base/", "/" + projection + "/")),
+        ContactGroupEntry.class);
+  }
+  
   /**
    * Print the contents of a ContactEntry to System.err.
    *
    * @param contact The ContactEntry to display.
    */
   private static void printContact(ContactEntry contact) {
-    System.err.println("Id: " +
-        contact.getId().substring(contact.getId().lastIndexOf("/")+1));
+    System.err.println("Id: " + contact.getId()); 
     String contactName =
         (contact.getTitle() == null) ? "" : contact.getTitle().getPlainText();
     System.err.println("Contact name: " + contactName);
@@ -276,19 +462,65 @@ public class ContactsExample {
       }
       System.err.print("\n");
     }
-
+    System.err.println("Groups:");
+    for (GroupMembershipInfo group : contact.getGroupMembershipInfos()) {      
+      System.err.println("  Id: " + group.getHref() + " Deleted? " + group.getDeleted());
+    }
+    System.err.println("Extended Properties:");
+    for (ExtendedProperty property : contact.getExtendedProperties()) {
+      if (property.getValue() != null) {
+        System.err.println("  " + property.getName() + "(value) = " + 
+            property.getValue());
+      } else if (property.getXmlBlob() != null) {
+        System.err.println("  " + property.getName() + "(xmlBlob)= " + 
+            property.getXmlBlob().getBlob());
+      }
+    }
+    if (contact.getLink("http://schemas.google.com/contacts/2008/rel#photo",
+        "image/*") != null) {
+      String photoLink = contact.getLink(
+          "http://schemas.google.com/contacts/2008/rel#photo", 
+          "image/*").getHref();
+      System.err.println("Photo Link:" + photoLink);
+    }
+    System.err.println("Edit-Photo link: " + contact.getLink(
+        "http://schemas.google.com/contacts/2008/rel#edit-photo", "image/*").getHref() );
     System.err.println("Self link: " + contact.getSelfLink().getHref());
     System.err.println("Edit link: " + contact.getEditLink().getHref());
     System.err.println("-------------------------------------------\n");
   }
+  
+  /**
+   * Prints the contents of a GroupEntry to System.err
+   * 
+   * @param groupEntry The GroupEntry to display
+   */
+  private static void printGroup(ContactGroupEntry groupEntry) {
+    System.err.println("Id: " + groupEntry.getId());
+    System.err.println("Group Name: " + groupEntry.getTitle().getPlainText());
+    System.err.println("Last Updated: " + groupEntry.getUpdated());
+    System.err.println("Extended Properties:");
+    for (ExtendedProperty property : groupEntry.getExtendedProperties()) {
+      if (property.getValue() != null) {
+        System.err.println("  " + property.getName() + "(value) = " + 
+            property.getValue());
+      } else if (property.getXmlBlob() != null) {
+        System.err.println("  " + property.getName() + "(xmlBlob) = " + 
+            property.getXmlBlob().getBlob());
+      }
+    }
+    System.err.println("Self Link: " + groupEntry.getSelfLink().getHref());
+    System.err.println("Edit Link: " + groupEntry.getEditLink().getHref());
+    System.err.println("-------------------------------------------\n");
+  }
 
+  
   /**
    * Processes script consisting of sequence of parameter lines in the same
-   * form as command line parameters
+   * form as command line parameters.
+   *
    * @param example object controlling the execution
    * @param parameters parameters passed from command line
-   * @throws IOException
-   * @throws ServiceException
    */
   private static void processScript(ContactsExample example,
       ContactsExampleParameters parameters) throws IOException,
@@ -309,39 +541,42 @@ public class ContactsExample {
 
   /**
    * Performs action specified as action parameter.
+   *
    * @param example object controlling the execution
    * @param parameters parameters from command line or script
-   * @throws IOException
-   * @throws ServiceException
    */
   private static void processAction(ContactsExample example,
       ContactsExampleParameters parameters) throws IOException,
       ServiceException {
-    String action = parameters.getAction();
+    Actions action = parameters.getAction();
     System.err.println("Executing action: " + action);
-    if ("list".equals(action)) {
-      example.listContacts(parameters);
-    } else if ("query".equals(action)) {
-      example.queryContacts(parameters);
-    } else if ("add".equals(action)) {
-      example.addContact(parameters);
-    } else if ("delete".equals(action)) {
-      example.deleteContact(parameters);
-    } else if ("update".equals(action)) {
-      example.updateContact(parameters);
-    } else  {
-      System.err.println("No such action");
+    switch (action) {
+      case LIST:
+        example.listEntries(parameters);
+        break;
+      case QUERY:
+        example.queryEntries(parameters);
+        break;
+      case ADD:
+        example.addEntry(parameters);
+        break;
+      case DELETE:
+        example.deleteEntry(parameters);
+        break;
+      case UPDATE:
+        example.updateEntry(parameters);
+        break;
+      default:
+        System.err.println("No such action");
     }
   }
 
   /**
-   * Query contacts according to parameters specified.
+   * Query entries (Contacts/Groups) according to parameters specified.
    *
    * @param parameters parameter for contact quest
-   * @throws IOException
-   * @throws ServiceException
    */
-  private void queryContacts(ContactsExampleParameters parameters)
+  private void queryEntries(ContactsExampleParameters parameters)
       throws IOException, ServiceException {
     Query myQuery = new Query(feedUrl);
     if (parameters.getUpdatedMin() != null) {
@@ -363,152 +598,198 @@ public class ContactsExample {
     if (parameters.getOrderBy() != null) {
       myQuery.setStringCustomParameter("orderby", parameters.getOrderBy());
     }
-    ContactFeed resultFeed = service.query(myQuery, ContactFeed.class);
-    for (int i = 0; i < resultFeed.getEntries().size(); i++) {
-      ContactEntry entry = resultFeed.getEntries().get(i);
-      printContact(entry);
+    if (parameters.getGroup() != null) {
+      myQuery.setStringCustomParameter("group", parameters.getGroup());
     }
-    System.err.println("Total: " + resultFeed.getEntries().size()
-        + " entries found");
+    if (parameters.isGroupFeed()) {
+      ContactGroupFeed groupFeed = service.query(
+          myQuery, ContactGroupFeed.class);
+      for (ContactGroupEntry entry : groupFeed.getEntries()) {
+        printGroup(entry);
+      }
+      System.err.println("Total: " + groupFeed.getEntries().size()
+          + " entries found");
+    } else {
+      ContactFeed resultFeed = service.query(myQuery, ContactFeed.class);
+      for (ContactEntry entry : resultFeed.getEntries()) {
+        printContact(entry);
+      }
+      System.err.println("Total: " + resultFeed.getEntries().size()
+          + " entries found");
+    }
   }
 
   /**
-   * List contacts (no parameter are taken into account)
+   * List Contacts or Group entries (no parameter are taken into account)
    * Note! only 25 results will be returned - this is default.
+   *
    * @param parameters
-   * @throws IOException
-   * @throws ServiceException
    */
-  private void listContacts(ContactsExampleParameters parameters)
+  private void listEntries(ContactsExampleParameters parameters)
       throws IOException, ServiceException {
-    ContactFeed resultFeed = service.getFeed(feedUrl, ContactFeed.class);
-    // Print the results
-    System.err.println(resultFeed.getTitle().getPlainText());
-    for (int i = 0; i < resultFeed.getEntries().size(); i++) {
-      ContactEntry entry = resultFeed.getEntries().get(i);
-      printContact(entry);
-    }
+    if (parameters.isGroupFeed()) {
+      ContactGroupFeed groupFeed = 
+          service.getFeed(feedUrl, ContactGroupFeed.class);    
+      System.err.println(groupFeed.getTitle().getPlainText());
+      for (ContactGroupEntry entry : groupFeed.getEntries()) {
+        printGroup(entry);
+      }
+      System.err.println("Total: " + groupFeed.getEntries().size() + 
+          " groups found");
+    } else {
+      ContactFeed resultFeed = service.getFeed(feedUrl, ContactFeed.class);
+      // Print the results
+      System.err.println(resultFeed.getTitle().getPlainText());
+      for (ContactEntry entry : resultFeed.getEntries()) {
+        printContact(entry);
+        // Get the photo if photolink is present
+        Link photoLink = entry.getLink(
+            "http://schemas.google.com/contacts/2008/rel#photo", "image/*");
+        if (photoLink != null) {
+          InputStream in = service.getStreamFromLink(photoLink);
+          ByteArrayOutputStream out = new ByteArrayOutputStream();
+          RandomAccessFile file = new RandomAccessFile(
+              "/tmp/" + entry.getSelfLink().getHref().substring(
+              entry.getSelfLink().getHref().lastIndexOf('/') + 1), "rw");
+          byte[] buffer = new byte[4096];
+          for (int read = 0; (read = in.read(buffer)) != -1;
+              out.write(buffer, 0, read));
+          file.write(out.toByteArray());
+          file.close();
+        }
+      }
     System.err.println("Total: " + resultFeed.getEntries().size()
         + " entries found");
+    }
   }
 
   /**
-   * Adds contact according to the parameters specified.
+   * Adds contact or group entry according to the parameters specified.
    *
    * @param parameters parameters for contact adding
-   * @throws IOException
-   * @throws ServiceException
    */
-  private void addContact(ContactsExampleParameters parameters)
+  private void addEntry(ContactsExampleParameters parameters)
       throws IOException, ServiceException {
-    ContactEntry addedContact =
-        service.insert(feedUrl, buildContact(parameters));
-    printContact(addedContact);
-    // Store id of the added contact so that scripts can use it in next steps
-    String longId[] = addedContact.getId().split("/");
-    lastAddedId = longId[longId.length - 1];
+    if (parameters.isGroupFeed()) {
+      ContactGroupEntry addedGroup = 
+          service.insert(feedUrl, buildGroup(parameters));
+      printGroup(addedGroup);
+      lastAddedId = addedGroup.getId();
+    } else {
+      ContactEntry addedContact =
+          service.insert(feedUrl, buildContact(parameters));
+      printContact(addedContact);
+      // Store id of the added contact so that scripts can use it in next steps
+      lastAddedId = addedContact.getId();
+    }
   }
+
 
   /**
    * Parses email command line parameter
-   * @param value parameter value
+   *
+   * @param value parameter value in the form of
+   *  email[,rel:REL|,label:LABEL]][,primary:[true|false]]
    * @return the email object parsed
    */
   private static Email parseEmail(String value) {
-    String s[] = value.split(",");
+    ComponentParser c = new ComponentParser(value);
     Email mail = new Email();
-    mail.setAddress(s[0]);
-    for (String component : s) {
-      if (component.startsWith("rel:")) {
-        mail.setRel(component.substring(4));
-      }
-      if (component.startsWith("label:")) {
-        mail.setLabel(component.substring(6));
-      }
-      if (component.equals("primary:true")) {
-        mail.setPrimary(true);
-      } else if (component.equals("primary:false")){
-        mail.setPrimary(false);
-      }
+    mail.setAddress(c.getValue());
+    if (c.isSetRel()) {
+      mail.setRel(c.getRel());
     }
+    if (c.isSetLabel()) {
+      mail.setLabel(c.getLabel());
+    }
+    if (c.isSetProtocol()) {
+      c.printWarning(c.getProtocol(), value);
+    }
+    if (c.isSetTitle()) {
+      c.printWarning(c.getTitle(), value);
+    }
+    mail.setPrimary(c.isPrimary());
     return mail;
   }
 
   /**
    * Parses im command line parameter
-   * @param value parameter value
+   *
+   * @param value parameter value in the form of
+   * address:[,rel:REL|label:LABEL][,protocol:PROTOCOL][,primary:true|false]
    * @return the im object parsed
    */
   private static Im parseIm(String value) {
-    String s[] = value.split(",");
+    ComponentParser c = new ComponentParser(value);
     Im im = new Im();
-    im.setAddress(s[0]);
-    for (String component : s) {
-      if (component.startsWith("rel:")) {
-        im.setRel(component.substring(4));
-      }
-      if (component.startsWith("label:")) {
-        im.setLabel(component.substring(6));
-      }
-      if (component.startsWith("protocol:")) {
-        im.setProtocol(component.substring(9));
-      }
-      if (component.equals("primary:true")) {
-        im.setPrimary(true);
-      } else if (component.equals("primary:false")){
-        im.setPrimary(false);
-      }
+    im.setAddress(c.getValue());
+    if (c.isSetRel()) {
+      im.setRel(c.getRel());
     }
+    if (c.isSetLabel()) {
+      im.setLabel(c.getLabel());
+    }
+    if (c.isSetProtocol()) {
+      im.setProtocol(c.getProtocol());
+    }
+    if (c.isSetTitle()) {
+      c.printWarning(c.getTitle(), value);
+    }
+    im.setPrimary(c.isPrimary());
     return im;
   }
 
   /**
    * Parses phone command line parameter
-   * @param value parameter value
+   *
+   * @param value parameter value in the form of
+   * phone:[,rel:REL|label:LABEL][,primary:true|false]
    * @return the phone object parsed
    */
   private static PhoneNumber parsePhone(String value) {
-    String s[] = value.split(",");
+    ComponentParser c = new ComponentParser(value);
     PhoneNumber phone = new PhoneNumber();
-    phone.setPhoneNumber(s[0]);
-    for (String component : s) {
-      if (component.startsWith("rel:")) {
-        phone.setRel(component.substring(4));
-      }
-      if (component.startsWith("label:")) {
-        phone.setLabel(component.substring(6));
-      }
-      if (component.equals("primary:true")) {
-        phone.setPrimary(true);
-      } else if (component.equals("primary:false")){
-        phone.setPrimary(false);
-      }
+    phone.setPhoneNumber(c.getValue());
+    if (c.isSetRel()) {
+      phone.setRel(c.getRel());
     }
+    if (c.isSetLabel()) {
+      phone.setLabel(c.getLabel());
+    }
+    if (c.isSetProtocol()) {
+      c.printWarning(c.getProtocol(), value);
+    }
+    if (c.isSetTitle()) {
+      c.printWarning(c.getTitle(), value);
+    }
+    phone.setPrimary(c.isPrimary());
     return phone;
   }
 
   /**
    * Parses postal address command line parameter
-   * @param value parameter value
+   *
+   * @param value parameter value in the form of
+   * address:[,rel:REL|label:LABEL][,primary:true|false]
    * @return the postal address object parsed
    */
   private static PostalAddress parsePostalAddress(String value) {
-    String s[] = value.split(",");
+    ComponentParser c = new ComponentParser(value);
     PostalAddress address = new PostalAddress();
-    address.setValue(s[0]);
-    for (String component : s) {
-      if (component.startsWith("rel:")) {
-        address.setRel(component.substring(4));
-      }
-      if (component.startsWith("label:")) {
-        address.setLabel(component.substring(6));
-      }
-      if (component.equals("primary:true")) {
-        address.setPrimary(true);
-      } else if (component.equals("primary:false")){
-        address.setPrimary(false);
-      }
+    address.setValue(c.getValue());
+    if (c.isSetRel()) {
+      address.setRel(c.getRel());
     }
+    if (c.isSetLabel()) {
+      address.setLabel(c.getLabel());
+    }
+    if (c.isSetProtocol()) {
+      c.printWarning(c.getProtocol(), value);
+    }
+    if (c.isSetTitle()) {
+      c.printWarning(c.getTitle(), value);
+    }
+    address.setPrimary(c.isPrimary());
     return address;
   }
 
@@ -517,28 +798,78 @@ public class ContactsExample {
    * @param value parameter value
    * @return the organization object parsed
    */
-
   private static Organization parseOrganization(String value) {
-    String s[] = value.split(",");
+    ComponentParser c = new ComponentParser(value);
     Organization organization = new Organization();
-    organization.setOrgName(new OrgName(s[0]));
-    for (String component : s) {
-      if (component.startsWith("title:")) {
-        organization.setOrgTitle(new OrgTitle(component.substring(6)));
-      }
-      if (component.startsWith("rel:")) {
-        organization.setRel(component.substring(4));
-      }
-      if (component.startsWith("label:")) {
-        organization.setLabel(component.substring(6));
-      }
-      if (component.equals("primary:true")) {
-        organization.setPrimary(true);
-      } else if (component.equals("primary:false")){
-        organization.setPrimary(false);
-      }
+    organization.setOrgName(new OrgName(c.getValue()));
+    if (c.isSetRel()) {
+      organization.setRel(c.getRel());
     }
+    if (c.isSetLabel()) {
+      organization.setLabel(c.getLabel());
+    }
+    if (c.isSetProtocol()) {
+      c.printWarning(c.getProtocol(), value);
+    }
+    if (c.isSetTitle()) {
+      organization.setOrgTitle(new OrgTitle(c.getTitle()));
+    }
+    organization.setPrimary(c.isPrimary());
     return organization;
+  }
+  
+  /**
+   * Parses Group command line parameter, needs the Username and baseUrl for 
+   * creating HREF for the group
+   *  
+   * @param value Parameter value
+   * @param baseUrl URL parameter
+   * @param username Username of the authenticated user 
+   * @return GroupMembershipInfo object parsed
+   */
+  private static GroupMembershipInfo parseGroup(String value, String baseUrl,
+      String username) {
+    ComponentParser c = new ComponentParser(value);
+    GroupMembershipInfo groupMembershipInfo = new GroupMembershipInfo();
+    groupMembershipInfo.setDeleted(false);
+    groupMembershipInfo.setHref(baseUrl + "groups/" + username + "/full/" + 
+        c.getValue());
+    return groupMembershipInfo;
+  }
+  
+  /**
+   * Parses ExtendedProperty command line parameter
+   * @param value Parameter value
+   * @return ExtendedProperty object parsed
+   * @throws FileNotFoundException When File specified for the Property value 
+   *                               does not exist
+   * @throws IOException           When error occurs while reading file 
+   */
+  private static ExtendedProperty parseExtendedProperty(String value) 
+      throws FileNotFoundException, IOException {
+    ComponentParser c = new ComponentParser(value);
+    ExtendedProperty extendedProperty = new ExtendedProperty();
+    extendedProperty.setName(c.getValue());
+    if (c.isSetExtPropertyFile()) {
+      File f = new File(c.getExtPropertyFile());
+      if (!f.exists()) {
+        throw new FileNotFoundException("No Such File:" + 
+            c.getExtPropertyFile());
+      }
+      BufferedReader reader = new BufferedReader(new FileReader(f));
+      StringBuffer xmlBuffer = new StringBuffer();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        xmlBuffer.append(line);
+      }
+      XmlBlob xmlBlob = new XmlBlob();
+      xmlBlob.setBlob(new String(xmlBuffer));
+      extendedProperty.setXmlBlob(xmlBlob); 
+    } 
+    if (c.isSetExtPropertyText()) {
+      extendedProperty.setValue(c.getExtPropertyText());
+    }
+    return extendedProperty;
   }
 
   /**
@@ -548,36 +879,65 @@ public class ContactsExample {
    * @return A contact.
    */
   private static ContactEntry buildContact(
-                 ContactsExampleParameters parameters) {
+        ContactsExampleParameters parameters) {
     ContactEntry contact = new ContactEntry();
     contact.setTitle(new PlainTextConstruct(parameters.getName()));
     if (parameters.getNotes() != null) {
       contact.setContent(new PlainTextConstruct(parameters.getNotes()));
     }
-
-    LinkedList<String> emails = parameters.getEmails();
-    for (String string : emails) {
+    for (String string : parameters.getEmails()) {
       contact.addEmailAddress(parseEmail(string));
     }
-    LinkedList<String> phones = parameters.getPhones();
-    for (String string : phones) {
+    for (String string : parameters.getPhones()) {
       contact.addPhoneNumber(parsePhone(string));
     }
-    LinkedList<String> organizations = parameters.getOrganizations();
-    for (String string : organizations) {
+    for (String string : parameters.getOrganizations()) {
       contact.addOrganization(parseOrganization(string));
     }
-    LinkedList<String> ims = parameters.getIms();
-    for (String string : ims) {
+    for (String string : parameters.getIms()) {
       contact.addImAddress(parseIm(string));
     }
-    LinkedList<String> postal = parameters.getPostal();
-    for (String string : postal) {
+    for (String string : parameters.getPostal()) {
       contact.addPostalAddress(parsePostalAddress(string));
+    }
+    for (String string : parameters.getGroups()) {
+      contact.addGroupMembershipInfo(parseGroup(string, 
+          parameters.getBaseUrl(), parameters.getUserName()));
+    }
+    for (String string : parameters.getExtendedProperties()) {
+      try {
+        contact.addExtendedProperty(parseExtendedProperty(string));
+      } catch (FileNotFoundException e) {
+        System.err.println("File Not Found!" + e.getMessage());
+      } catch (IOException e) {
+        System.err.println("Exception while reading file" + e.getMessage());
+      }
     }
     return contact;
   }
 
+  /**
+   * Builds GroupEntry from parameters
+   *  
+   * @param parameters ContactExamplParameters
+   * @return GroupEntry Object
+   */
+  private static ContactGroupEntry buildGroup(
+      ContactsExampleParameters parameters) {
+    ContactGroupEntry groupEntry = new ContactGroupEntry();
+    groupEntry.setTitle(new PlainTextConstruct(parameters.getName()));
+    for (String string : parameters.getExtendedProperties()) {
+      try {
+        groupEntry.addExtendedProperty(parseExtendedProperty(string));
+      } catch (FileNotFoundException e) {
+        System.err.println("File Not Found!" + e.getMessage());
+      } catch (IOException e) {
+        System.err.println("Exception while reading file" + e.getMessage());
+      }
+    }
+    return groupEntry;
+  }
+  
   /**
    * Displays usage information.
    */
@@ -595,6 +955,9 @@ public class ContactsExample {
             + "[,protocol:<protocol>][,primary:true|false]\n"
             + "             --postal<n>=<postal>,"
             + "rel:<rel>|label:<label>[,primary:true|false]\n"
+            + "             --groupid<n>=<groupid>\n"
+            + "             --extendedProperty<n>=<name>,"
+            + "text:<value>|file:<XmlFilePath> \n"
             + " Notes! <n> is a unique number for the field - several fields\n"
             + " of the same type can be present (example: im1, im2, im3).\n"
             + " Available rels and protocols can be looked up in the \n"
@@ -606,16 +969,21 @@ public class ContactsExample {
             + " -----------------------------------------------------------\n"
             + "  Basic command line usage:\n"
             + "    ContactsExample [<options>] <authenticationInformation> "
-            + "--action=<action> [<action options>]\n"
+            + "<--contactfeed|--groupfeed> "
+            + "--action=<action> [<action options>]  "
+            + "(default contactfeed)\n"
             + "  Scripting commands usage:\n"
             + "    contactsExample [<options>] <authenticationInformation> "
-            + "   --script=<script file>\n"
+            + "<--contactfeed|--groupfeed>   --script=<script file>  "
+            + "(default contactFeed) \n"
             + "  Print usage (this screen):\n"
             + "   --help\n"
             + " -----------------------------------------------------------\n\n"
             + "  Options: \n"
             + "    --base-url=<url to connect to> "
             + "(default http://www.google.com/m8/feeds/) \n"
+            + "    --projection=[thin|full|property-KEY] "
+            + "(default thin)\n"
             + "    --verbose : dumps communication information\n"
             + "  Authentication Information (obligatory on command line): \n"
             + "    --username=<username email> --password=<password>\n"
@@ -631,6 +999,8 @@ public class ContactsExample {
             + "             --max-results=<n> : return maximum n results\n"
             + "             --start-index=<n> : return results starting from "
             + "the starting index\n"
+            + "             --querygroupid=<groupid> : return results from the "
+            + "group\n"
             + "    * add  add new contact\n"
             + "        options:\n"
             + contactParameters
@@ -645,7 +1015,6 @@ public class ContactsExample {
 
     System.err.println(usageInstructions);
   }
-
 
   /**
    * Run the example program.
@@ -675,7 +1044,13 @@ public class ContactsExample {
       System.err.println("Both username and password must be specified.");
       return;
     }
-
+    
+    // Check that at most one of contactfeed and groupfeed has been provided
+    if (parameters.isContactFeed() && parameters.isGroupFeed()) {
+      throw new RuntimeException("Only one of contactfeed / groupfeed should" +
+          "be specified");
+    }
+    
     ContactsExample example = new ContactsExample(parameters);
 
     if (parameters.getScript() != null) {
@@ -685,6 +1060,4 @@ public class ContactsExample {
     }
     System.out.flush();
   }
-
-
 }

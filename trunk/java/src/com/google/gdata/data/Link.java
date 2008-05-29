@@ -188,6 +188,21 @@ public class Link extends ExtensionPoint implements Reference {
 
 
   /**
+   * Returns whether this link matches the given {@code rel} and {@code type}
+   * values.
+   *
+   * @param relToMatch  {@code rel} value to match or {@code null} to match any
+   *                    {@code rel} value.
+   * @param typeToMatch {@code type} value to match or {@code null} to match any
+   *                    {@code type} value.
+   */
+  public boolean matches(String relToMatch, String typeToMatch) {
+    return (relToMatch == null || relToMatch.equals(getRel()))
+        && (typeToMatch == null || typeToMatch.equals(this.type));
+  }
+
+
+  /**
    * Generates XML in the Atom format.
    *
    * @param   w

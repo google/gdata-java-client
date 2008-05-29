@@ -63,19 +63,23 @@ public class AppsForYourDomainClient {
       AppsForYourDomainClient.class.getName());
 
   private static final String APPS_FEEDS_URL_BASE =
-    "https://www.google.com/a/feeds/";
+      "https://www.google.com/a/feeds/";
   
   protected static final String SERVICE_VERSION = "2.0";
 
-  protected final String domainUrlBase;
+  protected String domainUrlBase;
 
   protected EmailListRecipientService emailListRecipientService;
   protected EmailListService emailListService;
   protected NicknameService nicknameService;
   protected UserService userService;
 
-
-  private String domain;
+  protected final String domain;
+  
+  protected AppsForYourDomainClient(String domain) {
+    this.domain = domain;
+    this.domainUrlBase = APPS_FEEDS_URL_BASE + domain + "/";
+  }
 
   /**
    * Constructs an AppsForYourDomainClient for the given domain using the
@@ -87,25 +91,23 @@ public class AppsForYourDomainClient {
    */
   public AppsForYourDomainClient(String adminEmail, String adminPassword,
       String domain) throws Exception {
-
-    this.domain = domain;
-    domainUrlBase = APPS_FEEDS_URL_BASE + domain + "/";
+    this(domain);
 
     // Configure all of the different Provisioning services
     userService = new UserService(
-	"gdata-sample-AppsForYourDomain-UserService");
+        "gdata-sample-AppsForYourDomain-UserService");
     userService.setUserCredentials(adminEmail, adminPassword);
 
     nicknameService = new NicknameService(
-	"gdata-sample-AppsForYourDomain-NicknameService");
+        "gdata-sample-AppsForYourDomain-NicknameService");
     nicknameService.setUserCredentials(adminEmail, adminPassword);
 
     emailListService = new EmailListService(
-	"gdata-sample-AppsForYourDomain-EmailListService");
+        "gdata-sample-AppsForYourDomain-EmailListService");
     emailListService.setUserCredentials(adminEmail, adminPassword);
 
     emailListRecipientService = new EmailListRecipientService(
-	"gdata-sample-AppsForYourDomain-EmailListRecipientService");
+        "gdata-sample-AppsForYourDomain-EmailListRecipientService");
     emailListRecipientService.setUserCredentials(adminEmail, adminPassword);
   }
 
@@ -193,15 +195,11 @@ public class AppsForYourDomainClient {
     try {
       deleteUser(fakeUsername);
     } catch (AppsForYourDomainException e) {
-      if (e.getErrorCode()
-	   == AppsForYourDomainErrorCode.EntityDoesNotExist) {
-
-	// Do some post-error processing or logging.
-	LOGGER.log(Level.INFO,
-	    "Do some post-error processing or logging.");
+      if (e.getErrorCode() == AppsForYourDomainErrorCode.EntityDoesNotExist) {
+        // Do some post-error processing or logging.
+        LOGGER.log(Level.INFO, "Do some post-error processing or logging.");
       }
     }
-
   }
 
   /**
@@ -341,8 +339,7 @@ public class AppsForYourDomainClient {
     LOGGER.log(Level.INFO,
         "Retrieving user '" + username + "'.");
 
-    URL retrieveUrl = new URL(domainUrlBase + "user/" 
-	+ SERVICE_VERSION + "/" + username);
+    URL retrieveUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     return userService.getEntry(retrieveUrl, UserEntry.class);
   }
 
@@ -364,8 +361,7 @@ public class AppsForYourDomainClient {
     LOGGER.log(Level.INFO,
         "Retrieving all users.");
 
-    URL retrieveUrl = new URL(domainUrlBase + "user/"
-	+ SERVICE_VERSION + "/");
+    URL retrieveUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/");
     UserFeed allUsers = new UserFeed();
     UserFeed currentPage;
     Link nextLink;
@@ -375,7 +371,7 @@ public class AppsForYourDomainClient {
       allUsers.getEntries().addAll(currentPage.getEntries());
       nextLink = currentPage.getLink(Link.Rel.NEXT, Link.Type.ATOM);
       if (nextLink != null) {
-	retrieveUrl = new URL(nextLink.getHref());
+        retrieveUrl = new URL(nextLink.getHref());
       }
     } while (nextLink != null);
 
@@ -401,10 +397,8 @@ public class AppsForYourDomainClient {
   public UserFeed retrievePageOfUsers(String startUsername)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Retrieving one page of users"
-	+ (startUsername != null ? " starting at " + startUsername : "")
-	+ ".");
+    LOGGER.log(Level.INFO, "Retrieving one page of users"
+        + (startUsername != null ? " starting at " + startUsername : "") + ".");
     
     URL retrieveUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/");
     AppsForYourDomainQuery query = new AppsForYourDomainQuery(retrieveUrl);
@@ -426,150 +420,134 @@ public class AppsForYourDomainClient {
   public UserEntry updateUser(String username, UserEntry userEntry)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Updating user '" + username + "'.");
+    LOGGER.log(Level.INFO, "Updating user '" + username + "'.");
 
-    URL updateUrl = new URL(domainUrlBase + "user/" 
-	+ SERVICE_VERSION + "/" + username);
+    URL updateUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     return userService.update(updateUrl, userEntry);
   }
 
   /**
    * Deletes a user.
-   *
+   * 
    * @param username The user you wish to delete.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public void deleteUser(String username)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Deleting user '" + username + "'.");
+    LOGGER.log(Level.INFO, "Deleting user '" + username + "'.");
 
-    URL deleteUrl = new URL(
-	domainUrlBase + "user/" + SERVICE_VERSION + "/" +  username);
+    URL deleteUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     userService.delete(deleteUrl);
   }
 
   /**
-   * Suspends a user.  Note that executing this method for a user who is
-   * already suspended has no effect.
-   *
+   * Suspends a user. Note that executing this method for a user who is already
+   * suspended has no effect.
+   * 
    * @param username The user you wish to suspend.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public UserEntry suspendUser(String username)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-	"Suspending user '" + username + "'.");
+    LOGGER.log(Level.INFO, "Suspending user '" + username + "'.");
 
-    URL retrieveUrl = new URL(domainUrlBase + "user/"
-        + SERVICE_VERSION + "/" + username);
+    URL retrieveUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     UserEntry userEntry = userService.getEntry(retrieveUrl, UserEntry.class);
     userEntry.getLogin().setSuspended(true);
 
-    URL updateUrl = new URL(domainUrlBase + "user/"
-        + SERVICE_VERSION + "/" + username);
+    URL updateUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     return userService.update(updateUrl, userEntry);
   }
 
   /**
-   * Restores a user.  Note that executing this method for a user who is not
+   * Restores a user. Note that executing this method for a user who is not
    * suspended has no effect.
-   *
+   * 
    * @param username The user you wish to restore.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public UserEntry restoreUser(String username)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Restoring user '" + username + "'.");
+    LOGGER.log(Level.INFO, "Restoring user '" + username + "'.");
 
-    URL retrieveUrl = new URL(domainUrlBase + "user/"
-        + SERVICE_VERSION + "/" + username);
+    URL retrieveUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     UserEntry userEntry = userService.getEntry(retrieveUrl, UserEntry.class);
     userEntry.getLogin().setSuspended(false);
 
-    URL updateUrl = new URL(domainUrlBase + "user/"
-        + SERVICE_VERSION + "/" + username);
+    URL updateUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     return userService.update(updateUrl, userEntry);
   }
   
   /**
-   * Set admin privilege for user.  Note that executing this method for a user 
+   * Set admin privilege for user. Note that executing this method for a user
    * who is already an admin has no effect.
-   *
+   * 
    * @param username The user you wish to make an admin.
-   * @throws AppsForYourDomainException If a Provisioning API specific error 
-   * occurs.
+   * @throws AppsForYourDomainException If a Provisioning API specific error
+   *         occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public UserEntry addAdminPrivilege(String username)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO, "Setting admin privileges for user '" + username 
-        + "'.");
+    LOGGER.log(Level.INFO, "Setting admin privileges for user '" + username + "'.");
 
-    URL retrieveUrl = new URL(domainUrlBase + "user/"
-        + SERVICE_VERSION + "/" + username);
+    URL retrieveUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     UserEntry userEntry = userService.getEntry(retrieveUrl, UserEntry.class);
     userEntry.getLogin().setAdmin(true);
 
-    URL updateUrl = new URL(domainUrlBase + "user/"
-        + SERVICE_VERSION + "/" + username);
+    URL updateUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     return userService.update(updateUrl, userEntry);
   }
 
   /**
-   * Remove admin privilege for user.  Note that executing this method for a 
-   * user who is not an admin has no effect.
-   *
+   * Remove admin privilege for user. Note that executing this method for a user
+   * who is not an admin has no effect.
+   * 
    * @param username The user you wish to remove admin privileges.
-   * @throws AppsForYourDomainException If a Provisioning API specific error 
-   * occurs.
+   * @throws AppsForYourDomainException If a Provisioning API specific error
+   *         occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public UserEntry removeAdminPrivilege(String username)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO, "Removing admin privileges for user '" + username 
-        + "'.");
+    LOGGER.log(Level.INFO, "Removing admin privileges for user '" + username + "'.");
 
-    URL retrieveUrl = new URL(domainUrlBase + "user/"
-        + SERVICE_VERSION + "/" + username);
+    URL retrieveUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     UserEntry userEntry = userService.getEntry(retrieveUrl, UserEntry.class);
     userEntry.getLogin().setAdmin(false);
 
-    URL updateUrl = new URL(domainUrlBase + "user/"
-        + SERVICE_VERSION + "/" + username);
+    URL updateUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     return userService.update(updateUrl, userEntry);
   }
 
   /**
-   * Require a user to change password at next login.  Note that executing this 
+   * Require a user to change password at next login. Note that executing this
    * method for a user who is already required to change password at next login
    * as no effect.
-   *
+   * 
    * @param username The user who must change his or her password.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public UserEntry forceUserToChangePassword(String username)
       throws AppsForYourDomainException, ServiceException, IOException {
@@ -628,25 +606,23 @@ public class AppsForYourDomainClient {
    * @throws IOException If an error occurs communicating with the GData
    * service.
    */
-  public NicknameEntry retrieveNickname(String nickname)
-      throws AppsForYourDomainException, ServiceException, IOException {
-    LOGGER.log(Level.INFO,
-        "Retrieving nickname '" + nickname + "'.");
+  public NicknameEntry retrieveNickname(String nickname) throws AppsForYourDomainException,
+      ServiceException, IOException {
+    LOGGER.log(Level.INFO, "Retrieving nickname '" + nickname + "'.");
 
-    URL retrieveUrl = new URL(domainUrlBase + "nickname/" 
-	+ SERVICE_VERSION + "/" +  nickname);
+    URL retrieveUrl = new URL(domainUrlBase + "nickname/" + SERVICE_VERSION + "/" + nickname);
     return nicknameService.getEntry(retrieveUrl, NicknameEntry.class);
   }
 
   /**
    * Retrieves all nicknames for the given username.
-   *
+   * 
    * @param username The user for which you want all nicknames.
    * @return A NicknameFeed object with all the nicknames for the user.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public NicknameFeed retrieveNicknames(String username)
       throws AppsForYourDomainException, ServiceException, IOException {
@@ -678,10 +654,8 @@ public class AppsForYourDomainClient {
   public NicknameFeed retrievePageOfNicknames(String startNickname)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Retrieving one page of nicknames"
-        + (startNickname != null ? " starting at " + startNickname : "")
-        + ".");
+    LOGGER.log(Level.INFO, "Retrieving one page of nicknames"
+        + (startNickname != null ? " starting at " + startNickname : "") + ".");
 
     URL retrieveUrl = new URL(
 	domainUrlBase + "nickname/" + SERVICE_VERSION + "/");
@@ -738,23 +712,21 @@ public class AppsForYourDomainClient {
   public void deleteNickname(String nickname)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Deleting nickname '" + nickname + "'.");
+    LOGGER.log(Level.INFO, "Deleting nickname '" + nickname + "'.");
 
-    URL deleteUrl = new URL(domainUrlBase + "nickname/" 
-	+ SERVICE_VERSION + "/" + nickname);
+    URL deleteUrl = new URL(domainUrlBase + "nickname/" + SERVICE_VERSION + "/" + nickname);
     nicknameService.delete(deleteUrl);
   }
 
   /**
    * Creates an empty email list.
-   *
+   * 
    * @param emailList The name of the email list you wish to create.
    * @return An EmailListEntry object of the newly created email list.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public EmailListEntry createEmailList(String emailList) 
       throws AppsForYourDomainException, ServiceException, IOException {
@@ -852,12 +824,8 @@ public class AppsForYourDomainClient {
   public EmailListFeed retrievePageOfEmailLists(String startEmailListName)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Retrieving one page of email lists"
-        + (startEmailListName != null 
-	  ? " starting at " + startEmailListName 
-	  : "")
-        + ".");
+    LOGGER.log(Level.INFO, "Retrieving one page of email lists"
+        + (startEmailListName != null ? " starting at " + startEmailListName : "") + ".");
 
     URL retrieveUrl = new URL(
 	domainUrlBase + "emailList/" + SERVICE_VERSION + "/");
@@ -879,46 +847,42 @@ public class AppsForYourDomainClient {
   public EmailListEntry retrieveEmailList(String emailList)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Retrieving email list '" + emailList + "'.");
+    LOGGER.log(Level.INFO, "Retrieving email list '" + emailList + "'.");
 
-    URL retrieveUrl = new URL(domainUrlBase + "emailList/" 
-	+ SERVICE_VERSION + "/" +  emailList);
+    URL retrieveUrl = new URL(domainUrlBase + "emailList/" + SERVICE_VERSION + "/" + emailList);
     return emailListService.getEntry(retrieveUrl, EmailListEntry.class);
   }
 
   /**
    * Deletes an email list.
-   *
+   * 
    * @param emailList The email list you with to delete.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public void deleteEmailList(String emailList)
       throws AppsForYourDomainException, ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Attempting to delete emailList '" + emailList + "'.");
+    LOGGER.log(Level.INFO, "Attempting to delete emailList '" + emailList + "'.");
 
-    URL deleteUrl = new URL(domainUrlBase + "emailList/" 
-	+ SERVICE_VERSION + "/" + emailList);
+    URL deleteUrl = new URL(domainUrlBase + "emailList/" + SERVICE_VERSION + "/" + emailList);
     emailListService.delete(deleteUrl);
   }
 
   /**
-   * Retrieves all recipients in an email list.  This method may be very slow
-   * for email lists with a large number of recipients.  Any changes to the
-   * email list contents, including adding or deleting recipients which are
-   * made after this method is called may or may not be included in the Feed
-   * which is returned.
-   *
+   * Retrieves all recipients in an email list. This method may be very slow for
+   * email lists with a large number of recipients. Any changes to the email
+   * list contents, including adding or deleting recipients which are made after
+   * this method is called may or may not be included in the Feed which is
+   * returned.
+   * 
    * @return An EmailListRecipientFeed object of the retrieved recipients.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public EmailListRecipientFeed retrieveAllRecipients(String emailList)
       throws AppsForYourDomainException, ServiceException, IOException {
@@ -934,8 +898,7 @@ public class AppsForYourDomainClient {
     Link nextLink;
 
     do {
-      currentPage = emailListRecipientService.getFeed(retrieveUrl,
-	  EmailListRecipientFeed.class);
+      currentPage = emailListRecipientService.getFeed(retrieveUrl, EmailListRecipientFeed.class);
       allRecipients.getEntries().addAll(currentPage.getEntries());
       nextLink = currentPage.getLink(Link.Rel.NEXT, Link.Type.ATOM);
       if (nextLink != null) {
@@ -969,16 +932,11 @@ public class AppsForYourDomainClient {
       String startRecipient) throws AppsForYourDomainException,
       ServiceException, IOException {
 
-    LOGGER.log(Level.INFO,
-        "Retrieving one page of recipients"
-        + (startRecipient != null
-          ? " starting at " + startRecipient
-          : "")
-        + ".");
+    LOGGER.log(Level.INFO, "Retrieving one page of recipients"
+        + (startRecipient != null ? " starting at " + startRecipient : "") + ".");
 
-    URL retrieveUrl = new URL(
-	domainUrlBase + "emailList/" + SERVICE_VERSION + "/" + emailList
-	+ "/recipient/");
+    URL retrieveUrl =
+        new URL(domainUrlBase + "emailList/" + SERVICE_VERSION + "/" + emailList + "/recipient/");
     AppsForYourDomainQuery query = new AppsForYourDomainQuery(retrieveUrl);
     query.setStartRecipient(startRecipient);
     return emailListRecipientService.query(query, EmailListRecipientFeed.class);
@@ -986,31 +944,29 @@ public class AppsForYourDomainClient {
 
   /**
    * Adds an email address to an email list.
-   *
+   * 
    * @param recipientAddress The email address you wish to add.
    * @param emailList The email list you wish to modify.
    * @return The EmailListRecipientEntry of the newly created email list
-   * recipient. 
+   *         recipient.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
    */
   public EmailListRecipientEntry addRecipientToEmailList(
       String recipientAddress, String emailList)
       throws AppsForYourDomainException, ServiceException, IOException {
    
-    LOGGER.log(Level.INFO,
-        "Adding '" + recipientAddress + "' to emailList '" + emailList + "'.");
+    LOGGER.log(Level.INFO, "Adding '" + recipientAddress + "' to emailList '" + emailList + "'.");
 
-    EmailListRecipientEntry emailListRecipientEntry
-	= new EmailListRecipientEntry();
+    EmailListRecipientEntry emailListRecipientEntry = new EmailListRecipientEntry();
     Who who = new Who();
     who.setEmail(recipientAddress);
     emailListRecipientEntry.addExtension(who);
 
-    URL insertUrl = new URL(domainUrlBase + "emailList/"
-	+ SERVICE_VERSION + "/" + emailList + "/recipient");
+    URL insertUrl =
+        new URL(domainUrlBase + "emailList/" + SERVICE_VERSION + "/" + emailList + "/recipient");
     return emailListRecipientService.insert(insertUrl, emailListRecipientEntry);
   }
 
@@ -1028,23 +984,23 @@ public class AppsForYourDomainClient {
       String emailList) throws AppsForYourDomainException, ServiceException,
       IOException {
 
-    LOGGER.log(Level.INFO,
-        "Removing '" + recipientAddress + "' from emailList '" + emailList
-	    + "'.");
+    LOGGER.log(Level.INFO, "Removing '" + recipientAddress + "' from emailList '" + emailList
+        + "'.");
 
-    URL deleteUrl = new URL(domainUrlBase + "emailList/"
-        + SERVICE_VERSION + "/" + emailList + "/recipient/"
-	+ recipientAddress);
+    URL deleteUrl =
+        new URL(domainUrlBase + "emailList/" + SERVICE_VERSION + "/" + emailList + "/recipient/"
+            + recipientAddress);
     emailListRecipientService.delete(deleteUrl);
   }
 
 
-  /*
+  /**
    * Main entry point.  Parses arguments and creates and invokes the
    * AppsForYourDomainClient.
    *
-   * Usage: java AppsForYourDomainClient --admin_email [email] --admin_password [pass] --domain [domain]
-   * 
+   * Usage: java AppsForYourDomainClient --admin_email [email]
+   *                                     --admin_password [pass]
+   *                                     --domain [domain]
    */
   public static void main(String[] arg)
       throws Exception {
@@ -1052,9 +1008,9 @@ public class AppsForYourDomainClient {
     String adminEmail = parser.getValue("admin_email", "email", "e");
     String adminPassword = parser.getValue("admin_password", "pass", "p");
     String domain = parser.getValue("domain", "domain", "d");
+
     boolean help = parser.containsKey("help", "h");
-    if (help || (adminEmail == null) 
-	|| (adminPassword == null) || (domain == null)) {
+    if (help || (adminEmail == null) || (adminPassword == null) || (domain == null)) {
       usage();
       System.exit(1);
     }

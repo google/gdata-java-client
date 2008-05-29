@@ -14,26 +14,26 @@
  */
 
 
-package com.google.gdata.data.health;
+package com.google.gdata.data.contacts;
 
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.Link;
 
 /**
- * Describes a profile feed.
+ * Describes a contact group feed.
  *
  * 
  */
-@Kind.Term(ProfileEntry.KIND)
-public class ProfileFeed extends BaseHealthFeed<ProfileFeed, ProfileEntry> {
+@Kind.Term(ContactGroupEntry.KIND)
+public class ContactGroupFeed extends BaseFeed<ContactGroupFeed,
+    ContactGroupEntry> {
 
   /**
    * Default mutable constructor.
    */
-  public ProfileFeed() {
-    super(ProfileEntry.class);
-    getCategories().add(ProfileEntry.CATEGORY);
+  public ContactGroupFeed() {
+    super(ContactGroupEntry.class);
+    getCategories().add(ContactGroupEntry.CATEGORY);
   }
 
   /**
@@ -42,23 +42,13 @@ public class ProfileFeed extends BaseHealthFeed<ProfileFeed, ProfileEntry> {
    *
    * @param sourceFeed source feed
    */
-  public ProfileFeed(BaseFeed sourceFeed) {
-    super(ProfileEntry.class, sourceFeed);
-  }
-
-  /**
-   * Returns the link that provides the URI that can be used to edit the entry.
-   *
-   * @return Link that provides the URI that can be used to edit the entry or
-   *     {@code null} for none.
-   */
-  public Link getEditLink() {
-    return getLink(Link.Rel.ENTRY_EDIT, Link.Type.ATOM);
+  public ContactGroupFeed(BaseFeed sourceFeed) {
+    super(ContactGroupEntry.class, sourceFeed);
   }
 
   @Override
   public String toString() {
-    return "{ProfileFeed " + super.toString() + "}";
+    return "{ContactGroupFeed " + super.toString() + "}";
   }
 
 }

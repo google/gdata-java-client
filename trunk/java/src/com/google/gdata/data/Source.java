@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 
 /**
@@ -176,18 +178,51 @@ public class Source extends ExtensionPoint {
   public Link getLink(String rel, String type) {
 
     for (Link link: srcState.links) {
-
-      String linkRel = link.getRel();
-      String linkType = link.getType();
-
-      if ((rel == null || (linkRel != null && linkRel.equals(rel))) &&
-          (type == null || (linkType != null && linkType.equals(type)))) {
-
+      if (link.matches(rel, type)) {
         return link;
       }
     }
 
     return null;
+  }
+
+
+  /**
+   * Return the links that match the given {@code rel} and {@code type} values.
+   *
+   * @param relToMatch  {@code rel} value to match or {@code null} to match any
+   *                    {@code rel} value.
+   * @param typeToMatch {@code type} value to match or {@code null} to match any
+   *                    {@code type} value.
+   * @return matching links.
+   */
+  public List<Link> getLinks(String relToMatch, String typeToMatch) {
+    List<Link> result = new ArrayList<Link>();
+    for (Link link : srcState.links) {
+      if (link.matches(relToMatch, typeToMatch)) {
+        result.add(link);
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Remove all links that match the given {@code rel} and {@code type} values.
+   *
+   * @param relToMatch  {@code rel} value to match or {@code null} to match any
+   *                    {@code rel} value.
+   * @param typeToMatch {@code type} value to match or {@code null} to match any
+   *                    {@code type} value.
+   */
+  public void removeLinks(String relToMatch, String typeToMatch) {
+    for (Iterator<Link> iterator = srcState.links.iterator();
+        iterator.hasNext();) {
+      Link link = iterator.next();
+      if (link.matches(relToMatch, typeToMatch)) {
+        iterator.remove();
+      }
+    }
   }
 
 

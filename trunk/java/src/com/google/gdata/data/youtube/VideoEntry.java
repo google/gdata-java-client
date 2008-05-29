@@ -98,8 +98,8 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
   /**
    * Sets the yt:racy flag.
    * 
-   * @deprecated in favor of {@link MediaGroup#getRatings()} with scheme
-   *             {@link YouTubeNamespace#MEDIA_RATING_SCHEME}.
+   * @deprecated in favor of {@link MediaGroup#getRatings()} with scheme {@link
+   *             YouTubeNamespace#MEDIA_RATING_SCHEME}. Removed in version 2.
    */
   @Deprecated
   public void setRacy(boolean racy) {
@@ -113,8 +113,8 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
   /**
    * Checks the yt:racy flag.
    * 
-   * @deprecated in favor of {@link MediaGroup#getRatings()} with scheme
-   *             {@link YouTubeNamespace#MEDIA_RATING_SCHEME}.
+   * @deprecated in favor of {@link MediaGroup#getRatings()} with scheme {@link
+   *             YouTubeNamespace#MEDIA_RATING_SCHEME}. Removed in version 2
    */
   @Deprecated
   public boolean isRacy() {
@@ -151,13 +151,13 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     return getExtension(GeoRssWhere.class);
   }
 
-  /** Sets the yt:location tag. */
+  /** Gets the yt:location tag. */
   public String getLocation() {
     YtLocation tag = getExtension(YtLocation.class);
     return tag == null ? null : tag.getContent();
   }
 
-  /** Gets the yt:location tag. */
+  /** Sets the yt:location tag. */
   public void setLocation(String location) {
     if (location == null) {
       removeExtension(YtLocation.class);

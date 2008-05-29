@@ -536,6 +536,19 @@ public class GoogleService extends Service implements TokenListener {
     return super.getFeed(feedUrl, feedClass, ifModifiedSince);
   }
 
+  @Override
+  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl, Class<F> feedClass,
+      String etag) throws IOException, ServiceException {
+    try {
+      return super.getFeed(feedUrl, feedClass, etag);
+    } catch (RedirectRequiredException e) {
+      feedUrl = handleRedirectException(e);
+    } catch (SessionExpiredException e) {
+      handleSessionExpiredException(e);
+    }
+
+    return super.getFeed(feedUrl, feedClass, etag);
+  }
 
   @Override
   public <F extends BaseFeed<?, ?>> F getFeed(Query query,
@@ -554,6 +567,19 @@ public class GoogleService extends Service implements TokenListener {
     return super.getFeed(query, feedClass, ifModifiedSince);
   }
 
+  @Override
+  public <F extends BaseFeed<?, ?>> F getFeed(Query query, Class<F> feedClass,
+      String etag) throws IOException, ServiceException {
+    try {
+      return super.getFeed(query, feedClass, etag);
+    } catch (RedirectRequiredException e) {
+      query = new Query(handleRedirectException(e));
+    } catch (SessionExpiredException e) {
+      handleSessionExpiredException(e);
+    }
+
+    return super.getFeed(query, feedClass, etag);
+  }
 
   @Override
   public void delete(URL entryUrl) throws IOException, ServiceException {

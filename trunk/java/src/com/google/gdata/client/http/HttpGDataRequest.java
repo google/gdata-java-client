@@ -18,7 +18,9 @@ package com.google.gdata.client.http;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.client.AuthTokenFactory;
+import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.Query;
+import com.google.gdata.client.GDataProtocol.Header;
 import com.google.gdata.client.Service.GDataRequest;
 import com.google.gdata.client.Service.GDataRequestFactory;
 import com.google.gdata.data.DateTime;
@@ -30,6 +32,7 @@ import com.google.gdata.util.LoggableInputStream;
 import com.google.gdata.util.LoggableOutputStream;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.NotModifiedException;
+import com.google.gdata.util.PreconditionFailedException;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.ServiceForbiddenException;
@@ -54,43 +57,35 @@ import java.util.zip.GZIPInputStream;
 /**
  * The HttpGDataRequest class provides a basic implementation of the
  * <code>GDataRequest</code> interface over HTTP.
- *
+ * 
  * @see GDataRequest
  */
 public class HttpGDataRequest implements GDataRequest {
 
   static final Logger logger =
-          Logger.getLogger(HttpGDataRequest.class.getName());
+      Logger.getLogger(HttpGDataRequest.class.getName());
 
   /**
    * If this system property is set to <code>true</code>, the GData HTTP
    * client library will use POST to send data to the associated GData service
    * and will specify the actual method using the {@code METHOD_OVERRIDE_HEADER}
    * HTTP header. This can be used as a workaround for HTTP proxies or gateways
-   * that do not handle PUT or DELETE HTTP methods properly.  If the system
-   * property is <code>false</code>, the regular PUT and DELETE HTTP verbs will
-   * be used.
+   * that do not handle PUT or DELETE HTTP methods properly. If the system
+   * property is <code>false</code>, the regular PUT and DELETE HTTP verbs
+   * will be used.
    */
   public static final String METHOD_OVERRIDE_PROPERTY =
-    "com.google.gdata.UseMethodOverride";
+      "com.google.gdata.UseMethodOverride";
 
 
   /**
-   * Name of HTTP header containing the method name that overrides
-   * the normal HTTP method. This is used to allow clients that are
-   * unable to issue PUT or DELETE methods to emulate such methods.
-   * The client would issue a POST method with this header set to
-   * PUT or DELETE, and the service translates the invocation to
-   * the corresponding request type.
+   * Name of HTTP header containing the method name that overrides the normal
+   * HTTP method.
+   * 
+   * @deprecated Use {@link GDataProtocol.Header#METHOD_OVERRIDE} instead
    */
   public static final String METHOD_OVERRIDE_HEADER =
-    "X-HTTP-Method-Override";
-
-  /**
-   * Name of HTTP header that is used to request a specific service version be
-   * used to handle a GData request.
-   */
-  public static final String VERSION_HEADER = "GData-Version";
+      GDataProtocol.Header.METHOD_OVERRIDE;
 
 
   /**
@@ -152,8 +147,7 @@ public class HttpGDataRequest implements GDataRequest {
     }
 
     @SuppressWarnings("unused")
-    public GDataRequest getRequest(Query query,
-                                   ContentType contentType)
+    public GDataRequest getRequest(Query query, ContentType contentType)
         throws IOException, ServiceException {
       return getRequest(RequestType.QUERY, query.getUrl(), contentType);
     }
@@ -162,11 +156,11 @@ public class HttpGDataRequest implements GDataRequest {
 
   /**
    * The HttpGDataRequest.AuthToken interface represents a token used to
-   * authenticate a request.  It encapsulates the functionality to create
-   * the "Authorization" header to be appended to a HTTP request.
+   * authenticate a request. It encapsulates the functionality to create the
+   * "Authorization" header to be appended to a HTTP request.
    *
    * @deprecated This interface has been deprecated. Please use
-   * {@link HttpAuthToken} instead.
+   *             {@link HttpAuthToken} instead.
    */
   public static interface AuthToken extends HttpAuthToken {
   }
@@ -189,7 +183,7 @@ public class HttpGDataRequest implements GDataRequest {
 
 
   /**
-   * Indicates whether request execution has taken place.  Set to
+   * Indicates whether request execution has taken place. Set to
    * <code>true</code> if executed, <code>false</code> otherwise.
    */
   protected boolean executed = false;
@@ -208,22 +202,15 @@ public class HttpGDataRequest implements GDataRequest {
 
 
   /**
-   * Contains the IfModifiedSince precondition to be applied to the
-   * request.
-   */
-  protected DateTime ifModifiedCondition;
-
-
-  /**
-   * The connection timeout for this request.   A value of -1 means no
-   * value has been configured (use JDK default timeout behavior).
+   * The connection timeout for this request. A value of -1 means no value has
+   * been configured (use JDK default timeout behavior).
    */
   protected int connectTimeout = -1;
 
 
   /**
-   * The read timeout for this request.   A value of -1 means no
-   * value has been configured (use JDK default timeout behavior).
+   * The read timeout for this request. A value of -1 means no value has been
+   * configured (use JDK default timeout behavior).
    */
   protected int readTimeout = -1;
 
@@ -231,7 +218,7 @@ public class HttpGDataRequest implements GDataRequest {
   /**
    * Constructs a new HttpGDataRequest instance of the specified RequestType,
    * targeting the specified URL.
-   *
+   * 
    * @param type type of GDataRequest.
    * @param requestUrl request target URL.
    * @param contentType the content type of request/response data.
@@ -239,19 +226,16 @@ public class HttpGDataRequest implements GDataRequest {
    * @param privateHeaderMap a set of headers to be included in each request
    * @throws IOException on error initializating service connection.
    */
-  protected HttpGDataRequest(RequestType type,
-                             URL requestUrl,
-                             ContentType contentType,
-                             HttpAuthToken authToken,
-                             Map<String, String> headerMap,
-                             Map<String, String> privateHeaderMap)
+  protected HttpGDataRequest(RequestType type, URL requestUrl,
+      ContentType contentType, HttpAuthToken authToken,
+      Map<String, String> headerMap, Map<String, String> privateHeaderMap)
       throws IOException {
 
     this.type = type;
     this.requestUrl = requestUrl;
     httpConn = getRequestConnection(requestUrl);
 
-    switch(type) {
+    switch (type) {
 
       case QUERY:
         hasOutput = true;
@@ -270,7 +254,7 @@ public class HttpGDataRequest implements GDataRequest {
         hasOutput = true;
         if (Boolean.getBoolean(METHOD_OVERRIDE_PROPERTY)) {
           setMethod("POST");
-          setHeader(METHOD_OVERRIDE_HEADER, "PUT");
+          setHeader(Header.METHOD_OVERRIDE, "PUT");
         } else {
           setMethod("PUT");
         }
@@ -280,7 +264,7 @@ public class HttpGDataRequest implements GDataRequest {
       case DELETE:
         if (Boolean.getBoolean(METHOD_OVERRIDE_PROPERTY)) {
           setMethod("POST");
-          setHeader(METHOD_OVERRIDE_HEADER, "DELETE");
+          setHeader(Header.METHOD_OVERRIDE, "DELETE");
         } else {
           setMethod("DELETE");
         }
@@ -295,8 +279,8 @@ public class HttpGDataRequest implements GDataRequest {
       // NOTE: Do not use setHeader() here, authorization should never be
       // logged.
       String authHeader =
-        authToken.getAuthorizationHeader(requestUrl,
-                                         httpConn.getRequestMethod());
+          authToken.getAuthorizationHeader(requestUrl, httpConn
+              .getRequestMethod());
       setPrivateHeader("Authorization", authHeader);
     }
 
@@ -332,8 +316,8 @@ public class HttpGDataRequest implements GDataRequest {
       throws IOException {
 
     if (!requestUrl.getProtocol().startsWith("http")) {
-      throw new UnsupportedOperationException("Unsupported scheme:" +
-                                              requestUrl.getProtocol());
+      throw new UnsupportedOperationException("Unsupported scheme:"
+          + requestUrl.getProtocol());
     }
     HttpURLConnection uc = (HttpURLConnection) requestUrl.openConnection();
 
@@ -348,13 +332,13 @@ public class HttpGDataRequest implements GDataRequest {
 
 
   /**
-   * Sets the number of milliseconds to wait for a connection to the
-   * remote GData service before timing out.
-   *
-   * @param timeout the read timeout.  A value of zero indicates an
-   *        infinite timeout.
+   * Sets the number of milliseconds to wait for a connection to the remote
+   * GData service before timing out.
+   * 
+   * @param timeout the read timeout. A value of zero indicates an infinite
+   *        timeout.
    * @throws IllegalArgumentException if the timeout value is negative.
-   *
+   * 
    * @see java.net.URLConnection#setConnectTimeout(int)
    */
   public void setConnectTimeout(int timeout) {
@@ -366,13 +350,13 @@ public class HttpGDataRequest implements GDataRequest {
 
 
   /**
-   * Sets the number of milliseconds to wait for a response from the
-   * remote GData service before timing out.
-   *
-   * @param timeout the read timeout.  A value of zero indicates an
-   *        infinite timeout.
-    @throws IllegalArgumentException if the timeout value is negative.
-   *
+   * Sets the number of milliseconds to wait for a response from the remote
+   * GData service before timing out.
+   * 
+   * @param timeout the read timeout. A value of zero indicates an infinite
+   *        timeout.
+   * @throws IllegalArgumentException if the timeout value is negative.
+   * 
    * @see java.net.URLConnection#setReadTimeout(int)
    */
   public void setReadTimeout(int timeout) {
@@ -384,21 +368,53 @@ public class HttpGDataRequest implements GDataRequest {
 
 
   /**
-   * Sets the If-Modified-Since date precondition to be applied to the
-   * request.  If this precondition is set, then the request will be
-   * performed only if the target resource has been modified since the
-   * specified date; otherwise, a {@code NotModifiedException} will be
-   * thrown.
+   * Sets the If-Modified-Since date precondition to be applied to the request.
+   * If this precondition is set, then the request will be performed only if the
+   * target resource has been modified since the specified date; otherwise, a
+   * {@code NotModifiedException} will be thrown.
    */
   public void setIfModifiedSince(DateTime conditionDate) {
-    this.ifModifiedCondition = conditionDate;
+    if (conditionDate == null) {
+      return;
+    }
+
+    if (type == RequestType.QUERY) {
+      setHeader(GDataProtocol.Header.IF_MODIFIED_SINCE,
+          conditionDate.toStringRfc822());
+    } else {
+      throw new IllegalStateException(
+          "Date conditions not supported for this request type");
+    }
   }
 
+  public void setEtag(String etag) {
+
+    if (etag == null) {
+      return;
+    }
+
+    switch (type) {
+      case QUERY:
+        if (etag != null) {
+          setHeader(GDataProtocol.Header.IF_NONE_MATCH, etag);
+        }
+        break;
+      case UPDATE:
+      case DELETE:
+        if (etag != null) {
+          setHeader(GDataProtocol.Header.IF_MATCH, etag);
+        }
+        break;
+      default:
+        throw new IllegalStateException(
+            "Etag conditions not supported for this request type");
+    }
+  }
 
   /**
-   * Returns a stream that can be used to write request data to the
-   * GData service.
-   *
+   * Returns a stream that can be used to write request data to the GData
+   * service.
+   * 
    * @return OutputStream that can be used to write GData request data.
    * @throws IOException error obtaining the request output stream.
    */
@@ -415,9 +431,9 @@ public class HttpGDataRequest implements GDataRequest {
 
 
   /**
-   * Returns an XML writer that can be used to write XML request data
-   * to the GData service.
-   *
+   * Returns an XML writer that can be used to write XML request data to the
+   * GData service.
+   * 
    * @return XmlWriter that can be used to write GData XML request data.
    * @throws IOException error obtaining the request writer.
    */
@@ -430,7 +446,7 @@ public class HttpGDataRequest implements GDataRequest {
 
   /**
    * Sets request method (and logs it, if enabled)
-   *
+   * 
    * @param method Http method name.
    * @throws ProtocolException exception.
    */
@@ -461,7 +477,7 @@ public class HttpGDataRequest implements GDataRequest {
 
   /**
    * Executes the GData service request.
-   *
+   * 
    * @throws IOException error writing to or reading from GData service.
    * @throws ServiceException service invocation error.
    */
@@ -475,19 +491,15 @@ public class HttpGDataRequest implements GDataRequest {
       httpConn.setReadTimeout(readTimeout);
     }
 
-    if (ifModifiedCondition != null) {
-      setHeader("If-Modified-Since", ifModifiedCondition.toStringRfc822());
-    }
-
     // Set the http.strictPostRedirect property to prevent redirected
-    // POST/PUT/DELETE from being mapped to a GET.  This
+    // POST/PUT/DELETE from being mapped to a GET. This
     // system property was a hack to fix a jdk bug w/out changing back
-    // compat behavior.  It's bogus that this is a system (and not a
+    // compat behavior. It's bogus that this is a system (and not a
     // per-connection) property, so we just change it for the duration
     // of the connection.
     // See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4023866
     String httpStrictPostRedirect =
-      System.getProperty("http.strictPostRedirect");
+        System.getProperty("http.strictPostRedirect");
     try {
       System.setProperty("http.strictPostRedirect", "true");
       httpConn.connect();
@@ -495,29 +507,29 @@ public class HttpGDataRequest implements GDataRequest {
       if (logger.isLoggable(Level.FINE)) {
 
         // Avoid calling URL.equals() unless an object equivalence test fails,
-        // because URL.equals() requires DNS resolution.  This test will
+        // because URL.equals() requires DNS resolution. This test will
         // fail on the first check for any URLConnection implementation
-        // that derives from java.net.URLConnection.  The 2nd check would
+        // that derives from java.net.URLConnection. The 2nd check would
         // work on an alternate impl that clones the URL.
-        if (httpConn.getURL() != requestUrl &&
-            !httpConn.getURL().toExternalForm().equals(
+        if (httpConn.getURL() != requestUrl
+            && !httpConn.getURL().toExternalForm().equals(
                 requestUrl.toExternalForm())) {
           logger.fine("Redirected to:" + httpConn.getURL().toExternalForm());
         }
 
         // Log response information here, if enabled
-        logger.fine(httpConn.getResponseCode() + " " +
-                    httpConn.getResponseMessage());
+        logger.fine(httpConn.getResponseCode() + " "
+            + httpConn.getResponseMessage());
         if (logger.isLoggable(Level.FINER)) {
-          for (Map.Entry<String, List<String>> headerField :
-               httpConn.getHeaderFields().entrySet()) {
+          for (Map.Entry<String, List<String>> headerField : httpConn
+              .getHeaderFields().entrySet()) {
             for (String value : headerField.getValue()) {
               logger.finer(headerField.getKey() + ": " + value);
             }
           }
         }
       }
-      checkResponse();  // will flush any request data
+      checkResponse(); // will flush any request data
 
     } finally {
       if (httpStrictPostRedirect == null) {
@@ -532,11 +544,10 @@ public class HttpGDataRequest implements GDataRequest {
 
 
   /**
-   * Called after a request is executed to process the response and
-   * generate an appropriate exception (on failure).
+   * Called after a request is executed to process the response and generate an
+   * appropriate exception (on failure).
    */
-  protected void checkResponse()
-      throws IOException, ServiceException {
+  protected void checkResponse() throws IOException, ServiceException {
 
     if (httpConn.getResponseCode() >= 300) {
       handleErrorResponse();
@@ -545,52 +556,55 @@ public class HttpGDataRequest implements GDataRequest {
 
 
   /**
-   * Handles an error response received while executing a GData service
-   * request.  Throws a {@link ServiceException} or one of its subclasses,
-   * depending on the failure conditions.
+   * Handles an error response received while executing a GData service request.
+   * Throws a {@link ServiceException} or one of its subclasses, depending on
+   * the failure conditions.
+   * 
    * @throws ServiceException exception describing the failure.
-   * @throws IOException error reading the error response from the
-   *         GData service.
+   * @throws IOException error reading the error response from the GData
+   *         service.
    */
-  protected void handleErrorResponse()
-      throws ServiceException, IOException {
+  protected void handleErrorResponse() throws ServiceException, IOException {
 
-      switch (httpConn.getResponseCode()) {
+    switch (httpConn.getResponseCode()) {
 
-        case HttpURLConnection.HTTP_NOT_FOUND:
-          throw new ResourceNotFoundException(httpConn);
+      case HttpURLConnection.HTTP_NOT_FOUND:
+        throw new ResourceNotFoundException(httpConn);
 
-        case HttpURLConnection.HTTP_BAD_REQUEST:
-          throw new InvalidEntryException(httpConn);
+      case HttpURLConnection.HTTP_BAD_REQUEST:
+        throw new InvalidEntryException(httpConn);
 
-        case HttpURLConnection.HTTP_FORBIDDEN:
-          throw new ServiceForbiddenException(httpConn);
+      case HttpURLConnection.HTTP_FORBIDDEN:
+        throw new ServiceForbiddenException(httpConn);
 
-        case HttpURLConnection.HTTP_UNAUTHORIZED:
-          throw new AuthenticationException(httpConn);
+      case HttpURLConnection.HTTP_UNAUTHORIZED:
+        throw new AuthenticationException(httpConn);
 
-        case HttpURLConnection.HTTP_NOT_MODIFIED:
-          throw new NotModifiedException(httpConn);
+      case HttpURLConnection.HTTP_NOT_MODIFIED:
+        throw new NotModifiedException(httpConn);
+        
+      case HttpURLConnection.HTTP_PRECON_FAILED:
+        throw new PreconditionFailedException(httpConn);
 
-        case HttpURLConnection.HTTP_NOT_IMPLEMENTED:
-          throw new NotImplementedException(httpConn);
+      case HttpURLConnection.HTTP_NOT_IMPLEMENTED:
+        throw new NotImplementedException(httpConn);
 
-        case HttpURLConnection.HTTP_CONFLICT:
-          throw new VersionConflictException(httpConn);
+      case HttpURLConnection.HTTP_CONFLICT:
+        throw new VersionConflictException(httpConn);
 
-        default:
-          throw new ServiceException(httpConn);
-      }
+      default:
+        throw new ServiceException(httpConn);
+    }
   }
 
   /**
    * Returns the content type of the GData response.
    * <p>
-   *
-   * @return ContentType the GData response content type or {@code null}
-   *                               if no response content.
-   * @throws IllegalStateException attempt to read content type without
-   *                               first calling {@link #execute()}.
+   * 
+   * @return ContentType the GData response content type or {@code null} if no
+   *         response content.
+   * @throws IllegalStateException attempt to read content type without first
+   *         calling {@link #execute()}.
    * @throws IOException error obtaining the response content type.
    */
   @SuppressWarnings("unused")
@@ -598,7 +612,7 @@ public class HttpGDataRequest implements GDataRequest {
 
     if (!executed) {
       throw new IllegalStateException(
-        "Must call execute() before attempting to read response");
+          "Must call execute() before attempting to read response");
     }
     String value = httpConn.getHeaderField("Content-Type");
     if (value == null) {
@@ -608,19 +622,19 @@ public class HttpGDataRequest implements GDataRequest {
   }
 
   /**
-   * Returns a stream that can be used to read response data from the
-   * GData service.
-   *
+   * Returns a stream that can be used to read response data from the GData
+   * service.
+   * 
    * @return InputStream providing access to GData response data.
-   * @throws IllegalStateException if attempting to read response without
-   *                               first calling {@link #execute()}.
+   * @throws IllegalStateException if attempting to read response without first
+   *         calling {@link #execute()}.
    * @throws IOException error obtaining the response input stream.
    */
   public InputStream getResponseStream() throws IOException {
 
     if (!executed) {
       throw new IllegalStateException(
-        "Must call execute() before attempting to read response");
+          "Must call execute() before attempting to read response");
     }
 
     if (!hasOutput) {
@@ -640,10 +654,10 @@ public class HttpGDataRequest implements GDataRequest {
   /**
    * Returns a parse source that can be used to read response data from the
    * GData service.
-   *
+   * 
    * @return ParseSource providing access to GData response data.
-   * @throws IllegalStateException if attemping to read response without
-   *                               first calling {@link #execute()}.
+   * @throws IllegalStateException if attemping to read response without first
+   *         calling {@link #execute()}.
    * @throws IOException error obtaining the response data.
    */
   public ParseSource getParseSource() throws IOException {
@@ -653,7 +667,7 @@ public class HttpGDataRequest implements GDataRequest {
   /**
    * Returns the URLConnection instance that represents the underlying
    * connection to the GData service that will be used by this request.
-   *
+   * 
    * @return connection to GData service.
    */
   public HttpURLConnection getConnection() {

@@ -22,8 +22,10 @@ import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.extensions.Deleted;
 import com.google.gdata.data.extensions.Email;
+import com.google.gdata.data.extensions.ExtendedProperty;
 import com.google.gdata.data.extensions.Im;
 import com.google.gdata.data.extensions.Organization;
 import com.google.gdata.data.extensions.PhoneNumber;
@@ -43,12 +45,13 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
   /**
    * Contact kind term value.
    */
-  static final String KIND = ContactsNamespace.GCONTACT_PREFIX + "contact";
+  public static final String KIND = ContactsNamespace.GCONTACT_PREFIX +
+      "contact";
 
   /**
    * Contact kind category.
    */
-  static final Category CATEGORY = new Category(Namespaces.gKind, KIND);
+  public static final Category CATEGORY = new Category(Namespaces.gKind, KIND);
 
   /**
    * Default mutable constructor.
@@ -77,6 +80,12 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     extProfile.declare(ContactEntry.class, new ExtensionDescription(Email.class,
         new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
         "email", false, true, false));
+    extProfile.declare(ContactEntry.class,
+        new ExtensionDescription(ExtendedProperty.class,
+        new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
+        "extendedProperty", false, true, false));
+    extProfile.declare(ContactEntry.class,
+        GroupMembershipInfo.getDefaultDescription(false, true));
     extProfile.declare(ContactEntry.class, Im.getDefaultDescription(false,
         true));
     extProfile.declare(ContactEntry.class,
@@ -148,6 +157,60 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
    */
   public boolean hasEmailAddresses() {
     return hasRepeatingExtension(Email.class);
+  }
+
+  /**
+   * Returns the extended properties.
+   *
+   * @return extended properties
+   */
+  public List<ExtendedProperty> getExtendedProperties() {
+    return getRepeatingExtension(ExtendedProperty.class);
+  }
+
+  /**
+   * Adds a new extended property.
+   *
+   * @param extendedProperty extended property
+   */
+  public void addExtendedProperty(ExtendedProperty extendedProperty) {
+    getExtendedProperties().add(extendedProperty);
+  }
+
+  /**
+   * Returns whether it has the extended properties.
+   *
+   * @return whether it has the extended properties
+   */
+  public boolean hasExtendedProperties() {
+    return hasRepeatingExtension(ExtendedProperty.class);
+  }
+
+  /**
+   * Returns the group membership infos.
+   *
+   * @return group membership infos
+   */
+  public List<GroupMembershipInfo> getGroupMembershipInfos() {
+    return getRepeatingExtension(GroupMembershipInfo.class);
+  }
+
+  /**
+   * Adds a new group membership info.
+   *
+   * @param groupMembershipInfo group membership info
+   */
+  public void addGroupMembershipInfo(GroupMembershipInfo groupMembershipInfo) {
+    getGroupMembershipInfos().add(groupMembershipInfo);
+  }
+
+  /**
+   * Returns whether it has the group membership infos.
+   *
+   * @return whether it has the group membership infos
+   */
+  public boolean hasGroupMembershipInfos() {
+    return hasRepeatingExtension(GroupMembershipInfo.class);
   }
 
   /**
@@ -258,25 +321,26 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     return hasRepeatingExtension(PostalAddress.class);
   }
 
-  @Override
-  protected void validate() {
+  /**
+   * Returns the link to edit contact photo.
+   *
+   * @return Link to edit contact photo or {@code null} for none.
+   */
+  public Link getContactEditPhotoLink() {
+    return getLink(ContactLink.Rel.EDIT_CONTACT_PHOTO, ContactLink.Type.IMAGE);
   }
 
   /**
-   * Returns the extension description, specifying whether it is required, and
-   * whether it is repeatable.
+   * Returns the link that provides the contact photo.
    *
-   * @param required   whether it is required
-   * @param repeatable whether it is repeatable
-   * @return extension description
+   * @return Link that provides the contact photo or {@code null} for none.
    */
-  public static ExtensionDescription getDefaultDescription(boolean required,
-      boolean repeatable) {
-    ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(ContactEntry.class);
-    desc.setRequired(required);
-    desc.setRepeatable(repeatable);
-    return desc;
+  public Link getContactPhotoLink() {
+    return getLink(ContactLink.Rel.CONTACT_PHOTO, ContactLink.Type.IMAGE);
+  }
+
+  @Override
+  protected void validate() {
   }
 
   @Override
@@ -285,4 +349,3 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
   }
 
 }
-

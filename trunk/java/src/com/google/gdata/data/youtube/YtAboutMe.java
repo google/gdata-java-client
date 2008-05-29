@@ -19,32 +19,26 @@ package com.google.gdata.data.youtube;
 import com.google.gdata.data.ExtensionDescription;
 
 /**
- * yt:description tag, found on the user detail page
- *
- * @deprecated This tag is only accepted in version 1 of the protocol.  The tag
- *             {@code atom:summary} usually replaces {@code yt:description} in
- *             version 2 and later. 
+ * yt:aboutMe tag, found on the user detail page
  *
  * 
  */
-@Deprecated
 @ExtensionDescription.Default(
     nsAlias = YouTubeNamespace.PREFIX,
     nsUri = YouTubeNamespace.URI,
-    localName = "description")
-public class YtDescription extends AbstractFreeTextExtension {
+    localName = "aboutMe")
+public class YtAboutMe extends AbstractFreeTextExtension {
 
   /** Creates an empty tag. */
-  public YtDescription() {
+  public YtAboutMe() {
   }
 
   /**
    * Creates a tag and initializes its content.
    *
-   * @param description content
+   * @param aboutMe content
    */
-  public YtDescription(String description) {
-    super(description);
+  public YtAboutMe(String aboutMe) {
+    super(aboutMe);
   }
-
 }

@@ -19,18 +19,25 @@ package com.google.gdata.data.calendar;
 import com.google.gdata.util.common.xml.XmlWriter;
 
 /**
- * Calendar namespace definitions
+ * GData namespace definitions related to Google Calendar.
  *
  * 
  */
-public final class Namespaces {
+public class Namespaces {
+
+  private Namespaces() {}
 
   /** Google Calendar (GCAL) namespace */
   public static final String gCal = "http://schemas.google.com/gCal/2005";
+
+  /** Google Calendar (GCAL) namespace prefix */
   public static final String gCalPrefix = gCal + "#";
+
+  /** Google Calendar (GCAL) namespace alias */
   public static final String gCalAlias = "gCal";
 
-  /** Google data XML writer namespace. */
-  public static final XmlWriter.Namespace gCalNs =
-      new XmlWriter.Namespace(gCalAlias, gCal);
+  /** XML writer namespace for Google Calendar (GCAL) */
+  public static final XmlWriter.Namespace gCalNs = new
+      XmlWriter.Namespace(gCalAlias, gCal);
+
 }
