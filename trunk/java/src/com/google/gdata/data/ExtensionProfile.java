@@ -265,6 +265,16 @@ public class ExtensionProfile {
   }
 
 
+  /**
+   * Returns whether the given extended type has already been declared.  Note
+   * that unlike {@link #getManifest(Class)}, it does not check the super
+   * classes.
+   */
+  public boolean isDeclared(Class extendedType) {
+    return profile.containsKey(extendedType);
+  }
+
+
   /** Retrieves a collection of all namespaces used by this profile. */
   public synchronized Collection<XmlWriter.Namespace> getNamespaceDecls() {
 
