@@ -23,6 +23,7 @@
   <import file="build-samples/photos.xml"/>
   <import file="build-samples/spreadsheet.xml"/>
   <import file="build-samples/youtube.xml"/>
+  <import file="build-samples/webmastertools.xml"/>
 
 
 <!--  ===================================================================== -->
@@ -43,6 +44,7 @@
     <antcall target="photos.sample.photos.build"/>
     <antcall target="spreadsheet.sample.spreadsheet.build"/>
     <antcall target="youtube.sample.youtube.build"/>
+    <antcall target="webmastertools.sample.webmastertools.build"/>
   </target>
 
   <target name="clean">
@@ -59,6 +61,7 @@
     <antcall target="photos.sample.photos.clean"/>
     <antcall target="spreadsheet.sample.spreadsheet.clean"/>
     <antcall target="youtube.sample.youtube.clean"/>
+    <antcall target="webmastertools.sample.webmastertools.clean"/>
   </target>
 
 

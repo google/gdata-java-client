@@ -488,6 +488,24 @@ public class GoogleService extends Service implements TokenListener {
 
 
   @Override
+  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
+                                             Class<E> entryClass,
+                                             String etag)
+      throws IOException, ServiceException {
+
+    try {
+      return super.getEntry(entryUrl, entryClass, etag);
+    } catch (RedirectRequiredException e) {
+      entryUrl = handleRedirectException(e);
+    } catch (SessionExpiredException e) {
+      handleSessionExpiredException(e);
+    }
+
+    return super.getEntry(entryUrl, entryClass, etag);
+  }
+
+
+  @Override
   public <E extends BaseEntry<?>> E update(URL entryUrl, E entry)
       throws IOException, ServiceException {
 
@@ -596,6 +614,20 @@ public class GoogleService extends Service implements TokenListener {
     super.delete(entryUrl);
   }
 
+  @Override
+  public void delete(URL entryUrl, String etag)
+      throws IOException, ServiceException {
+    try {
+      super.delete(entryUrl, etag);
+      return;
+    } catch (RedirectRequiredException e) {
+      entryUrl = handleRedirectException(e);
+    } catch (SessionExpiredException e) {
+      handleSessionExpiredException(e);
+    }
+
+    super.delete(entryUrl);
+  }
 
   /**
    * Handles a redirect exception by generating the new URL to use for the

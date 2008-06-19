@@ -49,6 +49,7 @@ public class YouTubeQuery extends Query {
   private static final String RACY_EXCLUDE = "exclude";
   private static final String LANGUAGE_RESTRICT = "lr";
   private static final String RESTRICTION = "restriction";
+  private static final String LOCATION = "location";
 
   private static final Pattern COUNTRY_CODE_PATTERN = Pattern.compile("[a-zA-Z]{2}");
   private static final Pattern IP_V4_PATTERN
@@ -145,7 +146,6 @@ public class YouTubeQuery extends Query {
   /**
    * Prefix for specifying relevance by language.
    */
-
   private static final Pattern RELEVANCE_LANGUAGE_PATTERN = Pattern.compile("_lang_([^_]+)");
 
 
@@ -376,7 +376,7 @@ public class YouTubeQuery extends Query {
   /**
    * Gets the value of the {@code racy} parameter.
    * 
-   * @return true if the {@code racy=include}
+   * @return true if the {@code racy=include} parameter is present
    */
   public boolean getIncludeRacy() {
     return RACY_INCLUDE.equals(getCustomParameterValue(RACY));
@@ -398,6 +398,29 @@ public class YouTubeQuery extends Query {
 
     overwriteCustomParameter(RACY, stringValue);
   }
+
+  /**
+   * Set/unset the location restrict.
+   * @param isRestrictLocation {@code true} if only videos that have a location are to be returned,
+   *   {@code false} otherwise.
+   */
+  public void setRestrictLocation(boolean isRestrictLocation) {
+    if (isRestrictLocation) {
+      overwriteCustomParameter(LOCATION, "");
+    } else {
+      overwriteCustomParameter(LOCATION, null);
+    }
+  }
+
+  /**
+   * Returns {@code true} if the query has a location restrict. More precisely, it returns {@code
+   * true} if the {@code location=} parameter is present in the query URL.
+   * @return {@code true} if the query is restricted by location, {@code false} otherwise.
+   */
+  public boolean hasRestrictLocation() {
+    return getCustomParameterValue(LOCATION) != null;
+  }
+
   
   /**
    * Retrieves the country restriction set on the current query, if any.

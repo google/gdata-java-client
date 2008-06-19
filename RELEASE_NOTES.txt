@@ -1,5 +1,11 @@
 Google Data API - Release Notes
 
+Notes for v1.19.0
+-----------------
+Jun 19, 2008
+o  Added support for Webmaster Tools API.  For details refer to
+   http://code.google.com/apis/webmastertools/.
+
 Notes for v1.18.0
 -----------------
 May 29, 2008
