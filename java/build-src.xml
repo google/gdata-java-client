@@ -16,6 +16,7 @@
   <import file="build-src/codesearch.xml"/>
   <import file="build-src/contacts.xml"/>
   <import file="build-src/docs.xml"/>
+  <import file="build-src/finance.xml"/>
   <import file="build-src/gbase.xml"/>
   <import file="build-src/health.xml"/>
   <import file="build-src/photos.xml"/>
@@ -36,6 +37,7 @@
     <antcall target="codesearch.build.codesearch"/>
     <antcall target="contacts.build.contacts"/>
     <antcall target="docs.build.docs"/>
+    <antcall target="finance.build.finance"/>
     <antcall target="gbase.build.gbase"/>
     <antcall target="health.build.health"/>
     <antcall target="photos.build.photos"/>
@@ -51,6 +53,7 @@
     <antcall target="codesearch.clean.codesearch"/>
     <antcall target="contacts.clean.contacts"/>
     <antcall target="docs.clean.docs"/>
+    <antcall target="finance.clean.finance"/>
     <antcall target="gbase.clean.gbase"/>
     <antcall target="health.clean.health"/>
     <antcall target="photos.clean.photos"/>

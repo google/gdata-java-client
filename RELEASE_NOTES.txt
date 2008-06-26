@@ -1,5 +1,11 @@
 Google Data API - Release Notes
 
+Notes for v1.20.0
+-----------------
+Jun 24, 2008
+o  Added support for Finance GData API.  For details refer to
+   http://code.google.com/apis/finance/.
+
 Notes for v1.19.0
 -----------------
 Jun 19, 2008
