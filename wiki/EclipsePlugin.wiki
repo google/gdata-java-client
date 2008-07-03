@@ -1,4 +1,5 @@
 #summary Introduction to new Google Data Java Client Eclipse Plug-in
+#labels Featured
 
 = Introduction =
 
