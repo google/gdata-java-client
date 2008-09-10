@@ -25,6 +25,7 @@ import com.google.gdata.data.ExtensionDescription;
  *
  * 
  */
+@Deprecated
 public class PheedImageUrl extends PheedConstruct {
   public PheedImageUrl() {
     this(null);

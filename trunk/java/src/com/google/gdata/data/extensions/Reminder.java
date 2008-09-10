@@ -17,6 +17,7 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
@@ -31,13 +32,13 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * GData schema extension describing a reminder on an event.  You can
  * represent a set of reminders where each has a (1) reminder period
  * and (2) notification method.  The method can be either "sms",
  * "email", "alert", "none", "all".
  *
+ * <p>
  * The meaning of this set of reminders differs based on whether you
  * are reading or writing feeds.  When reading, the set of reminders
  * returned on an event takes into account both defaults on a
@@ -46,14 +47,17 @@ import java.util.ArrayList;
  * means the event has absolutely no reminders.  "none" or "all" will
  * not apply in this case.
  *
+ * <p>
  * Writing is different because we have to be backwards-compatible
  * (see *) with the old way of setting reminders.  For easier analysis
  * we describe all the behaviors defined in the table below.  (Notice
  * we only include cases for minutes, as the other cases specified in
  * terms of days/hours/absoluteTime can be converted to this case.)
  *
+ * <p>
  * Notice method is case-sensitive: must be in lowercase!
  *
+ * <pre>
  *                   no method      method         method=
  *                   or method=all  =none          email|sms|alert
  *  ____________________________________________________________________________
@@ -74,6 +78,7 @@ import java.util.ArrayList;
  *
  *  multiple gd:rem  InvalidEntry-  InvalidEntry-  copy this set exactly
  *                   Exception      Exception
+ * </pre>
  *
  * Hence, to override an event with a set of reminder <time, method>
  * pairs, just specify them exactly.  To clear an event of all
@@ -92,8 +97,7 @@ public class Reminder extends ExtensionPoint implements Extension {
     ALL,
     EMAIL,
     NONE,
-    SMS,
-    ;
+    SMS;
 
     /**
      * @throws IllegalArgumentException if it doesn't match a method
@@ -152,6 +156,7 @@ public class Reminder extends ExtensionPoint implements Extension {
     return desc;
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -188,27 +193,20 @@ public class Reminder extends ExtensionPoint implements Extension {
   }
 
 
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
-                                             String namespace,
-                                             String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+      String namespace, String localName, Attributes attrs) {
     return new Handler(extProfile);
   }
-
 
   /** <g:reminder> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
-
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, Reminder.class);
     }
 
-
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
@@ -220,7 +218,8 @@ public class Reminder extends ExtensionPoint implements Extension {
           try {
             days = Integer.valueOf(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Invalid g:reminder/@days.", e);
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidReminderDays, e);
           }
 
         } else if (localName.equals("hours")) {
@@ -228,7 +227,8 @@ public class Reminder extends ExtensionPoint implements Extension {
           try {
             hours = Integer.valueOf(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Invalid g:reminder/@hours.", e);
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidReminderHours, e);
           }
 
         } else if (localName.equals("minutes")) {
@@ -236,7 +236,8 @@ public class Reminder extends ExtensionPoint implements Extension {
           try {
             minutes = Integer.valueOf(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Invalid g:reminder/@minutes.", e);
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidReminderMinutes, e);
           }
 
         } else if (localName.equals("absoluteTime")) {
@@ -244,7 +245,8 @@ public class Reminder extends ExtensionPoint implements Extension {
           try {
             absoluteTime = DateTime.parseDateTime(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Invalid g:reminder/@absoluteTime.", e);
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidReminderAbsoluteTime, e);
           }
 
         } else if (localName.equals("method")) {
@@ -252,12 +254,14 @@ public class Reminder extends ExtensionPoint implements Extension {
           try {
             method = Method.fromString(value);
           } catch (IllegalArgumentException e) {
-            throw new ParseException("Invalid g:reminder/@method.", e);
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidReminderMethod, e);
           }
         }
       }
     }
 
+    @Override
     public void processEndElement() throws ParseException {
 
       if ((days == null ? 0 : 1) +
@@ -265,7 +269,8 @@ public class Reminder extends ExtensionPoint implements Extension {
           (minutes == null ? 0 : 1) +
           (absoluteTime == null ? 0 : 1) > 1) {
 
-        throw new ParseException("g:reminder must have zero or one attribute.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.tooManyAttributes);
       }
 
       super.processEndElement();

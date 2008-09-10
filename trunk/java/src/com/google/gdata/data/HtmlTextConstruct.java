@@ -25,7 +25,6 @@ import com.google.gdata.util.XmlParser;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * HTML variant of {@link TextConstruct}.
  *
@@ -33,10 +32,8 @@ import java.util.ArrayList;
  */
 public class HtmlTextConstruct extends TextConstruct {
 
-
   /** Class constructor. */
-  public HtmlTextConstruct() {};
-
+  public HtmlTextConstruct() {}
 
   /**
    * Class constructor specifying the HTML content for this
@@ -45,7 +42,6 @@ public class HtmlTextConstruct extends TextConstruct {
   public HtmlTextConstruct (String html) {
     this.html = html;
   }
-
 
   /** 
    * Class constructor specifying the HTML content for this
@@ -57,12 +53,13 @@ public class HtmlTextConstruct extends TextConstruct {
     this.lang = lang;
   }
 
-
   /** @return the type (HTML) of this text construct */
+  @Override
   public int getType() { return Type.HTML; }
+  
   /** @return {@code true} if this text construct has no contents */
+  @Override
   public boolean isEmpty() { return getHtml() == null; }
-
 
   /** HTML contents. */
   protected String html;
@@ -71,14 +68,13 @@ public class HtmlTextConstruct extends TextConstruct {
   /** Specifies the HTML contents of this text construct. */
   public void setHtml(String v) { html = v; }
 
-
   /**
    * @return a plain-text representation of this text construct
    */
+  @Override
   public String getPlainText() {
     return HtmlToText.htmlToPlainText(html);
   }
-
 
   /**
    * Generates XML in the Atom format.
@@ -91,6 +87,7 @@ public class HtmlTextConstruct extends TextConstruct {
    *
    * @throws  IOException
    */
+  @Override
   public void generateAtom(XmlWriter w,
                            String elementName) throws IOException {
 
@@ -106,7 +103,6 @@ public class HtmlTextConstruct extends TextConstruct {
     w.simpleElement(Namespaces.atomNs, elementName, attrs, html);
   }
 
-
   /**
    * Generates XML in the RSS format.
    *
@@ -121,6 +117,7 @@ public class HtmlTextConstruct extends TextConstruct {
    *
    * @throws  IOException
    */
+  @Override
   public void generateRss(XmlWriter w,
                           String elementName,
                           RssFormat rssFormat) throws IOException {
@@ -140,7 +137,6 @@ public class HtmlTextConstruct extends TextConstruct {
     }
   }
 
-
   /** Parses XML in the Atom format. */
   public class AtomHandler extends XmlParser.ElementHandler {
 
@@ -149,6 +145,7 @@ public class HtmlTextConstruct extends TextConstruct {
      *
      * @throws ParseException
      */
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
@@ -161,10 +158,12 @@ public class HtmlTextConstruct extends TextConstruct {
       }
     }
 
-
     /**
      * Processes this element; overrides inherited method.
+     * 
+     * @throws ParseException from subclasses.
      */
+    @Override
     public void processEndElement() throws ParseException {
 
       if (value == null) {

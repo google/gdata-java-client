@@ -32,10 +32,4 @@ public interface Reference {
    * @param href the resource href.
    */
   public void setHref(String href);
-  
-  /**
-   * Returns the MIME type of the referenced resource (or {@code null} if
-   * unknown).
-   */
-  public String getType();
 }

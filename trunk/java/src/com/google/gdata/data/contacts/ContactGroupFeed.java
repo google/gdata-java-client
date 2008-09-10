@@ -42,7 +42,7 @@ public class ContactGroupFeed extends BaseFeed<ContactGroupFeed,
    *
    * @param sourceFeed source feed
    */
-  public ContactGroupFeed(BaseFeed sourceFeed) {
+  public ContactGroupFeed(BaseFeed<?, ?> sourceFeed) {
     super(ContactGroupEntry.class, sourceFeed);
   }
 

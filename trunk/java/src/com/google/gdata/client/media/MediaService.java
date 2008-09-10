@@ -16,7 +16,9 @@
 
 package com.google.gdata.client.media;
 
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.http.HttpGDataRequest;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.MediaContent;
@@ -47,6 +49,12 @@ import javax.mail.internet.MimeUtility;
  * 
  */
 public class MediaService extends GoogleService {
+  
+  /**
+   * Used to set the buffer size when using Transfer-Encoding: chunked.
+   * Setting this to 0 uses the default which is 4MB.
+   */
+  private static final int CHUNKED_BUFFER_SIZE = 0;
 
   /**
    * Constructs a MediaService instance connecting to the service with name
@@ -149,7 +157,8 @@ public class MediaService extends GoogleService {
       return getMediaResource(mediaUrl,
           mediaContent.getMimeType(), ifModifiedSince);
     } catch (MalformedURLException mue) {
-      throw new ServiceException("Invalid media source URI", mue);
+      throw new ServiceException(
+          CoreErrorDomain.ERR.invalidMediaSourceUri, mue);
     } catch (RedirectRequiredException e) {
       mediaUrl = handleRedirectException(e);
     } catch (SessionExpiredException e) {
@@ -183,6 +192,10 @@ public class MediaService extends GoogleService {
     String name = media.getName();
     if (name != null) {
       request.setHeader("Slug", MimeUtility.encodeText(name, "utf-8", null));
+    }
+    if (request instanceof HttpGDataRequest) {
+      HttpGDataRequest httpRequest = (HttpGDataRequest) request;
+      httpRequest.getConnection().setChunkedStreamingMode(CHUNKED_BUFFER_SIZE);
     }
   }
 
@@ -248,7 +261,8 @@ public class MediaService extends GoogleService {
       return (E) parseEntry(entry.getClass(), resultEntrySource);
 
     } catch (MessagingException e) {
-        throw new ServiceException("Unable to write MIME multipart message", e);
+      throw new ServiceException(
+          CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
     } finally {
       closeSource(resultEntrySource);
     }
@@ -356,7 +370,8 @@ public class MediaService extends GoogleService {
       return (E) parseEntry(entry.getClass(), resultEntrySource);
 
     } catch (MessagingException e) {
-      throw new ServiceException("Unable to write MIME multipart message", e);
+      throw new ServiceException(
+          CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
     } finally {
       closeSource(resultEntrySource);
     }

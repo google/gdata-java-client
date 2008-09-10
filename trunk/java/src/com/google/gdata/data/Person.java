@@ -17,6 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -27,21 +28,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
 /**
  * Person type used for feed and entry authors and contributors. It may also
  * be used by services' custom elements.
  *
  * 
  */
-public class Person extends ExtensionPoint {
-
+public class Person extends ExtensionPoint implements IPerson {
 
   /**
    * Class constructor.
    */
-  public Person() {};
-
+  public Person() {}
 
   /**
    * Constructs a new Person instance with the specified name.
@@ -51,7 +49,6 @@ public class Person extends ExtensionPoint {
       throw new NullPointerException("Name must have a value");
     this.name = name;
   }
-
 
   /**
    * Constructs a new Person instance with the specified name, URI,
@@ -63,30 +60,25 @@ public class Person extends ExtensionPoint {
     this.email = email;
   }
 
-
   /** Human-readable name. */
   protected String name;
   public String getName() { return name; }
   public void setName(String v) { name = v; }
-
 
   /** Language of name. Derived from the current state of {@code xml:lang}. */
   protected String nameLang;
   public String getNameLang() { return nameLang; }
   public void setNameLang(String v) { nameLang = v; }
 
-
   /** URI associated with the person. */
   protected String uri;
   public String getUri() { return uri; }
   public void setUri(String v) { uri = v; }
 
-
   /** Email address. */
   protected String email;
   public String getEmail() { return email; }
   public void setEmail(String v) { email = v; }
-
 
   /**
    * Generates XML.
@@ -147,7 +139,6 @@ public class Person extends ExtensionPoint {
     w.endElement(elementNamespace, elementName);
   }
 
-
   /**
    * Generates XML in the Atom format.
    *
@@ -168,7 +159,6 @@ public class Person extends ExtensionPoint {
 
     generate(extProfile, w, Namespaces.atomNs, elementName, null);
   }
-
 
   /**
    * Generates XML in the RSS format.
@@ -196,16 +186,15 @@ public class Person extends ExtensionPoint {
     w.simpleElement(Namespaces.rssNs, elementName, null, text);
   }
 
-
   /** Parses XML in the Atom format. */
   public class AtomHandler extends ExtensionPoint.ExtensionHandler {
 
 
-    public AtomHandler(ExtensionProfile extProfile) throws IOException {
+    public AtomHandler(ExtensionProfile extProfile) {
       super(extProfile, Person.class);
     }
 
-
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
@@ -226,17 +215,19 @@ public class Person extends ExtensionPoint {
       return null;
     }
 
-
     class NameHandler extends XmlParser.ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (name != null) {
-          throw new ParseException("Duplicate name.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateName);
         }
 
         if (value == null) {
-          throw new ParseException("Name must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.nameValueRequired);
         }
 
         name = value;
@@ -244,34 +235,38 @@ public class Person extends ExtensionPoint {
       }
     }
 
-
     class UriHandler extends XmlParser.ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (uri != null) {
-          throw new ParseException("Duplicate URI.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateUri);
         }
 
         if (value == null) {
-          throw new ParseException("URI must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.uriValueRequired);
         }
 
         uri = value;
       }
     }
 
-
     class EmailHandler extends XmlParser.ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (email != null) {
-          throw new ParseException("Duplicate email.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateEmail);
         }
 
         if (value == null) {
-          throw new ParseException("Email must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.emailValueRequired);
         }
 
         email = value;

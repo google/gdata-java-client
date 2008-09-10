@@ -31,6 +31,14 @@ import com.google.gdata.data.TextContent;
 @Kind.Term(YouTubeNamespace.KIND_COMPLAINT)
 public class ComplaintEntry extends BaseEntry<ComplaintEntry> {
 
+  /**
+   * Nonstandard categories that might be found in this entry.
+   */
+  public static final String[] CATEGORIES = {
+    YouTubeNamespace.COMPLAINT_REASON_SCHEME
+  };
+
+
   public ComplaintEntry() {
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_COMPLAINT);
   }

@@ -67,7 +67,7 @@ public class GphotoFeed<F extends GphotoFeed> extends MediaFeed<F, GphotoEntry>
    * {@code GphotoEntry} instances. The source data for the feed will be pulled
    * from the {@code BaseFeed} instance that was passed as source.
    */
-  public GphotoFeed(BaseFeed sourceFeed) {
+  public GphotoFeed(BaseFeed<?, ?> sourceFeed) {
     this(GphotoEntry.class, sourceFeed);
   }
 

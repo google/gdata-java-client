@@ -54,7 +54,7 @@ public class TransactionEntry extends BaseEntry<TransactionEntry> {
    *
    * @param sourceEntry source entry
    */
-  public TransactionEntry(BaseEntry sourceEntry) {
+  public TransactionEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 

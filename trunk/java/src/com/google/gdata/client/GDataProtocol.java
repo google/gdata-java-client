@@ -151,6 +151,14 @@ public class GDataProtocol {
      * matches that should be returned from a query request.
      */
     public static final String MAX_RESULTS = "max-results";
+    
+    /**
+     * The CATEGORY query parameter is an alternative syntax that can be used
+     * to specify a category query that is used to match returned entries.  The
+     * value is a comma-separated list of category query expressions that all
+     * must match.
+     */
+    public static final String CATEGORY = "category";
   }
   
   /**

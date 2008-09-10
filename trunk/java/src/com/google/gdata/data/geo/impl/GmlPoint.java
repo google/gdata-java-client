@@ -141,6 +141,7 @@ public class GmlPoint extends ExtensionPoint implements Point {
   /**
    * Generates the XML corresponding to this gml point.
    */
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 

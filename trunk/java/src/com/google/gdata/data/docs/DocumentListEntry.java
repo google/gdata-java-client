@@ -33,7 +33,6 @@ import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,6 +65,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     SXW("application/vnd.sun.xml.writer"),
     DOC("application/msword"),
     RTF("application/rtf"),
+    PDF("application/pdf"),
     PPS("application/vnd.ms-powerpoint"),
     PPT("application/vnd.ms-powerpoint"),
     XLS("application/vnd.ms-excel"),
@@ -120,7 +120,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * of document type.
    */
   public static final String UNKNOWN_KIND = DocumentListFeed.DOCUMENT_NAMESPACE 
-      + "#" + UNKNOWN_LABEL;
+      + "#" + DocumentListEntry.UNKNOWN_LABEL;
   
   /**
    * Category used to label entries which are of document type.
@@ -143,10 +143,11 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * Constructs a new entry by doing a shallow copy from another BaseEntry
    * instance.
    */
-  public DocumentListEntry(BaseEntry sourceEntry) {
+  public DocumentListEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
     extProfile.declare(DocumentListEntry.class, DocumentListAclFeedLink.class);
@@ -195,14 +196,14 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * @deprecated Prefer setFile(File, String)
    */
   @Deprecated
-  public void setFile(File file) throws IOException {
+  public void setFile(File file) {
     setFile(file, getMimeTypeFromFileName(file.getName()));
   }
 
   /**
    * Associate a File with this entry with the specified mime type
    */
-  public void setFile(File file, String mimeType) throws IOException {
+  public void setFile(File file, String mimeType) {
     MediaFileSource fileSource = new MediaFileSource(file, mimeType);
     MediaContent content = new MediaContent();
     content.setMediaSource(fileSource);

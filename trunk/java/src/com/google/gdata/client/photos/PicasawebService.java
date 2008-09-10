@@ -17,30 +17,32 @@
 package com.google.gdata.client.photos;
 
 import com.google.gdata.client.media.MediaService;
+import com.google.gdata.data.photos.AlbumEntry;
 import com.google.gdata.data.photos.AlbumFeed;
 import com.google.gdata.data.photos.CommentEntry;
+import com.google.gdata.data.photos.PhotoEntry;
 import com.google.gdata.data.photos.PhotoFeed;
 import com.google.gdata.data.photos.TagEntry;
+import com.google.gdata.data.photos.UserEntry;
 import com.google.gdata.data.photos.UserFeed;
 
 /**
- * The PicasawebService class extends the basic {@link MediaService}
- * abstraction to define a service that is preconfigured for access
- * to the Google Picasaweb data API.
+ * Extends the basic {@link MediaService} abstraction to define a service that
+ * is preconfigured for access to the Google Photos data API.
  *
  * 
  */
 public class PicasawebService extends MediaService {
 
   /**
-   * The abbreviated name of Picasaweb recognized by Google.  The service
+   * The abbreviated name of Google Photos recognized by Google.  The service
    * name is used when requesting an authentication token.
    */
   public static final String PWA_SERVICE = "lh2";
 
   /**
-   * Constructs a PicasawebService instance connecting to the Picasaweb service
-   * for an application with the name {@code applicationName}.
+   * Constructs an instance connecting to the Google Photos service for an
+   * application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -49,13 +51,15 @@ public class PicasawebService extends MediaService {
    *                        monitor the source of authentication.
    */
   public PicasawebService(String applicationName) {
-    this(applicationName, "https", "www.google.com");
+    super(PWA_SERVICE, applicationName);
+    declareExtensions();
   }
 
   /**
-   * Constructs a GoogleService instance connecting to the pwa service
-   * for an application with the name {@code applicationName}.
-   * The service will authenticate at the provided {@code domainName}.
+   * Constructs an instance connecting to the Google Photos service with name
+   * {@code serviceName} for an application with the name {@code
+   * applicationName}.  The service will authenticate at the provided {@code
+   * domainName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -69,19 +73,27 @@ public class PicasawebService extends MediaService {
   public PicasawebService(String applicationName, String protocol,
       String domainName) {
     super(PWA_SERVICE, applicationName, protocol, domainName);
-
-    // Turn on auto-extensions.
-    extProfile.setAutoExtending(true);
-
-    extProfile.addDeclarations(new UserFeed());
-    extProfile.addDeclarations(new AlbumFeed());
-    extProfile.addDeclarations(new PhotoFeed());
-    extProfile.addDeclarations(new CommentEntry());
-    extProfile.addDeclarations(new TagEntry());
+    declareExtensions();
   }
 
   @Override
   public String getServiceVersion() {
     return PWA_SERVICE + " " + super.getServiceVersion();
   }
+
+  /**
+   * Declare the extensions of the feeds for the Google Photos service.
+   */
+  private void declareExtensions() {
+    extProfile.setAutoExtending(true);
+    new AlbumEntry().declareExtensions(extProfile);
+    new AlbumFeed().declareExtensions(extProfile);
+    new CommentEntry().declareExtensions(extProfile);
+    new PhotoEntry().declareExtensions(extProfile);
+    new PhotoFeed().declareExtensions(extProfile);
+    new TagEntry().declareExtensions(extProfile);
+    new UserEntry().declareExtensions(extProfile);
+    new UserFeed().declareExtensions(extProfile);
+  }
+
 }

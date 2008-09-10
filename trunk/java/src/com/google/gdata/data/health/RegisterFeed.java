@@ -42,7 +42,7 @@ public class RegisterFeed extends BaseHealthFeed<RegisterFeed, RegisterEntry> {
    *
    * @param sourceFeed source feed
    */
-  public RegisterFeed(BaseFeed sourceFeed) {
+  public RegisterFeed(BaseFeed<?, ?> sourceFeed) {
     super(RegisterEntry.class, sourceFeed);
   }
 

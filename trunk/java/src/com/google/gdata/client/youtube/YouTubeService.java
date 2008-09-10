@@ -77,6 +77,11 @@ public class YouTubeService extends MediaService {
     public static final Version V2 =
         new Version(YouTubeService.class, "2.0", Service.Versions.V2);
 
+    /**
+     * A shortcut to the latest version.
+     */
+    public static final Version LATEST = V2;
+
     public static final Version[] ALL = { V1, V2 };
   }
 

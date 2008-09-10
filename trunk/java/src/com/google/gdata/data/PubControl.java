@@ -18,6 +18,7 @@ package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -79,8 +80,7 @@ public class PubControl extends ExtensionPoint {
   /** {@code <app:control>} parser. */
   public class AtomHandler extends ExtensionHandler {
 
-    public AtomHandler(ExtensionProfile profile)
-        throws IOException {
+    public AtomHandler(ExtensionProfile profile) {
       super(profile, PubControl.class);
     }
 
@@ -104,16 +104,17 @@ public class PubControl extends ExtensionPoint {
     @Override
     public void processEndElement() throws ParseException {
       if (draft != null) {
-        throw new ParseException("Duplicate draft element");
+        throw new ParseException(
+            CoreErrorDomain.ERR.duplicateDraft);
       }
       if (value.equals("yes")) {
         draft = true;
       } else if (value.equals("no")) {
         draft = false;
       } else {
-        throw new ParseException("Invalid value for draft");
+        throw new ParseException(
+            CoreErrorDomain.ERR.invalidDraft);
       }
     }
   }
-
 }

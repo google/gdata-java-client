@@ -8,6 +8,6 @@ Specification-Title: Google Data Protocol Extensions
 Specification-Version: 1.0
 Specification-Vendor: Google Inc.
 Implementation-Title: GData media client library for Java
-Implementation-Version: 1.20.0
+Implementation-Version: 1.21.0
 Implementation-Vendor: Google Inc.
 

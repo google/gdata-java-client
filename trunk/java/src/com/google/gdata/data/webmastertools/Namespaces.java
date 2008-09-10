@@ -49,6 +49,12 @@ public final class Namespaces {
       = WT_NAMESPACE_URI + "#site-info";
 
   /**
+   * Category term linked to {@link SitesFeed}.
+   */
+  public static final String KIND_SITES_FEED
+      = WT_NAMESPACE_URI + "#sites-feed";
+
+  /**
    * Category term linked to {@link SitemapsFeed}.
    */
   public static final String KIND_SITEMAPS_FEED
@@ -71,6 +77,18 @@ public final class Namespaces {
    */
   public static final String KIND_SITEMAP_NEWS
       = WT_NAMESPACE_URI + "#sitemap-news";
+
+  /**
+   * Category term linked to {@link MessageEntry}.
+   */
+  public static final String KIND_MESSAGE
+      = WT_NAMESPACE_URI + "#message";
+
+  /**
+   * Category term linked to {@link MessagesFeed}.
+   */
+  public static final String KIND_MESSAGES_FEED
+      = WT_NAMESPACE_URI + "#messages-feed";
 
   private Namespaces() {}
 

@@ -53,7 +53,7 @@ public class RegisterEntry extends BaseHealthEntry<RegisterEntry> {
    *
    * @param sourceEntry source entry
    */
-  public RegisterEntry(BaseEntry sourceEntry) {
+  public RegisterEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 

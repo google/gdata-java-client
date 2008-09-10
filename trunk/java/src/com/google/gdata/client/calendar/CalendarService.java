@@ -17,42 +17,58 @@
 package com.google.gdata.client.calendar;
 
 import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.Service;
 import com.google.gdata.data.acl.AclFeed;
+import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.calendar.CalendarEventFeed;
 import com.google.gdata.data.calendar.CalendarFeed;
-import com.google.gdata.data.extensions.EventFeed;
-
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 /**
- * The CalendarService class extends the basic {@link GoogleService}
- * abstraction to define a service that is preconfigured for access
- * to the Google Calendar data API.
+ * Extends the basic {@link GoogleService} abstraction to define a service that
+ * is preconfigured for access to the Google Calendar data API.
  *
  * 
  */
 public class CalendarService extends GoogleService {
 
   /**
-   * The abbreviated name of Calendar recognized by Google.  The service
-   * name is used while requesting an authentication token.
+   * The abbreviated name of Google Calendar recognized by Google.  The service
+   * name is used when requesting an authentication token.
    */
   public static final String CALENDAR_SERVICE = "cl";
 
   /**
-   * The root URL of Calendar feeds.  This URL will be used to scope
-   * the AuthSub (authentication for web services) tokens.
+   * The version ID of the service.
    */
-  public static final String CALENDAR_ROOT_URL =
-    "http://www.google.com/calendar/feeds/";
-
-  public static final String CALENDAR_SERVICE_VERSION =
-    "GCalendar-Java/" +
-    CalendarService.class.getPackage().getImplementationVersion();
-
+  public static final String CALENDAR_SERVICE_VERSION = "GCalendar-Java/" +
+      CalendarService.class.getPackage().getImplementationVersion();
 
   /**
-   * Constructs a CalendarService instance connecting to the Calendar service
-   * for an application with the name {@code applicationName}.
+   * GData versions supported by Google Calendar Service.
+   */
+  public static final class Versions {
+
+    /** Version 1 of the Calendar Data API. */
+    public static final Version V1 = new Version(CalendarService.class, "1.0",
+        Service.Versions.V1);
+
+    /** Version 2 of the Calendar Data API. */
+    public static final Version V2 = new Version(CalendarService.class, "2.0",
+        Service.Versions.V2);
+
+  }
+
+  /**
+   * Default GData version used by the Google Calendar service.
+   */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(CalendarService.class, Versions.V1);
+
+  /**
+   * Constructs an instance connecting to the Google Calendar service for an
+   * application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -61,16 +77,15 @@ public class CalendarService extends GoogleService {
    *                        monitor the source of authentication.
    */
   public CalendarService(String applicationName) {
-
-    this(applicationName, "https", "www.google.com");
+    super(CALENDAR_SERVICE, applicationName);
+    declareExtensions();
   }
 
-
   /**
-   * Constructs a GoogleService instance connecting to the service with name
-   * {@code serviceName} for an application with the name
-   * {@code applicationName}.  The service will authenticate at the provided
-   * {@code domainName}.
+   * Constructs an instance connecting to the Google Calendar service with name
+   * {@code serviceName} for an application with the name {@code
+   * applicationName}.  The service will authenticate at the provided {@code
+   * domainName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -81,21 +96,40 @@ public class CalendarService extends GoogleService {
    *                        ("http"/"https")
    * @param domainName      the name of the domain hosting the login handler
    */
-  public CalendarService(String applicationName,
-                         String protocol,
-                         String domainName) {
-
+  public CalendarService(String applicationName, String protocol,
+      String domainName) {
     super(CALENDAR_SERVICE, applicationName, protocol, domainName);
-
-    // Configure the extension profile to expect EventFeed formatted entries
-    // or Acl entries.
-    new CalendarFeed().declareExtensions(getExtensionProfile());
-    new EventFeed().declareExtensions(getExtensionProfile());
-    new CalendarEventFeed().declareExtensions(getExtensionProfile());
-    new AclFeed().declareExtensions(getExtensionProfile());
+    declareExtensions();
   }
 
+  @Override
   public String getServiceVersion() {
     return CALENDAR_SERVICE_VERSION + " " + super.getServiceVersion();
   }
+
+  /**
+   * Returns the current GData version used by the Google Calendar service.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(CalendarService.class);
+  }
+
+  /**
+   * Declare the extensions of the feeds for the Google Calendar service.
+   */
+  private void declareExtensions() {
+    new AclFeed().declareExtensions(extProfile);
+    new CalendarEventFeed().declareExtensions(extProfile);
+    new CalendarFeed().declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
+  }
+
+
+  /**
+   * The root URL of Calendar feeds.  This URL will be used to scope
+   * the AuthSub (authentication for web services) tokens.
+   */
+  public static final String CALENDAR_ROOT_URL =
+      "http://www.google.com/calendar/feeds/";
+
 }

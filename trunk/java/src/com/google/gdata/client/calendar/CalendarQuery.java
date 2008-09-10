@@ -92,7 +92,7 @@ public class CalendarQuery extends Query {
 
     /**
      * A regex describing the format of extended property values.
-     * The name can be:
+     * The value can be:
      * <ul>
      *   <li>a (possibly empty) plain string without ]'s (e.g. Foo Property), or
      *   <li>a (possibly empty) quoted string with back slashes and quotes

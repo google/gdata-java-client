@@ -16,11 +16,14 @@
 
 package com.google.gdata.data.spreadsheet;
 
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.OutOfLineContent;
+import com.google.gdata.util.Version;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -53,7 +56,7 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
   public WorksheetEntry() {
     getCategories().add(CATEGORY);
   }
-  
+
   /**
    * Constructs a new entry with the given row count and column count
    * @param rowCount the number of rows in the worksheet
@@ -81,44 +84,60 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
     extProfile.declare(WorksheetEntry.class, RowCount.getDefaultDescription());
     extProfile.declare(WorksheetEntry.class, ColCount.getDefaultDescription());
   }
-  
-  
+
   /**
    * Gets the URL for this worksheet's list feed.
-   * 
-   * You can then create a query using this URL to query this worksheet's
+   *
+   * <p>You can then create a query using this URL to query this worksheet's
    * rows, using the very powerful query model.
-   * 
+   *
    * @return a URL to get a feed of worksheets
    */
   public URL getListFeedUrl() {
-    Link feedLink = this.getLink(Namespaces.LIST_LINK_REL, Link.Type.ATOM);
     try {
-      return new URL(feedLink.getHref());
+      return new URL(getFeedUrlString(Namespaces.LIST_LINK_REL));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error in GData server", e);
     }
   }
-  
+
   /**
    * Gets the URL for this worksheet's cells feed.
-   * 
-   * With tis feed, you can query for arbitrary ranges of cells.
-   * 
+   *
+   * <p>With this feed, you can query for arbitrary ranges of cells.
+   *
    * @return a URL to the cells feed
    */
   public URL getCellFeedUrl() {
-    Link feedLink = this.getLink(Namespaces.CELLS_LINK_REL, Link.Type.ATOM);
     try {
-      return new URL(feedLink.getHref());
+      return new URL(getFeedUrlString(Namespaces.CELLS_LINK_REL));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error in GData server", e);
     }
   }
-  
+
+  private String getFeedUrlString(String linkRelKind) {
+    Version spreadsheetVersion = SpreadsheetService.getVersion();
+
+    if (spreadsheetVersion.isCompatible(SpreadsheetService.Versions.V1)) {
+      Link feedLink = this.getLink(linkRelKind, Link.Type.ATOM);
+      return feedLink.getHref();
+    } else { // must be SpreadsheetService.Versions.V2; only 2 versions for now
+      // List or Cells feed Url?
+      if (linkRelKind.equals(Namespaces.LIST_LINK_REL)) {
+        // the list feed is stored as a <content> tag
+        return ((OutOfLineContent)(this.getContent())).getUri();
+      } else { // it must be Namespaces.CELLS_LINK_REL
+        // the cells feed is stored in the <link> tag
+        Link feedLink = this.getLink(linkRelKind, Link.Type.ATOM);
+        return feedLink.getHref();
+      }
+    }
+  }
+
   /**
    * Gets the total number of rows.
-   * 
+   *
    * This refers to the hard bound on rows.  It is possible that your
    * spreadsheet has many, many empty rows, all of which are counted in
    * this count.
@@ -139,7 +158,7 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
    *
    * If the new number of rows is greater than the old, (new-old)
    * blank rows will be appended to the end.  If the new number of
-   * rows is less than the old, then (old-new) rows will be removed 
+   * rows is less than the old, then (old-new) rows will be removed
    * from the end which will DELETE ALL DATE IN DELETED ROWS.
    *
    * @param count the new row count.
@@ -147,14 +166,14 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
   public void setRowCount(int count) {
     setExtension(new RowCount(count));
   }
-  
+
   /**
    * Gets the total number of columns.
-   * 
+   *
    * This refers to the hard bound on columns.  It is possible that your
    * spreadsheet has many empty columns, all of which are counted in
    * this count.
-   * 
+   *
    * Column positions 1 to getColCount() are valid.
    */
   public int getColCount() {
@@ -171,7 +190,7 @@ public class WorksheetEntry extends BaseEntry<WorksheetEntry> {
    *
    * If the new number of columns is greater than the old, (new-old)
    * blank columns will be appended to the end.  If the new number of
-   * columns is less than the old, then (old-new) columns will be removed 
+   * columns is less than the old, then (old-new) columns will be removed
    * from the end which will DELETE ALL DATE IN DELETED COLUMNS.
    *
    * @param count the new column count.

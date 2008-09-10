@@ -40,7 +40,7 @@ public abstract class BaseHealthEntry<E extends BaseHealthEntry> extends
    *
    * @param sourceEntry source entry
    */
-  public BaseHealthEntry(BaseEntry sourceEntry) {
+  public BaseHealthEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 

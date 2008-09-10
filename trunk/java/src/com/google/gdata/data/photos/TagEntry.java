@@ -46,7 +46,7 @@ public class TagEntry extends GphotoEntry<TagEntry> implements TagData {
    * Construct a new tag entry doing a shallow copy of the data in the
    * passed in source entry.
    */
-  public TagEntry(BaseEntry sourceEntry) {
+  public TagEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     getCategories().add(TagData.TAG_CATEGORY);
     this.delegate = new TagDataImpl(this);

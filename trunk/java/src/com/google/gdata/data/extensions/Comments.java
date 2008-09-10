@@ -17,10 +17,14 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
+import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.ExtensionVisitor;
+import com.google.gdata.data.ExtensionVisitor.StoppedException;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser.ElementHandler;
@@ -37,12 +41,10 @@ import java.io.IOException;
  */
 public class Comments extends ExtensionPoint implements Extension {
 
-
   /** Comments feed link. */
-  protected FeedLink feedLink;
-  public FeedLink getFeedLink() { return feedLink; }
-  public void setFeedLink(FeedLink v) { feedLink = v; }
-
+  protected FeedLink<?> feedLink;
+  public FeedLink<?> getFeedLink() { return feedLink; }
+  public void setFeedLink(FeedLink<?> v) { feedLink = v; }
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -54,7 +56,15 @@ public class Comments extends ExtensionPoint implements Extension {
     return desc;
   }
 
-
+  @Override
+  protected void visitChildren(ExtensionVisitor ev) throws StoppedException {
+    if (feedLink != null) {
+      visitChild(ev, feedLink);
+    }
+    super.visitChildren(ev);
+  }
+  
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -70,47 +80,42 @@ public class Comments extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.gNs, "comments");
   }
 
-
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace,
                                    String localName,
-                                   Attributes attrs)
-      throws ParseException, IOException {
-
+                                   Attributes attrs) {
     return new Handler(extProfile);
   }
-
 
   /** <g:comments> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
-
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, Comments.class);
     }
 
-
+    @Override
     public void processEndElement() throws ParseException {
 
       if (feedLink == null) {
-        throw new ParseException("g:comments/g:feedLink is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.commentsFeedLinkRequired);
       }
 
       super.processEndElement();
     }
 
 
+    @Override
     public ElementHandler getChildHandler(String namespace, String localName,
                                           Attributes attrs) 
       throws ParseException, IOException {
 
       if (namespace.equals(Namespaces.g)) {
         if (localName.equals("feedLink")) {
-          feedLink = new FeedLink();
-          return (ElementHandler)feedLink.getHandler(extProfile, namespace, 
-                                                     localName, attrs);
+          feedLink = new FeedLink<BaseFeed<?, ?>>();
+          return feedLink.getHandler(extProfile, namespace, localName, attrs);
         }
       }
 
@@ -118,4 +123,3 @@ public class Comments extends ExtensionPoint implements Extension {
     }
   }
 }
-

@@ -19,49 +19,67 @@ package com.google.gdata.data.spreadsheet;
 import com.google.gdata.util.common.xml.XmlWriter;
 
 /**
- * Relevant namespaces for Google Spreadsheets.
- * 
+ * GData namespace definitions related to Google Spreadsheets.
+ *
  * 
  */
-public final class Namespaces {
+public class Namespaces {
 
-  /** Namespace for standard Google Spreadsheet tags. */
+  private Namespaces() {}
+
+  /** Google Spreadsheets (GS) namespace */
   public static final String gSpread =
       "http://schemas.google.com/spreadsheets/2006";
 
-  /** Prefix for individual kinds. */
+  /** Google Spreadsheets (GS) namespace prefix */
   public static final String gSpreadPrefix = gSpread + "#";
 
-  /** Google data XML writer namespace. */
-  public static final XmlWriter.Namespace gSpreadNs =
-      new XmlWriter.Namespace("gs", gSpread);
+  /** Google Spreadsheets (GS) namespace alias */
+  public static final String gSpreadAlias = "gs";
 
-  /** URI of the schema for custom spreadsheet tags, for list feed. */
+  /** XML writer namespace for Google Spreadsheets (GS) */
+  public static final XmlWriter.Namespace gSpreadNs = new
+      XmlWriter.Namespace(gSpreadAlias, gSpread);
+
+  /** Google Spreadsheets custom tag (GSX) namespace */
   public static final String gSpreadCustom =
       "http://schemas.google.com/spreadsheets/2006/extended";
 
-  /** Namespace for custom spreadsheet tags. */
-  public static final XmlWriter.Namespace gSpreadCustomNs =
-      new XmlWriter.Namespace("gsx", gSpreadCustom);
+  /** Google Spreadsheets custom tag (GSX) namespace prefix */
+  public static final String gSpreadCustomPrefix = gSpreadCustom + "#";
+
+  /** Google Spreadsheets custom tag (GSX) namespace alias */
+  public static final String gSpreadCustomAlias = "gsx";
+
+  /** XML writer namespace for Google Spreadsheets custom tag (GSX) */
+  public static final XmlWriter.Namespace gSpreadCustomNs = new
+      XmlWriter.Namespace(gSpreadCustomAlias, gSpreadCustom);
+
+  /** Gviz data source for the worksheet (GVIZ) namespace */
+  public static final String GVIZ =
+      "http://schemas.google.com/visualization/2008";
+
+  /** Gviz data source for the worksheet (GVIZ) namespace prefix */
+  public static final String GVIZ_PREFIX = GVIZ + "#";
+
 
   /** Link "rel" for worksheets feed. */
   public static final String WORKSHEETS_LINK_REL =
       gSpreadPrefix + "worksheetsfeed";
-  
+
   /** Link "rel" for list feeds. */
   public static final String LIST_LINK_REL =
       gSpreadPrefix + "listfeed";
-  
+
   /** Link "rel" for cells feeds. */
   public static final String CELLS_LINK_REL =
       gSpreadPrefix + "cellsfeed";
 
   /** Link "rel" for a url that is a source for a particular cell. */
   public static final String SOURCE_LINK_REL =
-    gSpreadPrefix + "source";
+      gSpreadPrefix + "source";
 
-  /** Disallows construction for this utility class. */
-  private Namespaces() {
-  }
-  
+ /** Link "rel" for GViz. */
+  public static final String GVIZ_LINK_REL =
+      GVIZ_PREFIX + "visualizationApi";
 }

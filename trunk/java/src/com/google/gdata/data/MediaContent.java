@@ -47,8 +47,8 @@ public class MediaContent extends OutOfLineContent {
    */
   public void setMediaSource(MediaSource v) { mediaSource = v; }
 
-  public static ChildHandlerInfo getChildHandler(Attributes attrs)
-      throws ParseException, IOException {
+  public static ChildHandlerInfo getChildHandler(ExtensionProfile extProfile,
+      Attributes attrs) throws ParseException, IOException {
 
     String src = attrs.getValue("", "src");
     if (src != null) {
@@ -64,7 +64,7 @@ public class MediaContent extends OutOfLineContent {
     } else {
 
       // Delegate all non-media content handling
-      return Content.getChildHandler(attrs);
+      return Content.getChildHandler(extProfile, attrs);
     }
   }
 }

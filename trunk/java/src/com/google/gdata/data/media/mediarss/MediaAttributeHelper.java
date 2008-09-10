@@ -16,6 +16,7 @@
 
 package com.google.gdata.data.media.mediarss;
 
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.util.ParseException;
 
@@ -38,8 +39,11 @@ public class MediaAttributeHelper {
     try {
       return NormalPlayTime.parse(value);
     } catch (java.text.ParseException e) {
-      throw new ParseException("Invalid time offset value for attribute '" +
-          name + "'", e);
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidTimeOffset, e);
+      pe.setInternalReason("Invalid time offset value for attribute '" +
+          name + "'");
+      throw pe;
     }
   }
 }

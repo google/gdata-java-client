@@ -19,7 +19,9 @@ package com.google.gdata.data.photos.impl;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.geo.Box;
 import com.google.gdata.data.geo.Point;
+import com.google.gdata.data.geo.impl.BoxDataImpl;
 import com.google.gdata.data.geo.impl.PointDataImpl;
 import com.google.gdata.data.media.mediarss.MediaCategory;
 import com.google.gdata.data.media.mediarss.MediaContent;
@@ -55,7 +57,8 @@ import java.util.List;
  */
 public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
 
-  private final PointDataImpl geoData;
+  private final PointDataImpl pointData;
+  private final BoxDataImpl boundingBoxData;
   private final MediaDataImpl mediaData;
 
   /**
@@ -64,7 +67,8 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
    */
   public PhotoDataImpl(ExtensionPoint extensionPoint) {
     super(extensionPoint);
-    geoData = new PointDataImpl(extensionPoint);
+    pointData = new PointDataImpl(extensionPoint);
+    boundingBoxData = new BoxDataImpl(extensionPoint);
     mediaData = new MediaDataImpl(extensionPoint);
   }
 
@@ -72,6 +76,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
    * Declare all of the extensions on the photo data.
    */
   @Override
+  @SuppressWarnings("deprecation")
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
     
@@ -100,7 +105,8 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
     declare(extProfile, GphotoCommentsEnabled.getDefaultDescription());
     declare(extProfile, GphotoCommentCount.getDefaultDescription());
 
-    geoData.declareExtensions(extProfile);
+    pointData.declareExtensions(extProfile);
+    boundingBoxData.declareExtensions(extProfile);
     mediaData.declareExtensions(extProfile);
   }
 
@@ -116,6 +122,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
    * PheedVideoUrl is deprecated but included for backwards compatibility with
    * older clients.
    */
+  @SuppressWarnings("deprecation")
   public void setVideoUrl(String videoUrl) {
     if (videoUrl != null) {
       setExtension(new GphotoVideoUrl(videoUrl));
@@ -437,17 +444,37 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
    * These delegate to the backing geo data.
    */
   public void setGeoLocation(Double lat, Double lon) {
-    geoData.setGeoLocation(lat, lon);
+    pointData.setGeoLocation(lat, lon);
   }
 
   public void setGeoLocation(Point point) {
-    geoData.setGeoLocation(point);
+    pointData.setGeoLocation(point);
   }
 
   public Point getGeoLocation() {
-    return geoData.getGeoLocation();
+    return pointData.getGeoLocation();
+  }
+  
+  public Box getGeoBoundingBox() {
+    return boundingBoxData.getGeoBoundingBox();
   }
 
+  public void setGeoBoundingBox(Point lowerLeft, Point upperRight) {
+    boundingBoxData.setGeoBoundingBox(lowerLeft, upperRight);
+  }
+
+  public void setGeoBoundingBox(Box boundingBox) {
+    boundingBoxData.setGeoBoundingBox(boundingBox);
+  }
+
+  public void clearPoint() {
+    pointData.clearPoint();
+  }
+
+  public void clearGeoBoundingBox() {
+    boundingBoxData.clearGeoBoundingBox();
+  }
+  
   /*
    * These delegate to the backing media data.
    */

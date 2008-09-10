@@ -17,6 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
@@ -26,7 +27,6 @@ import com.google.gdata.util.XmlParser;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * Variant of {@link Content} for entries that reference external content.
  *
@@ -34,8 +34,8 @@ import java.util.ArrayList;
  */
 public class OutOfLineContent extends Content {
 
-
   /** @return the type of this content */
+  @Override
   public int getType() {
     return Content.Type.MEDIA;
   }
@@ -47,8 +47,8 @@ public class OutOfLineContent extends Content {
   /** Specifies the MIME Content type. */
   public void setMimeType(ContentType v) { mimeType = v; }
 
-
   /** @return  always null, since language is undefined for external content. */
+  @Override
   public String getLang() { return null; }
 
   /**
@@ -73,10 +73,14 @@ public class OutOfLineContent extends Content {
    *
    * @param   w
    *            output writer
+   * @param   extProfile
+   *            Extension Profile for nested extensions
    *
    * @throws  IOException
    */
-  public void generateAtom(XmlWriter w) throws IOException {
+  @Override
+  public void generateAtom(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException {
 
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(2);
@@ -93,16 +97,19 @@ public class OutOfLineContent extends Content {
     w.simpleElement(Namespaces.atomNs, "content", attrs, null);
   }
 
-
   /**
    * Generates XML in the RSS format.
    *
    * @param   w
    *            output writer
+   * @param   extProfile
+   *            Extension Profile for nested extensions
    *
    * @throws  IOException
    */
-  public void generateRss(XmlWriter w) throws IOException {
+  @Override
+  public void generateRss(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException {
 
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(3);
@@ -125,12 +132,12 @@ public class OutOfLineContent extends Content {
   /** Parses XML in the Atom format. */
   public class AtomHandler extends XmlParser.ElementHandler {
 
-
     /**
      * Processes attributes.
      *
      * @throws   ParseException
      */
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
@@ -138,16 +145,23 @@ public class OutOfLineContent extends Content {
 
       if (namespace.equals("")) {
         if (localName.equals("type")) {
-          mimeType = new ContentType(value);
+          try {
+            mimeType = new ContentType(value);
+          } catch (IllegalArgumentException e) {
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidMimeType, e);
+          }
         } else if (localName.equals("src")) {
           uri = getAbsoluteUri(value);
         }
       }
     }
 
+    @Override
     public void processEndElement() throws ParseException {
       if (uri == null) {
-        throw new ParseException("Missing src attribute");
+        throw new ParseException(
+            CoreErrorDomain.ERR.missingSrcAttribute);
       }
 
       // Validate that external content element is empty.

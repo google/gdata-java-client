@@ -16,6 +16,7 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ParseException;
 
 import org.xml.sax.Attributes;
@@ -97,7 +98,8 @@ public class AttributeHelper {
   public String consume(String name, boolean required) throws ParseException {
     if (name == null) {
       if (content == null && required) {
-        throw new ParseException("Missing required text content");
+        throw new ParseException(
+            CoreErrorDomain.ERR.missingRequiredContent);
       }
       contentConsumed = true;
       return content;
@@ -105,7 +107,10 @@ public class AttributeHelper {
     String value = attrs.get(name);
     if (value == null) {
       if (required) {
-        throw new ParseException("Missing attribute: '" + name + "'");
+        ParseException pe = new ParseException(
+            CoreErrorDomain.ERR.missingAttribute);
+       pe.setInternalReason("Missing attribute: '" + name + "'");
+       throw pe;
       }
       return null;
     }
@@ -133,8 +138,11 @@ public class AttributeHelper {
     try {
       return Integer.parseInt(value);
     } catch (NumberFormatException e) {
-      throw new ParseException("Invalid integer value for attribute: '" +
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidIntegerAttribute);
+      pe.setInternalReason("Invalid integer value for attribute: '" +
           name + "'");
+      throw pe;
     }
   }
 
@@ -172,8 +180,11 @@ public class AttributeHelper {
     try {
       return Long.parseLong(value);
     } catch (NumberFormatException e) {
-      throw new ParseException("Invalid long value for attribute: '" +
-          name + "'", e);
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidLongAttribute, e);
+     pe.setInternalReason("Invalid long value for attribute: '" +
+          name + "'");
+     throw pe;
     }
   }
 
@@ -213,8 +224,11 @@ public class AttributeHelper {
     try {
       return Double.parseDouble(value);
     } catch (NumberFormatException e) {
-      throw new ParseException("Invalid double value for attribute: '" +
-          name + "'", e);
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidDoubleAttribute, e);
+      pe.setInternalReason("Invalid double value for attribute: '" +
+          name + "'");
+      throw pe;
     }
   }
 
@@ -253,8 +267,11 @@ public class AttributeHelper {
     try {
       return Float.parseFloat(value);
     } catch (NumberFormatException e) {
-      throw new ParseException("Invalid float value for attribute: '" +
-          name + "'", e);
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidFloatAttribute, e);
+      pe.setInternalReason("Invalid float value for attribute: '" +
+          name + "'");
+      throw pe;
     }
   }
 
@@ -297,8 +314,11 @@ public class AttributeHelper {
     } else if ("false".equals(value) || "0".equals(value)) {
       return false;
     } else {
-      throw new ParseException("Invalid boolean value for attribute: '" +
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidBooleanAttribute);
+      pe.setInternalReason("Invalid boolean value for attribute: '" +
           name + "'");
+      throw pe;
     }
 
   }
@@ -337,7 +357,10 @@ public class AttributeHelper {
     try {
       return DateTime.parseDateTimeChoice(value);
     } catch (NumberFormatException e) {
-      throw new ParseException("Invalid date/time value.", e);
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidDatetime, e);
+      pe.setInternalReason("Badly formatted datetime in attribute: " + name);
+      throw pe;
     }
   }
 
@@ -389,7 +412,10 @@ public class AttributeHelper {
         return enumValue;
       }
     }
-    throw new ParseException("Invalid value for attribute : '" + name + "'");
+    ParseException pe = new ParseException(
+        CoreErrorDomain.ERR.invalidAttributeValue);
+    pe.setInternalReason("Invalid value for attribute : '" + name + "'");
+    throw pe;
   }
 
   /**
@@ -418,8 +444,10 @@ public class AttributeHelper {
     try {
       return Enum.valueOf(enumClass, value.toUpperCase());
     } catch (IllegalArgumentException e) {
-      throw new ParseException("Invalid value for attribute : '" + name + "'",
-          e);
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidAttributeValue, e);
+     pe.setInternalReason("Invalid value for attribute : '" + name + "'");
+     throw pe;
     }
   }
 

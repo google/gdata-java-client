@@ -18,7 +18,6 @@ package com.google.gdata.data.media;
 
 import com.google.gdata.data.DateTime;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -57,7 +56,7 @@ public class MediaStreamSource extends BaseMediaSource {
     this(mediaStream, mediaType, null, -1);
   }
 
-  public InputStream getInputStream() throws IOException {
+  public InputStream getInputStream() {
 
     // If the underlying stream implements SharedInputStream, then get
     // a new stream so the stream source can be read multiple times.
@@ -68,7 +67,8 @@ public class MediaStreamSource extends BaseMediaSource {
     return returnStream;
   }
 
-  public OutputStream getOutputStream() throws IOException {
-    throw new UnsupportedOperationException("Cannot write to MediaStreamSource");
+  public OutputStream getOutputStream() {
+    throw new UnsupportedOperationException(
+        "Cannot write to MediaStreamSource");
   }
 }

@@ -21,13 +21,11 @@ import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.util.Namespaces;
-import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
 
 import org.xml.sax.Attributes;
 
 import java.io.IOException;
-
 
 /**
  * GData schema extension describing an RFC 2445 recurrence rule.
@@ -36,12 +34,10 @@ import java.io.IOException;
  */
 public class Recurrence implements Extension {
 
-
   /** Recurrence rule. Contains DTSTART, RRULE, RDATE, EXRULE, EXDATE, etc. */
   protected String value;
   public String getValue() { return value; }
   public void setValue(String v) { value = v; }
-
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -53,28 +49,25 @@ public class Recurrence implements Extension {
     return desc;
   }
 
-
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
     w.simpleElement(Namespaces.gNs, "recurrence", null, value);
   }
 
-
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace,
                                              String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+                                             Attributes attrs) {
     return new Handler();
   }
-
 
   /** <g:recurrence> parser. */
   private class Handler extends XmlParser.ElementHandler {
 
-    public void processEndElement() throws ParseException {
+    @Override
+    public void processEndElement() {
+
       // Delete leading and trailing linebreaker/whitespace
       // to avoid ical parsing error.
       Recurrence.this.value = Handler.this.value.trim();

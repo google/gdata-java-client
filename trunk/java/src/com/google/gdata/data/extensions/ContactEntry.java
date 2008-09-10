@@ -61,7 +61,7 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
    * Constructs a new ContactEntry by doing a shallow copy of data from an
    * existing BaseEntry intance.
    */
-  public ContactEntry(BaseEntry sourceEntry) {
+  public ContactEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     getCategories().add(CONTACT_CATEGORY);
   }
@@ -70,6 +70,7 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
    * Initializes an ExtensionProfile based upon the extensions expected
    * by an ContactEntry.
    */
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(ContactEntry.class, Email.getDefaultDescription());
     extProfile.declare(ContactEntry.class,

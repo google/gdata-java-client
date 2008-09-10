@@ -22,7 +22,6 @@ import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.util.Namespaces;
-import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
 
 import org.xml.sax.Attributes;
@@ -74,7 +73,7 @@ public class BatchId implements Extension {
    * @param entry
    * @return the id or null if it's not defined
    */
-  public static String getIdFrom(BaseEntry entry) {
+  public static String getIdFrom(BaseEntry<?> entry) {
     BatchId tag = entry.getExtension(BatchId.class);
     return tag == null ? null : tag.getId();
   }
@@ -86,12 +85,11 @@ public class BatchId implements Extension {
 
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace, String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
+                                             Attributes attrs) {
     return new XmlParser.ElementHandler() {
       
       @Override
-      public void processEndElement() throws ParseException {
+      public void processEndElement() {
         id = value;
       }
     };

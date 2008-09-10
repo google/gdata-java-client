@@ -91,6 +91,9 @@ public class Organization extends ExtensionPoint {
 
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    if (extProfile.isDeclared(Organization.class)) {
+      return;
+    }
     extProfile.declare(Organization.class, OrgName.class);
     extProfile.declare(Organization.class, OrgTitle.class);
   }

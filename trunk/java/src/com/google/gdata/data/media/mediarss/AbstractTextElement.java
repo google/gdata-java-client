@@ -16,19 +16,18 @@
 
 package com.google.gdata.data.media.mediarss;
 
+import com.google.gdata.client.CoreErrorDomain;
+import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.HtmlTextConstruct;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.TextConstruct;
-import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
 
 import org.xml.sax.Attributes;
-
-import java.io.IOException;
 
 /**
  * A media element with a 'type' attribute and text content.
@@ -78,14 +77,20 @@ public abstract class AbstractTextElement extends AbstractExtension {
     }
   }
 
+  /**
+   * The default implementation does nothing, subclasses can override to handle
+   * attributes.
+   * 
+   * @throws ParseException from subclasses. 
+   */
   @Override
-  protected void consumeAttributes(AttributeHelper attrsHelper) throws
-      ParseException {
-  }
+  protected void consumeAttributes(AttributeHelper attrsHelper)
+      throws ParseException {}
 
+  @Override
   final public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
       String namespace, String localName, Attributes attrs)
-      throws ParseException, IOException {
+      throws ParseException {
     final AttributeHelper attrsHelper = new AttributeHelper(attrs);
     String type = attrsHelper.consume("type", false);
     consumeAttributes(attrsHelper);
@@ -111,8 +116,7 @@ public abstract class AbstractTextElement extends AbstractExtension {
         }
       };
     } else {
-      throw new ParseException("Unsupported type. Valid types are 'plain' " +
-          "and 'html'.");
+      throw new ParseException(CoreErrorDomain.ERR.unsupportedTextType);
     }
   }
 }

@@ -19,27 +19,44 @@ package com.google.gdata.data.photos;
 import com.google.gdata.util.common.xml.XmlWriter;
 
 /**
- * Photos namespaces for the photos schema, these are the namespaces that are
- * used in the Picasaweb GData apis.
+ * GData namespace definitions related to Google Photos.
  *
  * 
  */
 public class Namespaces {
 
-  /** Picasaweb namespace. */
-  public static final String PHOTOS = "http://schemas.google.com/photos/2007";
-  public static final String PHOTOS_PREFIX = PHOTOS + "#";
-  public static final XmlWriter.Namespace PHOTOS_NAMESPACE
-      = new XmlWriter.Namespace("gphoto", PHOTOS);
+  private Namespaces() {}
 
-  /** Exif namespace. */
-  public static final String EXIF
-      = "http://schemas.google.com/photos/exif/2007";
-  public static final XmlWriter.Namespace EXIF_NAMESPACE
-      = new XmlWriter.Namespace("exif", EXIF);
+  /** Exif namespace (EXIF) namespace */
+  public static final String EXIF =
+      "http://schemas.google.com/photos/exif/2007";
+
+  /** Exif namespace (EXIF) namespace prefix */
+  public static final String EXIF_PREFIX = EXIF + "#";
+
+  /** Google Photos namespace (GPHOTO) namespace */
+  public static final String PHOTOS = "http://schemas.google.com/photos/2007";
+
+  /** Google Photos namespace (GPHOTO) namespace prefix */
+  public static final String PHOTOS_PREFIX = PHOTOS + "#";
+
+  /** Google Photos namespace (GPHOTO) namespace alias */
+  public static final String PHOTOS_ALIAS = "gphoto";
+
+  /** XML writer namespace for Google Photos namespace (GPHOTO) */
+  public static final XmlWriter.Namespace PHOTOS_NAMESPACE = new
+      XmlWriter.Namespace(PHOTOS_ALIAS, PHOTOS);
+
+
+
+  /** Exif namespace (EXIF) namespace alias */
+  public static final String EXIF_ALIAS = "exif";
+
+  /** XML writer namespace for Exif namespace (EXIF) */
+  public static final XmlWriter.Namespace EXIF_NAMESPACE = new
+      XmlWriter.Namespace(EXIF_ALIAS, EXIF);
 
   public static final String SLIDESHOW_REL = PHOTOS_PREFIX + "slideshow";
+
   public static final String REPORT_REL = PHOTOS_PREFIX + "report";
-  
-  private Namespaces() {}
 }

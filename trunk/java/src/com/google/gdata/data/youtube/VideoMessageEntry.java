@@ -34,7 +34,7 @@ public class VideoMessageEntry extends VideoEntry {
   }
 
   /** Creates a copy of another entry. */
-  public VideoMessageEntry(BaseEntry original) {
+  public VideoMessageEntry(BaseEntry<?> original) {
     super(original);
     setKindCategory();
   }
@@ -53,6 +53,7 @@ public class VideoMessageEntry extends VideoEntry {
    *
    * @param extProfile profile to register extensions to
    */
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
 

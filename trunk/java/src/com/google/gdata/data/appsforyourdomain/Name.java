@@ -21,8 +21,6 @@ import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.appsforyourdomain.Namespaces;
-import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser.ElementHandler;
 
 import org.xml.sax.Attributes;
@@ -39,7 +37,6 @@ import java.util.ArrayList;
  * 
  *
  */
-
 public class Name extends ExtensionPoint implements Extension {
   public static final String EXTENSION_LOCAL_NAME = "name";
   public static final String ATTRIBUTE_FAMILY_NAME = "familyName";
@@ -79,6 +76,7 @@ public class Name extends ExtensionPoint implements Extension {
     return EXTENSION_DESC;
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extensionProfile)
       throws IOException {
     ArrayList<XmlWriter.Attribute> attributes =
@@ -106,23 +104,22 @@ public class Name extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.APPS_NAMESPACE, EXTENSION_LOCAL_NAME);
   }
 
+  @Override
   public ElementHandler getHandler(
       ExtensionProfile extProfile, String namespace,
-      String localName, Attributes attrs)
-      throws ParseException, IOException {
+      String localName, Attributes attrs) {
     return new Handler(extProfile);
   }
 
   /** <apps:name> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, Name.class);
     }
 
+    @Override
     public void processAttribute(
-        String namespace, String localName, String value)
-        throws ParseException {
+        String namespace, String localName, String value) {
       if ("".equals(namespace)) {
         if (ATTRIBUTE_FAMILY_NAME.equals(localName)) {
           familyName = value;
@@ -130,10 +127,6 @@ public class Name extends ExtensionPoint implements Extension {
           givenName = value;
         }
       }
-    }
-
-    public void processEndElement() throws ParseException {
-      super.processEndElement();
     }
   }
 }

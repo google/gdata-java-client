@@ -40,7 +40,7 @@ public class EmailListFeed extends BaseFeed<EmailListFeed, EmailListEntry> {
    * Constructs a new {@code EmailListFeed} instance that is initialized using
    * data from another BaseFeed instance.
    */
-  public EmailListFeed(BaseFeed sourceFeed) {
+  public EmailListFeed(BaseFeed<?, ?> sourceFeed) {
     super(EmailListEntry.class, sourceFeed);
     getCategories().add(EmailListEntry.EMAIL_LIST_CATEGORY);
   }

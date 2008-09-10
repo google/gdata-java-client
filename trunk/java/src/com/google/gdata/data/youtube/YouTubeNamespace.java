@@ -49,7 +49,7 @@ public class YouTubeNamespace {
    * Kind linked to {@link CommentEntry}.
    */
   public static final String KIND_COMMENT = URI + "#comment";
-  
+
   /**
    * Kind linked to {@link PlaylistLinkEntry}.
    */
@@ -84,7 +84,7 @@ public class YouTubeNamespace {
    * Kind linked to {@link VideoMessageEntry}.
    */
   public static final String KIND_VIDEO_MESSAGE = URI + "#videoMessage";
-
+  
   /**
    * Scheme used for atom:categories and media:categories.
    */
@@ -120,7 +120,7 @@ public class YouTubeNamespace {
    * Scheme used for atom:categories which correspond to complaint reasons.
    */
   public static final String COMPLAINT_REASON_SCHEME = URI + "/complaint-reasons.cat";
-  
+
   /**
    * Scheme used for atom:categories which describes the type of subscription
    * defined in the entry.
@@ -137,6 +137,7 @@ public class YouTubeNamespace {
    * Link Rel value for the feed of a playlist (containing playlist entries)
    */
   public static final String PLAYLIST_REL = URI + "#playlist";
+
   /**
    * Link Rel value for user upload links.
    */
@@ -171,6 +172,11 @@ public class YouTubeNamespace {
    * Link Rel value for user inbox links.
    */
   public static final String INBOX_REL = URI + "#user.inbox";
+    
+  /**
+   * Link Rel value for the mobile page link of a video.
+   */
+  public static final String MOBILE_REL = URI + "#mobile";
 
   /**
    * Link Rel value for video responses links.
@@ -203,10 +209,15 @@ public class YouTubeNamespace {
   public static final String IN_REPLY_TO = URI + "#in-reply-to";
 
   /**
-   * Link Rel value for video queries (eg. /feeds/videos?vq=dog)
+   * Link Rel value for video queries (eg. /feeds/api/videos?q=dog)
    */
   public static final String VIDEO_QUERY_REL = URI + "#video.query";
 
+  /**
+   * Link Rel value for new subscription videos (/feeds/api/users/janedoe/newsubscriptionvideos)
+   */
+  public static final String NEW_SUBSCRIPTION_VIDEOS_REL = URI + "#user.newsubscriptionvideos";
+  
   /**
    * Link Rel value for a user's video log link.
    */
@@ -216,4 +227,15 @@ public class YouTubeNamespace {
    * Link Rel value for get upload token action.
    */
   public static final String GET_UPLOAD_TOKEN_REL = URI + "#action.getUploadToken";
+
+  /**
+   * Custom {@code media:credit} scheme.
+   * This overrides the default value of {@code urn:ebu} for {@code media:credit}.
+   */
+  public static final String CREDIT_SCHEME = "urn:youtube";
+
+  /**
+   * Uploader role inside {@link #CREDIT_SCHEME} for {@code media:credit}.
+   */
+  public static final String CREDIT_UPLOADER_ROLE = "uploader";  
 }

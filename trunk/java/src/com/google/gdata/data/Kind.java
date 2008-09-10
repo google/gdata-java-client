@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * The Kind class defines annotation types, interfaces and static helper 
  * methods for GData Kind extension handling.  A GData <i>Kind</i> refers to 
@@ -69,7 +68,6 @@ public class Kind {
     public String value();
   }
 
-
   /**
    * The Adaptable interface is implemented by GData {@link ExtensionPoint}
    * types that can be flexible adapted based upon the presence of GData
@@ -96,7 +94,6 @@ public class Kind {
     <E extends Adaptor> E getAdaptor(Class<E> adaptorClass);
   }
 
-
   /**
    * The Adaptor interface is implemented by {@link Extension} classes
    * that provide extension declaration and data modeling support for 
@@ -116,7 +113,6 @@ public class Kind {
      */
     void declareExtensions(ExtensionProfile extProfile);
   }
-
 
   /**
    * A simple helper class implementation of the {@link Adaptable} interface.
@@ -138,7 +134,7 @@ public class Kind {
     public <E extends Kind.Adaptor> E getAdaptor(Class<E> adaptorClass) {
       for (Kind.Adaptor adaptor : adaptors) {
         if (adaptor.getClass().equals(adaptorClass)) {
-          return (E)adaptor;
+          return adaptorClass.cast(adaptor);
         }
       }
       return null;
@@ -254,7 +250,8 @@ public class Kind {
           if (line.charAt(0) == '#') {  // comment line
             continue;
           }
-          adaptorList.add((Class<Adaptor>)cl.loadClass(line));
+          
+          adaptorList.add((Class<Adaptor>) cl.loadClass(line));
         }
       } catch (IOException ioe) {
         throw new AdaptorException("Unable to load Adaptor service info", ioe);
@@ -276,12 +273,12 @@ public class Kind {
     // a superclass relationship with the input Adaptable (for example,
     // both derive from BaseFeed).
     for (Class<Adaptor> adaptorClass : adaptorList) {
-      Class checkClass = adaptable.getClass();
+      Class<? extends Adaptable> checkClass = adaptable.getClass();
       while (Adaptable.class.isAssignableFrom(checkClass)) {
         if (checkClass.isAssignableFrom(adaptorClass)) {
           return adaptorClass;
         }
-        checkClass = checkClass.getSuperclass();
+        checkClass = (Class<? extends Adaptable>) checkClass.getSuperclass();
       }
     }
     return null;
@@ -304,8 +301,8 @@ public class Kind {
 
       // Look for an adaptor constructor that can take the adaptable
       // instance as an argument.
-      Constructor adaptorConstructor = null;
-      Class constructorArgClass = adaptable.getClass();
+      Constructor<?> adaptorConstructor = null;
+      Class<?> constructorArgClass = adaptable.getClass();
       while (constructorArgClass != null) {
         try {
           adaptorConstructor = adaptorClass.getConstructor(constructorArgClass);

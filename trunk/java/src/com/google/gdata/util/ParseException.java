@@ -41,6 +41,16 @@ public class ParseException extends ServiceException {
     initResponseCode();
   }
 
+  public ParseException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public ParseException(ErrorDomain.ErrorCode errorCode, Throwable cause) {
+    super(errorCode, cause);
+    initResponseCode();
+  }
+
   private void initResponseCode() {
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_BAD_REQUEST);
   }

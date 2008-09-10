@@ -53,4 +53,9 @@ public interface PointData {
    * @return a Point that contains the geo-coordinates (latitude and longitude).
    */
   public Point getGeoLocation();
+  
+  /**
+   * Clears the point data and removes the extension point.
+   */
+  public void clearPoint();
 }

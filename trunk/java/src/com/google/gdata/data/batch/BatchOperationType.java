@@ -79,6 +79,7 @@ public enum BatchOperationType {
     return method;
   }
 
+  @Override
   public String toString() {
     return name;
   }

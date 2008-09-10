@@ -18,38 +18,33 @@ package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.Namespaces;
-import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 
 /**
  * Atom generator type.
  *
  * 
  */
-public class Generator {
-
+public class Generator implements IGenerator {
 
   /** Version. */
   protected String version;
   public String getVersion() { return version; }
   public void setVersion(String v) { version = v; }
 
-
   /** URI. */
   protected String uri;
   public String getUri() { return uri; }
+  public String getHref() { return uri; }
   public void setUri(String v) { uri = v; }
-
 
   /** Generator name. */
   protected String name;
   public String getName() { return name; }
   public void setName(String v) { name = v; }
-
 
   /**
    * Generates XML in the Atom format.
@@ -75,15 +70,12 @@ public class Generator {
     w.simpleElement(Namespaces.atomNs, "generator", attrs, name);
   }
 
-
   /** {@code <atom:generator>} parser. */
   public class AtomHandler extends XmlParser.ElementHandler {
 
-
-    public void processAttribute(String namespace,
-                                 String localName,
-                                 String value)
-        throws ParseException {
+    @Override
+    public void processAttribute(String namespace, String localName,
+        String value) {
 
       if (namespace.equals("") && localName.equals("version")) {
         version = value;
@@ -92,7 +84,8 @@ public class Generator {
       }
     }
 
-    public void processEndElement() throws ParseException {
+    @Override
+    public void processEndElement() {
       name = value;
     }
   }

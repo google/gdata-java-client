@@ -57,6 +57,7 @@ public class File extends ExtensionPoint implements Extension {
     return desc;
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
     ArrayList<XmlWriter.Attribute> attributes =
@@ -69,26 +70,24 @@ public class File extends ExtensionPoint implements Extension {
                     attributes, "");
   }
 
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace, String localName,
-                                   Attributes attrs)
-      throws IOException, ParseException {
+                                   Attributes attrs) {
     return new Handler(extProfile);
   }
 
   /** <c:file> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
-
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, File.class);
     }
 
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
+                                 String value) {
 
       if ("".equals(namespace)) {
         if (ATTRIBUTE_NAME.equals(localName)) {
@@ -97,6 +96,7 @@ public class File extends ExtensionPoint implements Extension {
       }
     }
 
+    @Override
     public void processEndElement() throws ParseException {
       if (name == null) {
         throw new ParseException(Namespaces.gCS + EXTENSION_FILE + "/@" +

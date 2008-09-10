@@ -25,6 +25,7 @@ import com.google.gdata.data.ExtensionDescription;
  *
  * 
  */
+@Deprecated
 public class PheedThumbnail extends PheedConstruct {
   public PheedThumbnail() {
     this(null);

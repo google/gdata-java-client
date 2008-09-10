@@ -17,7 +17,7 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.data.Extension;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
@@ -51,6 +51,22 @@ public class Rating extends ExtensionPoint {
     public static final String PRICE = Namespaces.gPrefix + "price";
   }
 
+  /**
+   * Constructs an empty {@code Rating}.
+   */
+  public Rating() {
+    this(null);
+  }
+  
+  /**
+   * Constructs a {@code Rating} class with a specified rating.
+   * 
+   * @param rating the value of the rating
+   */
+  public Rating(Integer rating) {
+    this.rating = rating;
+  }
+
   /** Rating type. */
   protected String rel;
 
@@ -75,26 +91,26 @@ public class Rating extends ExtensionPoint {
   }
 
 
-  /** Minimum rating value on rating scale (required). */
+  /** Minimum rating value on rating scale (optional). */
   protected Integer min;
 
-  public int getMin() {
+  public Integer getMin() {
     return min;
   }
 
-  public void setMin(int r) {
+  public void setMin(Integer r) {
     min = r;
   }
 
 
-  /** Maximum rating value on rating scale (required). */
+  /** Maximum rating value on rating scale (optional). */
   protected Integer max;
 
-  public int getMax() {
+  public Integer getMax() {
     return max;
   }
 
-  public void setMax(int r) {
+  public void setMax(Integer r) {
     max = r;
   }
 
@@ -138,6 +154,7 @@ public class Rating extends ExtensionPoint {
     return getDefaultDescription(true);
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -176,31 +193,28 @@ public class Rating extends ExtensionPoint {
     w.endElement(Namespaces.gNs, "rating");
   }
 
-
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace,
                                    String localName,
-                                   Attributes attrs)
-      throws ParseException, IOException {
-
+                                   Attributes attrs) {
     return new Handler(extProfile);
   }
 
 
-  /** <g:rating> parser */
+  /** <gd:rating> parser */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile extProfile) throws ParseException,
-        IOException {
+    public Handler(ExtensionProfile extProfile) {
 
       super(extProfile, Rating.class);
     }
 
-
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
-        throws ParseException, NumberFormatException {
+        throws NumberFormatException {
 
       if (namespace.equals("")) {
         if (localName.equals("value")) {
@@ -219,30 +233,26 @@ public class Rating extends ExtensionPoint {
       }
     }
 
-
+    @Override
     public void processEndElement() throws ParseException {
 
       if (rating == null && average == null) {
-        throw new ParseException("at least one of g:rating/@value or "
-            + "gd:rating/@average is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.valueOrAverageRequired);
       }
 
-      if (max == null) {
-        throw new ParseException("gd:rating/@max is required.");
+      if (rating != null) {
+        if (min != null && rating < min || max != null && rating > max) {
+          throw new ParseException(
+              CoreErrorDomain.ERR.invalidValueRatingAttribute);
+        }
       }
 
-      if (min == null) {
-        throw new ParseException("gd:rating/@min is required.");
-      }
-
-      if (rating != null && (rating > max || rating < min)) {
-        throw new ParseException("gd:rating/@value should lie in between "
-          + "gd:rating/@min and gd:rating/@max.");
-      }
-
-      if (average != null && (average > max || average < min)) {
-        throw new ParseException("gd:rating/@average should lie in between "
-          + "gd:rating/@min and gd:rating/@max.");
+      if (average != null) {
+        if (min != null && average < min || max != null && average > max) {
+          throw new ParseException(
+              CoreErrorDomain.ERR.invalidAverageRatingAttribute);
+        }
       }
     }
   }

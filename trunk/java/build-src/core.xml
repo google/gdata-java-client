@@ -222,6 +222,7 @@
                          srcdir="${build.src.gdata}"
                          destdir="${build.classes.core}">
       <include name="client/*.java"/>
+      <include name="client/authn/**/*.java"/>
       <include name="client/batch/**/*.java"/>
       <include name="client/http/**/*.java"/>
       <include name="data/*.java"/>
@@ -230,6 +231,7 @@
       <include name="data/batch/**/*.java"/>
       <include name="data/geo/**/*.java"/>
       <include name="data/introspection/**/*.java"/>
+      <include name="data/threading/**/*.java"/>
       <include name="util/**/*.java"/>
       <exclude name="data/MediaContent.java"/>
     </javac>

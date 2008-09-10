@@ -51,7 +51,7 @@ public class UserFeed extends GphotoFeed<UserFeed> implements UserData,
    * feed.  This is used to get the correct entry type based on the category of
    * the entry.
    */
-  public UserFeed(BaseFeed sourceFeed) {
+  public UserFeed(BaseFeed<?, ?> sourceFeed) {
     super(sourceFeed);
     getCategories().add(UserData.USER_CATEGORY);
     this.delegate = new UserDataImpl(this);

@@ -19,6 +19,7 @@ package com.google.gdata.data.introspection;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.Service;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionPoint;
@@ -122,8 +123,7 @@ public class Workspace extends ExtensionPoint {
 
   @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile p,
-      String namespace, String localName, Attributes attrs)
-      throws IOException {
+      String namespace, String localName, Attributes attrs) {
     return new Handler(p, attrs);
   }
  
@@ -132,8 +132,7 @@ public class Workspace extends ExtensionPoint {
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile extProfile, Attributes attrs)
-        throws IOException {
+    public Handler(ExtensionProfile extProfile, Attributes attrs) {
       super(extProfile, Workspace.class, attrs);
     }
 
@@ -157,7 +156,8 @@ public class Workspace extends ExtensionPoint {
             !coreVersion.isCompatible(Service.Versions.V1)) {
 
           if (title != null) {
-            throw new ParseException("Duplicate title.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateTitle);
           }
 
           TextConstruct.ChildHandlerInfo chi =
@@ -174,7 +174,7 @@ public class Workspace extends ExtensionPoint {
 
     if (title == null) {
       throw new ParseException(
-        "Workspace must contain a title");
+        CoreErrorDomain.ERR.workspaceTitleRequired);
     }
   }
 }

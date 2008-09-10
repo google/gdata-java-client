@@ -19,6 +19,7 @@ package com.google.gdata.data.youtube;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.OutOfLineContent;
 import com.google.gdata.data.extensions.FeedLink;
 import com.google.gdata.data.media.mediarss.MediaThumbnail;
 
@@ -47,21 +48,88 @@ public abstract class FeedLinkEntry<T extends BaseEntry> extends BaseEntry<T> {
    *
    * @param base original entry
    */
-  FeedLinkEntry(BaseEntry base) {
+  FeedLinkEntry(BaseEntry<?> base) {
     super(base);
   }
 
-  /** Gets the feed link. */
-  public FeedLink getFeedLink() {
+  /**
+   * Gets the feed link.
+   *
+   * @deprecated Starting with version 2, the feed link can be found in the content.
+   *             See {@link #getFeedUrl} and {@link #getCountHint}.
+   */
+  public FeedLink<?> getFeedLink() {
     return getExtension(FeedLink.class);
   }
 
-  /** Sets the feed link. */
-  public void setFeedLink(FeedLink feedLink) {
+  /**
+   * Sets the feed link.
+   *
+   * @deprecated Starting with version 2, the feed link can be found in the content.
+   */
+  public void setFeedLink(FeedLink<?> feedLink) {
     if (feedLink == null) {
       removeExtension(FeedLink.class);
     } else {
       setExtension(feedLink);
+    }
+  }
+
+  /**
+   * Gets the URL of the enclosed feed.
+   *
+   * This method works both in version 1 and 2.
+   *
+   * @return URL to the enclosed feed or {@code null}
+   */
+  public String getFeedUrl() {
+    if (getContent() instanceof OutOfLineContent) {
+      return ((OutOfLineContent) getContent()).getUri();
+    }
+    FeedLink<?> feedLink = getFeedLink();
+    if (feedLink != null) {
+      return feedLink.getHref();
+    }
+    return null;
+  }
+
+  /**
+   * Gets an estimate of how many entries can be found
+   * in the enclosed feed.
+   *
+   * This method works both in version 1 and 2
+   *
+   * @return an estimate of the number of entries in the
+   *         enclosed feed or {@code null}
+   */
+  public Integer getCountHint() {
+    YtCountHint countHint = getExtension(YtCountHint.class);
+    if (countHint != null) {
+      return countHint.getValue();
+    }
+
+    FeedLink<?> feedLink = getFeedLink();
+    if (feedLink != null) {
+      return feedLink.getCountHint();
+    }
+
+    return null;
+  }
+
+  /**
+   * Sets the estimate of how many entries can be
+   * found in the enclosed feed.
+   *
+   * This method adds a tag {@code yt:countHint}.
+   *
+   * @param hint count hint or {@code null}
+   * @since 2.0
+   */
+  public void setCountHint(Integer hint) {
+    if (hint == null) {
+      removeExtension(YtCountHint.class);
+    } else {
+      setExtension(new YtCountHint(hint));
     }
   }
 
@@ -119,8 +187,11 @@ public abstract class FeedLinkEntry<T extends BaseEntry> extends BaseEntry<T> {
 
     // Only in version 1
     extProfile.declare(concreteClass, YtDescription.class);
-
     extProfile.declare(concreteClass, FeedLink.getDefaultDescription());
+
+    // Only in version 2
+    extProfile.declare(concreteClass, YtCountHint.class);
+
     extProfile.declareArbitraryXmlExtension(concreteClass);
   }
 }

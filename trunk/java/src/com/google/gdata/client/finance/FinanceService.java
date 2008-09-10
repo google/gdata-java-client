@@ -77,6 +77,7 @@ public class FinanceService extends GoogleService {
     declareExtensions();
   }
 
+  @Override
   public String getServiceVersion() {
     return FINANCE_SERVICE_VERSION + " " + super.getServiceVersion();
   }

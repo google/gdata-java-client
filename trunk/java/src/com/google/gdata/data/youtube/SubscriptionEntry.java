@@ -36,6 +36,14 @@ import java.util.Iterator;
 public class SubscriptionEntry extends FeedLinkEntry<SubscriptionEntry>{
 
   /**
+   * Nonstandard categories that might be found in this entry.
+   */
+  public static final String[] CATEGORIES = {
+    YouTubeNamespace.SUBSCRIPTIONTYPE_SCHEME
+  };
+
+
+  /**
    * Subscription types. More types will appear over time.
    */
   public static enum Type {

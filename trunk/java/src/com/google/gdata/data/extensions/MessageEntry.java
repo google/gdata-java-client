@@ -74,7 +74,7 @@ public class MessageEntry extends BaseEntry<MessageEntry> {
    * Constructs a new MessaEntry instance by doing a shallow copy of data
    * from an existing BaseEntry instance.
    */
-  public MessageEntry(BaseEntry sourceEntry) {
+  public MessageEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     getCategories().add(MESSAGE_CATEGORY);
   }
@@ -83,6 +83,7 @@ public class MessageEntry extends BaseEntry<MessageEntry> {
    * Initializes an ExtensionProfile based upon the extensions expected
    * by an MessageEntry.
    */
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(MessageEntry.class, Rating.getDefaultDescription(false));
     extProfile.declare(MessageEntry.class, When.getDefaultDescription(false));

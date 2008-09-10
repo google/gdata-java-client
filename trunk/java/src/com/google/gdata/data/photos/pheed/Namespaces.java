@@ -25,6 +25,7 @@ import com.google.gdata.util.common.xml.XmlWriter;
  *
  * 
  */
+@Deprecated
 public class Namespaces {
 
   /** Pheed <a href="http://www.pheed.com/pheed/">pheed</a> namespace. */

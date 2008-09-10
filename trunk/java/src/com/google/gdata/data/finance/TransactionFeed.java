@@ -42,7 +42,7 @@ public class TransactionFeed extends BaseFeed<TransactionFeed,
    *
    * @param sourceFeed source feed
    */
-  public TransactionFeed(BaseFeed sourceFeed) {
+  public TransactionFeed(BaseFeed<?, ?> sourceFeed) {
     super(TransactionEntry.class, sourceFeed);
   }
 

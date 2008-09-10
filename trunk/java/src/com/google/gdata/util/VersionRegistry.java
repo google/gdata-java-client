@@ -15,50 +15,91 @@
 
 package com.google.gdata.util;
 
+import com.google.gdata.util.common.annotations.VisibleForTesting;
 import com.google.gdata.client.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-/** 
- * The VersionRegistry class is an abstract base class used to manage and 
- * retrieve a version information about services.   It can be subclassed to
- * to implement a storage model for version information (by implementing the
- * {@link #getVersions()} method).   The class also provides management of a
- * singleton instance of a VersionRegistry subclass that is being used to
- * manage version information.   This instance is initialized by subclasses
- * via the {@link #initSingleton(VersionRegistry)} method.   The active
- * VersionRegistry instance can be retrieved using the {@link #get()} method.
+/**
+ * The VersionRegistry class is used to manage and retrieve version information
+ * about executing services. The registry supports the ability to configure
+ * versions for a running thread (via the {@link #setThreadVersion(Version)}
+ * method) or global defaults that will apply to all threads (using the
+ * {@link #addDefaultVersion(Version, boolean)} method. Thread defaults will
+ * have precedence over global defaults if present for the same service.
  * 
- * Clients of the API can use the {@link VersionRegistry#getVersions()}
- * method to get a list of all services with version information or the 
- * {@link VersionRegistry#getVersion(Class)} method to discover version 
- * information for a particular service.
+ * The class provides a singleton instance that is being used to manage version
+ * information. This instance is initialized by the {@link #ensureRegistry()}
+ * method. The active VersionRegistry instance can be retrieved using the
+ * {@link #get()} method. This method will throw an
+ * {@link IllegalStateException} if the version registry has not been
+ * initialized to aid in the detection of when version-conditional code is being
+ * executed in an environment where versions have net been configured.
+ * 
+ * The {@link VersionRegistry#getVersion(Class)} method can be used to request
+ * the version information for a particular service.
+ * 
+ * A model for writing version conditional code based upon the registry is:
+ * <code>
+ *    Version myServiceVersion = 
+ *         VersionRegistry.get().getVersion(MyService.class);
+ *    if (myServiceVersion.isCompatible(MyService.VERSIONS.V1) {
+ *      ... execute V1-specific handling ...
+ *    }
+ * </code>
+ * 
+ * VersionRegistry access is thread-safe.
  */
-public abstract class VersionRegistry {
+public class VersionRegistry {
   
   /**
-   * Singleton registry instance.
+   * Singleton registry instance.   The singleton is lazily initialized when the
+   * {@link #ensureRegistry()} method is called.  The reason for this design is
+   * to support the detect of version-conditional code running in unit tests.
+   * Such tests need to be run in a version-aware test environment (that will
+   * validate the behavior against all valid versions), so having a model so
+   * that they will fail by default is helpful to guarantee this.
    */
   private static VersionRegistry versionRegistry;
   
   /**
-   * Initializes the VersionRegistry instance.
-   * @param registry initialization version registry
-   * @throws IllegalStateException if the registry is already initialized.
+   * Maintains the per-thread version information.  The field may be 
+   * {@code null} if thread tracking is not enabled and the thread local value
+   * may be {@code null} if no versions have been set for the current thread.
    */
-  protected static void initSingleton(VersionRegistry registry) {
-    if (versionRegistry != null) {
-      throw new IllegalStateException("Registry already initialized");
+  private ThreadLocal<List<Version>> threadVersions = 
+      new ThreadLocal<List<Version>>();
+ 
+  /**
+   * Maintains the global defaults.
+   */
+  private List<Version> defaultVersions = new ArrayList<Version>();
+  
+  /**
+   * Returns the current VersionRegistry, creating it if necessary. The
+   * {@link #get()} method is preferred for most registry usage, as it enables
+   * the discovery of the execution of version-conditional code in an
+   * environment (such as unit test cases) where versioning has not been
+   * properly configured.
+   */
+  public static synchronized VersionRegistry ensureRegistry() {
+    if (versionRegistry == null) {
+      versionRegistry = new VersionRegistry();
     }
-    versionRegistry = registry;
+    return versionRegistry;
   }
   
   /**
-   * Resets the VersionRegistry instance to {@code null}
+   * Resets the VersionRegistry instance to {@code null}.   This means that any
+   * subsequent attempts to run version-specific code without version 
+   * configuration will result in an {@link IllegalStateException} in
+   * {@link #get()}.
    */
-  protected static void resetSingleton() {
+  @VisibleForTesting
+  static void reset() {
     versionRegistry = null;
   }
   
@@ -81,109 +122,7 @@ public abstract class VersionRegistry {
     }
     return versionRegistry;
   }
-
-  /**
-   * Finds a matching version for {@code serviceClass} in a list of versions,
-   * or returns {@code null} otherwise.
-   * @param versionList the list of versions to search.
-   * @param serviceClass the service class to match.
-   * @return the matching version or {@code null}.
-   */
-  protected static Version getVersion(List<Version> versionList, 
-      Class<? extends Service> serviceClass) {
-    for (Version v : versionList) {
-      if (v.getServiceClass().equals(serviceClass)) {
-        return v;
-      }
-    }
-    return null;
-  }  
   
-  /**
-   * Takes a list of {@link Version} instances and merges it into another
-   * list, validating that any duplicate information for a given service
-   * is a compatible version.
-   * @param target the target list of versions to merge into.
-   * @param source the source list of versions that will be merged.
-   * @throws IllegalStateException if the source list contains a version that
-   *            is incompatible with an existing version for the same service in
-   *            the target list.
-   */
-  protected static void mergeVersions(List<Version> target, 
-                                      List<Version> source)
-      throws IllegalStateException {
-    
-    // Check for conflicts with target list before making any changes,
-    // accumulating the list of changed versions.
-    List<Version> newVersions = new ArrayList<Version>();
-    for (Version checkVersion : source) {
-      Version currentVersion = 
-          getVersion(target, checkVersion.getServiceClass());
-      if (currentVersion != null) {
-        if (!currentVersion.isCompatible(checkVersion)) {
-          throw new IllegalArgumentException("Conflicting versions:"
-             + "current: " + currentVersion.toString()
-             + "new: " + checkVersion.toString());
-        }
-      } else {
-        newVersions.add(checkVersion);
-      }
-    }
-    
-    // Add all of the new versions.
-    target.addAll(newVersions);   
-  }
-  
-  /**
-   * Takes a {@link Version} instance and merges it into another
-   * list, validating that any duplicate information for a given service
-   * is a compatible version.
-   * @param target the target list of versions to merge into.
-   * @param source the source version that will be merged.
-   * @throws IllegalStateException if the source list contains a version that
-   *            is incompatible with an existing version for the same service in
-   *            the target list.
-   */
-  protected static void mergeVersion(List<Version> target, Version source)
-      throws IllegalStateException {   
-    mergeVersions(target, Arrays.asList(new Version [] { source }));
-  }
-  
-  /**
-   * Returns the the current version list.   This method is implemented by
-   * concrete subclasses to provide the storage model for version tracking.
-   * @return a list of versions associated with the current execution context.
-   */
-  public abstract List<Version> getVersions();
-  
-  /**
-   * Returns the version of a service.
-   * 
-   * @param serviceClass of the service to return.
-   * @return version of the service.
-   * @throws IllegalStateException if no version information could be found for
-   *         the requested service.
-   */
-  public Version getVersion(Class<? extends Service> serviceClass) {
-    
-    List<Version> versions = getVersions();
-    Version v = getVersion(versions, serviceClass);
-    if (v == null) {
-      // This should never happen for client, server, or code running in a
-      // unit test context.   Missing version information indicates that the
-      // version registry has not been properly initialized to meet the
-      // expectations of version-dependent code.   In the case of test
-      // execution, this generally means the test should be annotated to
-      // indicate a version dependency (see the TestVersion annotation) and
-      // also should be run in the context of a VersionedTestSuite that
-      // ensures all supported versions are tested.
-      throw new IllegalStateException(
-          "Attempt to access version information for unversioned service:" +
-          serviceClass);
-    }
-    return v;
-  }
-
 
   /**
    * Constructs a new Version instance based upon the value of a Java system
@@ -199,7 +138,7 @@ public abstract class VersionRegistry {
    *        name.
    * @return the {@link Version} computed from the property of {@code null} if
    *         the property is not set.
-   * @throws NumberFormatException if the property value does not contain valid
+   * @throws IllegalStateException if the property value does not contain valid
    *         revision information.
    */
   public static Version getVersionFromProperty(
@@ -215,6 +154,205 @@ public abstract class VersionRegistry {
       throw new IllegalStateException(
           "Invalid version property value: " + propertyName, iae);
     }
+  }
 
+  /**
+   * Finds a matching version for {@code serviceClass} in a list of versions,
+   * or returns {@code null} otherwise.
+   * @param versionList the list of versions to search.
+   * @param serviceClass the service class to match.
+   * @return the matching version or {@code null}.
+   */
+  @VisibleForTesting
+  static Version getVersion(List<Version> versionList, 
+      Class<? extends Service> serviceClass) {
+    for (Version v : versionList) {
+      if (v.getServiceClass().equals(serviceClass)) {
+        return v;
+      }
+    }
+    return null;
+  }  
+  
+  /**
+   * Takes a list of {@link Version} instances and merges it into another
+   * list.   A version in the source list will overwrite any value for the
+   * same service (if any) in the target list.
+   * @param target the target list of versions to merge into.
+   * @param source the source list of versions that will be merged.
+   */
+  @VisibleForTesting
+  static void mergeVersions(List<Version> target, List<Version> source) {
+    
+    // Check for conflicts with target list before making any changes,
+    // accumulating the list of changed versions.
+    List<Version> newVersions = new ArrayList<Version>();
+    for (Version checkVersion : source) {
+      Version currentVersion = 
+          getVersion(target, checkVersion.getServiceClass());
+      if (currentVersion != null) {
+        target.remove(currentVersion);
+      }
+    }
+    
+    // Add all of the new versions.
+    target.addAll(source);
+  }
+  
+  /**
+   * Takes a {@link Version} instance and merges it into another
+   * list, validating that any duplicate information for a given service
+   * is a compatible version.
+   * @param target the target list of versions to merge into.
+   * @param source the source version that will be merged.
+   */
+  @VisibleForTesting
+  static void mergeVersions(List<Version> target, Version source) {   
+    mergeVersions(target, Arrays.asList(new Version [] { source }));
+  }
+  
+  /**
+   * Returns the list of default versions for the registry.  The default version
+   * is the version that will be used if no version is explicitly selected.
+   * 
+   * @return list of default versions.
+   */
+  public List<Version> getDefaultVersions() {
+    return defaultVersions;
+  }
+  
+  /**
+   * Adds a default version to the version registry. This will overwrite any
+   * existing default version for the same service.
+   * 
+   * @param newDefault default version to add to the registry
+   *                   (not <code>null</code>)
+   * @param includeImplied if {@code true}, indicates that all implied versions
+   *        associated with the new default should be set as defaults too.
+   */
+  public void addDefaultVersion(Version newDefault, 
+      boolean includeImplied) {
+    
+    // Implement the addition using a copy into a new array.  This is done to
+    // avoid requiring full synchronization of access to defaultVersions, where
+    // additions will be infrequent and often happen at initialization time.
+    ArrayList<Version> newDefaults = new ArrayList<Version>(defaultVersions);
+    if (includeImplied) {
+      mergeVersions(newDefaults, newDefault.getImpliedVersions());
+    } else {
+      mergeVersions(newDefaults, newDefault);
+    }
+    // Replace the current defaults with the updated list.
+    defaultVersions = Collections.unmodifiableList(newDefaults);
+  }
+  
+  /**
+   * Sets the desired version for the current thread to the provided values.
+   * This method will update any existing request version information set by
+   * defaults or a previous call to this method.   The specified version (and
+   * any related implied versions} will be set for the current thread until the
+   * {@link #resetThreadVersion()} method is called to reset to the version
+   * information back to the default state.
+   *
+   * @param version the new active version for this request.
+   */
+  public void setThreadVersion(Version version) {
+    
+    // Set the thread local to the list of versions implied by the requested
+    // version.
+    threadVersions.set(
+        Collections.unmodifiableList(version.getImpliedVersions()));
+  }
+  
+  /**
+   * Returns the list of versions associated with the current thread or
+   * {@code null} if there are currently no thread versions.
+   * 
+   * @return thread version list or {@code null}
+   */
+  public List<Version> getThreadVersions() {
+    return threadVersions.get();
+  }
+  
+  /**
+   * Resets the version information for the current thread back to the
+   * default state.
+   */
+  public void resetThreadVersion() {
+    if (threadVersions != null) {
+      threadVersions.remove();
+    }
+  }
+ 
+  /**
+   * Returns the the current list of active versions.   This list takes both
+   * global defaults and thread versions into account.
+   */
+  @VisibleForTesting
+  List<Version> getVersions() {
+    
+    List<Version> defaultList = getDefaultVersions();
+    List<Version> threadList = getThreadVersions();
+    if (threadList == null) {
+      return defaultList;
+    }
+    
+    List<Version> combinedList = 
+        new ArrayList<Version>(defaultList.size() + threadList.size());
+    combinedList.addAll(defaultList);
+    mergeVersions(combinedList, threadList);
+    return combinedList;
+  }
+  
+  /**
+   * Returns the version of a service.
+   * 
+   * @param serviceClass of the service to return.
+   * @return version of the service.
+   * @throws IllegalStateException if no version information could be found for
+   *         the requested service.
+   */
+  public Version getVersion(Class<? extends Service> serviceClass) {
+    
+    Version v = null;
+    List<Version> threadList = getThreadVersions();
+    if (threadList != null) {
+      v = getVersion(threadList, serviceClass);
+    }
+    if (v == null) {
+      v = getVersion(getDefaultVersions(), serviceClass);
+      if (v == null) {
+        // This should never happen for client, server, or code running in a
+        // unit test context.   Missing version information indicates that the
+        // version registry has not been properly initialized to meet the
+        // expectations of version-dependent code.   In the case of test
+        // execution, this generally means the test should be annotated to
+        // indicate a version dependency (see the TestVersion annotation) and
+        // also should be run in the context of a VersionedTestSuite that
+        // ensures all supported versions are tested.
+        throw new IllegalStateException(
+            "Attempt to access version information for unversioned service:" +
+            serviceClass);
+      }
+    }
+    return v;
+  }
+  
+  /**
+   * Resets the VersionRegistry to a clean state with no thread local
+   * configuration and the specified set of version defaults.
+   * 
+   * @param initialDefaults the list of default versions that should be used to
+   *        initialize the version registry, or {@code null} for an empty
+   *        default list.
+   */
+  @VisibleForTesting
+  public synchronized void reset(List<Version> initialDefaults) {
+    threadVersions = new ThreadLocal<List<Version>>();
+    if (initialDefaults != null) {
+      defaultVersions = new ArrayList<Version>(initialDefaults);
+    } else {
+      defaultVersions = new ArrayList<Version>();
+    }
   }
 }

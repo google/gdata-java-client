@@ -24,6 +24,7 @@ import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Person;
 import com.google.gdata.data.ValueConstruct;
 import com.google.gdata.data.photos.GphotoData;
+import com.google.gdata.data.photos.GphotoId;
 import com.google.gdata.data.photos.Namespaces;
 import com.google.gdata.data.photos.impl.Extensions.GphotoConstruct;
 import com.google.gdata.data.photos.impl.Extensions.GphotoNickname;
@@ -61,8 +62,9 @@ public class GphotoDataImpl implements GphotoData {
   /*
    * Declare the default gphoto:id, gphoto:type, and gphoto:rsslink extensions.
    */
+  @SuppressWarnings("deprecation")
   public void declareExtensions(ExtensionProfile extProfile) {
-    declare(extProfile, GphotoId.getDefaultDescription());
+    declare(extProfile, GphotoId.getDefaultDescription(false, false));
     declare(extProfile, GphotoType.getDefaultDescription());
     declare(extProfile, GphotoRssLink.getDefaultDescription());
     extProfile.declareArbitraryXmlExtension(extClass);
@@ -100,7 +102,7 @@ public class GphotoDataImpl implements GphotoData {
    */
   public void setGphotoId(Long id) {
     if (id != null) {
-      setExtension(new GphotoId(id));
+      setExtension(GphotoId.from(id));
     } else {
       removeExtension(GphotoId.class);
     }
@@ -265,37 +267,13 @@ public class GphotoDataImpl implements GphotoData {
   }
 
   /**
-   * An extension that represents a gphoto:id, which is a string that is the
-   * system-id for a particular item. This is distinguished from the atom:id,
-   * which is the url that points to the item on the server, and is subject to
-   * change. The gphoto:id of an item will never change.
-   */
-  public static class GphotoId extends GphotoConstruct {
-    public GphotoId() {
-      this((String) null);
-    }
-
-    public GphotoId(String id) {
-      super("id", id);
-    }
-
-    public GphotoId(Long id) {
-      this(id == null ? null : Long.toString(id));
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoId.class,
-          Namespaces.PHOTOS_NAMESPACE, "id");
-    }
-  }
-
-  /**
    * Gphoto rss link class, used for gphoto:rsslink elements. This item is
    * provided for backwards compatibility with existing clients, and should not
    * be used for new code.
    *
    * @deprecated Clients should modify the alt-type themselves to request RSS.
    */
+  @Deprecated
   public static class GphotoRssLink extends GphotoConstruct {
     public GphotoRssLink() {
       this(null);
@@ -319,6 +297,7 @@ public class GphotoDataImpl implements GphotoData {
    * @deprecated Clients should use the atom:category to discover the kind of an
    *             item.
    */
+  @Deprecated
   public static class GphotoType extends GphotoConstruct {
     public GphotoType() {
       this(null);

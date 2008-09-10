@@ -17,6 +17,7 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.ExtensionVisitor;
@@ -32,7 +33,6 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 
 /**
  * The FeedLink class defines the object model for a link entity that refers to
@@ -55,7 +55,6 @@ public class FeedLink<F extends BaseFeed<?, ?>> extends Link {
     this((Class<F>) Feed.class);
   }
 
-
   /**
    * Constructs a feed link that points to the given feed type.
    *
@@ -65,18 +64,15 @@ public class FeedLink<F extends BaseFeed<?, ?>> extends Link {
     this.feedClass = feedClass;
   }
 
-
   /** Read only flag. */
   protected boolean readOnly = false;
   public boolean getReadOnly() { return readOnly; }
   public void setReadOnly(boolean v) { readOnly = v; }
 
-
   /** Count hint. */
   protected Integer countHint;
   public Integer getCountHint() { return countHint; }
   public void setCountHint(Integer v) { countHint = v; }
-
 
   /** Nested feed (optional). */
   protected BaseFeed<?, ?> feed;
@@ -84,17 +80,16 @@ public class FeedLink<F extends BaseFeed<?, ?>> extends Link {
   public F getFeed() { return (F) feed; }
   public void setFeed(F v) { feed = v; }
 
-
   /** Nested feed class. */
   protected final Class<F> feedClass;
   public Class<F> getFeedClass() { return feedClass; }
-
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
     return ExtensionDescription.getDefaultDescription(FeedLink.class);
   }
   
+  @Override
   public String getType() {
     return ContentType.getAtomFeed().toString();
   }
@@ -146,25 +141,20 @@ public class FeedLink<F extends BaseFeed<?, ?>> extends Link {
     w.endElement(Namespaces.gNs, "feedLink");
   }
 
-
   @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace,
                                    String localName,
-                                   Attributes attrs) throws IOException {
-
+                                   Attributes attrs) {
     return new Handler(extProfile);
   }
-
 
   /** <gd:feedLink> parser. */
   private class Handler extends Link.AtomHandler {
 
-    public Handler(ExtensionProfile extProfile) throws IOException {
-
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, FeedLink.class);
     }
-
 
     @Override
     public void processAttribute(String namespace,
@@ -179,14 +169,14 @@ public class FeedLink<F extends BaseFeed<?, ?>> extends Link {
           try {
             countHint = Integer.valueOf(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Invalid gd:feedLink/@countHint.", e);
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidCountHintAttribute, e);
           }
         } else {
           super.processAttribute(namespace, localName, value);
         }
       }
     }
-
 
     @Override
     public ElementHandler getChildHandler(String namespace,
@@ -203,9 +193,11 @@ public class FeedLink<F extends BaseFeed<?, ?>> extends Link {
           try {
             feed = feedClass.newInstance();
           } catch (IllegalAccessException iae) {
-            throw new ParseException("Unable to create feed", iae);
+            throw new ParseException(
+                CoreErrorDomain.ERR.cantCreateFeed, iae);
           } catch (InstantiationException ie) {
-            throw new ParseException("Unable to create feed", ie);
+            throw new ParseException(
+                CoreErrorDomain.ERR.cantCreateFeed, ie);
           }
           return feed.new FeedHandler(nestedExtProfile);
         }

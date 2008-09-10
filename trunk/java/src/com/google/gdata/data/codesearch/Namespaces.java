@@ -19,19 +19,25 @@ package com.google.gdata.data.codesearch;
 import com.google.gdata.util.common.xml.XmlWriter;
 
 /**
- * CodeSearch name space element: <gcs:..>. Used for all extensions
- * related to codesearch
+ * GData namespace definitions related to Google Code Search.
  *
  * 
  */
+public class Namespaces {
 
-public final class Namespaces {
-  /** Google Codesearch (c) namespace */
-  static final public String gCS = "http://schemas.google.com/codesearch/2006";
-  static final public String gCSPrefix = "gcs";
+  private Namespaces() {}
 
-  /** Google data XML writer namespace. */
-  static final public XmlWriter.Namespace gCSNs =
-  new XmlWriter.Namespace("gcs", gCS);
+  /** Google Code Search (GCS) namespace */
+  public static final String gCS = "http://schemas.google.com/codesearch/2006";
+
+  /** Google Code Search (GCS) namespace prefix */
+  public static final String gCSNamespacePrefix = gCS + "#";
+
+  /** Google Code Search (GCS) namespace alias */
+  public static final String gCSPrefix = "gcs";
+
+  /** XML writer namespace for Google Code Search (GCS) */
+  public static final XmlWriter.Namespace gCSNs = new
+      XmlWriter.Namespace(gCSPrefix, gCS);
 
 }

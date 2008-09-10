@@ -39,7 +39,6 @@ import java.util.ArrayList;
  * 
  *
  */
-
 public class Login extends ExtensionPoint implements Extension {
   public static final String EXTENSION_LOCAL_NAME = "login";
   public static final String ATTRIBUTE_USER_NAME = "userName";
@@ -147,6 +146,7 @@ public class Login extends ExtensionPoint implements Extension {
     return extensionDescription;
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extensionProfile)
       throws IOException {
     ArrayList<XmlWriter.Attribute> attributes =
@@ -201,21 +201,22 @@ public class Login extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.APPS_NAMESPACE, EXTENSION_LOCAL_NAME);
   }
 
+  @Override
   public ElementHandler getHandler(
       ExtensionProfile extProfile, String namespace,
-      String localName, Attributes attrs)
-      throws ParseException, IOException {
+      String localName, Attributes attrs) throws ParseException {
     return new Handler(extProfile, attrs);
   }
 
   /** <apps:login> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
     public Handler(ExtensionProfile extProfile, Attributes attrs)
-        throws ParseException, IOException {
+        throws ParseException {
       super(extProfile, Login.class);
       ipWhitelisted = getBooleanAttribute(attrs, "ipWhitelisted");
     }
 
+    @Override
     public void processAttribute(
         String namespace, String localName, String value) {
       if ("".equals(namespace)) {
@@ -251,10 +252,6 @@ public class Login extends ExtensionPoint implements Extension {
           }
         }
       }
-    }
-
-    public void processEndElement() throws ParseException {
-      super.processEndElement();
     }
   }
 }

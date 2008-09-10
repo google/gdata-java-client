@@ -39,7 +39,7 @@ public class CalendarFeed extends BaseFeed<CalendarFeed, CalendarEntry> {
    *
    * @param sourceFeed source feed
    */
-  public CalendarFeed(BaseFeed sourceFeed) {
+  public CalendarFeed(BaseFeed<?, ?> sourceFeed) {
     super(CalendarEntry.class, sourceFeed);
   }
 

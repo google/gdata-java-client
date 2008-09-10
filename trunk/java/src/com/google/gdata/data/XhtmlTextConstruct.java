@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
-
 /**
  * XHTML variant of {@link TextConstruct}.
  *
@@ -36,10 +35,8 @@ import java.util.ArrayList;
  */
 public class XhtmlTextConstruct extends TextConstruct {
 
-
   /** Class constructor. */
-  public XhtmlTextConstruct() {};
-
+  public XhtmlTextConstruct() {}
 
   /**
    * Class constructor specifying the XHTML content for this
@@ -48,7 +45,6 @@ public class XhtmlTextConstruct extends TextConstruct {
   public XhtmlTextConstruct(XmlBlob xhtml) {
     this.xhtml = xhtml;
   }
-
 
   /** 
    * Class constructor specifying the XHTML content for this
@@ -60,10 +56,12 @@ public class XhtmlTextConstruct extends TextConstruct {
     this.lang = lang;
   }
 
-
   /** @return the type (XHTML) of this text construct */
+  @Override
   public int getType() { return Type.XHTML; }
+  
   /** @return {@code true} if this text construct has no contents */
+  @Override
   public boolean isEmpty() { return xhtml == null; }
 
 
@@ -79,11 +77,11 @@ public class XhtmlTextConstruct extends TextConstruct {
   /** Specifies the XHTML contents of this text construct. */
   public void setXhtml(XmlBlob v) { xhtml = v; }
 
-
   /**
    * @return a plain-text representation of this text construct,
    * or {@code null} in case of error
    */
+  @Override
   public String getPlainText() {
 
     try {
@@ -101,7 +99,6 @@ public class XhtmlTextConstruct extends TextConstruct {
     }
   }
 
-
   /**
    * Generates XML in the Atom format.
    *
@@ -113,6 +110,7 @@ public class XhtmlTextConstruct extends TextConstruct {
    *
    * @throws  IOException
    */
+  @Override
   public void generateAtom(XmlWriter w,
                            String elementName) throws IOException {
 
@@ -129,7 +127,6 @@ public class XhtmlTextConstruct extends TextConstruct {
     XmlBlob.endElement(w, Namespaces.atomNs, elementName, xhtml);
   }
 
-
   /**
    * Generates XML in the RSS format.
    *
@@ -144,6 +141,7 @@ public class XhtmlTextConstruct extends TextConstruct {
    *
    * @throws  IOException
    */
+  @Override
   public void generateRss(XmlWriter w,
                           String elementName,
                           RssFormat rssFormat) throws IOException {
@@ -172,7 +170,6 @@ public class XhtmlTextConstruct extends TextConstruct {
     }
   }
 
-
   /** Parses XML in the Atom format. */
   public class AtomHandler extends XmlParser.ElementHandler {
 
@@ -187,12 +184,12 @@ public class XhtmlTextConstruct extends TextConstruct {
       lang = xmlLang;
     }
 
-
     /**
      * Sets the language.
      *
      * @throws ParseException
      */
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)

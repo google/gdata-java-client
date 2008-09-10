@@ -16,12 +16,15 @@
 
 package com.google.gdata.data.spreadsheet;
 
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.OutOfLineContent;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.Version;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -74,31 +77,50 @@ public class SpreadsheetEntry extends BaseEntry<SpreadsheetEntry> {
   public Link getSpreadsheetLink() {
     return super.getHtmlLink();
   }
-  
+
   /**
    * Gets the URL for this spreadsheet's worksheets feed.
-   * 
+   *
    * You can then create a query using this URL to query this worksheet's
    * sheets.
-   * 
-   * 
+   *
+   *
    * @return a URL to get a feed of worksheets
    */
   public URL getWorksheetFeedUrl() {
-    Link feedLink = this.getLink(Namespaces.WORKSHEETS_LINK_REL, 
-        Link.Type.ATOM);
     try {
-      return new URL(feedLink.getHref());
-    } catch (MalformedURLException e) {
+      return new URL(getWorksheetFeedUrlString());
+    } catch(MalformedURLException e) {
       throw new RuntimeException("Error in GData server", e);
     }
   }
 
   /**
+   * Gets the URL for this spreadseet's worksheets feed as a string.
+   *
+   * <p>This checks for version compatibility also.
+   *
+   * and call that from here, just like in WorksheetEntry.
+   *
+   * @return a string representing the URL for the worksheets feed
+   */
+  private String getWorksheetFeedUrlString() {
+    Version spreadsheetVersion = SpreadsheetService.getVersion();
+
+    if (spreadsheetVersion.isCompatible(SpreadsheetService.Versions.V1)) {
+      Link feedLink = this.getLink(Namespaces.WORKSHEETS_LINK_REL,
+                                   Link.Type.ATOM);
+      return feedLink.getHref();
+    } else { // must be SpreadsheetService.Versions.V2; only 2 versions for now
+      return ((OutOfLineContent)(this.getContent())).getUri();
+    }
+  }
+
+  /**
    * Gets all worksheet entries that are part of this spreadsheet.
-   * 
+   *
    * You must be online for this to work.
-   * 
+   *
    * @return the list of worksheet entries
    */
   public List<WorksheetEntry> getWorksheets()
@@ -110,34 +132,33 @@ public class SpreadsheetEntry extends BaseEntry<SpreadsheetEntry> {
 
   /**
    * Gets the first worksheet in the spreadsheet.
-   * 
+   *
    * This is very useful if your spreadsheet only has one worksheet.
-   * 
+   *
    * @return the first worksheet
    */
   public WorksheetEntry getDefaultWorksheet()
       throws IOException, ServiceException {
-    Link feedLink = this.getLink(Namespaces.WORKSHEETS_LINK_REL, Link.Type.ATOM);
-    String url = feedLink.getHref() + "/default";
+    String url = getWorksheetFeedUrlString() + "/default";
     return state.service.getEntry(new URL(url), WorksheetEntry.class);
   }
 
   /**
    * Gets the non-user-friendly key that is used to access the spreadsheet.
-   * 
+   *
    * This is the key that can be used to open the spreadsheet in a Web
    * browser, such as, http://spreadsheets.google.com/ccc?key={key}.
-   * 
+   *
    * @return the Google Spreadsheets key, in "o10110101.1010101" format
    */
   public String getKey() {
     String result = state.id;
     int position = result.lastIndexOf("/");
-    
+
     if (position > 0) {
       result = result.substring(position + 1);
     }
-    
+
     return result;
   }
 
@@ -146,7 +167,7 @@ public class SpreadsheetEntry extends BaseEntry<SpreadsheetEntry> {
    * Declares extensions (although Spreadsheet Kind currently has none).
    */
   public void declareExtensions(ExtensionProfile extProfile) {
-    
+
     // No special extensions.
   }
 }

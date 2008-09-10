@@ -17,6 +17,7 @@
 package com.google.gdata.data.batch;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
@@ -162,12 +163,10 @@ public class BatchInterrupted extends ExtensionPoint implements Extension {
 
   /**
    * Generates an XML representation for batch:interrupted.
-   * 
-   * @param w
-   * @param extProfile
-   * @throws IOException
    */
-  public void generate(XmlWriter w, ExtensionProfile extProfile) throws IOException {
+  @Override
+  public void generate(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException {
     List<XmlWriter.Attribute> attrs =
         new ArrayList<XmlWriter.Attribute>(6);
     if (reason != null) {
@@ -212,10 +211,11 @@ public class BatchInterrupted extends ExtensionPoint implements Extension {
    * @return a child handler linked to the current object
    * @throws ParseException 
    */
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace, String localName,
                                              Attributes attrs)
-      throws IOException, ParseException {
+      throws ParseException {
     return new BatchInterruptedElementHandler(extProfile, attrs);
   }
   
@@ -229,8 +229,11 @@ public class BatchInterrupted extends ExtensionPoint implements Extension {
     try {
       return Integer.parseInt(stringValue);
     } catch (NumberFormatException e) {
-      throw new ParseException("Invalid integer in value of attribute "
-                               + name + ": '" + stringValue + "'", e);
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidIntegerAttribute, e);
+      pe.setInternalReason("Invalid integer in value of attribute "
+          + name + ": '" + stringValue + "'");
+      throw pe;
     }
   }
 
@@ -243,7 +246,7 @@ public class BatchInterrupted extends ExtensionPoint implements Extension {
 
     public BatchInterruptedElementHandler(ExtensionProfile extProfile,
                                           Attributes attrs)
-        throws IOException, ParseException {
+        throws ParseException {
       super(extProfile, BatchInterrupted.class);
 
       totalCount = getIntegerAttribute(attrs, "parsed", 0);
@@ -256,14 +259,17 @@ public class BatchInterrupted extends ExtensionPoint implements Extension {
         try {
           contentType = new ContentType(contentTypeString);
         } catch (IllegalArgumentException e) {
-          throw new ParseException("Invalid content type: '" +
-              contentTypeString + "'", e);
+          ParseException pe = new ParseException(
+              CoreErrorDomain.ERR.invalidContentType, e);
+          pe.setInternalReason("Invalid content type: '" +
+              contentTypeString + "'");
+          throw pe;
         }
       }
     }
 
     @Override
-    public void processEndElement() throws ParseException {
+    public void processEndElement() {
       content = value;
     }
   }

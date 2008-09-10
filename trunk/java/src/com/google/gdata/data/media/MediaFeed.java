@@ -16,6 +16,7 @@
 
 package com.google.gdata.data.media;
 
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.BaseEntry;
@@ -41,7 +42,8 @@ public abstract class MediaFeed<F extends BaseFeed, E extends BaseEntry>
     super(entryClass);
   }
 
-  protected MediaFeed(Class<? extends E> entryClass, BaseFeed sourceFeed) {
+  protected MediaFeed(Class<? extends E> entryClass,
+      BaseFeed<?, ?> sourceFeed) {
     super(entryClass, sourceFeed);
   }
 
@@ -95,7 +97,7 @@ public abstract class MediaFeed<F extends BaseFeed, E extends BaseEntry>
       throws ServiceException, IOException {
     if (feedState.service == null) {
       throw new ServiceException(
-          "Entry is not associated with a GData service");
+          CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link postLink = getEntryPostLink();
     if (postLink == null) {

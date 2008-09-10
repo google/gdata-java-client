@@ -60,14 +60,6 @@ public class AccessLevelProperty extends ValueConstruct {
       new AccessLevelProperty("override");
 
   /**
-   * An access level on the calendar as a whole; the principal is a
-   * delegate only for those events for which the principal was the
-   * event creator.
-   */
-  public static final AccessLevelProperty CONTRIBUTOR =
-      new AccessLevelProperty("contributor");
-
-  /**
    * On a calendar, allows full owner access except an editor may not
    * change access control settings on the calendar.  On an event, the
    * user may edit the event.

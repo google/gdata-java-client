@@ -46,7 +46,7 @@ public class CommentEntry extends GphotoEntry<CommentEntry>
    * Construct a new comment entry doing a shallow copy of the data in the
    * passed in source entry.
    */
-  public CommentEntry(BaseEntry sourceEntry) {
+  public CommentEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     getCategories().add(CommentData.COMMENT_CATEGORY);
     this.delegate = new CommentDataImpl(this);

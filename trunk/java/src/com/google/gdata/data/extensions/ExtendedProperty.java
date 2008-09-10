@@ -17,6 +17,7 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
@@ -38,6 +39,16 @@ import java.util.List;
  */
 public class ExtendedProperty extends ExtensionPoint {
 
+  /** Limits on where the extended property applies. */
+  public static final class Realm {
+
+    /** Shared with all participants. */
+    public static final String SHARED = Namespaces.gPrefix + "shared";
+
+    // Applications may define other values for the realm attribute;
+    // see Calendar for an example.
+  }
+
   /**
    * Property name expressed as an URI (required). Extended property
    * URIs follow the {scheme}#{local-name} convention.
@@ -54,7 +65,6 @@ public class ExtendedProperty extends ExtensionPoint {
     name = n;
   }
 
-
   /** Property value (required). */
   protected String val;
 
@@ -70,6 +80,27 @@ public class ExtendedProperty extends ExtensionPoint {
     return val != null;
   }
 
+  /** Limits on where the extended property applies. */
+  protected String realm;
+
+  public String getRealm() {
+    return realm;
+  }
+
+  public void setRealm(String r) {
+    realm = r;
+  }
+
+  public boolean hasRealm() {
+    return realm != null;
+  }
+
+  /** Convert to String for debugging */
+  @Override
+  public String toString() {
+    return "<" + name + "=" + (hasValue() ? val : "")
+                      + "|" + (hasRealm() ? realm : "") + ">";
+  }
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -81,6 +112,7 @@ public class ExtendedProperty extends ExtensionPoint {
     return desc;
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -94,6 +126,10 @@ public class ExtendedProperty extends ExtensionPoint {
       attrs.add(new XmlWriter.Attribute("value", val));
     }
 
+    if (realm != null) {
+      attrs.add(new XmlWriter.Attribute("realm", realm));
+    }
+
     generateStartElement(w, Namespaces.gNs, "extendedProperty", attrs, null);
 
     // Invoke ExtensionPoint.
@@ -102,12 +138,11 @@ public class ExtendedProperty extends ExtensionPoint {
     w.endElement(Namespaces.gNs, "extendedProperty");
   }
 
-
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace,
                                    String localName,
-                                   Attributes attrs)
-      throws ParseException, IOException {
+                                   Attributes attrs) {
 
     return new Handler(extProfile);
   }
@@ -118,8 +153,7 @@ public class ExtendedProperty extends ExtensionPoint {
    */
   @Override
   protected void initializeArbitraryXml(ExtensionProfile profile,
-      Class<? extends ExtensionPoint> extPoint, ElementHandler handler)
-      throws IOException {
+      Class<? extends ExtensionPoint> extPoint, ElementHandler handler) {
 
       handler.initializeXmlBlob(xmlBlob,
           /* mixedContent */ true,
@@ -129,39 +163,44 @@ public class ExtendedProperty extends ExtensionPoint {
   /** <g:extendedProperty> parser */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile extProfile) throws ParseException,
-        IOException {
+    public Handler(ExtensionProfile extProfile) {
 
       super(extProfile, ExtendedProperty.class);
     }
 
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value) throws ParseException {
-
+                                 String value) {
       if (namespace.equals("")) {
         if (localName.equals("name")) {
           name = value;
         } else if (localName.equals("value")) {
           val = value;
+        } else if (localName.equals("realm")) {
+          realm = value;
         }
       }
     }
 
+    @Override
     public void processEndElement() throws ParseException {
 
       if (name == null) {
-        throw new ParseException("g:extendedProperty/@name is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.nameRequired);
       }
 
       XmlBlob xmlBlob = getXmlBlob();
 
       if (val != null && xmlBlob.getBlob() != null) {
-        throw new ParseException("g:extendedProperty/@value and XML are mutually exclusive.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.valueXmlMutuallyExclusive);
       }
 
       if (val == null && xmlBlob.getBlob() == null) {
-        throw new ParseException("exactly one of g:extendedProperty/@value, XML is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.valueOrXmlRequired);
       }
     }
   }

@@ -26,6 +26,7 @@ import com.google.gdata.data.ExtensionDescription;
  *
  * 
  */
+@Deprecated
 public class PheedVideoUrl extends PheedConstruct {
   public PheedVideoUrl() {
     this(null);

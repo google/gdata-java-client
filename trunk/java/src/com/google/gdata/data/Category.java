@@ -17,7 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -39,8 +39,7 @@ import java.util.regex.Pattern;
  *
  * 
  */
-public class Category {
-
+public class Category implements ICategory {
 
   /**
    * The character used to prefix any (optional) scheme in the compound
@@ -55,7 +54,7 @@ public class Category {
   public static final char SCHEME_SUFFIX = '}';
 
 
-  public Category() {};
+  public Category() {}
 
   // A simple pattern matcher for the "{scheme}term" syntax
   private static final Pattern categoryPattern =
@@ -89,7 +88,6 @@ public class Category {
    */
   public Category(String scheme, String term) { this(scheme, term, null); }
 
-
   /**
    * Constructs a new category.
    */
@@ -102,30 +100,25 @@ public class Category {
     this.label = label;
   }
 
-
   /** Scheme (domain). */
   protected String scheme;
   public String getScheme() { return scheme; }
   public void setScheme(String v) { scheme = v; }
-
 
   /** Term. */
   protected String term;
   public String getTerm() { return term; }
   public void setTerm(String v) { term = v; }
 
-
   /** Human-readable label. */
   protected String label;
   public String getLabel() { return label; }
   public void setLabel(String v) { label = v; }
 
-
   /** Language. */
   protected String labelLang;
   public String getLabelLang() { return labelLang; }
   public void setLabelLang(String v) { labelLang = v; }
-
 
   @Override
   public String toString() {
@@ -147,7 +140,6 @@ public class Category {
     return sb.toString();
   }
 
-
   // identical scheme/term values for all user-defined labels.  The label
   // attribute is being used for the user label.  This seems somewhat counter
   // to Atom semantics, where the scheme is a namespace and the term
@@ -163,7 +155,6 @@ public class Category {
     return toString().equals(obj.toString());
   }
 
-
   @Override
   public int hashCode() {
     int result = 17;
@@ -172,7 +163,6 @@ public class Category {
     result = 37 * result + ((label != null) ? label.hashCode() : 0);
     return result;
   }
-
 
   /**
    * Generates XML in the Atom format.
@@ -206,7 +196,6 @@ public class Category {
     w.simpleElement(Namespaces.atomNs, "category", attrs, null);
   }
 
-
   /**
    * Generates XML in the RSS format.
    *
@@ -236,7 +225,6 @@ public class Category {
     w.simpleElement(Namespaces.rssNs, "category", attrs, value);
   }
 
-
   /** {@code <atom:category>} parser. */
   public class AtomHandler extends XmlParser.ElementHandler {
 
@@ -244,8 +232,7 @@ public class Category {
     ExtensionProfile extProfile;
     Kind.Adaptable adaptable;
 
-    public AtomHandler() {};
-
+    public AtomHandler() {}
 
     /** Constructor used when parsing a Category for a source or entry  */
     public AtomHandler(ExtensionProfile extProfile,
@@ -256,11 +243,10 @@ public class Category {
       this.adaptable = adaptable;
     }
 
-
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
+                                 String value) {
 
       if (namespace.equals("") && localName.equals("scheme")) {
         scheme = value;
@@ -271,7 +257,7 @@ public class Category {
       }
     }
 
-
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs) {
@@ -279,12 +265,12 @@ public class Category {
       return null;
     }
 
-
+    @Override
     public void processEndElement() throws ParseException {
 
       if (term == null) {
         throw new ParseException(
-          "Category must have a 'term' attribute.");
+           CoreErrorDomain.ERR.missingTermAttribute);
       }
 
       labelLang = xmlLang;
@@ -310,7 +296,8 @@ public class Category {
               extProfile.addDeclarations(adaptor);
           }
         } catch (Kind.AdaptorException ae) {
-          throw new ParseException("Unable to load kind adaptor", ae);
+          throw new ParseException(
+              CoreErrorDomain.ERR.cantLoadKindAdaptor, ae);
         }
       }
     }

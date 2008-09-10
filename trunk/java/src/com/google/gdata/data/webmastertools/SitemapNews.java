@@ -96,14 +96,14 @@ public class SitemapNews extends ExtensionPoint {
       ExtensionProfile extProfile,
       String namespace,
       String localName,
-      Attributes attrs) throws IOException {
+      Attributes attrs) {
     return new Handler(extProfile);
   }
 
   /** <wt:sitemap-news> parser. */
   public class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile profile) throws IOException {
+    public Handler(ExtensionProfile profile) {
       super(profile, SitemapNews.class);
     }
 

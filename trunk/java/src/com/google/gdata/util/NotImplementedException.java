@@ -49,6 +49,17 @@ public class NotImplementedException extends ServiceException {
     initResponseCode();
   }
 
+  public NotImplementedException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public NotImplementedException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode);
+    initResponseCode();
+  }
+
   private void initResponseCode() {
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_NOT_IMPLEMENTED);
   }

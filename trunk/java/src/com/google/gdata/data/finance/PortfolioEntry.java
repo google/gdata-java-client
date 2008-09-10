@@ -54,7 +54,7 @@ public class PortfolioEntry extends BaseEntry<PortfolioEntry> {
    *
    * @param sourceEntry source entry
    */
-  public PortfolioEntry(BaseEntry sourceEntry) {
+  public PortfolioEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 
@@ -65,6 +65,7 @@ public class PortfolioEntry extends BaseEntry<PortfolioEntry> {
     }
     super.declareExtensions(extProfile);
     extProfile.declare(PortfolioEntry.class, PortfolioFeedLink.class);
+    new PortfolioFeedLink().declareExtensions(extProfile);
     extProfile.declare(PortfolioEntry.class,
         PortfolioData.getDefaultDescription(true, false));
     new PortfolioData().declareExtensions(extProfile);

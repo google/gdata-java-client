@@ -166,7 +166,9 @@ public class YouTubeQuery extends Query {
    * Gets the value of the {@code vq} parameter.
    *
    * @return current query string
+   * @deprecated Please use {@link Query#getFullTextQuery()} instead.
    */
+  @Deprecated
   public String getVideoQuery() {
     return getCustomParameterValue(VQ);
   }
@@ -174,12 +176,13 @@ public class YouTubeQuery extends Query {
   /**
    * Sets the value of the {@code vq} parameter.
    *
-   * The {@code vq} parameter supports the same query language as
-   * the one used on the youtube website. It is a superset of
-   * the language supported by the {@code q} parameter.
+   * The {@code vq} parameter is exactly equivalent to the
+   * {@code q} parameter.
    *
    * @param query query string, {@code null} to remove the parameter
+   * @deprecated Please use {@link Query#setFullTextQuery()} instead.
    */
+  @Deprecated
   public void setVideoQuery(String query) {
     overwriteCustomParameter(VQ, query);
   }

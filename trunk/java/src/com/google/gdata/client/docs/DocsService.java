@@ -12,18 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.google.gdata.client.docs;
 
 import com.google.gdata.client.Service;
 import com.google.gdata.client.media.MediaService;
-import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.acl.AclEntry;
 import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
+import com.google.gdata.data.docs.DocumentEntry;
 import com.google.gdata.data.docs.DocumentListFeed;
+import com.google.gdata.data.docs.PdfEntry;
+import com.google.gdata.data.docs.PhotoEntry;
+import com.google.gdata.data.docs.PresentationEntry;
+import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,57 +38,52 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- * The DocsService class extends the basic {@link MediaService}
- * abstraction to define a service that is preconfigured for access
- * to the Google Docs data API.
+ * Extends the basic {@link MediaService} abstraction to define a service that
+ * is preconfigured for access to the Google Documents List data API.
  *
  * 
  */
 public class DocsService extends MediaService {
 
   /**
-   * The abbreviated name of Docs recognized by Google.  The service
-   * name is used while requesting an authentication token.
+   * The abbreviated name of Google Documents List recognized by Google.  The
+   * service name is used when requesting an authentication token.
    */
   public static final String DOCS_SERVICE = "writely";
 
   /**
    * The version ID of the service.
    */
-  public static final String DOCS_SERVICE_VERSION =
-      "GDocs-Java/" +
+  public static final String DOCS_SERVICE_VERSION = "GDocs-Java/" +
       DocsService.class.getPackage().getImplementationVersion();
 
   /**
-   * The Versions class contains all released versions of the Doclist Google
-   * Data API
+   * GData versions supported by Google Documents List Service.
    */
-  public static class Versions {
+  public static final class Versions {
 
-    /**
-     * Version 1 of the Doclist Google Data API.  This is the initial version
-     * of the API and is based on Version 1 of the GData protocol.
-     */
-    public static final Version V1 =
-        new Version(DocsService.class, "1.0", Service.Versions.V1);
+    /** Version 1 of the Doclist Google Data API.  This is the initial version
+     * of the API and is based on Version 1 of the GData protocol. */
+    public static final Version V1 = new Version(DocsService.class, "1.0",
+        Service.Versions.V1);
 
-    /**
-     * Version 2 of the Doclist Google Data API.  This version of the API adds
-     * full compliance with the Atom Publishing Protocol and is based on
-     * Version 2 of the GData protocol.
-     */
-    public static final Version V2 =
-        new Version(DocsService.class, "2.0", Service.Versions.V1);
+    /** Version 2 of the Doclist Google Data API.  This version of the API adds
+     * full compliance with the Atom Publishing Protocol and is based on Version
+     * 2 of the GData protocol. */
+    public static final Version V2 = new Version(DocsService.class, "2.0",
+        Service.Versions.V2);
+
   }
 
-  /** Version 1 is the current default version of DocsService. */
+  /**
+   * Default GData version used by the Google Documents List service.
+   */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(DocsService.class, DocsService.Versions.V1);
+      Service.initServiceVersion(DocsService.class, Versions.V1);
 
   /**
-   * Constructs a DocsService instance connecting to the
-   * Documents service for an application with the name
-   * {@code applicationName}
+   * Constructs an instance connecting to the Google Documents List service for
+   * an application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -91,14 +93,14 @@ public class DocsService extends MediaService {
    */
   public DocsService(String applicationName) {
     super(DOCS_SERVICE, applicationName);
-    addExtensions();
+    declareExtensions();
   }
 
   /**
-   * Constructs a GoogleService instance connecting to the service with name
-   * {@code serviceName} for an application with the name
-   * {@code applicationName}.  The service will authenticate at the provided
-   * {@code domainName}.
+   * Constructs an instance connecting to the Google Documents List service with
+   * name {@code serviceName} for an application with the name {@code
+   * applicationName}.  The service will authenticate at the provided {@code
+   * domainName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -109,29 +111,48 @@ public class DocsService extends MediaService {
    *                        ("http"/"https")
    * @param domainName      the name of the domain hosting the login handler
    */
-  public DocsService(String applicationName,
-                            String protocol,
-                            String domainName) {
+  public DocsService(String applicationName, String protocol,
+      String domainName) {
     super(DOCS_SERVICE, applicationName, protocol, domainName);
-    addExtensions();
+    declareExtensions();
   }
+
+  @Override
+  public String getServiceVersion() {
+    return DOCS_SERVICE_VERSION + " " + super.getServiceVersion();
+  }
+
+  /**
+   * Returns the current GData version used by the Google Documents List
+   * service.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(DocsService.class);
+  }
+
+  /**
+   * Declare the extensions of the feeds for the Google Documents List service.
+   */
+  private void declareExtensions() {
+    new AclFeed().declareExtensions(extProfile);
+    /* Declarations for extensions that need to be handled as specific type
+     * should be done before call to {@see ExtensionProfile#setAutoExtending}.
+     * Order of declaration is important. */
+    extProfile.setAutoExtending(true);
+    new DocumentEntry().declareExtensions(extProfile);
+    new DocumentListFeed().declareExtensions(extProfile);
+    new PdfEntry().declareExtensions(extProfile);
+    new PhotoEntry().declareExtensions(extProfile);
+    new PresentationEntry().declareExtensions(extProfile);
+    new SpreadsheetEntry().declareExtensions(extProfile);
+  }
+
 
   /**
    * Adds the Google Docs extensions.
    */
   public void addExtensions() {
-    ExtensionProfile extensionProfile = getExtensionProfile();
-    new DocumentListFeed().declareExtensions(extensionProfile);
-    new AclFeed().declareExtensions(extensionProfile);
-  }
-
-  /**
-   * Service version ID.
-   *
-   * @return service version ID
-   */
-  public String getServiceVersion() {
-    return DOCS_SERVICE_VERSION + " " + super.getServiceVersion();
+    declareExtensions();
   }
 
   /**
@@ -197,7 +218,7 @@ public class DocsService extends MediaService {
    * <p>
    * This is a convenience method.  It constructs the entry edit URL from
    * the feed URL and scope.
-   * 
+   *
    * @param aclFeedUrl the POST URI associated with the target acl feed
    * @param scope the scope of the to-be-deleted acl
    *
@@ -221,4 +242,6 @@ public class DocsService extends MediaService {
       throw new IOException();
     }
   }
+
 }
+

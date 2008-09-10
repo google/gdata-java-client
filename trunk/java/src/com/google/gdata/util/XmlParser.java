@@ -18,6 +18,7 @@ package com.google.gdata.util;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 
+import com.google.gdata.client.CoreErrorDomain;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -35,6 +36,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -189,7 +191,55 @@ public class XmlParser extends DefaultHandler {
      *
      * The default implementation doesn't recognize anything. The result is a
      * schema error <i>unless</i> the parent handler accepts unrecognized XML.
+     * 
+     * {@link com.google.gdata.wireformats.XmlParser}.
+     * localname/namespace.
      *
+     * @param   namespace
+     *            Child element's namespace URI.
+     *
+     * @param   qualifiedName
+     *            Child element's qualified name.
+     *
+     * @param   localName
+     *            Child element's local name.
+     *
+     * @param   attrs
+     *            Child element's attributes. These attributes will be
+     *            communicated to the child element handler through its
+     *            {@link #processAttribute} method. They are passed here because
+     *            sometimes the value of some attribute determines the element's
+     *            content type, so different element handlers may be needed.
+     *
+     * @return  Child element's handler, or {@code null} if the child is
+     *          unrecognized.
+     *
+     * @throws  ParseException
+     *            Invalid child element.
+     *
+     * @throws  IOException
+     *            Internal I/O exception (e.g., thrown by XML blob writer).
+     */
+    public ElementHandler getChildHandler(String namespace,
+                                          String qualifiedName,
+                                          String localName,
+                                          Attributes attrs,
+                                          List<XmlWriter.Namespace> namespaces)
+        throws ParseException, IOException {
+      return getChildHandler(namespace, localName, attrs);
+    }
+
+    
+    /**
+     * Determines a handler for a child element.
+     * <p>
+     *
+     * The default implementation doesn't recognize anything. The result is a
+     * schema error <i>unless</i> the parent handler accepts unrecognized XML.
+     *
+     * {@link com.google.gdata.wireformats.XmlParser}.
+     * localname/namespace.
+     * 
      * @param   namespace
      *            Child element namespace URI.
      *
@@ -218,12 +268,41 @@ public class XmlParser extends DefaultHandler {
         throws ParseException, IOException {
 
       if (xmlBlob == null) {
-        throw new ParseException("Unrecognized element '" + localName + "'.");
+        ParseException pe = new ParseException(
+            CoreErrorDomain.ERR.unrecognizedElement);
+        pe.setInternalReason("Unrecognized element '" + localName + "'.");
+        throw pe;
       } else {
         logger.fine("No child handler for " + localName +
                     ". Treating as arbitrary foreign XML.");
         return null;
       }
+    }
+
+    /**
+     * Called to process an attribute. Designed to be overridden by derived
+     * classes.
+     *
+     * @param   namespace
+     *            Attribute namespace URI.
+     *
+     * @param   qualifiedName
+     *            Attribute's qualified name.
+     *
+     * @param   localName
+     *            Attribute's local name.
+     *
+     * @param   attrValue
+     *            Attribute value.
+     *
+     * @throws  ParseException
+     *            Invalid attribute.
+     */
+    public void processAttribute(String namespace,
+                                 String qualifiedName,
+                                 String localName,
+                                 String attrValue) throws ParseException {
+      processAttribute(namespace, localName, attrValue);
     }
 
     /**
@@ -255,7 +334,7 @@ public class XmlParser extends DefaultHandler {
     public void processEndElement() throws ParseException {
       if (value != null && !value.trim().equals("") && !mixedContent) {
         throw new ParseException(
-          "This element must not have any text() data.");
+            CoreErrorDomain.ERR.textNotAllowed);
       }
     }
 
@@ -278,14 +357,21 @@ public class XmlParser extends DefaultHandler {
      */
     public void initializeXmlBlob(XmlBlob xmlBlob,
                                   boolean mixedContent,
-                                  boolean fullTextIndex) throws IOException {
+                                  boolean fullTextIndex) {
 
       assert okToInitializeXmlBlob;
 
       this.xmlBlob = xmlBlob;
       this.mixedContent = mixedContent;
       this.innerXmlStringWriter = new StringWriter();
-      this.innerXml = new XmlWriter(innerXmlStringWriter);
+      try {
+        this.innerXml = new XmlWriter(innerXmlStringWriter);
+        
+        // The XmlWriter constructor doesn't actually throw an IOException, so
+        // once that constructor is fixed we can remove this catch block.
+      } catch (IOException impossible) {
+        throw new AssertionError(impossible);
+      }
       this.fullTextIndex = fullTextIndex;
       if (fullTextIndex) {
         this.fullTextIndexWriter = new StringWriter();
@@ -339,8 +425,11 @@ public class XmlParser extends DefaultHandler {
       try {
         result = parseBooleanValue(value);
       } catch (ParseException ex) {
-        throw new ParseException("Invalid value for " + attrName +
-                                 " attribute: " + value);
+        ParseException pe = new ParseException(
+            CoreErrorDomain.ERR.invalidAttributeValue);
+        pe.setInternalReason("Invalid value for " + attrName +
+            " attribute: " + value);
+        throw pe;
       }
 
       return result;
@@ -370,7 +459,10 @@ public class XmlParser extends DefaultHandler {
         return Boolean.TRUE;
       }
 
-      throw new ParseException("Invalid value for boolean attribute: " + value);
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidBooleanAttribute);
+      pe.setInternalReason("Invalid value for boolean attribute: " + value);
+      throw pe;
     }
   }
 
@@ -698,7 +790,8 @@ public class XmlParser extends DefaultHandler {
       // handler. If no handler is found, then parses element as
       // XML Blob (if enabled).
       try {
-        curHandler = curHandler.getChildHandler(namespace, localName, attrs);
+        curHandler = curHandler.getChildHandler(
+            namespace, qName, localName, attrs, elementNamespaces);
       } catch (ParseException e) {
         throw new SAXException(e);
       } catch (IOException e) {
@@ -718,7 +811,7 @@ public class XmlParser extends DefaultHandler {
       }
 
       try {
-
+        
         // First pass to extract xml:lang and xml:base.
         for (int i = attrs.getLength() - 1; i >= 0; --i) {
 
@@ -746,12 +839,14 @@ public class XmlParser extends DefaultHandler {
         for (int i = attrs.getLength() - 1; i >= 0; --i) {
 
           String attrNamespace = attrs.getURI(i);
+          String attrQName = attrs.getQName(i);
           String attrLocalName = attrs.getLocalName(i);
           String attrValue = attrs.getValue(i);
 
           logger.finer("Attribute " + attrLocalName + "='" + attrValue + "'");
 
-          curHandler.processAttribute(attrNamespace, attrLocalName, attrValue);
+          curHandler.processAttribute(
+              attrNamespace, attrQName, attrLocalName, attrValue);
         }
 
       } catch (ParseException e) {

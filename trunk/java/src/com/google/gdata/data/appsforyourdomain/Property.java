@@ -99,22 +99,20 @@ public class Property extends ExtensionPoint implements Extension {
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace,
                                    String localName,
-                                   Attributes attrs)
-      throws ParseException, IOException {
+                                   Attributes attrs) {
     return new Handler(extProfile);
   }
 
   // <apps:property> parser
   private class Handler extends ExtensionPoint.ExtensionHandler {
-    public Handler(ExtensionProfile extProfile) throws ParseException,
-        IOException {
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, Property.class);
     }
     
     @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value) throws ParseException {
+                                 String value) {
       if (namespace.equals("")) {
         if (localName.equals(ATTRIBUTE_NAME)) {
           name = value;

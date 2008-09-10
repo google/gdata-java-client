@@ -16,6 +16,7 @@
 package com.google.api.gbase.client;
 
 import com.google.gdata.client.Query;
+import com.google.gdata.client.Service;
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.BaseEntry;
@@ -25,6 +26,7 @@ import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.batch.BatchOperationType;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.util.Version;
 
 import java.io.IOException;
 import java.net.URL;
@@ -61,6 +63,30 @@ public class GoogleBaseService extends MediaService {
   public static final String GOOGLE_BASE_SERVICE_VERSION = "GBase-Java/" +
           GoogleBaseService.class.getPackage().getImplementationVersion();
 
+  /** The Versions class contains all released versions of the Google Base API */
+  public static class Versions {
+
+    /**
+      * Version 1 of the Google Base API. This is the initial version of the API and is
+      * based upon Version 1 of the GData Protocol.
+      */
+    public static final Version V1 =
+         new Version(GoogleBaseService.class, "1.0", Service.Versions.V1);
+
+    /**
+      * Version 2 of the Google Base API. This version of the API adds full compliance
+      * with the Atom Publishing Protocol and is based upon Version 2 of the GData protocol.
+      */
+    public static final Version V2 =
+         new Version(GoogleBaseService.class, "2.0", Service.Versions.V2);
+  } 
+
+  /**
+    * Version 1 is the current default version for GoogleBaseService.
+    */
+   public static final Version DEFAULT_VERSION =
+       Service.initServiceVersion(GoogleBaseService.class, GoogleBaseService.Versions.V1);
+  
   /** Name of the application passed to the constructor. */
   protected String application;
 

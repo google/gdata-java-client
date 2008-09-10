@@ -44,6 +44,15 @@ import java.util.List;
 public class VideoEntry extends MediaEntry<VideoEntry> {
 
   /**
+   * Nonstandard categories that might be found in this entry.
+   */
+  public static final String[] CATEGORIES = {
+    YouTubeNamespace.CATEGORY_SCHEME,
+    YouTubeNamespace.KEYWORD_SCHEME,
+    YouTubeNamespace.DEVELOPER_TAG_SCHEME
+  };
+
+  /**
    * Creates an empty video entry.
    */
   public VideoEntry() {
@@ -51,7 +60,7 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
   }
 
   /** Creates a copy of another entry. */
-  public VideoEntry(BaseEntry original) {
+  public VideoEntry(BaseEntry<?> original) {
     super(original);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO);
   }

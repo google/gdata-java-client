@@ -38,10 +38,6 @@ public final class CalendarAclRole {
   public static final AclRole EDITOR = new AclRole(
       Namespaces.gCalPrefix + AccessLevelProperty.EDITOR.getValue());
   
-  /** Google Calendar "CONTRIBUTOR" ACL role */
-  public static final AclRole CONTRIBUTOR = new AclRole(
-      Namespaces.gCalPrefix + AccessLevelProperty.CONTRIBUTOR.getValue());
-
   /** Google Calendar "OVERRIDE" ACL role */
   public static final AclRole OVERRIDE = new AclRole(
       Namespaces.gCalPrefix + AccessLevelProperty.OVERRIDE.getValue());

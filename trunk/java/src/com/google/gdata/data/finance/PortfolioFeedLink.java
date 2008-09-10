@@ -40,9 +40,12 @@ public class PortfolioFeedLink extends FeedLink<PositionFeed> {
       return;
     }
     super.declareExtensions(extProfile);
-    ExtensionProfile ep = new ExtensionProfile();
-    new PositionFeed().declareExtensions(ep);
-    extProfile.declareFeedLinkProfile(ep);
+    ExtensionProfile feedLinkProfile = extProfile.getFeedLinkProfile();
+    if (feedLinkProfile == null) {
+      feedLinkProfile = new ExtensionProfile();
+      extProfile.declareFeedLinkProfile(feedLinkProfile);
+    }
+    new PositionFeed().declareExtensions(feedLinkProfile);
   }
 
   /**

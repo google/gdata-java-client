@@ -21,7 +21,27 @@ import java.net.URLEncoder;
 import java.util.BitSet;
 
 /**
- * FastURLEncoder is intended as a replacement for the slow and inefficient
+ * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()},
+ * {@link com.google.gdata.util.common.base.CharEscapers#cppUriEscaper()} or create your
+ * own custom {@link com.google.gdata.util.common.base.PercentEscaper}.
+ *
+ * <p>Almost every use of FastURLEncoder can now be replaced with an instance of
+ * the PercentEscaper class, which is much faster.
+ *
+ * <p>In most cases it should be possible to use the static instances available
+ * from {@link com.google.gdata.util.common.base.CharEscapers} but it is also possible to
+ * create your own escaper with custom behaviour.
+ *
+ * <p>See <a href="https://docs.google.com/a/google.com/View?docID=ahmsnsb8b5_85dwj83whg">
+ * Deprecating FastURLEncoder</a> for more information.
+ *
+ * <p>Note that the new uriEscaper only escapes using UTF-8 encoding and while
+ * no examples of other encodings were found when preparing this class for
+ * deprecation, it's possible that some instance were missed. If you have a
+ * valid reason to escape URIs via an encoding other than UTF-8 please let
+ * the java-libraries-team know.
+ *
+ * <p>FastURLEncoder is intended as a replacement for the slow and inefficient
  * java.net.URLEncoder. There are a few differences though:
  * <ul>
  *  <li> URLEncoder.encode(String) uses the platform's default encoding
@@ -35,20 +55,20 @@ import java.util.BitSet;
  *    shouldn't be escaped and also whether spaces should be escaped as "+" or
  *    "%20".
  * </ul>
- * <p/>
- * It is possible that URLEncoder is doing really complicated stuff for
+ *
+ * <p>It is possible that URLEncoder is doing really complicated stuff for
  * a reason and that I just don't understand why. If you are unsure of
  * FastURLEncoder just call FastURLEncoder.setVerifyAgainstJava(true). This
  * will run both versions and verify that the outputs are the same.
  * Of course this will be slow but it is useful for testing. I wouldn't
  * be surprised if the two differ for non-latin1, non-utf-8 encodings.
- * <p/>
  *
- * FastURLEncoder requires jdk 1.5.
+ * <p>FastURLEncoder requires jdk 1.5.
  *
  * @see java.net.URLEncoder
  * 
  */
+@Deprecated
 public class FastURLEncoder {
   private static boolean verifyAgainstJava = false;
 
@@ -87,7 +107,12 @@ public class FastURLEncoder {
    * itself if no encoding is necessary.
    *
    * @throws UnsupportedEncodingException if {@code encoding} is not supported.
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}
+   * or create an instance of {@link com.google.gdata.util.common.base.PercentEscaper}.
+   * See {@link FastURLEncoder} for more details.
    */
+  @Deprecated
   public static String encode(final String s, final String encoding,
                               BitSet safeOctets, boolean plusForSpace)
       throws UnsupportedEncodingException {
@@ -126,7 +151,12 @@ public class FastURLEncoder {
    *
    * @throws UnsupportedEncodingException if {@code encoding} is not supported.
    * @throws IOException if {@code out} does so when appended to.
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}
+   * or create an instance of {@link com.google.gdata.util.common.base.PercentEscaper}.
+   * See {@link FastURLEncoder} for more details.
    */
+  @Deprecated
   public static boolean encode(final String s, final String encoding,
                                BitSet safeOctets, boolean plusForSpace,
                                Appendable out)
@@ -164,7 +194,11 @@ public class FastURLEncoder {
    * @see java.net.URLEncoder#encode(String, String)
    * @param s String to encode.
    * @param encoding character encoding to use (e.g., "UTF-8")
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}.
+   * See {@link FastURLEncoder} for more details.
    */
+  @Deprecated
   public static String encode(String s, String encoding)
       throws UnsupportedEncodingException {
     String result = encode(s, encoding, DEFAULT_SAFE_OCTETS, true);
@@ -192,7 +226,11 @@ public class FastURLEncoder {
    *
    * @throws UnsupportedEncodingException if {@code encoding} is not supported.
    * @throws IOException if {@code out} does so when appended to.
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}.
+   * See {@link FastURLEncoder} for more details.
    */
+  @Deprecated
   public static void encode(String s, String encoding, Appendable out)
       throws UnsupportedEncodingException, IOException {
 
@@ -209,7 +247,10 @@ public class FastURLEncoder {
    * uses UTF-8 instead of the platform's default encoding.
    * @see java.net.URLEncoder#encode(String)
    * @param s String to encode.
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}.
    */
+  @Deprecated
   public static String encode(String s) {
     try {
       return encode(s, "UTF-8");
@@ -225,7 +266,11 @@ public class FastURLEncoder {
    * @see java.net.URLEncoder#encode(String)
    * @param s String to encode.
    * @param out the Appendable destination for the encoded string.
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}.
+   * See {@link FastURLEncoder} for more details.
    */
+  @Deprecated
   public static void encode(String s, Appendable out) throws IOException {
     try {
 
@@ -249,7 +294,12 @@ public class FastURLEncoder {
    * @param plusForSpace whether octet 0x20, i.e., "space", should be encoded as
    * a plus sign rather than "%20". Note that this parameter is effectively
    * ignored if 0x20 is in safeOctets.
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}.
+   * or create an instance of {@link com.google.gdata.util.common.base.PercentEscaper}.
+   * See {@link FastURLEncoder} for more details.
    */
+  @Deprecated
   public static String encode(String s, BitSet safeOctets,
                               boolean plusForSpace) {
     try {
@@ -295,6 +345,8 @@ public class FastURLEncoder {
    * the kGoogle1Escape set.
    * To produce the same escaping as C++, use this BitSet with the plusForSpace
    * option.
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#cppUriEscaper()}
    */
   public static final BitSet CPLUSPLUS_COMPAT_SAFE_OCTETS = new BitSet(256);
   static {

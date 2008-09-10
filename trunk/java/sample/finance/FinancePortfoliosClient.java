@@ -314,7 +314,9 @@ public class FinancePortfoliosClient {
           break;
         case QUIT:
           System.exit(0);
-        case HELP:  // Proceed to default case.
+        case HELP:
+          printPortfolioMenuHelp();
+          break;
         default:
           printPortfolioMenuHelp();
       }
@@ -374,7 +376,9 @@ public class FinancePortfoliosClient {
           break;
         case QUIT:
           System.exit(0);
-        case HELP:  // Proceed to default case.
+        case HELP:
+          printPositionMenuHelp();
+          break;
         default:
           printPositionMenuHelp();
       }
@@ -482,7 +486,9 @@ public class FinancePortfoliosClient {
           return;
         case QUIT:
           System.exit(0);
-        case HELP:  // Proceed to default case.
+        case HELP:
+          printTransactionMenuHelp();
+          break;
         default:
           printTransactionMenuHelp();
       }
@@ -500,6 +506,7 @@ public class FinancePortfoliosClient {
     System.out.println("transactions (t) : transaction commands");
     System.out.println("help (h)         : help");
     System.out.println("quit (q)         : quit");
+    System.out.println("");
   }
 
   /**
@@ -517,6 +524,7 @@ public class FinancePortfoliosClient {
     System.out.println("positions (p) : go to the positions menu");
     System.out.println("help (h)      : help");
     System.out.println("quit (q)      : quit");
+    System.out.println("");
   }
 
   /**
@@ -531,6 +539,7 @@ public class FinancePortfoliosClient {
     System.out.println("transactions (t)   : go to the transactions menu");
     System.out.println("help (h)           : help");
     System.out.println("quit (q)           : quit");
+    System.out.println("");
   }
 
   /**
@@ -547,6 +556,7 @@ public class FinancePortfoliosClient {
     System.out.println("back (b)   : go back to previous menu");
     System.out.println("help (h)   : help");
     System.out.println("quit (q)   : quit");
+    System.out.println("");
   }
 
   /**
@@ -872,7 +882,7 @@ public class FinancePortfoliosClient {
    * Deletes a portfolio entry in a feed.
    *
    * @param service authenticated client connection to a Finance GData service
-   * @param resourceUrl the edit URL associated with the entry
+   * @param entryUrl the edit URL associated with the entry
    *   e.g. http://finance.google.com/finance/feeds/default/portfolios/1
    * @throws IOException If there is a problem communicating with the server.
    * @throws MalformedURLException If the URL is invalid.
@@ -882,6 +892,7 @@ public class FinancePortfoliosClient {
       throws IOException, MalformedURLException, ServiceException {
     System.out.println("Deleting Entry at location: " + entryUrl);
     service.delete(new URL(entryUrl));
+    System.out.println("Delete Successful");
   }
 
   /**
@@ -1013,7 +1024,7 @@ public class FinancePortfoliosClient {
    * Deletes a transaction entry in a feed.
    *
    * @param service authenticated client connection to a Finance GData service
-   * @param resourceUrl the edit URL associated with the entry
+   * @param entryUrl the edit URL associated with the entry
    *   e.g. http://finance.google.com/finance/feeds/default/
    *            portfolios/1/positions/NYSE:IBM/transactions/1
    * @throws IOException If there is a problem communicating with the server.
@@ -1024,6 +1035,7 @@ public class FinancePortfoliosClient {
       throws IOException, MalformedURLException, ServiceException {
     System.out.println("Deleting Entry at location: " + entryUrl);
     service.delete(new URL(entryUrl));
+    System.out.println("Delete Successful");
   }
 
   /**
@@ -1100,7 +1112,9 @@ public class FinancePortfoliosClient {
             break;
           case QUIT:
             System.exit(0);
-          case HELP:  // Proceed to default case.
+          case HELP:
+            printMainMenuHelp();
+            break;
           default:
             printMainMenuHelp();
         }
@@ -1114,5 +1128,9 @@ public class FinancePortfoliosClient {
       System.err.println("The server had a problem handling your request.");
       e.printStackTrace();
     }
+  }
+
+  /** This class is only used for its static methods */
+  private FinancePortfoliosClient() {
   }
 }

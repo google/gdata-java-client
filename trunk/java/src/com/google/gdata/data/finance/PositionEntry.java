@@ -54,7 +54,7 @@ public class PositionEntry extends BaseEntry<PositionEntry> {
    *
    * @param sourceEntry source entry
    */
-  public PositionEntry(BaseEntry sourceEntry) {
+  public PositionEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 
@@ -65,6 +65,7 @@ public class PositionEntry extends BaseEntry<PositionEntry> {
     }
     super.declareExtensions(extProfile);
     extProfile.declare(PositionEntry.class, PositionFeedLink.class);
+    new PositionFeedLink().declareExtensions(extProfile);
     extProfile.declare(PositionEntry.class,
         PositionData.getDefaultDescription(true, false));
     new PositionData().declareExtensions(extProfile);

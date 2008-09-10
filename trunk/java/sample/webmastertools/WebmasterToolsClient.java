@@ -18,12 +18,15 @@ package sample.webmastertools;
 
 import com.google.gdata.client.webmastertools.WebmasterToolsService;
 import com.google.gdata.data.OutOfLineContent;
+import com.google.gdata.data.webmastertools.CrawlRate;
+import com.google.gdata.data.webmastertools.DomainPreference;
 import com.google.gdata.data.webmastertools.SitemapsEntry;
 import com.google.gdata.data.webmastertools.SitemapsFeed;
 import com.google.gdata.data.webmastertools.SitemapsRegularEntry;
 import com.google.gdata.data.webmastertools.SitesEntry;
 import com.google.gdata.data.webmastertools.SitesFeed;
 import com.google.gdata.data.webmastertools.VerificationMethod;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 import sample.util.SimpleCommandLineParser;
@@ -35,86 +38,155 @@ import java.net.URLEncoder;
 
 /**
  * Demonstrates how to use the Google Data API's Java client library to
- * interface with the Webmaster Tools  service. There are methods for the following
- * operations:
+ * interface with the Webmaster Tools service.
+ *
+ * Google Data API: http://code.google.com/apis/gdata/
+ * Webmaster Tools Data API: http://code.google.com/apis/webmastertools/
+ *
+ * There are methods for the following operations:
  * <ol>
- * <li>List user's sites</li>
- * <li>Add site</li>
- * <li>List user's Sitemaps</li>
- * <li>Add Sitemap</li>
- * <li>Verify site</li>
- * <li>Delete Sitemap</li>
- * <li>Delete site</li>
+ *   <li>List user's sites</li>
+ *   <li>Add site</li>
+ *   <li>List verification options</li>
+ *   <li>Verify site</li>
+ *   <li>List site settings</li>
+ *   <li>Update site settings</li>
+ *   <li>Delete site</li>
+ *   <li>List user's Sitemaps</li>
+ *   <li>Add Sitemap</li>
+ *   <li>Delete Sitemap</li>
  * </ol>
  *
  * This sample program will only perform:
  * <ol>
- * <li>List user's sites</li>
- * <li>Add site: SAMPLE_SITE</li>
- * <li>List user's Sitemaps</li>
- * <li>Add SAMPLE_SITEMAP</li>
- * <li>Delete SAMPLE_SITEMAP</li>
- * <li>Delete SAMPLE_SITE</li>
+ *   <li>List user's sites</li>
+ *   <li>Add site: SAMPLE_SITE</li>
+ *   <li>List verification values for SAMPLE_SITE</li>
+ *   <li>List site settings (will not appear for unverified sites)</li>
+ *   <li>List user's Sitemaps</li>
+ *   <li>Add SAMPLE_SITEMAP</li>
+ *   <li>Delete SAMPLE_SITEMAP</li>
+ *   <li>Delete SAMPLE_SITE</li>
  * </ol>
- * Additional methods are available if uncommented below.
  */
 public class WebmasterToolsClient {
+  
+  // URL of the base feed
+  private static final String FEED_URI_BASE
+      = "http://www.google.com/webmasters/tools/feeds/";
 
-  private static final String FEED_URI_BASE = 
-      "http://www.google.com/webmasters/tools/feeds/";
-
+  // Directory of the sites feed
   private static final String SITES_FEED_DIRECTORY = "sites/";
+  
+  // Directory of the sitemaps feed for a particular site
   private static final String SITEMAPS_FEED_DIRECTORY = "/sitemaps/";
 
-  /* SAMPLE_SITE and SAMPLE_SITEMAP provide an example site for test methods */
+  // Sample site URL. No verification required to add or remove sites
+  // Please keep the trailing slash, it is required to access the site
   private static final String SAMPLE_SITE = "http://www.example.com/";
-  private static final String SAMPLE_SITEMAP =
-      "http://www.example.com/sitemap.xml";
 
-  /* Sitemap type declared at Sitemap submission.
-   * Additional types are VIDEO, CODE, and NEWS.
-   * Submission for other types  will require more information. */
+  // Sample sitemaps URL. No verification required to add or remove sitemaps
+  private static final String SAMPLE_SITEMAP
+      = "http://www.example.com/sitemap.xml";
+
+  // Geographic location, two letter region code
+  private static final String SAMPLE_LOCATION = "CA";
+
+  // Desired crawl rate, SLOWER, NORMAL, FASTER. See CrawlRate
+  private static final CrawlRate SAMPLE_RATE = CrawlRate.SLOWER;
+
+  // Preferred domain. NONE, PREFER_WWW, PREFER_NO_WWW. See Domain Preference
+  private static final DomainPreference SAMPLE_PREFERRED_DOMAIN
+      = DomainPreference.PREFER_WWW;
+
+  // Enable enhanced image search for the site
+  private static final boolean SAMPLE_ENHANCED_IMAGE_SEARCH = true;
+
+  // Sitemap type. Supported types include WEB, MOBILE, CODE, VIDEO, and NEWS.
+  // See http://code.google.com/apis/webmastertools/docs/developers_guide.html#Sitemaps
   private static final String GENERAL_WEB_SITEMAP = "WEB";
 
-  /* Public empty constructor*/
+  /**
+   * Public empty constructor
+   */
   public WebmasterToolsClient() {
   }
 
   /**
-   * Adds a new site for the given user.
+   * Creates the URL for the sites feed.
+   *
+   * @return URL of Webmaster Tools Sites feed.
+   * @throws IOException if the URL is malformed.
+   */
+  private static URL getSitesFeedUrl() throws IOException {
+    try {
+      return new URL(FEED_URI_BASE + SITES_FEED_DIRECTORY);
+    } catch (MalformedURLException e) {
+      throw new IOException("URL for sites feed is malformed.");
+    }
+  }  
+  
+  /**
+   * Lists all sites in a user's Webmaster Tools account.
+   * Sites may be sorted randomly. Do not rely on the ordering of the sites.
    *
    * @param myService Authenticated WebmasterTools Service object
-   * @param siteUrl URL of site to add to account
-   * @return A SitesEntry with the newly-created site
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws ServiceException if the service is unable to handle the request.
+   * @throws IOException if the URL is malformed.
    */
-  public static SitesEntry insertSite(
-      WebmasterToolsService myService, String siteUrl)
-      throws IOException, ServiceException {
+  public static void printUserSites(WebmasterToolsService myService)
+      throws ServiceException, IOException {
+    try {
+      System.out.println("Printing user's sites:");
+      
+      // Request the feed
+      URL feedUrl = getSitesFeedUrl();
+      SitesFeed sitesResultFeed = myService.getFeed(feedUrl, SitesFeed.class);
+
+      // Print the results
+      for (SitesEntry entry : sitesResultFeed.getEntries()) {
+        System.out.println("\t" + entry.getTitle().getPlainText());
+      }
+    } catch (MalformedURLException e) {
+      throw new IOException("URL for sites feed is malformed.");
+    }
+  }
+  
+  /**
+   * Adds a new site for the given user.
+   *
+   * @param myService authenticated WebmasterTools Service object
+   * @param siteUrl URL of site to add to account
+   * @return a SitesEntry with the newly-created site
+   * @throws ServiceException if the service is unable to handle the request.
+   * @throws IOException if there was an error communicating with the server.
+   */
+  public static SitesEntry insertSite(WebmasterToolsService myService, 
+      String siteUrl) throws IOException, ServiceException {
     SitesEntry entry = new SitesEntry();
     OutOfLineContent content = new OutOfLineContent();
     content.setUri(siteUrl);
     entry.setContent(content);
     System.out.println("Site: " + siteUrl + " now being added.");
-    return myService.insert(newSitesFeedUrl(), entry);
+    return myService.insert(getSitesFeedUrl(), entry);
   }
 
   /**
-   * List verification filename and metatag values.
+   * List verification options, currently filename and metatag values.
    *
-   * @param myService Authenticated WebmasterTools Service object.
+   * @param myService authenticated WebmasterTools Service object.
    * @param siteUrl URL of site to be verified.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws ServiceException if the service is unable to handle the request.
+   * @throws IOException if there was an error communicating with the server.
    */
-  public static void listVerificationValues(
-      WebmasterToolsService myService, String siteUrl)
-      throws IOException, ServiceException {
-    /* Request the feed */
+  public static void listVerificationValues(WebmasterToolsService myService, 
+      String siteUrl) throws IOException, ServiceException {
+    // Request the entry
     String siteId = URLEncoder.encode(siteUrl, "UTF-8");
-    URL feedUrl = new URL(newSitesFeedUrl() + siteId);
+    URL feedUrl = new URL(getSitesFeedUrl() + siteId);
     SitesEntry entry = myService.getEntry(feedUrl, SitesEntry.class);
+    
+    // Print verification options
     for (VerificationMethod method : entry.getVerificationMethods()) {
       System.out.println("Verification method: " + method.getMethodType());
       if (method.getMethodType() == VerificationMethod.MethodType.METATAG) {
@@ -131,101 +203,125 @@ public class WebmasterToolsClient {
    * HTML page. A webmaster may also verify through
    * VerificationMethod.MethodType.METATAG.
    *
-   * @param myService Authenticated WebmasterTools Service object.
+   * @param myService authenticated WebmasterTools Service object.
    * @param siteUrl URL of site to be verified.
-   * @return A SitesEntry for the verified site.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @return a SitesEntry for the verified site.
+   * @throws ServiceException if the service is unable to handle the request.
+   * @throws IOException if there was an error communicating with the server.
    */
-  public static SitesEntry verifySite(
-      WebmasterToolsService myService, String siteUrl)
-      throws IOException, ServiceException {
+  public static SitesEntry verifySite(WebmasterToolsService myService,
+      String siteUrl) throws IOException, ServiceException {
     VerificationMethod method = new VerificationMethod();
     method.setMethodType(VerificationMethod.MethodType.HTMLPAGE);
-    /* Or method.setMethodType(VerificationMethod.MethodType.METATAG);*/
+    // Or method.setMethodType(VerificationMethod.MethodType.METATAG);
     method.setInUse(true);
 
-    /* Create the new SitesEntry to be verified */
+    // Create the new SitesEntry to be verified
     SitesEntry entry = new SitesEntry();
     entry.addVerificationMethod(method);
     String siteId = URLEncoder.encode(siteUrl, "UTF-8");
     System.out.println("Now verifying site: " + siteUrl);
-    URL updateUrl = new URL(newSitesFeedUrl() + siteId);
+    URL updateUrl = new URL(getSitesFeedUrl() + siteId);
     return myService.update(updateUrl, entry);
   }
 
   /**
+   * Print the settings for all sites in the feed. The sites have to be
+   * verified in order to be able to access settings information.
+   * 
+   * @param myService authenticated WebmasterTools Service object.
+   * @throws IOException if the URL is malformed.
+   * @throws ServiceException if the service is unable to handle the request.
+   */
+  public static void printSiteSettings(WebmasterToolsService myService)
+      throws IOException, ServiceException {
+    try {
+      System.out.println("Printing site settings:");
+
+      // Get the sites feed
+      URL feedUrl = getSitesFeedUrl();
+      SitesFeed sitesResultFeed = myService.getFeed(feedUrl, SitesFeed.class);
+      for (SitesEntry entry : sitesResultFeed.getEntries()) {
+        // Print site name and settings
+        System.out.println("\t" + entry.getTitle().getPlainText());
+        System.out.println("\t\tGeographic location:"
+            + entry.getGeolocation());
+        System.out.println("\t\tDesired Crawl Rate:"
+            + entry.getCrawlRate());
+        System.out.println("\t\tPreferred Domain Association:"
+            + entry.getPreferredDomain());
+        System.out.println("\t\tEnhanced Image Search:"
+            + entry.getEnhancedImageSearch());
+      }
+    } catch (MalformedURLException e) {
+      throw new IOException("URL for site URL is malformed.");
+    }
+  }
+  
+  /**
+   * Update the settings for a site. The settings supported are
+   * geographic location, desired crawl rate, preferred domain and
+   * enhanced image search. Please update one setting at a time.
+   * Updating multiple settings at a time is not supported.
+   * 
+   * @param myService authenticated WebmasterTools Service object.
+   * @param siteUrl is the URL of the site to update.
+   * @return a SitesEntry with the last updated site.
+   * @throws IOException if there was an error communicating with the server.
+   * @throws ServiceException if the service is unable to handle the request.
+   */
+  public static SitesEntry updateSiteSettings(WebmasterToolsService myService,
+      String siteUrl) throws IOException, ServiceException {
+    System.out.println("Site: " + siteUrl);
+    String siteId = URLEncoder.encode(siteUrl, "UTF-8");
+    URL updateUrl = new URL(getSitesFeedUrl() + siteId);
+
+    try {
+      // Update geographic location
+      System.out.println("Updating geographic location...");
+      SitesEntry entryUpdate = new SitesEntry();
+      entryUpdate.setGeolocation(SAMPLE_LOCATION);
+      myService.update(updateUrl, entryUpdate);
+
+      // Update desired crawl rate
+      System.out.println("Updating desired crawl rate...");
+      entryUpdate = new SitesEntry();
+      entryUpdate.setCrawlRate(SAMPLE_RATE);
+      myService.update(updateUrl, entryUpdate);
+
+      // Update preferred domain
+      System.out.println("Updating preferred domain...");
+      entryUpdate = new SitesEntry();
+      entryUpdate.setPreferredDomain(SAMPLE_PREFERRED_DOMAIN);
+      myService.update(updateUrl, entryUpdate);
+
+      // Update enhanced image search and return the last updated entry
+      System.out.println("Updating enhanced image search...");
+      entryUpdate = new SitesEntry();
+      entryUpdate.setEnhancedImageSearch(SAMPLE_ENHANCED_IMAGE_SEARCH);
+      return myService.update(updateUrl, entryUpdate);
+    } catch (ServiceException e) {
+      System.out.println("Please make sure that the site to update "
+          + "contains a trailing forward slash");
+      throw(e);
+    }
+  }
+    
+  /**
    * Delete the site from the user's Webmaster Tools account.
    *
-   * @param myService Authenticated WebmasterTools Service object.
+   * @param myService authenticated WebmasterTools Service object.
    * @param siteUrl URL of site to delete from account.
-   * @throws IOException If there is a problem communicating with the server.
-   * @throws ServiceException If the service is unable to handle the request.
+   * @throws IOException if there was an error communicating with the server.
+   * @throws ServiceException if the service is unable to handle the request.
    */
   public static void deleteSite(WebmasterToolsService myService, String siteUrl)
       throws IOException, ServiceException {
     String siteId = URLEncoder.encode(siteUrl, "UTF-8");
-    URL feedUrl = new URL(newSitesFeedUrl() + siteId);
+    URL feedUrl = new URL(getSitesFeedUrl() + siteId);
     SitesEntry entry = myService.getEntry(feedUrl, SitesEntry.class);
     System.out.println("Now deleting site: " + siteUrl);
     entry.delete();
-  }
-
-  /**
-   * Delete the Sitemap from the user's Webmaster Tools account.
-   *
-   * @param myService Authenticated WebmasterTools Service object.
-   * @param siteUrl Site where the Sitemap is located
-   *        (e.g. "http:/www.example.com/").
-   * @param sitemapUrl Full path to Sitemap file.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
-   */
-  public static void deleteSitemap(
-      WebmasterToolsService myService, String siteUrl,
-      String sitemapUrl) throws IOException, ServiceException {
-    String siteId = URLEncoder.encode(siteUrl, "UTF-8");
-    String sitemapId = URLEncoder.encode(sitemapUrl, "UTF-8");
-    URL feedUrl = new URL(newSitemapsFeedUrl(siteId) + sitemapId);
-    SitemapsRegularEntry entry =
-        myService.getEntry(feedUrl, SitemapsRegularEntry.class);
-    System.out.println("Now deleting Sitemap: " + sitemapUrl);
-    entry.delete();
-  }
-
-  /**
-   * Submit a Sitemap for the user's Webmaster Tools account.
-   *
-   * @param myService Authenticated WebmasterTools Service object
-   * @param siteUrl URL of site hosting the Sitemap
-   * @param sitemapUrl is a Sitemap URL to submit. If the Sitemap has been
-   *     added already, then this method results in resubmitting the Sitemap.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed
-   */
-  public static SitemapsEntry insertSitemap(
-      WebmasterToolsService myService, String siteUrl,
-      String sitemapUrl)
-    throws IOException, ServiceException {
-    SitemapsRegularEntry entry = new SitemapsRegularEntry();
-    entry.setId(sitemapUrl);
-    entry.setSitemapType(GENERAL_WEB_SITEMAP);
-    System.out.println("Sitemap: " + sitemapUrl + " now being added.");
-    return myService.insert(newSitemapsFeedUrl(siteUrl), entry);
-  }
-
-  /**
-   * Creates the URL for the sites feed.
-   *
-   * @return URL of Webmaster Tools Sites feed.
-   * @throws IOException if the URL is malformed.
-   */
-  private static URL newSitesFeedUrl() throws IOException {
-    try {
-      return new URL(FEED_URI_BASE + SITES_FEED_DIRECTORY);
-    } catch (MalformedURLException e) {
-      throw new IOException("URL for sites is malformed.");
-    }
   }
 
   /**
@@ -234,7 +330,7 @@ public class WebmasterToolsClient {
    * @return URL of Webmaster Tools Sitemaps feed.
    * @throws IOException if the URL is malformed.
    */
-  private static URL newSitemapsFeedUrl(String siteUrl) throws IOException {
+  private static URL getSitemapsFeedUrl(String siteUrl) throws IOException {
     try {
       String siteId = URLEncoder.encode(siteUrl, "UTF-8");
       return new URL(FEED_URI_BASE + siteId + SITEMAPS_FEED_DIRECTORY);
@@ -242,52 +338,26 @@ public class WebmasterToolsClient {
       throw new IOException("URL for site URL is malformed.");
     }
   }
-
-  /**
-   * Lists all sites in a user's Webmaster Tools account.
-   *
-   * @param myService Authenticated WebmasterTools Service object
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
-   */
-  public static void printUserSites(WebmasterToolsService myService)
-      throws ServiceException, IOException {
-    try {
-      System.out.println("Printing user's sites:");
-      /* Request the feed */
-      URL feedUrl = newSitesFeedUrl();
-      SitesFeed sitesResultFeed = myService.getFeed(feedUrl, SitesFeed.class);
-
-      /* Print the results */
-      for (SitesEntry entry : sitesResultFeed.getEntries()) {
-        System.out.println("\t" + entry.getTitle().getPlainText());
-      }
-    } catch (MalformedURLException e) {
-      throw new IOException("URL for site URL is malformed.");
-    }
-  }
-
+  
   /**
    * Prints all Sitemap URLs for a given site.
    *
-   * @param myService Authenticated WebmasterTools Service object.
+   * @param myService authenticated WebmasterTools Service object.
    * @param siteUrl URL of site to view existing Sitemaps.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If the URL is malformed.
+   * @throws ServiceException if the service is unable to handle the request.
+   * @throws IOException if the URL is malformed.
    */
-  public static void printUserSitemaps(
-      WebmasterToolsService myService, String siteUrl)
-      throws ServiceException, IOException {
+  public static void printUserSitemaps(WebmasterToolsService myService, 
+      String siteUrl) throws ServiceException, IOException {
     System.out.println("Printing user's Sitemaps:");
     try {
       String siteId = URLEncoder.encode(siteUrl, "UTF-8");
-      /* Request the feed */
-      URL feedUrl = newSitemapsFeedUrl(siteUrl);
+      // Request the feed
+      URL feedUrl = getSitemapsFeedUrl(siteUrl);
       SitemapsFeed resultFeed = myService.getFeed(feedUrl, SitemapsFeed.class);
 
-      /* Print the results */
-      for (int i = 0; i < resultFeed.getEntries().size(); i++) {
-        SitemapsEntry entry = resultFeed.getEntries().get(i);
+      // Print the results    
+      for(SitemapsEntry entry : resultFeed.getEntries()) {
         System.out.println("\t" + entry.getTitle().getPlainText());
       }
     } catch (MalformedURLException e) {
@@ -296,45 +366,53 @@ public class WebmasterToolsClient {
   }
 
   /**
-   * Runs through many of the methods using the Webmaster Service instance.
-   * Users may comment or uncomment methods that they would like to run.
+   * Submit a Sitemap for the user's Webmaster Tools account.
    *
-   * @param myService An authenticated GoogleService object.
-   * @param userName Username of user to authenticate (e.g. jdoe@gmail.com).
-   * @param userPassword Password for user's authentication.
-   * @throws ServiceException If the service is unable to handle the request.
-   * @throws IOException If there is an error communicating with the server.
+   * @param myService authenticated WebmasterTools Service object
+   * @param siteUrl URL of site hosting the Sitemap
+   * @param sitemapUrl is a Sitemap URL to submit. If the Sitemap has been
+   *     added already, then this method results in resubmitting the Sitemap.
+   * @throws ServiceException if the service is unable to handle the request.
+   * @throws IOException if there was an error communicating with the server.
    */
-  public void run(WebmasterToolsService myService, String userName,
-      String userPassword) throws ServiceException, IOException {
-    /* Authenticate using ClientLogin */
-    System.out.println("Running with user: " + userName);
-    myService.setUserCredentials(userName, userPassword);
-    printUserSites(myService);
-    insertSite(myService, SAMPLE_SITE);
-    insertSitemap(myService, SAMPLE_SITE, SAMPLE_SITEMAP);
-    printUserSitemaps(myService, SAMPLE_SITE);
-    listVerificationValues(myService, SAMPLE_SITE);
-
-    /* Here you can add a function to create verification files or metatags then
-     * uncomment verifySite() below */
-    /* verifySite(myService, SAMPLE_SITE);*/
-
-    deleteSitemap(myService, SAMPLE_SITE, SAMPLE_SITEMAP);
-    deleteSite(myService, SAMPLE_SITE);
-    printUserSites(myService);
-    System.out.println("Sample run completed.");
+  public static SitemapsEntry insertSitemap(WebmasterToolsService myService, 
+      String siteUrl, String sitemapUrl) throws IOException, ServiceException {
+    SitemapsRegularEntry entry = new SitemapsRegularEntry();
+    entry.setId(sitemapUrl);
+    entry.setSitemapType(GENERAL_WEB_SITEMAP);
+    System.out.println("Sitemap: " + sitemapUrl + " now being added.");
+    return myService.insert(getSitemapsFeedUrl(siteUrl), entry);
   }
 
   /**
-   * Uses the command line arguments to authenticate the WebmasterToolsService
-   * and build the basic feed URI, then invokes all the other methods to
-   * demonstrate how to interface with the Webmastertools service.
+   * Delete the Sitemap from the user's Webmaster Tools account.
+   *
+   * @param myService authenticated WebmasterTools Service object.
+   * @param siteUrl site where the Sitemap is located
+   *        (e.g. "http:/www.example.com/").
+   * @param sitemapUrl full path to Sitemap file.
+   * @throws ServiceException if the service is unable to handle the request.
+   * @throws IOException if there was an error communicating with the server.
+   */
+  public static void deleteSitemap(WebmasterToolsService myService,
+      String siteUrl, String sitemapUrl) throws IOException, ServiceException {
+    String siteId = URLEncoder.encode(siteUrl, "UTF-8");
+    String sitemapId = URLEncoder.encode(sitemapUrl, "UTF-8");
+    URL feedUrl = new URL(getSitemapsFeedUrl(siteId) + sitemapId);
+    SitemapsRegularEntry entry
+        = myService.getEntry(feedUrl, SitemapsRegularEntry.class);
+    System.out.println("Now deleting Sitemap: " + sitemapUrl);
+    entry.delete();
+  }
+
+  /**
+   * Uses the command line arguments to authenticate with the WebmasterTools
+   * service, then invokes all the other methods to demonstrate how to use it.
    *
    * @param args See the usage method.
    */
   public static void main(String[] args) {
-    /* Set username, password and feed URI from command-line arguments. */
+    // Get username and password from command-line arguments.
     SimpleCommandLineParser parser = new SimpleCommandLineParser(args);
     String userName = parser.getValue("username", "user", "u");
     String userPassword = parser.getValue("password", "pass", "p");
@@ -344,17 +422,26 @@ public class WebmasterToolsClient {
       System.exit(1);
     }
 
+    // Connect with the service and authenticate
     WebmasterToolsService myService =
         new WebmasterToolsService("exampleCo-exampleApp-1");
-    WebmasterToolsClient demo = new WebmasterToolsClient();
-
     try {
-      demo.run(myService, userName, userPassword);
-    } catch (ServiceException se) {
-      se.printStackTrace();
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
+      myService.setUserCredentials(userName, userPassword);
+    } catch (AuthenticationException e) {
+      System.out.println("The username or password entered are not valid");
+      System.exit(1);
     }
+    System.out.println("Running with user: " + userName);
+
+    // Run the example methods, list sites, insert, update, etc.
+    try {
+      runExamples(myService);
+    } catch (ServiceException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    System.out.println("Sample run completed.");
   }
 
   /**
@@ -363,8 +450,37 @@ public class WebmasterToolsClient {
   private static void usage() {
     System.out.println("Usage: WebmasterToolsClient --username <username>"
         + " --password <password>");
-    System.out.println("\nA simple application that lists sites,\n"
-        + "and Sitemaps using the provided username and\n"
+    System.out.println("\nA simple application that lists sites, "
+        + "and Sitemaps using the provided username and "
         + "password for authentication.");
+  }
+  
+  /**
+   * Runs through many of the methods using the Webmaster Service instance.
+   * Users may comment or uncomment methods that they would like to run.
+   *
+   * @param myService an authenticated GoogleService object.
+   * @throws ServiceException if the service is unable to handle the request.
+   * @throws IOException if there is an error communicating with the server.
+   */
+  public static void runExamples(WebmasterToolsService myService) 
+      throws ServiceException, IOException {
+    printUserSites(myService);
+    insertSite(myService, SAMPLE_SITE);
+    printSiteSettings(myService);
+    listVerificationValues(myService, SAMPLE_SITE);
+    
+    // After the verification process is done, for example by uploading
+    // the verification file to your server run this verification method
+    // verifySite(myService, SAMPLE_SITE);
+    
+    // Uncomment to update the settings for the site once it is verified
+    // updateSiteSettings(myService, SAMPLE_SITE);
+    
+    printUserSitemaps(myService, SAMPLE_SITE);
+    insertSitemap(myService, SAMPLE_SITE, SAMPLE_SITEMAP);
+    deleteSitemap(myService, SAMPLE_SITE, SAMPLE_SITEMAP);
+    
+    deleteSite(myService, SAMPLE_SITE);
   }
 }

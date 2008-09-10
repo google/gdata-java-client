@@ -16,10 +16,8 @@
 
 package com.google.gdata.data.extensions;
 
-
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.Kind;
-
 
 /**
  * The EventFeed class customizes the generic event feed class to define
@@ -40,8 +38,7 @@ public class EventFeed extends BaseEventFeed<EventFeed, EventEntry> {
    * Constructs a new {@code EventFeed} instance that is initialized using
    * data from another BaseFeed instance.
    */
-  public EventFeed(BaseFeed sourceFeed) {
+  public EventFeed(BaseFeed<?, ?> sourceFeed) {
     super(EventEntry.class, sourceFeed);
   }
-
 }

@@ -20,6 +20,7 @@ import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.media.mediarss.MediaCategory;
 import com.google.gdata.data.media.mediarss.MediaContent;
+import com.google.gdata.data.media.mediarss.MediaCredit;
 import com.google.gdata.data.media.mediarss.MediaDescription;
 import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaKeywords;
@@ -50,6 +51,8 @@ import java.util.Set;
 )
 public class YouTubeMediaGroup extends MediaGroup {
 
+  private static final String UPLOADER_ROLE = "uploader";
+
   /** Gets the duration, in seconds, of the youtube video. */
   public Long getDuration() {
     YtDuration duration = getExtension(YtDuration.class);
@@ -65,6 +68,66 @@ public class YouTubeMediaGroup extends MediaGroup {
       duration.setSeconds(seconds);
       setExtension(duration);
     }
+  }
+
+  /**
+   * Sets the YouTube user who uploaded the video.
+   *
+   * @param uploader YouTube user name or {@code null}
+   * @since 2.0
+   */
+  public void setUploader(String uploader) {
+    for (Iterator<YouTubeMediaCredit> iterator = getYouTubeCredits().iterator();
+        iterator.hasNext(); ) {
+      MediaCredit credit = iterator.next();
+      if (UPLOADER_ROLE.equals(credit.getRole())
+          && YouTubeNamespace.CREDIT_SCHEME.equals(credit.getScheme())) {
+        iterator.remove();
+      }
+    }
+    if (uploader != null) {
+      YouTubeMediaCredit credit = new YouTubeMediaCredit();
+      credit.setScheme(YouTubeNamespace.CREDIT_SCHEME);
+      credit.setRole(UPLOADER_ROLE);
+      credit.setContent(uploader);
+      addCredit(credit);
+    }
+  }
+
+  /**
+   * Gets the YouTube user who uploaded the video.
+   *
+   * @return YouTube user name or {@code null}
+   * @since 2.0
+   */
+  public String getUploader() {
+    YouTubeMediaCredit uploader = getUploaderTag();
+    return uploader == null ? null : uploader.getContent();
+  }
+
+  /**
+   * Checks whether the uploader is a partner.
+   *
+   * @return uploader type
+   */
+  public YouTubeMediaCredit.Type getUploaderType() {
+    YouTubeMediaCredit uploader = getUploaderTag();
+    return uploader == null ? null : uploader.getType();
+  }
+
+  /**
+   * Returns a {@code media:credit} with role {@code uploader}.
+   *
+   * @return a {@code media:credit} tag or {@code null}
+   */
+  private YouTubeMediaCredit getUploaderTag() {
+    for (YouTubeMediaCredit credit : getYouTubeCredits()) {
+      if (UPLOADER_ROLE.equals(credit.getRole())
+          && YouTubeNamespace.CREDIT_SCHEME.equals(credit.getScheme())) {
+        return credit;
+      }
+    }
+    return null;
   }
 
   /**
@@ -140,6 +203,156 @@ public class YouTubeMediaGroup extends MediaGroup {
    */
   public void addContent(YouTubeMediaContent content) {
     addRepeatingExtension(content);
+  }
+
+  /**
+   * Gets a modifiable list of {@link YouTubeMediaRating}.
+   *
+   * @return list of {@code MediaRating}.
+   */
+  public List<YouTubeMediaRating> getYouTubeRatings() {
+    return getRepeatingExtension(YouTubeMediaRating.class);
+  }
+
+  /**
+   * Adds a new {@link MediaRating}.
+   *
+   * YouTube entries can only contain {@link YouTubeMediaRating} and this
+   * method checks that at runtime. Please use
+   * {@link #addRating(YouTubeMediaRating)} instead.
+   *
+   * @param rating
+   * @exception IllegalArgumentException if {@code rating} is not a
+   *   {@link YouTubeMediaRating}
+   */
+  @Override
+  public void addRating(MediaRating rating) {
+    if (!(rating instanceof YouTubeMediaRating)) {
+      throw new IllegalArgumentException("YouTube entries requires "
+          + "YouTubeMediaRating");
+    }
+    super.addRating(rating);
+  }
+
+  /**
+   * Gets a read-only list of {@link MediaRating}.
+   *
+   * YouTube entries only contain {@link YouTubeMediaRating}. Please use
+   * {@link #getYouTubeRatings()} instead to make sure you have access to
+   * a modifiable lis.
+   *
+   * This collection has been made read-only to make sure only
+   * {@link YouTubeMediaRating} are ever added. Please use
+   * {@link #getYouTubeRatings()}/{@link #addRating(YouTubeMediaRating)} to
+   * modify the list of media:rating tags..
+   *
+   * @return a read-only collection of {@code MediaRating}
+   */
+  @Override
+  public List<MediaRating> getRatings() {
+    final List<YouTubeMediaRating> ratings = getYouTubeRatings();
+    return new AbstractList<MediaRating>() {
+
+      public MediaRating get(int index) {
+        return ratings.get(index);
+      }
+
+      public int size() {
+        return ratings.size();
+      }
+    };
+  }
+
+  /**
+   * Clears the list of {@code media:rating} tags.
+   */
+  @Override
+  public void clearRatings() {
+    getYouTubeRatings().clear();
+  }
+
+  /**
+   * Adds a {@code media:rating} tag.
+   *
+   * @param rating
+   */
+  public void addRating(YouTubeMediaRating rating) {
+    addRepeatingExtension(rating);
+  }
+
+  /**
+   * Gets a modifiable list of {@link YouTubeMediaCredit}.
+   *
+   * @return list of {@code MediaCredit}.
+   */
+  public List<YouTubeMediaCredit> getYouTubeCredits() {
+    return getRepeatingExtension(YouTubeMediaCredit.class);
+  }
+
+  /**
+   * Adds a new {@link MediaCredit}.
+   *
+   * YouTube entries can only contain {@link YouTubeMediaCredit} and this
+   * method checks that at runtime. Please use
+   * {@link #addCredit(YouTubeMediaCredit)} instead.
+   *
+   * @param credit
+   * @exception IllegalArgumentException if {@code credit} is not a
+   *   {@link YouTubeMediaCredit}
+   */
+  @Override
+  public void addCredit(MediaCredit credit) {
+    if (!(credit instanceof YouTubeMediaCredit)) {
+      throw new IllegalArgumentException("YouTube entries requires "
+          + "YouTubeMediaCredit");
+    }
+    super.addCredit(credit);
+  }
+
+  /**
+   * Gets a read-only list of {@link MediaCredit}.
+   *
+   * YouTube entries only contain {@link YouTubeMediaCredit}. Please use
+   * {@link #getYouTubeCredits()} instead to make sure you have access to
+   * a modifiable lis.
+   *
+   * This collection has been made read-only to make sure only
+   * {@link YouTubeMediaCredit} are ever added. Please use
+   * {@link #getYouTubeCredits()}/{@link #addCredit(YouTubeMediaCredit)} to
+   * modify the list of media:credit tags..
+   *
+   * @return a read-only collection of {@code MediaCredit}
+   */
+  @Override
+  public List<MediaCredit> getCredits() {
+    final List<YouTubeMediaCredit> credits = getYouTubeCredits();
+    return new AbstractList<MediaCredit>() {
+
+      public MediaCredit get(int index) {
+        return credits.get(index);
+      }
+
+      public int size() {
+        return credits.size();
+      }
+    };
+  }
+
+  /**
+   * Clears the list of {@code media:credit} tags.
+   */
+  @Override
+  public void clearCredits() {
+    getYouTubeCredits().clear();
+  }
+
+  /**
+   * Adds a {@code media:credit} tag.
+   *
+   * @param credit
+   */
+  public void addCredit(YouTubeMediaCredit credit) {
+    addRepeatingExtension(credit);
   }
 
   /** Checks the yt:private flag. */
@@ -219,7 +432,8 @@ public class YouTubeMediaGroup extends MediaGroup {
     extProfile.declare(YouTubeMediaGroup.class, MediaRestriction.class);
     extProfile.declare(YouTubeMediaGroup.class, MediaCategory.class);
     extProfile.declare(YouTubeMediaGroup.class, MediaThumbnail.class);
-    extProfile.declare(YouTubeMediaGroup.class, MediaRating.class);
+    extProfile.declare(YouTubeMediaGroup.class, YouTubeMediaRating.class);
+    extProfile.declare(YouTubeMediaGroup.class, YouTubeMediaCredit.class);
     extProfile.declareArbitraryXmlExtension(YouTubeMediaGroup.class);
   }
 }

@@ -41,7 +41,7 @@ public class ContactFeed extends BaseFeed<ContactFeed, ContactEntry> {
    *
    * @param sourceFeed source feed
    */
-  public ContactFeed(BaseFeed sourceFeed) {
+  public ContactFeed(BaseFeed<?, ?> sourceFeed) {
     super(ContactEntry.class, sourceFeed);
   }
 

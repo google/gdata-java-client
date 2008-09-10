@@ -176,8 +176,7 @@ public class WebContent implements Extension {
     @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
+                                 String value) {
       if (!namespace.equals("")) {
         return;
       }
@@ -190,10 +189,9 @@ public class WebContent implements Extension {
       }
     }
 
+    @Override
     public ElementHandler getChildHandler(String namespace,
-        String localName,
-        Attributes attrs)
-        throws ParseException, IOException {
+        String localName, Attributes attrs) {
       // handle element: <gCal:webContentGadgetPref name="" value="" />
       if (Namespaces.gCal.equals(namespace) && GADGET_TYPE.equals(localName)) {
         return new GadgetPrefHandler(this);

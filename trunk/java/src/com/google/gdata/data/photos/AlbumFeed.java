@@ -19,6 +19,7 @@ package com.google.gdata.data.photos;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.geo.Box;
 import com.google.gdata.data.geo.Point;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.media.mediarss.MediaCategory;
@@ -63,7 +64,7 @@ public class AlbumFeed extends GphotoFeed<AlbumFeed>
    * feed.  This is used to get the correct entry type based on the category of
    * the entry.
    */
-  public AlbumFeed(BaseFeed sourceFeed) {
+  public AlbumFeed(BaseFeed<?, ?> sourceFeed) {
     super(sourceFeed);
     getCategories().add(AlbumData.ALBUM_CATEGORY);
     this.delegate = new AlbumDataImpl(this);
@@ -202,6 +203,26 @@ public class AlbumFeed extends GphotoFeed<AlbumFeed>
   
   public Point getGeoLocation() {
     return delegate.getGeoLocation();
+  }
+  
+  public void clearPoint() {
+    delegate.clearPoint();
+  }
+  
+  public void clearGeoBoundingBox() {
+    delegate.clearGeoBoundingBox();
+  }
+
+  public Box getGeoBoundingBox() {
+    return delegate.getGeoBoundingBox();
+  }
+
+  public void setGeoBoundingBox(Point lowerLeft, Point upperRight) {
+    delegate.setGeoBoundingBox(lowerLeft, upperRight);
+  }
+
+  public void setGeoBoundingBox(Box boundingBox) {
+    delegate.setGeoBoundingBox(boundingBox);
   }
   
   public MediaGroup getMediaGroup() {

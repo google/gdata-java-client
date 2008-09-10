@@ -49,8 +49,18 @@ public class ServiceForbiddenException extends ServiceException {
     initResponseCode();
   }
 
+  public ServiceForbiddenException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public ServiceForbiddenException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
+    initResponseCode();
+  }
+
   private void initResponseCode() {
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_FORBIDDEN);
   }
 }
-

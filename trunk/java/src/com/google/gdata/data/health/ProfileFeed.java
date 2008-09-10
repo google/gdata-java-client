@@ -42,7 +42,7 @@ public class ProfileFeed extends BaseHealthFeed<ProfileFeed, ProfileEntry> {
    *
    * @param sourceFeed source feed
    */
-  public ProfileFeed(BaseFeed sourceFeed) {
+  public ProfileFeed(BaseFeed<?, ?> sourceFeed) {
     super(ProfileEntry.class, sourceFeed);
   }
 

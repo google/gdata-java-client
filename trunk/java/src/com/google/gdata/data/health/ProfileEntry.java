@@ -54,12 +54,15 @@ public class ProfileEntry extends BaseHealthEntry<ProfileEntry> {
    *
    * @param sourceEntry source entry
    */
-  public ProfileEntry(BaseEntry sourceEntry) {
+  public ProfileEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    if (extProfile.isDeclared(ProfileEntry.class)) {
+      return;
+    }
     super.declareExtensions(extProfile);
     extProfile.declare(ProfileEntry.class, ContinuityOfCareRecord.class);
     extProfile.declare(ProfileEntry.class, ProfileMetaData.class);

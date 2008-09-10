@@ -16,93 +16,115 @@
 
 package com.google.gdata.client.spreadsheet;
 
-
 import com.google.gdata.client.GoogleService;
-import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.client.Service;
 import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.data.spreadsheet.ListFeed;
+import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
-
-import java.net.URL;
-
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 /**
- * The SpreadsheetService class extends the basic {@link GoogleService}
- * abstraction to define a service that is preconfigured for access
- * to the Google Spreadsheet data API.
+ * Extends the basic {@link GoogleService} abstraction to define a service that
+ * is preconfigured for access to the Google Spreadsheets data API.
  *
  * 
- * 
- * 
- * @see com.google.gdata.client.spreadsheet.FeedURLFactory#getDefault()
  */
 public class SpreadsheetService extends GoogleService {
 
   /**
-   * The abbreviated name of Spreadsheet recognized by Google.  The service
-   * name is used while requesting an authentication token.
+   * The abbreviated name of Google Spreadsheets recognized by Google.  The
+   * service name is used when requesting an authentication token.
    */
   public static final String SPREADSHEET_SERVICE = "wise";
 
   /**
    * The version ID of the service.
    */
-  public static final String SPREADSHEET_SERVICE_VERSION = 
-      "GSpread-Java/" +
+  public static final String SPREADSHEET_SERVICE_VERSION = "GSpread-Java/" +
       SpreadsheetService.class.getPackage().getImplementationVersion();
 
   /**
-   * Constructs a SpreadsheetService instance connecting to the
-   * Spreadsheet service for an application with the name
-   * {@code applicationName}.
-   * 
-   * @param applicationName the name of the client application accessing the 
+   * GData versions supported by Google Spreadsheets Service.
+   */
+  public static final class Versions {
+
+    /** Version 1 of the Spreadsheet Google Data API. This is the initial
+     * version of the API and is based upon Version 1 of the GData Protocol. */
+    public static final Version V1 = new Version(SpreadsheetService.class,
+        "1.0", Service.Versions.V1);
+
+    /** Version 2 of the Spreadsheet Google Data API. This version of the API
+     * adds full compliance with the Atom Publishing Protocol and is based upon
+     * Version 2 of the GData protocol. */
+    public static final Version V2 = new Version(SpreadsheetService.class,
+        "2.0", Service.Versions.V2);
+
+  }
+
+  /**
+   * Default GData version used by the Google Spreadsheets service.
+   */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(SpreadsheetService.class, Versions.V1);
+
+  /**
+   * Constructs an instance connecting to the Google Spreadsheets service for an
+   * application with the name {@code applicationName}.
+   *
+   * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
-   *                        the format [company-id]-[app-name]-[app-version]. 
-   *                        The name will be used by the Google servers to 
+   *                        the format [company-id]-[app-name]-[app-version].
+   *                        The name will be used by the Google servers to
    *                        monitor the source of authentication.
    */
   public SpreadsheetService(String applicationName) {
     super(SPREADSHEET_SERVICE, applicationName);
-    addExtensions();
+    declareExtensions();
   }
 
-
   /**
-   * Constructs a GoogleService instance connecting to the service with name
-   * {@code serviceName} for an application with the name
-   * {@code applicationName}.  The service will authenticate at the provided
-   * {@code domainName}.   
-   * 
-   * @param applicationName the name of the client application accessing the 
+   * Constructs an instance connecting to the Google Spreadsheets service with
+   * name {@code serviceName} for an application with the name {@code
+   * applicationName}.  The service will authenticate at the provided {@code
+   * domainName}.
+   *
+   * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
-   *                        the format [company-id]-[app-name]-[app-version]. 
-   *                        The name will be used by the Google servers to 
+   *                        the format [company-id]-[app-name]-[app-version].
+   *                        The name will be used by the Google servers to
    *                        monitor the source of authentication.
-   * @param protocol        name of protocol to use for authentication 
+   * @param protocol        name of protocol to use for authentication
    *                        ("http"/"https")
    * @param domainName      the name of the domain hosting the login handler
    */
-  public SpreadsheetService(String applicationName,
-                            String protocol,
-                            String domainName) {
+  public SpreadsheetService(String applicationName, String protocol,
+      String domainName) {
     super(SPREADSHEET_SERVICE, applicationName, protocol, domainName);
-    addExtensions();
+    declareExtensions();
+  }
+
+  @Override
+  public String getServiceVersion() {
+    return SPREADSHEET_SERVICE_VERSION + " " + super.getServiceVersion();
   }
 
   /**
-   * Adds the Google Spreadsheets extensions.
+   * Returns the current GData version used by the Google Spreadsheets service.
    */
-  private void addExtensions() {
-    ExtensionProfile extensionProfile = getExtensionProfile();
-    new CellFeed().declareExtensions(extensionProfile);
-    new ListFeed().declareExtensions(extensionProfile);
-    new WorksheetFeed().declareExtensions(extensionProfile);
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(SpreadsheetService.class);
   }
 
-
-  public String getServiceVersion() {
-    return SPREADSHEET_SERVICE_VERSION + " " + super.getServiceVersion();
+  /**
+   * Declare the extensions of the feeds for the Google Spreadsheets service.
+   */
+  private void declareExtensions() {
+    new CellFeed().declareExtensions(extProfile);
+    new ListFeed().declareExtensions(extProfile);
+    new SpreadsheetFeed().declareExtensions(extProfile);
+    new WorksheetFeed().declareExtensions(extProfile);
   }
 
 }

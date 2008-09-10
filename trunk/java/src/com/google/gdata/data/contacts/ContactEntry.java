@@ -67,12 +67,15 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
    *
    * @param sourceEntry source entry
    */
-  public ContactEntry(BaseEntry sourceEntry) {
+  public ContactEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    if (extProfile.isDeclared(ContactEntry.class)) {
+      return;
+    }
     super.declareExtensions(extProfile);
     extProfile.declare(ContactEntry.class,
         new ExtensionDescription(Deleted.class, new XmlWriter.Namespace("gd",

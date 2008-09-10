@@ -16,8 +16,11 @@
 
 package com.google.gdata.data.media;
 
-import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.IEntry;
 import com.google.gdata.util.ContentType;
+
+import java.io.InputStream;
+import java.util.logging.Logger;
 
 import javax.activation.CommandInfo;
 import javax.activation.CommandMap;
@@ -26,9 +29,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-
-import java.io.InputStream;
-import java.util.logging.Logger;
 
 /**
  * The MediaMultipart class provides helper code for parsing and generating MIME
@@ -114,7 +114,7 @@ public class MediaMultipart extends MimeMultipart {
    * Constructs a new MediaMultipart instance from an Atom entry instance
    * and a media source.
    */
-  public MediaMultipart(BaseEntry entry, MediaSource media)
+  public MediaMultipart(IEntry entry, MediaSource media)
       throws MessagingException {
 
     super("related");

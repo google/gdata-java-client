@@ -16,8 +16,6 @@
 
 package com.google.gdata.data;
 
-
-
 /**
  * The Entry class customizes the BaseFeed class to represent the most
  * generic possible entry type.  One usage for this class is to enable the
@@ -36,21 +34,18 @@ package com.google.gdata.data;
  */
 public class Entry extends BaseEntry<Entry> {
 
-
   /**
    * Constructs a new uninitialized Entry instance.
    */
   public Entry() {}
 
-
   /**
    * Constructs a new Entry by doing a shallow copy from another BaseEntry
    * instance.
    */
-  public Entry(BaseEntry sourceEntry) {
+  public Entry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
-
 
   /**
    * {@inheritDoc}
@@ -60,6 +55,7 @@ public class Entry extends BaseEntry<Entry> {
    * parsing should override this method and not delegate to the base
    * implementation.
    */
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
 
     // Declare arbitrary XML support for the entry instances, so any

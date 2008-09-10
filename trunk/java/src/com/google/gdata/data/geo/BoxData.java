@@ -51,4 +51,9 @@ public interface BoxData {
    * @return a Box that contains the boundary for the content of this entity.
    */
   public Box getGeoBoundingBox();
+  
+  /**
+   * Clears the bounding box and removes the extension point.
+   */
+  public void clearGeoBoundingBox();
 }

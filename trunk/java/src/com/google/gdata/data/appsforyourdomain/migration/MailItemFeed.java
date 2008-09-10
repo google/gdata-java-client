@@ -19,7 +19,6 @@ import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 
-
 /**
  * The MailItemFeed class customizes the generic BaseEntry class to define
  * a feed of MailItem entries.
@@ -42,7 +41,7 @@ public class MailItemFeed extends BaseFeed<MailItemFeed, MailItemEntry> {
    * Constructs a new {@code MailItem} instance that is initialized using
    * data from another BaseFeed instance.
    */
-  public MailItemFeed(BaseFeed sourceFeed) {
+  public MailItemFeed(BaseFeed<?, ?> sourceFeed) {
     super(MailItemEntry.class, sourceFeed);
     getCategories().add(MailItemEntry.MAILITEM_CATEGORY);
   }   

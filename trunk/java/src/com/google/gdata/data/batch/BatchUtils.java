@@ -20,6 +20,8 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.IEntry;
+import com.google.gdata.data.IFeed;
 import com.google.gdata.util.Namespaces;
 
 /**
@@ -74,8 +76,8 @@ public class BatchUtils {
    * @return the batch id or null if it is not set
    * @param entry
    */
-  public static String getBatchId(BaseEntry entry) {
-    return BatchId.getIdFrom(entry);
+  public static String getBatchId(IEntry entry) {
+    return BatchId.getIdFrom((BaseEntry<?>) entry);
   }
 
   /**
@@ -84,11 +86,15 @@ public class BatchUtils {
    * @param entry
    * @param id the batch id or null to remove it
    */
-  public static void setBatchId(BaseEntry entry, String id) {
-    if (id == null) {
-      entry.removeExtension(BatchId.class);
-    } else
-      entry.setExtension(new BatchId(id));
+  public static void setBatchId(IEntry entry, String id) {
+    if (entry instanceof ExtensionPoint) {
+      if (id == null) {
+        ((ExtensionPoint) entry).removeExtension(BatchId.class);
+      } else {
+        ((ExtensionPoint) entry).setExtension(new BatchId(id));
+      }
+    } else {
+    }
   }
 
   /**
@@ -98,8 +104,12 @@ public class BatchUtils {
    * @return the operation to execute or null if it's not set
    * @param entry
    */
-  public static BatchOperationType getBatchOperationType(BaseEntry entry) {
-    return getBatchOperationType((ExtensionPoint)entry);
+  public static BatchOperationType getBatchOperationType(IEntry entry) {
+    if (entry instanceof ExtensionPoint) {
+      return getBatchOperationType((ExtensionPoint)entry);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -108,8 +118,12 @@ public class BatchUtils {
    * @param entry
    * @param op batch operation type or null to remove it.
    */
-  public static void setBatchOperationType(BaseEntry entry, BatchOperationType op) {
-    setBatchOperationType((ExtensionPoint)entry, op);
+  public static void setBatchOperationType(IEntry entry,
+      BatchOperationType op) {
+    if (entry instanceof ExtensionPoint) {
+      setBatchOperationType((ExtensionPoint)entry, op);
+    } else {
+    }
   }
 
   /**
@@ -119,8 +133,12 @@ public class BatchUtils {
    * @return the operation to execute or null if it's not set
    * @param feed
    */
-  public static BatchOperationType getBatchOperationType(BaseFeed feed) {
-    return getBatchOperationType((ExtensionPoint)feed);
+  public static BatchOperationType getBatchOperationType(IFeed feed) {
+    if (feed instanceof ExtensionPoint) {
+      return getBatchOperationType((ExtensionPoint) feed);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -129,17 +147,22 @@ public class BatchUtils {
    * @param feed
    * @param op batch operation type or null to remove it.
    */
-  public static void setBatchOperationType(BaseFeed feed, BatchOperationType op) {
-    setBatchOperationType((ExtensionPoint)feed, op);
+  public static void setBatchOperationType(IFeed feed, BatchOperationType op) {
+    if (feed instanceof ExtensionPoint) {
+      setBatchOperationType((ExtensionPoint)feed, op);
+    } else {
+    }
   }
 
 
-  private static BatchOperationType getBatchOperationType(ExtensionPoint entry) {
-    BatchOperation op = (BatchOperation)entry.getExtension(BatchOperation.class);
+  private static BatchOperationType getBatchOperationType(
+      ExtensionPoint entry) {
+    BatchOperation op = entry.getExtension(BatchOperation.class);
     return op == null ? null : op.getType();
   }
 
-  private static void setBatchOperationType(ExtensionPoint entry, BatchOperationType op) {
+  private static void setBatchOperationType(ExtensionPoint entry,
+      BatchOperationType op) {
     if (op == null) {
       entry.removeExtension(BatchOperation.class);
     } else {
@@ -153,8 +176,12 @@ public class BatchUtils {
    * @return the object corresponding to the tag or null
    * @param entry
    */
-  public static BatchInterrupted getBatchInterrupted(BaseEntry entry) {
-    return (BatchInterrupted)entry.getExtension(BatchInterrupted.class);
+  public static BatchInterrupted getBatchInterrupted(IEntry entry) {
+    if (entry instanceof ExtensionPoint) {
+      return ((ExtensionPoint) entry).getExtension(BatchInterrupted.class);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -163,8 +190,12 @@ public class BatchUtils {
    * @return the object corresponding to the tag or null
    * @param entry
    */
-  public static BatchStatus getBatchStatus(BaseEntry entry) {
-    return (BatchStatus)entry.getExtension(BatchStatus.class);
+  public static BatchStatus getBatchStatus(IEntry entry) {
+    if (entry instanceof ExtensionPoint) {
+      return ((ExtensionPoint) entry).getExtension(BatchStatus.class);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -178,7 +209,7 @@ public class BatchUtils {
    * @exception IllegalArgumentException if the entry does not contain
    *   a BatchStatus object.
    */
-  public static boolean isSuccess(BaseEntry entry) {
+  public static boolean isSuccess(IEntry entry) {
     int code = getRequiredBatchStatusCode(entry);
     return code >= 200 && code < 300;
   }
@@ -189,7 +220,7 @@ public class BatchUtils {
    * This method is a shortcut for checking the code of
    * the entry's {@link BatchStatus} object.
    *
-   * You'll want to call {@link #getBatchStatus(BaseEntry)}
+   * You'll want to call {@link #getBatchStatus(IEntry)}
    * to get the error description and message when this
    * method returns true.
    *
@@ -198,11 +229,11 @@ public class BatchUtils {
    * @exception IllegalArgumentException if the entry does not contain
    *   a BatchStatus object.
    */
-  public static boolean isFailure(BaseEntry entry) {
+  public static boolean isFailure(IEntry entry) {
     return !isSuccess(entry);
   }
 
-  private static int getRequiredBatchStatusCode(BaseEntry entry) {
+  private static int getRequiredBatchStatusCode(IEntry entry) {
     BatchStatus batchStatus = getBatchStatus(entry);
     if (batchStatus == null) {
       throw new IllegalArgumentException("Not a batch response entry; " +

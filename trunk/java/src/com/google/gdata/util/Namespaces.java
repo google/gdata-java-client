@@ -32,6 +32,10 @@ public final class Namespaces {
    */
   public static final String xml =
     "http://www.w3.org/XML/1998/namespace";
+  
+  /** XML writer namespace */
+  public static final XmlWriter.Namespace xmlNs =
+    new XmlWriter.Namespace("xml", xml);
 
 
   /** Atom namespace. */
@@ -48,6 +52,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@code getAtomPubNs().getUri()} instead.
    */
+  @Deprecated
   public static final String atomPub =
     "http://purl.org/atom/app#";
 
@@ -56,6 +61,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@link #getAtomPubNs()} instead.
    */
+  @Deprecated
   public static final XmlWriter.Namespace atomPubNs =
     new XmlWriter.Namespace("app", atomPub);
 
@@ -64,6 +70,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@code getAtomPubNs().getUri()} instead.
    */
+  @Deprecated
   public static final String atomPubStandard =
     "http://www.w3.org/2007/app";
 
@@ -72,6 +79,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@link #getAtomPubNs()} instead.
    */
+  @Deprecated
   public static final XmlWriter.Namespace atomPubStandardNs =
     new XmlWriter.Namespace("app", atomPubStandard);
 
@@ -93,6 +101,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@code getOpenSearchNs().getUri()} instead.
    */
+  @Deprecated
   public static final String openSearch =
     "http://a9.com/-/spec/opensearchrss/1.0/";
 
@@ -101,6 +110,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@link #getOpenSearchNs()} instead.
    */
+  @Deprecated
   public static final XmlWriter.Namespace openSearchNs =
     new XmlWriter.Namespace("openSearch", openSearch);
 
@@ -109,6 +119,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@code getOpenSearchNs().getUri()} instead.
    */
+  @Deprecated
   public static final String openSearch1_1 =
     "http://a9.com/-/spec/opensearch/1.1/";
 
@@ -117,6 +128,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@link #getOpenSearchNs()} instead.
    */
+  @Deprecated
   public static final XmlWriter.Namespace openSearch1_1Ns =
     new XmlWriter.Namespace("openSearch", openSearch1_1);
 
@@ -134,6 +146,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@code getOpenSearchDescNs().getUri()} instead.
    */
+  @Deprecated
   public static final String openSearchDesc =
     "http://a9.com/-/spec/opensearchdescription/1.0/";
 
@@ -142,6 +155,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@link #getOpenSearchDescNs()} instead.
    */
+  @Deprecated
   public static final XmlWriter.Namespace openSearchDescNs =
     new XmlWriter.Namespace("openSearchDesc", openSearchDesc);
 
@@ -150,6 +164,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@code getOpenSearchDescNs().getUri()} instead.
    */
+  @Deprecated
   public static final String openSearchDesc1_1 =
     "http://a9.com/-/spec/opensearchdescription/1.1/";
 
@@ -158,6 +173,7 @@ public final class Namespaces {
    *
    * @deprecated Use {@link #getOpenSearchDescNs()} instead.
    */
+  @Deprecated
   public static final XmlWriter.Namespace openSearchDesc1_1Ns =
     new XmlWriter.Namespace("openSearchDesc", openSearchDesc1_1);
 

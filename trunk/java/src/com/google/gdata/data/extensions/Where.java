@@ -17,10 +17,13 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.ExtensionVisitor;
+import com.google.gdata.data.ExtensionVisitor.StoppedException;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -30,7 +33,6 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * GData schema extension describing a place (not necessarily a specific
  * geographical location).
@@ -38,7 +40,6 @@ import java.util.ArrayList;
  * 
  */
 public class Where extends ExtensionPoint implements Extension {
-
 
   /** Relation type. Describes the meaning of this location. */
   public static final class Rel {
@@ -50,10 +51,8 @@ public class Where extends ExtensionPoint implements Extension {
     public static final String EVENT_PARKING = Namespaces.gPrefix + "event.parking";
   }
 
-
   /** Constructs an empty Where instance. */
   public Where() {}
-
 
   /** Constructs a new Where instance using the specified parameters. */
   public Where(String rel, String label, String valueString) {
@@ -62,12 +61,10 @@ public class Where extends ExtensionPoint implements Extension {
     this.valueString = valueString;
   }
 
-
   /** Describes the meaning of this location. */
   protected String rel;
   public String getRel() { return rel; }
   public void setRel(String v) { rel = v; }
-
 
   /**
    * User-readable label that identifies this location in case multiple
@@ -77,18 +74,15 @@ public class Where extends ExtensionPoint implements Extension {
   public String getLabel() { return label; }
   public void setLabel(String v) { label = v; }
 
-
   /** Text description of the place. */
   protected String valueString;
   public String getValueString() { return valueString; }
   public void setValueString(String v) { valueString = v; }
 
-
   /** Nested person or venue (Contact) entry. */
-  protected EntryLink entryLink;
-  public EntryLink getEntryLink() { return entryLink; }
-  public void setEntryLink(EntryLink v) { entryLink = v; }
-
+  protected EntryLink<?> entryLink;
+  public EntryLink<?> getEntryLink() { return entryLink; }
+  public void setEntryLink(EntryLink<?> v) { entryLink = v; }
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -100,7 +94,15 @@ public class Where extends ExtensionPoint implements Extension {
     return desc;
   }
 
-
+  @Override
+  protected void visitChildren(ExtensionVisitor ev) throws StoppedException {
+    if (entryLink != null) {
+      visitChild(ev, entryLink);
+    }
+    super.visitChildren(ev);
+  }
+  
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -130,33 +132,23 @@ public class Where extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.gNs, "where");
   }
 
-
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
-                                             String namespace,
-                                             String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+      String namespace, String localName, Attributes attrs) {
     return new Handler(extProfile);
   }
-
 
   /** <g:where> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
-
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, Where.class);
     }
 
-
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
-
+                                 String value) {
       if (namespace.equals("")) {
         if (localName.equals("rel")) {
           rel = value;
@@ -168,15 +160,14 @@ public class Where extends ExtensionPoint implements Extension {
       }
     }
 
-
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
         throws ParseException, IOException {
-
       if (namespace.equals(Namespaces.g)) {
         if (localName.equals("entryLink")) {
-          entryLink = new EntryLink();
+          entryLink = new EntryLink<BaseEntry<?>>();
           return entryLink.getHandler(extProfile, namespace, localName, attrs);
         }
       }
