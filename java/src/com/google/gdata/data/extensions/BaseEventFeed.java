@@ -26,7 +26,7 @@ import com.google.gdata.data.ExtensionProfile;
  * @param <E> event entry class
  */
 public abstract class BaseEventFeed
-    <F extends BaseEventFeed, E extends BaseEventEntry>
+    <F extends BaseEventFeed<F, E>, E extends BaseEventEntry<E>>
     extends BaseFeed<F, E> {
 
   /**
@@ -47,7 +47,7 @@ public abstract class BaseEventFeed
    * @param entryClass event entry class
    * @param sourceFeed source feed
    */
-  public BaseEventFeed(Class<E> entryClass, BaseFeed sourceFeed) {
+  public BaseEventFeed(Class<E> entryClass, BaseFeed<?, ?> sourceFeed) {
     super(entryClass, sourceFeed);
     getCategories().add(EventEntry.EVENT_CATEGORY);
   }

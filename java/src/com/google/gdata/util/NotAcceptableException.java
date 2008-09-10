@@ -45,6 +45,17 @@ public class NotAcceptableException extends ServiceException {
     initResponseCode();
   }
 
+  public NotAcceptableException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public NotAcceptableException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
+    initResponseCode();
+  }
+
   private void initResponseCode() {
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_NOT_ACCEPTABLE);
   }

@@ -17,6 +17,7 @@
 package com.google.gdata.data.batch;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
@@ -74,6 +75,7 @@ public class BatchOperation extends ExtensionPoint implements Extension {
     this.type = type;
   }
   
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -90,23 +92,27 @@ public class BatchOperation extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.batchNs, "operation");
   }
 
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace, String localName,
                                              Attributes attrs)
-      throws ParseException, IOException {
+      throws ParseException {
     return new BatchOperationHandler(extProfile, attrs);
   }
   
   private class BatchOperationHandler extends ExtensionPoint.ExtensionHandler {
 
     public BatchOperationHandler(ExtensionProfile profile, Attributes attrs)
-        throws IOException, ParseException {
+        throws ParseException {
       super(profile, BatchOperation.class);
       String operationType = attrs.getValue("type");
       BatchOperationType op = BatchOperationType.forName(operationType);
       if (op == null) {
-        throw new ParseException("Invalid type for batch:operation: '" +
+        ParseException pe = new ParseException(
+            CoreErrorDomain.ERR.invalidBatchOperationType);
+        pe.setInternalReason("Invalid type for batch:operation: '" +
             operationType + "'");
+        throw pe;
       }
       type = op;
     }

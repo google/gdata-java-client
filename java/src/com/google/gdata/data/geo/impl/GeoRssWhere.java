@@ -163,11 +163,7 @@ public class GeoRssWhere extends ExtensionPoint implements Point, Box {
   public void setGeoLocation(Double lat, Double lon) {
     GmlPoint point = getExtension(GmlPoint.class);
     if (point != null) {
-      if (lat == null && lon == null) {
-        removeExtension(point);
-      } else {
-        point.setGeoLocation(lat, lon);
-      }
+      point.setGeoLocation(lat, lon);
     } else if (lat != null || lon != null) {
       point = new GmlPoint();
       setExtension(point);
@@ -195,7 +191,8 @@ public class GeoRssWhere extends ExtensionPoint implements Point, Box {
    * Set the bounding box points.  This correctly handles all cases where the
    * existing gml:envelope is null or has null values.  In particular:
    *
-   * 1)  Remove the extension if lowerLeft and upperRight are null.
+   * 1)  Remove the lower and upper corner of the GmlEnvelope
+   *     if lowerLeft and upperRight are null.
    * 2)  Create a new extension if it doesn't exist and either lowerLeft or
    *     upperRight are non-null.
    * 3)  Otherwise just set the lowerLeft and upperRight on the existing point.
@@ -203,16 +200,40 @@ public class GeoRssWhere extends ExtensionPoint implements Point, Box {
   public void setGeoLocation(Point lowerLeft, Point upperRight) {
     GmlEnvelope envelope = getExtension(GmlEnvelope.class);
     if (envelope != null) {
-      if (lowerLeft == null && upperRight == null) {
-        removeExtension(envelope);
-      } else {
-        envelope.setGeoLocation(lowerLeft, upperRight);
-      }
+      envelope.setGeoLocation(lowerLeft, upperRight);
     } else if (lowerLeft != null || upperRight != null) {
       envelope = new GmlEnvelope();
       setExtension(envelope);
       envelope.setGeoLocation(lowerLeft, upperRight);
     }
+  }
+  
+  /**
+   * @return true if this GeoRssWhere element contains a point element.
+   */
+  public boolean hasPoint() {
+    return getExtension(GmlPoint.class) != null;
+  }
+  
+  /**
+   * @return true if this GeoRssWhere element contains an envelope element.
+   */
+  public boolean hasBox() {
+    return getExtension(GmlEnvelope.class) != null;
+  }
+  
+  /**
+   * Removes the GmlPoint element inside this GeoRssWhere.
+   */
+  public void clearPoint() {
+    removeExtension(GmlPoint.class);
+  }
+  
+  /**
+   * Removes the GmlEnvelope element inside this GeoRssWhere.
+   */
+  public void clearBox() {
+    removeExtension(GmlEnvelope.class);
   }
 
   /*

@@ -16,10 +16,11 @@
 
 package com.google.gdata.data.photos.impl;
 
-import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.geo.Box;
 import com.google.gdata.data.geo.Point;
+import com.google.gdata.data.geo.impl.BoxDataImpl;
 import com.google.gdata.data.geo.impl.PointDataImpl;
 import com.google.gdata.data.media.mediarss.MediaCategory;
 import com.google.gdata.data.media.mediarss.MediaContent;
@@ -28,10 +29,14 @@ import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaKeywords;
 import com.google.gdata.data.media.mediarss.MediaThumbnail;
 import com.google.gdata.data.photos.AlbumData;
-import com.google.gdata.data.photos.Namespaces;
+import com.google.gdata.data.photos.GphotoAccess;
+import com.google.gdata.data.photos.GphotoBytesUsed;
+import com.google.gdata.data.photos.GphotoLocation;
+import com.google.gdata.data.photos.GphotoName;
+import com.google.gdata.data.photos.GphotoPhotosLeft;
+import com.google.gdata.data.photos.GphotoPhotosUsed;
 import com.google.gdata.data.photos.impl.Extensions.GphotoCommentCount;
 import com.google.gdata.data.photos.impl.Extensions.GphotoCommentsEnabled;
-import com.google.gdata.data.photos.impl.Extensions.GphotoConstruct;
 import com.google.gdata.data.photos.impl.Extensions.GphotoNickname;
 import com.google.gdata.data.photos.impl.Extensions.GphotoTimestamp;
 import com.google.gdata.data.photos.impl.Extensions.GphotoUsername;
@@ -53,7 +58,8 @@ import java.util.List;
  */
 public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
 
-  private final PointDataImpl geoData;
+  private final PointDataImpl pointData;
+  private final BoxDataImpl boundingBoxData;
   private final MediaDataImpl mediaData;
   
   /**
@@ -62,7 +68,8 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
    */
   public AlbumDataImpl(ExtensionPoint extensionPoint) {
     super(extensionPoint);
-    geoData = new PointDataImpl(extensionPoint);
+    pointData = new PointDataImpl(extensionPoint);
+    boundingBoxData = new BoxDataImpl(extensionPoint);
     mediaData = new MediaDataImpl(extensionPoint);
   }
 
@@ -70,19 +77,20 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
    * Declare the extensions that album objects use.
    */
   @Override
+  @SuppressWarnings("deprecation")
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
     
     declare(extProfile, PheedThumbnail.getDefaultDescription());
     declare(extProfile, PheedImageUrl.getDefaultDescription());
 
-    declare(extProfile, GphotoName.getDefaultDescription());
-    declare(extProfile, GphotoLocation.getDefaultDescription());
+    declare(extProfile, GphotoName.getDefaultDescription(false, false));
+    declare(extProfile, GphotoLocation.getDefaultDescription(false, false));
     declare(extProfile, GphotoTimestamp.getDefaultDescription());
-    declare(extProfile, GphotoAccess.getDefaultDescription());
-    declare(extProfile, GphotoPhotosUsed.getDefaultDescription());
-    declare(extProfile, GphotoPhotosLeft.getDefaultDescription());
-    declare(extProfile, GphotoBytesUsed.getDefaultDescription());
+    declare(extProfile, GphotoAccess.getDefaultDescription(false, false));
+    declare(extProfile, GphotoPhotosUsed.getDefaultDescription(false, false));
+    declare(extProfile, GphotoPhotosLeft.getDefaultDescription(false, false));
+    declare(extProfile, GphotoBytesUsed.getDefaultDescription(false, false));
 
     declare(extProfile, GphotoUsername.getDefaultDescription());
     declare(extProfile, GphotoNickname.getDefaultDescription());
@@ -92,14 +100,19 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
     declare(extProfile,
         GphotoCommentCount.getDefaultDescription());
     
-    geoData.declareExtensions(extProfile);
+    pointData.declareExtensions(extProfile);
+    boundingBoxData.declareExtensions(extProfile);
     mediaData.declareExtensions(extProfile);
     
   }
 
   /**
+   * Returns the photo:thumbnail element for the album.
+   * 
    * @return the photo:thumbnail on the entry.
+   * @deprecated use the media:thumbnail element to get thumbnails.
    */
+  @Deprecated
   public String getThumbnail() {
     return getSimpleValue(PheedThumbnail.class);
   }
@@ -108,7 +121,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
    * Set the thumbnail url for use in the photo:thumbnail element.
    *
    * @param thumbUrl the full url to the thumbnail.
+   * @deprecated use the media:thumbnail element to set thumbnails.
    */
+  @Deprecated
   public void setThumbnail(String thumbUrl) {
     if (thumbUrl != null) {
       setExtension(new PheedThumbnail(thumbUrl));
@@ -119,7 +134,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
 
   /**
    * @return the photo:imgsrc on the entry.
+   * @deprecated use the media:content element to get the image source.
    */
+  @Deprecated
   public String getImageUrl() {
     return getSimpleValue(PheedImageUrl.class);
   }
@@ -128,7 +145,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
    * Set the full image url for use in the photo:imgsrc element.
    *
    * @param imageUrl the full url to the image.
+   * @deprecated set the media:content element with the image source.
    */
+  @Deprecated
   public void setImageUrl(String imageUrl) {
     if (imageUrl != null) {
       setExtension(new PheedImageUrl(imageUrl));
@@ -199,7 +218,8 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
    * @return the access of the album this entry represents.
    */
   public String getAccess() {
-    return getSimpleValue(GphotoAccess.class);
+    GphotoAccess access = getExtension(GphotoAccess.class);
+    return access == null ? null : access.asString();
   }
 
   /**
@@ -218,8 +238,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
   /**
    * @return the number of photos used in the album this entry represents.
    */
-  public Integer getPhotosUsed() throws ParseException {
-    return getIntegerValue(GphotoPhotosUsed.class);
+  public Integer getPhotosUsed() {
+    GphotoPhotosUsed photosUsed = getExtension(GphotoPhotosUsed.class);
+    return photosUsed == null ? null : photosUsed.getValue();
   }
 
   /**
@@ -238,8 +259,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
   /**
    * @return the number of photos remaining in the album this entry represents.
    */
-  public Integer getPhotosLeft() throws ParseException {
-    return getIntegerValue(GphotoPhotosLeft.class);
+  public Integer getPhotosLeft() {
+    GphotoPhotosLeft left = getExtension(GphotoPhotosLeft.class);
+    return left == null ? null : left.getValue();
   }
 
   /**
@@ -258,8 +280,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
   /**
    * @return the number of bytes used in the album this entry represents.
    */
-  public Long getBytesUsed() throws ParseException {
-    return getLongValue(GphotoBytesUsed.class);
+  public Long getBytesUsed() {
+    GphotoBytesUsed used = getExtension(GphotoBytesUsed.class);
+    return used == null ? null : used.getValue();
   }
 
   /**
@@ -359,15 +382,35 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
    * These delegate to the backing geo data.
    */
   public void setGeoLocation(Double lat, Double lon) {
-    geoData.setGeoLocation(lat, lon);
+    pointData.setGeoLocation(lat, lon);
   }
   
   public void setGeoLocation(Point point) {
-    geoData.setGeoLocation(point);
+    pointData.setGeoLocation(point);
   }
   
   public Point getGeoLocation() {
-    return geoData.getGeoLocation();
+    return pointData.getGeoLocation();
+  }
+  
+  public Box getGeoBoundingBox() {
+    return boundingBoxData.getGeoBoundingBox();
+  }
+
+  public void setGeoBoundingBox(Point lowerLeft, Point upperRight) {
+    boundingBoxData.setGeoBoundingBox(lowerLeft, upperRight);
+  }
+
+  public void setGeoBoundingBox(Box boundingBox) {
+    boundingBoxData.setGeoBoundingBox(boundingBox);
+  }
+  
+  public void clearPoint() {
+    pointData.clearPoint();
+  }
+
+  public void clearGeoBoundingBox() {
+    boundingBoxData.clearGeoBoundingBox();
   }
 
   /*
@@ -399,117 +442,5 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
   
   public void setKeywords(MediaKeywords keywords) {
     mediaData.setKeywords(keywords);
-  }
-  
-  /**
-   * The gphoto:name element.
-   */
-  public static class GphotoName extends GphotoConstruct {
-    public GphotoName() {
-      this(null);
-    }
-
-    public GphotoName(String name) {
-      super("name", name);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoName.class,
-          Namespaces.PHOTOS_NAMESPACE, "name");
-    }
-  }
-
-  /**
-   * The gphoto:location element.
-   */
-  public static class GphotoLocation extends GphotoConstruct {
-    public GphotoLocation() {
-      this(null);
-    }
-
-    public GphotoLocation(String location) {
-      super("location", location);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoLocation.class,
-          Namespaces.PHOTOS_NAMESPACE, "location");
-    }
-  }
-
-  /**
-   * The gphoto:access element.
-   */
-  public static class GphotoAccess extends GphotoConstruct {
-    public GphotoAccess() {
-      this(null);
-    }
-
-    public GphotoAccess(String access) {
-      super("access", access);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoAccess.class,
-          Namespaces.PHOTOS_NAMESPACE, "access");
-    }
-  }
-
-  /**
-   * The gphoto:photosUsed element.
-   */
-  public static class GphotoPhotosUsed extends GphotoConstruct {
-    public GphotoPhotosUsed() {
-      this(null);
-    }
-
-    public GphotoPhotosUsed(Integer photosUsed) {
-      super("numphotos", photosUsed == null
-          ? null
-          : Integer.toString(photosUsed));
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoPhotosUsed.class,
-          Namespaces.PHOTOS_NAMESPACE, "numphotos");
-    }
-  }
-
-  /**
-   * The gphoto:photosLeft element.
-   */
-  public static class GphotoPhotosLeft extends GphotoConstruct {
-    public GphotoPhotosLeft() {
-      this(null);
-    }
-
-    public GphotoPhotosLeft(Integer photosUsed) {
-      super("numphotosremaining", photosUsed == null
-          ? null
-          : Integer.toString(photosUsed));
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoPhotosLeft.class,
-          Namespaces.PHOTOS_NAMESPACE, "numphotosremaining");
-    }
-  }
-
-  /**
-   * The gphoto:bytesUsed element.
-   */
-  public static class GphotoBytesUsed extends GphotoConstruct {
-    public GphotoBytesUsed() {
-      this(null);
-    }
-
-    public GphotoBytesUsed(Long bytesUsed) {
-      super("bytesUsed", bytesUsed == null ? null : Long.toString(bytesUsed));
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoBytesUsed.class,
-          Namespaces.PHOTOS_NAMESPACE, "bytesUsed");
-    }
   }
 }

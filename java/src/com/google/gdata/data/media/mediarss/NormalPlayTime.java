@@ -85,6 +85,7 @@ public class NormalPlayTime {
   }
 
   /** Gets a valid string representation (seconds "." fraction). */
+  @Override
   public String toString() {
     return getNptSecondsRepresentation();
   }

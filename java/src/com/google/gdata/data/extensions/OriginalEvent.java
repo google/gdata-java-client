@@ -17,6 +17,7 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionDescription;
@@ -29,7 +30,6 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 
 /**
  * GData schema extension describing a link to a recurring event.
@@ -62,7 +62,7 @@ public class OriginalEvent extends ExtensionPoint implements Extension {
     return desc;
   }
 
-
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
     ArrayList<XmlWriter.Attribute> attrs = new ArrayList<XmlWriter.Attribute>();
@@ -87,31 +87,25 @@ public class OriginalEvent extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.gNs, "originalEvent");
   }
 
-
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace,
                                              String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+                                             Attributes attrs) {
     return new Handler(extProfile);
   }
-
 
   /** <g:originalEvent> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
-
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, RecurrenceException.class);
     }
 
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
+                                 String value) {
       if (namespace.equals("")) {
         if (localName.equals("id")) {
           originalId = value;
@@ -121,7 +115,7 @@ public class OriginalEvent extends ExtensionPoint implements Extension {
       }
     }
 
-
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
@@ -136,14 +130,17 @@ public class OriginalEvent extends ExtensionPoint implements Extension {
       return super.getChildHandler(namespace, localName, attrs);
     }
 
+    @Override
     public void processEndElement() throws ParseException {
 
       if (originalId == null) {
-        throw new ParseException("g:originalEvent/@id is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.idRequired);
       }
 
       if (originalStartTime == null) {
-        throw new ParseException("g:when inside g:originalEvent is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.whenRequired);
       }
 
       super.processEndElement();

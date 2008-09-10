@@ -37,7 +37,7 @@ public class PlaylistLinkFeed
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
   }
 
-  public PlaylistLinkFeed(BaseFeed base) {
+  public PlaylistLinkFeed(BaseFeed<?, ?> base) {
     super(PlaylistLinkEntry.class, base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
   }

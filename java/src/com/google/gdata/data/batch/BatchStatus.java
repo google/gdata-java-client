@@ -17,6 +17,7 @@
 package com.google.gdata.data.batch;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
@@ -136,11 +137,10 @@ public class BatchStatus extends ExtensionPoint implements Extension {
 
   /**
    * Generate an Atom XML representation of the current object.
-   * @param w
-   * @param extProfile
-   * @throws IOException
    */
-  public void generate(XmlWriter w, ExtensionProfile extProfile) throws IOException {
+  @Override
+  public void generate(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException {
     List<XmlWriter.Attribute> attributes =
         new ArrayList<XmlWriter.Attribute>(4);
 
@@ -178,10 +178,11 @@ public class BatchStatus extends ExtensionPoint implements Extension {
    * @throws ParseException if the current element is not a valid
    *   batch:atom element
    */
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace, String localName,
                                              Attributes attrs)
-      throws ParseException, IOException {
+      throws ParseException {
     return new BatchStatusElementHandler(extProfile, attrs);
   }
 
@@ -191,15 +192,18 @@ public class BatchStatus extends ExtensionPoint implements Extension {
 
     private BatchStatusElementHandler(ExtensionProfile extProfile,
                                       Attributes attrs)
-        throws ParseException, IOException {
+        throws ParseException {
       super(extProfile, BatchStatus.class);
       String code = attrs.getValue("code");
       if (code != null) {
         try {
           setCode(Integer.parseInt(code));
         } catch (NumberFormatException e) {
-          throw new ParseException("Invalid integer value for code " +
-              "attribute : '" + code + "'", e);
+          ParseException pe = new ParseException(
+              CoreErrorDomain.ERR.invalidIntegerAttribute, e);
+          pe.setInternalReason("Invalid integer value for code " +
+              "attribute : '" + code + "'");
+          throw pe;
         }
       }
 
@@ -213,13 +217,16 @@ public class BatchStatus extends ExtensionPoint implements Extension {
         try {
           setContentType(new ContentType(contentType));
         } catch (IllegalArgumentException e) {
-          throw new ParseException("Invalid content type: " + contentType, e);
+          ParseException pe = new ParseException(
+              CoreErrorDomain.ERR.invalidContentType, e);
+          pe.setInternalReason("Invalid content type: " + contentType);
+          throw pe;
         }
       }
     }
 
     @Override
-    public void processEndElement() throws ParseException {
+    public void processEndElement() {
       if (value != null) {
         setContent(value);
       }

@@ -46,25 +46,11 @@ public class HealthNamespace {
   /** The h9 namespace (H9) namespace prefix */
   public static final String H9_PREFIX = H9 + "#";
 
-  /** The h9 namespace (H9) namespace alias */
-  public static final String H9_ALIAS = "h9";
-
-  /** XML writer namespace for The h9 namespace (H9) */
-  public static final XmlWriter.Namespace H9_NS = new
-      XmlWriter.Namespace(H9_ALIAS, H9);
-
   /** The h9kinds namespace (H9KINDS) namespace */
   public static final String H9KINDS = "http://schemas.google.com/health/kinds";
 
   /** The h9kinds namespace (H9KINDS) namespace prefix */
   public static final String H9KINDS_PREFIX = H9KINDS + "#";
-
-  /** The h9kinds namespace (H9KINDS) namespace alias */
-  public static final String H9KINDS_ALIAS = "h9kinds";
-
-  /** XML writer namespace for The h9kinds namespace (H9KINDS) */
-  public static final XmlWriter.Namespace H9KINDS_NS = new
-      XmlWriter.Namespace(H9KINDS_ALIAS, H9KINDS);
 
   /** The h9 metadata namespace (H9M) namespace */
   public static final String H9M = "http://schemas.google.com/health/metadata";
@@ -78,6 +64,21 @@ public class HealthNamespace {
   /** XML writer namespace for The h9 metadata namespace (H9M) */
   public static final XmlWriter.Namespace H9M_NS = new
       XmlWriter.Namespace(H9M_ALIAS, H9M);
+
+
+  /** The h9 namespace (H9) namespace alias */
+  public static final String H9_ALIAS = "h9";
+
+  /** XML writer namespace for The h9 namespace (H9) */
+  public static final XmlWriter.Namespace H9_NS = new
+      XmlWriter.Namespace(H9_ALIAS, H9);
+
+  /** The h9kinds namespace (H9KINDS) namespace alias */
+  public static final String H9KINDS_ALIAS = "h9kinds";
+
+  /** XML writer namespace for The h9kinds namespace (H9KINDS) */
+  public static final XmlWriter.Namespace H9KINDS_NS = new
+      XmlWriter.Namespace(H9KINDS_ALIAS, H9KINDS);
 
   /** Link Rel for a complete url of an entry, indicating the smallest feed
    * containing the entry. */

@@ -16,14 +16,16 @@
 
 package com.google.gdata.client.http;
 
+import com.google.gdata.util.common.base.CharEscapers;
+import com.google.gdata.util.common.base.Charsets;
 import com.google.gdata.util.common.base.StringUtil;
+import com.google.gdata.util.common.io.Characters;
 import com.google.gdata.util.common.util.Base64;
 import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.httputil.FastURLEncoder;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -308,7 +310,10 @@ public class AuthSubUtil {
     }
 
     // Parse the response
-    String body = StringUtil.stream2String(httpConn.getInputStream(), -1);
+    String body =
+        Characters.toString(
+            new InputStreamReader(
+                httpConn.getInputStream(), Charsets.ISO_8859_1));
     Map<String, String> parsedTokens =
       StringUtil.string2Map(body, "\n", "=", true /*stripEntry*/);
     parsedTokens = StringUtil.lowercaseKeys(parsedTokens);
@@ -372,7 +377,10 @@ public class AuthSubUtil {
                                         + httpConn.getResponseMessage());
     }
 
-    String body = StringUtil.stream2String(httpConn.getInputStream(), -1);
+    String body =
+      Characters.toString(
+          new InputStreamReader(
+              httpConn.getInputStream(), Charsets.ISO_8859_1));
     return StringUtil.string2Map(body.trim(), "\n", "=", true);
   }
 
@@ -477,12 +485,8 @@ public class AuthSubUtil {
                                    String name,
                                    String value) {
 
-    try {
-      name = FastURLEncoder.encode(name, "UTF-8");
-      value = FastURLEncoder.encode(value, "UTF-8");
-    } catch (UnsupportedEncodingException uee) {
-      throw new IllegalStateException("Unable to encode parameters", uee);
-    }
+    name = CharEscapers.uriEscaper().escape(name);
+    value = CharEscapers.uriEscaper().escape(value);
 
     // Make sure the url currently ends with the correct delimiter
     if (url.indexOf("?") == -1) {

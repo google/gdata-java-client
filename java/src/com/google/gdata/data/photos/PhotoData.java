@@ -17,6 +17,7 @@
 package com.google.gdata.data.photos;
 
 import com.google.gdata.data.Category;
+import com.google.gdata.data.geo.BoxData;
 import com.google.gdata.data.geo.PointData;
 import com.google.gdata.util.ServiceException;
 
@@ -30,7 +31,7 @@ import java.util.List;
  *
  * 
  */
-public interface PhotoData extends GphotoData, PointData, MediaData {
+public interface PhotoData extends GphotoData, PointData, BoxData, MediaData {
 
   /** The unqualified kind for a photo. */
   public static final String KIND = "photo";

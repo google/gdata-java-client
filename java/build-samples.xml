@@ -21,6 +21,7 @@
   <import file="build-samples/finance.xml"/>
   <import file="build-samples/gbase.xml"/>
   <import file="build-samples/health.xml"/>
+  <import file="build-samples/oauth.xml"/>
   <import file="build-samples/photos.xml"/>
   <import file="build-samples/spreadsheet.xml"/>
   <import file="build-samples/youtube.xml"/>
@@ -43,6 +44,7 @@
     <antcall target="finance.sample.finance.build"/>
     <antcall target="gbase.sample.gbase.build"/>
     <antcall target="health.sample.health.build"/>
+    <antcall target="oauth.sample.oauth.build"/>
     <antcall target="photos.sample.photos.build"/>
     <antcall target="spreadsheet.sample.spreadsheet.build"/>
     <antcall target="youtube.sample.youtube.build"/>
@@ -61,6 +63,7 @@
     <antcall target="finance.sample.finance.clean"/>
     <antcall target="gbase.sample.gbase.clean"/>
     <antcall target="health.sample.health.clean"/>
+    <antcall target="oauth.sample.oauth.clean"/>
     <antcall target="photos.sample.photos.clean"/>
     <antcall target="spreadsheet.sample.spreadsheet.clean"/>
     <antcall target="youtube.sample.youtube.clean"/>

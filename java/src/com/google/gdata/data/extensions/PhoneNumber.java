@@ -29,14 +29,12 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * GData schema extension describing a phone number.
  *
  * 
  */
 public class PhoneNumber implements Extension {
-
 
   /** The phone number type. */
   public static final class Rel {
@@ -59,18 +57,15 @@ public class PhoneNumber implements Extension {
   public String getRel() { return rel; }
   public void setRel(String v) { rel = v; }
 
-
   /** Label. */
   protected String label;
   public String getLabel() { return label; }
   public void setLabel(String v) { label = v; }
 
-
   /** "Tel URI" (formal representation of number; see RFC 3966). */
   protected String uri;
   public String getUri() { return uri; }
   public void setUri(String v) { uri = v; }
-
 
   /** Human-readable phone number. */
   protected String phoneNumber;
@@ -91,7 +86,6 @@ public class PhoneNumber implements Extension {
     desc.setRepeatable(true);
     return desc;
   }
-
 
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
@@ -117,13 +111,10 @@ public class PhoneNumber implements Extension {
     w.simpleElement(Namespaces.gNs, "phoneNumber", attrs, phoneNumber);
   }
 
-
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace,
                                              String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+                                             Attributes attrs) {
     return new Handler();
   }
 
@@ -131,7 +122,7 @@ public class PhoneNumber implements Extension {
   /** <g:phoneNumber> parser. */
   private class Handler extends XmlParser.ElementHandler {
 
-
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
@@ -151,7 +142,7 @@ public class PhoneNumber implements Extension {
       }
     }
 
-
+    @Override
     public void processEndElement() {
       phoneNumber = value;
     }

@@ -16,9 +16,9 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
-
 
 /**
  * Parser for the {@code atomPerson} type.
@@ -27,23 +27,24 @@ import com.google.gdata.util.XmlParser;
  */
 public class Rfc3339Handler extends XmlParser.ElementHandler {
 
-
   /** Date/time value being parsed. */
   private DateTime dateTime;
   /** @return   the timestamp */
   public DateTime getDateTime() { return dateTime; }
 
-
   /**
    * Processes this element; overrides inherited method.
    */
+  @Override
   public void processEndElement() throws ParseException {
     try {
       dateTime = DateTime.parseDateTime(value);
     } catch (NumberFormatException e) {
-      throw new ParseException(
-        "Invalid date/time format: '" + value + "'.");
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidDatetime);
+      pe.setInternalReason(
+          "Invalid date/time format: '" + value + "'.");
+      throw pe;
     }
   }
 }
-

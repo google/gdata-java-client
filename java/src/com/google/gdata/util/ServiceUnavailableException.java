@@ -39,13 +39,24 @@ public class ServiceUnavailableException extends ServiceException {
   }
 
   public ServiceUnavailableException(Throwable cause) {
-    this(null, cause);
+    super(cause.getMessage(), cause);
     initResponseCode();
   }
 
   public ServiceUnavailableException(HttpURLConnection httpConn)
       throws IOException {
     super(httpConn);
+    initResponseCode();
+  }
+
+  public ServiceUnavailableException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public ServiceUnavailableException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
     initResponseCode();
   }
 

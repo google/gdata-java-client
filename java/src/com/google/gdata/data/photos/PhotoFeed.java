@@ -19,6 +19,7 @@ package com.google.gdata.data.photos;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.geo.Box;
 import com.google.gdata.data.geo.Point;
 import com.google.gdata.data.media.mediarss.MediaCategory;
 import com.google.gdata.data.media.mediarss.MediaContent;
@@ -61,7 +62,7 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
    * feed.  This is used to get the correct entry type based on the category of
    * the entry.
    */
-  public PhotoFeed(BaseFeed sourceFeed) {
+  public PhotoFeed(BaseFeed<?, ?> sourceFeed) {
     super(sourceFeed);
     getCategories().add(PhotoData.PHOTO_CATEGORY);
     this.delegate = new PhotoDataImpl(this);
@@ -221,6 +222,27 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
     return delegate.getGeoLocation();
   }
 
+  public void clearPoint() {
+    delegate.clearPoint();
+  }
+
+  public Box getGeoBoundingBox() {
+    return delegate.getGeoBoundingBox();
+  }
+
+  public void setGeoBoundingBox(Point lowerLeft, Point upperRight) {
+    delegate.setGeoBoundingBox(lowerLeft, upperRight);
+    
+  }
+
+  public void setGeoBoundingBox(Box boundingBox) {
+    delegate.setGeoBoundingBox(boundingBox);
+  }
+  
+  public void clearGeoBoundingBox() {
+    delegate.clearGeoBoundingBox();
+  }
+  
   public void addStreamId(String streamId) {
     delegate.addStreamId(streamId);
   }

@@ -25,7 +25,6 @@ import com.google.gdata.util.XmlParser;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * Plain text variant of {@link TextConstruct}.
  *
@@ -33,10 +32,8 @@ import java.util.ArrayList;
  */
 public class PlainTextConstruct extends TextConstruct {
 
-
   /** Class constructor. */
   public PlainTextConstruct() {}
-
 
   /**
    * Class constructor specifying the plain text content for this
@@ -45,7 +42,6 @@ public class PlainTextConstruct extends TextConstruct {
   public PlainTextConstruct(String text) {
     this.text = text;
   }
-
 
   /** 
    * Class constructor specifying the plain text content for this
@@ -57,7 +53,6 @@ public class PlainTextConstruct extends TextConstruct {
     this.lang = lang;
   }
 
-
   /** @return the type (TEXT) of this text construct */
   @Override
   public int getType() { return Type.TEXT; }
@@ -66,7 +61,6 @@ public class PlainTextConstruct extends TextConstruct {
   /** @return {@code true} if this text construct has no contents */
   public boolean isEmpty() { return getText() == null; }
 
-
   /** Plain text contents. */
   protected String text;
   /** @return the plain text contents of this text construct */
@@ -74,13 +68,11 @@ public class PlainTextConstruct extends TextConstruct {
   /** Specifies the plain text contents of this text construct. */
   public void setText(String v) { text = v; }
 
-
   /** @return a plain-text representation of this text construct */
   @Override
   public String getPlainText() {
     return new String(text);
   }
-
 
   /**
    * Generates XML in the Atom format.
@@ -112,7 +104,6 @@ public class PlainTextConstruct extends TextConstruct {
     w.simpleElement(Namespaces.atomNs, elementName, attrs, text);
   }
 
-
   /**
    * Generates XML in the RSS format.
    *
@@ -135,7 +126,6 @@ public class PlainTextConstruct extends TextConstruct {
     w.simpleElement(Namespaces.rssNs, elementName, null, text);
   }
 
-
   /** Parses XML in the Atom format. */
   public class AtomHandler extends XmlParser.ElementHandler {
 
@@ -157,9 +147,10 @@ public class PlainTextConstruct extends TextConstruct {
       }
     }
 
-
     /**
      * Processes this element; overrides inherited method.
+     * 
+     * @throws ParseException from subclasses.
      */
     @Override
     public void processEndElement() throws ParseException {

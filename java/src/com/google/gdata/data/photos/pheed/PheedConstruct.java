@@ -25,6 +25,7 @@ import com.google.gdata.data.ValueConstruct;
  *
  * 
  */
+@Deprecated
 public abstract class PheedConstruct extends ValueConstruct {
   public PheedConstruct(String name) {
     this(name, null);

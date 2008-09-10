@@ -19,29 +19,29 @@ package com.google.gdata.data.media;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
-import com.google.gdata.data.Entry;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.Feed;
+import com.google.gdata.data.IEntry;
+import com.google.gdata.data.IFeed;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.ParseSource;
 import com.google.gdata.util.ContentType;
+import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.ParseUtil;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.io.base.UnicodeReader;
 
-import javax.activation.DataContentHandler;
-import javax.activation.DataSource;
-
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PushbackInputStream;
-import java.io.Reader;
 import java.util.regex.Pattern;
+
+import javax.activation.DataContentHandler;
+import javax.activation.DataSource;
 
 /**
  * The GDataContentHandler class implements the {@link DataContentHandler}
@@ -80,20 +80,20 @@ public class GDataContentHandler implements DataContentHandler {
   public static class DataContext {
 
     private ExtensionProfile extProfile;
-    private Class <? extends BaseEntry> entryClass;
-    private Class <? extends BaseFeed> feedClass;
+    private Class <? extends IEntry> entryClass;
+    private Class <? extends IFeed> feedClass;
 
     public DataContext(ExtensionProfile extProfile,
-                       Class <? extends BaseEntry> entryClass,
-                       Class <? extends BaseFeed> feedClass) {
+                       Class <? extends IEntry> entryClass,
+                       Class <? extends IFeed> feedClass) {
       this.extProfile = extProfile;
       this.entryClass = entryClass;
       this.feedClass = feedClass;
     }
 
     public ExtensionProfile getExtensionProfile() { return extProfile; }
-    public Class <? extends BaseEntry> getEntryClass() { return entryClass; }
-    public Class <? extends BaseFeed> getFeedClass() { return feedClass; }
+    public Class <? extends IEntry> getEntryClass() { return entryClass; }
+    public Class <? extends IFeed> getFeedClass() { return feedClass; }
   }
 
   private static final ThreadLocal<DataContext> threadDataContext =
@@ -122,8 +122,7 @@ public class GDataContentHandler implements DataContentHandler {
   }
 
   public Object getTransferData(DataFlavor df,
-                                DataSource ds)
-      throws UnsupportedFlavorException, IOException {
+                                DataSource ds) {
     throw new UnsupportedOperationException("No DataFlavor support");
   }
 
@@ -183,7 +182,9 @@ public class GDataContentHandler implements DataContentHandler {
     } else if (ENTRY_DOCUMENT_PATTERN.matcher(parseString).matches()) {
       isFeed = false;
     } else {
-      throw new IOException("Unable to find Atom feed or entry element");
+      ServiceException e = new InvalidEntryException(
+          "Unable to find Atom feed or entry element");
+      throw new IOException(e.getMessage());
     }
     pushbackStream.unread(buf, 0, n);
 
@@ -206,15 +207,15 @@ public class GDataContentHandler implements DataContentHandler {
     try {
       if (isFeed) {
         if (dataContext != null) {
-          retObject = BaseFeed.readFeed(source, dataContext.feedClass,
-              dataContext.extProfile);
+          retObject = ParseUtil.readFeed(
+              source, dataContext.feedClass, dataContext.extProfile);
         } else {
           retObject = BaseFeed.readFeed(source);
         }
       } else {
         if (dataContext != null) {
-          return BaseEntry.readEntry(source, dataContext.entryClass,
-              dataContext.extProfile);
+          retObject = ParseUtil.readEntry(
+              source, dataContext.entryClass, dataContext.extProfile);
         } else {
           retObject = BaseEntry.readEntry(source);
         }
@@ -257,22 +258,22 @@ public class GDataContentHandler implements DataContentHandler {
     }
     if (obj instanceof BaseFeed) {
 
-      BaseFeed feed = (BaseFeed)obj;
+      BaseFeed<?, ?> feed = (BaseFeed<?, ?>) obj;
       if (mimeType.equals("application/rss+xml")) {
         feed.generateRss(xw, extProfile);
       } else {
         xw.setDefaultNamespace(Namespaces.atomNs);
-        ((BaseFeed)obj).generateAtom(xw, extProfile);
+        ((BaseFeed<?, ?>) obj).generateAtom(xw, extProfile);
       }
 
     } else if (obj instanceof BaseEntry) {
 
-      BaseEntry entry = (BaseEntry)obj;
+      BaseEntry<?> entry = (BaseEntry<?>) obj;
       if (mimeType.equals("application/rss+xml")) {
-        ((BaseEntry)obj).generateRss(xw, extProfile);
+        ((BaseEntry<?>) obj).generateRss(xw, extProfile);
       } else {
         xw.setDefaultNamespace(Namespaces.atomNs);
-        ((BaseEntry)obj).generateAtom(xw, extProfile);
+        ((BaseEntry<?>) obj).generateAtom(xw, extProfile);
       }
 
     } else {

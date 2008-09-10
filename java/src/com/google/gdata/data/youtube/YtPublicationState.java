@@ -48,20 +48,18 @@ public class YtPublicationState extends AbstractExtension {
      */
     INCOMPLETE,
 
-    /**
-     * The video has just been uploaded and is not yet publicly available. 
-     */
+    /** The video has just been uploaded and is not yet publicly available. */
     PROCESSING,
 
-    /**
-     * The video has been rejected.
-     */
+    /** The video has been rejected. */
     REJECTED,
 
-    /**
-     * The video was not successfully processed.
-     */
-    FAILED; 
+    /** The video was not successfully processed. */
+    FAILED,
+    
+    /** Video was removed by the owner. */
+    DELETED,
+    ;
   }
 
   private State state;

@@ -16,9 +16,9 @@
 
 package com.google.gdata.client;
 
+import com.google.gdata.util.common.base.CharEscapers;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.DateTime;
-import com.google.gdata.util.httputil.FastURLEncoder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -67,8 +67,10 @@ public class Query {
     ATOM_IN_SCRIPT("atom-in-script"),
     RSS_IN_SCRIPT("rss-in-script"),
     JSON_IN_SCRIPT("json-in-script"),
-    JSON_XD("json-xd");
-
+    JSON_XD("json-xd"),
+    ATOM_SERVICE("atom-service");
+    
+    
     /**
      * Value to use for the "alt" param.
      */
@@ -509,10 +511,11 @@ public class Query {
 
 
   /**
-   * Returns the current start index value for the query.
+   * Returns the current start index value for the query,
+   * or {@link #UNDEFINED} if start index has not been set.
    */
   public int getStartIndex() {
-    return (startIndex == UNDEFINED) ? 1 : startIndex;
+    return startIndex;
   }
 
 
@@ -535,8 +538,10 @@ public class Query {
 
 
   /**
-   * Returns the maximum number of results to return for the query.  Note:
-   * a GData server may choose to provide fewer results, but will
+   * Returns the maximum number of results to return for the query,
+   * or {@link #UNDEFINED} if max results has not been set.
+   * <p>
+   * Note: a GData server may choose to provide fewer results, but will
    * never provide more than the requested maximum.
    */
   public int getMaxResults() {
@@ -701,19 +706,19 @@ public class Query {
         for (CategoryFilter categoryFilter : categoryFilters) {
           pathBuf.append("/");
           pathBuf.append(
-              FastURLEncoder.encode(categoryFilter.toString(), "UTF-8"));
+              CharEscapers.uriEscaper().escape(categoryFilter.toString()));
         }
       }
 
       StringBuilder queryBuf = new StringBuilder();
       if (queryString != null) {
         appendQueryParameter(queryBuf, GDataProtocol.Query.FULL_TEXT,
-            FastURLEncoder.encode(queryString, "UTF-8"));
+            CharEscapers.uriEscaper().escape(queryString));
       }
 
       if (author != null) {
         appendQueryParameter(queryBuf, GDataProtocol.Query.AUTHOR,
-            FastURLEncoder.encode(author, "UTF-8"));
+            CharEscapers.uriEscaper().escape(author));
       }
 
       if (resultFormat != ResultFormat.DEFAULT) {
@@ -723,22 +728,22 @@ public class Query {
 
       if (updatedMin != null) {
         appendQueryParameter(queryBuf, GDataProtocol.Query.UPDATED_MIN,
-            FastURLEncoder.encode(updatedMin.toString()));
+            CharEscapers.uriEscaper().escape(updatedMin.toString()));
       }
 
       if (updatedMax != null) {
         appendQueryParameter(queryBuf, GDataProtocol.Query.UPDATED_MAX,
-            FastURLEncoder.encode(updatedMax.toString()));
+            CharEscapers.uriEscaper().escape(updatedMax.toString()));
       }
 
       if (publishedMin != null) {
         appendQueryParameter(queryBuf, GDataProtocol.Query.PUBLISHED_MIN,
-            FastURLEncoder.encode(publishedMin.toString()));
+            CharEscapers.uriEscaper().escape(publishedMin.toString()));
       }
 
       if (publishedMax != null) {
         appendQueryParameter(queryBuf, GDataProtocol.Query.PUBLISHED_MAX,
-            FastURLEncoder.encode(publishedMax.toString()));
+            CharEscapers.uriEscaper().escape(publishedMax.toString()));
       }
 
       if (startIndex != UNDEFINED) {
@@ -757,8 +762,8 @@ public class Query {
 
       for (CustomParameter customParameter : customParameters) {
         appendQueryParameter(queryBuf,
-            FastURLEncoder.encode(customParameter.name, "UTF-8"),
-            FastURLEncoder.encode(customParameter.value, "UTF-8"));
+            CharEscapers.uriEscaper().escape(customParameter.name),
+            CharEscapers.uriEscaper().escape(customParameter.value));
       }
 
       return new URI(pathBuf.toString() + queryBuf.toString());

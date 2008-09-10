@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * Represents a date/time, or a date without a time.  Optionally
  * includes a time zone.
  */
-public class DateTime implements Comparable {
+public class DateTime implements Comparable<Object> {
 
 
   public DateTime() {}
@@ -90,8 +90,9 @@ public class DateTime implements Comparable {
   public void setTzShift(Integer v) { tzShift = v; }
 
 
+  @Override
   public int hashCode() {
-    return new Long(value).hashCode();
+    return Long.valueOf(value).hashCode();
   }
 
   /**
@@ -102,6 +103,7 @@ public class DateTime implements Comparable {
    * the time zone they refer to. 
    * Equals with a instance of java.util.Date is asymmetric.
    */
+  @Override
   public boolean equals(Object o) {
 
     if (o instanceof DateTime) {
@@ -162,6 +164,7 @@ public class DateTime implements Comparable {
 
 
   /** Formats the value as an xs:date or xs:dateTime string. */
+  @Override
   public String toString() {
 
     StringBuilder sb = new StringBuilder();

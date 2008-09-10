@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Google Apps for Your Domain schema extension describing a user's quota.
  *
@@ -59,6 +58,7 @@ public class Quota extends ExtensionPoint implements Extension {
     return desc;
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -73,13 +73,11 @@ public class Quota extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.APPS_NAMESPACE, "quota");
   }
 
-
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace,
                                              String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+                                             Attributes attrs) {
     return new Handler(extProfile);
   }
 
@@ -87,11 +85,11 @@ public class Quota extends ExtensionPoint implements Extension {
   /** <apps:quota> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, Email.class);
     }
 
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
@@ -108,6 +106,7 @@ public class Quota extends ExtensionPoint implements Extension {
       }
     }
 
+    @Override
     public void processEndElement() throws ParseException {
 
       if (limit == null) {

@@ -41,7 +41,7 @@ public class PortfolioFeed extends BaseFeed<PortfolioFeed, PortfolioEntry> {
    *
    * @param sourceFeed source feed
    */
-  public PortfolioFeed(BaseFeed sourceFeed) {
+  public PortfolioFeed(BaseFeed<?, ?> sourceFeed) {
     super(PortfolioEntry.class, sourceFeed);
   }
 

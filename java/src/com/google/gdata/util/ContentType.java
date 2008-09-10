@@ -88,7 +88,7 @@ public class ContentType {
    *
    * @see #getAtomEntry()
    */
-  static final ContentType ATOM_ENTRY =
+  public static final ContentType ATOM_ENTRY =
     new ContentType("application/atom+xml;type=entry;" + DEFAULT_CHARSET) {
       @Override
       public boolean match(ContentType acceptedContentType) {
@@ -104,7 +104,7 @@ public class ContentType {
    *
    * @see #getAtomFeed()
    */
-  static final ContentType ATOM_FEED =
+  public static final ContentType ATOM_FEED =
     new ContentType("application/atom+xml;type=feed;" + DEFAULT_CHARSET) {
       @Override
       public boolean match(ContentType acceptedContentType) {
@@ -175,6 +175,12 @@ public class ContentType {
    */
   public static final ContentType TEXT_PLAIN =
     new ContentType("text/plain;" + DEFAULT_CHARSET);
+
+  /**
+   * A ContentType constant that describes the GData error content type.
+   */
+  public static final ContentType GDATA_ERROR =
+    new ContentType("application/vnd.google.gdata.error+xml");
 
   /**
    * A ContentType constant that describes the MIME multipart/related content
@@ -356,10 +362,13 @@ public class ContentType {
 
   /** Returns the full media type */
   public String getMediaType() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(type);
     sb.append("/");
     sb.append(subType);
+    if (attributes.containsKey("type")) {
+      sb.append(";type=").append(attributes.get("type"));
+    }
     return sb.toString();
   }
 

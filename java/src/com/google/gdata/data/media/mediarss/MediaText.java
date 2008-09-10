@@ -75,8 +75,8 @@ public class MediaText extends AbstractTextElement {
   }
 
   @Override
-  protected void consumeAttributes(AttributeHelper attrsHelper) throws
-      ParseException {
+  protected void consumeAttributes(AttributeHelper attrsHelper)
+      throws ParseException {
     super.consumeAttributes(attrsHelper);
     start = MediaAttributeHelper.consumeNormalPlayTime(attrsHelper, "start");
     end = MediaAttributeHelper.consumeNormalPlayTime(attrsHelper, "end");

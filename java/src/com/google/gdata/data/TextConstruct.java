@@ -17,6 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlBlob;
 import com.google.gdata.util.XmlParser;
@@ -31,30 +32,27 @@ import java.io.IOException;
  *
  * 
  */
-public abstract class TextConstruct {
+public abstract class TextConstruct implements ITextConstruct {
 
-
-  /** Defines the possible text construct types: TEXT, HTML, and XHTML. */
+  /**
+   * Defines the possible text construct types: TEXT, HTML, and XHTML.
+   */
   public static class Type {
     public static final int TEXT = 1;
     public static final int HTML = 2;
     public static final int XHTML = 3;
   }
 
-
   /** Returns this text construct's type (text, HTML, or XHTML). */
   public abstract int getType();
-
 
   /**
    * Returns {@code true} if this text construct has no contents.
    */
   public abstract boolean isEmpty();
 
-
   /** Returns a plain-text representation of this text construct. */
   public abstract String getPlainText();
-
 
   /** Language. Derived from the current state of {@code xml:lang}. */
   protected String lang;
@@ -64,7 +62,6 @@ public abstract class TextConstruct {
 
   /** Specifies the human language that this text construct is written in. */
   public void setLang(String v) { lang = v; }
-
 
   /**
    * Creates a text construct.
@@ -193,9 +190,11 @@ public abstract class TextConstruct {
       childHandlerInfo.textConstruct = xtc;
 
     } else {
-
-      throw new ParseException(
-        "Invalid text content type: '" + type + "'.");
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidTextContentType);
+      pe.setInternalReason(
+          "Invalid text content type: '" + type + "'");
+      throw pe;
     }
 
     return childHandlerInfo;

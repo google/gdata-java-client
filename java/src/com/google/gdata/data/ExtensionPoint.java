@@ -18,6 +18,7 @@ package com.google.gdata.data;
 
 import com.google.gdata.util.common.base.Pair;
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlBlob;
 import com.google.gdata.util.XmlNamespace;
@@ -378,15 +379,13 @@ public class ExtensionPoint extends AbstractExtension {
   /** Parser class for cumulative XML blobs. */
   public class CumulativeBlobHandler extends ElementHandler {
 
-
     public CumulativeBlobHandler(ExtensionProfile extProfile,
-        Class<? extends ExtensionPoint> extendedClass) throws IOException {
+        Class<? extends ExtensionPoint> extendedClass) {
 
       this.extProfile = extProfile;
       this.extendedClass = extendedClass;
       initializeArbitraryXml(extProfile, extendedClass, this);
     }
-
 
     private final ExtensionProfile extProfile;
     private final Class<? extends ExtensionPoint> extendedClass;
@@ -405,8 +404,6 @@ public class ExtensionPoint extends AbstractExtension {
       return super.getChildHandler(namespace, localName, attrs);
     }
   }
-
-
 
   /** Retrieves the manifest for the specified class. */
   protected ExtensionManifest getManifest(ExtensionProfile extProfile,
@@ -449,7 +446,7 @@ public class ExtensionPoint extends AbstractExtension {
   @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile p,
       String namespace, String localName, Attributes attrs)
-      throws ParseException, IOException {
+      throws ParseException {
     return new ExtensionHandler(p, this.getClass(), attrs);
   }
 
@@ -506,8 +503,7 @@ public class ExtensionPoint extends AbstractExtension {
    * {@link ExtensionProfile#declareArbitraryXmlExtension(Class)}.
    */
   protected void initializeArbitraryXml(ExtensionProfile profile,
-      Class<? extends ExtensionPoint> extPoint, ElementHandler handler)
-      throws IOException {
+      Class<? extends ExtensionPoint> extPoint, ElementHandler handler) {
 
     boolean arbitraryXml = profile.allowsArbitraryXml();
     if (!arbitraryXml) {
@@ -592,9 +588,11 @@ public class ExtensionPoint extends AbstractExtension {
       try {
         extension = extClass.newInstance();
       } catch (InstantiationException e) {
-        throw new ParseException("Unable to create extension", e);
+        throw new ParseException(
+            CoreErrorDomain.ERR.cantCreateExtension, e);
       } catch (IllegalAccessException e) {
-        throw new ParseException("Unable to create extension", e);
+        throw new ParseException(
+            CoreErrorDomain.ERR.cantCreateExtension, e);
       }
     } else {
       needsAdd = false;
@@ -612,8 +610,11 @@ public class ExtensionPoint extends AbstractExtension {
       } else {
         boolean added = addExtension(extension, extClass);
         if (!added) {
-          throw new ParseException("Duplicate extension element "
-              + namespaceUri + ":" + localName);
+          ParseException pe = new ParseException(
+              CoreErrorDomain.ERR.duplicateExtension);
+          pe.setInternalReason("Duplicate extension element " +
+              namespaceUri + ":" + localName);
+          throw pe;
         }
       }
     }
@@ -636,9 +637,12 @@ public class ExtensionPoint extends AbstractExtension {
                 .containsKey(extClass) : nonRepeatingExtensionMap
                 .containsKey(extClass));
         if (!found) {
-          throw new ParseException("Required extension element "
-              + extDescription.getNamespace().getUri() + ":"
-              + extDescription.getLocalName() + " not found.");
+          ParseException pe = new ParseException(
+              CoreErrorDomain.ERR.missingExtensionElement);
+          pe.setInternalReason("Required extension element " +
+              extDescription.getNamespace().getUri() + ":" +
+              extDescription.getLocalName() + " not found.");
+          throw pe;
         }
       }
     }
@@ -667,7 +671,7 @@ public class ExtensionPoint extends AbstractExtension {
      *        handler
      */
     public ExtensionHandler(ExtensionProfile profile,
-        Class<? extends ExtensionPoint> extendedClass) throws IOException {
+        Class<? extends ExtensionPoint> extendedClass) {
       this(profile, extendedClass, null);
     }
 
@@ -682,8 +686,7 @@ public class ExtensionPoint extends AbstractExtension {
      *        {@link AttributeHelper}
      */
     public ExtensionHandler(ExtensionProfile profile,
-        Class<? extends ExtensionPoint> extendedClass, Attributes attrs)
-        throws IOException {
+        Class<? extends ExtensionPoint> extendedClass, Attributes attrs) {
       super(attrs);
 
       this.extProfile = profile;

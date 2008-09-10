@@ -17,8 +17,8 @@
 package com.google.gdata.util;
 
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.IEntry;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -33,18 +33,31 @@ import java.net.HttpURLConnection;
 public class VersionConflictException extends ServiceException {
 
   public VersionConflictException() {
-    this((BaseEntry) null);
+    this((IEntry) null);
   }
-  
-  public VersionConflictException(BaseEntry currentEntry) {
-    super("Version conflict.");
+
+  public VersionConflictException(IEntry currentEntry) {
+    this(currentEntry, null);
+  }
+
+  public VersionConflictException(IEntry currentEntry, Throwable cause) {
+    super("Version conflict", cause);
     this.currentEntry = currentEntry;
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_CONFLICT);
   }
 
-  public VersionConflictException(HttpURLConnection httpConn) 
+  public VersionConflictException(HttpURLConnection httpConn)
       throws IOException {
     super(httpConn);
+  }
+
+  public VersionConflictException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+  }
+
+  public VersionConflictException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
   }
 
 
@@ -53,9 +66,9 @@ public class VersionConflictException extends ServiceException {
    * but has a new version ID, this field represents the current state of the
    * entry.
    */
-  private BaseEntry currentEntry;
-  public BaseEntry getCurrentEntry() { return currentEntry; }
-  public void setCurrentEntry(BaseEntry entry) { currentEntry = entry; }
+  private IEntry currentEntry;
+  public IEntry getCurrentEntry() { return currentEntry; }
+  public void setCurrentEntry(IEntry entry) { currentEntry = entry; }
 
 
   /**
@@ -71,7 +84,6 @@ public class VersionConflictException extends ServiceException {
    */
   public void generate(ExtensionProfile extProfile,
                        XmlWriter xw) throws IOException {
-
-    currentEntry.generateAtom(xw, extProfile);
+    GenerateUtil.generateAtom(xw, currentEntry, extProfile);
   }
 }

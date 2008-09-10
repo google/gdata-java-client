@@ -17,6 +17,7 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
@@ -30,8 +31,6 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-
 
 /**
  * GData schema extension describing a geographic location.
@@ -42,36 +41,30 @@ import java.util.Date;
 @Deprecated
 public class GeoPt extends ExtensionPoint implements Extension {
 
-
   /** Label. */
   protected String label;
   public String getLabel() { return label; }
   public void setLabel(String v) { label = v; }
-
 
   /** Latitude. */
   protected Float lat;
   public Float getLat() { return lat; }
   public void setLat(Float v) { lat = v; }
 
-
   /** Longitude. */
   protected Float lon;
   public Float getLon() { return lon; }
   public void setLon(Float v) { lon = v; }
-
 
   /** Elevation. */
   protected Float elev;
   public Float getElev() { return elev; }
   public void setElev(Float v) { elev = v; }
 
-
   /** Time. */
   protected DateTime time;
   public DateTime getTime() { return time; }
   public void setTime(DateTime v) { time = v; }
-
 
   /**
    * Returns the suggested extension description with configurable
@@ -91,6 +84,7 @@ public class GeoPt extends ExtensionPoint implements Extension {
     return getDefaultDescription(true);
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -125,27 +119,22 @@ public class GeoPt extends ExtensionPoint implements Extension {
   }
 
 
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace,
                                              String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+                                             Attributes attrs) {
     return new Handler(extProfile);
   }
-
 
   /** <g:geoPt> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
-
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, GeoPt.class);
     }
 
-
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value)
@@ -162,7 +151,8 @@ public class GeoPt extends ExtensionPoint implements Extension {
           try {
             lat = Float.valueOf(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Invalid geoPt/@lat.", e);
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidGeoPtLat, e);
           }
 
         } else if (localName.equals("lon")) {
@@ -170,7 +160,8 @@ public class GeoPt extends ExtensionPoint implements Extension {
           try {
             lon = Float.valueOf(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Invalid geoPt/@lon.", e);
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidGeoPtLon, e);
           }
 
         } else if (localName.equals("elev")) {
@@ -178,7 +169,8 @@ public class GeoPt extends ExtensionPoint implements Extension {
           try {
             elev = Float.valueOf(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Invalid geoPt/@elev.", e);
+            throw new ParseException(
+               CoreErrorDomain.ERR.invalidGeoPtElev, e);
           }
 
         } else if (localName.equals("time")) {
@@ -186,21 +178,24 @@ public class GeoPt extends ExtensionPoint implements Extension {
           try {
             time = DateTime.parseDateTime(value);
           } catch (NumberFormatException e) {
-            throw new ParseException("Date/time value expected.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.invalidGeoPtTime);
           }
         }
       }
     }
 
-
+    @Override
     public void processEndElement() throws ParseException {
 
       if (lat == null) {
-        throw new ParseException("g:geoPt/@lat is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.geoPtLatRequired);
       }
 
       if (lon == null) {
-        throw new ParseException("g:geoPt/@lon is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.geoPtLonRequired);
       }
 
       super.processEndElement();

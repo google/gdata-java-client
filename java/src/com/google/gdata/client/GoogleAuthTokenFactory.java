@@ -16,6 +16,7 @@
 
 package com.google.gdata.client;
 
+import com.google.gdata.util.common.base.CharEscapers;
 import com.google.gdata.util.common.base.StringUtil;
 import com.google.gdata.client.GoogleService.AccountDeletedException;
 import com.google.gdata.client.GoogleService.AccountDisabledException;
@@ -25,10 +26,13 @@ import com.google.gdata.client.GoogleService.NotVerifiedException;
 import com.google.gdata.client.GoogleService.ServiceUnavailableException;
 import com.google.gdata.client.GoogleService.SessionExpiredException;
 import com.google.gdata.client.GoogleService.TermsNotAgreedException;
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
+import com.google.gdata.client.authn.oauth.OAuthParameters;
+import com.google.gdata.client.authn.oauth.OAuthSigner;
 import com.google.gdata.client.http.AuthSubUtil;
 import com.google.gdata.client.http.HttpAuthToken;
 import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.httputil.FastURLEncoder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -149,6 +153,53 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
                                                    requestMethod);
       } catch (GeneralSecurityException e) {
         throw new RuntimeException(e.getMessage());
+      }
+    }
+  }
+
+
+  /**
+   * Encapsulates the OAuth information used by applications to login on behalf
+   * of a user.  This class generates an unique authorization header for each 
+   * request.
+   */
+  public static class OAuthToken implements HttpAuthToken {
+
+    OAuthParameters parameters;
+    GoogleOAuthHelper oauthHelper;
+    
+    /**
+     * Create a new {@link OAuthToken} object.  Store the 
+     * {@link OAuthParameters} and {@link OAuthSigner} to use when generating 
+     * the header.  The following OAuth parameters are required:
+     * <ul>
+     * <li>oauth_consumer_key
+     * <li>oauth_token
+     * </ul>
+     * 
+     * @param parameters the required OAuth parameters
+     * @param signer the {@link OAuthSigner} object to use when to generate the 
+     *        OAuth signature.
+     */
+    public OAuthToken(OAuthParameters parameters, OAuthSigner signer) {
+      this.parameters = parameters;
+      oauthHelper = new GoogleOAuthHelper(signer);
+    }
+
+    /**
+     * Generates the OAuth authorization header using the user's OAuth 
+     * parameters, the request url and the request method.
+     * 
+     * @param requestUrl the URL being requested
+     * @param requestMethod the HTTP method of the request
+     * @return the authorization header to be used for the request
+     */
+    public String getAuthorizationHeader(URL requestUrl, String requestMethod) {
+      try {
+        return oauthHelper.getAuthorizationHeader(requestUrl.toString(), 
+            requestMethod, parameters);
+      } catch (OAuthException e) {
+        throw new RuntimeException(e);
       }
     }
   }
@@ -290,7 +341,26 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     setAuthToken(new AuthSubToken(token, key));
   }
 
-  
+  /**
+   * Sets the OAuth credentials used to generate the authorization header.
+   * The following OAuth parameters are required:
+   * <ul>
+   * <li>oauth_consumer_key
+   * <li>oauth_token
+   * </ul>
+   * 
+   * @param parameters the OAuth parameters to use to generated the header
+   * @param signer the signing method to use for signing the header
+   * @throws OAuthException 
+   */
+  public void setOAuthCredentials(OAuthParameters parameters, 
+      OAuthSigner signer) throws OAuthException {
+    // validate input parameters
+    parameters.assertOAuthConsumerKeyExists();
+    parameters.assertOAuthTokenExists();
+    setAuthToken(new OAuthToken(parameters, signer));
+  }
+
   /**
    * Set the authentication token.
    * 
@@ -397,8 +467,8 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
         content.append("&");
       }
       content.append(
-          FastURLEncoder.encode(parameter.getKey(), "UTF-8")).append("=");
-      content.append(FastURLEncoder.encode(parameter.getValue(), "UTF-8"));
+          CharEscapers.uriEscaper().escape(parameter.getKey())).append("=");
+      content.append(CharEscapers.uriEscaper().escape(parameter.getValue()));
       first = false;
     }
 

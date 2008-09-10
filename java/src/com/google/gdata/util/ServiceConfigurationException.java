@@ -28,7 +28,7 @@ public class ServiceConfigurationException extends ServiceException {
     super(message);
   }
 
-  public ServiceConfigurationException(String message, 
+  public ServiceConfigurationException(String message,
       Throwable cause) {
     super(message, cause);
   }
@@ -36,4 +36,14 @@ public class ServiceConfigurationException extends ServiceException {
   public ServiceConfigurationException(Throwable cause) {
     super(cause);
   }
+
+  public ServiceConfigurationException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+  }
+
+  public ServiceConfigurationException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
+  }
+
 }

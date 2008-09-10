@@ -17,6 +17,7 @@
 package com.google.gdata.client.webmastertools;
 
 import com.google.gdata.client.GoogleService;
+import com.google.gdata.data.webmastertools.MessagesFeed;
 import com.google.gdata.data.webmastertools.SitemapsFeed;
 import com.google.gdata.data.webmastertools.SitesFeed;
 
@@ -77,6 +78,7 @@ public class WebmasterToolsService extends GoogleService {
     declareExtensions();
   }
 
+  @Override
   public String getServiceVersion() {
     return WEBMASTERTOOLS_SERVICE_VERSION + " " + super.getServiceVersion();
   }
@@ -85,8 +87,8 @@ public class WebmasterToolsService extends GoogleService {
    * Declare the extensions of the feeds for the Webmaster Tools service.
    */
   private void declareExtensions() {
+    new MessagesFeed().declareExtensions(extProfile);
     new SitemapsFeed().declareExtensions(extProfile);
     new SitesFeed().declareExtensions(extProfile);
   }
-
 }

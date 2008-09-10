@@ -41,7 +41,7 @@ public class PositionFeed extends BaseFeed<PositionFeed, PositionEntry> {
    *
    * @param sourceFeed source feed
    */
-  public PositionFeed(BaseFeed sourceFeed) {
+  public PositionFeed(BaseFeed<?, ?> sourceFeed) {
     super(PositionEntry.class, sourceFeed);
   }
 

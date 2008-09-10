@@ -17,10 +17,14 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.ExtensionVisitor;
+import com.google.gdata.data.ExtensionVisitor.StoppedException;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -45,10 +49,9 @@ public class RecurrenceException extends ExtensionPoint implements Extension {
   public void setSpecialized(boolean v) { isSpecialized = v; }
 
   /** Nested event entry. */
-  protected EntryLink entryLink;
-  public EntryLink getEntryLink() { return entryLink; }
-  public void setEntryLink(EntryLink v) { entryLink = v; }
-
+  protected EntryLink<?> entryLink;
+  public EntryLink<?> getEntryLink() { return entryLink; }
+  public void setEntryLink(EntryLink<?> v) { entryLink = v; }
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
@@ -60,7 +63,15 @@ public class RecurrenceException extends ExtensionPoint implements Extension {
     return desc;
   }
 
-
+  @Override
+  protected void visitChildren(ExtensionVisitor ev) throws StoppedException {
+    if (entryLink != null) {
+      visitChild(ev, entryLink);
+    }
+    super.visitChildren(ev);
+  }
+  
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -80,44 +91,42 @@ public class RecurrenceException extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.gNs, "recurrenceException");
   }
 
-
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
-                                             String namespace,
-                                             String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+      String namespace, String localName, Attributes attrs) {
     return new Handler(extProfile);
-  }
-
-  public void processAttribute(String namespace,
-                               String localName,
-                               String value)
-      throws ParseException {
-    if (namespace.equals("")) {
-      if (localName.equals("specialized")) {
-        if ("true".equals(value)) {
-          isSpecialized = true;
-        } else if ("false".equals(value)) {
-          isSpecialized = false;
-        } else {
-          throw
-            new ParseException("Invalid g:recurrenceException/@specialized");
-        }
-      }
-    }
   }
 
   /** <g:recurrenceException> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
-
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, RecurrenceException.class);
     }
 
+    @Override
+    public void processAttribute(String namespace,
+                                 String localName,
+                                 String value)
+        throws ParseException {
+      if (namespace.equals("")) {
+        if (localName.equals("specialized")) {
+          if ("true".equals(value) || "1".equals(value)) {
+            isSpecialized = true;
+          } else if ("false".equals(value) || "0".equals(value)) {
+            isSpecialized = false;
+          } else {
+            ParseException pe =
+                new ParseException(CoreErrorDomain.ERR.invalidBooleanAttribute);
+            pe.setInternalReason(
+                "Invalid boolean value for attribute: 'specialized'");
+            throw pe;
+          }
+        }
+      }
+    }
+
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
@@ -126,7 +135,7 @@ public class RecurrenceException extends ExtensionPoint implements Extension {
 
       if (namespace.equals(Namespaces.g)) {
         if (localName.equals("entryLink")) {
-          entryLink = new EntryLink();
+          entryLink = new EntryLink<BaseEntry<?>>();
           return entryLink.getHandler(extProfile, namespace, localName, attrs);
         }
       }

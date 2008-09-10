@@ -143,6 +143,7 @@ public class W3CPoint extends ExtensionPoint implements Point {
   /**
    * Generates the XML corresponding to this GeoPoint.
    */
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -158,9 +159,9 @@ public class W3CPoint extends ExtensionPoint implements Point {
    * @return a handler for processing a W3C geo:Point element.  All
    * points must have a latitude and longitude element.
    */
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
-      String namespace, String localName, Attributes attrs)
-      throws IOException {
+      String namespace, String localName, Attributes attrs) {
     return new Handler(extProfile);
   }
 
@@ -171,8 +172,7 @@ public class W3CPoint extends ExtensionPoint implements Point {
    */
   protected class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile extProfile)
-        throws IOException {
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, W3CPoint.class);
     }
 

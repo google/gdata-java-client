@@ -18,11 +18,14 @@ package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.Service;
+import com.google.gdata.util.EventSourceParser;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.ParseUtil;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.XmlParser;
 import com.google.gdata.util.XmlParser.ElementHandler;
@@ -38,8 +41,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * The BaseFeed class is an abstract base class that represents a
@@ -117,7 +120,7 @@ import java.util.Set;
  */
 public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     extends Source
-    implements Kind.Adaptable, Kind.Adaptor {
+    implements Kind.Adaptable, Kind.Adaptor, IFeed {
 
 
   /**
@@ -199,7 +202,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * of {@code BaseFeed} can use this constructor to create adaptor
    * instances of a feed that share state with the original.
    */
-  protected BaseFeed(Class<? extends E> entryClass, BaseFeed sourceFeed) {
+  protected BaseFeed(Class<? extends E> entryClass, BaseFeed<?, ?> sourceFeed) {
 
     super(sourceFeed);
     feedState = sourceFeed.feedState;
@@ -405,7 +408,8 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   @SuppressWarnings("unchecked")
   public F getSelf() throws IOException, ServiceException {
     if (feedState.service == null) {
-      throw new ServiceException("Feed is not associated with a GData service");
+      throw new ServiceException(
+         CoreErrorDomain.ERR.feedNotAssociated);
     }
     Link selfLink = getSelfLink();
     if (selfLink == null) {
@@ -448,7 +452,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       throws ServiceException, IOException {
     if (feedState.service == null) {
       throw new ServiceException(
-          "Entry is not associated with a GData service");
+          CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link postLink = getEntryPostLink();
     if (postLink == null) {
@@ -470,8 +474,13 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       this.visitChild(ev, link);
     }
     super.visitChildren(ev);
-  } 
+  }
 
+  @Override
+  public void generate(XmlWriter w, ExtensionProfile p) throws IOException {
+    generateAtom(w, p);
+  }
+  
   /**
    * Generates XML in the Atom format.
    *
@@ -484,8 +493,8 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * @throws  IOException
    */
   @Override
-  public void generateAtom(XmlWriter w,
-                           ExtensionProfile extProfile) throws IOException {
+  public void generateAtom(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException {
 
     generateFeedStart(extProfile, w, null);
 
@@ -713,67 +722,18 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     return readFeed(source, null, null);
   }
 
-  // This method provides the base implementation of feed reading using either
-  // static or dynamic typing.  If feedClass is non-null, the method is
-  // guaranteed to return an instance of this type, otherwise adaptation will
-  // be used to determine the type.  The source object may be either an
-  // InputStream, Reader, or XmlParser.
+  /**
+   * This method provides the base implementation of feed reading using either
+   * static or dynamic typing.  If feedClass is non-null, the method is
+   * guaranteed to return an instance of this type, otherwise adaptation will
+   * be used to determine the type.  The source object may be either an
+   * InputStream, Reader, or XmlParser.
+   */
   public static <F extends BaseFeed> F readFeed(ParseSource source,
-                                                Class <F> feedClass,
-                                                ExtensionProfile extProfile)
+      Class <F> feedClass, ExtensionProfile extProfile)
       throws IOException, ParseException, ServiceException {
-
-    if (source == null) {
-      throw new NullPointerException("Null source");
-    }
-
-    // Determine the parse feed type
-    boolean isAdapting = (feedClass == null);
-    if (isAdapting) {
-      feedClass = (Class<F>) Feed.class;
-    }
-
-    // Create a new feed instance.
-    F feed;
-    try {
-      feed = feedClass.newInstance();
-    } catch (IllegalAccessException iae) {
-      throw new ServiceException("Unable to create feed", iae);
-    } catch (InstantiationException ie) {
-      throw new ServiceException("Unable to create feed", ie);
-    }
-
-    // Initialize the extension profile (if not provided)
-    if (extProfile == null) {
-      extProfile = new ExtensionProfile();
-      feed.declareExtensions(extProfile);
-      if (isAdapting) {
-        extProfile.setAutoExtending(true);
-      }
-    }
-
-    // Parse the content
-    if (source.getReader() != null) {
-      feed.parseAtom(extProfile, source.getReader());
-    } else if (source.getInputStream() != null) {
-      feed.parseAtom(extProfile, source.getInputStream());
-    } else if (source.getParser() != null) {
-      feed.parseAtom(extProfile, source.getParser());
-    } else {
-      throw new IllegalStateException("Invalid source: " + source.getClass());
-    }
-
-    // Adapt if requested and the feed contained a kind tag
-    if (isAdapting) {
-      F adaptedFeed = (F) feed.getAdaptedFeed();
-      if (adaptedFeed != null) {
-        feed = adaptedFeed;
-      }
-    }
-
-    return feed;
+    return ParseUtil.readFeed(source, feedClass, extProfile);
   }
-
 
   /**
    * Parses XML in the Atom format.
@@ -803,6 +763,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    *            XML Reader.  The caller is responsible for ensuring that
    *            the character encoding is correct.
    */
+  @Override
   public void parseAtom(ExtensionProfile extProfile,
                         Reader reader) throws IOException,
                                               ParseException {
@@ -811,31 +772,34 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     new XmlParser().parse(reader, handler, Namespaces.atom, "feed");
   }
 
-
   /**
    * Parses XML in the Atom format from a parser-defined content source.
    *
    * @param   extProfile
    *            Extension profile.
    *            
-   * @param   parser
-   *            XML parser.
+   * @param   source
+   *            XML source.
    */
-  public void parseAtom(ExtensionProfile extProfile,
-                        XmlParser parser) throws IOException,
-                                                        ParseException {
+  public void parseAtom(ExtensionProfile extProfile, XmlEventSource source)
+      throws IOException, ParseException {
 
     FeedHandler handler = new FeedHandler(extProfile);
-    parser.parse(handler, Namespaces.atom, "feed");
+    new EventSourceParser(handler, Namespaces.atom, "feed").parse(source);
   }
 
-
+  @Override
+  public ElementHandler getHandler(ExtensionProfile p, String namespace,
+      String localName, Attributes attrs) throws ParseException {
+    return new FeedHandler(p);
+  }
+  
   /** {@code <atom:feed>} parser. */
   public class FeedHandler extends SourceHandler {
 
     private Namespace openSearchNs = Namespaces.getOpenSearchNs();
 
-    public FeedHandler(ExtensionProfile extProfile) throws IOException {
+    public FeedHandler(ExtensionProfile extProfile) {
       super(extProfile, BaseFeed.this.getClass());
     }
 
@@ -871,7 +835,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
           E entry = createEntry();
           entries.add(entry);
-          return (ElementHandler) ((BaseEntry) entry).new AtomHandler(
+          return ((BaseEntry<?>) entry).new AtomHandler(
               extProfile);
         }
 
@@ -904,17 +868,20 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       public void processEndElement() throws ParseException {
 
         if (feedState.totalResults != Query.UNDEFINED) {
-          throw new ParseException("Duplicate totalResults.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateTotalResults);
         }
 
         if (value == null) {
-          throw new ParseException("logo must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.logoValueRequired);
         }
 
         try {
           feedState.totalResults = Integer.valueOf(value).intValue();
         } catch (NumberFormatException e) {
-          throw new ParseException("totalResults is not an integer");
+          throw new ParseException(
+              CoreErrorDomain.ERR.totalResultsNotInteger);
         }
       }
     }
@@ -927,17 +894,20 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       public void processEndElement() throws ParseException {
 
         if (feedState.startIndex != Query.UNDEFINED) {
-          throw new ParseException("Duplicate startIndex.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateStartIndex);
         }
 
         if (value == null) {
-          throw new ParseException("logo must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.logoValueRequired);
         }
 
         try {
           feedState.startIndex = Integer.valueOf(value).intValue();
         } catch (NumberFormatException e) {
-          throw new ParseException("startIndex must be an integer");
+          throw new ParseException(
+              CoreErrorDomain.ERR.startIndexNotInteger);
         }
       }
     }
@@ -950,23 +920,26 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       public void processEndElement() throws ParseException {
 
         if (feedState.itemsPerPage != Query.UNDEFINED) {
-          throw new ParseException("Duplicate itemsPerPage.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateItemsPerPage);
         }
 
         if (value == null) {
-          throw new ParseException("logo must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.logoValueRequired);
         }
 
         try {
           feedState.itemsPerPage = Integer.valueOf(value).intValue();
         } catch (NumberFormatException e) {
-          throw new ParseException("itemsPerPage is not an integer");
+          throw new ParseException(
+              CoreErrorDomain.ERR.itemsPerPageNotInteger);
         }
       }
     }
 
     @Override
-    public void processEndElement() throws ParseException {
+    public void processEndElement() {
 
       // Set the canPost flag based upon the presence of an entry post
       // link relation in the parsed feed.
@@ -992,7 +965,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       // then use it.
       if (adaptedFeed == null ||
           adaptedFeed.getClass().isAssignableFrom(adaptor.getClass())) {
-        adaptedFeed = (BaseFeed) adaptor;
+        adaptedFeed = (BaseFeed<?, ?>) adaptor;
       }
     }
 
@@ -1008,7 +981,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
         sourceEntries.addAll(entries);
       }
       adaptedFeed.getEntries().clear();
-      for (BaseEntry entry : sourceEntries) {
+      for (E entry : sourceEntries) {
         adaptedFeed.getEntries().add(entry.getAdaptedEntry());
       }
     }

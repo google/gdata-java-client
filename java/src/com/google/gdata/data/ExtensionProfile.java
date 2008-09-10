@@ -19,9 +19,9 @@ package com.google.gdata.data;
 import com.google.gdata.util.common.base.Pair;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
-import com.google.gdata.util.ServiceConfigurationException;
 import com.google.gdata.util.XmlParser;
 
 import org.xml.sax.Attributes;
@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.TreeSet;
-
 
 /**
  * Specifies a complete extension profile for an extended GData schema.
@@ -76,7 +75,7 @@ public class ExtensionProfile {
   // where we know the cast is safe.
   @SuppressWarnings("unchecked")
   private Class<? extends ExtensionPoint> extensionPointClass(Class clazz) {
-    return (Class<? extends ExtensionPoint>)clazz;
+    return clazz;
   }
 
   /**
@@ -253,7 +252,7 @@ public class ExtensionProfile {
    * Retrieves an extension manifest for a specific class (or one of
    * its superclasses) or {@code null} if not specified.
    */
-  public ExtensionManifest getManifest(Class extendedType) {
+  public ExtensionManifest getManifest(Class<?> extendedType) {
     ExtensionManifest manifest = null;
     while (extendedType != null) {
       manifest = profile.get(extendedType);
@@ -270,7 +269,7 @@ public class ExtensionProfile {
    * that unlike {@link #getManifest(Class)}, it does not check the super
    * classes.
    */
-  public boolean isDeclared(Class extendedType) {
+  public boolean isDeclared(Class<?> extendedType) {
     return profile.containsKey(extendedType);
   }
 
@@ -287,8 +286,8 @@ public class ExtensionProfile {
 
 
   /** Internal storage for the profile. */
-  private final Map<Class, ExtensionManifest> profile =
-    new HashMap<Class, ExtensionManifest>();
+  private final Map<Class<?>, ExtensionManifest> profile =
+    new HashMap<Class<?>, ExtensionManifest>();
 
 
   /** Additional namespaces. */
@@ -381,7 +380,7 @@ public class ExtensionProfile {
     // Look for any existing profile types that extend the newly added
     // one and set up a relationship mapping so future declarations on this
     // manifest will be propagated
-    for(Map.Entry<Class, ExtensionManifest> profileMapping :
+    for(Map.Entry<Class<?>, ExtensionManifest> profileMapping :
         profile.entrySet()) {
 
       if (extendedType.isAssignableFrom(profileMapping.getKey())) {
@@ -425,7 +424,7 @@ public class ExtensionProfile {
               new ArrayList<XmlWriter.Namespace>();
 
     public Handler(ExtensionProfile configProfile, ClassLoader configLoader,
-                   Attributes attrs) throws IOException, ParseException {
+                   Attributes attrs) throws ParseException {
       this.configProfile = configProfile;
       this.configLoader = configLoader;
 
@@ -438,26 +437,27 @@ public class ExtensionProfile {
                      arbitraryXmlAttr.equals("0")) {
             allowsArbitraryXml = false;
           } else {
-            throw new ParseException("Invalid value for arbitaryXml: " +
+            ParseException pe = new ParseException(
+                CoreErrorDomain.ERR.invalidArbitraryXml);
+            pe.setInternalReason("Invalid value for arbitaryXml: " +
                                      arbitraryXmlAttr);
+            throw pe;
           }
         }
       }
     }
 
-    public void validate() throws ServiceConfigurationException {
+    public void validate() {
     }
 
 
-    public void processEndElement() throws ParseException {
-      try {
-        validate();
-      } catch (ServiceConfigurationException e) {
-        throw new ParseException(e);
-      }
+    @Override
+    public void processEndElement() {
+      validate();
     }
 
 
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
@@ -469,13 +469,19 @@ public class ExtensionProfile {
 
           String alias = attrs.getValue("", "alias");
           if (alias == null) {
-            throw new ParseException(
+            ParseException pe = new ParseException(
+                CoreErrorDomain.ERR.missingAttribute);
+            pe.setInternalReason(
                       "NamespaceDescription alias attribute is missing");
+            throw pe;
           }
           String uri = attrs.getValue("", "uri");
           if (uri == null) {
-            throw new ParseException(
+            ParseException pe = new ParseException(
+                CoreErrorDomain.ERR.missingAttribute);
+            pe.setInternalReason(
                       "NamespaceDescription uri attribute is missing");
+            throw pe;
           }
 
           XmlWriter.Namespace declaredNs = new XmlWriter.Namespace(alias, uri);
@@ -512,7 +518,7 @@ public class ExtensionProfile {
                                  ClassLoader configLoader,
                                  List<XmlWriter.Namespace> namespaces,
                                  Attributes attrs)
-        throws ParseException, IOException {
+        throws ParseException {
 
       this.configProfile = configProfile;
       this.configLoader = configLoader;
@@ -520,19 +526,23 @@ public class ExtensionProfile {
 
       String extendedClassName = attrs.getValue("", "extendedClass");
       if (extendedClassName == null) {
-        throw new ParseException(
-                    "ExtensionPoint extendedClass attribute is missing");
+        ParseException pe = new ParseException(
+            CoreErrorDomain.ERR.missingAttribute);
+        pe.setInternalReason(
+            "ExtensionPoint extendedClass attribute is missing");
+        throw pe;
       }
 
-      Class loadedClass;
+      Class<?> loadedClass;
       try {
         loadedClass = configLoader.loadClass(extendedClassName);
       } catch (ClassNotFoundException e) {
-        throw new ParseException("Unable to load ExtensionPoint class", e);
+        throw new ParseException(
+            CoreErrorDomain.ERR.cantLoadExtensionPoint, e);
       }
       if (!ExtensionPoint.class.isAssignableFrom(loadedClass)) {
         throw new ParseException(
-                    "Extended classes must extend ExtensionPoint");
+            CoreErrorDomain.ERR.mustExtendExtensionPoint);
       }
       extensionPoint = extensionPointClass(loadedClass);
 
@@ -544,14 +554,17 @@ public class ExtensionProfile {
                    arbitraryXmlAttr.equals("0")) {
           arbitraryXml = false;
         } else {
-          throw new ParseException("Invalid value for arbitaryXml: " +
-                                   arbitraryXml);
+          ParseException pe = new ParseException(
+              CoreErrorDomain.ERR.invalidArbitraryXml);
+          pe.setInternalReason("Invalid value for arbitaryXml: " +
+                                   arbitraryXmlAttr);
+          throw pe;
         }
       }
     }
 
-
-    public void processEndElement() throws ParseException {
+    @Override
+    public void processEndElement() {
 
       if (arbitraryXml) {
         declareArbitraryXmlExtension(extensionPoint);
@@ -562,7 +575,7 @@ public class ExtensionProfile {
       }
     }
 
-
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
@@ -637,20 +650,23 @@ public class ExtensionProfile {
     //
     // Get a list of the extended classes sorted by class name
     //
-    TreeSet<Class> extensionSet = new TreeSet<Class>(
-        new Comparator<Class>() {
-          public int compare(Class c1, Class c2) {
+    TreeSet<Class<?>> extensionSet = new TreeSet<Class<?>>(
+        new Comparator<Class<?>>() {
+          public int compare(Class<?> c1, Class<?> c2) {
             return c1.getName().compareTo(c2.getName());
           }
-          public boolean equals(Comparator c) {
+          
+          @Override
+          public boolean equals(Object c) {
             return this.getClass().equals(c.getClass());
           }
         });
-    for (Class extensionPoint : profile.keySet()) {
+
+    for (Class<?> extensionPoint : profile.keySet()) {
       extensionSet.add(extensionPoint);
     }
 
-    for (Class extensionPoint : extensionSet) {
+    for (Class<?> extensionPoint : extensionSet) {
 
       ExtensionManifest  manifest = profile.get(extensionPoint);
 

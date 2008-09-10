@@ -16,17 +16,17 @@
 
 package com.google.gdata.data.media;
 
-import com.google.gdata.data.BaseEntry;
-
-import javax.activation.DataHandler;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
+import com.google.gdata.data.IEntry;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.activation.DataHandler;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.MimeBodyPart;
 
 /**
  * The MediaBodyPart class extends the base MimeBodyPart implementation
@@ -89,7 +89,7 @@ public class MediaBodyPart extends MimeBodyPart {
     initMediaDataHandler();
   }
 
-  public MediaBodyPart(BaseEntry entry) throws MessagingException {
+  public MediaBodyPart(IEntry entry) throws MessagingException {
     super();
     setContent(entry, "application/atom+xml");
     setHeader("Content-Type", "application/atom+xml");

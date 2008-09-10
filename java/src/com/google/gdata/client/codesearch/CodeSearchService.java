@@ -20,26 +20,28 @@ import com.google.gdata.client.GoogleService;
 import com.google.gdata.data.codesearch.CodeSearchFeed;
 
 /**
-* CodeSearchService Extension for Google Data
-*
-* 
-*/
-
+ * Extends the basic {@link GoogleService} abstraction to define a service that
+ * is preconfigured for access to the Google Code Search data API.
+ *
+ * 
+ */
 public class CodeSearchService extends GoogleService {
+
   /**
-   * The abbreviated name of the Code Search service recognized by Google.
-   * The service name is used while requesting an authentication token.
+   * The abbreviated name of Google Code Search recognized by Google.  The
+   * service name is used when requesting an authentication token.
    */
   public static final String CODESEARCH_SERVICE = "codesearch";
 
-  public static final String CODESEARCH_SERVICE_VERSION =
-  "CodeSearch-Java/" +
-  CodeSearchService.class.getPackage().getImplementationVersion();
-
+  /**
+   * The version ID of the service.
+   */
+  public static final String CODESEARCH_SERVICE_VERSION = "CodeSearch-Java/" +
+      CodeSearchService.class.getPackage().getImplementationVersion();
 
   /**
-   * Constructs a CodeSearchService instance connecting to the CodeSearc service
-   * for an application with the name {@code applicationName}.
+   * Constructs an instance connecting to the Google Code Search service for an
+   * application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -47,15 +49,42 @@ public class CodeSearchService extends GoogleService {
    *                        The name will be used by the Google servers to
    *                        monitor the source of authentication.
    */
-
   public CodeSearchService(String applicationName) {
     super(CODESEARCH_SERVICE, applicationName, "http", "www.google.com");
-    // Configure the extension profile to expect CodeSearchFeed formatted
-    // entries.
-    new CodeSearchFeed().declareExtensions(getExtensionProfile());
+    declareExtensions();
   }
 
+  /**
+   * Constructs an instance connecting to the Google Code Search service with
+   * name {@code serviceName} for an application with the name {@code
+   * applicationName}.  The service will authenticate at the provided {@code
+   * domainName}.
+   *
+   * @param applicationName the name of the client application accessing the
+   *                        service. Application names should preferably have
+   *                        the format [company-id]-[app-name]-[app-version].
+   *                        The name will be used by the Google servers to
+   *                        monitor the source of authentication.
+   * @param protocol        name of protocol to use for authentication
+   *                        ("http"/"https")
+   * @param domainName      the name of the domain hosting the login handler
+   */
+  public CodeSearchService(String applicationName, String protocol,
+      String domainName) {
+    super(CODESEARCH_SERVICE, applicationName, protocol, domainName);
+    declareExtensions();
+  }
+
+  @Override
   public String getServiceVersion() {
     return CODESEARCH_SERVICE_VERSION + " " + super.getServiceVersion();
   }
+
+  /**
+   * Declare the extensions of the feeds for the Google Code Search service.
+   */
+  private void declareExtensions() {
+    new CodeSearchFeed().declareExtensions(extProfile);
+  }
+
 }

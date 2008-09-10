@@ -24,10 +24,8 @@ import com.google.gdata.util.Namespaces;
 
 import java.util.List;
 
-
 /**
  * Extension class for manipulating entries of the Event kind.
- *
  */
 @Kind.Term(EventEntry.EVENT_KIND)
 public class EventEntry extends BaseEventEntry<EventEntry> {
@@ -56,7 +54,7 @@ public class EventEntry extends BaseEventEntry<EventEntry> {
    * Constructs a new EventEntry instance by doing a shallow copy of data
    * from an existing BaseEntry instance.
    */
-  public EventEntry(BaseEntry sourceEntry) {
+  public EventEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 
@@ -64,6 +62,7 @@ public class EventEntry extends BaseEventEntry<EventEntry> {
    * Initializes an ExtensionProfile based upon the extensions expected
    * by an EventEntry.
    */
+  @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
     extProfile.declare(EventEntry.class, Who.getDefaultDescription());
@@ -82,5 +81,4 @@ public class EventEntry extends BaseEventEntry<EventEntry> {
   public void addParticipant(Who participant) {
     getParticipants().add(participant);
   }
-
 }

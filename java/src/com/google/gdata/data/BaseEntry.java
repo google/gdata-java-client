@@ -19,13 +19,17 @@ package com.google.gdata.data;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.Service;
+import com.google.gdata.util.EventSourceParser;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.ParseUtil;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.XmlParser;
+import com.google.gdata.util.XmlParser.ElementHandler;
 
 import org.xml.sax.Attributes;
 
@@ -36,12 +40,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Iterator;
 
 
 /**
@@ -106,7 +110,7 @@ import java.util.Iterator;
  */
 public abstract class BaseEntry<E extends BaseEntry>
     extends ExtensionPoint
-    implements Kind.Adaptable, Kind.Adaptor {
+    implements Kind.Adaptable, Kind.Adaptor, IEntry {
 
 
   /**
@@ -227,7 +231,7 @@ public abstract class BaseEntry<E extends BaseEntry>
    * of {@code BaseEntry} can use this constructor to create adaptor
    * instances of an entry that share state with the original.
    */
-  protected BaseEntry(BaseEntry sourceEntry) {
+  protected BaseEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     state = sourceEntry.state;
   }
@@ -334,6 +338,16 @@ public abstract class BaseEntry<E extends BaseEntry>
 
   public List<Link> getLinks() { return state.links; }
 
+  public void addLink(Link link) {
+    state.links.add(link);
+  }
+  
+  public Link addLink(String rel, String type, String href) {
+    Link link = new Link(rel, type, href);
+    addLink(link);
+    return link;
+  }
+  
   public List<Person> getAuthors() { return state.authors; }
 
   public List<Person> getContributors() { return state.contributors; }
@@ -349,7 +363,7 @@ public abstract class BaseEntry<E extends BaseEntry>
    */
   public void setDraft(Boolean v) {
     if (state.pubControl == null) {
-      if (v != Boolean.TRUE) {
+      if (!Boolean.TRUE.equals(v)) {
         // No need to create a PubControl entry for that
         return;
       }
@@ -503,6 +517,7 @@ public abstract class BaseEntry<E extends BaseEntry>
 
 
   /** Retrieves the media resource edit link. */
+  @SuppressWarnings("deprecation")
   public Link getMediaEditLink() {
     Link mediaLink = getLink(Link.Rel.MEDIA_EDIT, null);
     if (mediaLink == null) {
@@ -530,7 +545,7 @@ public abstract class BaseEntry<E extends BaseEntry>
   public E getSelf() throws IOException, ServiceException {
     if (state.service == null) {
       throw new ServiceException(
-          "Entry is not associated with a GData service");
+          CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link selfLink = getSelfLink();
     if (selfLink == null) {
@@ -573,7 +588,7 @@ public abstract class BaseEntry<E extends BaseEntry>
 
     if (state.service == null) {
       throw new ServiceException(
-          "Entry is not associated with a GData service");
+          CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link editLink = getEditLink();
     if (editLink == null) {
@@ -602,7 +617,7 @@ public abstract class BaseEntry<E extends BaseEntry>
 
     if (state.service == null) {
       throw new ServiceException(
-          "Entry is not associated with a GData service");
+          CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link editLink = getEditLink();
     if (editLink == null) {
@@ -615,17 +630,66 @@ public abstract class BaseEntry<E extends BaseEntry>
         GDataProtocol.isWeakEtag(state.etag) ? null : state.etag);
   }
 
+  /**
+   * The OutOfLineReference class adapts an {@link OutOfLineContent} instance
+   * to implement the {@link Reference} interface so nested content references
+   * will be post-processed.
+   */
+  private class OutOfLineReference implements Reference, Extension {
+    
+    // This ugliness is necessary because there's no unifying base abstraction
+    // for all data elements and the current visitor model only acts upon
+    // Extension types (which Content is not). This is fixed in the new data 
+    // model, at which time we can just have OolContent be visited and wrap it 
+    // in something that implement the Reference interface inside of 
+    // ReferenceVisitor.visit().
+    private OutOfLineContent oolContent;
+    
+    private OutOfLineReference(OutOfLineContent oolContent) {
+      this.oolContent = oolContent;
+    }
+
+    public String getHref() {
+      return oolContent.getUri();
+    }
+
+    public void setHref(String href) {
+      oolContent.setUri(href);
+    }
+
+    public void generate(XmlWriter w, ExtensionProfile extProfile) {
+      throw new IllegalStateException("Should not be generated");
+    }
+
+    public ElementHandler getHandler(ExtensionProfile extProfile,
+        String namespace, String localName, Attributes attrs) {
+      throw new IllegalStateException("Should not be parsed");
+    } 
+  }
+  
   @Override
   protected void visitChildren(ExtensionVisitor ev)
       throws ExtensionVisitor.StoppedException {
+    
+    // Add out of line content to the visitor pattern by wrapping in an
+    // adaptor.  This is necessary so the src reference can be processed.
+    if (state.content instanceof OutOfLineContent) {
+      this.visitChild(ev, 
+          new OutOfLineReference((OutOfLineContent) state.content));
+    }
     
     // Add nested links to the visitor pattern
     for (Link link : getLinks()) {
       this.visitChild(ev, link);
     }
     super.visitChildren(ev);
-  } 
+  }
 
+  @Override
+  public void generate(XmlWriter w, ExtensionProfile p) throws IOException {
+    generateAtom(w, p);
+  }
+  
   /**
    * Generates XML in the Atom format.
    *
@@ -637,8 +701,8 @@ public abstract class BaseEntry<E extends BaseEntry>
    *
    * @throws  IOException
    */
-  public void generateAtom(XmlWriter w,
-                           ExtensionProfile extProfile) throws IOException {
+  public void generateAtom(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException {
 
     Set<XmlWriter.Namespace> nsDecls =
       new LinkedHashSet<XmlWriter.Namespace>(namespaceDeclsAtom);
@@ -652,6 +716,7 @@ public abstract class BaseEntry<E extends BaseEntry>
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", state.etag));
     }
+    
     generateStartElement(w, Namespaces.atomNs, "entry", attrs, nsDecls);
 
     if (state.id != null) {
@@ -696,7 +761,7 @@ public abstract class BaseEntry<E extends BaseEntry>
     }
 
     if (state.content != null) {
-      state.content.generateAtom(w);
+      state.content.generateAtom(w, extProfile);
     }
 
     w.startRepeatingElement();
@@ -797,7 +862,7 @@ public abstract class BaseEntry<E extends BaseEntry>
     }
 
     if (state.content != null) {
-      state.content.generateRss(w);
+      state.content.generateRss(w, extProfile);
     }
 
     w.startRepeatingElement();
@@ -843,65 +908,18 @@ public abstract class BaseEntry<E extends BaseEntry>
    * based upon any {@link Kind} category tag found in the input content. If
    * no kind tag is found an {@link Entry} instance will be returned.
    */
-  public static BaseEntry readEntry(ParseSource source)
+  public static BaseEntry<?> readEntry(ParseSource source)
       throws IOException, ParseException, ServiceException {
     return readEntry(source, null, null);
   }
 
+  /**
+   * Reads an entry of type {@code T} using the given extension profile.
+   */
   public static <T extends BaseEntry> T readEntry(ParseSource source,
-                                                  Class <T> entryClass,
-                                                  ExtensionProfile extProfile)
+      Class <T> entryClass, ExtensionProfile extProfile)
       throws IOException, ParseException, ServiceException {
-
-    if (source == null) {
-      throw new NullPointerException("Null source");
-    }
-
-    // Determine the parse entry type
-    boolean isAdapting = (entryClass == null);
-    if (isAdapting) {
-      entryClass = (Class<T>) Entry.class;
-    }
-
-    // Create a new entry instance.
-    T entry;
-    try {
-      entry = entryClass.newInstance();
-    } catch (IllegalAccessException iae) {
-      throw new ServiceException("Unable to create entry", iae);
-    } catch (InstantiationException ie) {
-      throw new ServiceException("Unable to create entry", ie);
-    }
-
-    // Initialize the extension profile (if not provided)
-    if (extProfile == null) {
-      extProfile = new ExtensionProfile();
-      entry.declareExtensions(extProfile);
-      if (isAdapting) {
-        extProfile.setAutoExtending(true);
-      }
-    }
-
-    // Parse the content
-    if (source.getReader() != null) {
-      entry.parseAtom(extProfile, source.getReader());
-    } else if (source.getInputStream() != null) {
-      entry.parseAtom(extProfile, source.getInputStream());
-    } else if (source.getParser() != null) {
-      entry.parseAtom(extProfile, source.getParser());
-    } else {
-      throw new IllegalStateException("Unexpected source: " + source);
-    }
-
-    // Adapt if requested and the entry contained a kind tag
-    if (isAdapting) {
-      BaseEntry adaptedEntry = entry.getAdaptedEntry();
-      if (adaptedEntry != null) {
-        entry = (T) adaptedEntry;
-      }
-    }
-
-    return entry;
+    return ParseUtil.readEntry(source, entryClass, extProfile);
   }
 
   /**
@@ -946,28 +964,34 @@ public abstract class BaseEntry<E extends BaseEntry>
    *
    * @param   extProfile
    *            Extension profile.
-   * @param   parser
-   *            XML parser.
+   * @param   eventSource
+   *            XML event source.
    */
   public void parseAtom(ExtensionProfile extProfile,
-                        XmlParser parser) throws IOException,
-                                              ParseException {
+      XmlEventSource eventSource) throws IOException, ParseException {
 
     AtomHandler handler = new AtomHandler(extProfile);
-    parser.parse(handler, Namespaces.atom, "entry");
+    new EventSourceParser(handler, Namespaces.atom, "entry")
+        .parse(eventSource);
   }
 
   /** Returns information about the content element processing. */
-  protected Content.ChildHandlerInfo getContentHandlerInfo(Attributes attrs)
+  protected Content.ChildHandlerInfo getContentHandlerInfo(
+      ExtensionProfile extProfile, Attributes attrs)
       throws ParseException, IOException {
-    return Content.getChildHandler(attrs);
+    return Content.getChildHandler(extProfile, attrs);
   }
 
+  @Override
+  public ElementHandler getHandler(ExtensionProfile p, String namespace,
+      String localName, Attributes attrs) {
+    return new AtomHandler(p);
+  }
+  
   /** {@code <atom:entry>} parser. */
   public class AtomHandler extends ExtensionPoint.ExtensionHandler {
 
-
-    public AtomHandler(ExtensionProfile extProfile) throws IOException {
+    public AtomHandler(ExtensionProfile extProfile) {
       super(extProfile, BaseEntry.this.getClass());
     }
 
@@ -983,6 +1007,7 @@ public abstract class BaseEntry<E extends BaseEntry>
       super.processAttribute(namespace, localName, value);
     }
 
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
@@ -1009,7 +1034,8 @@ public abstract class BaseEntry<E extends BaseEntry>
             TextConstruct.getChildHandler(attrs);
 
           if (state.title != null) {
-            throw new ParseException("Duplicate title.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateTitle);
           }
 
           state.title = chi.textConstruct;
@@ -1021,7 +1047,8 @@ public abstract class BaseEntry<E extends BaseEntry>
             TextConstruct.getChildHandler(attrs);
 
           if (state.summary != null) {
-            throw new ParseException("Duplicate summary.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateSummary);
           }
 
           state.summary = chi.textConstruct;
@@ -1033,7 +1060,8 @@ public abstract class BaseEntry<E extends BaseEntry>
             TextConstruct.getChildHandler(attrs);
 
           if (state.rights != null) {
-            throw new ParseException("Duplicate rights.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateRights);
           }
 
           state.rights = chi.textConstruct;
@@ -1042,10 +1070,12 @@ public abstract class BaseEntry<E extends BaseEntry>
         } else if (localName.equals("content")) {
 
           if (state.content != null) {
-            throw new ParseException("Duplicate content.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateContent);
           }
 
-          Content.ChildHandlerInfo chi = getContentHandlerInfo(attrs);
+          Content.ChildHandlerInfo chi =
+              getContentHandlerInfo(extProfile, attrs);
 
           state.content = chi.content;
           return chi.handler;
@@ -1107,14 +1137,17 @@ public abstract class BaseEntry<E extends BaseEntry>
     /** {@code <atom:id>} parser. */
     class IdHandler extends XmlParser.ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (state.id != null) {
-          throw new ParseException("Duplicate entry ID.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateEntryId);
         }
 
         if (value == null) {
-          throw new ParseException("ID must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.idValueRequired);
         }
 
         state.id = value;
@@ -1124,6 +1157,8 @@ public abstract class BaseEntry<E extends BaseEntry>
 
     /** {@code <atom:published>} parser. */
     class PublishedHandler extends Rfc3339Handler {
+
+      @Override
       public void processEndElement() throws ParseException {
         super.processEndElement();
         state.published = getDateTime();
@@ -1133,6 +1168,8 @@ public abstract class BaseEntry<E extends BaseEntry>
 
     /** {@code <atom:updated>} parser. */
     class UpdatedHandler extends Rfc3339Handler {
+
+      @Override
       public void processEndElement() throws ParseException {
         super.processEndElement();
         state.updated = getDateTime();
@@ -1141,6 +1178,8 @@ public abstract class BaseEntry<E extends BaseEntry>
 
     /** {@code <app:edited>} parser. */
     class EditedHandler extends Rfc3339Handler {
+
+      @Override
       public void processEndElement() throws ParseException {
         super.processEndElement();
         state.edited = getDateTime();
@@ -1152,10 +1191,12 @@ public abstract class BaseEntry<E extends BaseEntry>
    * Locates and returns the most specific {@link Kind.Adaptor} BaseEntry
    * subtype for this entry.  If none can be found for the current class,
    * {@code null} will be returned.
+   * 
+   * @throws Kind.AdaptorException for subclasses to throw.
    */
   public BaseEntry<?> getAdaptedEntry() throws Kind.AdaptorException {
 
-    BaseEntry adaptedEntry = null;
+    BaseEntry<?> adaptedEntry = null;
 
     // Find the BaseEntry adaptor instance that is most specific.
     for (Kind.Adaptor adaptor : getAdaptors()) {
@@ -1166,7 +1207,7 @@ public abstract class BaseEntry<E extends BaseEntry>
       // then use it.
       if (adaptedEntry == null ||
           adaptedEntry.getClass().isAssignableFrom(adaptor.getClass())) {
-        adaptedEntry = (BaseEntry) adaptor;
+        adaptedEntry = (BaseEntry<?>) adaptor;
       }
     }
 

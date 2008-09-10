@@ -17,12 +17,15 @@
 package com.google.gdata.client.health;
 
 import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.Service;
 import com.google.gdata.data.health.ProfileFeed;
 import com.google.gdata.data.health.RegisterFeed;
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 /**
- * The HealthService class extends the basic {@link GoogleService} abstraction
- * to define a service that is preconfigured for access to the Health data API.
+ * Extends the basic {@link GoogleService} abstraction to define a service that
+ * is preconfigured for access to the Health data API.
  *
  * 
  */
@@ -41,8 +44,29 @@ public class HealthService extends GoogleService {
       HealthService.class.getPackage().getImplementationVersion();
 
   /**
-   * Constructs a HealthService instance connecting to the Health service for an
-   * application with the name {@code applicationName}.
+   * GData versions supported by Health Service.
+   */
+  public static final class Versions {
+
+    /** Initial version of the API, based on GData version 1. */
+    public static final Version V1 = new Version(HealthService.class, "1.0",
+        Service.Versions.V1);
+
+    /** Newer version of the API, based on GData version 2. */
+    public static final Version V2 = new Version(HealthService.class, "2.0",
+        Service.Versions.V2);
+
+  }
+
+  /**
+   * Default GData version used by the Health service.
+   */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(HealthService.class, Versions.V1);
+
+  /**
+   * Constructs an instance connecting to the Health service for an application
+   * with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -51,14 +75,14 @@ public class HealthService extends GoogleService {
    *                        monitor the source of authentication.
    */
   public HealthService(String applicationName) {
-    this(applicationName, "https", "www.google.com");
+    super(HEALTH_SERVICE, applicationName);
+    declareExtensions();
   }
 
   /**
-   * Constructs a GoogleService instance connecting to the Health service with
-   * name {@code serviceName} for an application with the name {@code
-   * applicationName}.  The service will authenticate at the provided {@code
-   * domainName}.
+   * Constructs an instance connecting to the Health service with name {@code
+   * serviceName} for an application with the name {@code applicationName}.  The
+   * service will authenticate at the provided {@code domainName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -72,14 +96,27 @@ public class HealthService extends GoogleService {
   public HealthService(String applicationName, String protocol,
       String domainName) {
     super(HEALTH_SERVICE, applicationName, protocol, domainName);
-
-    // Declare the extensions of the feeds
-    new ProfileFeed().declareExtensions(getExtensionProfile());
-    new RegisterFeed().declareExtensions(getExtensionProfile());
+    declareExtensions();
   }
 
+  @Override
   public String getServiceVersion() {
     return HEALTH_SERVICE_VERSION + " " + super.getServiceVersion();
+  }
+
+  /**
+   * Returns the current GData version used by the Health service.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(HealthService.class);
+  }
+
+  /**
+   * Declare the extensions of the feeds for the Health service.
+   */
+  private void declareExtensions() {
+    new ProfileFeed().declareExtensions(extProfile);
+    new RegisterFeed().declareExtensions(extProfile);
   }
 
 }

@@ -41,6 +41,10 @@ import java.util.List;
  *     <wt:indexed>true</wt:indexed>
  *     <wt:verified>true</wt:verified>
  *     <wt:last-crawled>2007-1-1T18:30:00.000Z</wt:last-crawled>
+ *     <wt:geolocation>US</wt:geolocation>
+ *     <wt:crawl-rate>normal</wt:crawl-rate>
+ *     <wt:preferred-domain>preferwww</wt:preferred-domain>
+ *     <wt:enhanced-image-search>true</wt:enhanced-image-search>
  *     <wt:verification-method type="metatag" in-use="false>
  *       <meta name="verify-v1" content="XXX" />
  *     </wt:verification-method>
@@ -51,6 +55,7 @@ import java.util.List;
  * </pre>
  *
  * 
+ * 
  */
 public class SitesEntry extends BaseEntry<SitesEntry> {
 
@@ -58,6 +63,10 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
   private static final String INDEXED = "indexed";
   private static final String CRAWLED = "crawled";
   private static final String VERIFIED = "verified";
+  private static final String GEOLOCATION = "geolocation";
+  private static final String CRAWL_RATE = "crawl-rate";
+  private static final String PREFERRED_DOMAIN = "preferred-domain";
+  private static final String ENHANCED_IMAGE_SEARCH = "enhanced-image-search";
   
   /**
    * Kind category used to label entry.
@@ -97,6 +106,22 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
     extProfile.declare(
         SitesEntry.class,
         ExtensionDescription.getDefaultDescription(Verified.class));
+    
+    extProfile.declare(
+        SitesEntry.class,
+        ExtensionDescription.getDefaultDescription(Geolocation.class));
+    
+    extProfile.declare(
+        SitesEntry.class,
+        ExtensionDescription.getDefaultDescription(CrawlingRate.class));
+    
+    extProfile.declare(
+        SitesEntry.class,
+        ExtensionDescription.getDefaultDescription(PreferredDomain.class));
+    
+    extProfile.declare(
+        SitesEntry.class,
+        ExtensionDescription.getDefaultDescription(EnhancedImageSearch.class));
     
     desc = ExtensionDescription.getDefaultDescription(VerificationMethod.class);
     desc.setRepeatable(true);
@@ -190,6 +215,116 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
     }
 
     return verified.getBooleanValue();
+  }  
+  
+  /**
+   * Changes site geographic location. See 
+   * http://www.unicode.org/cldr/data/diff/supplemental/territory_containment_un_m_49.html.
+   *
+   * @param regionCode is a two-letter code representing a country.
+   */
+  public void setGeolocation(String regionCode) {
+    Geolocation geolocation = getExtension(Geolocation.class);
+    if (geolocation == null) {
+      geolocation = new Geolocation();
+      setExtension(geolocation);
+    }
+  
+    geolocation.setValue(regionCode);
+  }  
+  
+  /**
+   * Returns site geographic location. See
+   * http://www.unicode.org/cldr/data/diff/supplemental/territory_containment_un_m_49.html.
+   *
+   * @return A two-letter code representing a country.
+   */
+  public String getGeolocation() {
+    Geolocation geolocation = getExtension(Geolocation.class);
+    // If the extension is null do not return any value to prevent
+    // the field from appearing in the GData XML
+    return (geolocation == null) ? null : geolocation.getValue();
+  }
+  
+  /**
+   * Changes the crawl rate.
+   *
+   * @param rate is an integer representing the desired crawl rate.
+   */
+  public void setCrawlRate(CrawlRate rate) {
+    CrawlingRate crawlingRate = getExtension(CrawlingRate.class);
+    if (crawlingRate == null) {
+      crawlingRate = new CrawlingRate();
+      setExtension(crawlingRate);
+    }
+  
+    crawlingRate.setCrawlRate(rate);
+  }  
+  
+  /**
+   * Returns site crawl rate.
+   *
+   * @return A {@link CrawlRate} enum representing the crawl rate.
+   */
+  public CrawlRate getCrawlRate() {
+    CrawlingRate crawlingRate = getExtension(CrawlingRate.class);
+    // If the extension is null do not return any value to prevent
+    // the field from appearing in the GData XML
+    return (crawlingRate == null) ? null : crawlingRate.getCrawlRate();
+  }
+  
+  /**
+   * Changes the domain preference. 
+   * 
+   * @param preference is a {@link DomainPreference} that indicates which one 
+   * of the possibilities is preferred, using domain, www.domain, or no
+   * association at all.
+   */
+  public void setPreferredDomain(DomainPreference preference) {
+    PreferredDomain preferredDomain = getExtension(PreferredDomain.class);
+    if (preferredDomain == null) {
+      preferredDomain = new PreferredDomain();
+      setExtension(preferredDomain);
+    }
+    
+    preferredDomain.setPreference(preference);
+  }
+  
+  /**
+   * Returns the domain preference for the site.
+   * 
+   * @return A {@link DomainPreference} value that indicates which one of 
+   * the domain preferences for the site is preferred.
+   */
+  public DomainPreference getPreferredDomain() {
+    PreferredDomain preferredDomain = getExtension(PreferredDomain.class);
+    return (preferredDomain == null) ? null : preferredDomain.getPreference();
+  }
+  
+  /**
+   * Changes the Enhanced Image Search setting.
+   * 
+   * @param enabled specifies whether enhanced image should be enabled.
+   */
+  public void setEnhancedImageSearch(boolean enabled) {
+    EnhancedImageSearch enhanced = getExtension(EnhancedImageSearch.class);
+    if (enhanced == null) {
+      enhanced = new EnhancedImageSearch();
+      setExtension(enhanced);
+    }
+    
+    enhanced.setBooleanValue(enabled);
+  }
+  
+  /**
+   * Returns the Enhanced Image Search setting.
+   * 
+   * @return {@code true} if Enhanced Image Search is enabled, {@code false} 
+   * if it is disabled.
+   */
+  public boolean getEnhancedImageSearch() {
+    EnhancedImageSearch enhanced = getExtension(EnhancedImageSearch.class);
+    return ((enhanced != null) && enhanced.getBooleanValue());
   }
   
   /**
@@ -273,4 +408,57 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
       super(VERIFIED);
     }
   }  
+  
+  /**
+   * Region code value construct to represent <geolocation> field.
+   */
+  @ExtensionDescription.Default(
+      nsAlias = Namespaces.WT_PREFIX,
+      nsUri = Namespaces.WT_NAMESPACE_URI,
+      localName = GEOLOCATION)
+  public static class Geolocation extends RegionCodeValueConstruct {
+    public Geolocation() {
+      super(GEOLOCATION);
+    }
+  }  
+  
+  /**
+   * Crawl Rate construct to represent <crawl-rate> field.
+   */
+  @ExtensionDescription.Default(
+      nsAlias = Namespaces.WT_PREFIX,
+      nsUri = Namespaces.WT_NAMESPACE_URI,
+      localName = CRAWL_RATE)
+  public static class CrawlingRate extends CrawlRateConstruct {
+    public CrawlingRate() {
+      super(CRAWL_RATE);
+    }
+  } 
+  
+  /**
+   * Domain Preference construct to represent <preferred-domain> field.
+   */
+  @ExtensionDescription.Default(
+      nsAlias = Namespaces.WT_PREFIX,
+      nsUri = Namespaces.WT_NAMESPACE_URI,
+      localName = PREFERRED_DOMAIN)
+  public static class PreferredDomain extends DomainPreferenceConstruct {
+    public PreferredDomain() {
+      super(PREFERRED_DOMAIN);
+    }
+  } 
+  
+  /**
+   * Boolean value construct to represent <enhanced-image-search> field.
+   */
+  @ExtensionDescription.Default(
+      nsAlias = Namespaces.WT_PREFIX,
+      nsUri = Namespaces.WT_NAMESPACE_URI,
+      localName = ENHANCED_IMAGE_SEARCH)
+  public static class EnhancedImageSearch extends BoolValueConstruct {
+    public EnhancedImageSearch() {
+      super(ENHANCED_IMAGE_SEARCH);
+    }
+  }   
 }
+

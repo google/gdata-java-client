@@ -19,6 +19,7 @@ package com.google.gdata.data.photos;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.geo.Box;
 import com.google.gdata.data.geo.Point;
 import com.google.gdata.data.media.mediarss.MediaCategory;
 import com.google.gdata.data.media.mediarss.MediaContent;
@@ -58,7 +59,7 @@ public class PhotoEntry extends GphotoEntry<PhotoEntry> implements PhotoData,
    * Construct a new photo entry doing a shallow copy of the data in the
    * passed in source entry.
    */
-  public PhotoEntry(BaseEntry sourceEntry) {
+  public PhotoEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     getCategories().add(PhotoData.PHOTO_CATEGORY);
     this.delegate = new PhotoDataImpl(this);
@@ -221,6 +222,27 @@ public class PhotoEntry extends GphotoEntry<PhotoEntry> implements PhotoData,
     return delegate.getGeoLocation();
   }
 
+  public void clearPoint() {
+    delegate.clearPoint();
+  }
+
+  public void clearGeoBoundingBox() {
+    delegate.clearGeoBoundingBox();
+  }
+  
+  public Box getGeoBoundingBox() {
+    return delegate.getGeoBoundingBox();
+  }
+
+  public void setGeoBoundingBox(Point lowerLeft, Point upperRight) {
+    delegate.setGeoBoundingBox(lowerLeft, upperRight);
+    
+  }
+
+  public void setGeoBoundingBox(Box boundingBox) {
+    delegate.setGeoBoundingBox(boundingBox);
+  }
+  
   public void addStreamId(String streamId) {
     delegate.addStreamId(streamId);
   }

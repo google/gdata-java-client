@@ -55,7 +55,7 @@ public class GphotoEntry<E extends GphotoEntry<E>> extends MediaEntry<E>
   /**
    * Constructs a new entry instance using the source for a shallow copy.
    */
-  protected GphotoEntry(BaseEntry sourceEntry) {
+  protected GphotoEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     this.delegate = new GphotoDataImpl(this);
   }
@@ -84,8 +84,8 @@ public class GphotoEntry<E extends GphotoEntry<E>> extends MediaEntry<E>
    * kinds parameter is empty, the default kind associated with this feed class
    * will be used.
    */
-  public <F extends GphotoFeed> F getFeed(Class<F> feedClass, String... kinds)
-      throws IOException, ServiceException {
+  public <F extends GphotoFeed<F>> F getFeed(Class<F> feedClass,
+      String... kinds) throws IOException, ServiceException {
     if (state.service == null) {
       throw new ServiceException(
           "Entry is not associated with a GData service.");
@@ -169,6 +169,7 @@ public class GphotoEntry<E extends GphotoEntry<E>> extends MediaEntry<E>
   /**
    * Returns an adapted entry that is a subclass of GphotoEntry.
    */
+  @Override
   public GphotoEntry<?> getAdaptedEntry() throws AdaptorException {
     return (GphotoEntry<?>) super.getAdaptedEntry();
   }

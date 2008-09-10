@@ -33,6 +33,14 @@ import com.google.gdata.util.Namespaces;
 @Kind.Term(YouTubeNamespace.KIND_FRIEND)
 public class FriendEntry extends BaseEntry<FriendEntry> {
 
+  /**
+   * Nonstandard categories that might be found in this entry.
+   */
+  public static final String[] CATEGORIES = {
+    YouTubeNamespace.CONTACT_LIST_SCHEME
+  };
+
+
   public FriendEntry() {
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_FRIEND);
   }

@@ -19,6 +19,7 @@ package com.google.gdata.data;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 
@@ -30,7 +31,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * The ExtensionDescription class describes the attributes of an XML extension
@@ -258,19 +258,15 @@ public class ExtensionDescription extends ExtensionPoint
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {
 
-    private ClassLoader configLoader;
-    private Class extensionPointClass;
-
     public Handler(ExtensionProfile configProfile, ClassLoader configLoader,
                    List<XmlWriter.Namespace> namespaces, Attributes attrs)
-        throws ParseException, IOException {
-
+        throws ParseException {
       super(configProfile, ExtensionDescription.class);
-      this.configLoader = configLoader;
 
       String nsValue = attrs.getValue("", "namespace");
       if (nsValue == null) {
-        throw new ParseException("Missing namespace");
+        throw new ParseException(
+            CoreErrorDomain.ERR.missingNamespace);
       }
 
       // Find the namespace in the list of declared NamespaceDescriptions.
@@ -283,29 +279,36 @@ public class ExtensionDescription extends ExtensionPoint
         }
       }
       if (namespace == null) {
-        throw new ParseException("No matching NamespaceDescription for " +
-                                 nsValue);
+        ParseException pe = new ParseException(
+            CoreErrorDomain.ERR.missingNamespaceDescription);
+        pe.setInternalReason("No matching NamespaceDescription for " +
+            nsValue);
+        throw pe;
       }
 
       localName = attrs.getValue("", "localName");
       if (localName == null) {
-        throw new ParseException("Missing localName");
+        throw new ParseException(
+            CoreErrorDomain.ERR.missingLocalName);
       }
 
       String extensionClassName = attrs.getValue("", "extensionClass");
       if (extensionClassName == null) {
-        throw new ParseException("Missing extensionClass attribute");
+        throw new ParseException(
+            CoreErrorDomain.ERR.missingExtensionClass);
       }
       try {
-        Class extClass = configLoader.loadClass(extensionClassName);
+        Class<?> extClass = configLoader.loadClass(extensionClassName);
         if (!Extension.class.isAssignableFrom(extClass)) {
           throw new ParseException(
-            "Extension classes must implement the Extension interface");
+              CoreErrorDomain.ERR.mustImplementExtension);
         }
         extensionClass = (Class<? extends Extension>) extClass;
       } catch (ClassNotFoundException e) {
-        throw new ParseException("Unable to load extensionClass: " +
-                                 extensionClassName, e);
+        ParseException pe = new ParseException(
+            CoreErrorDomain.ERR.cantLoadExtensionClass, e);
+        pe.setInternalReason("Unable to load extensionClass: " +
+            extensionClassName);
       }
 
       Boolean bool = getBooleanAttribute(attrs, "required");

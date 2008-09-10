@@ -29,7 +29,6 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * GData schema extension describing a postal address.
  *
@@ -76,7 +75,6 @@ public class PostalAddress implements Extension {
     return desc;
   }
 
-
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -97,13 +95,10 @@ public class PostalAddress implements Extension {
     w.simpleElement(Namespaces.gNs, "postalAddress", attrs, value);
   }
 
-
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace,
                                              String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+                                             Attributes attrs) {
     return new Handler();
   }
 
@@ -111,11 +106,10 @@ public class PostalAddress implements Extension {
   /** <g:postalAddress> parser. */
   private class Handler extends XmlParser.ElementHandler {
 
-
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
+                                 String value) throws ParseException {
 
       if (namespace.equals("")) {
         if (localName.equals("rel")) {
@@ -129,8 +123,8 @@ public class PostalAddress implements Extension {
       }
     }
 
-
-    public void processEndElement() throws ParseException {
+    @Override
+    public void processEndElement() {
       PostalAddress.this.value = Handler.this.value;
     }
   }

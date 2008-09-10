@@ -27,6 +27,7 @@ import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ParseSource;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
+import com.google.gdata.util.EntityTooLargeException;
 import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.util.LoggableInputStream;
 import com.google.gdata.util.LoggableOutputStream;
@@ -151,18 +152,6 @@ public class HttpGDataRequest implements GDataRequest {
         throws IOException, ServiceException {
       return getRequest(RequestType.QUERY, query.getUrl(), contentType);
     }
-  }
-
-
-  /**
-   * The HttpGDataRequest.AuthToken interface represents a token used to
-   * authenticate a request. It encapsulates the functionality to create the
-   * "Authorization" header to be appended to a HTTP request.
-   *
-   * @deprecated This interface has been deprecated. Please use
-   *             {@link HttpAuthToken} instead.
-   */
-  public static interface AuthToken extends HttpAuthToken {
   }
 
 
@@ -591,6 +580,9 @@ public class HttpGDataRequest implements GDataRequest {
 
       case HttpURLConnection.HTTP_CONFLICT:
         throw new VersionConflictException(httpConn);
+
+      case HttpURLConnection.HTTP_ENTITY_TOO_LARGE:
+        throw new EntityTooLargeException(httpConn);
 
       default:
         throw new ServiceException(httpConn);

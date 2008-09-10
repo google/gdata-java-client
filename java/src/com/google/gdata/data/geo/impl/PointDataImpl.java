@@ -53,12 +53,7 @@ public class PointDataImpl implements PointData {
    */
   public void setGeoLocation(Double lat, Double lon)
       throws IllegalArgumentException {
-    Point existing = getGeoLocation();
-    if (existing != null) {
-      existing.setGeoLocation(lat, lon);
-    } else {
-      extPoint.setExtension(new GeoRssWhere(lat, lon));
-    }
+    setGeoLocation(new GeoRssWhere(lat, lon));
   }
 
   /**
@@ -67,16 +62,7 @@ public class PointDataImpl implements PointData {
    * @param point A point containing the latitude and longitude coordinates.
    */
   public void setGeoLocation(Point point) {
-    Point existing = getGeoLocation();
-
-    if (existing != null) {
-      Double lat = point == null ? null : point.getLatitude();
-      Double lon = point == null ? null : point.getLongitude();
-      existing.setGeoLocation(lat, lon);
-
-    } else if (point != null) {
-      extPoint.setExtension(point);
-    }
+    setPoint(extPoint, point);
   }
 
   /**
@@ -84,9 +70,13 @@ public class PointDataImpl implements PointData {
    * @return a Point that contains the geo-coordinates (latitude and longitude).
    */
   public Point getGeoLocation() {
-    return getPointExtension();
+    return getPoint(extPoint);
   }
 
+  public void clearPoint() {
+    clearPoint(extPoint);
+  }
+  
   /*
    * Declare the extensions that are used for storing Point information.
    */
@@ -117,17 +107,86 @@ public class PointDataImpl implements PointData {
       extProfile.declare(BaseEntry.class, desc);
     }
   }
-
+  
   /**
-   * Helper method that iterates through all extensions in the ExtensionPoint
-   * and returns an instance of the Point extension if it exists.
+   * Sets the geo point of the extension passed in. This will first try to
+   * replace any existing point information. If there is no existing point, then
+   * it will simply add the point extension.
+   * 
+   * @param ext The extension point to add the Point to.
+   * @param point The new point information.
    */
-  private Point getPointExtension() {
-    for (Extension ext : extPoint.getExtensions()) {
-      if (ext instanceof Point) {
-        return (Point)ext;
+  public static void setPoint(ExtensionPoint ext, Point point) {
+    Point existing = getPointExtension(ext);
+    if (existing != null) {
+      Double lat = point != null ? point.getLatitude() : null;
+      Double lon = point != null ? point.getLongitude() : null;
+      existing.setGeoLocation(lat, lon);
+    } else if (point != null) {
+      ext.setExtension(point);
+    }
+  }
+  
+  /**
+   * Iterates through all the extension points and finds the first matching
+   * Point extension.
+   * 
+   * NOTE(pingc): Made package private for testing. DO NOT USE.
+   * 
+   * @param ext The extension point to search through.
+   * @return A point extension point. This includes GeoRssWhere that may only
+   *    contain a box.
+   */
+  static Point getPointExtension(ExtensionPoint ext) {
+    for (Extension e : ext.getExtensions()) {
+      if (e instanceof Point) {
+        return (Point) e;
       }
     }
     return null;
+  }
+  
+  /**
+   * Helper method to retrieve the Box extension point.
+   * @param ext The containing extension point.
+   * @return An extension point that implements the Box interface and contain
+   *    box information.
+   */
+  public static Point getPoint(ExtensionPoint ext) {
+    Point p = getPointExtension(ext);
+    if (p != null) {
+      if (p instanceof GeoRssWhere) {
+        GeoRssWhere geoWhere = (GeoRssWhere)p;
+        if (geoWhere.hasPoint()) {
+          return geoWhere;
+        }
+      } else {
+        return p;
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Removes the first Point extension found on the extension point. If the
+   * point extension is a GeoRssWhere, it will only remove the GeoRssWhere
+   * extension if it does not contain a Box/Envelope extension.
+   * 
+   * @param ext The extension point from which to clear the Box extension.
+   */
+  public static void clearPoint(ExtensionPoint ext) {
+    Point p = getPointExtension(ext);
+    if (p != null) {
+      if (p instanceof GeoRssWhere) {
+        GeoRssWhere where = (GeoRssWhere)p;
+        if (where.hasBox()) {
+          // If the GeoRssWhere has a box, just clear the point, otherwise
+          // remove the whole thing.
+          where.clearPoint();
+          return;
+        }
+      }
+      ext.removeExtension(p);
+    }
   }
 }

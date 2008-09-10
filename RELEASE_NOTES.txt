@@ -1,5 +1,16 @@
 Google Data API - Release Notes
 
+Notes for v1.21.0
+-----------------
+Sep 9, 2008
+o  Added support for OAuth authentication with options to sign requests
+   using RSA-SHA1 or HMAC-SHA1.  See OAuth sample included in this package
+   for usage details.
+o  Updated PicasaWeb Album API and YouTube API data model classes.
+o  Added Atom threading extensions (RFC 4685) support in Blogger API.
+o  Fixed a bug related to retries related to session expiry.
+o  Support for chunking related to media uploads for large video files.
+
 Notes for v1.20.0
 -----------------
 Jun 24, 2008

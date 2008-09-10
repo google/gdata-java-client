@@ -17,6 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 
 /**
  * The Source class represents an Atom feed source object
@@ -168,6 +168,15 @@ public class Source extends ExtensionPoint {
   public Generator getGenerator() { return srcState.generator; }
   public void setGenerator(Generator v) { srcState.generator = v; }
 
+  public Generator setGenerator(String version, String uri, String name) {
+    Generator gen = new Generator();
+    gen.setVersion(version);
+    gen.setUri(uri);
+    gen.setName(name);
+    setGenerator(gen);
+    return gen;
+  }
+  
   /**
    * Retrieves the first link with the supplied {@code rel} and/or
    * {@code type} value.
@@ -185,7 +194,6 @@ public class Source extends ExtensionPoint {
 
     return null;
   }
-
 
   /**
    * Return the links that match the given {@code rel} and {@code type} values.
@@ -206,6 +214,15 @@ public class Source extends ExtensionPoint {
     return result;
   }
 
+  public void addLink(Link link) {
+    srcState.links.add(link);
+  }
+  
+  public Link addLink(String rel, String type, String href) {
+    Link link = new Link(rel, type, href);
+    addLink(link);
+    return link;
+  }
 
   /**
    * Remove all links that match the given {@code rel} and {@code type} values.
@@ -224,7 +241,6 @@ public class Source extends ExtensionPoint {
       }
     }
   }
-
 
   /**
    * Adds a link pointing to an HTML representation.
@@ -256,7 +272,6 @@ public class Source extends ExtensionPoint {
     srcState.links.add(link);
   }
 
-
   /**
    * Retrieves the first HTML link.
    *
@@ -266,7 +281,6 @@ public class Source extends ExtensionPoint {
     Link htmlLink = getLink(Link.Rel.ALTERNATE, Link.Type.HTML);
     return htmlLink;
   }
-
 
   /**
    * Generates XML in the Atom format.
@@ -293,7 +307,6 @@ public class Source extends ExtensionPoint {
 
     w.endElement(Namespaces.atomNs, "source");
   }
-
 
   /**
    * Generates inner XML content in the Atom format.
@@ -367,7 +380,6 @@ public class Source extends ExtensionPoint {
     }
   }
 
-
   /**
    * Parses XML in the Atom format.
    *
@@ -389,7 +401,6 @@ public class Source extends ExtensionPoint {
     new XmlParser().parse(stream, handler, Namespaces.atom, "source");
   }
 
-
   /**
    * Parses XML in the Atom format.
    *
@@ -408,28 +419,24 @@ public class Source extends ExtensionPoint {
     new XmlParser().parse(reader, handler, Namespaces.atom, "source");
   }
 
-
   /** {@code <atom:source>} parser. */
   public class SourceHandler extends ExtensionPoint.ExtensionHandler {
 
-
-    public SourceHandler(ExtensionProfile extProfile) throws IOException {
+    public SourceHandler(ExtensionProfile extProfile) {
       super(extProfile, Source.class);
     }
 
 
-    protected SourceHandler(ExtensionProfile extProfile, Class extClass)
-        throws IOException {
+    protected SourceHandler(ExtensionProfile extProfile,
+        Class<? extends ExtensionPoint> extClass) {
       super(extProfile, extClass);
     }
 
-
-
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)
         throws ParseException, IOException {
-
 
       if (namespace.equals(Namespaces.atom)) {
 
@@ -459,7 +466,8 @@ public class Source extends ExtensionPoint {
             TextConstruct.getChildHandler(attrs);
 
           if (srcState.title != null) {
-            throw new ParseException("Duplicate title.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateTitle);
           }
 
           srcState.title = chi.textConstruct;
@@ -471,7 +479,8 @@ public class Source extends ExtensionPoint {
             TextConstruct.getChildHandler(attrs);
 
           if (srcState.subtitle != null) {
-            throw new ParseException("Duplicate subtitle.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateSubtitle);
           }
 
           srcState.subtitle = chi.textConstruct;
@@ -483,7 +492,8 @@ public class Source extends ExtensionPoint {
             TextConstruct.getChildHandler(attrs);
 
           if (srcState.rights != null) {
-            throw new ParseException("Duplicate rights.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateRights);
           }
 
           srcState.rights = chi.textConstruct;
@@ -518,7 +528,8 @@ public class Source extends ExtensionPoint {
         } else if (localName.equals("generator")) {
 
           if (srcState.generator != null) {
-            throw new ParseException("Duplicate generator.");
+            throw new ParseException(
+                CoreErrorDomain.ERR.duplicateGenerator);
           }
 
           srcState.generator = new Generator();
@@ -532,63 +543,70 @@ public class Source extends ExtensionPoint {
       return null;
     }
 
-
     /** &lt;atom:id&gt; parser. */
     private class IdHandler extends XmlParser.ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (srcState.id != null) {
-          throw new ParseException("Duplicate feed ID.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateFeedId);
         }
 
         if (value == null) {
-          throw new ParseException("ID must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.idValueRequired);
         }
 
         srcState.id = value;
       }
     }
 
-
     /** &lt;atom:updated&gt; parser. */
     class UpdatedHandler extends Rfc3339Handler {
+      
+      @Override
       public void processEndElement() throws ParseException {
         super.processEndElement();
         srcState.updated = getDateTime();
       }
     }
 
-
     /** &lt;atom:icon&gt; parser. */
     private class IconHandler extends XmlParser.ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (srcState.icon != null) {
-          throw new ParseException("Duplicate icon.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateIcon);
         }
 
         if (value == null) {
-          throw new ParseException("icon must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.iconValueRequired);
         }
 
         srcState.icon = value;
       }
     }
 
-
     /** &lt;atom:logo&gt; parser. */
     private class LogoHandler extends XmlParser.ElementHandler {
 
+      @Override
       public void processEndElement() throws ParseException {
 
         if (srcState.logo != null) {
-          throw new ParseException("Duplicate logo.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.duplicateLogo);
         }
 
         if (value == null) {
-          throw new ParseException("logo must have a value.");
+          throw new ParseException(
+              CoreErrorDomain.ERR.logoValueRequired);
         }
 
         srcState.logo = value;

@@ -38,10 +38,9 @@ public class MediaFileSource extends BaseMediaSource {
 
   private File mediaFile;
 
-  public MediaFileSource(File mediaFile, String mediaType)
-      throws IOException {
-
+  public MediaFileSource(File mediaFile, String mediaType) {
     super(mediaType);
+    
     this.mediaFile = mediaFile;
     this.contentLength = mediaFile.length();
     this.lastModified = new DateTime(mediaFile.lastModified());
@@ -52,7 +51,7 @@ public class MediaFileSource extends BaseMediaSource {
     return new FileInputStream(mediaFile);
   }
 
-  public OutputStream getOutputStream() throws IOException {
+  public OutputStream getOutputStream() {
     throw new UnsupportedOperationException("Cannot write to MediaFileSource");
   }
   

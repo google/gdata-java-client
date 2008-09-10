@@ -35,8 +35,10 @@ import com.google.gdata.util.Namespaces;
  * <code>
  * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  * &lt;atom:entry xmlns:atom="http://www.w3.org/2005/Atom"&gt;
- *   &lt;atom:category scheme="http://schemas.google.com/g/2005#kind" * term="http://schemas.google.com/apps/2006#emailList.recipient"/&gt;
- *   &lt;gd:who xmlns:gd="http://schemas.google.com/g/2005" * email="SusanJones-1321@apps-provisioning-test.com"/&gt;
+ *   &lt;atom:category scheme="http://schemas.google.com/g/2005#kind"
+ * term="http://schemas.google.com/apps/2006#emailList.recipient"/&gt;
+ *   &lt;gd:who xmlns:gd="http://schemas.google.com/g/2005"
+ * email="SusanJones-1321@apps-provisioning-test.com"/&gt;
  * &lt;/atom:entry&gt;
  * </code>
  *
@@ -73,7 +75,7 @@ public class EmailListRecipientEntry
    * Constructs a new EmailListRecipientEntry by doing a shallow copy of data
    * from an existing BaseEntry intance.
    */
-  public EmailListRecipientEntry(BaseEntry sourceEntry) {
+  public EmailListRecipientEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     getCategories().add(EMAILLIST_RECIPIENT_CATEGORY);
   }

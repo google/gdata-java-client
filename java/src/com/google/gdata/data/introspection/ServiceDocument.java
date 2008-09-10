@@ -18,6 +18,7 @@ package com.google.gdata.data.introspection;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.ExtensionVisitor;
@@ -133,8 +134,7 @@ public class ServiceDocument extends ExtensionPoint {
 
   @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile p,
-      String namespace, String localName, Attributes attrs)
-      throws IOException {
+      String namespace, String localName, Attributes attrs) {
     return new Handler(p);
   }
 
@@ -143,8 +143,7 @@ public class ServiceDocument extends ExtensionPoint {
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile) throws IOException {
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, ServiceDocument.class);
     }
 
@@ -169,7 +168,8 @@ public class ServiceDocument extends ExtensionPoint {
 
   public void processEndElement() throws ParseException {
     if (workspaces.size() == 0) {
-      throw new ParseException("Service must contain at least one workspace");
+      throw new ParseException(
+          CoreErrorDomain.ERR.workspaceRequired);
     }
   }
 }

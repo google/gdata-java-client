@@ -29,7 +29,7 @@ public class ParseSource {
   // Exactly one of these will be non-null, given the contructor model.
   private final Reader reader;
   private final InputStream inputStream;
-  private final XmlParser parser;
+  private final XmlEventSource eventSource;
 
   /**
    * Constructs a new GData input source using data from a {@link Reader}.
@@ -37,7 +37,7 @@ public class ParseSource {
   public ParseSource(Reader reader) {
     this.reader = reader;
     this.inputStream = null;
-    this.parser = null;
+    this.eventSource = null;
   }
 
   /**
@@ -46,14 +46,14 @@ public class ParseSource {
   public ParseSource(InputStream inputStream) {
     this.inputStream = inputStream;
     this.reader = null;
-    this.parser = null;
+    this.eventSource = null;
   }
 
   /**
    * Constructs a new GData input source using data from an {@link XmlParser}.
    */
-  public ParseSource(XmlParser parser) {
-    this.parser = parser;
+  public ParseSource(XmlEventSource eventSource) {
+    this.eventSource = eventSource;
     this.reader = null;
     this.inputStream = null;
   }
@@ -78,7 +78,7 @@ public class ParseSource {
    * Returns the {@link Reader} associated with the input source or
    * {@code null} if associated with a different source type.
    */
-  final public XmlParser getParser() {
-    return parser;
+  final public XmlEventSource getEventSource() {
+    return eventSource;
   }
 }

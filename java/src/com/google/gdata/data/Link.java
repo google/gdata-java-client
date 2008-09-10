@@ -17,19 +17,22 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.util.XmlParser;
+import com.google.gdata.util.XmlParser.ElementHandler;
+
+import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * External link type.
  */
-public class Link extends ExtensionPoint implements Reference {
-
+public class Link extends ExtensionPoint implements ILink {
 
   /**
    * The Rel class defines constants for some common link relation types.
@@ -99,6 +102,8 @@ public class Link extends ExtensionPoint implements Reference {
      * supported to enable back compatibility for Picasa Web.  This rel
      * will be deleted after all usage has been migrated to use
      * {@link #MEDIA_EDIT}.
+     * 
+     * @deprecated use {@link Rel#MEDIA_EDIT} instead.
      */
     @Deprecated
     public static final String MEDIA_EDIT_BACKCOMPAT = "media-edit";
@@ -139,7 +144,7 @@ public class Link extends ExtensionPoint implements Reference {
     this.type = type;
     setHref(href);
   }
-
+  
   /**
    * Link relation type.  Possible values include {@code self}, {@code
    * prev}, {@code next}, {@code enclosure}, etc.
@@ -150,43 +155,41 @@ public class Link extends ExtensionPoint implements Reference {
   }
   public void setRel(String v) { rel = v; }
 
-
   /** MIME type of the link target. */
   protected String type;
   public String getType() { return type; }
   public void setType(String v) { type = v; }
-
 
   /** Link URI. */
   protected String href;
   public String getHref() { return href; }
   public void setHref(String v) { href = v; }
 
-
   /** Language of resource pointed to by href. */
   protected String hrefLang;
   public String getHrefLang() { return hrefLang; }
   public void setHrefLang(String v) { hrefLang = v; }
-
 
   /** Link title. */
   protected String title;
   public String getTitle() { return title; }
   public void setTitle(String v) { title = v; }
 
-
   /** Language of link title. */
   protected String titleLang;
   public String getTitleLang() { return titleLang; }
   public void setTitleLang(String v) { titleLang = v; }
-
 
   /** Length of the resource pointed to by href, in bytes. */
   protected long length = -1;
   public long getLength() { return length; }
   public void setLength(long v) { length = v; }
 
-
+  /** Nested atom:content element or {@code null} if no inlined link content. */
+  protected Content content = null;
+  public Content getContent() { return content; }
+  public void setContent(Content c) { this.content = c; }
+  
   /**
    * Returns whether this link matches the given {@code rel} and {@code type}
    * values.
@@ -201,6 +204,16 @@ public class Link extends ExtensionPoint implements Reference {
         && (typeToMatch == null || typeToMatch.equals(this.type));
   }
 
+  @Override
+  public XmlParser.ElementHandler getHandler(ExtensionProfile p,
+      String namespace, String localName, Attributes attrs) {
+    return new AtomHandler(p);
+  }
+
+  @Override
+  public void generate(XmlWriter w, ExtensionProfile p) throws IOException {
+    generateAtom(w, p);
+  }
 
   /**
    * Generates XML in the Atom format.
@@ -249,12 +262,15 @@ public class Link extends ExtensionPoint implements Reference {
 
     generateStartElement(w, Namespaces.atomNs, "link", attrs, null);
 
+    if (content != null) {
+      content.generateAtom(w, extProfile);
+    }
+    
     // Invoke ExtensionPoint.
     generateExtensions(w, extProfile);
 
     w.endElement(Namespaces.atomNs, "link");
   }
-
 
   /**
    * Generates XML in the RSS format.
@@ -298,27 +314,24 @@ public class Link extends ExtensionPoint implements Reference {
     }
   }
 
-
   /** &lt;atom:link&gt; parser. */
   public class AtomHandler extends ExtensionPoint.ExtensionHandler {
 
-
     /**
-     * {@code true if the 'href' attribute is required.
+     * {@code true} if the 'href' attribute is required.
      */
     private final boolean linkRequired;
 
-    public AtomHandler(ExtensionProfile extProfile) throws IOException {
+    public AtomHandler(ExtensionProfile extProfile) {
       super(extProfile, Link.class);
       linkRequired = true;
     }
 
     protected AtomHandler(ExtensionProfile extProfile,
-        Class<? extends Link> extendedClass) throws IOException {
+        Class<? extends Link> extendedClass) {
       super(extProfile, extendedClass);
       linkRequired = false;
     }
-
 
     @Override
     public void processAttribute(String namespace,
@@ -340,18 +353,39 @@ public class Link extends ExtensionPoint implements Reference {
         try {
           length = Integer.valueOf(value).longValue();
         } catch (NumberFormatException e) {
-          throw new ParseException("Length must be an integer");
+          throw new ParseException(
+              CoreErrorDomain.ERR.lengthNotInteger);
         }
       }
     }
 
-
+    @Override
+    public ElementHandler getChildHandler(String namespace, String localName,
+        Attributes attrs) throws ParseException, IOException {
+      
+      if (namespace.equals(Namespaces.atom)) {
+        if (localName.equals("content")) {
+          if (content != null) {
+            throw new ParseException(CoreErrorDomain.ERR.duplicateContent);
+          }
+  
+          Content.ChildHandlerInfo chi =
+              Content.getChildHandler(extProfile, attrs);
+  
+          content = chi.content;
+          return chi.handler;
+        }
+      }
+      
+      return super.getChildHandler(namespace, localName, attrs);
+    }
+    
     @Override
     public void processEndElement() throws ParseException {
 
       if (linkRequired && href == null) {
         throw new ParseException(
-          "Link must have an 'href' attribute.");
+          CoreErrorDomain.ERR.missingHrefAttribute);
       }
 
       titleLang = xmlLang;

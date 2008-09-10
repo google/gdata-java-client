@@ -38,9 +38,25 @@ public class PreconditionFailedException extends ServiceException {
     initResponseCode();
   }
 
+  public PreconditionFailedException(String message, Throwable cause) {
+    super(message, cause);
+    initResponseCode();
+  }
+
   public PreconditionFailedException(HttpURLConnection httpConn)
       throws IOException{
     super(httpConn);
+    initResponseCode();
+  }
+
+  public PreconditionFailedException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public PreconditionFailedException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
     initResponseCode();
   }
 

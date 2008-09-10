@@ -31,8 +31,6 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
-
 /**
  * GData schema extension describing a match in the source.
  * <gcs:match lineNumber="23" type="text/html">
@@ -69,6 +67,7 @@ public class Match extends ExtensionPoint implements Extension {
     return desc;
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
     ArrayList<XmlWriter.Attribute> attributes =
@@ -83,25 +82,24 @@ public class Match extends ExtensionPoint implements Extension {
                     attributes, lineText.getPlainText());
   }
 
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace, String localName,
-                                   Attributes attrs)
-      throws ParseException, IOException {
+                                   Attributes attrs) {
     return new Handler(extProfile);
   }
 
   /** <c:match> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
+    public Handler(ExtensionProfile extProfile) {
 
       super(extProfile, Match.class);
     }
 
+    @Override
     public void processAttribute(String namespace,
                                  String localName,
-                                 String value)
-        throws ParseException {
+                                 String value) {
 
       if ("".equals(namespace)) {
         if (ATTRIBUTE_LINENUMBER.equals(localName)) {
@@ -110,6 +108,7 @@ public class Match extends ExtensionPoint implements Extension {
       }
     }
 
+    @Override
     public void processEndElement() throws ParseException {
       if (lineNumber == null) {
         throw new ParseException(Namespaces.gCS + EXTENSION_MATCH + "/@" +

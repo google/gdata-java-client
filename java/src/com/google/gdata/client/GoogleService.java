@@ -18,6 +18,9 @@ package com.google.gdata.client;
 
 import com.google.gdata.client.AuthTokenFactory.AuthToken;
 import com.google.gdata.client.AuthTokenFactory.TokenListener;
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.client.authn.oauth.OAuthParameters;
+import com.google.gdata.client.authn.oauth.OAuthSigner;
 import com.google.gdata.client.http.GoogleGDataRequest;
 import com.google.gdata.client.http.GoogleGDataRequest.GoogleCookie;
 import com.google.gdata.data.BaseEntry;
@@ -146,36 +149,6 @@ public class GoogleService extends Service implements TokenListener {
 
   
   /**
-   * The UserToken encapsulates the token retrieved as a result of
-   * authenticating to Google using a user's credentials.
-   * 
-   * @deprecated This class has been deprecated. Please use
-   * {@link com.google.gdata.client.GoogleAuthTokenFactory.UserToken}
-   * instead.
-   */
-  public static class UserToken extends GoogleAuthTokenFactory.UserToken {
-    public UserToken(String token) {
-      super(token);
-    }
-  }
-
-
-  /**
-   * Encapsulates the token used by web applications to login on behalf of
-   * a user.
-   * 
-   * @deprecated This class has been deprecated. Please use
-   * {@link com.google.gdata.client.GoogleAuthTokenFactory.AuthSubToken}
-   * instead.
-   */
-  public static class AuthSubToken extends GoogleAuthTokenFactory.AuthSubToken {
-    public AuthSubToken(String token, PrivateKey key) {
-      super(token, key);
-    }
-  }
-
-  
-  /**
    * Constructs a GoogleService instance connecting to the service with name
    * {@code serviceName} for an application with the name
    * {@code applicationName}. The default domain (www.google.com) and the
@@ -280,6 +253,7 @@ public class GoogleService extends Service implements TokenListener {
       // previous user.
       cookieManager.clearCookies();
     }
+    requestFactory.setAuthToken(newToken);
   }
 
 
@@ -336,6 +310,24 @@ public class GoogleService extends Service implements TokenListener {
     requestFactory.setAuthToken(authTokenFactory.getAuthToken());
   }
 
+  /**
+   * Sets the OAuth credentials used to generate the authorization header.  
+   * This header needs to be set per request, as it depends on the request url.
+   * The following OAuth parameters are required:
+   * <ul>
+   * <li>oauth_consumer_key
+   * <li>oauth_token
+   * </ul>
+   * 
+   * @param parameters the OAuth parameters to use to generated the header
+   * @param signer the signing method to use for signing the header
+   */
+  public void setOAuthCredentials(OAuthParameters parameters, 
+      OAuthSigner signer) throws OAuthException {
+    GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
+    googleAuthTokenFactory.setOAuthCredentials(parameters, signer);
+    requestFactory.setAuthToken(authTokenFactory.getAuthToken());
+  }
 
   /**
    * Sets the AuthSub token to be used to authenticate a user.
@@ -638,8 +630,11 @@ public class GoogleService extends Service implements TokenListener {
     try {
       return new URL(redirect.getRedirectLocation());
     } catch (MalformedURLException e) {
-      throw new ServiceException("Invalid redirected-to URL - "
-                                 + redirect.getRedirectLocation());
+      ServiceException se = new ServiceException(
+          CoreErrorDomain.ERR.invalidRedirectedToUrl);
+      se.setInternalReason("Invalid redirected-to URL - "
+          + redirect.getRedirectLocation());
+      throw se;
     }
   }
 
@@ -666,3 +661,4 @@ public class GoogleService extends Service implements TokenListener {
     return (GoogleAuthTokenFactory) authTokenFactory;
   }
 }
+

@@ -19,7 +19,6 @@ package com.google.gdata.data.media;
 import com.google.gdata.data.DateTime;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -40,9 +39,7 @@ public class MediaByteArraySource extends BaseMediaSource {
    * Constructs a new MediaBteyArraySource using the specified byte data
    * and content type.
    */
-  public MediaByteArraySource(byte [] mediaBytes, String mediaType)
-      throws IOException {
-
+  public MediaByteArraySource(byte [] mediaBytes, String mediaType) {
     super(mediaType);
 
     this.mediaBytes = mediaBytes;
@@ -50,11 +47,11 @@ public class MediaByteArraySource extends BaseMediaSource {
     this.lastModified = DateTime.now();
   }
 
-  public InputStream getInputStream() throws IOException {
+  public InputStream getInputStream() {
     return new ByteArrayInputStream(mediaBytes);
   }
 
-  public OutputStream getOutputStream() throws IOException {
+  public OutputStream getOutputStream() {
     throw new UnsupportedOperationException("Cannot write to MediaSource");
   }
 }

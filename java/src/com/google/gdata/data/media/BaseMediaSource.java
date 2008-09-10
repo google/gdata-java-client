@@ -53,5 +53,5 @@ abstract public class BaseMediaSource implements MediaSource {
   public void setContentLength(long contentLength) {
     this.contentLength = contentLength;
   }
-  public long getContentLength() { return contentLength; };
+  public long getContentLength() { return contentLength; }
 }

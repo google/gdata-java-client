@@ -44,7 +44,7 @@ public abstract class BaseHealthFeed<F extends BaseHealthFeed,
    * @param entryClass entry class
    * @param sourceFeed source feed
    */
-  public BaseHealthFeed(Class<E> entryClass, BaseFeed sourceFeed) {
+  public BaseHealthFeed(Class<E> entryClass, BaseFeed<?, ?> sourceFeed) {
     super(entryClass, sourceFeed);
   }
 

@@ -17,13 +17,10 @@
 package com.google.gdata.data.media.mediarss;
 
 import com.google.gdata.data.AttributeGenerator;
+import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionPoint;
-import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.util.ParseException;
-
-import org.xml.sax.Attributes;
-
 
 /**
  * An empty tag with a url, width and height attribute.

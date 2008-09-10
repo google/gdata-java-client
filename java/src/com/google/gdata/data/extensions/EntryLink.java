@@ -17,6 +17,7 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Entry;
 import com.google.gdata.data.ExtensionDescription;
@@ -33,7 +34,6 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * The EntryLink class defines the object model for a link entity that refers to
  * a GData entry.   The entry content may be included inline via child elements 
@@ -47,7 +47,6 @@ import java.util.ArrayList;
     localName = "entryLink")
 public class EntryLink<E extends BaseEntry<?>> extends Link {
 
-
   /**
    * Constructs an entry link that points to an {@link Entry}.
    */
@@ -55,7 +54,6 @@ public class EntryLink<E extends BaseEntry<?>> extends Link {
   public EntryLink() {
     this((Class<E>) Entry.class);
   }
-
 
   /**
    * Constructs an entry link that points to the given entry type.
@@ -66,12 +64,10 @@ public class EntryLink<E extends BaseEntry<?>> extends Link {
     this.entryClass = entryClass;
   }
 
-
   /** Read only flag. */
   protected boolean readOnly;
   public boolean getReadOnly() { return readOnly; }
   public void setReadOnly(boolean v) { readOnly = v; }
-
 
   /** Nested entry (optional). */
   protected BaseEntry<?> entry;
@@ -79,17 +75,16 @@ public class EntryLink<E extends BaseEntry<?>> extends Link {
   public E getEntry() { return (E) entry; }
   public void setEntry(E v) { entry = v; }
 
-
   /** Nested entry class. */
   protected final Class<E> entryClass;
   public Class<E> getEntryClass() { return entryClass; }
-
 
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
     return ExtensionDescription.getDefaultDescription(EntryLink.class);
   }
   
+  @Override
   public String getType() {
     return ContentType.getAtomEntry().toString();
   }
@@ -138,32 +133,25 @@ public class EntryLink<E extends BaseEntry<?>> extends Link {
     w.endElement(Namespaces.gNs, "entryLink");
   }
 
-
   @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
                                    String namespace,
                                    String localName,
-                                   Attributes attrs)
-      throws IOException {
-
+                                   Attributes attrs) {
     return new Handler(extProfile);
   }
-
 
   /** <gd:entryLink> parser. */
   private class Handler extends Link.AtomHandler {
 
-
-    public Handler(ExtensionProfile extProfile) throws IOException {
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, EntryLink.class);
     }
-
 
     @Override
     public void processAttribute(String namespace,
                                  String localName,
                                  String value) throws ParseException {
-
       if (namespace.equals("")) {
         if (localName.equals("readOnly")) {
           readOnly = value.equals("true");
@@ -172,7 +160,6 @@ public class EntryLink<E extends BaseEntry<?>> extends Link {
         }
       }
     }
-
 
     @Override
     public ElementHandler getChildHandler(String namespace,
@@ -189,9 +176,11 @@ public class EntryLink<E extends BaseEntry<?>> extends Link {
           try {
             entry = entryClass.newInstance();
           } catch (IllegalAccessException iae) {
-            throw new ParseException("Unable to create entry", iae);
+            throw new ParseException(
+                CoreErrorDomain.ERR.cantCreateEntry);
           } catch (InstantiationException ie) {
-            throw new ParseException("Unable to create entry", ie);
+            throw new ParseException(
+                CoreErrorDomain.ERR.cantCreateEntry);
           }
           return entry.new AtomHandler(nestedExtProfile);
         }

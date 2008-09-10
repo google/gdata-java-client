@@ -31,11 +31,18 @@ import com.google.gdata.data.Kind;
 @Kind.Term(YouTubeNamespace.KIND_PLAYLIST_LINK)
 public class PlaylistLinkEntry extends FeedLinkEntry<PlaylistLinkEntry>{
 
+  /**
+   * Nonstandard categories that might be found in this entry.
+   */
+  public static final String[] CATEGORIES = {
+    YouTubeNamespace.TAG_SCHEME
+  };
+
   public PlaylistLinkEntry() {
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
   }
 
-  public PlaylistLinkEntry(BaseEntry base) {
+  public PlaylistLinkEntry(BaseEntry<?> base) {
     super(base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
   }

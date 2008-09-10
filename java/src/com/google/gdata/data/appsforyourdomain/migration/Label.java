@@ -131,15 +131,14 @@ public class Label extends ExtensionPoint implements Extension {
 
   @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
-      String namespace, String localName, Attributes attrs)
-      throws IOException {
+      String namespace, String localName, Attributes attrs) {
     return new Handler(extProfile);
   }
 
   /** <apps:Label> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile extProfile) throws IOException {
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, Label.class);
     }
 
@@ -164,9 +163,7 @@ public class Label extends ExtensionPoint implements Extension {
         );
       }
       
-      
       super.processEndElement();
-
     }
   }
 }

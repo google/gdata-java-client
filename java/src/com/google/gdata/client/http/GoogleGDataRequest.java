@@ -495,6 +495,14 @@ public class GoogleGDataRequest extends HttpGDataRequest {
   public void setService(GoogleService service) {
     this.service = service;
     
+    // This undocumented system property can be used to disable version headers.
+    // It exists only to support some unit test scenarios for query-parameter
+    // version configuration and back-compat defaulting when no version 
+    // information is sent by the client library.
+    if (Boolean.getBoolean("GoogleGDataRequest.disableVersionHeader")) {
+      return;
+    }
+    
     // Look up the active version for the type of service initiating the
     // request, and set the version header if found.
     try {
@@ -555,8 +563,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
       if (msg != null && msg.contains("Token expired")) {
         SessionExpiredException se =
           new SessionExpiredException(e.getMessage());
-        se.setResponseContentType(e.getResponseContentType());
-        se.setResponseBody(e.getResponseBody());
+        se.setResponse(e.getResponseContentType(), e.getResponseBody());
         throw se;
       }
       throw e;

@@ -16,11 +16,9 @@
 
 package com.google.gdata.data.extensions;
 
-
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
-
 
 /**
  * The Message class customizes the generic BaseEntry class to define
@@ -45,19 +43,17 @@ public class MessageFeed extends BaseFeed<MessageFeed, MessageEntry> {
    * Constructs a new {@code MessageFeed} instance that is initialized using
    * data from another BaseFeed instance.
    */
-  public MessageFeed(BaseFeed sourceFeed) {
+  public MessageFeed(BaseFeed<?, ?> sourceFeed) {
     super(MessageEntry.class, sourceFeed);
     getCategories().add(MessageEntry.MESSAGE_CATEGORY);
   }
 
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
 
     // Add any feed-level extension declarations here.
-
-    super.declareExtensions(extProfile);
   }
-
 
   // Any feed-level extension accessor APIs would go here
 }

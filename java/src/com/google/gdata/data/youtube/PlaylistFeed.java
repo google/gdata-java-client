@@ -28,12 +28,19 @@ import com.google.gdata.data.Kind;
 @Kind.Term(YouTubeNamespace.KIND_PLAYLIST)
 public class PlaylistFeed extends BaseFeed<PlaylistFeed, PlaylistEntry> {
 
+  /**
+   * Nonstandard categories that might be found in this feed.
+   */
+  public static final String[] CATEGORIES = {
+    YouTubeNamespace.TAG_SCHEME
+  };
+
   public PlaylistFeed() {
     super(PlaylistEntry.class);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
   }
 
-  public PlaylistFeed(BaseFeed base) {
+  public PlaylistFeed(BaseFeed<?, ?> base) {
     super(PlaylistEntry.class, base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
   }

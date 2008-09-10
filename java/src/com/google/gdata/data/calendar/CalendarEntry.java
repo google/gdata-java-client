@@ -65,6 +65,8 @@ public class CalendarEntry extends BaseEntry<CalendarEntry> {
         SelectedProperty.getDefaultDescription());
     extProfile.declare(CalendarEntry.class,
         TimeZoneProperty.getDefaultDescription());
+    extProfile.declare(CalendarEntry.class,
+        TimesCleanedProperty.getDefaultDescription(false, false));
     extProfile.declare(CalendarEntry.class, When.getDefaultDescription());
     extProfile.declare(CalendarEntry.class, Where.getDefaultDescription());
   }
@@ -173,5 +175,19 @@ public class CalendarEntry extends BaseEntry<CalendarEntry> {
    */
   public void setTimeZone(TimeZoneProperty timeZone) {
     setExtension(timeZone);
+  }
+
+  /**
+   * Returns the calendar timesCleaned property.
+   */
+  public TimesCleanedProperty getTimesCleaned() {
+    return getExtension(TimesCleanedProperty.class);
+  }
+
+  /**
+   * Sets the calendar timesCleaned property.
+   */
+  public void setTimesCleaned(TimesCleanedProperty timesCleaned) {
+    setExtension(timesCleaned);
   }
 }

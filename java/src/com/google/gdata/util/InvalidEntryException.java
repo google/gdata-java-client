@@ -40,12 +40,23 @@ public class InvalidEntryException extends ServiceException {
   }
 
   public InvalidEntryException(Throwable cause) {
-    this(null, cause);
+    super(cause.getMessage(), cause);
     initResponseCode();
   }
 
   public InvalidEntryException(HttpURLConnection httpConn) throws IOException {
     super(httpConn);
+    initResponseCode();
+  }
+
+  public InvalidEntryException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public InvalidEntryException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
     initResponseCode();
   }
 

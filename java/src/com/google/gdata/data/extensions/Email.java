@@ -17,6 +17,7 @@
 package com.google.gdata.data.extensions;
 
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
@@ -29,7 +30,6 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 
 /**
  * GData schema extension describing an email address.
@@ -56,12 +56,10 @@ public class Email extends ExtensionPoint implements Extension {
   public String getLabel() { return label; }
   public void setLabel(String v) { label = v; }
 
-
   /** Email address. */
   protected String address;
   public String getAddress() { return address; }
   public void setAddress(String v) { address = v; }
-
 
   /** Email quota. */
   protected String quota;
@@ -83,7 +81,7 @@ public class Email extends ExtensionPoint implements Extension {
     return desc;
   }
 
-
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
@@ -117,30 +115,22 @@ public class Email extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.gNs, "email");
   }
 
-
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
-                                             String namespace,
-                                             String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
-
+      String namespace, String localName, Attributes attrs) {
     return new Handler(extProfile);
   }
-
 
   /** <g:email> parser. */
   private class Handler extends ExtensionPoint.ExtensionHandler {
 
-
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
+    public Handler(ExtensionProfile extProfile) {
       super(extProfile, Email.class);
     }
 
-    public void processAttribute(String namespace,
-                                 String localName,
-                                 String value)
-        throws ParseException {
+    @Override
+    public void processAttribute(String namespace, String localName,
+        String value) throws ParseException {
 
       if (namespace.equals("")) {
         if (localName.equals("rel")) {
@@ -158,11 +148,12 @@ public class Email extends ExtensionPoint implements Extension {
       }
     }
 
-
+    @Override
     public void processEndElement() throws ParseException {
 
       if (address == null) {
-        throw new ParseException("g:email/@address is required.");
+        throw new ParseException(
+            CoreErrorDomain.ERR.missingAddressAttribute);
       }
 
       super.processEndElement();

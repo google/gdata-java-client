@@ -16,10 +16,12 @@
 
 package com.google.gdata.data.media;
 
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Content;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.MediaContent;
 import com.google.gdata.util.ContentType;
@@ -38,7 +40,7 @@ import java.net.URL;
  * @param <E> the entry class for the bound subtype.
  * 
  */
-public abstract class MediaEntry<E extends BaseEntry> extends BaseEntry<E> {
+public abstract class MediaEntry<E extends BaseEntry<E>> extends BaseEntry<E> {
 
   /**
    * Constructs a new BaseEntry instance.
@@ -55,7 +57,7 @@ public abstract class MediaEntry<E extends BaseEntry> extends BaseEntry<E> {
    * of {@code BaseEntry} can use this constructor to create adaptor
    * instances of an entry that share state with the original.
    */
-  protected MediaEntry(BaseEntry sourceEntry) {
+  protected MediaEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 
@@ -93,8 +95,9 @@ public abstract class MediaEntry<E extends BaseEntry> extends BaseEntry<E> {
     return null;
   }
 
-
   /** Retrieves the media resource edit link. */
+  @Override
+  @SuppressWarnings("deprecation")
   public Link getMediaEditLink() {
     Link mediaLink = getLink(Link.Rel.MEDIA_EDIT, null);
     if (mediaLink == null) {
@@ -139,7 +142,8 @@ public abstract class MediaEntry<E extends BaseEntry> extends BaseEntry<E> {
     }
 
     if (state.service == null) {
-      throw new ServiceException("Entry is not associated with GData service");
+      throw new ServiceException(
+          CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link mediaLink = getMediaEditLink();
     if (mediaLink == null) {
@@ -156,9 +160,10 @@ public abstract class MediaEntry<E extends BaseEntry> extends BaseEntry<E> {
 
   // Override content handler lookup to provide media handling.
   @Override
-  protected Content.ChildHandlerInfo getContentHandlerInfo(Attributes attrs)
+  protected Content.ChildHandlerInfo getContentHandlerInfo(
+      ExtensionProfile extProfile, Attributes attrs)
       throws ParseException, IOException {
     // Use the extended child handler that supports out-of-line media content.
-    return MediaContent.getChildHandler(attrs);
+    return MediaContent.getChildHandler(extProfile, attrs);
   }
 }

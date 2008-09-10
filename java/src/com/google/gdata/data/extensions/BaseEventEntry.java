@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @param <E> concrete event entry type
  */
-public class BaseEventEntry<E extends BaseEventEntry> extends BaseEntry<E> {
+public class BaseEventEntry<E extends BaseEventEntry<E>> extends BaseEntry<E> {
 
   /**
    * Constructs a new EventEntry with the appropriate kind category
@@ -46,13 +46,14 @@ public class BaseEventEntry<E extends BaseEventEntry> extends BaseEntry<E> {
    *
    * @param sourceEntry entry to copy
    */
-  public BaseEventEntry(BaseEntry sourceEntry) {
+  public BaseEventEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     getCategories().add(EventEntry.EVENT_CATEGORY);
   }
 
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    @SuppressWarnings("unchecked")
     Class<? extends BaseEventEntry> eventEntryClass = getClass();
     extProfile.declare(eventEntryClass,
         RecurrenceException.getDefaultDescription());

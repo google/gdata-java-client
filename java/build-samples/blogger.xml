@@ -2,6 +2,10 @@
   <!-- Path containing core.xml -->
   <dirname property="build_dir" file="${ant.file.blogger}"/>
   <import file="${build_dir}/core.xml"/>
+  <import file="${build_dir}/blogger.xml"/>
+
+  <property name="gdata-blogger.jar"
+    value="${build.jars}/gdata-blogger-${blogger.spec.version}.jar"/>
 
   <!--  ===================================================================== -->
   <!--                 Build GData Blogger samples.                           -->

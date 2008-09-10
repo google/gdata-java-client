@@ -40,9 +40,12 @@ public class PositionFeedLink extends FeedLink<TransactionFeed> {
       return;
     }
     super.declareExtensions(extProfile);
-    ExtensionProfile ep = new ExtensionProfile();
-    new TransactionFeed().declareExtensions(ep);
-    extProfile.declareFeedLinkProfile(ep);
+    ExtensionProfile feedLinkProfile = extProfile.getFeedLinkProfile();
+    if (feedLinkProfile == null) {
+      feedLinkProfile = new ExtensionProfile();
+      extProfile.declareFeedLinkProfile(feedLinkProfile);
+    }
+    new TransactionFeed().declareExtensions(feedLinkProfile);
   }
 
   /**

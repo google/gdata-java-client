@@ -171,9 +171,16 @@ public abstract class AbstractExtension implements Extension {
     generate(w, p, namespace, localName, attrs, generator);
   }
 
+  /**
+   * The default implementation uses the {@link AttributesHandler} to handle
+   * parsing the extension.
+   * 
+   * @throws ParseException when an unexpected tag or badly-formatted
+   *     XML is detected
+   */
   public XmlParser.ElementHandler getHandler(ExtensionProfile p,
       String namespace, String localName, Attributes attrs)
-      throws ParseException, IOException {
+      throws ParseException {
     return new AttributesHandler(attrs);
   }
 
@@ -201,6 +208,7 @@ public abstract class AbstractExtension implements Extension {
       }
     }
 
+    @Override
     public void processEndElement() throws ParseException {
       /* don't call super.processEndElement() because it doesn't allow text()
       data */

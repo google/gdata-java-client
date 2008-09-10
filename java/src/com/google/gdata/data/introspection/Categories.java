@@ -19,6 +19,7 @@ package com.google.gdata.data.introspection;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionPoint;
@@ -130,8 +131,7 @@ public class Categories extends ExtensionPoint {
   
   @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile p,
-      String namespace, String localName, Attributes attrs)
-      throws IOException {
+      String namespace, String localName, Attributes attrs) {
     return new Handler(p, attrs);
   }
  
@@ -147,8 +147,11 @@ public class Categories extends ExtensionPoint {
       } else if ("no".equals(fixedValue)) {
         fixed = false;
       } else {
-        throw new ParseException("Invalid value for fixed attribute:" +
+        ParseException pe = new ParseException(
+            CoreErrorDomain.ERR.invalidFixedAttribute);
+        pe.setInternalReason("Invalid value for fixed attribute:" +
             fixedValue);
+        throw pe;
       }
     }
   }
@@ -215,13 +218,12 @@ public class Categories extends ExtensionPoint {
   }
 
   /**
-   * The Handler class implements the {@link XmlParser#ElementHandler} for 
+   * The Handler class implements the {@link XmlParser.ElementHandler} for 
    * parsing an {@code app:categories} element.
    */
   public class Handler extends ExtensionPoint.ExtensionHandler {
 
-    public Handler(ExtensionProfile extProfile, Attributes attrs) 
-        throws IOException {
+    public Handler(ExtensionProfile extProfile, Attributes attrs) {
       super(extProfile, Categories.class, attrs);
     }
     

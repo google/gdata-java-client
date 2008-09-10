@@ -24,18 +24,15 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 
-
 /**
  * Abstract base class for entry content.
  *
  * 
  */
-public abstract class Content {
-
+public abstract class Content implements IContent {
 
   /** Defines the possible content types. */
   public static class Type {
-
     public static final int TEXT = 1;
     public static final int HTML = 2;
     public static final int XHTML = 3;
@@ -45,40 +42,43 @@ public abstract class Content {
     public static final int MEDIA = 7;          // external media
   }
 
-
   /** Returns this content's type. */
   public abstract int getType();
 
-
   /** Returns the human language that this content is written in. */
   public abstract String getLang();
-
 
   /**
    * Generates XML in the Atom format.
    *
    * @param   w
    *            output writer
+   * @param   extProfile
+   *            extension profile for nested extensions.
    *
    * @throws  IOException
    */
-  public abstract void generateAtom(XmlWriter w) throws IOException;
-
+  public abstract void generateAtom(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException;
 
   /**
    * Generates XML in the RSS format.
    *
    * @param   w
    *            output writer
+   * @param   extProfile
+   *            extension profile for nested extensions.
    *
    * @throws  IOException
    */
-  public abstract void generateRss(XmlWriter w) throws IOException;
-
+  public abstract void generateRss(XmlWriter w, ExtensionProfile extProfile)
+      throws IOException;
 
   /**
    * Parses XML in the Atom format.
    *
+   * @param   extProfile
+   *            ExtensionProfile used for nested content.
    * @param   attrs
    *            XML attributes of the Content node.
    *            Used to determine the type of this node.
@@ -88,8 +88,8 @@ public abstract class Content {
    * @throws  ParseException
    * @throws  IOException
    */
-  public static ChildHandlerInfo getChildHandler(Attributes attrs)
-      throws ParseException, IOException {
+  public static ChildHandlerInfo getChildHandler(ExtensionProfile extProfile,
+      Attributes attrs) throws ParseException, IOException {
 
     String type = attrs.getValue("", "type");
     ChildHandlerInfo childHandlerInfo = new ChildHandlerInfo();
@@ -115,7 +115,7 @@ public abstract class Content {
       } else {
 
         OtherContent oc = new OtherContent();
-        childHandlerInfo.handler = oc.new AtomHandler(attrs);
+        childHandlerInfo.handler = oc.new AtomHandler(extProfile, attrs);
         childHandlerInfo.content = oc;
       }
     } else {
@@ -127,10 +127,11 @@ public abstract class Content {
     return childHandlerInfo;
   }
 
-
   /**
-   * Return type for {@link Content#getChildHandler(Attributes)}
-   * contains an element handler and a text construct.
+   * Return type for
+   * {@link Content#getChildHandler(ExtensionProfile, Attributes)} contains an
+   * element handler and a content element.  This is mainly because Content
+   * is not actually an ExtensionPoint so things are handled manually.
    */
   public static class ChildHandlerInfo {
     public XmlParser.ElementHandler handler;

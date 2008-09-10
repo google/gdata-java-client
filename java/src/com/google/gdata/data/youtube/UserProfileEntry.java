@@ -36,11 +36,19 @@ import java.util.Set;
 @Kind.Term(YouTubeNamespace.KIND_USER_PROFILE)
 public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
 
+  /**
+   * Nonstandard categories that might be found in this entry.
+   */
+  public static final String[] CATEGORIES = {
+    YouTubeNamespace.CHANNELTYPE_SCHEME
+  };
+
+
   public UserProfileEntry() {
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_PROFILE);
   }
 
-  public UserProfileEntry(BaseEntry base) {
+  public UserProfileEntry(BaseEntry<?> base) {
     super(base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_PROFILE);
   }
@@ -423,34 +431,39 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
   }
 
   /** Returns a link to the user favorites feed. */
-  public FeedLink getFavoritesFeedLink() {
+  public FeedLink<?> getFavoritesFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.FAVORITES_REL);
   }
 
   /** Returns a link to the user contacts (friends) feed. */
-  public FeedLink getContactsFeedLink() {
+  public FeedLink<?> getContactsFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.CONTACTS_REL);
   }
 
   /** Returns a link to the user inbox feed. */
-  public FeedLink getInboxFeedLink() {
+  public FeedLink<?> getInboxFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.INBOX_REL);
   }
 
   /** Returns a link to the user playlists feed. */
-  public FeedLink getPlaylistsFeedLink() {
+  public FeedLink<?> getPlaylistsFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.PLAYLISTS_REL);
   }
 
   /** Returns a link to the users subscriptions feed. */
-  public FeedLink getSubscriptionsFeedLink() {
+  public FeedLink<?> getSubscriptionsFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.SUBSCRIPTIONS_REL);
   }
 
   /** Returns a link to the user uploads feed. */
-  public FeedLink getUploadsFeedLink() {
+  public FeedLink<?> getUploadsFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.UPLOADS_REL);
   }
+
+  /** Returns a link to the user's new subscription videos feed. */
+  public FeedLink<?> getNewSubscriptionVideosFeedLink() {
+    return EntryUtils.getFeedLink(this, YouTubeNamespace.NEW_SUBSCRIPTION_VIDEOS_REL);
+  }  
 
   /** Returns a link to the playlist defined by the user as video log. */
   public Link getVideoLogLink() {

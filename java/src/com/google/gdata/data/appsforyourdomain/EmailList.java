@@ -69,6 +69,7 @@ public class EmailList extends ExtensionPoint implements Extension {
     return EXTENSION_DESC;
   }
 
+  @Override
   public void generate(XmlWriter w, ExtensionProfile extensionProfile)
       throws IOException {
     ArrayList<XmlWriter.Attribute> attributes
@@ -87,14 +88,16 @@ public class EmailList extends ExtensionPoint implements Extension {
     w.endElement(Namespaces.APPS_NAMESPACE, EXTENSION_LOCAL_NAME);
   }
 
+  @Override
   public ElementHandler getHandler(ExtensionProfile extProfile,
-      String namespace, String localName, Attributes attrs)
-      throws ParseException, IOException {
+      String namespace, String localName, Attributes attrs) {
 
     /** <apps:emailList> parser. */
     return new ExtensionPoint.ExtensionHandler(extProfile, EmailList.class) {
+      
+      @Override
       public void processAttribute(String namespace, String localName,
-          String value) throws ParseException {
+          String value) {
         if ("".equals(namespace)) {
           if (ATTRIBUTE_NAME.equals(localName)) {
             name = value;
@@ -102,6 +105,7 @@ public class EmailList extends ExtensionPoint implements Extension {
         }
       }
 
+      @Override
       public void processEndElement() throws ParseException {
         if (name == null) {
           throw new ParseException(

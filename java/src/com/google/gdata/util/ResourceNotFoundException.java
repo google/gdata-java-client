@@ -49,8 +49,18 @@ public class ResourceNotFoundException extends ServiceException {
     initResponseCode();
   }
 
+  public ResourceNotFoundException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public ResourceNotFoundException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
+    initResponseCode();
+  }
+
   private void initResponseCode() {
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_NOT_FOUND);
   }
 }
-

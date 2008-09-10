@@ -18,6 +18,7 @@ package com.google.gdata.data.webmastertools;
 
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Category;
 
 /**
  * The SitesFeed class customizes the generic BaseFeed class to define
@@ -33,7 +34,14 @@ public class SitesFeed extends BaseFeed<SitesFeed, SitesEntry> {
    */
   public SitesFeed() {
     super(SitesEntry.class);
+    this.getCategories().add(CATEGORY);
   }
+
+  /**
+   * Kind category used to label feed.
+   */
+  private static final Category CATEGORY
+      = Namespaces.createCategory(Namespaces.KIND_SITES_FEED);
 
   /**
    * Declares feed extensions. We only add Webmaster Tools namespace to the

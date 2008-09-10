@@ -16,11 +16,9 @@
 
 package com.google.gdata.data.calendar;
 
-import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.extensions.Who;
-import com.google.gdata.data.calendar.ResourceProperty;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -28,7 +26,6 @@ import com.google.gdata.util.XmlParser;
 import org.xml.sax.Attributes;
 
 import java.io.IOException;
-
 
 /**
  * Calendar extensions to the base-level Who processing for calendar
@@ -50,7 +47,6 @@ public class EventWho extends Who {
     setExtension(resource);
   }
 
-
   /** Returns a suggested extension description, which is repeatable. */
   public static ExtensionDescription getDefaultDescription() {
     return getDefaultDescription(true);
@@ -69,12 +65,11 @@ public class EventWho extends Who {
     return desc;
   }
 
-
+  @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
                                              String namespace,
                                              String localName,
-                                             Attributes attrs)
-      throws ParseException, IOException {
+                                             Attributes attrs) {
 
     return new Handler(extProfile);
   }
@@ -84,12 +79,12 @@ public class EventWho extends Who {
   private class Handler extends Who.Handler {
 
 
-    public Handler(ExtensionProfile extProfile)
-        throws ParseException, IOException {
+    public Handler(ExtensionProfile extProfile) {
 
       super(extProfile, EventWho.class);
     }
 
+    @Override
     public XmlParser.ElementHandler getChildHandler(String namespace,
                                                     String localName,
                                                     Attributes attrs)

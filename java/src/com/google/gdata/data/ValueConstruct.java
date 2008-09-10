@@ -202,7 +202,7 @@ public abstract class ValueConstruct extends AbstractExtension {
   @Override
   public XmlParser.ElementHandler getHandler(ExtensionProfile p,
       String namespace, String localName, Attributes attrs)
-      throws ParseException, IOException {
+      throws ParseException {
     // for backwards compatibility set value to null first
     value = null;
     return super.getHandler(p, namespace, localName, attrs);

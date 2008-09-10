@@ -22,9 +22,8 @@ import com.google.gdata.data.contacts.ContactFeed;
 import com.google.gdata.data.contacts.ContactGroupFeed;
 
 /**
- * The ContactsService class extends the basic {@link GoogleService} abstraction
- * to define a service that is preconfigured for access to the Google Contacts
- * data API.
+ * Extends the basic {@link GoogleService} abstraction to define a service that
+ * is preconfigured for access to the Google Contacts data API.
  *
  * 
  */
@@ -43,8 +42,8 @@ public class ContactsService extends GoogleService {
       ContactsService.class.getPackage().getImplementationVersion();
 
   /**
-   * Constructs a ContactsService instance connecting to the Google Contacts
-   * service for an application with the name {@code applicationName}.
+   * Constructs an instance connecting to the Google Contacts service for an
+   * application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -53,14 +52,15 @@ public class ContactsService extends GoogleService {
    *                        monitor the source of authentication.
    */
   public ContactsService(String applicationName) {
-    this(applicationName, "https", "www.google.com");
+    super(CONTACTS_SERVICE, applicationName);
+    declareExtensions();
   }
 
   /**
-   * Constructs a GoogleService instance connecting to the Google Contacts
-   * service with name {@code serviceName} for an application with the name
-   * {@code applicationName}.  The service will authenticate at the provided
-   * {@code domainName}.
+   * Constructs an instance connecting to the Google Contacts service with name
+   * {@code serviceName} for an application with the name {@code
+   * applicationName}.  The service will authenticate at the provided {@code
+   * domainName}.
    *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
@@ -74,15 +74,21 @@ public class ContactsService extends GoogleService {
   public ContactsService(String applicationName, String protocol,
       String domainName) {
     super(CONTACTS_SERVICE, applicationName, protocol, domainName);
-
-    // Declare the extensions of the feeds
-    new ContactFeed().declareExtensions(getExtensionProfile());
-    new ContactGroupFeed().declareExtensions(getExtensionProfile());
-    BatchUtils.declareExtensions(getExtensionProfile());
+    declareExtensions();
   }
 
+  @Override
   public String getServiceVersion() {
     return CONTACTS_SERVICE_VERSION + " " + super.getServiceVersion();
+  }
+
+  /**
+   * Declare the extensions of the feeds for the Google Contacts service.
+   */
+  private void declareExtensions() {
+    new ContactFeed().declareExtensions(extProfile);
+    new ContactGroupFeed().declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
   }
 
 }

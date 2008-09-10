@@ -31,6 +31,10 @@ import com.google.gdata.data.batch.BatchInterrupted;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.introspection.ServiceDocument;
 import com.google.gdata.util.ContentType;
+import com.google.gdata.util.NotModifiedException;
+import com.google.gdata.util.ParseException;
+import com.google.gdata.util.PreconditionFailedException;
+import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
@@ -38,6 +42,7 @@ import com.google.gdata.util.VersionRegistry;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 
 /**
@@ -87,11 +92,17 @@ public class Service {
      * migration to OpenSearch 1.1, and other (TBD) features.
      */
     public static final Version V2 = new Version(Service.class, 2, 0);
+    /**
+     * The eventual future V3 release (not yet supported) of the GData
+     * core protocol that will default to structured error messages.
+     */
+    public static final Version V3 = new Version(Service.class, 3, 0);
   }
 
   /**
    * Initializes the default client version for the GData core protocol.
    */
+  @SuppressWarnings("unused")
   private static final Version CORE_VERSION =
       initServiceVersion(Service.class, Versions.V1);
 
@@ -361,12 +372,22 @@ public class Service {
   protected static Version initServiceVersion(
       Class<? extends Service> serviceClass, Version defaultVersion) {
 
-    // Allow override via a Java system property
-    Version v = VersionRegistry.getVersionFromProperty(serviceClass);
-    if (v == null) {
-      v = defaultVersion;
+    VersionRegistry versionRegistry = VersionRegistry.ensureRegistry();
+    Version v;
+    try {
+      // Check to see if default has already been defined
+      v = versionRegistry.getVersion(serviceClass);
+    } catch (IllegalStateException ise) {
+ 
+      // If not, use system property override or provided default version
+      v = VersionRegistry.getVersionFromProperty(serviceClass);
+      if (v == null) {
+        v = defaultVersion;
+      }
+      // Do not include any implied versions, which are defaulted separately
+      // by their own service static initialization.
+      versionRegistry.addDefaultVersion(v, false);
     }
-    ClientVersion.init(v);
     return v;
   }
 
@@ -832,10 +853,6 @@ public class Service {
     }
   }
   
-
-
-
-
   /**
    * Executes a GData feed request against the target service and returns the
    * resulting feed results via an input stream.
@@ -1314,10 +1331,21 @@ public class Service {
    * @throws ServiceException delete request failed due to system error.
    */
   public void delete(URL resourceUrl) throws IOException, ServiceException {
-
     delete(resourceUrl, null);
   }
   
+  /**
+   * Deletes an existing entry (and associated media content, if any) using the
+   * specified edit URI.
+   * 
+   * @param resourceUri the edit or medit edit URI associated with the resource.
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.ResourceNotFoundException invalid entry URI.
+   * @throws ServiceException delete request failed due to system error.
+   */
+  public void delete(URI resourceUri) throws IOException, ServiceException {
+    delete(resourceUri.toURL(), null);
+  }
   
   /**
    * Deletes an existing entry (and associated media content, if any) using the
@@ -1341,7 +1369,26 @@ public class Service {
     request.setEtag(etag);
     request.execute();
   }
-
+  
+  /**
+   * Deletes an existing entry (and associated media content, if any) using the
+   * specified edit URI. This delete is conditional upon the provided tag
+   * matching the current entity tag for the entry. If (and only if) they match,
+   * the deletion will be performed.
+   * 
+   * @param resourceUri the edit or medit edit URI associated with the resource.
+   * @param etag the entity tag value that is the expected value for the target
+   *        resource.   A value of {@code null} will not set an etag 
+   *        precondition and a value of <code>"*"</code> will perform an
+   *        unconditional delete.
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.ResourceNotFoundException invalid entry URI.
+   * @throws ServiceException delete request failed due to system error.
+   */
+  public void delete(URI resourceUri, String etag)
+      throws IOException, ServiceException {
+    delete(resourceUri.toURL(), etag);
+  }
 
   /**
    * Creates a new GDataRequest that can be used to delete an Atom entry. For

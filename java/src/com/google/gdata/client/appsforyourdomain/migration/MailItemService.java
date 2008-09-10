@@ -75,22 +75,38 @@ public class MailItemService extends AppsForYourDomainService {
   public static final String URL_SUFFIX = "/mail/batch";
 
   /**
-   * Constructs a MailItemService instance for an application with
-   * the name {@code applicationName}.
-   *
+   * Constructs a {@code MailItemService} instance for an application with the
+   * name {@code applicationName}.
+   * 
    * @param applicationName the name of the client application accessing the
-   *                        service. Application names should preferably have
-   *                        the format [company-id]-[app-name]-[app-version].
-   *                        The name will be used by the Google servers to
-   *                        monitor the source of authentication.
+   *        service. Application names should preferably have the format
+   *        [company-id]-[app-name]-[app-version]. The name will be used by the
+   *        Google servers to monitor the source of authentication.
    */
   public MailItemService(String applicationName) {
-    super(applicationName, HTTPS_PROTOCOL, DOMAIN_NAME);
+    this(applicationName, HTTPS_PROTOCOL, DOMAIN_NAME);
+  }
+  
+  /**
+   * Constructs a {@code MailItemService} instance connecting to the service
+   * with name {@code serviceName} for an application with the name
+   * {@code applicationName}. The service will authenticate at the provided
+   * {@code domainName}.
+   * 
+   * @param applicationName the name of the client application accessing the
+   *        service. Application names should preferably have the format
+   *        [company-id]-[app-name]-[app-version]. The name will be used by the
+   *        Google servers to monitor the source of authentication.
+   * @param protocol name of protocol to use for authentication ("http"/"https")
+   * @param domainName the name of the domain hosting the login handler
+   */
+  public MailItemService(String applicationName, String protocol, String domainName) {
+    super(applicationName, protocol, domainName);
     
     BatchUtils.declareExtensions(getExtensionProfile());
     new MailItemFeed().declareExtensions(getExtensionProfile());
   }
-  
+
   /**
    * Inserts one or more MailItem entries in a single batch operation.  Using
    * {@code batch} instead of repeated calls to {@code insert} is helpful in

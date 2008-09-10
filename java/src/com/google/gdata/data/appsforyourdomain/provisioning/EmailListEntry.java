@@ -59,7 +59,7 @@ public class EmailListEntry extends BaseEntry<EmailListEntry> {
    * Constructs a new EmailListEntry by doing a shallow copy of data from an
    * existing BaseEntry intance.
    */
-  public EmailListEntry(BaseEntry sourceEntry) {
+  public EmailListEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
     getCategories().add(EMAIL_LIST_CATEGORY);
   }

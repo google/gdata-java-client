@@ -38,9 +38,25 @@ public class NotModifiedException extends ServiceException {
     initResponseCode();
   }
 
+  public NotModifiedException(String message, Throwable cause) {
+    super(message, cause);
+    initResponseCode();
+  }
+
   public NotModifiedException(HttpURLConnection httpConn)
       throws IOException{
     super(httpConn);
+    initResponseCode();
+  }
+
+  public NotModifiedException(ErrorDomain.ErrorCode errorCode) {
+    super(errorCode);
+    initResponseCode();
+  }
+
+  public NotModifiedException(ErrorDomain.ErrorCode errorCode,
+      Throwable cause) {
+    super(errorCode, cause);
     initResponseCode();
   }
 
@@ -48,4 +64,3 @@ public class NotModifiedException extends ServiceException {
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_NOT_MODIFIED);
   }
 }
-

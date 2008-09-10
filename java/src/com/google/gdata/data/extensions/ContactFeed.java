@@ -47,7 +47,7 @@ public class ContactFeed extends BaseFeed<ContactFeed, ContactEntry> {
    * Constructs a new {@code ContactFeed} instance that is initialized using
    * data from another BaseFeed instance.
    */
-  public ContactFeed(BaseFeed sourceFeed) {
+  public ContactFeed(BaseFeed<?, ?> sourceFeed) {
     super(ContactEntry.class, sourceFeed);
     getCategories().add(ContactEntry.CONTACT_CATEGORY);
   }
