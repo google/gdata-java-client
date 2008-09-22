@@ -49,7 +49,6 @@ import java.util.logging.Logger;
  * interface to connect with a Google-GData server.
  *
  * 
- * 
  */
 public class GoogleGDataRequest extends HttpGDataRequest {
 

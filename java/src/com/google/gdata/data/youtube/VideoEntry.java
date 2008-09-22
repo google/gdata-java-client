@@ -239,6 +239,10 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     if (state == null) {
       if (control != null) {
         control.removeExtension(YtPublicationState.class);
+        // check if we can remove app. control
+        if (control.isDraft() == false && control.getExtensions().isEmpty()) {
+          setPubControl(null);
+        }
       }
     } else {
       if (control == null) {

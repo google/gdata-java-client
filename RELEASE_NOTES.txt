@@ -1,5 +1,11 @@
 Google Data API - Release Notes
 
+Notes for v1.22.0
+-----------------
+Sep 22, 2008
+o  Added support for Book Search Data API.
+o  Data model updates for Blogger Data API, Youtube Data API.
+
 Notes for v1.21.0
 -----------------
 Sep 9, 2008

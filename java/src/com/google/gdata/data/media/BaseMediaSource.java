@@ -28,10 +28,11 @@ import com.google.gdata.data.DateTime;
  */
 abstract public class BaseMediaSource implements MediaSource {
 
-  protected String mediaType;           // required
-  protected long contentLength = -1;    // default: unknown
-  protected DateTime lastModified;      // default: unknown
-  protected String name;                // default: none
+  protected final String mediaType;           // required
+  protected long contentLength = -1;          // default: unknown
+  protected DateTime lastModified;            // default: unknown
+  protected String name;                      // default: none
+  protected String etag;                      // default: unknown
 
   /**
    * Constructs a new BaseMediaSource of the specified content type.
@@ -54,4 +55,9 @@ abstract public class BaseMediaSource implements MediaSource {
     this.contentLength = contentLength;
   }
   public long getContentLength() { return contentLength; }
+
+  public void setEtag(String etag) {
+    this.etag = etag;
+  }
+  public String getEtag() { return etag; }
 }

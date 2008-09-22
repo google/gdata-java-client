@@ -54,6 +54,12 @@ public interface MediaSource extends DataSource {
    * if unknown.
    */
   public DateTime getLastModified();
+  
+  /**
+   * Returns the entity tag (etag) value associated with the media content
+   * or {@code null} if unknown.
+   */
+  public String getEtag();
 
   /**
    * The Output class provides helper methods for MediaSource handling.

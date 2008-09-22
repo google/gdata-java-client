@@ -125,6 +125,8 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
   }
 
   /**
+
+
    * Retrieves the web content link
    */
   public Link getWebContentLink() {
@@ -166,3 +168,4 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
   }
 
 }
+

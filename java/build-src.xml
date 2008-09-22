@@ -13,6 +13,7 @@
   <!-- Include property specific build scripts -->
   <import file="build-src/appsforyourdomain.xml"/>
   <import file="build-src/blogger.xml"/>
+  <import file="build-src/books.xml"/>
   <import file="build-src/calendar.xml"/>
   <import file="build-src/codesearch.xml"/>
   <import file="build-src/contacts.xml"/>
@@ -35,6 +36,7 @@
     <antcall target="core.build.core"/>
     <antcall target="appsforyourdomain.build.appsforyourdomain"/>
     <antcall target="blogger.build.blogger"/>
+    <antcall target="books.build.books"/>
     <antcall target="calendar.build.calendar"/>
     <antcall target="codesearch.build.codesearch"/>
     <antcall target="contacts.build.contacts"/>
@@ -52,6 +54,7 @@
     <antcall target="core.clean.core"/>
     <antcall target="appsforyourdomain.clean.appsforyourdomain"/>
     <antcall target="blogger.clean.blogger"/>
+    <antcall target="books.clean.books"/>
     <antcall target="calendar.clean.calendar"/>
     <antcall target="codesearch.clean.codesearch"/>
     <antcall target="contacts.clean.contacts"/>

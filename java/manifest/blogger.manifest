@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Class-Path: gdata-client-@client.spec.version@.jar gdata-blogger-meta-@blogger.spec.version@.jar
+Class-Path: gdata-client-@client.spec.version@.jar gdata-media-@media.spec.version@.jar gdata-blogger-meta-@blogger.spec.version@.jar
 
 Name: com/google/gdata/client/blogger/
 Specification-Title: Google Blogger Data API

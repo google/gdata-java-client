@@ -53,6 +53,21 @@ public class YouTubeMediaGroup extends MediaGroup {
 
   private static final String UPLOADER_ROLE = "uploader";
 
+  /** Gets the YouTube ID of the video. */
+  public String getVideoId() {
+    YtVideoId videoId = getExtension(YtVideoId.class);
+    return videoId == null ? null : videoId.getVideoId();
+  }
+  
+  /** Sets the YouTube video ID of the video. */
+  public void setVideoId(String videoId) {
+    if (videoId == null) {
+      removeExtension(YtVideoId.class);
+    } else {
+      setExtension(new YtVideoId(videoId));
+    }
+  }
+  
   /** Gets the duration, in seconds, of the youtube video. */
   public Long getDuration() {
     YtDuration duration = getExtension(YtDuration.class);
@@ -422,6 +437,7 @@ public class YouTubeMediaGroup extends MediaGroup {
    */
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    extProfile.declare(YouTubeMediaGroup.class, YtVideoId.class);
     extProfile.declare(YouTubeMediaGroup.class, YtDuration.class);
     extProfile.declare(YouTubeMediaGroup.class, YtPrivate.class);
     extProfile.declare(YouTubeMediaGroup.class, YouTubeMediaContent.class);

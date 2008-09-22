@@ -74,8 +74,8 @@ public class MediaGroup extends ExtensionPoint implements Extension {
   public Set<MediaCategory> getCategoriesWithScheme(String scheme) {
     Set<MediaCategory> result = new HashSet<MediaCategory>();
     for (MediaCategory category : getCategories()) {
-      if (category.getScheme() == scheme
-          || (category.getScheme() != null && category.getScheme().equals(scheme))) {
+      if ((scheme == null && category.getScheme() == null)
+          || (scheme != null && scheme.equals(category.getScheme()))) {
         result.add(category);
       }
     }
@@ -197,26 +197,6 @@ public class MediaGroup extends ExtensionPoint implements Extension {
 
   public void addRestriction(MediaRestriction restriction) {
     getRestrictions().add(restriction);
-  }
-
-  public List<MediaPlayer> getPlayers() {
-    return getRepeatingExtension(MediaPlayer.class);
-  }
-
-  public void clearPlayers() {
-    getPlayers().clear();
-  }
-
-  public void addPlayer(MediaPlayer player) {
-    getPlayers().add(player);
-  }
-
-  public void setRestriction(MediaRestriction restriction) {
-    if (restriction == null) {
-      removeExtension(MediaRestriction.class);
-    } else {
-      setExtension(restriction);
-    }
   }
 
   public void setTitle(MediaTitle title) {

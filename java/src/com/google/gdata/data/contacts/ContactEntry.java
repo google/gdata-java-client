@@ -351,4 +351,35 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     return "{ContactEntry " + super.toString() + "}";
   }
 
+  
+  /**
+   * Returns the gender.
+   *
+   * @return gender
+   */
+  public Gender getGender() {
+    return getExtension(Gender.class);
+  }
+
+  /**
+   * Sets the gender.
+   *
+   * @param gender gender or <code>null</code> to reset
+   */
+  public void setGender(Gender gender) {
+    if (gender == null) {
+      removeExtension(Gender.class);
+    } else {
+      setExtension(gender);
+    }
+  }
+
+  /**
+   * Returns whether it has the gender.
+   *
+   * @return whether it has the gender
+   */
+  public boolean hasGender() {
+    return hasExtension(Gender.class);
+  }
 }

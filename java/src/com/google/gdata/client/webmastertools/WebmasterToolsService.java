@@ -16,7 +16,9 @@
 
 package com.google.gdata.client.webmastertools;
 
+import com.google.gdata.client.AuthTokenFactory;
 import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.Service;
 import com.google.gdata.data.webmastertools.MessagesFeed;
 import com.google.gdata.data.webmastertools.SitemapsFeed;
 import com.google.gdata.data.webmastertools.SitesFeed;
@@ -47,13 +49,33 @@ public class WebmasterToolsService extends GoogleService {
    * application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
-   *                        service. Application names should preferably have
-   *                        the format [company-id]-[app-name]-[app-version].
-   *                        The name will be used by the Google servers to
-   *                        monitor the source of authentication.
+   *     service. Application names should preferably have the format
+   *     [company-id]-[app-name]-[app-version]. The name will be used by the
+   *     Google servers to monitor the source of authentication.
    */
   public WebmasterToolsService(String applicationName) {
     super(WEBMASTERTOOLS_SERVICE, applicationName);
+    declareExtensions();
+  }
+
+  /**
+   * Constructs an instance connecting to the Webmaster Tools service for an
+   * application with the name {@code applicationName} and the given {@code
+   * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
+   * override the default factories.
+   *
+   * @param applicationName the name of the client application accessing the
+   *     service. Application names should preferably have the format
+   *     [company-id]-[app-name]-[app-version]. The name will be used by the
+   *     Google servers to monitor the source of authentication.
+   * @param requestFactory the request factory that generates gdata request
+   *     objects
+   * @param authTokenFactory the factory that creates auth tokens
+   */
+  public WebmasterToolsService(String applicationName,
+      Service.GDataRequestFactory requestFactory,
+      AuthTokenFactory authTokenFactory) {
+    super(applicationName, requestFactory, authTokenFactory);
     declareExtensions();
   }
 
@@ -64,12 +86,11 @@ public class WebmasterToolsService extends GoogleService {
    * domainName}.
    *
    * @param applicationName the name of the client application accessing the
-   *                        service. Application names should preferably have
-   *                        the format [company-id]-[app-name]-[app-version].
-   *                        The name will be used by the Google servers to
-   *                        monitor the source of authentication.
+   *     service. Application names should preferably have the format
+   *     [company-id]-[app-name]-[app-version]. The name will be used by the
+   *     Google servers to monitor the source of authentication.
    * @param protocol        name of protocol to use for authentication
-   *                        ("http"/"https")
+   *     ("http"/"https")
    * @param domainName      the name of the domain hosting the login handler
    */
   public WebmasterToolsService(String applicationName, String protocol,
@@ -91,4 +112,5 @@ public class WebmasterToolsService extends GoogleService {
     new SitemapsFeed().declareExtensions(extProfile);
     new SitesFeed().declareExtensions(extProfile);
   }
+
 }

@@ -16,6 +16,7 @@
 
 package com.google.gdata.client.health;
 
+import com.google.gdata.client.AuthTokenFactory;
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Service;
 import com.google.gdata.data.health.ProfileFeed;
@@ -69,13 +70,33 @@ public class HealthService extends GoogleService {
    * with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
-   *                        service. Application names should preferably have
-   *                        the format [company-id]-[app-name]-[app-version].
-   *                        The name will be used by the Google servers to
-   *                        monitor the source of authentication.
+   *     service. Application names should preferably have the format
+   *     [company-id]-[app-name]-[app-version]. The name will be used by the
+   *     Google servers to monitor the source of authentication.
    */
   public HealthService(String applicationName) {
     super(HEALTH_SERVICE, applicationName);
+    declareExtensions();
+  }
+
+  /**
+   * Constructs an instance connecting to the Health service for an application
+   * with the name {@code applicationName} and the given {@code
+   * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
+   * override the default factories.
+   *
+   * @param applicationName the name of the client application accessing the
+   *     service. Application names should preferably have the format
+   *     [company-id]-[app-name]-[app-version]. The name will be used by the
+   *     Google servers to monitor the source of authentication.
+   * @param requestFactory the request factory that generates gdata request
+   *     objects
+   * @param authTokenFactory the factory that creates auth tokens
+   */
+  public HealthService(String applicationName,
+      Service.GDataRequestFactory requestFactory,
+      AuthTokenFactory authTokenFactory) {
+    super(applicationName, requestFactory, authTokenFactory);
     declareExtensions();
   }
 
@@ -85,12 +106,11 @@ public class HealthService extends GoogleService {
    * service will authenticate at the provided {@code domainName}.
    *
    * @param applicationName the name of the client application accessing the
-   *                        service. Application names should preferably have
-   *                        the format [company-id]-[app-name]-[app-version].
-   *                        The name will be used by the Google servers to
-   *                        monitor the source of authentication.
+   *     service. Application names should preferably have the format
+   *     [company-id]-[app-name]-[app-version]. The name will be used by the
+   *     Google servers to monitor the source of authentication.
    * @param protocol        name of protocol to use for authentication
-   *                        ("http"/"https")
+   *     ("http"/"https")
    * @param domainName      the name of the domain hosting the login handler
    */
   public HealthService(String applicationName, String protocol,

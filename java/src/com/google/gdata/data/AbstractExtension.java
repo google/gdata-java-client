@@ -89,6 +89,20 @@ public abstract class AbstractExtension implements Extension {
   }
 
   /**
+   * Gets the extension's namespace.
+   */
+  public final XmlWriter.Namespace getExtensionNamespace() {
+    return namespace;
+  }
+
+  /**
+   * Gets the extension's localname.
+   */
+  public final String getExtensionLocalName() {
+    return localName;
+  }
+
+  /**
    * Checks the attributes to see if there are any problems.  Default
    * implementation does nothing, though generally this is discouraged unless
    * there really are no restrictions.

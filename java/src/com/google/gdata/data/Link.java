@@ -121,6 +121,11 @@ public class Link extends ExtensionPoint implements ILink {
      * for the content in the feed.
      */
     public static final String VIA = "via";
+
+    /**
+     * Relation for links to enclosure (podcasting) files.
+     */
+    public static final String ENCLOSURE = "enclosure";
   }
 
   /**

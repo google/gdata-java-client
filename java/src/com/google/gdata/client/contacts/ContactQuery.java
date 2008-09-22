@@ -24,11 +24,14 @@ import java.net.URL;
  * Describes a query for the following feeds:<ul>
  * <li>The feed of contacts</li>
  * <li>The feed of contact groups</li>
- * </ul>.
+ * </ul>
  *
  * 
  */
 public class ContactQuery extends Query {
+
+  /** Group id. */
+  private String group;
 
   /** Order of entries in a feed. */
   private OrderBy orderBy = OrderBy.NONE;
@@ -103,6 +106,32 @@ public class ContactQuery extends Query {
    */
   public ContactQuery(URL feedUrl) {
     super(feedUrl);
+  }
+
+  /**
+   * Returns the group id.  Results are limited to contacts belonging to this
+   * group..
+   *
+   * @return group id or <code>null</code> to indicate that the parameter is not
+   *     set.
+   */
+  public String getGroup() {
+    return group;
+  }
+
+  /**
+   * Sets the group id.  Results are limited to contacts belonging to this
+   * group..
+   *
+   * @param group group id or <code>null</code> to remove this parameter if set.
+   */
+  public void setGroup(String group) {
+    // check if setting to existing value
+    if (this.group == null ? group != null : !this.group.equals(group)) {
+      // set to new value for customer parameter
+      this.group = group;
+      setStringCustomParameter("group", group);
+    }
   }
 
   /**

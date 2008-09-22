@@ -16,8 +16,12 @@
 
 package com.google.gdata.data.blogger;
 
+import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.ExtensionDescription;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.media.mediarss.MediaThumbnail;
 
 /**
  * Describes a blog post entry.
@@ -41,6 +45,59 @@ public class PostEntry extends BaseEntry<PostEntry> {
    */
   public PostEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
+  }
+
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    if (extProfile.isDeclared(PostEntry.class)) {
+      return;
+    }
+    super.declareExtensions(extProfile);
+    extProfile.declare(PostEntry.class,
+        new ExtensionDescription(MediaThumbnail.class,
+        new XmlWriter.Namespace("media", "http://search.yahoo.com/mrss/"),
+        "thumbnail", false, false, false));
+  }
+
+  /**
+   * Returns the media thumbnail.
+   *
+   * @return media thumbnail
+   */
+  public MediaThumbnail getThumbnail() {
+    return getExtension(MediaThumbnail.class);
+  }
+
+  /**
+   * Sets the media thumbnail.
+   *
+   * @param thumbnail media thumbnail or <code>null</code> to reset
+   */
+  public void setThumbnail(MediaThumbnail thumbnail) {
+    if (thumbnail == null) {
+      removeExtension(MediaThumbnail.class);
+    } else {
+      setExtension(thumbnail);
+    }
+  }
+
+  /**
+   * Returns whether it has the media thumbnail.
+   *
+   * @return whether it has the media thumbnail
+   */
+  public boolean hasThumbnail() {
+    return hasExtension(MediaThumbnail.class);
+  }
+
+  /**
+   * Returns the link that identifies a resource related to the entry.
+   *
+   * @return Link that identifies a resource related to the entry or {@code
+   *     null} for none.
+   */
+  public Link getEnclosureLink() {
+    return getLink(Link.Rel.ENCLOSURE, null);
   }
 
   /**
@@ -83,6 +140,10 @@ public class PostEntry extends BaseEntry<PostEntry> {
    */
   public Link getRepliesLink() {
     return getLink(BloggerLink.Rel.REPLIES, Link.Type.ATOM);
+  }
+
+  @Override
+  protected void validate() {
   }
 
   @Override

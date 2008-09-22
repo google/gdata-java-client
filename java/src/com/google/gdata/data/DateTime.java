@@ -60,7 +60,7 @@ public class DateTime implements Comparable<Object> {
 
 
   public static DateTime now() {
-    return new DateTime(new Date(), TimeZone.getTimeZone("GMT"));
+    return new DateTime(new Date(), GMT);
   }
 
 
@@ -157,9 +157,10 @@ public class DateTime implements Comparable<Object> {
   private static final SimpleDateFormat dateTimeFormat822 =
     new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
+  private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
   static {
-    dateTimeFormat822.setTimeZone(TimeZone.getTimeZone("GMT"));
+    dateTimeFormat822.setTimeZone(GMT);
   }
 
 
@@ -169,7 +170,7 @@ public class DateTime implements Comparable<Object> {
 
     StringBuilder sb = new StringBuilder();
 
-    Calendar dateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+    Calendar dateTime = new GregorianCalendar(GMT);
     long localTime = value;
     if (tzShift != null) {
      localTime += tzShift.longValue() * 60000;
@@ -245,7 +246,7 @@ public class DateTime implements Comparable<Object> {
 
     StringBuilder sb = new StringBuilder();
 
-    Calendar dateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+    Calendar dateTime = new GregorianCalendar(GMT);
     long localTime = value;
     if (tzShift != null) {
      localTime += tzShift.longValue() * 60000;
@@ -316,7 +317,7 @@ public class DateTime implements Comparable<Object> {
       }
     }
 
-    Calendar dateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+    Calendar dateTime = new GregorianCalendar(GMT);
 
     dateTime.clear();
     dateTime.set(Integer.valueOf(m.group(1)),
@@ -375,7 +376,7 @@ public class DateTime implements Comparable<Object> {
       }
     }
 
-    Calendar dateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+    Calendar dateTime = new GregorianCalendar(GMT);
 
     dateTime.clear();
     dateTime.set(Integer.valueOf(m.group(1)),
