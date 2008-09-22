@@ -8,6 +8,10 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.22.0 ==
+  *  Added support for Book Search Data API.
+  *  Updated data model for Blogger Data API and Youtube Data API.
+
 == 1.21.0 ==
   *  Added support for OAuth authentication with options to sign requests using RSA-SHA1 or HMAC-SHA1.  See OAuth sample included in this package for usage details.
   *  Updated PicasaWeb Album API and YouTube API data model classes.
