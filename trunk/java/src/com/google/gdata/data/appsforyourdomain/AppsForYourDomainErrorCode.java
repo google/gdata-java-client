@@ -63,7 +63,9 @@ public enum AppsForYourDomainErrorCode {
   DuplicateDestinations(1601),
   TooManyDestinations(1602),
   InvalidRouteAddress(1603),
-  
+
+  GroupCannotContainCycle(1700),
+
   InvalidDomainEdition(1800),
   InvalidValue(1801);
 

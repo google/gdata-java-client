@@ -14,6 +14,7 @@
   <import file="build-samples/appsforyourdomain.xml"/>
   <import file="build-samples/authsub.xml"/>
   <import file="build-samples/blogger.xml"/>
+  <import file="build-samples/books.xml"/>
   <import file="build-samples/calendar.xml"/>
   <import file="build-samples/codesearch.xml"/>
   <import file="build-samples/contacts.xml"/>
@@ -36,6 +37,7 @@
     <antcall target="appsforyourdomain.sample.appsforyourdomain.build"/>
     <antcall target="authsub.sample.authsub.build"/>
     <antcall target="blogger.sample.blogger.build"/>
+    <antcall target="books.sample.books.build"/>
     <antcall target="calendar.sample.calendar.build"/>
     <antcall target="codesearch.sample.codesearch.build"/>
     <antcall target="contacts.sample.contacts.build"/>
@@ -55,6 +57,7 @@
     <antcall target="appsforyourdomain.sample.appsforyourdomain.clean"/>
     <antcall target="authsub.sample.authsub.clean"/>
     <antcall target="blogger.sample.blogger.clean"/>
+    <antcall target="books.sample.books.clean"/>
     <antcall target="calendar.sample.calendar.clean"/>
     <antcall target="codesearch.sample.codesearch.clean"/>
     <antcall target="contacts.sample.contacts.clean"/>

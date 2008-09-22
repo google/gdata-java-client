@@ -16,6 +16,7 @@
 
 package com.google.gdata.data.media;
 
+import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.data.IEntry;
 
 import java.io.ByteArrayInputStream;
@@ -50,7 +51,7 @@ public class MediaBodyPart extends MimeBodyPart {
    * {@link MediaSource} instance associated with the media, and returns it
    * as the content representation for the data.
    */
-  private class MediaSourceDataHandler extends DataHandler {
+  private static class MediaSourceDataHandler extends DataHandler {
 
     MediaSource source;
 
@@ -100,6 +101,10 @@ public class MediaBodyPart extends MimeBodyPart {
     this.mediaSource = mediaSource;
     //headers.setHeader("Content-Type", mediaSource.getContentType());
     setHeader("Content-Type", mediaSource.getContentType());
+    String etag = mediaSource.getEtag();
+    if (etag != null) {
+      setHeader(GDataProtocol.Header.ETAG, etag);
+    }
     initMediaDataHandler();
   }
 
@@ -108,8 +113,13 @@ public class MediaBodyPart extends MimeBodyPart {
     super(headers, content);
     // javax.mail.util.SharedByteArrayInputStream here.
     String contentType = getContentType();
-    mediaSource =
-       new MediaStreamSource(new ByteArrayInputStream(content), contentType);
+    MediaStreamSource mediaStreamSource =
+        new MediaStreamSource(new ByteArrayInputStream(content), contentType);
+    String etag = getHeader(GDataProtocol.Header.ETAG, null);
+    if (etag != null) {
+      mediaStreamSource.setEtag(etag);
+    }
+    mediaSource = mediaStreamSource;
     initMediaDataHandler();
   }
 

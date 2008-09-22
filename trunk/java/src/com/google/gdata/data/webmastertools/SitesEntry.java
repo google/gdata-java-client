@@ -340,7 +340,15 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
   public List<VerificationMethod> getVerificationMethods() {
     return getRepeatingExtension(VerificationMethod.class);
   }
-  
+
+  /**
+   * Returns a List of {@link EntryLink} for the links of this class, which
+   * are the child feeds.
+   */
+  public List<EntryLink> getEntryLinks() {
+    return getRepeatingExtension(EntryLink.class);
+  }
+
   /**
    * Validates that the list of verification methods contains no duplicate
    * method types and in-use flag is only set once.

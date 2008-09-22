@@ -32,11 +32,10 @@ public class GDataProtocol {
   public interface Header {
 
     /**
-     * The VERSION header is used to request a specific service version. The
-     * value of the parameter will be in the format {@code <major>.<minor>} and
-     * will be interpreted relative to the version model of the target service.
+     * The ETAG header is used to return an HTTP entity tag for a resource in
+     * a GData response.
      */
-    public static final String VERSION = "GData-Version";
+    public static final String ETAG = "ETag";
 
     /**
      * The IF_MATCH header is used to request specific entity versions. The
@@ -61,6 +60,13 @@ public class GDataProtocol {
      * value of the parameter will be a space-separated list of Etags.
      */
     public static final String IF_NONE_MATCH = "If-None-Match";
+    
+
+    /**
+     * The ETAG header is used to return an last modification time for a
+     * resource in a GData response.
+     */
+    public static final String LAST_MODIFIED = "Last-Modified";
 
     /**
      * The METHOD_OVERRIDE parameter overrides the normal HTTP method. The value
@@ -71,6 +77,13 @@ public class GDataProtocol {
      * invocation to the corresponding request type.
      */
     public static final String METHOD_OVERRIDE = "X-HTTP-Method-Override";
+
+    /**
+     * The VERSION header is used to request a specific service version. The
+     * value of the parameter will be in the format {@code <major>.<minor>} and
+     * will be interpreted relative to the version model of the target service.
+     */
+    public static final String VERSION = "GData-Version";
   }
 
   /**

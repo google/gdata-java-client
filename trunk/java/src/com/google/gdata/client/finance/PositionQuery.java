@@ -22,7 +22,7 @@ import java.net.URL;
 
 /**
  * Describes a query for the feed of all the positions belonging to the
- * portfolio..
+ * portfolio.
  *
  * 
  */

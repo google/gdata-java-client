@@ -229,6 +229,7 @@
       <include name="data/acl/**/*.java"/>
       <include name="data/apt/**/*.java"/>
       <include name="data/batch/**/*.java"/>
+      <include name="data/dublincore/**/*.java"/>
       <include name="data/geo/**/*.java"/>
       <include name="data/introspection/**/*.java"/>
       <include name="data/threading/**/*.java"/>

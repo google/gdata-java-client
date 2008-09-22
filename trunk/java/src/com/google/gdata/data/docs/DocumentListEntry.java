@@ -114,14 +114,14 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * Label for category.
    */
   public static final String UNKNOWN_LABEL = "unknown";
-  
+
   /**
    * Kind category term used to label the entries which are
    * of document type.
    */
-  public static final String UNKNOWN_KIND = DocumentListFeed.DOCUMENT_NAMESPACE 
+  public static final String UNKNOWN_KIND = DocumentListFeed.DOCUMENT_NAMESPACE
       + "#" + DocumentListEntry.UNKNOWN_LABEL;
-  
+
   /**
    * Category used to label entries which are of document type.
    */
@@ -130,6 +130,9 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
   public static final String FOLDERS_NAMESPACE =
       DOCUMENT_NAMESPACE + "/folders";
+
+  public static final String PARENT_NAMESPACE =
+    DOCUMENT_NAMESPACE + "#parent";
 
   /**
    * Constructs a new uninitialized entry, to be populated by the
@@ -164,7 +167,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   public Link getDocumentLink() {
     return super.getHtmlLink();
   }
-  
+
   /**
    * Gets the non-user-friendly key that is used to access the
    * document feed.  This is the key that can be used to construct the
@@ -172,20 +175,20 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * feed.
    *
    * <code>http://docs.google.com/getdoc?id={id}</code>
-   * <code>http://spreadsheets.google.com/ccc?key={id}</code> 
-   * 
+   * <code>http://spreadsheets.google.com/ccc?key={id}</code>
+   *
    * @return the Google Docs &amp; Spreadsheets id
    */
   public String getKey() {
     String result = state.id;
     if (result != null) {
       int position = result.lastIndexOf("/");
-    
+
       if (position > 0) {
         result = result.substring(position + 1);
       }
     }
-    
+
     return result;
   }
 
@@ -299,5 +302,9 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   public AclFeed getAclFeed() {
     DocumentListAclFeedLink feedLink = getAclFeedLink();
     return (feedLink != null) ? feedLink.getFeed() : null;
+  }
+
+  public List<Link> getParentLinks() {
+    return getLinks(PARENT_NAMESPACE, Link.Type.ATOM);
   }
 }

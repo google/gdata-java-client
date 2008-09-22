@@ -201,7 +201,38 @@ public class GoogleService extends Service implements TokenListener {
         new GoogleAuthTokenFactory(serviceName, applicationName,
                                    protocol, domainName, this);
     cookieManager = new SimpleCookieManager();
-    
+    initRequestFactory(applicationName);
+  }
+  
+  /**
+   * Constructs a GoogleService instance connecting to the service for an 
+   * application with the name {@code applicationName}.  The provided 
+   * {@code GDataRequestFactory} will create requests, and the given 
+   * {@code AuthTokenFactory} will be used to generate auth tokens. 
+   * A simple cookie manager is used.
+   * 
+   * @param applicationName the name of the client application accessing the
+   *                        service. Application names should preferably have
+   *                        the format [company-id]-[app-name]-[app-version].
+   *                        The name will be used by the Google servers to
+   *                        monitor the source of authentication.
+   * @param requestFactory  the request factory that generates gdata requests
+   * @param authTokenFactory the auth token factory that generates auth tokens
+   */
+  public GoogleService(String applicationName,
+                       GDataRequestFactory requestFactory,
+                       AuthTokenFactory authTokenFactory) {
+    this.requestFactory = requestFactory;
+    this.authTokenFactory = authTokenFactory;
+    cookieManager = new SimpleCookieManager();
+    initRequestFactory(applicationName);
+  }
+  
+  /**
+   * Sets the headers in the request factory with the appropriate user agent
+   * settings.
+   */
+  private void initRequestFactory(String applicationName) {
     if (applicationName != null) {
       requestFactory.setHeader("User-Agent",
           applicationName + " " + getServiceVersion());
@@ -209,7 +240,6 @@ public class GoogleService extends Service implements TokenListener {
       requestFactory.setHeader("User-Agent", getServiceVersion());
     }
   }
-
 
   /**
    * Returns the {@link AuthTokenFactory} currently associated with the service.
@@ -661,4 +691,5 @@ public class GoogleService extends Service implements TokenListener {
     return (GoogleAuthTokenFactory) authTokenFactory;
   }
 }
+
 

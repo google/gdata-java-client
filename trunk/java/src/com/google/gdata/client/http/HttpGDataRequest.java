@@ -319,17 +319,6 @@ public class HttpGDataRequest implements GDataRequest {
     return uc;
   }
 
-
-  /**
-   * Sets the number of milliseconds to wait for a connection to the remote
-   * GData service before timing out.
-   * 
-   * @param timeout the read timeout. A value of zero indicates an infinite
-   *        timeout.
-   * @throws IllegalArgumentException if the timeout value is negative.
-   * 
-   * @see java.net.URLConnection#setConnectTimeout(int)
-   */
   public void setConnectTimeout(int timeout) {
     if (timeout < 0) {
       throw new IllegalArgumentException("Timeout cannot be negative");
@@ -337,17 +326,6 @@ public class HttpGDataRequest implements GDataRequest {
     connectTimeout = timeout;
   }
 
-
-  /**
-   * Sets the number of milliseconds to wait for a response from the remote
-   * GData service before timing out.
-   * 
-   * @param timeout the read timeout. A value of zero indicates an infinite
-   *        timeout.
-   * @throws IllegalArgumentException if the timeout value is negative.
-   * 
-   * @see java.net.URLConnection#setReadTimeout(int)
-   */
   public void setReadTimeout(int timeout) {
     if (timeout < 0) {
       throw new IllegalArgumentException("Timeout cannot be negative");
@@ -355,13 +333,6 @@ public class HttpGDataRequest implements GDataRequest {
     readTimeout = timeout;
   }
 
-
-  /**
-   * Sets the If-Modified-Since date precondition to be applied to the request.
-   * If this precondition is set, then the request will be performed only if the
-   * target resource has been modified since the specified date; otherwise, a
-   * {@code NotModifiedException} will be thrown.
-   */
   public void setIfModifiedSince(DateTime conditionDate) {
     if (conditionDate == null) {
       return;
@@ -400,13 +371,6 @@ public class HttpGDataRequest implements GDataRequest {
     }
   }
 
-  /**
-   * Returns a stream that can be used to write request data to the GData
-   * service.
-   * 
-   * @return OutputStream that can be used to write GData request data.
-   * @throws IOException error obtaining the request output stream.
-   */
   public OutputStream getRequestStream() throws IOException {
 
     if (!expectsInput) {
@@ -419,26 +383,12 @@ public class HttpGDataRequest implements GDataRequest {
   }
 
 
-  /**
-   * Returns an XML writer that can be used to write XML request data to the
-   * GData service.
-   * 
-   * @return XmlWriter that can be used to write GData XML request data.
-   * @throws IOException error obtaining the request writer.
-   */
   public XmlWriter getRequestWriter() throws IOException {
     OutputStream requestStream = getRequestStream();
     Writer writer = new OutputStreamWriter(requestStream, "utf-8");
     return new XmlWriter(writer);
   }
 
-
-  /**
-   * Sets request method (and logs it, if enabled)
-   * 
-   * @param method Http method name.
-   * @throws ProtocolException exception.
-   */
   public void setMethod(String method) throws ProtocolException {
     httpConn.setRequestMethod(method);
     if (logger.isLoggable(Level.FINE)) {
@@ -446,30 +396,17 @@ public class HttpGDataRequest implements GDataRequest {
     }
   }
 
-  /**
-   * Sets request header (and logs it, if enabled)
-   */
   public void setHeader(String name, String value) {
     httpConn.setRequestProperty(name, value);
     logger.finer(name + ": " + value);
   }
 
 
-  /**
-   * Sets request header and log just it's name, not it's value
-   */
   public void setPrivateHeader(String name, String value) {
     httpConn.setRequestProperty(name, value);
     logger.finer(name + ": <Not Logged>");
   }
 
-
-  /**
-   * Executes the GData service request.
-   * 
-   * @throws IOException error writing to or reading from GData service.
-   * @throws ServiceException service invocation error.
-   */
   public void execute() throws IOException, ServiceException {
 
     if (connectTimeout >= 0) {
@@ -589,18 +526,7 @@ public class HttpGDataRequest implements GDataRequest {
     }
   }
 
-  /**
-   * Returns the content type of the GData response.
-   * <p>
-   * 
-   * @return ContentType the GData response content type or {@code null} if no
-   *         response content.
-   * @throws IllegalStateException attempt to read content type without first
-   *         calling {@link #execute()}.
-   * @throws IOException error obtaining the response content type.
-   */
-  @SuppressWarnings("unused")
-  public ContentType getResponseContentType() throws IOException {
+  public ContentType getResponseContentType() {
 
     if (!executed) {
       throw new IllegalStateException(
@@ -612,16 +538,16 @@ public class HttpGDataRequest implements GDataRequest {
     }
     return new ContentType(value);
   }
+  
+  public String getResponseHeader(String headerName) {
+    return httpConn.getHeaderField(headerName);
+  }
+  
+  public DateTime getResponseDateHeader(String headerName) {
+    long dateValue = httpConn.getHeaderFieldDate(headerName, -1);
+    return (dateValue >= 0) ? new DateTime(dateValue) : null;
+  }
 
-  /**
-   * Returns a stream that can be used to read response data from the GData
-   * service.
-   * 
-   * @return InputStream providing access to GData response data.
-   * @throws IllegalStateException if attempting to read response without first
-   *         calling {@link #execute()}.
-   * @throws IOException error obtaining the response input stream.
-   */
   public InputStream getResponseStream() throws IOException {
 
     if (!executed) {
@@ -643,15 +569,6 @@ public class HttpGDataRequest implements GDataRequest {
     return responseStream;
   }
 
-  /**
-   * Returns a parse source that can be used to read response data from the
-   * GData service.
-   * 
-   * @return ParseSource providing access to GData response data.
-   * @throws IllegalStateException if attemping to read response without first
-   *         calling {@link #execute()}.
-   * @throws IOException error obtaining the response data.
-   */
   public ParseSource getParseSource() throws IOException {
     return new ParseSource(getResponseStream());
   }

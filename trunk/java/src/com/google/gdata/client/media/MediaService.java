@@ -16,8 +16,11 @@
 
 package com.google.gdata.client.media;
 
+import com.google.gdata.client.AuthTokenFactory;
 import com.google.gdata.client.CoreErrorDomain;
+import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.Service;
 import com.google.gdata.client.http.HttpGDataRequest;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.DateTime;
@@ -77,7 +80,27 @@ public class MediaService extends GoogleService {
 
     super(serviceName, applicationName);
   }
-
+  
+  /**
+   * Constructs an instance connecting to the service for an application 
+   * with the name {@code applicationName} and the given 
+   * {@code GDataRequestFactory} and {@code AuthTokenFactory}. Use
+   * this constructor to override the default factories.
+   *
+   * @param applicationName the name of the client application accessing the
+   *                        service. Application names should preferably have
+   *                        the format [company-id]-[app-name]-[app-version].
+   *                        The name will be used by the Google servers to
+   *                        monitor the source of authentication.
+   * @param requestFactory the request factory that generates gdata request
+   *                       objects
+   * @param authTokenFactory the factory that creates auth tokens
+   */
+  public MediaService(String applicationName,
+      Service.GDataRequestFactory requestFactory,
+      AuthTokenFactory authTokenFactory) {
+    super(applicationName, requestFactory, authTokenFactory);
+  }
 
   /**
    * Constructs a MediaService instance connecting to the service with name
@@ -130,8 +153,22 @@ public class MediaService extends GoogleService {
     request.setIfModifiedSince(ifModifiedSince);
     request.execute();
     InputStream resultStream = request.getResponseStream();
-    return new MediaStreamSource(resultStream,
-        request.getResponseContentType().toString());
+
+    MediaStreamSource mediaSource =
+        new MediaStreamSource(resultStream, 
+            request.getResponseContentType().toString());
+
+    DateTime lastModified = 
+        request.getResponseDateHeader(GDataProtocol.Header.LAST_MODIFIED);
+    if (lastModified != null) {
+      mediaSource.setLastModified(lastModified);
+    }
+    String etag = request.getResponseHeader(GDataProtocol.Header.ETAG);
+    if (etag != null) {
+      mediaSource.setEtag(etag);
+    }
+
+    return mediaSource;
   }
 
 

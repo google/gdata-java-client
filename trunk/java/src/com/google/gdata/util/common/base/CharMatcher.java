@@ -586,7 +586,7 @@ public abstract class CharMatcher implements Predicate<Character> {
    * situations this produces a matcher which is faster to query than the
    * original; your mileage may vary.
    *
-   * <b>The default implementation creates a new bit array and passes it to
+   * <p>The default implementation creates a new bit array and passes it to
    * {@link #setBits(LookupTable)}.
    */
   public CharMatcher precomputed() {
@@ -933,3 +933,4 @@ public abstract class CharMatcher implements Predicate<Character> {
     return matches(character);
   }
 }
+

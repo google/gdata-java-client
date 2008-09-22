@@ -258,7 +258,6 @@ public class Service {
 
     /**
      * Returns the content type of the GData response.
-     * <p>
      * 
      * @return ContentType the GData response content type or {@code null} if no
      *         response content.
@@ -284,6 +283,25 @@ public class Service {
      * @throws IOException error obtaining the response input stream.
      */
     public InputStream getResponseStream() throws IOException;
+
+    /**
+     * Returns the value of the specified response header name or {@code null}
+     * if no response header of this type exists.
+     * 
+     * @param headerName name of header
+     * @return header value.
+     */
+    public String getResponseHeader(String headerName);
+
+    /**
+     * Returns the value of a header containing a header or {@code null} if no
+     * response header of this type exists or it could not be parsed as a valid
+     * date.
+     * 
+     * @param headerName name of header
+     * @return header value.
+     */
+    public DateTime getResponseDateHeader(String headerName);
 
     /**
      * Returns a parse source that can be used to read response data from the
@@ -373,14 +391,17 @@ public class Service {
       Class<? extends Service> serviceClass, Version defaultVersion) {
 
     VersionRegistry versionRegistry = VersionRegistry.ensureRegistry();
-    Version v;
+    Version v = null;
     try {
       // Check to see if default has already been defined
       v = versionRegistry.getVersion(serviceClass);
-    } catch (IllegalStateException ise) {
- 
+    } catch (IllegalStateException ise) { 
       // If not, use system property override or provided default version
-      v = VersionRegistry.getVersionFromProperty(serviceClass);
+      try {
+        v = VersionRegistry.getVersionFromProperty(serviceClass);
+      } catch (SecurityException e) {
+        // Ignore exception, and just take default.
+      }
       if (v == null) {
         v = defaultVersion;
       }

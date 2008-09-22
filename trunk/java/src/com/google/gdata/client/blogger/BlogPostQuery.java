@@ -21,7 +21,7 @@ import com.google.gdata.client.Query;
 import java.net.URL;
 
 /**
- * Describes a query for the feed of a blog's posts..
+ * Describes a query for the feed of a blog's posts.
  *
  * 
  */

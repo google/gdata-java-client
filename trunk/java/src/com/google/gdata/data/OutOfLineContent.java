@@ -18,6 +18,7 @@ package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.client.CoreErrorDomain;
+import com.google.gdata.client.Service;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
@@ -69,6 +70,13 @@ public class OutOfLineContent extends Content {
   public void setLength(long v) { length = v; }
 
   /**
+   * ETag for the referenced content.  Value will be {@code null} if unknown.
+   */
+  protected String etag;
+  public String getEtag() { return etag; }
+  public void setEtag(String v) { etag = v; }
+  
+  /**
    * Generates XML in the Atom format.
    *
    * @param   w
@@ -91,6 +99,11 @@ public class OutOfLineContent extends Content {
 
     if (uri != null) {
       attrs.add(new XmlWriter.Attribute("src", uri));
+    }
+    
+    if (etag != null && 
+        !Service.getVersion().isCompatible(Service.Versions.V1)) {
+      attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", etag));
     }
 
 
@@ -153,6 +166,11 @@ public class OutOfLineContent extends Content {
           }
         } else if (localName.equals("src")) {
           uri = getAbsoluteUri(value);
+        }
+      } else if (namespace.equals(Namespaces.g)) {
+        if (localName.equals("etag")) {
+          setEtag(value);
+          return;
         }
       }
     }
