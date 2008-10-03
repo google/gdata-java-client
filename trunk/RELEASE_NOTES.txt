@@ -1,5 +1,10 @@
 Google Data API - Release Notes
 
+Notes for v1.23.0
+-----------------
+Oct 2, 2008
+o  Added samples for Apps API interface to update gmail settings.
+
 Notes for v1.22.0
 -----------------
 Sep 22, 2008

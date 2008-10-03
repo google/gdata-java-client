@@ -27,6 +27,12 @@
             value="sample.appsforyourdomain.AppsForYourDomainClient"/>
   <property name="sample.appsforyourdomain.migration.main"
             value="sample.appsforyourdomain.migration.AppsForYourDomainMigrationClient"/>
+  <property name="sample.appsforyourdomain.gmailsettings.AppsForYourDomainGmailFilterClient"
+            value="sample.appsforyourdomain.gmailsettings.AppsForYourDomainGmailFilterClient"/>
+  <property name="sample.appsforyourdomain.gmailsettings.GmailSettingsClient"
+            value="sample.appsforyourdomain.gmailsettings.GmailSettingsClient"/>
+  <property name="sample.appsforyourdomain.gmailsettings.gui.GmailSettingsClient"
+            value="sample.appsforyourdomain.gmailsettings.gui.GmailSettingsClient"/>
 
 
   <!-- dependency check -->
@@ -87,6 +93,41 @@
           description="Runs the AppsForYourDomain Migration sample">
     <java fork="true" classname="${sample.appsforyourdomain.migration.main}">
       <arg line="--username ${sample.appsforyourdomain.migration.username} --password ${sample.appsforyourdomain.migration.password} --domain ${sample.appsforyourdomain.migration.domain}"/>
+      <classpath>
+        <path refid="sample.appsforyourdomain.compile.classpath"/>
+        <path location="${sample.appsforyourdomain.jar}"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="sample.appsforyourdomain.gmailsettings.filter.run"
+          depends="sample.appsforyourdomain.build"
+          description="Runs the AppsForYourDomain Gmail filter sample">
+    <java fork="true" classname="${sample.appsforyourdomain.gmailsettings.AppsForYourDomainGmailFilterClient}">
+      <arg line="--username ${sample.appsforyourdomain.admin_email} --password ${sample.appsforyourdomain.admin_password} --domain ${sample.appsforyourdomain.domain} --destination_user ${sample.appsforyourdomain.user_email}"/>
+      <classpath>
+        <path refid="sample.appsforyourdomain.compile.classpath"/>
+        <path location="${sample.appsforyourdomain.jar}"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="sample.appsforyourdomain.gmailsettings.run"
+          depends="sample.appsforyourdomain.build"
+          description="Runs the AppsForYourDomain Gmail settings sample">
+    <java fork="true" classname="${sample.appsforyourdomain.gmailsettings.GmailSettingsClient}">
+      <arg line="--username ${sample.appsforyourdomain.admin_email} --password ${sample.appsforyourdomain.admin_password} --domain ${sample.appsforyourdomain.domain} --destination_user ${sample.appsforyourdomain.user_email} --setting pop"/>
+      <classpath>
+        <path refid="sample.appsforyourdomain.compile.classpath"/>
+        <path location="${sample.appsforyourdomain.jar}"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="sample.appsforyourdomain.gmailsettings.gui.run"
+          depends="sample.appsforyourdomain.build"
+          description="Runs the AppsForYourDomain Gmail filter GUI sample">
+    <java fork="true" classname="${sample.appsforyourdomain.gmailsettings.gui.GmailSettingsClient}">
       <classpath>
         <path refid="sample.appsforyourdomain.compile.classpath"/>
         <path location="${sample.appsforyourdomain.jar}"/>
