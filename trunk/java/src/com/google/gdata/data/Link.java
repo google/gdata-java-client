@@ -28,6 +28,7 @@ import org.xml.sax.Attributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * External link type.
@@ -195,6 +196,11 @@ public class Link extends ExtensionPoint implements ILink {
   public Content getContent() { return content; }
   public void setContent(Content c) { this.content = c; }
   
+  /** Etag of linked resource, or {@code null} if unknown */
+  protected String etag = null;
+  public String getEtag() { return etag; }
+  public void setEtag(String v) { etag = v; }
+  
   /**
    * Returns whether this link matches the given {@code rel} and {@code type}
    * values.
@@ -236,6 +242,8 @@ public class Link extends ExtensionPoint implements ILink {
 
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(3);
+    List<XmlWriter.Namespace> nsDecls =
+      new ArrayList<XmlWriter.Namespace>();
 
     if (rel != null) {
       attrs.add(new XmlWriter.Attribute("rel", rel));
@@ -264,8 +272,13 @@ public class Link extends ExtensionPoint implements ILink {
     if (length != -1) {
       attrs.add(new XmlWriter.Attribute("length", String.valueOf(length)));
     }
+    
+    if (etag != null) {
+      nsDecls.add(Namespaces.gNs);
+      attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", etag));
+    }
 
-    generateStartElement(w, Namespaces.atomNs, "link", attrs, null);
+    generateStartElement(w, Namespaces.atomNs, "link", attrs, nsDecls);
 
     if (content != null) {
       content.generateAtom(w, extProfile);
@@ -344,22 +357,28 @@ public class Link extends ExtensionPoint implements ILink {
                                  String value)
         throws ParseException {
 
-      if (namespace.equals("") && localName.equals("rel")) {
-        rel = value;
-      } else if (namespace.equals("") && localName.equals("type")) {
-        type = value;
-      } else if (namespace.equals("") && localName.equals("href")) {
-        href = getAbsoluteUri(value);
-      } else if (namespace.equals("") && localName.equals("hreflang")) {
-        hrefLang = value;
-      } else if (namespace.equals("") && localName.equals("title")) {
-        title = value;
-      } else if (namespace.equals("") && localName.equals("length")) {
-        try {
-          length = Integer.valueOf(value).longValue();
-        } catch (NumberFormatException e) {
-          throw new ParseException(
-              CoreErrorDomain.ERR.lengthNotInteger);
+      if (namespace.equals("")) {
+        if (localName.equals("rel")) {
+          rel = value;
+        } else if (localName.equals("type")) {
+          type = value;
+        } else if (localName.equals("href")) {
+          href = getAbsoluteUri(value);
+        } else if (localName.equals("hreflang")) {
+          hrefLang = value;
+        } else if (localName.equals("title")) {
+          title = value;
+        } else if (localName.equals("length")) {
+          try {
+            length = Integer.valueOf(value).longValue();
+          } catch (NumberFormatException e) {
+            throw new ParseException(
+                CoreErrorDomain.ERR.lengthNotInteger);
+          }
+        }
+      } else if (namespace.equals(Namespaces.g)) {
+        if (localName.equals("etag")) {
+          etag = value;
         }
       }
     }

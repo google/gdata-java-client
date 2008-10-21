@@ -30,19 +30,14 @@ public class VideoMessageEntry extends VideoEntry {
 
   /** Creates an empty inbox entry. */
   public VideoMessageEntry() {
-    setKindCategory();
+    super();
+    EntryUtils.changeKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
   }
 
   /** Creates a copy of another entry. */
   public VideoMessageEntry(BaseEntry<?> original) {
     super(original);
-    setKindCategory();
-  }
-
-  private void setKindCategory() {
-    // PlaylistEntry extends VideoEntry, but they're still different kinds
-    getCategories().clear();
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
+    EntryUtils.changeKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
   }
 
   /**

@@ -31,6 +31,7 @@ import com.google.gdata.util.EntityTooLargeException;
 import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.util.LoggableInputStream;
 import com.google.gdata.util.LoggableOutputStream;
+import com.google.gdata.util.NotAcceptableException;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.PreconditionFailedException;
@@ -520,6 +521,9 @@ public class HttpGDataRequest implements GDataRequest {
 
       case HttpURLConnection.HTTP_ENTITY_TOO_LARGE:
         throw new EntityTooLargeException(httpConn);
+
+      case HttpURLConnection.HTTP_NOT_ACCEPTABLE:
+        throw new NotAcceptableException(httpConn);
 
       default:
         throw new ServiceException(httpConn);

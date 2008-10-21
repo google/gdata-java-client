@@ -22,6 +22,7 @@ import com.google.gdata.data.Category;
 import com.google.gdata.data.extensions.FeedLink;
 import com.google.gdata.util.Namespaces;
 
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -53,6 +54,24 @@ class EntryUtils {
    */
   static void addKindCategory(BaseFeed entry, String kind) {
     addKindCategory(entry.getCategories(), kind);
+  }
+  
+  /**
+   * Replaces the existing kind category with the new given value.
+   * 
+   * @param entry entry to change.
+   * @param newKind the new kind to set.
+   */
+  static void changeKindCategory(BaseEntry<?> entry, String newKind) {
+    for (Iterator<Category> iterator = entry.getCategories().iterator();
+        iterator.hasNext();) {
+      Category category = iterator.next();
+      if (Namespaces.gKind.equals(category.getScheme())) {
+        iterator.remove();
+      }
+    }
+    
+    addKindCategory(entry, newKind);
   }
 
   private static void addKindCategory(Set<Category> categories, String kind) {

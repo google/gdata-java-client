@@ -86,10 +86,10 @@ public class YouTubeService extends MediaService {
   }
 
   /**
-   * Version 1 is currently the default version for clients.
+   * Version 2 is currently the default version for clients.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(YouTubeService.class, YouTubeService.Versions.V1);
+      Service.initServiceVersion(YouTubeService.class, YouTubeService.Versions.V2);
 
   /**
    * Creates a new instance of the service with the given application name.
@@ -165,6 +165,21 @@ public class YouTubeService extends MediaService {
     return VersionRegistry.get().getVersion(YouTubeService.class);
   }
 
+  /**
+   * Returns true if the current YouTube GData API version {@link #getVersion()}
+   * is compatible with the given version.
+   * 
+   * @param version version to check compatibility with.
+   * @return true if the current version is compatible with the given version,
+   *         false otherwise.
+   */
+  public static boolean isCompatible(Version version) {
+    if (version == null) {
+      throw new NullPointerException("Version cannot be null.");
+    }
+    
+    return getVersion().isCompatible(version);
+  }
 
   /**
    * Generate a form-upload token given the XML description of a new media entry.

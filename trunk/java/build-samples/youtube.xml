@@ -41,7 +41,7 @@
   <!-- dependency check -->
   <target name="sample.youtube.dependencies">
     <antcall target="template.require.service.jar">
-      <param name="template.service.name" value="client"/>
+      <param name="template.service.name" value="youtube"/>
       <param name="template.service.version" value="${youtube.spec.version}"/>
     </antcall>
   </target>

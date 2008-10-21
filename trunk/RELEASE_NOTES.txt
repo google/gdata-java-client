@@ -1,5 +1,42 @@
 Google Data API - Release Notes
 
+Notes for v1.24.0
+-----------------
+Oct 20, 2008
+o  Added support for version 2 of Google Data API.  API versioning is
+   rolled-out in phases and currently limited documentation about API
+   versioning is available at
+   http://code.google.com/apis/youtube/2.0/developers_guide_protocol.html#API_Versioning.
+   As of this release only YouTube Data API supports version 2.
+   Version 2 provides significant feature enhancements including:
+   1. Added Support for caching through http ETag headers.  The implementation is
+      compatible with specification in RFC 2616 with support for If-Match,
+      If-None-Match, If-Modified-Since headers.  Other conditional headers are
+      not supported.
+   2. Updated OpenSearch namespace from http://a9.com/-/spec/opensearchrss/1.0/
+      to http://a9.com/-/spec/opensearch/1.1/.
+   3. Introduced "GData-Version" header to indicate requested protocol
+      version.  The GData-Version header value is of format
+      "<major_version>.<minor_version>".  Possible values as of this release
+      are "1.0" and "2.0".  The version information can also be specified
+      using "v=2.0" query parameter.
+   All version 2 enabled Google Data API Services will continue to support
+   version 1 of the protocol.  If both "GData-Version" header and "v" query
+   parameter are not specified in the request, the server defaults to
+   version 1.0.
+o  Updated com.google.gdata.client.youtube.YouTubeService class to use
+   version 2 of the YouTube Data API as default version. Refer to YouTube API
+   developer guide at
+   http://code.google.com/apis/youtube/2.0/developers_guide_protocol.html for
+   details on version 2 API.  Refer to YouTube Data API Migration Guide at
+   http://code.google.com/apis/youtube/2.0/migration.html for details on
+   breaking changes from version 1 to version 2, and details on how to migrate
+   your code to work with version 2 of the YouTube Data API.
+   NOTE: There are breaking API changes between version 1 and version 2.
+   Though it is not required to upgrade to version 2.0 immediately, it is
+   highly recommended to upgrade version 2.0.  Older versions of YouTube Data
+   API libraries will continue to work until version 1.0 is deprecated.
+
 Notes for v1.23.0
 -----------------
 Oct 2, 2008

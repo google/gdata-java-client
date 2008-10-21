@@ -16,6 +16,7 @@
 
 package com.google.gdata.data.youtube;
 
+import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.media.mediarss.MediaCategory;
@@ -53,13 +54,21 @@ public class YouTubeMediaGroup extends MediaGroup {
 
   private static final String UPLOADER_ROLE = "uploader";
 
-  /** Gets the YouTube ID of the video. */
+  /**
+   * Gets the YouTube ID of the video.
+   * 
+   * @since 2.0
+   */
   public String getVideoId() {
     YtVideoId videoId = getExtension(YtVideoId.class);
     return videoId == null ? null : videoId.getVideoId();
   }
   
-  /** Sets the YouTube video ID of the video. */
+  /**
+   * Sets the YouTube video ID of the video.
+   * 
+   * @since 2.0
+   */
   public void setVideoId(String videoId) {
     if (videoId == null) {
       removeExtension(YtVideoId.class);
@@ -82,6 +91,29 @@ public class YouTubeMediaGroup extends MediaGroup {
       YtDuration duration = new YtDuration();
       duration.setSeconds(seconds);
       setExtension(duration);
+    }
+  }
+  
+  /**
+   * Returns the time the video was uploaded at.
+   * 
+   * @since 2.0
+   */
+  public DateTime getUploaded() {
+    YtUploaded uploadTime = getExtension(YtUploaded.class);
+    return uploadTime != null ? uploadTime.getDateTime() : null;
+  }
+  
+  /** 
+   * Sets or unsets the time the video was uploaded at.
+   *
+   * @since 2.0
+   */
+  public void setUploaded(DateTime dateTime) {
+    if (dateTime == null) {
+      removeExtension(YtUploaded.class);
+    } else {
+      setExtension(new YtUploaded(dateTime));
     }
   }
 
@@ -440,6 +472,7 @@ public class YouTubeMediaGroup extends MediaGroup {
     extProfile.declare(YouTubeMediaGroup.class, YtVideoId.class);
     extProfile.declare(YouTubeMediaGroup.class, YtDuration.class);
     extProfile.declare(YouTubeMediaGroup.class, YtPrivate.class);
+    extProfile.declare(YouTubeMediaGroup.class, YtUploaded.class);
     extProfile.declare(YouTubeMediaGroup.class, YouTubeMediaContent.class);
     extProfile.declare(YouTubeMediaGroup.class, MediaPlayer.class);
     extProfile.declare(YouTubeMediaGroup.class, MediaKeywords.class);

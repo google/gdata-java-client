@@ -17,7 +17,6 @@
 package com.google.gdata.client;
 
 import com.google.gdata.util.ErrorDomain;
-import com.google.gdata.util.ErrorDomain.ErrorCode;
 
 /**
  This is the error domain class for the Core Error Domain,
@@ -99,7 +98,7 @@ public class CoreErrorDomain extends ErrorDomain {
 
   public final ErrorCode cantLoadEntryClass =
       new ErrorCode("cantLoadEntryClass")
-      .setInternalReason("entry class cannot be loaded");;
+      .setInternalReason("entry class cannot be loaded");
 
   public final ErrorCode cantLoadExtensionClass =
       new ErrorCode("cantLoadExtensionClass")
@@ -113,7 +112,7 @@ public class CoreErrorDomain extends ErrorDomain {
 
   public final ErrorCode cantLoadFeedClass =
       new ErrorCode("cantLoadFeedClass")
-      .setInternalReason("feed class cannot be loaded");;
+      .setInternalReason("feed class cannot be loaded");
 
   public final ErrorCode cantLoadFeedProviderClass =
       new ErrorCode("cantLoadFeedProviderClass")
@@ -312,6 +311,9 @@ public class CoreErrorDomain extends ErrorDomain {
       .setInternalReason(
       "If-Modified-Since HTTP precondition not supported on POST");
 
+  public final ErrorCode incorrectDataVersion =
+      new ErrorCode("incorrectDataVersion");
+  
   public final ErrorCode insertNotSupported =
       new ErrorCode("insertNotSupported")
       .setInternalReason("Insert not supported by feed");
@@ -708,6 +710,10 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("noAcceptableType")
       .setInternalReason("No acceptable type available");
 
+  public final ErrorCode noAcceptableLanguage =
+      new ErrorCode("noAcceptableLanguage")
+      .setInternalReason("No acceptable language available");
+
   public final ErrorCode noAvailableServers =
       new ErrorCode("noAvailableServers")
       .setInternalReason("Cannot find any servers");
@@ -727,6 +733,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode optionsNotSupported =
       new ErrorCode("optionsNotSupported")
       .setInternalReason("OPTIONS is not supported");
+  
+  public final ErrorCode optimisticConcurrencyNotSupported =
+      new ErrorCode("optimisticConcurrencyNotSupported")
+      .setInternalReason("Optimistic concurrency is no longer supported");
 
   public final ErrorCode pathPrefixValueRequired =
       new ErrorCode("pathPrefixValueRequired")

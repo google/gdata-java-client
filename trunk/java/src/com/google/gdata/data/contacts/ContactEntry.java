@@ -351,7 +351,7 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     return "{ContactEntry " + super.toString() + "}";
   }
 
-  
+
   /**
    * Returns the gender.
    *

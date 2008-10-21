@@ -17,6 +17,7 @@
 package com.google.gdata.client.youtube;
 
 import com.google.gdata.client.Query;
+import com.google.gdata.data.geo.impl.GeoRssWhere;
 
 import java.net.URL;
 import java.util.Collections;
@@ -50,10 +51,15 @@ public class YouTubeQuery extends Query {
   private static final String LANGUAGE_RESTRICT = "lr";
   private static final String RESTRICTION = "restriction";
   private static final String LOCATION = "location";
+  private static final String LOCATION_RADIUS = "location-radius";
+  private static final String SAFE_SEARCH = "safeSearch";
+  private static final String UPLOADER = "uploader";
 
   private static final Pattern COUNTRY_CODE_PATTERN = Pattern.compile("[a-zA-Z]{2}");
   private static final Pattern IP_V4_PATTERN
       = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+  private static final Pattern LOCATION_RADIUS_PATTERN
+      = Pattern.compile("\\d+(ft|mi|m|km)");
   
   /**
    * Standard values for the {@code time} parameter.
@@ -140,6 +146,86 @@ public class YouTubeQuery extends Query {
         map.put(orderBy.toParameterValue(), orderBy);
       }
       PARAMETER_TO_ORDERBY = Collections.unmodifiableMap(map);
+    }
+  }
+  
+  /**
+   * Standard values for the {@code safeSearch} parameter.
+   */
+  public static enum SafeSearch {
+    NONE("none"),
+    MODERATE("moderate"),
+    STRICT("strict");
+
+    private final String value;
+
+    private SafeSearch(String value) {
+      this.value = value;
+    }
+
+    /** Returns the corresponding parameter value. */
+    public String toParameterValue() {
+      return value;
+    }
+
+    public static SafeSearch fromParameterValue(String value) {
+      if (value == null) {
+        return null;
+      }
+      SafeSearch safeSearch = PARAMETER_TO_SAFESEARCH.get(value);
+      if (safeSearch == null) {
+        throw new IllegalStateException("Cannot convert safeSearch value: "
+            + value);
+      }
+      return safeSearch;
+    }
+
+    private static Map<String, SafeSearch> PARAMETER_TO_SAFESEARCH;
+    static {
+      Map<String, SafeSearch> map = new HashMap<String, SafeSearch>();
+      for (SafeSearch safeSearch : SafeSearch.values()) {
+        map.put(safeSearch.toParameterValue(), safeSearch);
+      }
+      PARAMETER_TO_SAFESEARCH = Collections.unmodifiableMap(map);
+    }
+  }
+  
+  /**
+   * Standard values for the {@code uploader} parameter.
+   */
+  public static enum Uploader {
+    PARTNER("partner");
+
+    private final String value;
+
+    private Uploader(String value) {
+      this.value = value;
+    }
+
+    /** Returns the corresponding parameter value. */
+    public String toParameterValue() {
+      return value;
+    }
+
+    public static Uploader fromParameterValue(String value) {
+      if (value == null) {
+        return null;
+      }
+      Uploader uploader = PARAMETER_TO_UPLOADER.get(value);
+      if (uploader == null) {
+        throw new IllegalStateException("Cannot convert uploader value: "
+            + value);
+      }
+      return uploader;
+    }
+
+    private static Map<String, Uploader> PARAMETER_TO_UPLOADER;
+    static {
+      Map<String, Uploader> map = new HashMap<String, Uploader>();
+      for (Uploader uploader : Uploader.values()) {
+        map.put(uploader.toParameterValue(), uploader);
+      }
+      PARAMETER_TO_UPLOADER = Collections.unmodifiableMap(map);
     }
   }
 
@@ -375,12 +461,37 @@ public class YouTubeQuery extends Query {
     }
     return null;
   }
+  
+  /**
+   * Gets the value of the {@code safeSearch} parameter.
+   *
+   * @return value of the {@code safeSearch} parameter.
+   * @exception IllegalStateException if a value was found in the
+   *   query that cannot be transformed into {@link YouTubeQuery.SafeSearch}
+   */
+  public SafeSearch getSafeSearch() {
+    String stringValue = getCustomParameterValue(SAFE_SEARCH);
+    return SafeSearch.fromParameterValue(stringValue);
+  }
+
+  /**
+   * Sets the value of the {@code safeSearch} parameter.
+   *
+   * @param  safeSearch value of {@code safeSearch} parameter,
+   *   {@code null} to remove the parameter
+   */
+  public void setSafeSearch(SafeSearch safeSearch) {
+    overwriteCustomParameter(SAFE_SEARCH,
+        safeSearch == null ? null : safeSearch.toParameterValue());
+  }
 
   /**
    * Gets the value of the {@code racy} parameter.
    * 
    * @return true if the {@code racy=include} parameter is present
+   * @deprecated Please use {@link #getSafeSearch()} instead.
    */
+  @Deprecated
   public boolean getIncludeRacy() {
     return RACY_INCLUDE.equals(getCustomParameterValue(RACY));
   }
@@ -390,7 +501,9 @@ public class YouTubeQuery extends Query {
    *
    * @param includeRacy {@code true} to include racy content, false
    *   to exclude it, {@code null} to remove the parameter
+   * @deprecated Please use {@link #setSafeSearch(String)} instead.
    */
+  @Deprecated
   public void setIncludeRacy(Boolean includeRacy) {
     String stringValue;
     if (includeRacy == null) {
@@ -401,27 +514,100 @@ public class YouTubeQuery extends Query {
 
     overwriteCustomParameter(RACY, stringValue);
   }
+  
+  /**
+   * Sets the value of the {@code location} parameter.
+   * @param where A {@link com.google.gdata.data.geo.impl.GeoRssWhere} 
+   *  element describing the center of where to search.
+   */
+  public void setLocation(GeoRssWhere where) {
+    
+    StringBuilder location = new StringBuilder();
+    
+    if (where != null) {
+      location.append(
+          where.getLatitude()).append(",").append(where.getLongitude());
+    }
+    
+    if (hasRestrictLocation()) {
+      location.append("!");
+    }
+    
+    overwriteCustomParameter(LOCATION,
+        location.toString().equals("") ? null : location.toString());
+  }
+  
+  /**
+   * Returns the value of the {@code location} parameter.
+   * @return A {@link com.google.gdata.data.geo.impl.GeoRssWhere} element 
+   *   describing the center of where to search.
+   */
+  public GeoRssWhere getLocation() {
+    String location = getCustomParameterValue(LOCATION);
+    location = location.replaceAll("!", "");
+    String[] parts = location.split(",");
+    return new GeoRssWhere(Double.parseDouble(parts[0]), Double.parseDouble(parts[1]));
+  }
+  
+  /**
+   * Sets the value of the {@code location-radius} parameter. Format is 
+   *   "100km". Valid units of measurement are "ft", "mi", "m", and "km".
+   * @param locationRadius The requested search radius.
+   * @exception InvalidArgumentException if the given string is not a properly
+   *   formatted location radius.
+   */
+  public void setLocationRadius(String locationRadius) {
+    if (locationRadius != null && !LOCATION_RADIUS_PATTERN.matcher(locationRadius).matches()) {
+      throw new IllegalArgumentException("Invalid location radius: " + locationRadius);
+    }
+    overwriteCustomParameter(LOCATION_RADIUS, locationRadius);
+  }
+  
+  /**
+   * Sets the value of the {@code location-radius} parameter. Format is 
+   *   "100km". Valid units of measurement are "ft", "mi", "m", and "km".
+   * @return The current search radius.
+   */
+  public String getLocationRadius() {
+    return getCustomParameterValue(LOCATION_RADIUS);
+  }
 
   /**
    * Set/unset the location restrict.
-   * @param isRestrictLocation {@code true} if only videos that have a location are to be returned,
-   *   {@code false} otherwise.
+   * @param isRestrictLocation {@code true} if only videos that have 
+   *  latitude and longitude information are to be returned,
+   *  {@code false} otherwise.
    */
   public void setRestrictLocation(boolean isRestrictLocation) {
+    
+    String location = getCustomParameterValue(LOCATION);
+    
+    if (location == null) {
+      location = "";
+    }
+    
     if (isRestrictLocation) {
-      overwriteCustomParameter(LOCATION, "");
+      if (!location.endsWith("!")) {
+        overwriteCustomParameter(LOCATION, location + "!");
+      }
     } else {
-      overwriteCustomParameter(LOCATION, null);
+      location = location.replaceAll("!", "");
+      //if we have no lat/long then remove the query parameter.
+      if (location.length() == 0) {
+        location = null;
+      }
+      overwriteCustomParameter(LOCATION, location);
     }
   }
 
   /**
-   * Returns {@code true} if the query has a location restrict. More precisely, it returns {@code
-   * true} if the {@code location=} parameter is present in the query URL.
+   * Returns {@code true} if the query only wants results that have latitude
+   * and longitude information.
    * @return {@code true} if the query is restricted by location, {@code false} otherwise.
    */
   public boolean hasRestrictLocation() {
-    return getCustomParameterValue(LOCATION) != null;
+    String location = getCustomParameterValue(LOCATION);
+    return location != null && location.endsWith("!");
   }
 
   
@@ -526,4 +712,28 @@ public class YouTubeQuery extends Query {
     }
     return customParams.get(0).getValue();
   }
+  
+  /**
+   * Gets the value of the {@code uploader} parameter.
+   *
+   * @return value of the {@code uploader} parameter.
+   * @exception IllegalStateException if a value was found in the
+   *   query that cannot be transformed into {@link YouTubeQuery.Uploader}
+   */
+  public Uploader getUploader() {
+    String stringValue = getCustomParameterValue(UPLOADER);
+    return Uploader.fromParameterValue(stringValue);
+  }
+
+  /**
+   * Sets the value of the {@code uploader} parameter.
+   *
+   * @param uploader value of the {@code uploader} parameter, 
+   *   {@code null} to remove the parameter
+   */
+  public void setUploader(Uploader uploader) {
+    overwriteCustomParameter(UPLOADER,
+        uploader == null ? null : uploader.toParameterValue());
+  }
+
 }

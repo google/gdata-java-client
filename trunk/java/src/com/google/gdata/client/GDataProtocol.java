@@ -32,6 +32,12 @@ public class GDataProtocol {
   public interface Header {
 
     /**
+     * The ACCEPT_LANGUAGE header is used to choose the best language for 
+     * the output when the parameter {@code hl} is not specified.
+     */
+    public static final String ACCEPT_LANGUAGE = "Accept-Language";
+
+    /**
      * The ETAG header is used to return an HTTP entity tag for a resource in
      * a GData response.
      */
@@ -111,6 +117,14 @@ public class GDataProtocol {
      * which will reject any unknown query parameters or xml content.
      */
     public static final String STRICT = "strict";
+
+
+    /**
+     * The HL query parameter selects the language of the
+     * automatically-generated text in the result. The value is a language code
+     * as defined by BCP 47.
+     */
+    public static final String LANGUAGE = "hl";
   }
 
   /**

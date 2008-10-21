@@ -282,9 +282,9 @@ public class DateTime implements Comparable<Object> {
   public static DateTime parseDateTime(String str)
       throws NumberFormatException {
 
-    Matcher m = dateTimePattern.matcher(str);
+    Matcher m = str == null ? null : dateTimePattern.matcher(str);
 
-    if (!m.matches()) {
+    if (str == null || !m.matches()) {
       throw new NumberFormatException("Invalid date/time format.");
     }
 
@@ -340,14 +340,13 @@ public class DateTime implements Comparable<Object> {
     return ret;
   }
 
-
   /** Parses an xs:date string. */
   public static DateTime parseDate(String str)
       throws NumberFormatException {
 
-    Matcher m = datePattern.matcher(str);
+    Matcher m = str == null ? null : datePattern.matcher(str);
 
-    if (!m.matches()) {
+    if (str == null || !m.matches()) {
       throw new NumberFormatException("Invalid date format.");
     }
 
