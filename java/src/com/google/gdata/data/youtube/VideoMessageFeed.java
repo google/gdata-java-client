@@ -17,7 +17,6 @@ package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.media.MediaFeed;
 
 /**
  * Shared video feed (inbox).
@@ -25,15 +24,14 @@ import com.google.gdata.data.media.MediaFeed;
  * 
  */
 @Kind.Term(YouTubeNamespace.KIND_VIDEO_MESSAGE)
-public class VideoMessageFeed
-    extends MediaFeed<VideoMessageFeed, VideoMessageEntry> {
+public class VideoMessageFeed extends BaseFeed<VideoMessageFeed, VideoMessageEntry> {
 
   public VideoMessageFeed() {
     super(VideoMessageEntry.class);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
   }
 
-  public VideoMessageFeed(BaseFeed base) {
+  public VideoMessageFeed(BaseFeed<?,?> base) {
     super(VideoMessageEntry.class, base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
   }

@@ -187,7 +187,10 @@ public abstract class FeedLinkEntry<T extends BaseEntry> extends BaseEntry<T> {
 
     // Only in version 1
     extProfile.declare(concreteClass, YtDescription.class);
-    extProfile.declare(concreteClass, FeedLink.getDefaultDescription());
+    
+    ExtensionDescription feedLinkDescription = FeedLink.getDefaultDescription();
+    feedLinkDescription.setRepeatable(false);
+    extProfile.declare(concreteClass, feedLinkDescription);
 
     // Only in version 2
     extProfile.declare(concreteClass, YtCountHint.class);

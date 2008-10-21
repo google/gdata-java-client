@@ -17,11 +17,11 @@
 
 package sample.youtube;
 
-import sample.util.SimpleCommandLineParser;
 import com.google.gdata.client.Service;
+import sample.util.SimpleCommandLineParser;
 import com.google.gdata.client.youtube.YouTubeService;
 import com.google.gdata.data.PlainTextConstruct;
-import com.google.gdata.data.extensions.FeedLink;
+import com.google.gdata.data.TextConstruct;
 import com.google.gdata.data.media.MediaFileSource;
 import com.google.gdata.data.media.mediarss.MediaCategory;
 import com.google.gdata.data.media.mediarss.MediaDescription;
@@ -197,10 +197,11 @@ public class YouTubeWriteClient {
       PlaylistLinkEntry playlistLinkEntry, boolean showPlaylistContents)
       throws IOException, ServiceException {
     System.out.println(prefix);
-    System.out.printf("Description: %s\n", playlistLinkEntry.getDescription());
+    System.out.printf("Description: %s\n",
+        playlistLinkEntry.getSummary().getPlainText());
     if (showPlaylistContents) {
-      FeedLink<?> feedLink = playlistLinkEntry.getFeedLink();
-      printPlaylist(playlistLinkEntry.getService(), feedLink.getHref());
+      printPlaylist(
+          playlistLinkEntry.getService(), playlistLinkEntry.getFeedUrl());
     }
   }
 
@@ -534,7 +535,7 @@ public class YouTubeWriteClient {
       return;
     }
 
-    String playlistUrl = entry.getFeedLink().getHref();
+    String playlistUrl = entry.getFeedUrl();
     PlaylistEntry playlistEntry = new PlaylistEntry(videoEntry);
 
     try {
@@ -615,7 +616,8 @@ public class YouTubeWriteClient {
 
       PlaylistLinkEntry newEntry = new PlaylistLinkEntry();
       newEntry.setTitle(new PlainTextConstruct(title));
-      newEntry.setDescription(description);
+      newEntry.setSummary(
+          TextConstruct.create(TextConstruct.Type.TEXT, description, null));
 
       service.insert(new URL(feedUrl), newEntry);
 

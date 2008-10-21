@@ -29,7 +29,7 @@
   <!-- dependency check -->
   <target name="sample.docs.dependencies">
     <antcall target="template.require.service.jar">
-      <param name="template.service.name" value="client"/>
+      <param name="template.service.name" value="docs"/>
       <param name="template.service.version" value="${docs.spec.version}"/>
     </antcall>
   </target>

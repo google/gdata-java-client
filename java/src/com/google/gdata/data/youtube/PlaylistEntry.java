@@ -27,22 +27,16 @@ import com.google.gdata.data.Kind;
  */
 @Kind.Term(YouTubeNamespace.KIND_PLAYLIST)
 public class PlaylistEntry extends VideoEntry {
-
   /** Creates an empty playlist entry. */
   public PlaylistEntry() {
-    setKindCategory();
+    super();
+    EntryUtils.changeKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
   }
 
   /** Creates a copy of another entry. */
   public PlaylistEntry(BaseEntry<?> original) {
     super(original);
-    setKindCategory();
-  }
-
-  private void setKindCategory() {
-    // PlaylistEntry extends VideoEntry, but they're still different kinds
-    getCategories().clear();
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
+    EntryUtils.changeKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
   }
 
   /**

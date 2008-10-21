@@ -331,10 +331,9 @@ public class YouTubeReadonlyClient {
       throws IOException, ServiceException {
 
     System.out.println(prefix);
-    System.out.printf("Description: %s\n", playlistLinkEntry.getDescription());
+    System.out.printf("Description: %s\n", playlistLinkEntry.getSummary().getPlainText());
     if (showPlaylistContents) {
-      FeedLink feedLink = playlistLinkEntry.getFeedLink();
-      printPlaylist(playlistLinkEntry.getService(), feedLink.getHref());
+      printPlaylist(playlistLinkEntry.getService(), playlistLinkEntry.getFeedUrl());
     }
   }
 
@@ -368,7 +367,7 @@ public class YouTubeReadonlyClient {
     if (feedLinkEntry.getTitle() != null) {
       System.out.printf("Title: %s\n", feedLinkEntry.getTitle().getPlainText());
     }
-    System.out.println("FeedLink: " + feedLinkEntry.getFeedLink().getHref());
+    System.out.println("FeedLink: " + feedLinkEntry.getFeedUrl());
   }
 
   /**
@@ -437,7 +436,7 @@ public class YouTubeReadonlyClient {
     System.out.println("Single? : " + userProfileEntry.getRelationship());
     System.out.println("Books   : " + userProfileEntry.getBooks());
     System.out.println("Company : " + userProfileEntry.getCompany());
-    System.out.println("Describe: " + userProfileEntry.getDescription());
+    System.out.println("Describe: " + userProfileEntry.getAboutMe());
     System.out.println("Hobbies : " + userProfileEntry.getHobbies());
     System.out.println("Hometown: " + userProfileEntry.getHometown());
     System.out.println("Location: " + userProfileEntry.getLocation());
@@ -641,12 +640,12 @@ public class YouTubeReadonlyClient {
 
     // do not exclude restricted content from the search results 
     // (by default, it is excluded) 
-    query.setIncludeRacy(true);
+    query.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
 
     System.out.println("\nEnter search terms: ");
     String searchTerms = readLine();
 
-    query.setVideoQuery(searchTerms);
+    query.setFullTextQuery(searchTerms);
 
     printUnderlined("Running Search for '" + searchTerms + "'");
     VideoFeed videoFeed = service.query(query, VideoFeed.class);
@@ -672,7 +671,7 @@ public class YouTubeReadonlyClient {
     query.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT);
     
     // include restricted content in the search results
-    query.setIncludeRacy(true);
+    query.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
 
     // a category filter holds a collection of categories to limit the search
     Query.CategoryFilter categoryFilter = new Query.CategoryFilter();

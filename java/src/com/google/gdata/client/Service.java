@@ -497,6 +497,28 @@ public class Service {
     ((HttpGDataRequest.Factory) this.requestFactory).useSsl();
   }
 
+  /**
+   * Defines the languages accepted by the application.
+   *
+   * This parameters defines the human language the service should use for
+   * generated strings. Different services support different languages, please
+   * check the service documentation.
+   *
+   * If no language on this list is accepted by the service, and if the list
+   * does not contain {@code *} to accept all languages, the exception
+   * in the exception {@link NotAcceptableException}.
+   *
+   * The service will choose the best available language on this list. Check the
+   * attribute {@code xml:lang} on the relevant tags, such as atom:content,
+   * atom:title and atom:category.
+   *
+   * @param acceptedLanguages list of accepted languages, as defined
+   *        in section 14.4 of RFC 2616
+   */
+  public void setAcceptLanguage(String acceptedLanguages) {
+    this.requestFactory.setHeader(
+        GDataProtocol.Header.ACCEPT_LANGUAGE, acceptedLanguages);
+  }
 
   /**
    * Creates a new GDataRequest for use by the service.
@@ -517,7 +539,7 @@ public class Service {
   /**
    * Creates a new GDataRequest for querying the service.
    */
-  private GDataRequest createRequest(Query query, ContentType inputType)
+  protected GDataRequest createRequest(Query query, ContentType inputType)
       throws IOException, ServiceException {
 
     GDataRequest request = requestFactory.getRequest(query, inputType);

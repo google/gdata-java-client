@@ -46,7 +46,7 @@ import java.util.Set;
  */
 public class GoogleService extends Service implements TokenListener {
 
-  
+
   // Authentication token factory used to access Google services
   private AuthTokenFactory authTokenFactory;
 
@@ -147,7 +147,7 @@ public class GoogleService extends Service implements TokenListener {
     }
   }
 
-  
+
   /**
    * Constructs a GoogleService instance connecting to the service with name
    * {@code serviceName} for an application with the name
@@ -203,14 +203,14 @@ public class GoogleService extends Service implements TokenListener {
     cookieManager = new SimpleCookieManager();
     initRequestFactory(applicationName);
   }
-  
+
   /**
-   * Constructs a GoogleService instance connecting to the service for an 
-   * application with the name {@code applicationName}.  The provided 
-   * {@code GDataRequestFactory} will create requests, and the given 
-   * {@code AuthTokenFactory} will be used to generate auth tokens. 
+   * Constructs a GoogleService instance connecting to the service for an
+   * application with the name {@code applicationName}.  The provided
+   * {@code GDataRequestFactory} will create requests, and the given
+   * {@code AuthTokenFactory} will be used to generate auth tokens.
    * A simple cookie manager is used.
-   * 
+   *
    * @param applicationName the name of the client application accessing the
    *                        service. Application names should preferably have
    *                        the format [company-id]-[app-name]-[app-version].
@@ -227,7 +227,7 @@ public class GoogleService extends Service implements TokenListener {
     cookieManager = new SimpleCookieManager();
     initRequestFactory(applicationName);
   }
-  
+
   /**
    * Sets the headers in the request factory with the appropriate user agent
    * settings.
@@ -251,7 +251,7 @@ public class GoogleService extends Service implements TokenListener {
 
   /**
    * Sets the {@link AuthTokenFactory} currently associated with the service.
-   * 
+   *
    * @param authTokenFactory Authentication factory
    */
   public void setAuthTokenFactory(AuthTokenFactory authTokenFactory) {
@@ -269,7 +269,7 @@ public class GoogleService extends Service implements TokenListener {
 
   /**
    * Sets the {@link CookieManager} currently associated with the service.
-   * 
+   *
    * @param cookieManager Cookie manager
    */
   public void setCookieManager(CookieManager cookieManager) {
@@ -334,25 +334,25 @@ public class GoogleService extends Service implements TokenListener {
    * @param token the AuthToken in ascii form
    */
   public void setUserToken(String token) {
-    
+
     GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
     googleAuthTokenFactory.setUserToken(token);
     requestFactory.setAuthToken(authTokenFactory.getAuthToken());
   }
 
   /**
-   * Sets the OAuth credentials used to generate the authorization header.  
+   * Sets the OAuth credentials used to generate the authorization header.
    * This header needs to be set per request, as it depends on the request url.
    * The following OAuth parameters are required:
    * <ul>
    * <li>oauth_consumer_key
    * <li>oauth_token
    * </ul>
-   * 
+   *
    * @param parameters the OAuth parameters to use to generated the header
    * @param signer the signing method to use for signing the header
    */
-  public void setOAuthCredentials(OAuthParameters parameters, 
+  public void setOAuthCredentials(OAuthParameters parameters,
       OAuthSigner signer) throws OAuthException {
     GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
     googleAuthTokenFactory.setOAuthCredentials(parameters, signer);
@@ -385,7 +385,7 @@ public class GoogleService extends Service implements TokenListener {
     requestFactory.setAuthToken(authTokenFactory.getAuthToken());
   }
 
-  
+
   /**
    * Retrieves the authentication token for the provided set of credentials.
    *
@@ -490,6 +490,15 @@ public class GoogleService extends Service implements TokenListener {
     return request;
   }
 
+  @Override
+  protected GDataRequest createRequest(Query query, ContentType contentType)
+      throws IOException, ServiceException {
+    GDataRequest request = super.createRequest(query, contentType);
+    if (request instanceof GoogleGDataRequest) {
+      ((GoogleGDataRequest) request).setService(this);
+    }
+    return request;
+  }
 
   @Override
   public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
@@ -681,7 +690,7 @@ public class GoogleService extends Service implements TokenListener {
    * Get the {@link GoogleAuthTokenFactory} current associated with this
    * service. If an auth token factory of a different type is configured,
    * an {@link IllegalStateException} is thrown.
-   * 
+   *
    * @return Google authentication token factory.
    */
   private GoogleAuthTokenFactory getGoogleAuthTokenFactory() {
@@ -691,5 +700,4 @@ public class GoogleService extends Service implements TokenListener {
     return (GoogleAuthTokenFactory) authTokenFactory;
   }
 }
-
 

@@ -31,12 +31,13 @@ import com.google.gdata.data.media.MediaMultipart;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.media.MediaStreamSource;
 import com.google.gdata.util.ContentType;
-import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.RedirectRequiredException;
+import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -54,11 +55,26 @@ import javax.mail.internet.MimeUtility;
 public class MediaService extends GoogleService {
   
   /**
-   * Used to set the buffer size when using Transfer-Encoding: chunked.
+   * Used to set the default buffer size when using Transfer-Encoding: chunked.
    * Setting this to 0 uses the default which is 4MB.
    */
-  private static final int CHUNKED_BUFFER_SIZE = 0;
+  public static final int DEFAULT_CHUNKED_BUFFER_SIZE = 0;
 
+  /**
+   * Used to specify that the media write requests will not be chunked, but 
+   * sent in one piece. 
+   * 
+   * @see MediaService#setChunkedMediaUpload(int)
+   */
+  public static final int NO_CHUNKED_MEDIA_REQUEST = -1;
+  
+  /**
+   * The size of the buffer to send media write requests, when using
+   * Transfer-Encoding: chunked. If the value is equal to 
+   * {@link #NO_CHUNKED_MEDIA_REQUEST}, no chunking will be performed. 
+   */
+  private int chunkedBufferSize = DEFAULT_CHUNKED_BUFFER_SIZE;
+  
   /**
    * Constructs a MediaService instance connecting to the service with name
    * {@code serviceName} for an application with the name
@@ -99,6 +115,7 @@ public class MediaService extends GoogleService {
   public MediaService(String applicationName,
       Service.GDataRequestFactory requestFactory,
       AuthTokenFactory authTokenFactory) {
+    
     super(applicationName, requestFactory, authTokenFactory);
   }
 
@@ -129,7 +146,26 @@ public class MediaService extends GoogleService {
     super(serviceName, applicationName, protocol, domainName);
   }
 
-
+  /**
+   * Configures the service to use chunked streaming mode for media write
+   * requests. 
+   * <p>
+   * By default, the service is configured to use Transfer-Encoding: chunked 
+   * using the {@link #DEFAULT_CHUNKED_BUFFER_SIZE}. Use this method to change
+   * the size buffer size, or to disable the chunked mode entirely.  
+   * 
+   * @param chunkSizeInBytes specifies the buffer size (in bytes) to be used 
+   *     when sending a media write request. 
+   *     Use {@link #DEFAULT_CHUNKED_BUFFER_SIZE} for the default value. 
+   *     Use {@link #NO_CHUNKED_MEDIA_REQUEST} for not using chunked requests.
+   *     Use a positive number to specify the size of each buffer.
+   * 
+   * @see HttpURLConnection#setChunkedStreamingMode(int)
+   */
+  public void setChunkedMediaUpload(int chunkSizeInBytes) { 
+    this.chunkedBufferSize = chunkSizeInBytes;
+  }
+  
   /**
    * Returns a {@link MediaSource} that can be used to read the media pointed
    * to by the media url.
@@ -230,9 +266,10 @@ public class MediaService extends GoogleService {
     if (name != null) {
       request.setHeader("Slug", MimeUtility.encodeText(name, "utf-8", null));
     }
-    if (request instanceof HttpGDataRequest) {
+    if (chunkedBufferSize != NO_CHUNKED_MEDIA_REQUEST
+        && request instanceof HttpGDataRequest) {
       HttpGDataRequest httpRequest = (HttpGDataRequest) request;
-      httpRequest.getConnection().setChunkedStreamingMode(CHUNKED_BUFFER_SIZE);
+      httpRequest.getConnection().setChunkedStreamingMode(chunkedBufferSize);
     }
   }
 

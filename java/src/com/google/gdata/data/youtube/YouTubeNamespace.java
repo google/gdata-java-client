@@ -74,11 +74,21 @@ public class YouTubeNamespace {
    * Kind linked to {@link UserProfileEntry}.
    */
   public static final String KIND_USER_PROFILE = URI + "#userProfile";
+  
+  /**
+   * Kind linked to {@link ChannelEntry}.
+   */
+  public static final String KIND_CHANNEL = URI + "#channel";  
 
   /**
    * Kind linked to {@link PlaylistEntry}.
    */
   public static final String KIND_PLAYLIST = URI + "#playlist";
+
+  /**
+   * Kind linked to {@link FavoriteEntry}.
+   */
+  public static final String KIND_FAVORITE = URI + "#favorite";
 
   /**
    * Kind linked to {@link VideoMessageEntry}.

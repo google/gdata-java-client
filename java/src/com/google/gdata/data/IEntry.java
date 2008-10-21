@@ -146,6 +146,19 @@ public interface IEntry {
   public ILink getMediaEditLink();
   
   /**
+   * Retrieves the first link with the supplied {@code rel} and/or
+   * {@code type} value.
+   * 
+   * <p>If either parameter is {@code null}, it will not return matches
+   * for that paramter.
+   * 
+   * @param rel link relation.
+   * @param type link type.
+   * @return first matching link.
+   */
+  public ILink getLink(String rel, String type);
+  
+  /**
    * Gets a list containing all links on this entry.
    */
   public List<? extends ILink> getLinks();

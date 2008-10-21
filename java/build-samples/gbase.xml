@@ -27,7 +27,7 @@
   <!-- dependency check -->
   <target name="sample.gbase.dependencies">
     <antcall target="template.require.service.jar">
-      <param name="template.service.name" value="client"/>
+      <param name="template.service.name" value="base"/>
       <param name="template.service.version" value="${base.spec.version}"/>
     </antcall>
   </target>

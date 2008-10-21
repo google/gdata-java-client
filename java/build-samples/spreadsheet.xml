@@ -48,7 +48,7 @@
   <!-- dependency check -->
   <target name="sample.spreadsheet.dependencies">
     <antcall target="template.require.service.jar">
-      <param name="template.service.name" value="client"/>
+      <param name="template.service.name" value="spreadsheet"/>
       <param name="template.service.version" value="${spreadsheet.spec.version}"/>
     </antcall>
   </target>

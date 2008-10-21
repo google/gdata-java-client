@@ -19,6 +19,7 @@ package com.google.gdata.data.media.mediarss;
 import com.google.gdata.data.Extension;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
+import com.google.gdata.data.ExtensionProfile;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,7 +45,13 @@ public class MediaGroup extends ExtensionPoint implements Extension {
   public static ExtensionDescription getDefaultDescription() {
     return ExtensionDescription.getDefaultDescription(MediaGroup.class);
   }
-
+  
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);  
+    MediaRssNamespace.declareAll(extProfile);
+  }
+  
   public List<MediaContent> getContents() {
     return getRepeatingExtension(MediaContent.class);
   }
@@ -61,7 +68,6 @@ public class MediaGroup extends ExtensionPoint implements Extension {
     return getRepeatingExtension(MediaCategory.class);
   }
 
-  
   /**
    * Returns all the found categories of the given scheme. If the given scheme
    * parameter is null it returns all the categories that do not have a scheme
@@ -90,7 +96,7 @@ public class MediaGroup extends ExtensionPoint implements Extension {
   public void addCategory(MediaCategory category) {
     getCategories().add(category);
   }
-
+  
   public MediaCopyright getCopyright() {
     return getExtension(MediaCopyright.class);
   }
