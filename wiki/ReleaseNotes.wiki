@@ -8,6 +8,14 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.24.0 ==
+  *  Added support for version 2 of Google Data API.  [http://code.google.com/apis/youtube/2.0/developers_guide_protocol.html#API_Versioning API versioning] is rolled-out in phases. As of this release only YouTube Data API supports version 2.  Version 2 provides significant feature enhancements including:
+    * Added Support for caching through http ETag headers.  The implementation is compatible with specification in RFC 2616 with support for If-Match, If-None-Match, If-Modified-Since headers.  Other conditional headers are not supported.
+    * Updated OpenSearch namespace from http://a9.com/-/spec/opensearchrss/1.0/ to http://a9.com/-/spec/opensearch/1.1/.
+    * Introduced "GData-Version" header to indicate requested protocol version.  The GData-Version header value is of format "<major_version>.<minor_version>".  Possible values as of this release are "1.0" and "2.0".  The version information can also be specified using "v=2.0" query parameter.
+    * All version 2 enabled Google Data API Services will continue to support version 1 of the protocol.  If both "GData-Version" header and "v" query parameter are not specified in the request, the server defaults to version 1.0.
+  * Updated com.google.gdata.client.youtube.YouTubeService class to use version 2 of the YouTube Data API as default version. Refer to [http://code.google.com/apis/youtube/2.0/developers_guide_protocol.html YouTube API developer guide] for details on version 2 API.  Refer to[http://code.google.com/apis/youtube/2.0/migration.html YouTube Data API Migration Guide] for details on breaking changes from version 1 to version 2, and details on how to migrate your code to work with version 2 of the YouTube Data API. NOTE: There are breaking API changes between version 1 and version 2.  Though it is not required to upgrade to version 2.0 immediately, it is highly recommended to upgrade version 2.0.  Older versions of YouTube Data API libraries will continue to work until version 1.0 is deprecated.
+
 == 1.23.0 ==
   *  Added samples for Google [http://code.google.com/apis/apps/email_settings/developers_guide_protocol.html Apps Email Settings API].
 
