@@ -16,8 +16,8 @@
 
 package sample.blogger;
 
-import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Query;
+import com.google.gdata.client.blogger.BloggerService;
 import sample.util.SimpleCommandLineParser;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.Entry;
@@ -74,7 +74,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If the URL is malformed.
    */
-  private static String getBlogId(GoogleService myService)
+  private static String getBlogId(BloggerService myService)
       throws ServiceException, IOException {
     // Get the metafeed
     final URL feedUrl = new URL(METAFEED_URL);
@@ -95,7 +95,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If the URL is malformed.
    */
-  public static void printUserBlogs(GoogleService myService)
+  public static void printUserBlogs(BloggerService myService)
       throws ServiceException, IOException {
 
     // Request the feed
@@ -128,7 +128,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If the URL is malformed.
    */
-  public static Entry createPost(GoogleService myService, String title,
+  public static Entry createPost(BloggerService myService, String title,
       String content, String authorName, String userName, Boolean isDraft)
       throws ServiceException, IOException {
     // Create the entry to insert
@@ -152,7 +152,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If the URL is malformed.
    */
-  public static void printAllPosts(GoogleService myService)
+  public static void printAllPosts(BloggerService myService)
       throws ServiceException, IOException {
     // Request the feed
     URL feedUrl = new URL(feedUri + POSTS_FEED_URI_SUFFIX);
@@ -185,7 +185,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If the URL is malformed.
    */
-  public static void printDateRangeQueryResults(GoogleService myService,
+  public static void printDateRangeQueryResults(BloggerService myService,
       DateTime startTime, DateTime endTime) throws ServiceException,
       IOException {
     // Create query and submit a request
@@ -221,7 +221,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If the URL is malformed.
    */
-  public static Entry updatePostTitle(GoogleService myService,
+  public static Entry updatePostTitle(BloggerService myService,
       Entry entryToUpdate, String newTitle) throws ServiceException,
       IOException {
     entryToUpdate.setTitle(new PlainTextConstruct(newTitle));
@@ -243,7 +243,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If the URL is malformed.
    */
-  public static Entry createComment(GoogleService myService, String postId,
+  public static Entry createComment(BloggerService myService, String postId,
       String commentText) throws ServiceException, IOException {
     // Build the comment feed URI
     String commentsFeedUri = feedUri + "/" + postId + COMMENTS_FEED_URI_SUFFIX;
@@ -265,7 +265,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If there is an error communicating with the server.
    */
-  public static void printAllComments(GoogleService myService, String postId)
+  public static void printAllComments(BloggerService myService, String postId)
       throws ServiceException, IOException {
     // Build comment feed URI and request comments on the specified post
     String commentsFeedUri = feedUri + "/" + postId + COMMENTS_FEED_URI_SUFFIX;
@@ -291,7 +291,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If there is an error communicating with the server.
    */
-  public static void deleteComment(GoogleService myService, String editLinkHref)
+  public static void deleteComment(BloggerService myService, String editLinkHref)
       throws ServiceException, IOException {
     URL deleteUrl = new URL(editLinkHref);
     myService.delete(deleteUrl);
@@ -305,7 +305,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If there is an error communicating with the server.
    */
-  public static void deletePost(GoogleService myService, String editLinkHref)
+  public static void deletePost(BloggerService myService, String editLinkHref)
       throws ServiceException, IOException {
     URL deleteUrl = new URL(editLinkHref);
     myService.delete(deleteUrl);
@@ -320,7 +320,7 @@ public class BloggerClient {
    * @throws ServiceException If the service is unable to handle the request.
    * @throws IOException If there is an error communicating with the server.
    */
-  public static void run(GoogleService myService, String userName,
+  public static void run(BloggerService myService, String userName,
       String userPassword) throws ServiceException, IOException {
     // Authenticate using ClientLogin
     myService.setUserCredentials(userName, userPassword);
@@ -401,8 +401,7 @@ public class BloggerClient {
       System.exit(1);
     }
 
-    GoogleService myService = new GoogleService("blogger",
-        "exampleCo-exampleApp-1");
+    BloggerService myService = new BloggerService("exampleCo-exampleApp-1");
 
     try {
       run(myService, userName, userPassword);

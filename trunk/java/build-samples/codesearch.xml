@@ -22,7 +22,7 @@
   <!-- dependency check -->
   <target name="sample.codesearch.dependencies">
     <antcall target="template.require.service.jar">
-      <param name="template.service.name" value="client"/>
+      <param name="template.service.name" value="codesearch"/>
       <param name="template.service.version" value="${codesearch.spec.version}"/>
     </antcall>
   </target>

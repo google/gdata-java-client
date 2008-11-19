@@ -42,7 +42,9 @@ import java.util.List;
  *
  * 
  */
-public class BatchStatus extends ExtensionPoint implements Extension {
+public class BatchStatus extends ExtensionPoint
+    implements Extension, IBatchStatus {
+
   private int code;
   private String reason;
   private ContentType contentType;

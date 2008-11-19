@@ -25,6 +25,7 @@ import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
 import com.google.gdata.data.docs.DocumentEntry;
 import com.google.gdata.data.docs.DocumentListFeed;
+import com.google.gdata.data.docs.FolderEntry;
 import com.google.gdata.data.docs.PdfEntry;
 import com.google.gdata.data.docs.PhotoEntry;
 import com.google.gdata.data.docs.PresentationEntry;
@@ -80,7 +81,7 @@ public class DocsService extends MediaService {
    * Default GData version used by the Google Documents List service.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(DocsService.class, Versions.V1);
+      Service.initServiceVersion(DocsService.class, Versions.V2);
 
   /**
    * Constructs an instance connecting to the Google Documents List service for
@@ -161,6 +162,7 @@ public class DocsService extends MediaService {
     extProfile.setAutoExtending(true);
     new DocumentEntry().declareExtensions(extProfile);
     new DocumentListFeed().declareExtensions(extProfile);
+    new FolderEntry().declareExtensions(extProfile);
     new PdfEntry().declareExtensions(extProfile);
     new PhotoEntry().declareExtensions(extProfile);
     new PresentationEntry().declareExtensions(extProfile);

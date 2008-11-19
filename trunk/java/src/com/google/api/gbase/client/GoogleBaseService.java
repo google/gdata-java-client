@@ -85,7 +85,7 @@ public class GoogleBaseService extends MediaService {
     * Version 1 is the current default version for GoogleBaseService.
     */
    public static final Version DEFAULT_VERSION =
-       Service.initServiceVersion(GoogleBaseService.class, GoogleBaseService.Versions.V1);
+       Service.initServiceVersion(GoogleBaseService.class, GoogleBaseService.Versions.V2);
   
   /** Name of the application passed to the constructor. */
   protected String application;

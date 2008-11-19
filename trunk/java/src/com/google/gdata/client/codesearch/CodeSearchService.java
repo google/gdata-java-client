@@ -20,6 +20,8 @@ import com.google.gdata.client.AuthTokenFactory;
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Service;
 import com.google.gdata.data.codesearch.CodeSearchFeed;
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 /**
  * Extends the basic {@link GoogleService} abstraction to define a service that
@@ -40,6 +42,27 @@ public class CodeSearchService extends GoogleService {
    */
   public static final String CODESEARCH_SERVICE_VERSION = "CodeSearch-Java/" +
       CodeSearchService.class.getPackage().getImplementationVersion();
+
+  /**
+   * GData versions supported by Google Code Search Service.
+   */
+  public static final class Versions {
+
+    /** Version 1 of the Codesearch Data API. */
+    public static final Version V1 = new Version(CodeSearchService.class, "1.0",
+        Service.Versions.V1);
+
+    /** Version 2 of the Codesearch Data API. */
+    public static final Version V2 = new Version(CodeSearchService.class, "2.0",
+        Service.Versions.V2);
+
+  }
+
+  /**
+   * Default GData version used by the Google Code Search service.
+   */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(CodeSearchService.class, Versions.V2);
 
   /**
    * Constructs an instance connecting to the Google Code Search service for an
@@ -99,6 +122,13 @@ public class CodeSearchService extends GoogleService {
   @Override
   public String getServiceVersion() {
     return CODESEARCH_SERVICE_VERSION + " " + super.getServiceVersion();
+  }
+
+  /**
+   * Returns the current GData version used by the Google Code Search service.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(CodeSearchService.class);
   }
 
   /**

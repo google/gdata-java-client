@@ -63,7 +63,7 @@ public class HealthService extends GoogleService {
    * Default GData version used by the Health service.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(HealthService.class, Versions.V1);
+      Service.initServiceVersion(HealthService.class, Versions.V2);
 
   /**
    * Constructs an instance connecting to the Health service for an application

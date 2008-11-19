@@ -52,6 +52,8 @@ import java.util.NoSuchElementException;
  * #checkNotNull(Object)} -- and technically this parameter could be even marked
  * as {@link Nullable} -- yet the method will still throw an exception anyway,
  * because that's what its contract says to do.
+ * 
+ * <p>This class may be used with the Google Web Toolkit (GWT).
  *
  * 
  */

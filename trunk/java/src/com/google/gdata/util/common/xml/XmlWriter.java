@@ -12,10 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 
 package com.google.gdata.util.common.xml;
 
+
+import com.google.gdata.util.common.base.CharMatcher;
 import com.google.gdata.util.common.base.StringUtil;
 
 import java.io.IOException;
@@ -27,7 +29,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-
 
 /**
  * Implements a simple XML writer on top of java.io.PrintWriter.
@@ -114,6 +115,15 @@ import java.util.Stack;
 public class XmlWriter {
 
   /**
+   * Determines whether a character is legal in an XML 1.0 document,
+   * cf. http://www.w3.org/TR/REC-xml/#charsets.
+   */
+  public static final CharMatcher LEGAL_XML_1_0 =
+      CharMatcher.inRange('\u0020', '\ud7ff')
+      .or(CharMatcher.anyOf("\u0009\n\r"))
+      .or(CharMatcher.inRange('\ue000', '\ufffd'));
+
+  /**
    * Enumeration type that can be used to configure the XmlWriter behavior.
    */
   public enum WriterFlags {
@@ -128,13 +138,13 @@ public class XmlWriter {
     PRETTY_PRINT,
   }
 
-  final protected Set<WriterFlags> flags;
+  protected final Set<WriterFlags> flags;
 
   /**
    * The Namespace class represents an XML Namespace that can be associated
    * with elements or attributes.
    */
-  public final static class Namespace {
+  public static final class Namespace {
 
     String alias;
     final String uri;
@@ -149,18 +159,19 @@ public class XmlWriter {
      * Returns the prefix alias for the namespace.
      * @returns namespace alias.
      */
-    final public String getAlias() { return alias; }
+    public final String getAlias() { return alias; }
 
     /**
      * Returns the fully qualified URI for the namespace.
      * @returns namespace URI.
      */
-    final public String getUri() { return uri; }
+    public final String getUri() { return uri; }
 
     @Override
     public boolean equals(Object obj) {
-      if (! (obj instanceof Namespace))
+      if (!(obj instanceof Namespace)) {
         return false;
+      }
       Namespace other = (Namespace) obj;
       if (alias == null) {
         return (other.alias == null) && uri.equals(other.uri);
@@ -182,7 +193,7 @@ public class XmlWriter {
   /**
    * The Attribute class represents an XML attribute.
    */
-  public final static class Attribute {
+  public static final class Attribute {
 
     public final String nsAlias;
     public final String name;
@@ -215,7 +226,7 @@ public class XmlWriter {
         int separator = name.indexOf(':');
         if (separator > 0) {
           nsAlias = name.substring(0, separator);
-          name = name.substring(separator+1);
+          name = name.substring(separator + 1);
         }
       }
       this.nsAlias = nsAlias;
@@ -236,10 +247,10 @@ public class XmlWriter {
 
   /**
    * The Element class contains information about an XML element. Used to keep
-   * track of namespace alias/URI mappings.  This class may be subclassed
-   * by XmlWriter subclasses that want to track additional information about
-   * output elements.  The {@link #createElement} method can be overriden
-   * to instantiate a specialized Element subclass.
+   * track of namespace alias/URI mappings. This class may be subclassed by
+   * XmlWriter subclasses that want to track additional information about output
+   * elements. The {@link #createElement(String, String, String)} method can be
+   * overridden to instantiate a specialized Element subclass.
    */
   protected static class Element {
 
@@ -288,8 +299,8 @@ public class XmlWriter {
 
     /**
      * Indicates the number of repeating child elements written within
-     * the scope of the current {@link #startRepeatingElement} /
-     * {@link endRepeatingElement} pair for this element.  The value will be
+     * the scope of the current {@link #startRepeatingElement()} /
+     * {@link #endRepeatingElement()} pair for this element.  The value will be
      * {@link #NOT_REPEATING} if not currently writing repeating elements.
      */
     public int repeatingCount = NOT_REPEATING;
@@ -310,18 +321,16 @@ public class XmlWriter {
 
     /**
      * Set to {@code false} if the closing bracket of the element's start
-     * tag has been written (i.e. if {@link #writeOpenTagEnd} has been
+     * tag has been written (i.e. if {@link #writeOpenTagEnd()} has been
      * called yet).  Used to optimized elements that have no nested content
      * or children.
      */
     public boolean openTagEnded;
 
     /**
-     * Constructs an element. This constructor should never be directly
-     * called, always use the {@link #createElement} method to create new
-     * elements.
-     *
-     * @see #createElement
+     * Constructs an element. This constructor should never be directly called,
+     * always use the {@link #createElement(String, String, String)} method to
+     * create new elements.
      */
     protected Element(String nsAlias, String nsUri, String name) {
       nsDecls = new ArrayList<Namespace>();
@@ -334,7 +343,7 @@ public class XmlWriter {
      * Adds a namespace declaration to the element, avoiding duplicates.
      */
     public void addNamespace(Namespace ns) {
-      if(!nsDecls.contains(ns)) {
+      if (!nsDecls.contains(ns)) {
         nsDecls.add(ns);
       }
     }
@@ -361,9 +370,30 @@ public class XmlWriter {
   /**
    * Encoding of output
    */
-  protected String encoding = null;
+  protected String encoding;
 
-  private String nextDefaultNamespace = null;
+  private String nextDefaultNamespace;
+
+  private Boolean standalone;
+
+  /**
+   * Constructor that allows standalone directive to be provided.  Please note
+   * that using this constructor explicity causes the standalone header value
+   * to be written and WRITE_HEADER flag to be set.
+   *
+   * @param   w output writer object.
+   * @param   f writer configuration flags or {@code null for no flags}
+   * @param   encoding charset encoding.
+   * @param   standalone boolean where true=yes and false=no.
+   * @throws  IOException thrown by the underlying writer
+   *
+   * @see WriterFlags
+   */
+  public XmlWriter(Writer w, Set<WriterFlags> f, String encoding,
+      boolean standalone) throws IOException {
+    this(w, f, encoding);
+    this.standalone = standalone;
+  }
 
   /**
    * The default namespace that will take effect on the next
@@ -377,17 +407,11 @@ public class XmlWriter {
    *
    * @see WriterFlags
    */
-  @SuppressWarnings("unused")
-  public XmlWriter(Writer w, Set<WriterFlags> f, String encoding)
-      throws IOException {
+  @SuppressWarnings("unused")  // for IOException not thrown here
+  public XmlWriter(Writer w, Set<WriterFlags> f, String encoding) throws IOException {
 
-    writer = w;
-    if (f != null) {
-      flags = f;
-    } else {
-      flags = EnumSet.noneOf(WriterFlags.class);
-    }
-
+    this.writer = w;
+    this.flags = f != null ? f : EnumSet.noneOf(WriterFlags.class);
     this.encoding = encoding;
 
     /*
@@ -396,7 +420,7 @@ public class XmlWriter {
      * the root element without requiring special case handling of an
      * empty element stack.
      */
-    elementStack = new Stack<Element>();
+    this.elementStack = new Stack<Element>();
     Element rootElement = createElement(null, null, null);
     rootElement.openTagEnded = true;
     elementStack.push(rootElement);
@@ -413,7 +437,6 @@ public class XmlWriter {
     this(w, null, null);
   }
 
-
   /**
    * Constructor that writers header including encoding information.
    *
@@ -426,7 +449,6 @@ public class XmlWriter {
     this(w, EnumSet.of(WriterFlags.WRITE_HEADER), encoding);
   }
 
-
   /**
    * @deprecated see {@link #XmlWriter(Writer, Set, String)}
    */
@@ -434,7 +456,6 @@ public class XmlWriter {
   public XmlWriter(Writer w, boolean includeHeader) throws IOException {
     this(w, EnumSet.of(WriterFlags.WRITE_HEADER), null);
   }
-
 
   /**
    * Closes the XmlWriter and the underlying output writer.
@@ -445,7 +466,6 @@ public class XmlWriter {
     writer.close();
   }
 
-
   /**
    * Flushes the XmlWriter and the underlying output writer.
    *
@@ -454,7 +474,6 @@ public class XmlWriter {
   public void flush() throws IOException {
     writer.flush();
   }
-
 
   /**
    * Sets the default namespace. It takes effect on the next element.
@@ -467,7 +486,6 @@ public class XmlWriter {
       nextDefaultNamespace = namespace.uri;
     }
   }
-
 
   /**
    * Constructs an Element instance that describes an XML element that
@@ -482,7 +500,6 @@ public class XmlWriter {
    * written.
    */
   protected Element currentElement() {
-
     try {
       return elementStack.peek();
     } catch (EmptyStackException e) {
@@ -519,7 +536,8 @@ public class XmlWriter {
    * @throws  IOException thrown by the underlying writer.
    */
   public void startElement(Namespace namespace, String name,
-      Collection<Attribute> attrs, Collection<Namespace> namespaceDecls)
+                           Collection<Attribute> attrs,
+                           Collection<Namespace> namespaceDecls)
       throws IOException {
 
     if (elementStack.size() == 1) {
@@ -557,14 +575,13 @@ public class XmlWriter {
 
     if (nextDefaultNamespace != null) {
       Namespace defaultNs = new Namespace(null, nextDefaultNamespace);
-      element.enclosingDefaultNamespace = defaultNamespace;
       defaultNamespace = nextDefaultNamespace;
       element.addNamespace(defaultNs);
       nextDefaultNamespace = null;
     }
 
     if (namespaceDecls != null) {
-      for (Namespace ns: namespaceDecls) {
+      for (Namespace ns : namespaceDecls) {
         ensureNamespace(ns);
       }
     }
@@ -575,7 +592,7 @@ public class XmlWriter {
 
     writeOpenTagStart(element.nsAlias, name);
 
-    for (Namespace ns: element.nsDecls) {
+    for (Namespace ns : element.nsDecls) {
       if (ns.alias != null && ns.alias.length() > 0) {
         writeAttribute("xmlns", ns.alias, ns.uri);  // xmlns:name=uri
       } else {
@@ -584,9 +601,7 @@ public class XmlWriter {
     }
 
     if (attrs != null) {
-
-      for (Attribute attr: attrs) {
-
+      for (Attribute attr : attrs) {
         // Don't write out xml:lang if consistent with the current state.
         if (attr.name.equals("lang") && "xml".equals(attr.nsAlias)) {
           if (attr.value.equals(element.xmlLang)) {
@@ -595,7 +610,6 @@ public class XmlWriter {
             element.xmlLang = attr.value;
           }
         }
-
         writeAttribute(attr.nsAlias, attr.name, attr.value);
       }
     }
@@ -611,14 +625,14 @@ public class XmlWriter {
    *     otherwise
    */
   protected boolean shouldWriteHeaderAndFooter() {
-    return flags.contains(WriterFlags.WRITE_HEADER) || encoding != null;
+    return flags.contains(WriterFlags.WRITE_HEADER)
+        || encoding != null || standalone != null;
   }
 
   /**
    * Ends the start tag for an element.
    */
   protected void endOpenTag() throws IOException {
-
     Element element = currentElement();
     if (!element.openTagEnded) {
       writeOpenTagEnd();
@@ -645,9 +659,7 @@ public class XmlWriter {
   public void endElement() throws IOException {
     Element element = currentElement();
     writeCloseTag(element.nsAlias, element.name);
-    if (element.enclosingDefaultNamespace != null) {
-      defaultNamespace = element.enclosingDefaultNamespace;
-    }
+    defaultNamespace = element.enclosingDefaultNamespace;
     elementStack.pop();
 
     // Write the footer if we're down to just the dummy element.
@@ -723,7 +735,7 @@ public class XmlWriter {
 
       Element element = elementStack.get(i);
 
-      for (Namespace ns: element.nsDecls) {
+      for (Namespace ns : element.nsDecls) {
         if (ns.alias != null && ns.uri.equals(namespaceUri)) {
           return ns.alias;
         }
@@ -745,7 +757,6 @@ public class XmlWriter {
    * Returns the current level of indentation.
    */
   private int getIndentationLevel() {
-
     // substract 2 from the stack size: one for the dummy element
     // pushed in the constructor and one due to the timing of
     // OpenTag/CloseTag calls relative to push/pop.
@@ -765,7 +776,7 @@ public class XmlWriter {
    * Write the specified number of indentation units to the writer.
    */
   private void writeUnitsOfIndentation(int i) throws IOException {
-    for (; i > 0; i-- ) {
+    for (; i > 0; i--) {
       writer.write(INDENTATION_UNIT);
     }
   }
@@ -807,14 +818,13 @@ public class XmlWriter {
    * @param element the element to check.
    * @param namespace the XML namespace to ensure.
    */
-  private void ensureUniqueNamespaceAlias(Element element,
-      Namespace namespace) {
+  private void ensureUniqueNamespaceAlias(Element element, Namespace namespace) {
     boolean unique;
     int serial = 0;
 
     do {
       unique = true;
-      for (Namespace ns: element.nsDecls) {
+      for (Namespace ns : element.nsDecls) {
         if (namespace.alias.equals(ns.alias)) {
           unique = false;
           namespace.alias = "ns" + String.valueOf(++serial);
@@ -831,15 +841,13 @@ public class XmlWriter {
    * @return    namespace URI, or {@code null} if not found.
    */
   protected String getNamespaceUri(String nsAlias) {
-
     if (nsAlias == null) {
       return defaultNamespace;
     }
-
     // Walk the stack from the top to find an element with this ns alias.
     for (int i = elementStack.size() - 1; i >= 0; --i) {
       Element element = elementStack.get(i);
-      for (Namespace ns: element.nsDecls) {
+      for (Namespace ns : element.nsDecls) {
         if (ns.getAlias().equals(nsAlias)) {
           return ns.getUri();
         }
@@ -854,7 +862,6 @@ public class XmlWriter {
    */
   @SuppressWarnings("unused")
   protected void writeBeginOutput() throws IOException {
-
   }
 
   /**
@@ -866,19 +873,21 @@ public class XmlWriter {
    */
   @SuppressWarnings("unused")
   protected void writeEndOutput() throws IOException {
-
   }
 
   /**
-   * Writes basic XML headers including XML version and encoding.
+   * Writes basic XML headers including XML version, standalone, and encoding.
    * @param encoding the XML encoding for the output.  Can be {@code null}.
    * @throws  IOException thrown by the underlying writer.
    */
-  protected void writeHeader(String encoding) throws IOException {
+  protected void writeHeader(String enc) throws IOException {
     writer.write("<?xml");
     writeAttribute("version", "1.0");
-    if (encoding != null) {
-      writeAttribute("encoding", encoding);
+    if (enc != null) {
+      writeAttribute("encoding", enc);
+    }
+    if (standalone != null) {
+      writeAttribute("standalone", (standalone ? "yes" : "no"));
     }
     writer.write("?>");
   }
@@ -889,7 +898,6 @@ public class XmlWriter {
    */
   @SuppressWarnings("unused")
   protected void writeFooter() throws IOException {
-
   }
 
   /**
@@ -899,8 +907,7 @@ public class XmlWriter {
    * @param name namespace-relative local name.
    * @throws IOException thrown by the underlying writer.
    */
-  protected void writeQualifiedName(String nsAlias, String name)
-      throws IOException {
+  protected void writeQualifiedName(String nsAlias, String name) throws IOException {
 
     if (nsAlias != null && nsAlias.length() > 0) {
       writer.write(nsAlias);
@@ -916,12 +923,10 @@ public class XmlWriter {
    * @param name tag name for the element.
    * @throws IOException thrown by the underlying writer.
    */
-  protected void writeOpenTagStart(String nsAlias, String name)
-      throws IOException {
+  protected void writeOpenTagStart(String nsAlias, String name) throws IOException {
 
     // if pretty print is enabled, write out the indentation
     if (isPrettyPrintingEnabled()) {
-
       // add a new line if this is a nested element,
       // or if we've written the header
       if (getIndentationLevel() > 0
@@ -953,8 +958,7 @@ public class XmlWriter {
    * @param name tag name for the element.
    * @throws IOException thrown by the underlying writer.
    */
-  protected void writeCloseTag(String nsAlias, String name)
-      throws IOException {
+  protected void writeCloseTag(String nsAlias, String name) throws IOException {
 
     Element element = currentElement();
     if (element.openTagEnded) {
@@ -1013,15 +1017,11 @@ public class XmlWriter {
    * @throws IOException thrown by the underlying writer.
    */
   public void characters(String s) throws IOException {
-
     if (s == null) {
       return;
     }
-
     endOpenTag();
-
     currentElement().unformattedChildren = true;
-
     writer.write(StringUtil.xmlContentEscape(s));
   }
 
@@ -1032,7 +1032,6 @@ public class XmlWriter {
    * @throws IOException thrown by the underlying writer.
    */
   public void innerXml(String xml) throws IOException {
-
     if (xml == null) {
       return;
     }
@@ -1042,17 +1041,14 @@ public class XmlWriter {
 
   /**
    * Writes a string without XML entity escaping. Used by
-   * {@link com.google.gdata.util.XmlParser} to generate XML blobs.
+   * {@code com.google.gdata.util.XmlParser} to generate XML blobs.
    *
    * @param s the raw content to write without escaping.
    * @throws IOException thrown by the underlying writer.
    */
   public void writeUnescaped(String s) throws IOException {
-
     endOpenTag();
-
     currentElement().unformattedChildren = true;
-
     writer.write(s);
   }
 }

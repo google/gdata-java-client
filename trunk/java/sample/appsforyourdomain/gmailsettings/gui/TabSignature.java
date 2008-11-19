@@ -30,7 +30,8 @@ import javax.swing.*;
  * Tab containing all the signature information. 
  */
 public class TabSignature extends Tab {
-
+  protected SpringLayout layout;
+  protected JLabel signatureLabel;
   protected JTextArea signature;
   protected JScrollPane signaturePane;
   protected JButton submit;
@@ -40,8 +41,13 @@ public class TabSignature extends Tab {
    */
   public TabSignature() {
     super("Signature", "Change a users's signature.");
+    layout = new SpringLayout();
+    setLayout(layout);
+
+    signatureLabel = new JLabel("Signature: ");
     signature = new JTextArea(Defaults.SIGNATURE, 4, 25);
     signaturePane = new JScrollPane(signature);
+
     submit = new JButton("Set Signature");
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
@@ -69,10 +75,16 @@ public class TabSignature extends Tab {
           }
         }
       });
+
+    layout.putConstraint(SpringLayout.WEST, signatureLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, signatureLabel, 5, SpringLayout.NORTH, this);
+    layout.putConstraint(SpringLayout.WEST, signaturePane, 5, SpringLayout.EAST, signatureLabel);
+    layout.putConstraint(SpringLayout.NORTH, signaturePane, 5, SpringLayout.NORTH, this);
+
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, signaturePane);
     
-    setLayout(new FlowLayout());
-    
-    add(new JLabel("Signature:"));
+    add(signatureLabel);
     add(signaturePane);
     add(submit);
   }

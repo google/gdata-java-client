@@ -183,25 +183,30 @@ public class MediaService extends GoogleService {
       DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
-    GDataRequest request =
-        createRequest(GDataRequest.RequestType.QUERY,
-            mediaUrl, contentType);
-    request.setIfModifiedSince(ifModifiedSince);
-    request.execute();
-    InputStream resultStream = request.getResponseStream();
+    MediaStreamSource mediaSource;
+    try {
+      startVersionScope();
+      GDataRequest request =
+          createRequest(GDataRequest.RequestType.QUERY,
+              mediaUrl, contentType);
+      request.setIfModifiedSince(ifModifiedSince);
+      request.execute();
+      InputStream resultStream = request.getResponseStream();
 
-    MediaStreamSource mediaSource =
-        new MediaStreamSource(resultStream, 
-            request.getResponseContentType().toString());
+      mediaSource = new MediaStreamSource(resultStream, 
+          request.getResponseContentType().toString());
 
-    DateTime lastModified = 
-        request.getResponseDateHeader(GDataProtocol.Header.LAST_MODIFIED);
-    if (lastModified != null) {
-      mediaSource.setLastModified(lastModified);
-    }
-    String etag = request.getResponseHeader(GDataProtocol.Header.ETAG);
-    if (etag != null) {
-      mediaSource.setEtag(etag);
+      DateTime lastModified = 
+          request.getResponseDateHeader(GDataProtocol.Header.LAST_MODIFIED);
+      if (lastModified != null) {
+        mediaSource.setLastModified(lastModified);
+      }
+      String etag = request.getResponseHeader(GDataProtocol.Header.ETAG);
+      if (etag != null) {
+        mediaSource.setEtag(etag);
+      }
+    } finally {
+      endVersionScope();
     }
 
     return mediaSource;
@@ -320,6 +325,8 @@ public class MediaService extends GoogleService {
 
     ParseSource resultEntrySource = null;
     try {
+      startVersionScope();
+      
       // Write as MIME multipart containing the entry and media
       MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
       GDataRequest request =
@@ -338,6 +345,7 @@ public class MediaService extends GoogleService {
       throw new ServiceException(
           CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
     } finally {
+      endVersionScope();
       closeSource(resultEntrySource);
     }
   }
@@ -378,6 +386,8 @@ public class MediaService extends GoogleService {
 
     ParseSource resultEntrySource = null;
     try {
+      startVersionScope();
+        
       // Write media content only.
       GDataRequest request =
           createRequest(GDataRequest.RequestType.INSERT, feedUrl,
@@ -391,6 +401,7 @@ public class MediaService extends GoogleService {
       return parseEntry(entryClass, resultEntrySource);
 
     } finally {
+      endVersionScope();
       closeSource(resultEntrySource);
     }
   }
@@ -431,6 +442,8 @@ public class MediaService extends GoogleService {
 
     ParseSource resultEntrySource = null;
     try {
+      startVersionScope();
+      
       // Write as MIME multipart containing the entry and media
       MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
       GDataRequest request =
@@ -447,6 +460,7 @@ public class MediaService extends GoogleService {
       throw new ServiceException(
           CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
     } finally {
+      endVersionScope();
       closeSource(resultEntrySource);
     }
   }
@@ -487,6 +501,7 @@ public class MediaService extends GoogleService {
 
     ParseSource resultEntrySource = null;
     try {
+      startVersionScope();
       GDataRequest request =
           createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
               new ContentType(media.getContentType()));
@@ -497,6 +512,7 @@ public class MediaService extends GoogleService {
       return parseEntry(entryClass, resultEntrySource);
 
     } finally {
+      endVersionScope();
       closeSource(resultEntrySource);
     }
   }

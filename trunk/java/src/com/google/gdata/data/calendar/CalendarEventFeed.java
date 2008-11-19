@@ -16,47 +16,119 @@
 
 package com.google.gdata.data.calendar;
 
+import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.extensions.BaseEventFeed;
 
 /**
- * This extends the EventFeed class to feeds for Google Calendars,
- * which is a list of events.
+ * Describes a Calendar event feed.
  *
  * 
  */
-public class CalendarEventFeed
-    extends BaseEventFeed<CalendarEventFeed, CalendarEventEntry> {
+public class CalendarEventFeed extends BaseEventFeed<CalendarEventFeed,
+    CalendarEventEntry> {
 
   /**
-   * Constructs a new {@code CalendarEventFeed} instance that is
-   * parameterized to contain {@code EventEntry} instances.
+   * Default mutable constructor.
    */
   public CalendarEventFeed() {
     super(CalendarEventEntry.class);
   }
 
-  @Override
-  public void declareExtensions(ExtensionProfile extProfile) {
-
-    // Add any feed-level extension declarations here.
-
-    super.declareExtensions(extProfile);
-    // extProfile.declareFeedExtension(
-    //      AccessLevelProperty.getDefaultDescription());
-    extProfile.declare(CalendarEventFeed.class,
-        TimeZoneProperty.getDefaultDescription());
-    extProfile.declare(CalendarEventFeed.class,
-        TimesCleanedProperty.getDefaultDescription(false, false));
-    // extProfile.declareFeedExtension(When.getDefaultDescription());
-    BatchUtils.declareExtensions(extProfile);
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link BaseFeed} instance.
+   *
+   * @param sourceFeed source feed
+   */
+  public CalendarEventFeed(BaseFeed<?, ?> sourceFeed) {
+    super(CalendarEventEntry.class, sourceFeed);
   }
 
-  /** TimeZone associated with the feed. */
-  protected String tzName;
-  public String getTimeZone() { return tzName; }
-  public void setTimeZone(String v) { tzName = v; }
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    if (extProfile.isDeclared(CalendarEventFeed.class)) {
+      return;
+    }
+    super.declareExtensions(extProfile);
+    extProfile.declare(CalendarEventFeed.class,
+        new ExtensionDescription(TimeZoneProperty.class,
+        new XmlWriter.Namespace("gCal", "http://schemas.google.com/gCal/2005"),
+        "timezone", true, false, false));
+    extProfile.declare(CalendarEventFeed.class, TimesCleanedProperty.class);
+  }
 
-  // Any additional feed-level extension accessor APIs go here
+  /**
+   * Returns the time zone.
+   *
+   * @return time zone
+   */
+  public TimeZoneProperty getTimeZone() {
+    return getExtension(TimeZoneProperty.class);
+  }
+
+  /**
+   * Sets the time zone.
+   *
+   * @param timeZone time zone or <code>null</code> to reset
+   */
+  public void setTimeZone(TimeZoneProperty timeZone) {
+    if (timeZone == null) {
+      removeExtension(TimeZoneProperty.class);
+    } else {
+      setExtension(timeZone);
+    }
+  }
+
+  /**
+   * Returns whether it has the time zone.
+   *
+   * @return whether it has the time zone
+   */
+  public boolean hasTimeZone() {
+    return hasExtension(TimeZoneProperty.class);
+  }
+
+  /**
+   * Returns the times cleaned property.
+   *
+   * @return times cleaned property
+   */
+  public TimesCleanedProperty getTimesCleaned() {
+    return getExtension(TimesCleanedProperty.class);
+  }
+
+  /**
+   * Sets the times cleaned property.
+   *
+   * @param timesCleaned times cleaned property or <code>null</code> to reset
+   */
+  public void setTimesCleaned(TimesCleanedProperty timesCleaned) {
+    if (timesCleaned == null) {
+      removeExtension(TimesCleanedProperty.class);
+    } else {
+      setExtension(timesCleaned);
+    }
+  }
+
+  /**
+   * Returns whether it has the times cleaned property.
+   *
+   * @return whether it has the times cleaned property
+   */
+  public boolean hasTimesCleaned() {
+    return hasExtension(TimesCleanedProperty.class);
+  }
+
+  @Override
+  protected void validate() {
+  }
+
+  @Override
+  public String toString() {
+    return "{CalendarEventFeed " + super.toString() + "}";
+  }
+
 }

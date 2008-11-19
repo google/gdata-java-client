@@ -23,6 +23,8 @@ package com.google.gdata.util.common.base;
  *
  * <p>Implementations which may cause side effects upon evaluation are strongly
  * encouraged to state this fact clearly in their API documentation.
+ * 
+ * <p>This interface may be used with the Google Web Toolkit (GWT).
  *
  * 
  */

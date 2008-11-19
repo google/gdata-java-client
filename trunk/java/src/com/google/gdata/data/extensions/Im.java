@@ -85,6 +85,9 @@ public class Im extends ExtensionPoint {
     /** MSN. */
     public static final String MSN = Namespaces.gPrefix + "MSN";
 
+    /** Netmeeting. */
+    public static final String NETMEETING = Namespaces.gPrefix + "NETMEETING";
+
     /** Tencent QQ. */
     public static final String QQ = Namespaces.gPrefix + "QQ";
 

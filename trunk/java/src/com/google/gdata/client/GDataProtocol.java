@@ -118,13 +118,20 @@ public class GDataProtocol {
      */
     public static final String STRICT = "strict";
 
-
     /**
      * The HL query parameter selects the language of the
      * automatically-generated text in the result. The value is a language code
      * as defined by BCP 47.
      */
     public static final String LANGUAGE = "hl";
+    
+    /**
+     * The PRETTYPRINT parameter requests that character-based output 
+     * representations have their content be pretty-printed for debugging.  A
+     * value of "true" selects pretty-printing, otherwise responses will not be
+     * formatted.
+     */
+    public static final String PRETTYPRINT = "prettyprint";
   }
 
   /**

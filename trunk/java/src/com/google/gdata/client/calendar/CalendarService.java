@@ -65,7 +65,7 @@ public class CalendarService extends GoogleService {
    * Default GData version used by the Google Calendar service.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(CalendarService.class, Versions.V1);
+      Service.initServiceVersion(CalendarService.class, Versions.V2);
 
   /**
    * Constructs an instance connecting to the Google Calendar service for an

@@ -16,6 +16,7 @@
 
 package com.google.gdata.data.extensions;
 
+import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionDescription;
@@ -94,8 +95,15 @@ public class Organization extends ExtensionPoint {
     if (extProfile.isDeclared(Organization.class)) {
       return;
     }
+    extProfile.declare(Organization.class, OrgDepartment.class);
+    extProfile.declare(Organization.class, OrgJobDescription.class);
     extProfile.declare(Organization.class, OrgName.class);
+    extProfile.declare(Organization.class, OrgSymbol.class);
     extProfile.declare(Organization.class, OrgTitle.class);
+    extProfile.declare(Organization.class, new ExtensionDescription(Where.class,
+        new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
+        "where", false, false, false));
+    new Where().declareExtensions(extProfile);
   }
 
   /**
@@ -127,6 +135,69 @@ public class Organization extends ExtensionPoint {
   }
 
   /**
+   * Returns the department name in organization.
+   *
+   * @return department name in organization
+   */
+  public OrgDepartment getOrgDepartment() {
+    return getExtension(OrgDepartment.class);
+  }
+
+  /**
+   * Sets the department name in organization.
+   *
+   * @param orgDepartment department name in organization or <code>null</code>
+   *     to reset
+   */
+  public void setOrgDepartment(OrgDepartment orgDepartment) {
+    if (orgDepartment == null) {
+      removeExtension(OrgDepartment.class);
+    } else {
+      setExtension(orgDepartment);
+    }
+  }
+
+  /**
+   * Returns whether it has the department name in organization.
+   *
+   * @return whether it has the department name in organization
+   */
+  public boolean hasOrgDepartment() {
+    return hasExtension(OrgDepartment.class);
+  }
+
+  /**
+   * Returns the job description.
+   *
+   * @return job description
+   */
+  public OrgJobDescription getOrgJobDescription() {
+    return getExtension(OrgJobDescription.class);
+  }
+
+  /**
+   * Sets the job description.
+   *
+   * @param orgJobDescription job description or <code>null</code> to reset
+   */
+  public void setOrgJobDescription(OrgJobDescription orgJobDescription) {
+    if (orgJobDescription == null) {
+      removeExtension(OrgJobDescription.class);
+    } else {
+      setExtension(orgJobDescription);
+    }
+  }
+
+  /**
+   * Returns whether it has the job description.
+   *
+   * @return whether it has the job description
+   */
+  public boolean hasOrgJobDescription() {
+    return hasExtension(OrgJobDescription.class);
+  }
+
+  /**
    * Returns the name of organization.
    *
    * @return name of organization
@@ -155,6 +226,37 @@ public class Organization extends ExtensionPoint {
    */
   public boolean hasOrgName() {
     return hasExtension(OrgName.class);
+  }
+
+  /**
+   * Returns the organization symbol/ticker.
+   *
+   * @return organization symbol/ticker
+   */
+  public OrgSymbol getOrgSymbol() {
+    return getExtension(OrgSymbol.class);
+  }
+
+  /**
+   * Sets the organization symbol/ticker.
+   *
+   * @param orgSymbol organization symbol/ticker or <code>null</code> to reset
+   */
+  public void setOrgSymbol(OrgSymbol orgSymbol) {
+    if (orgSymbol == null) {
+      removeExtension(OrgSymbol.class);
+    } else {
+      setExtension(orgSymbol);
+    }
+  }
+
+  /**
+   * Returns whether it has the organization symbol/ticker.
+   *
+   * @return whether it has the organization symbol/ticker
+   */
+  public boolean hasOrgSymbol() {
+    return hasExtension(OrgSymbol.class);
   }
 
   /**
@@ -243,6 +345,37 @@ public class Organization extends ExtensionPoint {
    */
   public boolean hasRel() {
     return getRel() != null;
+  }
+
+  /**
+   * Returns the office location.
+   *
+   * @return office location
+   */
+  public Where getWhere() {
+    return getExtension(Where.class);
+  }
+
+  /**
+   * Sets the office location.
+   *
+   * @param where office location or <code>null</code> to reset
+   */
+  public void setWhere(Where where) {
+    if (where == null) {
+      removeExtension(Where.class);
+    } else {
+      setExtension(where);
+    }
+  }
+
+  /**
+   * Returns whether it has the office location.
+   *
+   * @return whether it has the office location
+   */
+  public boolean hasWhere() {
+    return hasExtension(Where.class);
   }
 
   @Override

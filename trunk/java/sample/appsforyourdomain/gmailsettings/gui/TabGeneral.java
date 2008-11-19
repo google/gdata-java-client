@@ -31,7 +31,8 @@ import javax.swing.*;
  * Tab containing all the general information.
  */
 public class TabGeneral extends Tab  {
-
+  protected SpringLayout layout;
+  protected JLabel pageSizeLabel;
   protected JComboBox pageSize;
   protected JCheckBox enableShortcuts;
   protected JCheckBox enableArrows;
@@ -45,13 +46,18 @@ public class TabGeneral extends Tab  {
    */
   public TabGeneral() {
     super("General", "");
+    layout = new SpringLayout();
+    setLayout(layout);
 
+    pageSizeLabel = new JLabel("Page size: ");
     pageSize = new JComboBox(Constants.GENERAL_ALLOWED_PAGE_SIZES);
-    enableShortcuts = new JCheckBox("Enable shortcuts:",
-        Defaults.GENERAL_ENABLE_SHORTCUTS);
+
+    enableShortcuts = new JCheckBox("Enable shortcuts:", Defaults.GENERAL_ENABLE_SHORTCUTS);
+
     enableArrows = new JCheckBox("Enable arrows:", Defaults.GENERAL_ENABLE_ARROWS);
-    enableSnippets = new JCheckBox("Enable snippets:", 
-        Defaults.GENERAL_ENABLE_SNIPPETS);
+
+    enableSnippets = new JCheckBox("Enable snippets:", Defaults.GENERAL_ENABLE_SNIPPETS);
+
     enableUnicode = new JCheckBox("Enable unicode:", Defaults.GENERAL_ENABLE_UNICODE);
 
     submit = new JButton("Submit");
@@ -85,9 +91,27 @@ public class TabGeneral extends Tab  {
         }
       });
 
-    setLayout(new FlowLayout());
+    layout.putConstraint(SpringLayout.WEST, pageSizeLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, pageSizeLabel, 5, SpringLayout.NORTH, this);
+    layout.putConstraint(SpringLayout.WEST, pageSize, 5, SpringLayout.EAST, pageSizeLabel);
+    layout.putConstraint(SpringLayout.NORTH, pageSize, 5, SpringLayout.NORTH, this);
 
-    add(new JLabel("Page size:"));
+    layout.putConstraint(SpringLayout.WEST, enableShortcuts, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, enableShortcuts, 5, SpringLayout.SOUTH, pageSize);
+
+    layout.putConstraint(SpringLayout.WEST, enableArrows, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, enableArrows, 5, SpringLayout.SOUTH, enableShortcuts);
+
+    layout.putConstraint(SpringLayout.WEST, enableSnippets, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, enableSnippets, 5, SpringLayout.SOUTH, enableArrows);
+
+    layout.putConstraint(SpringLayout.WEST, enableUnicode, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, enableUnicode, 5, SpringLayout.SOUTH, enableSnippets);
+
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, enableUnicode);
+
+    add(pageSizeLabel);
     add(pageSize);
     add(enableShortcuts);
     add(enableArrows);

@@ -31,9 +31,11 @@ import javax.swing.*;
  * Tab containing all the POP information. 
  */
 public class TabPop extends Tab  {
-
+  protected SpringLayout layout;
   protected JCheckBox enable;
+  protected JLabel enableForLabel;
   protected JComboBox enableFor;
+  protected JLabel actionLabel;
   protected JComboBox action;
   protected JButton submit;
 
@@ -42,12 +44,19 @@ public class TabPop extends Tab  {
    */
   public TabPop() {
     super("Pop","");
+    layout = new SpringLayout();
+    setLayout(layout);
 
     enable = new JCheckBox("Enable:",Defaults.POP_ENABLE);
+
+    enableForLabel = new JLabel("Enable for: ");
     enableFor = new JComboBox(Constants.POP_ENABLE_FOR);
     enableFor.setSelectedItem(Defaults.POP_ENABLE_FOR);
+
+    actionLabel = new JLabel("Action: ");
     action = new JComboBox(Constants.POP_ACTION);
     action.setSelectedItem(Defaults.POP_ACTION);
+
     submit = new JButton("Submit");
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
@@ -77,12 +86,26 @@ public class TabPop extends Tab  {
         }
       });
 
-    setLayout(new FlowLayout());
+    layout.putConstraint(SpringLayout.WEST, enable, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, enable, 5, SpringLayout.NORTH, this);
+ 
+    layout.putConstraint(SpringLayout.WEST, enableForLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, enableForLabel, 5, SpringLayout.SOUTH, enable);
+    layout.putConstraint(SpringLayout.WEST, enableFor, 5, SpringLayout.EAST, enableForLabel);
+    layout.putConstraint(SpringLayout.NORTH, enableFor, 5, SpringLayout.SOUTH, enable);
+
+    layout.putConstraint(SpringLayout.WEST, actionLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, actionLabel, 5, SpringLayout.SOUTH, enableFor);
+    layout.putConstraint(SpringLayout.WEST, action, 5, SpringLayout.EAST, actionLabel);
+    layout.putConstraint(SpringLayout.NORTH, action, 5, SpringLayout.SOUTH, enableFor);
+    
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, action);
 
     add(enable);
-    add(new JLabel("Enable for:"));
+    add(enableForLabel);
     add(enableFor);
-    add(new JLabel("Action:"));
+    add(actionLabel);
     add(action);
     add(submit);
   }

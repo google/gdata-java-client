@@ -386,36 +386,109 @@ public final class CharEscapers {
    * <p>When encoding a String, the following rules apply:
    * <ul>
    * <li>The alphanumeric characters "a" through "z", "A" through "Z" and "0"
-   * through "9" remain the same.
+   *     through "9" remain the same.
    * <li>The special characters ".", "-", "*", and "_" remain the same.
    * <li>The space character " " is converted into a plus sign "+".
    * <li>All other characters are converted into one or more bytes using UTF-8
-   * encoding and each byte is then represented by the 3-character string "%xy",
-   * where xy is the two-digit hexadecimal representation of the byte.
+   *     encoding and each byte is then represented by the 3-character string
+   *     "%XY", where "XY" is the two-digit, uppercase, hexadecimal
+   *     representation of the byte value.
    * <ul>
    *
-   * <p><b>Note</b>: this escaper currently produces upper-case hexadecimal
-   * characters when doing percent escaping, but this is likely to change in the
-   * future. Callers must not rely on the case of any percent-escaped sequences.
+   * <p><b>Note</b>: Unlike other escapers, URI escapers produce uppercase
+   * hexidecimal sequences. From <a href="http://www.ietf.org/rfc/rfc3986.txt">
+   * RFC 3986</a>:<br>
+   * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+   * for all percent-encodings."</i>
    *
    * <p>This escaper has identical behavior to (but is potentially much faster
    * than):
    * <ul>
    * <li>{@link com.google.gdata.util.httputil.FastURLEncoder#encode(String)}
-   * <li>{@link com.google.gdata.util.httputil.FastURLEncoder#encode(String,String)} with
-   * the encoding name "UTF-8"
+   * <li>{@link com.google.gdata.util.httputil.FastURLEncoder#encode(String,String)} 
+   *     with the encoding name "UTF-8"
    * <li>{@link com.google.gdata.util.common.net.UriEncoder#encode(String)}
    * <li>{@link com.google.gdata.util.common.net.UriEncoder#encode(String,java.nio.charset.Charset)}
-   * with the UTF_8 Charset
-   * <li>{@link java.net.URLEncoder#encode(String, String)} with the encoding
-   * name "UTF-8"
+   *     with the UTF_8 Charset
+   * <li>{@link java.net.URLEncoder#encode(String, String)} 
+   *     with the encoding name "UTF-8"
    * </ul>
    *
    * <p>This method is equivalent to {@code uriEscaper(true)}.
-   *
    */
   public static Escaper uriEscaper() {
     return uriEscaper(true);
+  }
+
+  /**
+   * Returns an {@link Escaper} instance that escapes Java chars so they can be
+   * safely included in URI path segments. For details on escaping URIs, see
+   * section 2.4 of <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+   *
+   * <p>When encoding a String, the following rules apply:
+   * <ul>
+   * <li>The alphanumeric characters "a" through "z", "A" through "Z" and "0"
+   *     through "9" remain the same.
+   * <li>The unreserved characters ".", "-", "~", and "_" remain the same.
+   * <li>The general delimiters "@" and ":" remain the same.
+   * <li>The subdelimiters "!", "$", "&amp;", "'", "(", ")", "*", ",", ";",
+   *     and "=" remain the same.
+   * <li>The space character " " is converted into %20.
+   * <li>All other characters are converted into one or more bytes using UTF-8
+   *     encoding and each byte is then represented by the 3-character string
+   *     "%XY", where "XY" is the two-digit, uppercase, hexadecimal
+   *     representation of the byte value.
+   * </ul>
+   *
+   * <p><b>Note</b>: Unlike other escapers, URI escapers produce uppercase
+   * hexidecimal sequences. From <a href="http://www.ietf.org/rfc/rfc3986.txt">
+   * RFC 3986</a>:<br>
+   * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+   * for all percent-encodings."</i>
+   */
+  public static Escaper uriPathEscaper() {
+    return URI_PATH_ESCAPER;
+  }
+
+  /**
+   * Returns an {@link Escaper} instance that escapes Java chars so they can be
+   * safely included in URI query string segments. When the query string
+   * consists of a sequence of name=value pairs separated by &amp;, the names
+   * and values should be individually encoded. If you escape an entire query
+   * string in one pass with this escaper, then the "=" and "&amp;" characters
+   * used as separators will also be escaped.
+   *
+   * <p>This escaper is also suitable for escaping fragment identifiers.
+   *
+   * <p>For details on escaping URIs, see
+   * section 2.4 of <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+   *
+   * <p>When encoding a String, the following rules apply:
+   * <ul>
+   * <li>The alphanumeric characters "a" through "z", "A" through "Z" and "0"
+   *     through "9" remain the same.
+   * <li>The unreserved characters ".", "-", "~", and "_" remain the same.
+   * <li>The general delimiters "@" and ":" remain the same.
+   *  <li>The path delimiters "/" and "?" remain the same.
+   * <li>The subdelimiters "!", "$", "'", "(", ")", "*", ",", and ";",
+   *     remain the same.
+   * <li>The space character " " is converted into %20.
+   * <li>The equals sign "=" is converted into %3D.
+   * <li>The ampersand "&amp;" is converted into %26.
+   * <li>All other characters are converted into one or more bytes using UTF-8
+   *     encoding and each byte is then represented by the 3-character string
+   *     "%XY", where "XY" is the two-digit, uppercase, hexadecimal
+   *     representation of the byte value.
+   * </ul>
+   *
+   * <p><b>Note</b>: Unlike other escapers, URI escapers produce uppercase
+   * hexidecimal sequences. From <a href="http://www.ietf.org/rfc/rfc3986.txt">
+   * RFC 3986</a>:<br>
+   * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+   * for all percent-encodings."</i>
+   */
+  public static Escaper uriQueryStringEscaper() {
+    return URI_QUERY_STRING_ESCAPER;
   }
 
   /**
@@ -426,21 +499,28 @@ public final class CharEscapers {
    * <p>When encoding a String, the following rules apply:
    * <ul>
    * <li>The alphanumeric characters "a" through "z", "A" through "Z" and "0"
-   *    through "9" remain the same.
+   *     through "9" remain the same.
    * <li>The special characters ".", "-", "*", and "_" remain the same.
    * <li>If {@code plusForSpace} was specified, the space character " " is
-   *    converted into a plus sign "+". Otherwise it is converted into "%20".
+   *     converted into a plus sign "+". Otherwise it is converted into "%20".
    * <li>All other characters are converted into one or more bytes using UTF-8
-   *    encoding and each byte is then represented by the 3-character string
-   *    "%xy", where xy is the two-digit hexadecimal representation of the byte.
+   *     encoding and each byte is then represented by the 3-character string
+   *     "%XY", where "XY" is the two-digit, uppercase, hexadecimal
+   *     representation of the byte value.
    * </ul>
    *
-   * <p><b>Note</b>: this escaper currently produces upper-case hexadecimal
-   * characters when doing percent escaping, but this is likely to change in the
-   * future. Callers must not rely on the case of any percent-escaped sequences.
+   * <p><b>Note</b>: Unlike other escapers, URI escapers produce uppercase
+   * hexidecimal sequences. From <a href="http://www.ietf.org/rfc/rfc3986.txt">
+   * RFC 3986</a>:<br>
+   * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+   * for all percent-encodings."</i>
    *
    * @param plusForSpace if {@code true} space is escaped to {@code +} otherwise
-   *        it is escaped to {@code %20}
+   *        it is escaped to {@code %20}. Although common, the escaping of
+   *        spaces as plus signs has a very ambiguous status in the relevant
+   *        specifications. You should prefer {@code %20} unless you are doing
+   *        exact character-by-character comparisons of URLs and backwards
+   *        compatibility requires you to use plus signs.
    *
    * @see #uriEscaper()
    */
@@ -454,9 +534,15 @@ public final class CharEscapers {
   private static final Escaper URI_ESCAPER_NO_PLUS =
       new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false);
 
+  private static final Escaper URI_PATH_ESCAPER =
+      new PercentEscaper(PercentEscaper.SAFEPATHCHARS_URLENCODER, false);
+
+  private static final Escaper URI_QUERY_STRING_ESCAPER =
+      new PercentEscaper(PercentEscaper.SAFEQUERYSTRINGCHARS_URLENCODER, false);
+
   /**
    * Returns a {@link Escaper} instance that escapes Java characters in a manner
-   * compatible with the C++ webutil/url URL class (the <b>kGoogle1Escape<b>
+   * compatible with the C++ webutil/url URL class (the {@code kGoogle1Escape}
    * set).
    *
    * <p>When encoding a String, the following rules apply:
@@ -467,13 +553,16 @@ public final class CharEscapers {
    * and ":" remain the same.
    * <li>The space character " " is converted into a plus sign "+".
    * <li>All other characters are converted into one or more bytes using UTF-8
-   * encoding and each byte is then represented by the 3-character string "%xy",
-   * where xy is the two-digit hexadecimal representation of the byte.
-   * <ul>
+   *     encoding and each byte is then represented by the 3-character string
+   *     "%XY", where "XY" is the two-digit, uppercase, hexadecimal
+   *     representation of the byte value.
+   * </ul>
    *
-   * <p><b>Note</b>: this escaper currently produces upper-case hexadecimal
-   * characters when doing percent escaping, but this is likely to change in the
-   * future. Callers must not rely on the case of any percent-escaped sequences.
+   * <p><b>Note</b>: Unlike other escapers, URI escapers produce uppercase
+   * hexidecimal sequences. From <a href="http://www.ietf.org/rfc/rfc3986.txt">
+   * RFC 3986</a>:<br>
+   * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+   * for all percent-encodings."</i>
    *
    * <p><b>Note</b>: This escaper is a special case and is <em>not
    * compliant</em> with <a href="http://www.ietf.org/rfc/rfc2396.txt">
@@ -678,7 +767,7 @@ public final class CharEscapers {
       this.safeMax = safeMax;
     }
 
-    /** Overriden for performance (see {@link FastCharEscaper}). */
+    /** Overridden for performance (see {@link FastCharEscaper}). */
     @Override public String escape(String s) {
       int slen = s.length();
       for (int index = 0; index < slen; index++) {

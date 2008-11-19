@@ -27,9 +27,9 @@ public class GmailSettingsClient {
   public static final String APP_TITLE = "GUI Gmail Settings Client";
   public static final String ERROR_AUTHENTICATION_REQUIRED = "You must authenticate first.";
 
-  protected static final int DEFAULT_APP_HEIGHT = 500;
-  protected static final int DEFAULT_APP_WIDTH = 1100;
-  protected static final int DEFAULT_PANE_DIVIDER_LOCATION = 200;
+  protected static final int DEFAULT_APP_HEIGHT = 350;
+  protected static final int DEFAULT_APP_WIDTH = 600;
+  protected static final int DEFAULT_PANE_DIVIDER_LOCATION = 150;
 
   public static GmailSettings settings;
   public static UsersPanel users;

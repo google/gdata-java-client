@@ -42,13 +42,23 @@ public class PhoneNumber implements Extension {
     public static final String MOBILE = Namespaces.gPrefix + "mobile";
     public static final String HOME = Namespaces.gPrefix + "home";
     public static final String WORK = Namespaces.gPrefix + "work";
+    public static final String WORK_MOBILE = Namespaces.gPrefix + "work_mobile";
+    public static final String CALLBACK = Namespaces.gPrefix + "callback";
+    public static final String ASSISTANT = Namespaces.gPrefix + "assistant";
+    public static final String COMPANY_MAIN = Namespaces.gPrefix + "company_main";
     public static final String INTERNAL_EXTENSION = Namespaces.gPrefix + "internal-extension";
     public static final String FAX = Namespaces.gPrefix + "fax";
     public static final String HOME_FAX = Namespaces.gPrefix + "home_fax";
     public static final String WORK_FAX = Namespaces.gPrefix + "work_fax";
+    public static final String OTHER_FAX = Namespaces.gPrefix + "other_fax";
     public static final String PAGER = Namespaces.gPrefix + "pager";
+    public static final String WORK_PAGER = Namespaces.gPrefix + "work_pager";
     public static final String CAR = Namespaces.gPrefix + "car";
     public static final String SATELLITE = Namespaces.gPrefix + "satellite";
+    public static final String RADIO = Namespaces.gPrefix + "radio";
+    public static final String TTY_TDD = Namespaces.gPrefix + "tty_tdd";
+    public static final String ISDN = Namespaces.gPrefix + "isdn";
+    public static final String TELEX = Namespaces.gPrefix + "telex";
     public static final String OTHER = Namespaces.gPrefix + "other";
   }
 

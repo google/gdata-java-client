@@ -120,7 +120,8 @@ public class GmailSettingsClient {
             Defaults.FILTER_SHOULD_ARCHIVE, Defaults.FILTER_LABEL);
       } else if (setting.startsWith("sendas")) {
         settings.createSendAs(new String[] {destinationUser}, 
-            Defaults.SEND_AS_NAME, Defaults.SEND_AS_ADDRESS, Defaults.SEND_AS_SENDAS);
+            Defaults.SEND_AS_NAME, Defaults.SEND_AS_ADDRESS, Defaults.SEND_AS_REPLY_TO,
+            Defaults.SEND_AS_MAKE_DEFAULT);
       } else if (setting.startsWith("label")) {
         settings.createLabel(new String[] {destinationUser}, Defaults.LABEL);
       } else if (setting.startsWith("forwarding")) {

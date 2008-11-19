@@ -27,6 +27,8 @@ import com.google.gdata.data.IEntry;
 import com.google.gdata.data.IFeed;
 import com.google.gdata.data.ParseSource;
 
+
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -176,6 +178,7 @@ public class ParseUtil {
     return (F) responseClass.cast(feed);
   }
   
+
   private static void parseEntry(ParseSource source, BaseEntry<?> entry,
       ExtensionProfile extProfile) throws ParseException, IOException {
     if (source.getReader() != null) {
@@ -229,3 +232,4 @@ public class ParseUtil {
     return extProfile;
   }
 }
+

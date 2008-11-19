@@ -33,11 +33,15 @@ import java.net.HttpURLConnection;
 public class VersionConflictException extends ServiceException {
 
   public VersionConflictException() {
-    this((IEntry) null);
+    super("Version conflict");
+    this.currentEntry = null;
+    setHttpErrorCodeOverride(HttpURLConnection.HTTP_CONFLICT);
   }
 
   public VersionConflictException(IEntry currentEntry) {
-    this(currentEntry, null);
+    super("Version conflict");
+    this.currentEntry = currentEntry;
+    setHttpErrorCodeOverride(HttpURLConnection.HTTP_CONFLICT);
   }
 
   public VersionConflictException(IEntry currentEntry, Throwable cause) {

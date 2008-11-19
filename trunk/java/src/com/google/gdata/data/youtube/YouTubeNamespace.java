@@ -76,6 +76,11 @@ public class YouTubeNamespace {
   public static final String KIND_USER_PROFILE = URI + "#userProfile";
   
   /**
+   * Kind linked to {@link UserEventEntry}.
+   */
+  public static final String KIND_USER_EVENT = URI + "#userEvent";
+  
+  /**
    * Kind linked to {@link ChannelEntry}.
    */
   public static final String KIND_CHANNEL = URI + "#channel";  
@@ -125,6 +130,12 @@ public class YouTubeNamespace {
    * on the user profile feed.
    */
   public static final String CHANNELTYPE_SCHEME = URI + "/channeltypes.cat";
+  
+  /**
+   * Scheme used for atom:categories which describes the type of event in 
+   * the entry. 
+   */
+  public static final String USEREVENTS_SCHEME = URI + "/userevents.cat";
 
   /**
    * Scheme used for atom:categories which correspond to complaint reasons.
@@ -212,6 +223,11 @@ public class YouTubeNamespace {
    * Link Rel value for related videos links.
    */
   public static final String RELATED_REL = URI + "#video.related";
+  
+  /**
+   * Link Rel value for the channel content.
+   */
+  public static final String CHANNEL_CONTENT_REL = URI + "#channel.content";
 
   /**
    * Link Rel value for parent comment link on the comments feed.
@@ -237,6 +253,11 @@ public class YouTubeNamespace {
    * Link Rel value for get upload token action.
    */
   public static final String GET_UPLOAD_TOKEN_REL = URI + "#action.getUploadToken";
+  
+  /**
+   * Link Rel value for video. 
+   */
+  public static final String VIDEO_REL = URI + "#video";
 
   /**
    * Custom {@code media:credit} scheme.
