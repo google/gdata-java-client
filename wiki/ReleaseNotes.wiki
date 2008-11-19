@@ -10,10 +10,10 @@ The wiki page shows the release notes for the current binary download, the subve
 
 == 1.25.0 ==
   *  Updated Google Base, Blogger, Calendar, Code Search, Document List, Finance, Health, Spreadsheet Data API to use version 2 of Google Data Protocol.  With this change all requests from above mentioned API will send requests with "GData-Version" http header set to "2.0".  If you need to request older version of the feed, you can do so by calling "Service#setProtocolVersion".
-  *  The Version 2 protocol for above API does not contain any new features specific to that API.  But they inherit all of the GData Protocol Version 2 core capabilities including Etags, use new opensearch namespace.
+  *  The Version 2 protocol for above API does not contain any new features.  But they inherit all of the GData Protocol Version 2 core capabilities including Etags, use of new opensearch namespace.
 
 == 1.24.0 ==
-  *  Added support for version 2 of Google Data API.  [http://code.google.com/apis/youtube/2.0/developers_guide_protocol.html#API_Versioning API versioning] is rolled-out in phases. As of this release only YouTube Data API supports version 2.  Version 2 provides significant feature enhancements including:
+  *  Added support for version 2 of Google Data API.  [http://code.google.com/apis/youtube/2.0/developers_guide_protocol.html#API_Versioning API versioning] is rolled-out in phases. As of this release only !YouTube Data API supports version 2.  Version 2 provides significant feature enhancements including:
     * Added Support for caching through http ETag headers.  The implementation is compatible with specification in RFC 2616 with support for If-Match, If-None-Match, If-Modified-Since headers.  Other conditional headers are not supported.
     * Updated OpenSearch namespace from http://a9.com/-/spec/opensearchrss/1.0/ to http://a9.com/-/spec/opensearch/1.1/.
     * Introduced "GData-Version" header to indicate requested protocol version.  The GData-Version header value is of format "<major_version>.<minor_version>".  Possible values as of this release are "1.0" and "2.0".  The version information can also be specified using "v=2.0" query parameter.
