@@ -18,6 +18,7 @@ package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.DateTime;
+import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
@@ -29,7 +30,6 @@ import com.google.gdata.data.geo.impl.GeoRssWhere;
 import com.google.gdata.data.geo.impl.GmlPoint;
 import com.google.gdata.data.geo.impl.GmlPos;
 import com.google.gdata.data.media.MediaEntry;
-import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaRssNamespace;
 import com.google.gdata.util.Namespaces;
 
@@ -40,6 +40,11 @@ import java.util.List;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = YouTubeNamespace.PREFIX,
+    nsUri = YouTubeNamespace.URI,
+    localName = "video"
+)
 @Kind.Term(YouTubeNamespace.KIND_VIDEO)
 public class VideoEntry extends MediaEntry<VideoEntry> {
 

@@ -31,9 +31,11 @@ import javax.swing.*;
  * Tab containing the forwarding information. 
  */
 public class TabForwarding extends Tab  {
-  
+  protected SpringLayout layout;
   protected JCheckBox enable;
+  protected JLabel forwardToLabel;
   protected JTextField forwardTo;
+  protected JLabel actionLabel;
   protected JComboBox action; 
   protected JButton submit;
 
@@ -42,11 +44,18 @@ public class TabForwarding extends Tab  {
    */
   public TabForwarding() {
     super("Forwarding", "");
+    layout = new SpringLayout();
+    setLayout(layout);
 
     enable = new JCheckBox("Enable:", Defaults.FORWARDING_ENABLE);
+
+    forwardToLabel = new JLabel("Forward To: ");
     forwardTo = new JTextField(Defaults.FORWARDING_FORWARD_TO, 25);
+
+    actionLabel = new JLabel("Action: ");
     action = new JComboBox(Constants.FORWARDING_ACTION);
     action.setSelectedItem(Defaults.FORWARDING_ACTION); 
+
     submit = new JButton("Submit");
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
@@ -75,13 +84,27 @@ public class TabForwarding extends Tab  {
           } 
         }
       });
+   
+    layout.putConstraint(SpringLayout.WEST, enable, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, enable, 5, SpringLayout.NORTH, this);
 
-    setLayout(new FlowLayout());
+    layout.putConstraint(SpringLayout.WEST, forwardToLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, forwardToLabel, 5, SpringLayout.SOUTH, enable);
+    layout.putConstraint(SpringLayout.WEST, forwardTo, 5, SpringLayout.EAST, forwardToLabel);
+    layout.putConstraint(SpringLayout.NORTH, forwardTo, 5, SpringLayout.SOUTH, enable);
+
+    layout.putConstraint(SpringLayout.WEST, actionLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, actionLabel, 5, SpringLayout.SOUTH, forwardTo);
+    layout.putConstraint(SpringLayout.WEST, action, 5, SpringLayout.EAST, actionLabel);
+    layout.putConstraint(SpringLayout.NORTH, action, 5, SpringLayout.SOUTH, forwardTo);
+
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, action);
 
     add(enable);
-    add(new JLabel("Forward to:"));
+    add(forwardToLabel);
     add(forwardTo);
-    add(new JLabel("Action:"));
+    add(actionLabel);
     add(action);
     add(submit);
   }

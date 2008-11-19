@@ -1,5 +1,17 @@
 Google Data API - Release Notes
 
+Notes for v1.25.0
+-----------------
+Nov 13, 2008
+o  Updated Google Base, Blogger, Calendar, Code Search, Document List, Finance, Health,
+   Spreadsheet Data APIs to use version 2 of Google Data Protocol.  With this
+   change all requests from above mentioned APIs will send requests with
+   "GData-Version" http header set to "2.0".  If you need to request older
+   version of the feed, you can do so by calling "{Property}Service#setProtocolVersion".
+o  The Version 2 protocol for above APIs does not contain any new features
+   specific to that API.  But they inherit all of the GData Protocol Version 2
+   core capabilities including Etags, use new opensearch namespace.
+
 Notes for v1.24.0
 -----------------
 Oct 20, 2008

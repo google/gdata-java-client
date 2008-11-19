@@ -30,15 +30,17 @@ import javax.swing.*;
  * Tab containing all the IMAP information. 
  */
 public class TabImap extends Tab  {
-
-  protected JButton submit;
+  protected SpringLayout layout;
   protected JCheckBox imapEnabled;
+  protected JButton submit;
 
   /**
    * Setup all the components on the tab.
    */
   public TabImap() {
     super("Imap", "");
+    layout = new SpringLayout();
+    setLayout(layout);
 
     imapEnabled = new JCheckBox("Enable IMAP:", Defaults.IMAP_ENABLE);
     
@@ -70,7 +72,11 @@ public class TabImap extends Tab  {
         }
       });
 
-    setLayout(new FlowLayout());
+    layout.putConstraint(SpringLayout.WEST, imapEnabled, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, imapEnabled, 5, SpringLayout.NORTH, this);
+
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, imapEnabled);
 
     add(imapEnabled);
     add(submit);

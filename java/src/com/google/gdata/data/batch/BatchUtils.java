@@ -20,13 +20,11 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.IEntry;
-import com.google.gdata.data.IFeed;
+
 import com.google.gdata.util.Namespaces;
 
 /**
  * Utility methods for setting up and using batch feeds and entries.
- *
  *
  * 
  */
@@ -76,126 +74,70 @@ public class BatchUtils {
    * @return the batch id or null if it is not set
    * @param entry
    */
-  public static String getBatchId(IEntry entry) {
-    return BatchId.getIdFrom((BaseEntry<?>) entry);
+  public static String getBatchId(BaseEntry<?> entry) {
+    return BatchId.getIdFrom(entry);
   }
 
   /**
    * Sets the value of the tag {@code <batch:id>}.
    *
-   * @param entry
+   * @param extPoint extension point to put the id on
    * @param id the batch id or null to remove it
    */
-  public static void setBatchId(IEntry entry, String id) {
-    if (entry instanceof ExtensionPoint) {
-      if (id == null) {
-        ((ExtensionPoint) entry).removeExtension(BatchId.class);
-      } else {
-        ((ExtensionPoint) entry).setExtension(new BatchId(id));
-      }
+  public static void setBatchId(ExtensionPoint extPoint, String id) {
+    if (id == null) {
+      extPoint.removeExtension(BatchId.class);
     } else {
+      extPoint.setExtension(new BatchId(id));
     }
   }
 
   /**
    * Gets the batch operation type from the tag {@code <batch:operation>}
-   * in a {@link BaseEntry}.
+   * in a {@link ExtensionPoint}.
    *
+   * @param extPoint extension point to get the operation type from
    * @return the operation to execute or null if it's not set
-   * @param entry
    */
-  public static BatchOperationType getBatchOperationType(IEntry entry) {
-    if (entry instanceof ExtensionPoint) {
-      return getBatchOperationType((ExtensionPoint)entry);
-    } else {
-      return null;
-    }
+  public static BatchOperationType getBatchOperationType(
+      ExtensionPoint extPoint) {
+    BatchOperation op = extPoint.getExtension(BatchOperation.class);
+    return op == null ? null : op.getType();
   }
 
   /**
    * Sets the batch operation to execute in a {@link BaseEntry}.
    *
-   * @param entry
-   * @param op batch operation type or null to remove it.
+   * @param extPoint extension point to set the operation type on
+   * @param op batch operation type or null to remove it
    */
-  public static void setBatchOperationType(IEntry entry,
-      BatchOperationType op) {
-    if (entry instanceof ExtensionPoint) {
-      setBatchOperationType((ExtensionPoint)entry, op);
-    } else {
-    }
-  }
-
-  /**
-   * Gets the batch operation type from the tag {@code <batch:operation>}
-   * in a {@link BaseFeed}.
-   *
-   * @return the operation to execute or null if it's not set
-   * @param feed
-   */
-  public static BatchOperationType getBatchOperationType(IFeed feed) {
-    if (feed instanceof ExtensionPoint) {
-      return getBatchOperationType((ExtensionPoint) feed);
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Sets the batch operation to execute in a {@link BaseFeed}.
-   *
-   * @param feed
-   * @param op batch operation type or null to remove it.
-   */
-  public static void setBatchOperationType(IFeed feed, BatchOperationType op) {
-    if (feed instanceof ExtensionPoint) {
-      setBatchOperationType((ExtensionPoint)feed, op);
-    } else {
-    }
-  }
-
-
-  private static BatchOperationType getBatchOperationType(
-      ExtensionPoint entry) {
-    BatchOperation op = entry.getExtension(BatchOperation.class);
-    return op == null ? null : op.getType();
-  }
-
-  private static void setBatchOperationType(ExtensionPoint entry,
+  public static void setBatchOperationType(ExtensionPoint extPoint,
       BatchOperationType op) {
     if (op == null) {
-      entry.removeExtension(BatchOperation.class);
+      extPoint.removeExtension(BatchOperation.class);
     } else {
-      entry.setExtension(new BatchOperation(op));
+      extPoint.setExtension(new BatchOperation(op));
     }
   }
 
   /**
    * Gets the value of the tag {@code <batch:interrupted>}.
    *
+   * @param extPoint the extension point to get the interrupted tag from
    * @return the object corresponding to the tag or null
-   * @param entry
    */
-  public static BatchInterrupted getBatchInterrupted(IEntry entry) {
-    if (entry instanceof ExtensionPoint) {
-      return ((ExtensionPoint) entry).getExtension(BatchInterrupted.class);
-    } else {
-      return null;
-    }
+  public static BatchInterrupted getBatchInterrupted(ExtensionPoint extPoint) {
+      return extPoint.getExtension(BatchInterrupted.class);
   }
 
   /**
    * Gets the value of the tag {@code <batch:status>}.
    *
+   * @param extPoint the extension point to get the status from
    * @return the object corresponding to the tag or null
-   * @param entry
    */
-  public static BatchStatus getBatchStatus(IEntry entry) {
-    if (entry instanceof ExtensionPoint) {
-      return ((ExtensionPoint) entry).getExtension(BatchStatus.class);
-    } else {
-      return null;
-    }
+  public static BatchStatus getBatchStatus(ExtensionPoint extPoint) {
+    return extPoint.getExtension(BatchStatus.class);
   }
 
   /**
@@ -204,13 +146,13 @@ public class BatchUtils {
    * This method is a shortcut for checking the code of
    * the entry's {@link BatchStatus} object.
    *
-   * @param entry
+   * @param extPoint the extension point to check the status on.
    * @return true if the entry is a success report.
    * @exception IllegalArgumentException if the entry does not contain
    *   a BatchStatus object.
    */
-  public static boolean isSuccess(IEntry entry) {
-    int code = getRequiredBatchStatusCode(entry);
+  public static boolean isSuccess(ExtensionPoint extPoint) {
+    int code = getRequiredBatchStatusCode(extPoint);
     return code >= 200 && code < 300;
   }
   
@@ -220,21 +162,25 @@ public class BatchUtils {
    * This method is a shortcut for checking the code of
    * the entry's {@link BatchStatus} object.
    *
-   * You'll want to call {@link #getBatchStatus(IEntry)}
+   * You'll want to call {@link #getBatchStatus(ExtensionPoint)}
    * to get the error description and message when this
    * method returns true.
    *
-   * @param entry
+   * @param extPoint the extension point to check the status of.
    * @return true if the entry is an error report.
    * @exception IllegalArgumentException if the entry does not contain
    *   a BatchStatus object.
    */
-  public static boolean isFailure(IEntry entry) {
-    return !isSuccess(entry);
+  public static boolean isFailure(ExtensionPoint extPoint) {
+    return !isSuccess(extPoint);
   }
 
-  private static int getRequiredBatchStatusCode(IEntry entry) {
-    BatchStatus batchStatus = getBatchStatus(entry);
+  /**
+   * Get the batch status or throw an illegal argument exception if it doesn't
+   * have a status code.
+   */
+  private static int getRequiredBatchStatusCode(ExtensionPoint extPoint) {
+    BatchStatus batchStatus = getBatchStatus(extPoint);
     if (batchStatus == null) {
       throw new IllegalArgumentException("Not a batch response entry; " +
            "Missing BatchStatus extension.");
@@ -242,3 +188,4 @@ public class BatchUtils {
     return batchStatus.getCode();
   }
 }
+

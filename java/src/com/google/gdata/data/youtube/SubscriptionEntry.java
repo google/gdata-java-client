@@ -47,7 +47,7 @@ public class SubscriptionEntry extends FeedLinkEntry<SubscriptionEntry>{
    * Subscription types. More types will appear over time.
    */
   public static enum Type {
-    CHANNEL, FAVORITES, QUERY;
+    CHANNEL, FAVORITES, QUERY, PLAYLIST;
 
     /**
      * Gets the category term corresponding to this subscription
@@ -182,11 +182,56 @@ public class SubscriptionEntry extends FeedLinkEntry<SubscriptionEntry>{
     return query == null ? null : query.getContent();
   }
   
+  /**
+   * Set the title of the playlist subscribed to.   
+   *
+   * @param playlistTitle the playlistTitle
+   */
+  public void setPlaylistTitle(String playlistTitle) {
+    if (playlistTitle != null) {
+      addExtension(new YtPlaylistTitle(playlistTitle));
+    } else {
+      removeExtension(YtPlaylistTitle.class);
+    }
+  }
+  
+  /**
+   * Get the title of the playlist subscribed to.
+   * @return the playlist title
+   */
+  public String getPlaylistTitle() {
+    YtPlaylistTitle playlistTitle = getExtension(YtPlaylistTitle.class);
+    return playlistTitle == null ? null : playlistTitle.getContent();
+  }
+  
+  /**
+   * Set the optional id of the playlist subscribed to. 
+   * @param playlistId the id of the playlist
+   */
+  public void setPlaylistId(String playlistId) {
+    if (playlistId != null) {
+      addExtension(new YtPlaylistId(playlistId));
+    } else {
+      removeExtension(YtPlaylistId.class);
+    }
+  }
+  
+  /**
+   * Get the id of the playlist subscribed to.
+   * @return the playlist id
+   */
+  public String getPlaylistId() {
+    YtPlaylistId playlistId = getExtension(YtPlaylistId.class);
+    return playlistId == null ? null : playlistId.getPlaylistId();
+  }  
+  
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
     
     extProfile.declare(SubscriptionEntry.class, YtUsername.class);
     extProfile.declare(SubscriptionEntry.class, YtQueryString.class);
+    extProfile.declare(SubscriptionEntry.class, YtPlaylistTitle.class);
+    extProfile.declare(SubscriptionEntry.class, YtPlaylistId.class);
   }
 }

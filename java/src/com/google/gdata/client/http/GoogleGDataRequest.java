@@ -26,7 +26,6 @@ import com.google.gdata.util.ContentType;
 import com.google.gdata.util.RedirectRequiredException;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.Version;
-import com.google.gdata.util.VersionRegistry;
 
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -456,18 +455,16 @@ public class GoogleGDataRequest extends HttpGDataRequest {
   private GoogleService service;
   
   /**
-   * The version associated with this request.
-   */
-  private Version requestVersion;
-  
-  /**
    * Returns the {@link Version} that will be used to execute the request on the
    * target service or {@code null} if the service is not versioned.
    * 
    * @return version sent with the request or {@code null}.
    */
   public Version getRequestVersion() {
-    return requestVersion;
+    // Always get the request version from the associated service, never from
+    // the version registry.   There are aspects of request handling that happen
+    // outside the scope of Service.begin/endVersionScope.
+    return service.getProtocolVersion();
   }
   
   /**
@@ -505,7 +502,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     // Look up the active version for the type of service initiating the
     // request, and set the version header if found.
     try {
-      requestVersion = VersionRegistry.get().getVersion(service.getClass());
+      Version requestVersion = service.getProtocolVersion();
       if (requestVersion != null) {
         setHeader(GDataProtocol.Header.VERSION, 
             requestVersion.getVersionString());

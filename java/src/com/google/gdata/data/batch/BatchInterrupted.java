@@ -40,7 +40,8 @@ import java.util.List;
  *
  * 
  */
-public class BatchInterrupted extends ExtensionPoint implements Extension {
+public class BatchInterrupted extends ExtensionPoint
+    implements Extension, IBatchInterrupted {
 
   private String reason;
   private int totalCount;
@@ -76,7 +77,7 @@ public class BatchInterrupted extends ExtensionPoint implements Extension {
    * Creates an empty object.
    * 
    * Usually used in conjuction with 
-   * {@link #getHandler(com.google.gdata.data.ExtensionProfile,String,String,org.xml.sax.Attributes)}. 
+   * {@link #getHandler(ExtensionProfile,String,String,Attributes)}. 
    */
   public BatchInterrupted() {
     
@@ -138,6 +139,11 @@ public class BatchInterrupted extends ExtensionPoint implements Extension {
   /** Gets the number of entries that were rejected. */
   public int getErrorCount() {
     return errorCount;
+  }
+  
+  /** Gets the number of entries that were skipped. */
+  public int getSkippedCount() {
+    return (totalCount - ( successCount + errorCount));
   }
 
   /** Describe the content of this tag. */

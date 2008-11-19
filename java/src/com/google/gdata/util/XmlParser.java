@@ -122,7 +122,7 @@ public class XmlParser extends DefaultHandler {
     public String value;
 
     /** Temporary buffer for building up the text() value. */
-    private StringBuffer buffer;
+    private StringBuilder buffer;
 
     /**
      * The current state of {@code xml:lang}.
@@ -988,7 +988,6 @@ public class XmlParser extends DefaultHandler {
     }
   }
 
-
   /** SAX callback. */
   @Override
   public void characters(char[] text, int start, int len) throws SAXException {
@@ -998,7 +997,7 @@ public class XmlParser extends DefaultHandler {
       if (unrecognizedElements == 0) {
 
         if (curHandler.buffer == null) {
-          curHandler.buffer = new StringBuffer();
+          curHandler.buffer = new StringBuilder();
         }
 
         curHandler.buffer.append(text, start, len);

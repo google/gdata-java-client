@@ -37,8 +37,9 @@ package com.google.gdata.util.common.base;
  * <li>If {@code plusForSpace} was specified, the space character " " is
  * converted into a plus sign "+".
  * <li>All other characters are converted into one or more bytes using UTF-8
- * encoding and each byte is then represented by the 3-character string "%xy",
- * where xy is the two-digit hexadecimal representation of the byte.
+ *     encoding and each byte is then represented by the 3-character string
+ *     "%XY", where "XY" is the two-digit, uppercase, hexadecimal representation
+ *     of the byte value.
  * </ul>
  *
  * <p>RFC 2396 specifies the set of unreserved characters as "-", "_", ".", "!",
@@ -48,13 +49,13 @@ package com.google.gdata.util.common.base;
  * of the URI, but this should not be done unless the URI is being used
  * in a context that does not allow the unescaped character to appear.</i>
  *
- * <p>For performance reasons the only supported character encoding of this
- * class is UTF-8.
+ * <p>For performance reasons the only currently supported character encoding of
+ * this class is UTF-8.
  *
- * <p><b>Note</b>: this escaper currently produces upper-case hexadecimal
- * characters when doing percent escaping, but this is likely to change in the
- * future. Callers must not rely on the case of any percent-escaped sequences.
- *
+ * <p><b>Note</b>: This escaper produces uppercase hexidecimal sequences. From
+ * <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>:<br>
+ * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+ * for all percent-encodings."</i>
  *
  * 
  */
@@ -64,8 +65,23 @@ public class PercentEscaper extends UnicodeEscaper {
    * {@link java.net.URLEncoder}.
    *
    */
-  public final static String SAFECHARS_URLENCODER = "-_.*";
+  public static final String SAFECHARS_URLENCODER = "-_.*";
 
+  /**
+   * A string of characters that do not need to be encoded when used in URI
+   * path segments, as specified in RFC 3986. Note that some of these
+   * characters do need to be escaped when used in other parts of the URI.
+   */
+  public static final String SAFEPATHCHARS_URLENCODER = "-_.!~*'()@:$&,;=";
+
+  /**
+   * A string of characters that do not need to be encoded when used in URI
+   * query strings, as specified in RFC 3986. Note that some of these
+   * characters do need to be escaped when used in other parts of the URI.
+   */
+  public static final String SAFEQUERYSTRINGCHARS_URLENCODER
+      = "-_.!~*'()@:$,;/?:";
+  
   // In some uri escapers spaces are escaped to '+'
   private static final char[] URI_ESCAPED_SPACE = { '+' };
 

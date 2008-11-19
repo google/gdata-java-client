@@ -20,11 +20,18 @@
   <property name="sample.blogger.main"          value="sample.blogger.BloggerClient"/>
 
   <path id="sample.blogger.compile.classpath">
-     <path location="${gdata-client.jar}"/>
+     <path location="${gdata-blogger.jar}"/>
      <path location="${sample-util.jar}"/>
   </path>
 
-  <target name="sample.blogger.build" depends="sample.core.dependencies">
+  <target name="sample.blogger.dependencies">
+    <antcall target="template.require.service.jar">
+      <param name="template.service.name" value="blogger"/>
+      <param name="template.service.version" value="${blogger.spec.version}"/>
+    </antcall>
+  </target>
+
+  <target name="sample.blogger.build" depends="sample.blogger.dependencies">
     <mkdir dir="${sample.blogger.build.lib}"/>
     <mkdir dir="${sample.blogger.build.classes}"/>
     <javac srcdir="${sample.blogger.src.home}"
@@ -51,7 +58,7 @@
     <java fork="true" classname="${sample.blogger.main}">
       <arg line="--username ${sample.credentials.username} --password ${sample.credentials.password}"/>
       <classpath>
-        <path location="${gdata-client.jar}"/>
+        <path location="${gdata-blogger.jar}"/>
         <path location="${sample-util.jar}"/>
         <path location="${sample.blogger.jar}"/>
       </classpath>

@@ -26,6 +26,7 @@ import com.google.gdata.data.MediaContent;
 import com.google.gdata.data.Person;
 import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclNamespace;
+import com.google.gdata.data.extensions.Deleted;
 import com.google.gdata.data.extensions.Labels;
 import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.media.MediaFileSource;
@@ -245,8 +246,10 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   public void setTrashed(boolean trashed) {
     if (trashed) {
       this.getCategories().add(Labels.TRASHED);
+      this.setExtension(new Deleted());
     } else {
       this.getCategories().remove(Labels.TRASHED);
+      this.removeExtension(Deleted.class);
     }
   }
 
@@ -255,7 +258,8 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * by the user this feed request has been authenticated under.
    */
   public boolean isTrashed() {
-    return this.getCategories().contains(Labels.TRASHED);
+    return this.getCategories().contains(Labels.TRASHED)
+        || this.hasExtension(Deleted.class);
   }
 
   /**

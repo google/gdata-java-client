@@ -53,6 +53,11 @@ public abstract class CharMatcher implements Predicate<Character> {
     @Override public int indexIn(CharSequence sequence) {
       return (sequence.length() == 0) ? -1 : 0;
     }
+    @Override public int indexIn(CharSequence sequence, int start) {
+      int length = sequence.length();
+      checkIndex(start, length);
+      return (start == length) ? -1 : start;
+    }
     @Override public int lastIndexIn(CharSequence sequence) {
       return sequence.length() - 1;
     }
@@ -105,6 +110,11 @@ public abstract class CharMatcher implements Predicate<Character> {
       checkNotNull(sequence);
       return -1;
     }
+    @Override public int indexIn(CharSequence sequence, int start) {
+      int length = sequence.length();
+      checkIndex(start, length);
+      return -1;
+    }
     @Override public int lastIndexIn(CharSequence sequence) {
       checkNotNull(sequence);
       return -1;
@@ -149,7 +159,7 @@ public abstract class CharMatcher implements Predicate<Character> {
   };
 
   /**
-   * Determines whether a character is ASCII, meaning that its code point is 
+   * Determines whether a character is ASCII, meaning that its code point is
    * less than 128.
    */
   public static final CharMatcher ASCII = inRange('\0', '\u007f');
@@ -179,7 +189,7 @@ public abstract class CharMatcher implements Predicate<Character> {
    * Determines whether a character is a digit according to
    * <a href="http://unicode.org/cldr/utility/list-unicodeset.jsp?a=%5Cp%7Bdigit%7D">Unicode</a>.
    */
-  public static final CharMatcher DIGIT = 
+  public static final CharMatcher DIGIT =
       new CharMatcher() {
         @Override protected void setBits(LookupTable table) {
           for (char base : ZEROES.toCharArray()) {
@@ -207,7 +217,7 @@ public abstract class CharMatcher implements Predicate<Character> {
   /**
    * Determines whether a character is whitespace according to {@link
    * Character#isWhitespace(char) Java's definition}; it is usually preferable
-   * to use {@link #WHITESPACE}. See a comparison of several definitions of 
+   * to use {@link #WHITESPACE}. See a comparison of several definitions of
    * "whitespace" at <a href="http://go/white+space">go/white+space</a>.
    */
   public static final CharMatcher JAVA_WHITESPACE = new CharMatcher() {
@@ -292,7 +302,7 @@ public abstract class CharMatcher implements Predicate<Character> {
       .or(anyOf("\u06dd\u070f\u1680\u17b4\u17b5\u180e"))
       .or(inRange('\u2000', '\u200f'))
       .or(inRange('\u2028', '\u202f'))
-      .or(inRange('\u205f', '\u2063'))
+      .or(inRange('\u205f', '\u2064'))
       .or(inRange('\u206a', '\u206f'))
       .or(is('\u3000'))
       .or(inRange('\ud800', '\uf8ff'))
@@ -334,15 +344,6 @@ public abstract class CharMatcher implements Predicate<Character> {
         return c == match;
       }
 
-      @Override public int indexIn(CharSequence sequence) {
-        // so, whether it's worth it to do likewise for StringBuilder
-        return (sequence instanceof String)
-            ? ((String) sequence).indexOf(match) : super.indexIn(sequence);
-      }
-      @Override public int lastIndexIn(CharSequence sequence) {
-        return (sequence instanceof String)
-            ? ((String) sequence).lastIndexOf(match) : super.indexIn(sequence);
-      }
       @Override public String replaceFrom(
           CharSequence sequence, char replacement) {
         return sequence.toString().replace(match, replacement);
@@ -693,12 +694,50 @@ public abstract class CharMatcher implements Predicate<Character> {
    * @return an index, or {@code -1} if no character matches
    */
   public int indexIn(CharSequence sequence) {
-    for (int i = 0; i < sequence.length(); i++) {
+    int length = sequence.length();
+    for (int i = 0; i < length; i++) {
       if (matches(sequence.charAt(i))) {
         return i;
       }
     }
     return -1;
+  }
+
+  /**
+   * Returns the index of the first matching character in a character sequence,
+   * starting from a given position, or {@code -1} if no character matches after
+   * that position.
+   *
+   * <p>The default implementation iterates over the sequence in forward order,
+   * beginning at {@code start}, calling {@link #matches} for each character.
+   *
+   * @param sequence the character sequence to examine
+   * @param start the first index to examine; must be nonnegative and no
+   *     greater than {@code sequence.length()}
+   * @return the index of the first matching character, guaranteed to be no less
+   *     than {@code start}, or {@code -1} if no character matches
+   * @throws IndexOutOfBoundsException if start is negative or greater than
+   *     {@code sequence.length()}
+   */
+  public int indexIn(CharSequence sequence, int start) {
+    int length = sequence.length();
+    checkIndex(start, length);
+    for (int i = start; i < length; i++) {
+      if (matches(sequence.charAt(i))) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  private static void checkIndex(int start, int length) {
+    if (start < 0) {
+      throw new IndexOutOfBoundsException("negative start index: " + start);
+    }
+    if (start > length) {
+      throw new IndexOutOfBoundsException("start index " + start
+          + " greater than length " + length);
+    }
   }
 
   /**
@@ -933,4 +972,5 @@ public abstract class CharMatcher implements Predicate<Character> {
     return matches(character);
   }
 }
+
 

@@ -29,9 +29,12 @@ import javax.swing.*;
  * Tab containing all the authentication information. 
  */
 public class TabAuthentication extends Tab {
-  
+  protected SpringLayout layout; 
+  protected JLabel domainLabel; 
   protected JTextField domain;
+  protected JLabel usernameLabel; 
   protected JTextField username;
+  protected JLabel passwordLabel;
   protected JPasswordField password;  
   protected JButton submit;
 
@@ -40,13 +43,18 @@ public class TabAuthentication extends Tab {
    */
   public TabAuthentication() {
     super("Authentication", "Authenticate with a server");
+    layout = new SpringLayout();
+    setLayout(layout);
 
+    domainLabel = new JLabel("Domain: ");
     domain = new JTextField(12);
     domain.setText(Constants.DEFAULT_DOMAIN);
 
+    usernameLabel = new JLabel("Admin username: ");  
     username = new JTextField(12);
     username.setText(Constants.DEFAULT_USERNAME);
-    
+   
+    passwordLabel = new JLabel("Admin password: "); 
     password = new JPasswordField(12);
     password.setText(Constants.DEFAULT_PASSWORD);
 
@@ -65,13 +73,29 @@ public class TabAuthentication extends Tab {
         }
       });
 
-    setLayout(new FlowLayout());
-    
-    add(new JLabel("Domain:"));
+    layout.putConstraint(SpringLayout.WEST, domainLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, domainLabel, 5, SpringLayout.NORTH, this);
+    layout.putConstraint(SpringLayout.WEST, domain, 5, SpringLayout.EAST, domainLabel);
+    layout.putConstraint(SpringLayout.NORTH, domain, 5, SpringLayout.NORTH, this);
+ 
+    layout.putConstraint(SpringLayout.WEST, usernameLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, usernameLabel, 5, SpringLayout.SOUTH, domain);
+    layout.putConstraint(SpringLayout.WEST, username, 5, SpringLayout.EAST, usernameLabel);
+    layout.putConstraint(SpringLayout.NORTH, username, 5, SpringLayout.SOUTH, domain);
+
+    layout.putConstraint(SpringLayout.WEST, passwordLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, passwordLabel, 5, SpringLayout.SOUTH, username);
+    layout.putConstraint(SpringLayout.WEST, password, 5, SpringLayout.EAST, passwordLabel);
+    layout.putConstraint(SpringLayout.NORTH, password, 5, SpringLayout.SOUTH, username);
+
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, password);
+
+    add(domainLabel);
     add(domain);
-    add(new JLabel("Admin username:"));
+    add(usernameLabel);
     add(username);
-    add(new JLabel("Admin password:"));
+    add(passwordLabel);
     add(password);
     add(submit);
   }

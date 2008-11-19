@@ -30,10 +30,13 @@ import javax.swing.*;
  * Tab containing all the vacation information.
  */
 public class TabVacation extends Tab  {
-
+  protected SpringLayout layout;
   protected JCheckBox enable;
+  protected JLabel subjectLabel;
   protected JTextField subject;
+  protected JLabel messageLabel;
   protected JTextField message;
+  protected JLabel contactsOnlyLabel;
   protected JCheckBox contactsOnly;
   protected JButton submit;
 
@@ -42,11 +45,19 @@ public class TabVacation extends Tab  {
    */
   public TabVacation() {
     super("Vacation Responder", "");
+    layout = new SpringLayout();
+    setLayout(layout);
 
     enable = new JCheckBox("Enable:", Defaults.VACATION_ENABLE);
+
+    subjectLabel = new JLabel("Subject: ");
     subject = new JTextField(Defaults.VACATION_SUBJECT, 25);
+   
+    messageLabel = new JLabel("Message: ");
     message = new JTextField(Defaults.VACATION_MESSAGE, 25);
+ 
     contactsOnly = new JCheckBox("Contacts only:", Defaults.VACATION_CONTACTS_ONLY);
+
     submit = new JButton("Submit");
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
@@ -76,12 +87,29 @@ public class TabVacation extends Tab  {
         }
       });
 
-    setLayout(new FlowLayout());
+    layout.putConstraint(SpringLayout.WEST, enable, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, enable, 5, SpringLayout.NORTH, this);
+
+    layout.putConstraint(SpringLayout.WEST, subjectLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, subjectLabel, 5, SpringLayout.SOUTH, enable);
+    layout.putConstraint(SpringLayout.WEST, subject, 5, SpringLayout.EAST, subjectLabel);
+    layout.putConstraint(SpringLayout.NORTH, subject, 5, SpringLayout.SOUTH, enable);
+ 
+    layout.putConstraint(SpringLayout.WEST, messageLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, messageLabel, 5, SpringLayout.SOUTH, subject);
+    layout.putConstraint(SpringLayout.WEST, message, 5, SpringLayout.EAST, messageLabel);
+    layout.putConstraint(SpringLayout.NORTH, message, 5, SpringLayout.SOUTH, subject);
+
+    layout.putConstraint(SpringLayout.WEST, contactsOnly, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, contactsOnly, 5, SpringLayout.SOUTH, message);
+
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, contactsOnly);
 
     add(enable);
-    add(new JLabel("Subject:"));
+    add(subjectLabel);
     add(subject);
-    add(new JLabel("Message:"));
+    add(messageLabel);
     add(message);
     add(contactsOnly);
     add(submit);

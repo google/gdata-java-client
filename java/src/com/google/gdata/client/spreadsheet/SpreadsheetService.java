@@ -68,7 +68,7 @@ public class SpreadsheetService extends GoogleService {
    * Default GData version used by the Google Spreadsheets service.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(SpreadsheetService.class, Versions.V1);
+      Service.initServiceVersion(SpreadsheetService.class, Versions.V2);
 
   /**
    * Constructs an instance connecting to the Google Spreadsheets service for an
@@ -143,8 +143,10 @@ public class SpreadsheetService extends GoogleService {
   private void declareExtensions() {
     new CellFeed().declareExtensions(extProfile);
     new ListFeed().declareExtensions(extProfile);
+
     new SpreadsheetFeed().declareExtensions(extProfile);
     new WorksheetFeed().declareExtensions(extProfile);
   }
 
 }
+

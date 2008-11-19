@@ -66,6 +66,11 @@ public interface IFeed {
    * Returns the value of the atom:logo element.
    */
   public String getLogo();
+  
+  /**
+   * Sets the value of the logo field on this feed.
+   */
+  public void setLogo(String logo);
 
   /**
    * Returns the atom:title element of this feed.

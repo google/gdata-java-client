@@ -68,7 +68,7 @@ public class BloggerService extends GoogleService {
    * Default GData version used by the Blogger service.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(BloggerService.class, Versions.V1);
+      Service.initServiceVersion(BloggerService.class, Versions.V2);
 
   /**
    * Constructs an instance connecting to the Blogger service for an application

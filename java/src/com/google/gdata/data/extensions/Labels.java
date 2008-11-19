@@ -41,4 +41,20 @@ public final class Labels {
 
   /** Common category for a trashed item */
   public static final Category TRASHED = newLabel("trashed");
+
+  /** Common category for a published item */
+  public static final Category PUBLISHED = newLabel("published");
+
+  /** Common category for a private item */
+  public static final Category PRIVATE = newLabel("private");
+
+  /** Common category for an item owned by the current user */
+  public static final Category MINE = newLabel("mine");
+
+  /** Common category for an item shared with the domain */
+  public static final Category SHARED_WITH_DOMAIN =
+      newLabel("shared-with-domain");
+
+  /** Common category for a hidden item */
+  public static final Category HIDDEN = newLabel("hidden");
 }

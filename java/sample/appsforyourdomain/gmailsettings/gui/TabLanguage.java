@@ -31,7 +31,8 @@ import javax.swing.*;
  * Tab containing all the language information. 
  */
 public class TabLanguage extends Tab  {
-
+  protected SpringLayout layout;
+  protected JLabel languagesLabel;
   protected JComboBox languages;
   protected JButton submit;
 
@@ -40,9 +41,13 @@ public class TabLanguage extends Tab  {
    */
   public TabLanguage() {
     super("Language", "");
-
+    layout = new SpringLayout();
+    setLayout(layout);
+  
+    languagesLabel = new JLabel("Languages: "); 
     languages = new JComboBox(Constants.LANGUAGE_VALID_KEY);
     languages.setSelectedItem(Defaults.LANGUAGE);
+
     submit = new JButton("Submit");
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
@@ -71,9 +76,15 @@ public class TabLanguage extends Tab  {
         }
       });
 
-    setLayout(new FlowLayout());
-  
-    add(new JLabel("Language:"));
+    layout.putConstraint(SpringLayout.WEST, languagesLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, languagesLabel, 5, SpringLayout.NORTH, this);
+    layout.putConstraint(SpringLayout.WEST, languages, 5, SpringLayout.EAST, languagesLabel);
+    layout.putConstraint(SpringLayout.NORTH, languages, 5, SpringLayout.NORTH, this);
+
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, languages);
+
+    add(languagesLabel);
     add(languages);
     add(submit);
   }

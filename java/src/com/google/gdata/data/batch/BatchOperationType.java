@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Defines a batch operation (update, insert, delete, but not query).
+ * Defines a batch operation (query, update, insert, delete).
  *
  * This enum is the java equivalent of &lt;batch: operation type="..."/&gt.
  * 

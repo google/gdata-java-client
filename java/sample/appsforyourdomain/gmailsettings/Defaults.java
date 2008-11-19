@@ -38,7 +38,8 @@ public final class Defaults {
 
   public static final String SEND_AS_NAME = "test-alias";
   public static final String SEND_AS_ADDRESS = "johndoe@example.com";
-  public static final String SEND_AS_SENDAS = "reply-to@someplace.com";
+  public static final String SEND_AS_REPLY_TO = "reply-to@someplace.com";
+  public static final boolean SEND_AS_MAKE_DEFAULT = false;
   
   public static final String LABEL = "label";
 

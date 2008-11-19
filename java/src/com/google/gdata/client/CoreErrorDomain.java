@@ -380,6 +380,10 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("invalidEndValue")
       .setInternalReason("Invalid end value");
 
+  public final ErrorCode invalidEnumValue =
+      new ErrorCode("invalidEnumValue")
+      .setInternalReason("Invalid enum value");
+  
   public final ErrorCode invalidFixedAttribute =
       new ErrorCode("invalidFixedAttribute")
       .setInternalReason("Invalid value for fixed attribute");
@@ -762,6 +766,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode rpcUnsupported =
       new ErrorCode("rpcUnsupported")
       .setInternalReason("RPC authentication not enabled");
+
+  public final ErrorCode serverOverloaded =
+      new ErrorCode("serverOverloaded")
+      .setInternalReason("Servers are overloaded");
 
   public final ErrorCode startIndexNotInteger =
       new ErrorCode("startIndexNotInteger")

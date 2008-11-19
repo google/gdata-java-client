@@ -30,16 +30,20 @@ import javax.swing.*;
 * Tab containing all the label information.
 */
 public class TabLabel extends Tab  {
-
-  protected JButton submit;
+  protected SpringLayout layout; 
+  protected JLabel labelLabel;
   protected JTextField label;
+  protected JButton submit;
 
   /**
    * Setup all the components on the tab.
    */
   public TabLabel() {
     super("Label", "");
-
+    layout = new SpringLayout();
+    setLayout(layout);
+   
+    labelLabel = new JLabel("Label: "); 
     label = new JTextField(Defaults.LABEL, 25);
 
     submit = new JButton("Submit");
@@ -71,10 +75,16 @@ public class TabLabel extends Tab  {
         }
       });
 
-      setLayout(new FlowLayout());
+    layout.putConstraint(SpringLayout.WEST, labelLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, labelLabel, 5, SpringLayout.NORTH, this);
+    layout.putConstraint(SpringLayout.WEST, label, 5, SpringLayout.EAST, labelLabel);
+    layout.putConstraint(SpringLayout.NORTH, label, 5, SpringLayout.NORTH, this);
 
-      add(new JLabel("Label:"));
-      add(label);
-      add(submit);
+    layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, label);
+
+    add(labelLabel);
+    add(label);
+    add(submit);
   }
 }

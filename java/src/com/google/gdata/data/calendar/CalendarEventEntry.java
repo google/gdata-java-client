@@ -35,7 +35,6 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
    */
   public CalendarEventEntry() { super(); }
 
-
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
@@ -168,4 +167,3 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
   }
 
 }
-

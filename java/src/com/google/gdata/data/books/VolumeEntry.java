@@ -97,6 +97,7 @@ public class VolumeEntry extends BaseEntry<VolumeEntry> {
         Identifier.getDefaultDescription(false, true));
     extProfile.declare(VolumeEntry.class, Language.getDefaultDescription(false,
         true));
+    extProfile.declare(VolumeEntry.class, OpenAccess.class);
     extProfile.declare(VolumeEntry.class, Publisher.getDefaultDescription(false,
         true));
     extProfile.declare(VolumeEntry.class, new ExtensionDescription(Rating.class,
@@ -332,6 +333,37 @@ public class VolumeEntry extends BaseEntry<VolumeEntry> {
    */
   public boolean hasLanguages() {
     return hasRepeatingExtension(Language.class);
+  }
+
+  /**
+   * Returns the open access.
+   *
+   * @return open access
+   */
+  public OpenAccess getOpenAccess() {
+    return getExtension(OpenAccess.class);
+  }
+
+  /**
+   * Sets the open access.
+   *
+   * @param openAccess open access or <code>null</code> to reset
+   */
+  public void setOpenAccess(OpenAccess openAccess) {
+    if (openAccess == null) {
+      removeExtension(OpenAccess.class);
+    } else {
+      setExtension(openAccess);
+    }
+  }
+
+  /**
+   * Returns whether it has the open access.
+   *
+   * @return whether it has the open access
+   */
+  public boolean hasOpenAccess() {
+    return hasExtension(OpenAccess.class);
   }
 
   /**

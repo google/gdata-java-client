@@ -99,7 +99,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Creates a filter
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to create the filter for.
    * @param from The email must come from this address in order to be filtered.
    * @param to The email must be sent to this address in order to be filtered.
    * @param subject A string the email must have in it's subject line to be filtered.
@@ -148,19 +148,22 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Creates a send-as alias
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to create the send-as alias for.
    * @param name The name which e-mails sent using the alias are from.
    * @param address The e-mail address which e-mails sent using the alias are from.
    * @param replyTo (Optional) If set, this address will be included as the reply-to address in 
    *     e-mails sent using the alias.
+   * @param makeDefault (Optional) If set to true, this user will have this send-as alias selected
+   *     by default from now on.
    * @throws InvalidUserException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
    *       service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void createSendAs(String[] users, String name, String address, String replyTo) 
-      throws InvalidUserException, ServiceException, MalformedURLException, IOException {
+  public void createSendAs(String[] users, String name, String address, String replyTo,
+      boolean makeDefault) throws InvalidUserException, ServiceException, MalformedURLException, 
+      IOException {
     if (users.length == 0) {
       throw new InvalidUserException();
     }
@@ -169,6 +172,7 @@ public class GmailSettings extends AppsForYourDomainService {
     entry.addProperty("name", name);
     entry.addProperty("address", address);
     entry.addProperty("replyTo", replyTo);
+    entry.addProperty("makeDefault", String.valueOf(makeDefault));
 
     for (int i = 0; i < users.length; i++) {
       logger.log(Level.INFO, "Creating send-as alias...");
@@ -180,7 +184,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Creates a label
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to create the label for.
    * @param label A string that represents the name of the label.
    * @throws InvalidUserException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
@@ -207,7 +211,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Changes forwarding settings
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to change the forwarding for.
    * @param enable Whether to enable forwarding of incoming mail.
    * @param forwardTo The email will be forwarded to this address.
    * @param action What gmail should do with its copy of the e-mail after forwarding it on.
@@ -242,7 +246,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Changes POP3 settings
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to change the POP3 settings for.
    * @param enable Whether to enable POP3 access.
    * @param enableFor Whether to enable POP3 for all mail, or mail from now on.
    * @param action What gmail should do with its copy of the e-mail after it is retrieved using POP.
@@ -277,7 +281,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Changes IMAP settings
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to change the IMAP settings for.
    * @param enable Whether to enable IMAP access.
    * @throws InvalidUserException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
@@ -304,7 +308,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Changes vacation-responder settings
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to change the vacation-responder for.
    * @param enable Whether to enable the vacation responder.
    * @param subject The subject line of the vacation responder autoresponse.
    * @param message The message body of the vacation responder autoresponse.
@@ -338,7 +342,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Changes signature
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to change the signature for.
    * @param signature The signature to be appended to outgoing messages.  Don't want a signature? 
    *     Set the signature to "" (empty string).
    * @throws InvalidUserException if no users are passed in.
@@ -366,7 +370,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Changes general settings
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to change the general settings for.
    * @param pageSize The number of conversations to be shown per page.
    * @param enableShortcuts Whether to enable keyboard shortcuts
    * @param enableArrows Whether to display arrow-shaped personal indicators next to emails that 
@@ -404,7 +408,7 @@ public class GmailSettings extends AppsForYourDomainService {
   /**
    * Changes language settings
    *
-   * @param users An array of the users to set the signature for.
+   * @param users An array of the users to change the language for.
    * @param language Gmail's display language.
    * @throws InvalidUserException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData

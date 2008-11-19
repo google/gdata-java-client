@@ -39,6 +39,7 @@ public class TabbedPane extends JTabbedPane {
    * Create an instance of all tabs required, and add them to the pane.
    */ 
   public TabbedPane() {
+    super(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 
     authenticationTab = new TabAuthentication();
     signatureTab = new TabSignature();
