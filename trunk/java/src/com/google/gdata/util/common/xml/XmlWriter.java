@@ -115,15 +115,6 @@ import java.util.Stack;
 public class XmlWriter {
 
   /**
-   * Determines whether a character is legal in an XML 1.0 document,
-   * cf. http://www.w3.org/TR/REC-xml/#charsets.
-   */
-  public static final CharMatcher LEGAL_XML_1_0 =
-      CharMatcher.inRange('\u0020', '\ud7ff')
-      .or(CharMatcher.anyOf("\u0009\n\r"))
-      .or(CharMatcher.inRange('\ue000', '\ufffd'));
-
-  /**
    * Enumeration type that can be used to configure the XmlWriter behavior.
    */
   public enum WriterFlags {
