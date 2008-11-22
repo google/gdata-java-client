@@ -1,16 +1,22 @@
 Google Data API - Release Notes
 
+Notes for v1.26.0
+-----------------
+Nov 20, 2008
+o  Fixed bug related to failure to load com.google.gdata.util.common.xml.XmlWriter
+   when executing in eclipse with JDK 1.5.
+
 Notes for v1.25.0
 -----------------
 Nov 13, 2008
-o  Updated Google Base, Blogger, Calendar, Code Search, Document List, Finance, Health,
-   Spreadsheet Data APIs to use version 2 of Google Data Protocol.  With this
-   change all requests from above mentioned APIs will send requests with
-   "GData-Version" http header set to "2.0".  If you need to request older
-   version of the feed, you can do so by calling "{Property}Service#setProtocolVersion".
+o  Updated Google Base, Blogger, Calendar, Code Search, Document List, Finance, Health
+   and Spreadsheet Data APIs to use version 2 of Google Data Protocol.  With this
+   change all requests from the above mentioned APIs will send requests with
+   the "GData-Version" http header set to "2.0".  If you need to request older
+   versions of the feed, you can do so by calling "{Property}Service#setProtocolVersion".
 o  The Version 2 protocol for above APIs does not contain any new features
    specific to that API.  But they inherit all of the GData Protocol Version 2
-   core capabilities including Etags, use new opensearch namespace.
+   core capabilities including Etags, use of new opensearch namespace.
 
 Notes for v1.24.0
 -----------------
