@@ -8,6 +8,9 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.26.0 ==
+  * Fixed bug related to failure to load com.google.gdata.utuil.common.xml.XmlWriter when executing in eclipse with JDK 1.5.
+
 == 1.25.0 ==
   *  Updated Google Base, Blogger, Calendar, Code Search, Document List, Finance, Health, Spreadsheet Data API to use version 2 of Google Data Protocol.  With this change all requests from above mentioned API will send requests with "GData-Version" http header set to "2.0".  If you need to request older version of the feed, you can do so by calling "Service#setProtocolVersion".
   *  The Version 2 protocol for above API does not contain any new features.  But they inherit all of the GData Protocol Version 2 core capabilities including Etags, use of new opensearch namespace.
