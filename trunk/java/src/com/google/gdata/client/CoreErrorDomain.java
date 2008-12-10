@@ -352,6 +352,10 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("invalidBooleanAttribute")
       .setInternalReason("Invalid value for boolean attribute");
 
+  public final ErrorCode invalidCacheControlOption =
+      new ErrorCode("invalidCacheControlOption")
+      .setInternalReason("Invalid option in Cache-Control header");
+
   public final ErrorCode invalidCategoryFilter =
       new ErrorCode("invalidCategoryFilter")
       .setInternalReason("Invalid category filter");
@@ -383,6 +387,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode invalidEnumValue =
       new ErrorCode("invalidEnumValue")
       .setInternalReason("Invalid enum value");
+  
+  public final ErrorCode invalidErrorFormat =
+      new ErrorCode("invalidErrorFormat")
+      .setInternalReason("Invalid error format");
   
   public final ErrorCode invalidFixedAttribute =
       new ErrorCode("invalidFixedAttribute")

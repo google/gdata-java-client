@@ -277,7 +277,7 @@ public class YouTubeQuery extends Query {
    * Gets the value of the {@code time} parameter.
    *
    * @return value of the {@code time} parameter
-   * @exception IllegalStateException if a time value was found in the
+   * @throws IllegalStateException if a time value was found in the
    *   query that cannot be transformed into {@link YouTubeQuery.Time}
    */
   public Time getTime() {
@@ -395,7 +395,7 @@ public class YouTubeQuery extends Query {
    * Gets the value of the {@code orderby} parameter.
    *
    * @return value of the {@code orderby} parameter.
-   * @exception IllegalStateException if a time value was found in the
+   * @throws IllegalStateException if a time value was found in the
    *   query that cannot be transformed into {@link YouTubeQuery.OrderBy}
    */
   public OrderBy getOrderby() {
@@ -466,7 +466,7 @@ public class YouTubeQuery extends Query {
    * Gets the value of the {@code safeSearch} parameter.
    *
    * @return value of the {@code safeSearch} parameter.
-   * @exception IllegalStateException if a value was found in the
+   * @throws IllegalStateException if a value was found in the
    *   query that cannot be transformed into {@link YouTubeQuery.SafeSearch}
    */
   public SafeSearch getSafeSearch() {
@@ -553,7 +553,7 @@ public class YouTubeQuery extends Query {
    * Sets the value of the {@code location-radius} parameter. Format is 
    *   "100km". Valid units of measurement are "ft", "mi", "m", and "km".
    * @param locationRadius The requested search radius.
-   * @exception InvalidArgumentException if the given string is not a properly
+   * @throws InvalidArgumentException if the given string is not a properly
    *   formatted location radius.
    */
   public void setLocationRadius(String locationRadius) {
@@ -717,7 +717,7 @@ public class YouTubeQuery extends Query {
    * Gets the value of the {@code uploader} parameter.
    *
    * @return value of the {@code uploader} parameter.
-   * @exception IllegalStateException if a value was found in the
+   * @throws IllegalStateException if a value was found in the
    *   query that cannot be transformed into {@link YouTubeQuery.Uploader}
    */
   public Uploader getUploader() {

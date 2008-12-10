@@ -16,9 +16,9 @@
 
 package com.google.gdata.data.introspection;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.Category;
@@ -44,7 +44,7 @@ import java.util.List;
 public class Categories extends ExtensionPoint {
   
   // Locally cache the version-appropriate AtomPub namespace information.
-  private Namespace atomPubNs = Namespaces.getAtomPubNs();
+  private XmlNamespace atomPubNs = Namespaces.getAtomPubNs();
 
   /**
    * Constructs a new empty Categories instance for the purposes of parsing

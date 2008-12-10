@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.contacts;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Google Contacts.
@@ -38,7 +38,7 @@ public class ContactsNamespace {
   public static final String GCONTACT_ALIAS = "gContact";
 
   /** XML writer namespace for Google Contacts (GCONTACT) */
-  public static final XmlWriter.Namespace GCONTACT_NS = new
-      XmlWriter.Namespace(GCONTACT_ALIAS, GCONTACT);
+  public static final XmlNamespace GCONTACT_NS = new
+      XmlNamespace(GCONTACT_ALIAS, GCONTACT);
 
 }

@@ -16,9 +16,9 @@
 
 package com.google.gdata.data.introspection;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.Service;
 import com.google.gdata.data.AttributeHelper;
@@ -58,7 +58,7 @@ public class Workspace extends ExtensionPoint {
   // Locally case version-dependent information.   The assumption here is that
   // a single instance isn't used with multiple version of the protocol.
   private Version coreVersion = Service.getVersion();
-  private Namespace atomPubNs = Namespaces.getAtomPubNs();
+  private XmlNamespace atomPubNs = Namespaces.getAtomPubNs();
 
   public Workspace() {}
 

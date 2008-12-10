@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.books;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionDescription;
@@ -81,7 +81,7 @@ public class VolumeEntry extends BaseEntry<VolumeEntry> {
     }
     super.declareExtensions(extProfile);
     extProfile.declare(VolumeEntry.class,
-        new ExtensionDescription(Comments.class, new XmlWriter.Namespace("gd",
+        new ExtensionDescription(Comments.class, new XmlNamespace("gd",
         "http://schemas.google.com/g/2005"), "comments", false, false, false));
     new Comments().declareExtensions(extProfile);
     extProfile.declare(VolumeEntry.class, Creator.getDefaultDescription(false,
@@ -101,8 +101,8 @@ public class VolumeEntry extends BaseEntry<VolumeEntry> {
     extProfile.declare(VolumeEntry.class, Publisher.getDefaultDescription(false,
         true));
     extProfile.declare(VolumeEntry.class, new ExtensionDescription(Rating.class,
-        new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
-        "rating", false, false, false));
+        new XmlNamespace("gd", "http://schemas.google.com/g/2005"), "rating",
+        false, false, false));
     extProfile.declare(VolumeEntry.class, Review.class);
     extProfile.declare(VolumeEntry.class, Subject.getDefaultDescription(false,
         true));

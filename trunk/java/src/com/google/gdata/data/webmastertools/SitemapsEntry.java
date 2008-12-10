@@ -153,8 +153,8 @@ public class SitemapsEntry<E extends SitemapsEntry<E>> extends BaseEntry<E> {
    * Represents <sitemap-status> node.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = SITEMAP_STATUS)  
   public static class SitemapStatus extends ValueConstruct {
     public SitemapStatus() {
@@ -167,8 +167,8 @@ public class SitemapsEntry<E extends SitemapsEntry<E>> extends BaseEntry<E> {
    * date/time value.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = SITEMAP_DOWNLOADED)
   public static class LastDownloaded extends DateTimeValueConstruct {
     public LastDownloaded() {
@@ -181,8 +181,8 @@ public class SitemapsEntry<E extends SitemapsEntry<E>> extends BaseEntry<E> {
    * int value.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = SITEMAP_URL_COUNT)
   public static class UrlCount extends IntValueConstruct {
     public UrlCount() {

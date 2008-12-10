@@ -16,8 +16,8 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
 
@@ -103,7 +103,7 @@ public abstract class ValueConstruct extends AbstractExtension {
    * @param attrName the name of attribute that contains the value, or
    *        {@code null} if the value is contained within the element content.
    */
-  protected ValueConstruct(Namespace namespace,
+  protected ValueConstruct(XmlNamespace namespace,
                            String localName,
                            String attrName) {
     this(namespace, localName, attrName, null);
@@ -125,7 +125,7 @@ public abstract class ValueConstruct extends AbstractExtension {
    *        construct instance.   After construction, the value will be
    *        immutable.
    */
-  protected ValueConstruct(Namespace namespace,
+  protected ValueConstruct(XmlNamespace namespace,
                            String localName,
                            String attrName,
                            String value) {

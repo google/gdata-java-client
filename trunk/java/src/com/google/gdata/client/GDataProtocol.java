@@ -90,6 +90,12 @@ public class GDataProtocol {
      * will be interpreted relative to the version model of the target service.
      */
     public static final String VERSION = "GData-Version";
+
+    /**
+     * The CACHE_CONTROL header is used to specify how fresh a result should
+     * be in a request.
+     */
+    public static final String CACHE_CONTROL  = "Cache-Control";
   }
 
   /**

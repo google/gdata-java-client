@@ -60,10 +60,6 @@ public abstract class DomainPreferenceConstruct extends EnumConstruct {
       return false;
     }
 
-    if (!sameClassAs(rhs)) {
-      return false;
-    }
-
     return getValue().equals(((DomainPreferenceConstruct) rhs).getValue());
   }
 

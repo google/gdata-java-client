@@ -16,6 +16,7 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
@@ -41,7 +42,7 @@ import java.util.Map;
 public abstract class AbstractExtension implements Extension {
 
   /** XML namespace for this extension or <code>null</code> if not defined */
-  protected final XmlWriter.Namespace namespace;
+  protected final XmlNamespace namespace;
 
   /** XML local name for this extension or <code>null</code> if not defined */
   protected final String localName;
@@ -66,7 +67,7 @@ public abstract class AbstractExtension implements Extension {
     ExtensionDescription.Default defAnnot = extensionClass
         .getAnnotation(ExtensionDescription.Default.class);
     if (defAnnot != null) {
-      this.namespace = new XmlWriter.Namespace(defAnnot.nsAlias(),
+      this.namespace = new XmlNamespace(defAnnot.nsAlias(),
           defAnnot.nsUri());
       this.localName = defAnnot.localName();
     } else {
@@ -83,7 +84,7 @@ public abstract class AbstractExtension implements Extension {
    * @param namespace the namespace of the value element
    * @param localName the local name of the value element
    */
-  protected AbstractExtension(XmlWriter.Namespace namespace, String localName) {
+  protected AbstractExtension(XmlNamespace namespace, String localName) {
     this.namespace = namespace;
     this.localName = localName;
   }
@@ -91,7 +92,7 @@ public abstract class AbstractExtension implements Extension {
   /**
    * Gets the extension's namespace.
    */
-  public final XmlWriter.Namespace getExtensionNamespace() {
+  public final XmlNamespace getExtensionNamespace() {
     return namespace;
   }
 
@@ -152,7 +153,7 @@ public abstract class AbstractExtension implements Extension {
    * @throws IOException any I/O exception
    */
   protected void generate(XmlWriter w, ExtensionProfile p,
-      XmlWriter.Namespace namespace, String localName,
+      XmlNamespace namespace, String localName,
       List<XmlWriter.Attribute> attrs, AttributeGenerator generator)
       throws IOException {
     w.simpleElement(namespace, localName, attrs, generator.getContent());
@@ -173,16 +174,25 @@ public abstract class AbstractExtension implements Extension {
     // generate attributes
     AttributeGenerator generator = new AttributeGenerator();
     putAttributes(generator);
+    
     List<XmlWriter.Attribute> attrs = new ArrayList<XmlWriter.Attribute>();
+    generateAttributes(attrs, generator);
+
+    // generate XML
+    generate(w, p, namespace, localName, attrs, generator);
+  }
+  
+  /**
+   * Generates the attributes in the generator into the list of attributes.
+   */
+  protected void generateAttributes(List<XmlWriter.Attribute> attrs,
+      AttributeGenerator generator) {
     for (Map.Entry<String, String> entry : generator.entrySet()) {
       String value = entry.getValue();
       if (value != null) {
         attrs.add(new XmlWriter.Attribute(entry.getKey(), value));
       }
     }
-
-    // generate XML
-    generate(w, p, namespace, localName, attrs, generator);
   }
 
   /**

@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.contacts;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionDescription;
@@ -78,15 +78,15 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     }
     super.declareExtensions(extProfile);
     extProfile.declare(ContactEntry.class,
-        new ExtensionDescription(Deleted.class, new XmlWriter.Namespace("gd",
+        new ExtensionDescription(Deleted.class, new XmlNamespace("gd",
         "http://schemas.google.com/g/2005"), "deleted", false, false, false));
     extProfile.declare(ContactEntry.class, new ExtensionDescription(Email.class,
-        new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
-        "email", false, true, false));
+        new XmlNamespace("gd", "http://schemas.google.com/g/2005"), "email",
+        false, true, false));
     extProfile.declare(ContactEntry.class,
-        new ExtensionDescription(ExtendedProperty.class,
-        new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
-        "extendedProperty", false, true, false));
+        new ExtensionDescription(ExtendedProperty.class, new XmlNamespace("gd",
+        "http://schemas.google.com/g/2005"), "extendedProperty", false, true,
+        false));
     extProfile.declare(ContactEntry.class,
         GroupMembershipInfo.getDefaultDescription(false, true));
     extProfile.declare(ContactEntry.class, Im.getDefaultDescription(false,
@@ -95,13 +95,13 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
         Organization.getDefaultDescription(false, true));
     new Organization().declareExtensions(extProfile);
     extProfile.declare(ContactEntry.class,
-        new ExtensionDescription(PhoneNumber.class,
-        new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
-        "phoneNumber", false, true, false));
+        new ExtensionDescription(PhoneNumber.class, new XmlNamespace("gd",
+        "http://schemas.google.com/g/2005"), "phoneNumber", false, true,
+        false));
     extProfile.declare(ContactEntry.class,
-        new ExtensionDescription(PostalAddress.class,
-        new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
-        "postalAddress", false, true, false));
+        new ExtensionDescription(PostalAddress.class, new XmlNamespace("gd",
+        "http://schemas.google.com/g/2005"), "postalAddress", false, true,
+        false));
   }
 
   /**
@@ -351,35 +351,4 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     return "{ContactEntry " + super.toString() + "}";
   }
 
-
-  /**
-   * Returns the gender.
-   *
-   * @return gender
-   */
-  public Gender getGender() {
-    return getExtension(Gender.class);
-  }
-
-  /**
-   * Sets the gender.
-   *
-   * @param gender gender or <code>null</code> to reset
-   */
-  public void setGender(Gender gender) {
-    if (gender == null) {
-      removeExtension(Gender.class);
-    } else {
-      setExtension(gender);
-    }
-  }
-
-  /**
-   * Returns whether it has the gender.
-   *
-   * @return whether it has the gender
-   */
-  public boolean hasGender() {
-    return hasExtension(Gender.class);
-  }
 }

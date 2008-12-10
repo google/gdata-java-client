@@ -22,21 +22,14 @@ import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthRsaSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
-import com.google.gdata.client.blogger.BloggerService;
-import com.google.gdata.client.contacts.ContactsService;
-import com.google.gdata.client.finance.FinanceService;
-import com.google.gdata.client.photos.PicasawebService;
 import com.google.gdata.data.BaseEntry;
-import com.google.gdata.data.contacts.ContactFeed;
+import com.google.gdata.data.BaseFeed;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 
 /**
  * Sample application using OAuth in the Google Data Java Client.  See the
- * comments below to learn how to use OAuth in the Java Client.
+ * comments below to learn about the details.
  *
  * 
  */
@@ -44,10 +37,20 @@ class OAuthExample {
 
   public static void main(String[] args) throws Exception {
 
-    UserInputVariables variables = getUserInputVariables();
+    ////////////////////////////////////////////////////////////////////////////
+    // STEP 1: Gather the user's information
+    ////////////////////////////////////////////////////////////////////////////
+
+    // This step collects information from the user, such as the consumer key
+    // and which service to query.  This is just a general setup routine, and
+    // the method by which you collect user information may be different in your
+    // implementation.
+    UserInputHelper inputController = new OAuthUserInputHelper();
+    UserInputVariables variables = inputController.getVariables();
+
 
     ////////////////////////////////////////////////////////////////////////////
-    // STEP 1: Set up the OAuth objects
+    // STEP 2: Set up the OAuth objects
     ////////////////////////////////////////////////////////////////////////////
 
     // You first need to initialize a few OAuth-related objects.
@@ -84,7 +87,7 @@ class OAuthExample {
 
 
     ////////////////////////////////////////////////////////////////////////////
-    // STEP 2: Get the Authorization URL
+    // STEP 3: Get the Authorization URL
     ////////////////////////////////////////////////////////////////////////////
 
     // Set the scope for this particular service.
@@ -104,7 +107,7 @@ class OAuthExample {
 
 
     ////////////////////////////////////////////////////////////////////////////
-    // STEP 3: Get the Access Token
+    // STEP 4: Get the Access Token
     ////////////////////////////////////////////////////////////////////////////
 
     // Once the user authorizes with Google, the request token can be exchanged
@@ -117,20 +120,21 @@ class OAuthExample {
 
 
     ////////////////////////////////////////////////////////////////////////////
-    // STEP 4: Make an OAuth authorized request to Google
+    // STEP 5: Make an OAuth authorized request to Google
     ////////////////////////////////////////////////////////////////////////////
 
     // Initialize the variables needed to make the request
     URL feedUrl = new URL(variables.getFeedUrl());
     System.out.println("Sending request to " + feedUrl.toString());
     System.out.println();
-    GoogleService googleService = variables.getGoogleService();
+    GoogleService googleService =
+        new GoogleService(variables.getGoogleServiceName(), "oauth-sample-app");
 
     // Set the OAuth credentials which were obtained from the step above.
     googleService.setOAuthCredentials(oauthParameters, signer);
 
     // Make the request to Google
-    ContactFeed resultFeed = googleService.getFeed(feedUrl, ContactFeed.class);
+    BaseFeed resultFeed = googleService.getFeed(feedUrl, null);
     System.out.println("Response Data:");
     System.out.println("=====================================================");
     System.out.println("| TITLE: " + resultFeed.getTitle().getPlainText());
@@ -138,168 +142,11 @@ class OAuthExample {
       System.out.println("|\tNo entries found.");
     } else {
       for (int i = 0; i < resultFeed.getEntries().size(); i++) {
-        BaseEntry entry = resultFeed.getEntries().get(i);
+        BaseEntry entry = (BaseEntry) resultFeed.getEntries().get(i);
         System.out.println("|\t" + (i + 1) + ": "
             + entry.getTitle().getPlainText());
       }
     }
     System.out.println("=====================================================");
-  }
-
-  /** The various Google services enabled in this sample. */
-  private enum GoogleServiceType {
-    Blogger,
-    Contacts,
-    Finance,
-    Picasa
-  }
-
-  /** The signature methods supported by the Java client. */
-  private enum SignatureMethod {
-    HMAC,
-    RSA
-  }
-
-  /** A helper class to store all the user variables related to OAuth. */
-  private static class UserInputVariables {
-    private static final String APPLICATION_NAME = "oauth-sample-app";
-    private GoogleServiceType serviceType;
-    private String scope;
-    private String feedUrl;
-    private GoogleService googleService;
-    private SignatureMethod signatureMethod;
-    private String signatureKey;
-    private String consumerKey;
-
-    public UserInputVariables() {
-    }
-
-    /** Sets the variables related to a Google Service. */
-    public void setServiceVariables(GoogleServiceType stype) {
-      serviceType = stype;
-      switch (stype) {
-        case Contacts:
-          scope = "http://www.google.com/m8/feeds/";
-          feedUrl = "http://www.google.com/m8/feeds/contacts/default/base";
-          googleService = new ContactsService(APPLICATION_NAME);
-          break;
-        case Blogger:
-          scope = "http://www.blogger.com/feeds/";
-          feedUrl = "http://www.blogger.com/feeds/default/blogs";
-          googleService = new BloggerService(APPLICATION_NAME);
-          break;
-        case Finance:
-          scope = "http://finance.google.com/finance/feeds/";
-          feedUrl =
-              "http://finance.google.com/finance/feeds/default/portfolios";
-          googleService = new FinanceService(APPLICATION_NAME);
-          break;
-        case Picasa:
-          scope = "http://picasaweb.google.com/data/";
-          feedUrl = "http://picasaweb.google.com/data/feed/api/user/default";
-          googleService = new PicasawebService(APPLICATION_NAME);
-          break;
-        default:
-          throw new IllegalArgumentException("Unsupported Google Service");
-      }
-    }
-
-    public String getFeedUrl() {
-      return feedUrl;
-    }
-
-    public GoogleService getGoogleService() {
-      return googleService;
-    }
-
-    public GoogleServiceType getGoogleServiceType() {
-      return serviceType;
-    }
-
-    public String getScope() {
-      return scope;
-    }
-
-    public void setConsumerKey(String key) {
-      consumerKey = key;
-    }
-
-    public String getConsumerKey() {
-      return consumerKey;
-    }
-
-    public void setSignatureKey(String key) {
-      this.signatureKey = key;
-    }
-
-    public String getSignatureKey() {
-      return signatureKey;
-    }
-
-    public void setSignatureMethod(SignatureMethod signatureMethod) {
-      this.signatureMethod = signatureMethod;
-    }
-
-    public SignatureMethod getSignatureMethod() {
-      return signatureMethod;
-    }
-  }
-
-  /** Helper method to read input from the command line. */
-  private static String readCommandLineInput() {
-    System.out.print("> ");
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    String userInput = null;
-    try {
-       userInput = br.readLine();
-    } catch (IOException ioe) {
-       System.out.println("IO error trying to read input!");
-       System.exit(1);
-    }
-    System.out.println();
-    return userInput;
-  }
-
-  /** Helper method to gather input from the user. */
-  private static UserInputVariables getUserInputVariables() {
-    UserInputVariables variables = new UserInputVariables();
-    System.out.println();
-    System.out.println("=============");
-    System.out.println("Testing OAuth");
-    System.out.println("=============");
-    System.out.println();
-    System.out.println("This sample will show you how to use OAuth to retrieve "
-        + "information from a Google Data service.  Follow the instructions "
-        + "below to continue");
-    System.out.println();
-    System.out.println("Please select a Google service to query:");
-    for (GoogleServiceType t : GoogleServiceType.values()) {
-      System.out.println("\t" + (t.ordinal() + 1) + ") " + t.toString());
-    }
-    variables.setServiceVariables(GoogleServiceType
-        .values()[Integer.parseInt(readCommandLineInput()) - 1]);
-    System.out.println("Please select a signature method:");
-    for (SignatureMethod m : SignatureMethod.values()) {
-      System.out.println("\t" + (m.ordinal() + 1) + ") " + m.toString());
-    }
-    variables.setSignatureMethod(SignatureMethod.values()[Integer
-        .parseInt(readCommandLineInput()) - 1]);
-    System.out.println("Please enter your OAuth consumer key (usually your "
-        + "domain, visit https://www.google.com/accounts/ManageDomains to "
-        + "manage your OAuth parameters)");
-    variables.setConsumerKey(readCommandLineInput());
-    switch (variables.getSignatureMethod()) {
-      case RSA:
-        System.out.println("Please enter your RSA private key (the key should "
-            + "be a Base-64 encoded string conforming to the PKCS #8 standard");
-        break;
-      case HMAC:
-        System.out.println("Please enter your OAuth consumer secret (visit "
-            + "https://www.google.com/accounts/ManageDomains to view your "
-            + "consumer secret)");
-        break;
-    }
-    variables.setSignatureKey(readCommandLineInput());
-    return variables;
   }
 }

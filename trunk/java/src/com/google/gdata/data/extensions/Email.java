@@ -71,6 +71,11 @@ public class Email extends ExtensionPoint implements Extension {
   public boolean getPrimary() { return primary; }
   public void setPrimary(boolean p) { primary = p; }
 
+  /** Display name of the email address */
+  protected String displayName;
+  public String getDisplayName() { return displayName; }
+  public void setDisplayName(String n) { displayName = n; }
+
   /** Returns the suggested extension description. */
   public static ExtensionDescription getDefaultDescription() {
     ExtensionDescription desc = new ExtensionDescription();
@@ -105,6 +110,10 @@ public class Email extends ExtensionPoint implements Extension {
 
     if (primary) {
       attrs.add(new XmlWriter.Attribute("primary", true));
+    }
+    
+    if (displayName != null) {
+      attrs.add(new XmlWriter.Attribute("displayName", displayName));
     }
 
     generateStartElement(w, Namespaces.gNs, "email", attrs, null);
@@ -144,6 +153,8 @@ public class Email extends ExtensionPoint implements Extension {
         } else if (localName.equals("primary")) {
           Boolean pr = parseBooleanValue(value);
           primary = (pr != null) ? pr : false;
+        } else if (localName.equals("displayName")) {
+          displayName = value;
         }
       }
     }

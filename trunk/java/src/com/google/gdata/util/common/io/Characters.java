@@ -55,9 +55,9 @@ public final class Characters {
    * @param value the string to read
    * @return the factory
    */
-  public static IoSupplier<StringReader> newReaderSupplier(final String value) {
-    return new IoSupplier<StringReader>() {
-      public StringReader get() {
+  public static InputSupplier<StringReader> newReaderSupplier(final String value) {
+    return new InputSupplier<StringReader>() {
+      public StringReader getInput() {
         return new StringReader(value);
       }
     };
@@ -71,11 +71,11 @@ public final class Characters {
    * @param charset the character set used to decode the input stream
    * @return the factory
    */
-  public static IoSupplier<InputStreamReader> newReaderSupplier(
-      final IoSupplier<? extends InputStream> in, final Charset charset) {
-    return new IoSupplier<InputStreamReader>() {
-      public InputStreamReader get() throws IOException {
-        return new InputStreamReader(in.get(), charset);
+  public static InputSupplier<InputStreamReader> newReaderSupplier(
+      final InputSupplier<? extends InputStream> in, final Charset charset) {
+    return new InputSupplier<InputStreamReader>() {
+      public InputStreamReader getInput() throws IOException {
+        return new InputStreamReader(in.getInput(), charset);
       }
     };
   }
@@ -88,11 +88,11 @@ public final class Characters {
    * @param charset the character set used to encode the output stream
    * @return the factory
    */
-  public static IoSupplier<OutputStreamWriter> newWriterSupplier(
-      final IoSupplier<? extends OutputStream> out, final Charset charset) {
-    return new IoSupplier<OutputStreamWriter>() {
-      public OutputStreamWriter get() throws IOException {
-        return new OutputStreamWriter(out.get(), charset);
+  public static OutputSupplier<OutputStreamWriter> newWriterSupplier(
+      final OutputSupplier<? extends OutputStream> out, final Charset charset) {
+    return new OutputSupplier<OutputStreamWriter>() {
+      public OutputStreamWriter getOutput() throws IOException {
+        return new OutputStreamWriter(out.getOutput(), charset);
       }
     };
   }
@@ -108,12 +108,12 @@ public final class Characters {
    * @throws IOException if an I/O error occurs
    */
   public static <R extends Readable & Closeable,
-      W extends Appendable & Closeable> long copy(IoSupplier<R> from,
-      IoSupplier<W> to) throws IOException {
+      W extends Appendable & Closeable> long copy(InputSupplier<R> from,
+      OutputSupplier<W> to) throws IOException {
     boolean threw = true;
-    R in = from.get();
+    R in = from.getInput();
     try {
-      W out = to.get();
+      W out = to.getOutput();
       try {
         long count = copy(in, out);
         threw = false;
@@ -136,10 +136,10 @@ public final class Characters {
    * @return the number of characters copied
    * @throws IOException if an I/O error occurs
    */
-  public static <R extends Readable & Closeable> long copy(IoSupplier<R> from,
+  public static <R extends Readable & Closeable> long copy(InputSupplier<R> from,
       Appendable to) throws IOException {
     boolean threw = true;
-    R in = from.get();
+    R in = from.getInput();
     try {
       long count = copy(in, to);
       threw = false;
@@ -194,7 +194,7 @@ public final class Characters {
    * @throws IOException if an I/O error occurs
    */
   public static <R extends Readable & Closeable> String toString(
-      IoSupplier<R> supplier) throws IOException {
+      InputSupplier<R> supplier) throws IOException {
     return toStringBuilder(supplier).toString();
   }
 
@@ -220,9 +220,9 @@ public final class Characters {
    * @throws IOException if an I/O error occurs
    */
   private static <R extends Readable & Closeable> StringBuilder toStringBuilder(
-      IoSupplier<R> supplier) throws IOException {
+      InputSupplier<R> supplier) throws IOException {
     boolean threw = true;
-    R r = supplier.get();
+    R r = supplier.getInput();
     try {
       StringBuilder result = toStringBuilder(r);
       threw = false;
@@ -242,9 +242,9 @@ public final class Characters {
    * @throws IOException if an I/O error occurs
    */
   public static <R extends Readable & Closeable> String readFirstLine(
-      IoSupplier<R> supplier) throws IOException {
+      InputSupplier<R> supplier) throws IOException {
     boolean threw = true;
-    R r = supplier.get();
+    R r = supplier.getInput();
     try {
       String line = new LineReader(r).readLine();
       threw = false;
@@ -264,9 +264,9 @@ public final class Characters {
    * @throws IOException if an I/O error occurs
    */
   public static <R extends Readable & Closeable> List<String> readLines(
-      IoSupplier<R> supplier) throws IOException {
+      InputSupplier<R> supplier) throws IOException {
     boolean threw = true;
-    R r = supplier.get();
+    R r = supplier.getInput();
     try {
       List<String> result = readLines(r);
       threw = false;
@@ -314,18 +314,18 @@ public final class Characters {
    * @return a supplier that will return a reader containing the concatenated
    *     data
    */
-  public static IoSupplier<Reader> join(
-      final Iterable<? extends IoSupplier<? extends Reader>> suppliers) {
-    return new IoSupplier<Reader>() {
-      public Reader get() throws IOException {
+  public static InputSupplier<Reader> join(
+      final Iterable<? extends InputSupplier<? extends Reader>> suppliers) {
+    return new InputSupplier<Reader>() {
+      public Reader getInput() throws IOException {
         return new MultiReader(suppliers.iterator());
       }
     };
   }
 
   /** Varargs form of {@link #join(Iterable)}. */
-  public static IoSupplier<Reader> join(
-      IoSupplier<? extends Reader>... suppliers) {
+  public static InputSupplier<Reader> join(
+      InputSupplier<? extends Reader>... suppliers) {
     return join(Arrays.asList(suppliers));
   }
 

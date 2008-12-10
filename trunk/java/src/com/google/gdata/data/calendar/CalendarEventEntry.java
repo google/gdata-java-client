@@ -44,6 +44,14 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
         ExtendedProperty.getDefaultDescription());
     extProfile.declare(CalendarEventEntry.class,
         SendEventNotificationsProperty.getDefaultDescription());
+    extProfile.declare(CalendarEventEntry.class,
+        IcalUIDProperty.getDefaultDescription());
+    extProfile.declare(CalendarEventEntry.class,
+        SequenceNumberProperty.getDefaultDescription());
+    extProfile.declare(CalendarEventEntry.class,
+        SyncEventProperty.getDefaultDescription());
+    extProfile.declare(CalendarEventEntry.class,
+        PrivateCopyProperty.getDefaultDescription(false, false));
 
     // Override gd:who processing for calender events to handle extended
     // semantics
@@ -105,6 +113,35 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
   }
 
   /**
+   * If the event needs to be synced i.e., the Ical UID and Sequence number
+   * need to be honored.
+   */
+  public boolean isSyncEvent() {
+    SyncEventProperty syncEvent = getExtension(SyncEventProperty.class);
+    return (syncEvent != null) && "true".equalsIgnoreCase(syncEvent.getValue());
+  }
+
+  /**
+   * Set whether the event needs to be synced i.e., the Ical UID and Sequence
+   * number need to be honored.
+   */
+  public void setSyncEvent(boolean syncEvent) {
+    setExtension(syncEvent ? SyncEventProperty.TRUE : SyncEventProperty.FALSE);
+  }
+
+  /** Whether this is a private copy of the event. */
+  public boolean isPrivateCopy() {
+    PrivateCopyProperty privateCopy = getExtension(PrivateCopyProperty.class);
+    return (privateCopy != null) && privateCopy.getValue();
+  }
+
+  /** Set whether this is a private copy of the event. */
+  public void setPrivateCopy(boolean privateCopy) {
+    setExtension(privateCopy ? PrivateCopyProperty.TRUE
+                             : PrivateCopyProperty.FALSE);
+  }
+
+  /**
    * Whether to send event notifications or not. Default is to not send
    * notifications to the other participants.
    */
@@ -124,8 +161,51 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
   }
 
   /**
+   * Returns the Ical UID(RFC 2445) of the event if it exists otherwise returns
+   * null.
+   */
+  public String getIcalUID() {
+    IcalUIDProperty uid = getExtension(IcalUIDProperty.class);
+    return uid == null ? null : uid.getValue();
+  }
+
+  /**
+   * Sets the Ical UID(RFC 2445) of the event.
+   * Note: Setting uid to null deletes the value.
+   */
+  public void setIcalUID(String uid) {
+    if (uid == null) {
+      removeExtension(IcalUIDProperty.class);
+    } else {
+      setExtension(new IcalUIDProperty(uid));
+    }
+  }
+
+  /**
+   * Returns whether a sequence number is present.
+   */
+  public boolean hasSequence() {
+    return hasExtension(SequenceNumberProperty.class);
+  }
+
+  /**
+   * Returns the sequence number of the event or 0 if not set.
+   */
+  public int getSequence() {
+    SequenceNumberProperty seq = getExtension(SequenceNumberProperty.class);
+    // Absence of sequence number implies that sequence number is 0.
+    return seq == null ? 0 : Integer.parseInt(seq.getValue());
+  }
+
+  /**
+   * Sets the sequence number of the event.
+   */
+  public void setSequence(int sequence) {
+    setExtension(new SequenceNumberProperty(String.valueOf(sequence)));
+  }
 
 
+  /**
    * Retrieves the web content link
    */
   public Link getWebContentLink() {

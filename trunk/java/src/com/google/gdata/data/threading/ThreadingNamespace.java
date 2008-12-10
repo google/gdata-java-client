@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.threading;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Threading.
@@ -37,7 +37,6 @@ public class ThreadingNamespace {
   public static final String THR_ALIAS = "thr";
 
   /** XML writer namespace for Atom threading extensions (THR) */
-  public static final XmlWriter.Namespace THR_NS = new
-      XmlWriter.Namespace(THR_ALIAS, THR);
+  public static final XmlNamespace THR_NS = new XmlNamespace(THR_ALIAS, THR);
 
 }

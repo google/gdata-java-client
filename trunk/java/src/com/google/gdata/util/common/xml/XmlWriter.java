@@ -132,52 +132,16 @@ public class XmlWriter {
   protected final Set<WriterFlags> flags;
 
   /**
-   * The Namespace class represents an XML Namespace that can be associated
-   * with elements or attributes.
+   * The Namespace class represents an XML Namespace that can be used in output
+   * with an XML writer.
+   * 
+   * @deprecated Use the {@link XmlNamespace} class instead.
    */
-  public static final class Namespace {
-
-    String alias;
-    final String uri;
-
-    /** Initializes a namespace. */
+  @Deprecated
+  public static final class Namespace extends XmlNamespace {
+    
     public Namespace(String alias, String uri) {
-      this.alias = alias;
-      this.uri = uri;
-    }
-
-    /**
-     * Returns the prefix alias for the namespace.
-     * @returns namespace alias.
-     */
-    public final String getAlias() { return alias; }
-
-    /**
-     * Returns the fully qualified URI for the namespace.
-     * @returns namespace URI.
-     */
-    public final String getUri() { return uri; }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (!(obj instanceof Namespace)) {
-        return false;
-      }
-      Namespace other = (Namespace) obj;
-      if (alias == null) {
-        return (other.alias == null) && uri.equals(other.uri);
-      } else {
-        return alias.equals(other.alias) && uri.equals(other.uri);
-      }
-    }
-
-    @Override
-    public int hashCode() {
-      if (alias == null) {
-        return uri.hashCode();
-      } else {
-        return alias.hashCode() & uri.hashCode();
-      }
+      super(alias, uri);
     }
   }
 
@@ -255,7 +219,7 @@ public class XmlWriter {
     /**
      *  Namespace declarations associated with this element.
      */
-    public List<Namespace> nsDecls;
+    public List<XmlNamespace> nsDecls;
 
     /**
      * Namespace prefix for the element.
@@ -324,7 +288,7 @@ public class XmlWriter {
      * create new elements.
      */
     protected Element(String nsAlias, String nsUri, String name) {
-      nsDecls = new ArrayList<Namespace>();
+      nsDecls = new ArrayList<XmlNamespace>();
       this.nsAlias = nsAlias;
       this.nsUri = nsUri;
       this.name = name;
@@ -333,7 +297,7 @@ public class XmlWriter {
     /**
      * Adds a namespace declaration to the element, avoiding duplicates.
      */
-    public void addNamespace(Namespace ns) {
+    public void addNamespace(XmlNamespace ns) {
       if (!nsDecls.contains(ns)) {
         nsDecls.add(ns);
       }
@@ -472,7 +436,7 @@ public class XmlWriter {
    * @param namespace the new namespace to set as the default at the start
    *                  of the next element.
    */
-  public void setDefaultNamespace(Namespace namespace) {
+  public void setDefaultNamespace(XmlNamespace namespace) {
     if (!namespace.uri.equals(defaultNamespace)) {
       nextDefaultNamespace = namespace.uri;
     }
@@ -526,9 +490,9 @@ public class XmlWriter {
    * @param   namespaceDecls extra namespace declarations. Can be {@code null}.
    * @throws  IOException thrown by the underlying writer.
    */
-  public void startElement(Namespace namespace, String name,
+  public void startElement(XmlNamespace namespace, String name,
                            Collection<Attribute> attrs,
-                           Collection<Namespace> namespaceDecls)
+                           Collection<? extends XmlNamespace> namespaceDecls)
       throws IOException {
 
     if (elementStack.size() == 1) {
@@ -565,14 +529,14 @@ public class XmlWriter {
     elementStack.push(element);
 
     if (nextDefaultNamespace != null) {
-      Namespace defaultNs = new Namespace(null, nextDefaultNamespace);
+      XmlNamespace defaultNs = new XmlNamespace(nextDefaultNamespace);
       defaultNamespace = nextDefaultNamespace;
       element.addNamespace(defaultNs);
       nextDefaultNamespace = null;
     }
 
     if (namespaceDecls != null) {
-      for (Namespace ns : namespaceDecls) {
+      for (XmlNamespace ns : namespaceDecls) {
         ensureNamespace(ns);
       }
     }
@@ -583,7 +547,7 @@ public class XmlWriter {
 
     writeOpenTagStart(element.nsAlias, name);
 
-    for (Namespace ns : element.nsDecls) {
+    for (XmlNamespace ns : element.nsDecls) {
       if (ns.alias != null && ns.alias.length() > 0) {
         writeAttribute("xmlns", ns.alias, ns.uri);  // xmlns:name=uri
       } else {
@@ -637,7 +601,8 @@ public class XmlWriter {
    * @param   namespace element namespace.
    * @param   name element name.
    */
-  public void endElement(Namespace namespace, String name) throws IOException {
+  public void endElement(XmlNamespace namespace, String name) 
+      throws IOException {
     Element element = currentElement();
     assert namespace == null || element.nsUri.equals(namespace.uri);
     assert element.name.equals(name);
@@ -705,7 +670,7 @@ public class XmlWriter {
    * @param   value element value. Can be {@code null}.
    * @throws  IOException thrown by the underlying writer.
    */
-  public void simpleElement(Namespace namespace, String name,
+  public void simpleElement(XmlNamespace namespace, String name,
       List<Attribute> attrs, String value) throws IOException {
 
     startElement(namespace, name, attrs, null);
@@ -726,7 +691,7 @@ public class XmlWriter {
 
       Element element = elementStack.get(i);
 
-      for (Namespace ns : element.nsDecls) {
+      for (XmlNamespace ns : element.nsDecls) {
         if (ns.alias != null && ns.uri.equals(namespaceUri)) {
           return ns.alias;
         }
@@ -779,7 +744,7 @@ public class XmlWriter {
    *
    * @return  namespace alias or {@code null} for the default namespace.
    */
-  protected String ensureNamespace(Namespace namespace) {
+  protected String ensureNamespace(XmlNamespace namespace) {
 
     // Return the default namespace if possible.  There is no need to add
     // here, as it has already been added (with a null alias) by startElement()
@@ -793,7 +758,7 @@ public class XmlWriter {
     // If not found, insert this namespace.
     if (alias == null) {
       Element current = currentElement();
-      ensureUniqueNamespaceAlias(current, namespace);
+      namespace = ensureUniqueNamespaceAlias(current, namespace);
       current.addNamespace(namespace);
       alias = namespace.alias;
     }
@@ -809,20 +774,23 @@ public class XmlWriter {
    * @param element the element to check.
    * @param namespace the XML namespace to ensure.
    */
-  private void ensureUniqueNamespaceAlias(Element element, Namespace namespace) {
+  private XmlNamespace ensureUniqueNamespaceAlias(Element element,
+      XmlNamespace namespace) {
     boolean unique;
     int serial = 0;
 
     do {
       unique = true;
-      for (Namespace ns : element.nsDecls) {
+      for (XmlNamespace ns : element.nsDecls) {
         if (namespace.alias.equals(ns.alias)) {
           unique = false;
-          namespace.alias = "ns" + String.valueOf(++serial);
+          namespace =
+              new XmlNamespace("ns" + String.valueOf(++serial), namespace.uri);
           break;
         }
       }
     } while (!unique);
+    return namespace;
   }
 
   /**
@@ -838,7 +806,7 @@ public class XmlWriter {
     // Walk the stack from the top to find an element with this ns alias.
     for (int i = elementStack.size() - 1; i >= 0; --i) {
       Element element = elementStack.get(i);
-      for (Namespace ns : element.nsDecls) {
+      for (XmlNamespace ns : element.nsDecls) {
         if (ns.getAlias().equals(nsAlias)) {
           return ns.getUri();
         }
@@ -868,7 +836,7 @@ public class XmlWriter {
 
   /**
    * Writes basic XML headers including XML version, standalone, and encoding.
-   * @param encoding the XML encoding for the output.  Can be {@code null}.
+   * @param enc the XML encoding for the output.  Can be {@code null}.
    * @throws  IOException thrown by the underlying writer.
    */
   protected void writeHeader(String enc) throws IOException {
@@ -898,7 +866,8 @@ public class XmlWriter {
    * @param name namespace-relative local name.
    * @throws IOException thrown by the underlying writer.
    */
-  protected void writeQualifiedName(String nsAlias, String name) throws IOException {
+  protected void writeQualifiedName(String nsAlias, String name) 
+      throws IOException {
 
     if (nsAlias != null && nsAlias.length() > 0) {
       writer.write(nsAlias);
@@ -1008,6 +977,8 @@ public class XmlWriter {
    * @throws IOException thrown by the underlying writer.
    */
   public void characters(String s) throws IOException {
+
+
     if (s == null) {
       return;
     }
@@ -1031,8 +1002,7 @@ public class XmlWriter {
   }
 
   /**
-   * Writes a string without XML entity escaping. Used by
-   * {@code com.google.gdata.util.XmlParser} to generate XML blobs.
+   * Writes a string without XML entity escaping.
    *
    * @param s the raw content to write without escaping.
    * @throws IOException thrown by the underlying writer.
@@ -1043,3 +1013,4 @@ public class XmlWriter {
     writer.write(s);
   }
 }
+

@@ -17,6 +17,7 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 
 /**
@@ -59,5 +60,32 @@ public class PlaylistLinkEntry extends FeedLinkEntry<PlaylistLinkEntry>{
   /** Gets the value of the private flag. */
   public boolean isPrivate() {
     return getExtension(YtPrivate.class) != null;
+  }
+  
+  /**
+   * Get the id of the playlist.
+   * @return the playlist id
+   */
+  public String getPlaylistId() {
+    YtPlaylistId playlistId = getExtension(YtPlaylistId.class);
+    return playlistId == null ? null : playlistId.getPlaylistId();
+  }  
+  
+  /**
+   * Set the id of the playlist. 
+   * @param playlistId the id of the playlist
+   */
+  public void setPlaylistId(String playlistId) {
+    if (playlistId != null) {
+      addExtension(new YtPlaylistId(playlistId));
+    } else {
+      removeExtension(YtPlaylistId.class);
+    }
+  }
+  
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    extProfile.declare(PlaylistLinkEntry.class, YtPlaylistId.class);
   }
 }

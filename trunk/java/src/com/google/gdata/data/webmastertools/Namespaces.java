@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.webmastertools;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.Category;
 
 /**
@@ -28,69 +28,75 @@ import com.google.gdata.data.Category;
 public final class Namespaces {
 
   /** Namespace URI for Webmaster Tools GData extensions */
-  public static final String WT_NAMESPACE_URI
+  public static final String WT
       = "http://schemas.google.com/webmasters/tools/2007";
 
   /** Namespace prefix for Webmaster Tools GData extensions */
-  public static final String WT_PREFIX = "wt";
+  public static final String WT_ALIAS = "wt";
+
+  /** Prefix for Webmaster Tools GData extensions */
+  public static final String WT_PREFIX = WT + "#";
 
   /**
    * Webmaster tools GData namespace.
    */
-  public static final XmlWriter.Namespace WT_NAMESPACE =
-      new XmlWriter.Namespace(
-          WT_PREFIX,
-          WT_NAMESPACE_URI);
+  public static final XmlNamespace WT_NAMESPACE =
+      new XmlNamespace(
+          WT_ALIAS,
+          WT);
+
+  /**
+   * Same as above, for compatibility with automatically generated feeds.
+   */
+  public static final XmlNamespace WT_NS = WT_NAMESPACE;
 
   /**
    * Category term linked to {@link SitesEntry}.
    */
   public static final String KIND_SITE_INFO
-      = WT_NAMESPACE_URI + "#site-info";
+      = WT + "#site-info";
 
   /**
    * Category term linked to {@link SitesFeed}.
    */
   public static final String KIND_SITES_FEED
-      = WT_NAMESPACE_URI + "#sites-feed";
+      = WT + "#sites-feed";
 
   /**
    * Category term linked to {@link SitemapsFeed}.
    */
   public static final String KIND_SITEMAPS_FEED
-      = WT_NAMESPACE_URI + "#sitemaps-feed";
+      = WT + "#sitemaps-feed";
 
   /**
    * Category term linked to {@link SitemapsEntry}. Represents regular sitemap.
    */
   public static final String KIND_SITEMAP_REGULAR
-      = WT_NAMESPACE_URI + "#sitemap-regular";
+      = WT + "#sitemap-regular";
 
   /**
    * Category term linked to {@link SitemapsEntry}. Represents mobile sitemap.
    */
   public static final String KIND_SITEMAP_MOBILE
-      = WT_NAMESPACE_URI + "#sitemap-mobile";
+      = WT + "#sitemap-mobile";
 
   /**
    * Category term linked to {@link SitemapsEntry}. Represents news sitemap.
    */
   public static final String KIND_SITEMAP_NEWS
-      = WT_NAMESPACE_URI + "#sitemap-news";
+      = WT + "#sitemap-news";
 
   /**
    * Category term linked to {@link MessageEntry}.
    */
   public static final String KIND_MESSAGE
-      = WT_NAMESPACE_URI + "#message";
+      = WT + "#message";
 
   /**
    * Category term linked to {@link MessagesFeed}.
    */
   public static final String KIND_MESSAGES_FEED
-      = WT_NAMESPACE_URI + "#messages-feed";
-
-  private Namespaces() {}
+      = WT + "#messages-feed";
 
   /**
    * Helper method to create {@link Category} objects.

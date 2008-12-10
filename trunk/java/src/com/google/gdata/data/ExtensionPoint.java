@@ -17,11 +17,11 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.base.Pair;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlBlob;
-import com.google.gdata.util.XmlNamespace;
 import com.google.gdata.util.XmlParser;
 import com.google.gdata.util.XmlParser.ElementHandler;
 
@@ -324,7 +324,7 @@ public class ExtensionPoint extends AbstractExtension {
     }
 
     if (manifest != null) {
-      for (XmlWriter.Namespace ns : manifest.getNamespaceDecls()) {
+      for (XmlNamespace ns : manifest.getNamespaceDecls()) {
         XmlNamespace newNs = new XmlNamespace(ns.getAlias(), ns.getUri());
         if (!namespaces.contains(newNs)) {
           namespaces.add(newNs);
@@ -418,7 +418,7 @@ public class ExtensionPoint extends AbstractExtension {
 
   @Override
   protected void generate(XmlWriter w, ExtensionProfile p,
-      XmlWriter.Namespace namespace, String localName,
+      XmlNamespace namespace, String localName,
       List<XmlWriter.Attribute> attrs, AttributeGenerator generator)
       throws IOException {
 
@@ -456,9 +456,9 @@ public class ExtensionPoint extends AbstractExtension {
    * XML blob may contain namespace declarations.
    */
   protected void generateStartElement(XmlWriter w,
-      XmlWriter.Namespace namespace, String elementName,
+      XmlNamespace namespace, String elementName,
       Collection<XmlWriter.Attribute> additionalAttrs,
-      Collection<XmlWriter.Namespace> additionalNs) throws IOException {
+      Collection<XmlNamespace> additionalNs) throws IOException {
 
     XmlBlob.startElement(w, namespace, elementName, xmlBlob, additionalAttrs,
         additionalNs);

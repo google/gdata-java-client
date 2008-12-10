@@ -45,6 +45,9 @@ public class ContactQuery extends Query {
   /** Order of entries in a feed.  Default value is {@link #NONE}. */
   public enum OrderBy {
 
+    /** Order the returned feed's entries by their &lt;app:edited&gt; values. */
+    EDITED("edited"),
+
     /** Order the returned feed's entries by their &lt;updated&gt; values. */
     LAST_MODIFIED("lastmodified"),
 

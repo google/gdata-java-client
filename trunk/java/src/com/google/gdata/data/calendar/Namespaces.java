@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.calendar;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Google Calendar.
@@ -37,7 +37,6 @@ public class Namespaces {
   public static final String gCalAlias = "gCal";
 
   /** XML writer namespace for Google Calendar (GCAL) */
-  public static final XmlWriter.Namespace gCalNs = new
-      XmlWriter.Namespace(gCalAlias, gCal);
+  public static final XmlNamespace gCalNs = new XmlNamespace(gCalAlias, gCal);
 
 }

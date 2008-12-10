@@ -16,6 +16,7 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
@@ -104,7 +105,7 @@ public class Person extends ExtensionPoint implements IPerson {
    */
   public void generate(ExtensionProfile extProfile,
                        XmlWriter w,
-                       XmlWriter.Namespace elementNamespace,
+                       XmlNamespace elementNamespace,
                        String elementName,
                        Collection<XmlWriter.Attribute> attributes)
       throws IOException {

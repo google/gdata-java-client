@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.calendar;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
@@ -55,7 +55,7 @@ public class CalendarEventFeed extends BaseEventFeed<CalendarEventFeed,
     super.declareExtensions(extProfile);
     extProfile.declare(CalendarEventFeed.class,
         new ExtensionDescription(TimeZoneProperty.class,
-        new XmlWriter.Namespace("gCal", "http://schemas.google.com/gCal/2005"),
+        new XmlNamespace("gCal", "http://schemas.google.com/gCal/2005"),
         "timezone", true, false, false));
     extProfile.declare(CalendarEventFeed.class, TimesCleanedProperty.class);
   }

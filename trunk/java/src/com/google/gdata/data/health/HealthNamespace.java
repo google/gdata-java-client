@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.health;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Health.
@@ -37,8 +37,7 @@ public class HealthNamespace {
   public static final String CCR_ALIAS = "ccr";
 
   /** XML writer namespace for Continuity of Care Record namespace (CCR) */
-  public static final XmlWriter.Namespace CCR_NS = new
-      XmlWriter.Namespace(CCR_ALIAS, CCR);
+  public static final XmlNamespace CCR_NS = new XmlNamespace(CCR_ALIAS, CCR);
 
   /** The h9 namespace (H9) namespace */
   public static final String H9 = "http://schemas.google.com/health/data";
@@ -62,23 +61,22 @@ public class HealthNamespace {
   public static final String H9M_ALIAS = "h9m";
 
   /** XML writer namespace for The h9 metadata namespace (H9M) */
-  public static final XmlWriter.Namespace H9M_NS = new
-      XmlWriter.Namespace(H9M_ALIAS, H9M);
+  public static final XmlNamespace H9M_NS = new XmlNamespace(H9M_ALIAS, H9M);
 
 
   /** The h9 namespace (H9) namespace alias */
   public static final String H9_ALIAS = "h9";
 
   /** XML writer namespace for The h9 namespace (H9) */
-  public static final XmlWriter.Namespace H9_NS = new
-      XmlWriter.Namespace(H9_ALIAS, H9);
+  public static final XmlNamespace H9_NS = new
+      XmlNamespace(H9_ALIAS, H9);
 
   /** The h9kinds namespace (H9KINDS) namespace alias */
   public static final String H9KINDS_ALIAS = "h9kinds";
 
   /** XML writer namespace for The h9kinds namespace (H9KINDS) */
-  public static final XmlWriter.Namespace H9KINDS_NS = new
-      XmlWriter.Namespace(H9KINDS_ALIAS, H9KINDS);
+  public static final XmlNamespace H9KINDS_NS = new
+      XmlNamespace(H9KINDS_ALIAS, H9KINDS);
 
   /** Link Rel for a complete url of an entry, indicating the smallest feed
    * containing the entry. */

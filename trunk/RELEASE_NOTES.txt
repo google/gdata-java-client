@@ -1,5 +1,22 @@
 Google Data API - Release Notes
 
+Notes for v1.27.0
+-----------------
+Dec 10, 2008
+o  Updated Contacts, Webmaster Tools Google Data APIs to use Version 2 of
+   Google Data Protocol. With this
+   change all requests from the above mentioned APIs will send requests with
+   the "GData-Version" http header set to "2.0".  If you need to request older
+   versions of the feed, you can do so by calling "{Property}Service#setProtocolVersion".
+o  Contacts Version 2 API has few breaking changes.  For details refer to
+   Contacts API version 2 migration guide at
+   http://code.google.com/apis/contacts/docs/2.0/migration_guide.html
+o  Webmaster Tools Version 2 API does not contain any new features.  But it
+   inherits all of the GData Protocol Version 2 core capabilities including
+   Etags and user of new opensearch namespace.
+o  Added new data model classes for Attendee Feed and Access Control Entry in
+   Calendar Data API.
+
 Notes for v1.26.0
 -----------------
 Nov 20, 2008

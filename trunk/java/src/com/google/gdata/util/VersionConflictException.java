@@ -57,11 +57,13 @@ public class VersionConflictException extends ServiceException {
 
   public VersionConflictException(ErrorDomain.ErrorCode errorCode) {
     super(errorCode);
+    setHttpErrorCodeOverride(HttpURLConnection.HTTP_CONFLICT);
   }
 
   public VersionConflictException(ErrorDomain.ErrorCode errorCode,
       Throwable cause) {
     super(errorCode, cause);
+    setHttpErrorCodeOverride(HttpURLConnection.HTTP_CONFLICT);
   }
 
 

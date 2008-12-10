@@ -102,7 +102,8 @@ public class SitemapsRegularEntry extends SitemapsEntry<SitemapsRegularEntry> {
     super.validate();
     
     if (getSitemapType() == null) {
-      throw new IllegalStateException(SITEMAP_TYPE + " is not set");
+      throw new IllegalStateException(SITEMAP_TYPE
+          + " is not set"); // COV_NF_LINE
     }
   }
   
@@ -110,8 +111,8 @@ public class SitemapsRegularEntry extends SitemapsEntry<SitemapsRegularEntry> {
    * Represents a single <sitemap-type> node that defines sitemap type.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = SITEMAP_TYPE)
   public static class SitemapType extends ValueConstruct {
     public SitemapType() {

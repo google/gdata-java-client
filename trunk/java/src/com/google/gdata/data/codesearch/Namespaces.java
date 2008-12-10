@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.codesearch;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Google Code Search.
@@ -37,7 +37,6 @@ public class Namespaces {
   public static final String gCSPrefix = "gcs";
 
   /** XML writer namespace for Google Code Search (GCS) */
-  public static final XmlWriter.Namespace gCSNs = new
-      XmlWriter.Namespace(gCSPrefix, gCS);
+  public static final XmlNamespace gCSNs = new XmlNamespace(gCSPrefix, gCS);
 
 }

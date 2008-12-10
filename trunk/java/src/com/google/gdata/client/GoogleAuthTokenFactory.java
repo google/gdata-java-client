@@ -26,8 +26,8 @@ import com.google.gdata.client.GoogleService.NotVerifiedException;
 import com.google.gdata.client.GoogleService.ServiceUnavailableException;
 import com.google.gdata.client.GoogleService.SessionExpiredException;
 import com.google.gdata.client.GoogleService.TermsNotAgreedException;
-import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
+import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
 import com.google.gdata.client.http.AuthSubUtil;
@@ -49,7 +49,7 @@ import java.util.Map;
 /**
  * A factory for creating Google authentication tokens (ClientLogin and
  * AuthSub).
- * 
+ *
  * 
  */
 public class GoogleAuthTokenFactory implements AuthTokenFactory {
@@ -160,25 +160,25 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
 
   /**
    * Encapsulates the OAuth information used by applications to login on behalf
-   * of a user.  This class generates an unique authorization header for each 
+   * of a user.  This class generates an unique authorization header for each
    * request.
    */
   public static class OAuthToken implements HttpAuthToken {
 
     OAuthParameters parameters;
     GoogleOAuthHelper oauthHelper;
-    
+
     /**
-     * Create a new {@link OAuthToken} object.  Store the 
-     * {@link OAuthParameters} and {@link OAuthSigner} to use when generating 
+     * Create a new {@link OAuthToken} object.  Store the
+     * {@link OAuthParameters} and {@link OAuthSigner} to use when generating
      * the header.  The following OAuth parameters are required:
      * <ul>
      * <li>oauth_consumer_key
      * <li>oauth_token
      * </ul>
-     * 
+     *
      * @param parameters the required OAuth parameters
-     * @param signer the {@link OAuthSigner} object to use when to generate the 
+     * @param signer the {@link OAuthSigner} object to use when to generate the
      *        OAuth signature.
      */
     public OAuthToken(OAuthParameters parameters, OAuthSigner signer) {
@@ -187,16 +187,16 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     }
 
     /**
-     * Generates the OAuth authorization header using the user's OAuth 
+     * Generates the OAuth authorization header using the user's OAuth
      * parameters, the request url and the request method.
-     * 
+     *
      * @param requestUrl the URL being requested
      * @param requestMethod the HTTP method of the request
      * @return the authorization header to be used for the request
      */
     public String getAuthorizationHeader(URL requestUrl, String requestMethod) {
       try {
-        return oauthHelper.getAuthorizationHeader(requestUrl.toString(), 
+        return oauthHelper.getAuthorizationHeader(requestUrl.toString(),
             requestMethod, parameters);
       } catch (OAuthException e) {
         throw new RuntimeException(e);
@@ -263,7 +263,7 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     this.tokenListener = tokenListener;
   }
 
-  
+
   /**
    * Sets the credentials of the user to authenticate requests to the server.
    *
@@ -348,22 +348,21 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
    * <li>oauth_consumer_key
    * <li>oauth_token
    * </ul>
-   * 
+   *
    * @param parameters the OAuth parameters to use to generated the header
    * @param signer the signing method to use for signing the header
-   * @throws OAuthException 
+   * @throws OAuthException
    */
-  public void setOAuthCredentials(OAuthParameters parameters, 
+  public void setOAuthCredentials(OAuthParameters parameters,
       OAuthSigner signer) throws OAuthException {
     // validate input parameters
     parameters.assertOAuthConsumerKeyExists();
-    parameters.assertOAuthTokenExists();
     setAuthToken(new OAuthToken(parameters, signer));
   }
 
   /**
    * Set the authentication token.
-   * 
+   *
    * @param authToken authentication token
    */
   public void setAuthToken(HttpAuthToken authToken) {
@@ -373,12 +372,12 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     }
   }
 
-  
+
   public HttpAuthToken getAuthToken() {
     return authToken;
   }
 
-  
+
   /**
    * Retrieves the authentication token for the provided set of credentials.
    *

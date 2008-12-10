@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.youtube;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * YouTube namespace definition.
@@ -32,8 +32,8 @@ public class YouTubeNamespace {
   public static final String PREFIX = "yt";
 
   /** Namespace object. */
-  public static final XmlWriter.Namespace NS =
-      new XmlWriter.Namespace(PREFIX, URI);
+  public static final XmlNamespace NS =
+      new XmlNamespace(PREFIX, URI);
 
   /**
    * Kind linked to {@link VideoEntry}.

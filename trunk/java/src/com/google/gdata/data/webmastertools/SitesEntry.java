@@ -382,8 +382,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
    * Boolean value construct to represent <indexed> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = INDEXED)
   public static class Indexed extends BoolValueConstruct {
     public Indexed() {
@@ -395,8 +395,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
    * Date/time value construct to represent <crawled> field. 
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = CRAWLED)
   public static class Crawled extends DateTimeValueConstruct {
     public Crawled() {
@@ -408,8 +408,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
    * Boolean value construct to represent <verified> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = VERIFIED)
   public static class Verified extends BoolValueConstruct {
     public Verified() {
@@ -421,8 +421,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
    * Region code value construct to represent <geolocation> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = GEOLOCATION)
   public static class Geolocation extends RegionCodeValueConstruct {
     public Geolocation() {
@@ -434,8 +434,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
    * Crawl Rate construct to represent <crawl-rate> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = CRAWL_RATE)
   public static class CrawlingRate extends CrawlRateConstruct {
     public CrawlingRate() {
@@ -447,8 +447,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
    * Domain Preference construct to represent <preferred-domain> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = PREFERRED_DOMAIN)
   public static class PreferredDomain extends DomainPreferenceConstruct {
     public PreferredDomain() {
@@ -460,8 +460,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
    * Boolean value construct to represent <enhanced-image-search> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = ENHANCED_IMAGE_SEARCH)
   public static class EnhancedImageSearch extends BoolValueConstruct {
     public EnhancedImageSearch() {

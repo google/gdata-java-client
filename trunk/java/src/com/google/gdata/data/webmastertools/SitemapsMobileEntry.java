@@ -108,8 +108,8 @@ public class SitemapsMobileEntry extends SitemapsEntry<SitemapsMobileEntry> {
    * Represents a single <sitemap-mobile-markup-language> node.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = MOBILE_MARKUP_LANG)
   public static class MarkupLanguage extends ValueConstruct {
     public MarkupLanguage() {

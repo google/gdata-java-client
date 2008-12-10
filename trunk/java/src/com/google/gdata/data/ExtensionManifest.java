@@ -17,7 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.base.Pair;
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,10 +86,9 @@ public class ExtensionManifest {
    * Retrieves a collection of namespace declarations for all possible
    * extensions based on this manifest.
    */
-  Collection<XmlWriter.Namespace> getNamespaceDecls() {
+  Collection<XmlNamespace> getNamespaceDecls() {
 
-    Collection<XmlWriter.Namespace> nsDecls =
-      new HashSet<XmlWriter.Namespace>();
+    Collection<XmlNamespace> nsDecls = new HashSet<XmlNamespace>();
 
     for (ExtensionDescription extDescription: supportedExtensions.values()) {
       nsDecls.add(extDescription.getNamespace());

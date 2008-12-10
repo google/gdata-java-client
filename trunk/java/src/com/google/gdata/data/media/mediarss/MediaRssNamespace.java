@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.media.mediarss;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
@@ -36,8 +36,7 @@ public class MediaRssNamespace {
   public static final String PREFIX = "media";
 
   /** Namespace object. */
-  public static final XmlWriter.Namespace NS =
-      new XmlWriter.Namespace(PREFIX, URI);
+  public static final XmlNamespace NS = new XmlNamespace(PREFIX, URI);
 
   /**
    * Description of extensions that can be used inside feed,

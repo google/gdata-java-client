@@ -16,6 +16,7 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ContentType;
@@ -242,8 +243,7 @@ public class Link extends ExtensionPoint implements ILink {
 
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(3);
-    List<XmlWriter.Namespace> nsDecls =
-      new ArrayList<XmlWriter.Namespace>();
+    List<XmlNamespace> nsDecls = new ArrayList<XmlNamespace>();
 
     if (rel != null) {
       attrs.add(new XmlWriter.Attribute("rel", rel));
