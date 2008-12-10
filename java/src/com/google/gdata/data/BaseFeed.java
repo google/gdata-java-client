@@ -16,8 +16,8 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.Service;
@@ -93,7 +93,7 @@ import java.util.Vector;
  * <p>
  * The BaseFeed class implements the {@link Kind.Adaptable} interface, meaning
  * it is possible to create new {@link Kind.Adaptor} subtypes that defines
- * a custom extension model (and associated convience APIs) for a BaseFeed
+ * a custom extension model (and associated convenience APIs) for a BaseFeed
  * subtypes that use Atom/RSS extensions to extend the content model for a
  * particular type of data.
  * <p>
@@ -537,12 +537,12 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    */
   public void generateFeedStart(ExtensionProfile extProfile,
                                 XmlWriter w,
-                                Collection<Namespace> namespaces) throws
+                                Collection<XmlNamespace> namespaces) throws
       IOException {
 
-    Namespace openSearchNs = Namespaces.getOpenSearchNs();
+    XmlNamespace openSearchNs = Namespaces.getOpenSearchNs();
 
-    Set<Namespace> nsDecls = new LinkedHashSet<Namespace>();
+    Set<XmlNamespace> nsDecls = new LinkedHashSet<XmlNamespace>();
     nsDecls.add(Namespaces.atomNs);
     nsDecls.add(openSearchNs);
     nsDecls.addAll(extProfile.getNamespaceDecls());
@@ -556,6 +556,12 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", feedState.etag));
     }
+    
+    // Add any attribute extensions.
+    AttributeGenerator generator = new AttributeGenerator();
+    putAttributes(generator);
+    generateAttributes(attrs, generator);
+    
     generateStartElement(w, Namespaces.atomNs, "feed", attrs, nsDecls);
 
     // Generate base feed elements
@@ -596,9 +602,9 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   public void generateRss(XmlWriter w,
                           ExtensionProfile extProfile) throws IOException {
 
-    Namespace openSearchNs = Namespaces.getOpenSearchNs();
+    XmlNamespace openSearchNs = Namespaces.getOpenSearchNs();
 
-    Vector<XmlWriter.Namespace> nsDecls = new Vector<XmlWriter.Namespace>();
+    Vector<XmlNamespace> nsDecls = new Vector<XmlNamespace>();
     nsDecls.add(Namespaces.atomNs);
     nsDecls.add(openSearchNs);
     nsDecls.addAll(extProfile.getNamespaceDecls());
@@ -797,7 +803,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   /** {@code <atom:feed>} parser. */
   public class FeedHandler extends SourceHandler {
 
-    private Namespace openSearchNs = Namespaces.getOpenSearchNs();
+    private XmlNamespace openSearchNs = Namespaces.getOpenSearchNs();
 
     public FeedHandler(ExtensionProfile extProfile) {
       super(extProfile, BaseFeed.this.getClass());

@@ -16,12 +16,13 @@
 
 package com.google.gdata.data.blogger;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.media.mediarss.MediaThumbnail;
+import com.google.gdata.data.threading.Total;
 
 /**
  * Describes a blog post entry.
@@ -54,9 +55,9 @@ public class PostEntry extends BaseEntry<PostEntry> {
     }
     super.declareExtensions(extProfile);
     extProfile.declare(PostEntry.class,
-        new ExtensionDescription(MediaThumbnail.class,
-        new XmlWriter.Namespace("media", "http://search.yahoo.com/mrss/"),
-        "thumbnail", false, false, false));
+        new ExtensionDescription(MediaThumbnail.class, new XmlNamespace("media",
+        "http://search.yahoo.com/mrss/"), "thumbnail", false, false, false));
+    extProfile.declare(PostEntry.class, Total.class);
   }
 
   /**
@@ -88,6 +89,37 @@ public class PostEntry extends BaseEntry<PostEntry> {
    */
   public boolean hasThumbnail() {
     return hasExtension(MediaThumbnail.class);
+  }
+
+  /**
+   * Returns the total.
+   *
+   * @return total
+   */
+  public Total getTotal() {
+    return getExtension(Total.class);
+  }
+
+  /**
+   * Sets the total.
+   *
+   * @param total total or <code>null</code> to reset
+   */
+  public void setTotal(Total total) {
+    if (total == null) {
+      removeExtension(Total.class);
+    } else {
+      setExtension(total);
+    }
+  }
+
+  /**
+   * Returns whether it has the total.
+   *
+   * @return whether it has the total
+   */
+  public boolean hasTotal() {
+    return hasExtension(Total.class);
   }
 
   /**

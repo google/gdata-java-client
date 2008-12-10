@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.spreadsheet;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Google Spreadsheets.
@@ -38,8 +38,8 @@ public class Namespaces {
   public static final String gSpreadAlias = "gs";
 
   /** XML writer namespace for Google Spreadsheets (GS) */
-  public static final XmlWriter.Namespace gSpreadNs = new
-      XmlWriter.Namespace(gSpreadAlias, gSpread);
+  public static final XmlNamespace gSpreadNs = new XmlNamespace(gSpreadAlias,
+      gSpread);
 
   /** Google Spreadsheets custom tag (GSX) namespace */
   public static final String gSpreadCustom =
@@ -52,8 +52,8 @@ public class Namespaces {
   public static final String gSpreadCustomAlias = "gsx";
 
   /** XML writer namespace for Google Spreadsheets custom tag (GSX) */
-  public static final XmlWriter.Namespace gSpreadCustomNs = new
-      XmlWriter.Namespace(gSpreadCustomAlias, gSpreadCustom);
+  public static final XmlNamespace gSpreadCustomNs = new
+      XmlNamespace(gSpreadCustomAlias, gSpreadCustom);
 
   /** Gviz data source for the worksheet (GVIZ) namespace */
   public static final String GVIZ =

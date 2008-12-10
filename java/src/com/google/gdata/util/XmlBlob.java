@@ -16,6 +16,7 @@
 
 package com.google.gdata.util;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 
 import java.io.IOException;
@@ -94,16 +95,16 @@ public class XmlBlob {
 
   /** Generates an element opening tag containing an XML blob. */
   public static void startElement(XmlWriter w,
-                                  XmlWriter.Namespace namespace,
+                                  XmlNamespace namespace,
                                   String elementName,
                                   XmlBlob xml,
                                   Collection<XmlWriter.Attribute>
                                     additionalAttrs,
-                                  Collection<XmlWriter.Namespace> additionalNs)
+                                  Collection<XmlNamespace> additionalNs)
       throws IOException {
 
     Collection<XmlWriter.Attribute> attrs;
-    Collection<XmlWriter.Namespace> namespaces;
+    Collection<XmlNamespace> namespaces;
 
     if (xml != null) {
 
@@ -139,8 +140,8 @@ public class XmlBlob {
 
       } else {
 
-        namespaces = new ArrayList<XmlWriter.Namespace>(additionalNsSize +
-                                                        blobNamespaces.size());
+        namespaces = new ArrayList<XmlNamespace>(additionalNsSize +
+                                                 blobNamespaces.size());
 
         // Blob namespaces have to go first, because we depend on their aliases
         // being preserved. If an additional namespace has a conflicting alias,
@@ -148,8 +149,8 @@ public class XmlBlob {
         // alias, not the blob's.
 
         for (XmlNamespace blobNs : blobNamespaces) {
-          namespaces.add(new XmlWriter.Namespace(blobNs.getAlias(),
-                                                 blobNs.getUri()));
+          namespaces.add(new XmlNamespace(blobNs.getAlias(),
+                                          blobNs.getUri()));
         }
 
         if (additionalNs != null) {
@@ -168,7 +169,7 @@ public class XmlBlob {
 
   /** Generates an element closing tag containing an XML blob. */
   public static void endElement(XmlWriter w,
-                                XmlWriter.Namespace namespace,
+                                XmlNamespace namespace,
                                 String elementName,
                                 XmlBlob xml) throws IOException {
 

@@ -48,10 +48,6 @@ public abstract class BoolValueConstruct extends ValueConstruct {
       return false;
     }
 
-    if (!sameClassAs(rhs)) {
-      return false;
-    }
-
     BoolValueConstruct r = (BoolValueConstruct) rhs;
     return boolValue == r.boolValue;
   }

@@ -63,7 +63,7 @@ public class AppsForYourDomainClient {
       AppsForYourDomainClient.class.getName());
 
   private static final String APPS_FEEDS_URL_BASE =
-      "https://www.google.com/a/feeds/";
+      "https://apps-apis.google.com/a/feeds/";
   
   protected static final String SERVICE_VERSION = "2.0";
 

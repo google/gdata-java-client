@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.finance;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Google Finance.
@@ -37,7 +37,6 @@ public class FinanceNamespace {
   public static final String GF_ALIAS = "gf";
 
   /** XML writer namespace for Google Finance (GF) */
-  public static final XmlWriter.Namespace GF_NS = new
-      XmlWriter.Namespace(GF_ALIAS, GF);
+  public static final XmlNamespace GF_NS = new XmlNamespace(GF_ALIAS, GF);
 
 }

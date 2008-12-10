@@ -17,6 +17,7 @@
 package com.google.gdata.data;
 
 import com.google.gdata.util.common.base.Pair;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.client.CoreErrorDomain;
@@ -217,7 +218,7 @@ public class ExtensionProfile {
 
 
   /** Specifies additional top-level namespace declarations. */
-  public synchronized void declareAdditionalNamespace(XmlWriter.Namespace ns) {
+  public synchronized void declareAdditionalNamespace(XmlNamespace ns) {
     additionalNamespaces.add(ns);
   }
 
@@ -275,7 +276,7 @@ public class ExtensionProfile {
 
 
   /** Retrieves a collection of all namespaces used by this profile. */
-  public synchronized Collection<XmlWriter.Namespace> getNamespaceDecls() {
+  public synchronized Collection<XmlNamespace> getNamespaceDecls() {
 
     if (nsDecls == null) {
       nsDecls = computeNamespaceDecls();
@@ -291,8 +292,8 @@ public class ExtensionProfile {
 
 
   /** Additional namespaces. */
-  private Collection<XmlWriter.Namespace> additionalNamespaces =
-    new LinkedHashSet<XmlWriter.Namespace>();
+  private Collection<XmlNamespace> additionalNamespaces =
+    new LinkedHashSet<XmlNamespace>();
 
 
   /** Nested feed link profile. */
@@ -304,7 +305,7 @@ public class ExtensionProfile {
 
 
   /** Namespace declarations cache. */
-  private Collection<XmlWriter.Namespace> nsDecls = null;
+  private Collection<XmlNamespace> nsDecls = null;
 
 
   /** Profile supports auto-extension declaration */
@@ -392,9 +393,9 @@ public class ExtensionProfile {
   }
 
 
-  private synchronized Collection<XmlWriter.Namespace> computeNamespaceDecls() {
+  private synchronized Collection<XmlNamespace> computeNamespaceDecls() {
 
-    HashSet<XmlWriter.Namespace> result = new HashSet<XmlWriter.Namespace>();
+    HashSet<XmlNamespace> result = new HashSet<XmlNamespace>();
 
     result.addAll(additionalNamespaces);
 
@@ -420,8 +421,8 @@ public class ExtensionProfile {
 
     private ExtensionProfile configProfile;
     private ClassLoader configLoader;
-    private List<XmlWriter.Namespace> namespaces =
-              new ArrayList<XmlWriter.Namespace>();
+    private List<XmlNamespace> namespaces =
+              new ArrayList<XmlNamespace>();
 
     public Handler(ExtensionProfile configProfile, ClassLoader configLoader,
                    Attributes attrs) throws ParseException {
@@ -484,7 +485,7 @@ public class ExtensionProfile {
             throw pe;
           }
 
-          XmlWriter.Namespace declaredNs = new XmlWriter.Namespace(alias, uri);
+          XmlNamespace declaredNs = new XmlNamespace(alias, uri);
           namespaces.add(declaredNs);
           declareAdditionalNamespace(declaredNs);
           return new XmlParser.ElementHandler();
@@ -512,11 +513,11 @@ public class ExtensionProfile {
     private boolean arbitraryXml;
     private List<ExtensionDescription> extDescriptions =
       new ArrayList<ExtensionDescription>();
-    private List<XmlWriter.Namespace> namespaces;
+    private List<XmlNamespace> namespaces;
 
     public ExtensionPointHandler(ExtensionProfile configProfile,
                                  ClassLoader configLoader,
-                                 List<XmlWriter.Namespace> namespaces,
+                                 List<XmlNamespace> namespaces,
                                  Attributes attrs)
         throws ParseException {
 
@@ -638,7 +639,7 @@ public class ExtensionProfile {
     w.startElement(Namespaces.gdataConfigNs, "extensionProfile", epAttrs,
         nsDecls);
 
-    for (XmlWriter.Namespace namespace : additionalNamespaces) {
+    for (XmlNamespace namespace : additionalNamespaces) {
 
       List<Attribute> nsAttrs = new ArrayList<Attribute>();
       nsAttrs.add(new Attribute("alias", namespace.getAlias()));

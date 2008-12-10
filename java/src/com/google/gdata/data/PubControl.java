@@ -16,8 +16,8 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
@@ -40,7 +40,7 @@ import java.io.IOException;
 public class PubControl extends ExtensionPoint {
 
   private Boolean draft;
-  private Namespace atomPubNs = Namespaces.getAtomPubNs();
+  private XmlNamespace atomPubNs = Namespaces.getAtomPubNs();
 
 
   /** Creates an empty app:control tag. */

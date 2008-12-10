@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.contacts;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionDescription;
@@ -71,12 +71,12 @@ public class ContactGroupEntry extends BaseEntry<ContactGroupEntry> {
     }
     super.declareExtensions(extProfile);
     extProfile.declare(ContactGroupEntry.class,
-        new ExtensionDescription(Deleted.class, new XmlWriter.Namespace("gd",
+        new ExtensionDescription(Deleted.class, new XmlNamespace("gd",
         "http://schemas.google.com/g/2005"), "deleted", false, false, false));
     extProfile.declare(ContactGroupEntry.class,
-        new ExtensionDescription(ExtendedProperty.class,
-        new XmlWriter.Namespace("gd", "http://schemas.google.com/g/2005"),
-        "extendedProperty", false, true, false));
+        new ExtensionDescription(ExtendedProperty.class, new XmlNamespace("gd",
+        "http://schemas.google.com/g/2005"), "extendedProperty", false, true,
+        false));
     extProfile.declare(ContactGroupEntry.class, SystemGroup.class);
   }
 

@@ -49,8 +49,8 @@ import java.util.Collection;
  * 
  */
 @ExtensionDescription.Default(
-    nsAlias = Namespaces.WT_PREFIX,
-    nsUri = Namespaces.WT_NAMESPACE_URI,
+    nsAlias = Namespaces.WT_ALIAS,
+    nsUri = Namespaces.WT,
     localName = SitemapMobile.SITEMAP_MOBILE)
 public class SitemapMobile extends ExtensionPoint {
 
@@ -120,7 +120,8 @@ public class SitemapMobile extends ExtensionPoint {
         return lang.getHandler(null, namespace, localName, attrs);
       }
 
-      return super.getChildHandler(namespace, localName, attrs);
+      // Handle the exceptional case, should never happen
+      return super.getChildHandler(namespace, localName, attrs); // COV_NF_LINE
     }
   }
 
@@ -131,8 +132,8 @@ public class SitemapMobile extends ExtensionPoint {
    * 
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = SITEMAP_MARKUP_LANG)
   static class MarkupLanguageConstruct extends ValueConstruct {
     public MarkupLanguageConstruct() {

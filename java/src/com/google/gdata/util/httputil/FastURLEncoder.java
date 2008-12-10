@@ -348,6 +348,7 @@ public class FastURLEncoder {
    *
    * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#cppUriEscaper()}
    */
+  @Deprecated
   public static final BitSet CPLUSPLUS_COMPAT_SAFE_OCTETS = new BitSet(256);
   static {
     CPLUSPLUS_COMPAT_SAFE_OCTETS.set('!');

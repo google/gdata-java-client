@@ -24,14 +24,14 @@ import java.util.Iterator;
 
 /**
  * A {@link Reader} that will concatenates multiple readers
- * 
+ *
  * 
  */
 class MultiReader extends Reader {
-  private final Iterator<? extends IoSupplier<? extends Reader>> it;
+  private final Iterator<? extends InputSupplier<? extends Reader>> it;
   private Reader current;
 
-  MultiReader(Iterator<? extends IoSupplier<? extends Reader>> readers)
+  MultiReader(Iterator<? extends InputSupplier<? extends Reader>> readers)
       throws IOException {
     this.it = readers;
     advance();
@@ -43,7 +43,7 @@ class MultiReader extends Reader {
   private void advance() throws IOException {
     close();
     if (it.hasNext()) {
-      current = it.next().get();
+      current = it.next().getInput();
     }
   }
 

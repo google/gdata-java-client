@@ -219,7 +219,6 @@ public class ServiceException extends Exception {
     }
   }
 
-
   /**
    * Set HTTP response type and body simultaneously.
    * They are inherently coupled together: a body without a content type

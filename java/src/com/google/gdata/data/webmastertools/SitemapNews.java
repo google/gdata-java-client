@@ -49,8 +49,8 @@ import java.util.Collection;
  * 
  */
 @ExtensionDescription.Default(
-    nsAlias = Namespaces.WT_PREFIX,
-    nsUri = Namespaces.WT_NAMESPACE_URI,
+    nsAlias = Namespaces.WT_ALIAS,
+    nsUri = Namespaces.WT,
     localName = SitemapNews.SITEMAP_NEWS)
 public class SitemapNews extends ExtensionPoint {
 
@@ -119,7 +119,8 @@ public class SitemapNews extends ExtensionPoint {
         return label.getHandler(null, namespace, localName, attrs);
       }
 
-      return super.getChildHandler(namespace, localName, attrs);
+      // Handle the exceptional case, should never happen
+      return super.getChildHandler(namespace, localName, attrs); // COV_NF_LINE
     }
   }
 
@@ -130,8 +131,8 @@ public class SitemapNews extends ExtensionPoint {
    * 
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = SITEMAP_PUBLICATION_LABEL)  
   static class PublicationLabelConstruct extends ValueConstruct {
     public PublicationLabelConstruct() {

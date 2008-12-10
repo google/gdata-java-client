@@ -46,10 +46,6 @@ public abstract class IntValueConstruct extends ValueConstruct {
       return false;
     }
 
-    if (!sameClassAs(rhs)) {
-      return false;
-    }
-
     IntValueConstruct r = (IntValueConstruct) rhs;
     return intValue == r.intValue;
   }

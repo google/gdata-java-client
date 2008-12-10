@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.geo.impl;
 
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.ValueConstruct;
 import com.google.gdata.data.geo.GeoLat;
 import com.google.gdata.data.geo.GeoLong;
@@ -36,7 +36,7 @@ public abstract class PointConstruct extends ValueConstruct implements Point {
   /**
    * Constructor to create an empty point object.
    */
-  public PointConstruct(Namespace namespace, String name) {
+  public PointConstruct(XmlNamespace namespace, String name) {
     super(namespace, name, null);
     setRequired(false);
   }
@@ -46,7 +46,7 @@ public abstract class PointConstruct extends ValueConstruct implements Point {
    * empy point if both values are null, if only one value is null with throw
    * an illegal argument exception.
    */
-  public PointConstruct(Namespace namespace, String name,
+  public PointConstruct(XmlNamespace namespace, String name,
       Double lat, Double lon) {
     super(namespace, name, null);
 
@@ -59,7 +59,7 @@ public abstract class PointConstruct extends ValueConstruct implements Point {
   /**
    * Copy constructor to create a point from another point.
    */
-  public PointConstruct(Namespace namespace, String name, Point copyFrom) {
+  public PointConstruct(XmlNamespace namespace, String name, Point copyFrom) {
     this(namespace, name, copyFrom == null ? null : copyFrom.getLatitude(),
         copyFrom == null ? null : copyFrom.getLongitude());
   }

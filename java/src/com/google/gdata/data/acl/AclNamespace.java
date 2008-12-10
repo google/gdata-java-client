@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.acl;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Access Control Lists (ACL's).
@@ -37,8 +37,7 @@ public class AclNamespace {
   public static final String gAclAlias = "gAcl";
 
   /** XML writer namespace for Google ACL */
-  public static final XmlWriter.Namespace gAclNs =
-      new XmlWriter.Namespace(gAclAlias, gAcl);
+  public static final XmlNamespace gAclNs = new XmlNamespace(gAclAlias, gAcl);
 
   /**
    * Link provides the URI of the feed for the access control list for the

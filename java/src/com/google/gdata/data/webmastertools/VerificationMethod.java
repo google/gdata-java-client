@@ -38,8 +38,8 @@ import com.google.gdata.util.ParseException;
  * 
  */
 @ExtensionDescription.Default(
-    nsAlias = Namespaces.WT_PREFIX,
-    nsUri = Namespaces.WT_NAMESPACE_URI,
+    nsAlias = Namespaces.WT_ALIAS,
+    nsUri = Namespaces.WT,
     localName = VerificationMethod.METHOD_NODE)
 public class VerificationMethod extends AbstractExtension {
 

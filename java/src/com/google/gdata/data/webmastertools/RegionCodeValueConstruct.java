@@ -52,10 +52,6 @@ public abstract class RegionCodeValueConstruct extends ValueConstruct {
       return false;
     }
 
-    if (!sameClassAs(rhs)) {
-      return false;
-    }
-
     return getValue().equals(((RegionCodeValueConstruct) rhs).getValue());
   }
 

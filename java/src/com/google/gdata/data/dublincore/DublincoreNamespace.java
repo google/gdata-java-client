@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.dublincore;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * GData namespace definitions related to Dublin Core Metadata Initiative.
@@ -40,7 +40,6 @@ public class DublincoreNamespace {
 
   /** XML writer namespace for Dublin Core Metadata Initiative,
    * http://dublincore.org (DC) */
-  public static final XmlWriter.Namespace DC_NS = new
-      XmlWriter.Namespace(DC_ALIAS, DC);
+  public static final XmlNamespace DC_NS = new XmlNamespace(DC_ALIAS, DC);
 
 }

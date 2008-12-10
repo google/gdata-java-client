@@ -47,10 +47,6 @@ public abstract class DateTimeValueConstruct extends ValueConstruct {
       return false;
     }
 
-    if (!sameClassAs(rhs)) {
-      return false;
-    }
-
     DateTimeValueConstruct r = (DateTimeValueConstruct) rhs;
     if (dateTimeValue == null) {
       return r.dateTimeValue == null;

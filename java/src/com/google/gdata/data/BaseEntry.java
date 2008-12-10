@@ -16,9 +16,9 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.Service;
@@ -59,7 +59,7 @@ import java.util.Vector;
  * <p>
  * The BaseEntry class implements the {@link Kind.Adaptable} interface, meaning
  * it is possible to create new {@link Kind.Adaptor} subtypes that defines
- * a custom extension model (and associated convience APIs) for a BaseEntry
+ * a custom extension model (and associated convenience APIs) for a BaseEntry
  * subtypes that use Atom/RSS extensions to extend the content model for a
  * particular type of data.
  * <p>
@@ -216,8 +216,8 @@ public abstract class BaseEntry<E extends BaseEntry>
 
   // Locally cache the atomPub namespace value, which is dynamic based upon
   // the in-use version but constant for any instance.
-  private Namespace atomPubNs;
-  private Namespace getAtomPubNs() {
+  private XmlNamespace atomPubNs;
+  private XmlNamespace getAtomPubNs() {
     if (atomPubNs == null) {
       atomPubNs = Namespaces.getAtomPubNs();
     }
@@ -704,8 +704,8 @@ public abstract class BaseEntry<E extends BaseEntry>
   public void generateAtom(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
 
-    Set<XmlWriter.Namespace> nsDecls =
-      new LinkedHashSet<XmlWriter.Namespace>(namespaceDeclsAtom);
+    Set<XmlNamespace> nsDecls =
+      new LinkedHashSet<XmlNamespace>(namespaceDeclsAtom);
     nsDecls.addAll(extProfile.getNamespaceDecls());
 
     ArrayList<XmlWriter.Attribute> attrs =
@@ -716,6 +716,11 @@ public abstract class BaseEntry<E extends BaseEntry>
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", state.etag));
     }
+    
+    // Add any attribute extensions.
+    AttributeGenerator generator = new AttributeGenerator();
+    putAttributes(generator);
+    generateAttributes(attrs, generator);
     
     generateStartElement(w, Namespaces.atomNs, "entry", attrs, nsDecls);
 
@@ -807,8 +812,7 @@ public abstract class BaseEntry<E extends BaseEntry>
   public void generateRss(XmlWriter w,
                           ExtensionProfile extProfile) throws IOException {
 
-    Vector<XmlWriter.Namespace> nsDecls =
-      new Vector<XmlWriter.Namespace>(namespaceDeclsRss);
+    Vector<XmlNamespace> nsDecls = new Vector<XmlNamespace>(namespaceDeclsRss);
     nsDecls.addAll(extProfile.getNamespaceDecls());
 
     generateStartElement(w, Namespaces.rssNs, "item", null, nsDecls);
@@ -891,11 +895,11 @@ public abstract class BaseEntry<E extends BaseEntry>
 
 
   /** Top-level namespace declarations for generated XML. */
-  private static final Collection<XmlWriter.Namespace> namespaceDeclsAtom =
-    new Vector<XmlWriter.Namespace>(1);
+  private static final Collection<XmlNamespace> namespaceDeclsAtom =
+    new Vector<XmlNamespace>(1);
 
-  private static final Collection<XmlWriter.Namespace> namespaceDeclsRss =
-    new Vector<XmlWriter.Namespace>(1);
+  private static final Collection<XmlNamespace> namespaceDeclsRss =
+    new Vector<XmlNamespace>(1);
 
   static {
     namespaceDeclsAtom.add(Namespaces.atomNs);

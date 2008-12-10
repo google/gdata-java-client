@@ -16,8 +16,8 @@
 
 package com.google.gdata.data.introspection;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
@@ -45,7 +45,7 @@ import java.util.List;
 public class ServiceDocument extends ExtensionPoint {
 
   // Locally cache the version-appropriate AtomPub namespace information.
-  private Namespace atomPubNs = Namespaces.getAtomPubNs();
+  private XmlNamespace atomPubNs = Namespaces.getAtomPubNs();
 
   /** The list of workspaces associated with the service */
   List<Workspace> workspaces = new ArrayList<Workspace>();

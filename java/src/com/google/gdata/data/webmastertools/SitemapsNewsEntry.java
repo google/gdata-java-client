@@ -110,8 +110,8 @@ public class SitemapsNewsEntry extends SitemapsEntry<SitemapsNewsEntry> {
    * label for News sitemap.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = NEWS_PUBLICATION_LABEL)
   public static class PublicationLabel extends ValueConstruct {
     public PublicationLabel() {

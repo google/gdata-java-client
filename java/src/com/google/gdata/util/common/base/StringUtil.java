@@ -314,7 +314,17 @@ public class StringUtil {
    * @param right strip from right
    * @param what character(s) to strip
    * @return the stripped string
+   * @deprecated ensure the string is not null and use 
+   *	<ul>
+   *		<li> {@code CharMatcher.anyOf(what).trimFrom(str)}
+   *	if {@code left == true} and {@code right == true}
+   *		<li> {@code CharMatcher.anyOf(what).trimLeadingFrom(str)}
+   *	if {@code left == true} and {@code right == false}
+   *		<li> {@code CharMatcher.anyOf(what).trimTrailingFrom(str)}
+   *	if {@code left == false} and {@code right == true}
+   *	</ul>
    */
+  @Deprecated
   public static String megastrip(String str,
                                  boolean left, boolean right,
                                  String what) {
@@ -322,35 +332,41 @@ public class StringUtil {
       return null;
     }
 
-    int limitLeft = 0;
-    int limitRight = str.length() - 1;
-
-    while (left && limitLeft <= limitRight &&
-           what.indexOf(str.charAt(limitLeft)) >= 0) {
-      limitLeft ++;
+    CharMatcher matcher = CharMatcher.anyOf(what);
+    if (left) {
+	if (right) {
+	    return matcher.trimFrom(str);
+	}
+	return matcher.trimLeadingFrom(str);
+    } 
+    if (right) {
+	return matcher.trimTrailingFrom(str);
     }
-    while (right && limitRight>=limitLeft &&
-           what.indexOf(str.charAt(limitRight)) >= 0) {
-      limitRight --;
-    }
-
-    return str.substring(limitLeft, limitRight + 1);
+    return str;
   }
 
   /** lstrip - strips spaces from left
    * @param str what to strip
    * @return String the striped string
+   * @deprecated ensure the string is not null and use {@code
+   *     CharMatcher.LEGACY_WHITESPACE.trimLeadingFrom(str)}; also consider whether you
+   *     really want the legacy whitespace definition, or something more
+   *     standard like {@link CharMatcher#WHITESPACE}.
    */
-  public static String lstrip(String str) {
-    return megastrip(str, true, false, WHITE_SPACES);
+  @Deprecated public static String lstrip(String str) {
+      return (str == null) ? null : CharMatcher.LEGACY_WHITESPACE.trimLeadingFrom(str);
   }
 
   /** rstrip - strips spaces from right
    * @param str what to strip
    * @return String the striped string
+   * @deprecated ensure the string is not null and use {@code
+   *     CharMatcher.LEGACY_WHITESPACE.trimTrailingFrom(str)}; also consider whether you
+   *     really want the legacy whitespace definition, or something more
+   *     standard like {@link CharMatcher#WHITESPACE}.
    */
-  public static String rstrip(String str) {
-    return megastrip(str, false, true, WHITE_SPACES);
+  @Deprecated public static String rstrip(String str) {
+      return (str == null) ? null : CharMatcher.LEGACY_WHITESPACE.trimTrailingFrom(str);
   }
 
   /** strip - strips both ways
@@ -2885,3 +2901,5 @@ public class StringUtil {
         : capitalized + s.substring(1);
   }
 }
+
+

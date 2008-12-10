@@ -16,7 +16,7 @@
 
 package com.google.gdata.data;
 
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public abstract class EnumConstruct extends ValueConstruct {
    * Constructs a new EnumConstruct instance associated with a particular
    * XML representation and set of expected values.
    */
-  protected EnumConstruct(Namespace namespace,
+  protected EnumConstruct(XmlNamespace namespace,
                           String tagName,
                           String attrName,
                           Set<String> values) {
@@ -49,7 +49,7 @@ public abstract class EnumConstruct extends ValueConstruct {
    * is provided and it is not {@code null}, the constructed instance will
    * be initialized to the value and will be immutable.
    */
-  protected EnumConstruct(Namespace namespace,
+  protected EnumConstruct(XmlNamespace namespace,
                           String tagName,
                           String attrName,
                           Set<String> values,

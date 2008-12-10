@@ -50,7 +50,30 @@ public class PlaylistFeed extends BaseFeed<PlaylistFeed, PlaylistEntry> {
     super.declareExtensions(extProfile);
     extProfile.declareFeedExtension(YtPrivate.class);
     extProfile.declareFeedExtension(YouTubeMediaGroup.class);
+    extProfile.declare(PlaylistFeed.class, YtPlaylistId.class);
     new YouTubeMediaGroup().declareExtensions(extProfile);
+    
+  }
+  
+  /**
+   * Get the id of the playlist.
+   * @return the playlist id
+   */
+  public String getPlaylistId() {
+    YtPlaylistId playlistId = getExtension(YtPlaylistId.class);
+    return playlistId == null ? null : playlistId.getPlaylistId();
+  }  
+  
+  /**
+   * Set the id of the playlist. 
+   * @param playlistId the id of the playlist
+   */
+  public void setPlaylistId(String playlistId) {
+    if (playlistId != null) {
+      addExtension(new YtPlaylistId(playlistId));
+    } else {
+      removeExtension(YtPlaylistId.class);
+    }
   }
 
   /** Gets the private field of the feed. */

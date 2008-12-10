@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.appsforyourdomain;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * Google Apps for Your Domain namespace.
@@ -43,8 +43,8 @@ public class Namespaces {
       = APPS_PREFIX + "emailList.recipient";
  
   /** Google data XML writer namespace. */
-  public static final XmlWriter.Namespace APPS_NAMESPACE
-      = new XmlWriter.Namespace("apps", APPS);
+  public static final XmlNamespace APPS_NAMESPACE
+      = new XmlNamespace("apps", APPS);
   
   /** Google data rel's for migration API */
   public static final String OWNER_REL = APPS + "/rel/owner";

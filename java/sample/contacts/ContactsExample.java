@@ -81,6 +81,36 @@ public class ContactsExample {
   private static final String EXT_PROPERTY_FILE = "file:";
   private static final String EXT_PROPERTY_TEXT = "text:";
 
+  private enum SystemGroup {
+    MY_CONTACTS("Contacts", "My Contacts"),
+    FRIENDS("Friends", "Friends"),
+    FAMILY("Family", "Family"),
+    COWORKERS("Coworkers", "Coworkers");
+
+    private final String systemGroupId;
+    private final String prettyName;
+
+    SystemGroup(String systemGroupId, String prettyName) {
+      this.systemGroupId = systemGroupId;
+      this.prettyName = prettyName;
+    }
+
+    static SystemGroup fromSystemGroupId(String id) {
+      for(SystemGroup group : SystemGroup.values()) {
+        if (id.equals(group.systemGroupId)) {
+          return group;
+        }
+      }
+
+      throw new IllegalArgumentException("Unrecognized system group id: " + id);
+    }
+
+    @Override
+    public String toString() {
+      return prettyName;
+    }
+  }
+
   /**
    * Reusable componentiser that parses element specification.
    */
@@ -222,7 +252,8 @@ public class ContactsExample {
         + parameters.getUserName() + "/" + projection;
 
     feedUrl = new URL(url);
-    service = new ContactsService("Google-contactsExampleApp-1");
+    service = new ContactsService("Google-contactsExampleApp-2");
+
     String userName = parameters.getUserName();
     String password = parameters.getPassword();
     if (userName == null || password == null) {
@@ -237,8 +268,7 @@ public class ContactsExample {
    * @param parameters the parameters determining contact to delete.
    */
   private void deleteEntry(ContactsExampleParameters parameters)
-    throws IOException, ServiceException {
-    URL entryURL;
+      throws IOException, ServiceException {
     if (parameters.isGroupFeed()) {
       // get the Group then delete it
       ContactGroupEntry group = getGroupInternal(parameters.getId());
@@ -246,7 +276,7 @@ public class ContactsExample {
         System.err.println("No Group found with id: " + parameters.getId());
         return;
       }
-      entryURL = new URL(group.getEditLink().getHref());
+      group.delete();
     } else {
       // get the contact then delete them
       ContactEntry contact = getContactInternal(parameters.getId());
@@ -254,9 +284,8 @@ public class ContactsExample {
         System.err.println("No contact found with id: " + parameters.getId());
         return;
       }
-      entryURL = new URL(contact.getEditLink().getHref());
+      contact.delete();
     }
-    service.delete(entryURL);
   }
 
   /**
@@ -282,8 +311,7 @@ public class ContactsExample {
       if (group.hasExtendedProperties()) {
         extendedProperties.addAll(group.getExtendedProperties());
       }
-      URL entryUrl = new URL(canonicalGroup.getEditLink().getHref());
-      printGroup(service.update(entryUrl, canonicalGroup)); 
+      printGroup(canonicalGroup.update());
     } else {
       ContactEntry contact = buildContact(parameters);
       // get the contact then update it
@@ -336,8 +364,7 @@ public class ContactsExample {
         extendedProperties.addAll(contact.getExtendedProperties());
       }
 
-      URL entryUrl = new URL(canonicalContact.getEditLink().getHref());
-      printContact(service.update(entryUrl, canonicalContact));  
+      printContact(canonicalContact.update());
     }
   }
 
@@ -476,17 +503,15 @@ public class ContactsExample {
             property.getXmlBlob().getBlob());
       }
     }
-    if (contact.getLink("http://schemas.google.com/contacts/2008/rel#photo",
-        "image/*") != null) {
-      String photoLink = contact.getLink(
-          "http://schemas.google.com/contacts/2008/rel#photo", 
-          "image/*").getHref();
-      System.err.println("Photo Link:" + photoLink);
-    }
-    System.err.println("Edit-Photo link: " + contact.getLink(
-        "http://schemas.google.com/contacts/2008/rel#edit-photo", "image/*").getHref() );
+    Link photoLink = contact.getLink(
+        "http://schemas.google.com/contacts/2008/rel#photo", "image/*");
+    System.err.println("Photo link: " + photoLink.getHref());
+    String photoEtag = photoLink.getEtag();
+    System.err.println("  Photo ETag: "
+        + (photoEtag != null ? photoEtag : "(No contact photo uploaded)"));
     System.err.println("Self link: " + contact.getSelfLink().getHref());
     System.err.println("Edit link: " + contact.getEditLink().getHref());
+    System.err.println("ETag: " + contact.getEtag());
     System.err.println("-------------------------------------------\n");
   }
   
@@ -509,8 +534,20 @@ public class ContactsExample {
             property.getXmlBlob().getBlob());
       }
     }
+
+    System.err.print("Which System Group: ");
+    if (groupEntry.hasSystemGroup()) {
+      SystemGroup systemGroup = SystemGroup.fromSystemGroupId(groupEntry.getSystemGroup().getId());
+      System.err.println(systemGroup);
+    } else {
+      System.err.println("(Not a system group)");
+    }
+
     System.err.println("Self Link: " + groupEntry.getSelfLink().getHref());
-    System.err.println("Edit Link: " + groupEntry.getEditLink().getHref());
+    if (!groupEntry.hasSystemGroup()) {
+      // System groups are not modifiable, and thus don't have an edit link.
+      System.err.println("Edit Link: " + groupEntry.getEditLink().getHref());
+    }
     System.err.println("-------------------------------------------\n");
   }
 
@@ -642,10 +679,11 @@ public class ContactsExample {
       System.err.println(resultFeed.getTitle().getPlainText());
       for (ContactEntry entry : resultFeed.getEntries()) {
         printContact(entry);
-        // Get the photo if photolink is present
+        // Since 2.0, the photo link is always there, the presence of an actual
+        // photo is indicated by the presence of an ETag.
         Link photoLink = entry.getLink(
             "http://schemas.google.com/contacts/2008/rel#photo", "image/*");
-        if (photoLink != null) {
+        if (photoLink.getEtag() != null) {
           InputStream in = service.getStreamFromLink(photoLink);
           ByteArrayOutputStream out = new ByteArrayOutputStream();
           RandomAccessFile file = new RandomAccessFile(

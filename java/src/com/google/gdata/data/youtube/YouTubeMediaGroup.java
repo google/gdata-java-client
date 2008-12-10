@@ -194,7 +194,7 @@ public class YouTubeMediaGroup extends MediaGroup {
    * {@link #addContent(YouTubeMediaContent)} instead.
    *
    * @param content
-   * @exception IllegalArgumentException if {@code content} is not a
+   * @throws IllegalArgumentException if {@code content} is not a
    *   {@link YouTubeMediaContent}
    */
   @Override
@@ -269,7 +269,7 @@ public class YouTubeMediaGroup extends MediaGroup {
    * {@link #addRating(YouTubeMediaRating)} instead.
    *
    * @param rating
-   * @exception IllegalArgumentException if {@code rating} is not a
+   * @throws IllegalArgumentException if {@code rating} is not a
    *   {@link YouTubeMediaRating}
    */
   @Override
@@ -344,7 +344,7 @@ public class YouTubeMediaGroup extends MediaGroup {
    * {@link #addCredit(YouTubeMediaCredit)} instead.
    *
    * @param credit
-   * @exception IllegalArgumentException if {@code credit} is not a
+   * @throws IllegalArgumentException if {@code credit} is not a
    *   {@link YouTubeMediaCredit}
    */
   @Override

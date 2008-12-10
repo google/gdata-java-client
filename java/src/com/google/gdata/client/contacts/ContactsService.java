@@ -22,6 +22,8 @@ import com.google.gdata.client.Service;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.contacts.ContactFeed;
 import com.google.gdata.data.contacts.ContactGroupFeed;
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 /**
  * Extends the basic {@link GoogleService} abstraction to define a service that
@@ -42,6 +44,31 @@ public class ContactsService extends GoogleService {
    */
   public static final String CONTACTS_SERVICE_VERSION = "GContacts-Java/" +
       ContactsService.class.getPackage().getImplementationVersion();
+
+  /**
+   * GData versions supported by Google Contacts Service.
+   */
+  public static final class Versions {
+
+    /** Version 1 of the Contacts Data API. */
+    public static final Version V1 = new Version(ContactsService.class, "1.0",
+        Service.Versions.V1);
+
+    /** Version 2 of the Contacts Data API. */
+    public static final Version V2 = new Version(ContactsService.class, "2.0",
+        Service.Versions.V2);
+
+    /** Version 3 of the Contacts Data API. */
+    public static final Version V3 = new Version(ContactsService.class, "3.0",
+        Service.Versions.V2);
+
+  }
+
+  /**
+   * Default GData version used by the Google Contacts service.
+   */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(ContactsService.class, Versions.V2);
 
   /**
    * Constructs an instance connecting to the Google Contacts service for an
@@ -101,6 +128,13 @@ public class ContactsService extends GoogleService {
   @Override
   public String getServiceVersion() {
     return CONTACTS_SERVICE_VERSION + " " + super.getServiceVersion();
+  }
+
+  /**
+   * Returns the current GData version used by the Google Contacts service.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(ContactsService.class);
   }
 
   /**

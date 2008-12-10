@@ -48,7 +48,7 @@ import com.google.gdata.data.extensions.EntryLink;
  *
  * 
  */
-public class MessageEntry extends BaseEntry<SitesEntry> {
+public class MessageEntry extends BaseEntry<MessageEntry> {
 
   /**
    * Names for the XML nodes defined in the entry.
@@ -243,9 +243,9 @@ public class MessageEntry extends BaseEntry<SitesEntry> {
    * Value construct to represent <language> field.
    */
   @ExtensionDescription.Default(
-    nsAlias = Namespaces.WT_PREFIX,
-    nsUri = Namespaces.WT_NAMESPACE_URI,
-    localName = LANGUAGE)
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
+      localName = LANGUAGE)
   public static class LanguageExtension extends ValueConstruct {
     public LanguageExtension() {
       super(LANGUAGE);
@@ -256,8 +256,8 @@ public class MessageEntry extends BaseEntry<SitesEntry> {
    * Value construct to represent <subject> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = SUBJECT)
   public static class SubjectExtension extends ValueConstruct {
     public SubjectExtension() {
@@ -269,8 +269,8 @@ public class MessageEntry extends BaseEntry<SitesEntry> {
    * DateTimeValueConstruct to represent <date> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = DATE)
   public static class DateExtension extends DateTimeValueConstruct {
     public DateExtension() {
@@ -282,8 +282,8 @@ public class MessageEntry extends BaseEntry<SitesEntry> {
    * BoolValueConstruct to represent <read> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = READ)
   public static class ReadExtension extends BoolValueConstruct {
     public ReadExtension() {
@@ -295,8 +295,8 @@ public class MessageEntry extends BaseEntry<SitesEntry> {
    * Value construct to represent <body> field.
    */
   @ExtensionDescription.Default(
-      nsAlias = Namespaces.WT_PREFIX,
-      nsUri = Namespaces.WT_NAMESPACE_URI,
+      nsAlias = Namespaces.WT_ALIAS,
+      nsUri = Namespaces.WT,
       localName = BODY)
   public static class BodyExtension extends ValueConstruct {
     public BodyExtension() {

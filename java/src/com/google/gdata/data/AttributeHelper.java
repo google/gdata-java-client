@@ -22,9 +22,9 @@ import com.google.gdata.util.ParseException;
 import org.xml.sax.Attributes;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * Helps accessing tag attributes.
@@ -221,6 +221,11 @@ public class AttributeHelper {
     if (value == null) {
       return defaultValue;
     }
+    if ("INF".equals(value)) {
+      return Double.POSITIVE_INFINITY;
+    } else if ("-INF".equals(value)) {
+      return Double.NEGATIVE_INFINITY;
+    }
     try {
       return Double.parseDouble(value);
     } catch (NumberFormatException e) {
@@ -263,6 +268,11 @@ public class AttributeHelper {
     String value = consume(name, required);
     if (value == null) {
       return defaultValue;
+    }
+    if ("INF".equals(value)) {
+      return Float.POSITIVE_INFINITY;
+    } else if ("-INF".equals(value)) {
+      return Float.NEGATIVE_INFINITY;
     }
     try {
       return Float.parseFloat(value);

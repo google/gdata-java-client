@@ -60,10 +60,6 @@ public abstract class CrawlRateConstruct extends EnumConstruct {
       return false;
     }
 
-    if (!sameClassAs(rhs)) {
-      return false;
-    }
-
     return getValue().equals(((CrawlRateConstruct) rhs).getValue());
   }
 

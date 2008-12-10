@@ -56,6 +56,42 @@ public class AttributeGenerator extends LinkedHashMap<String, String> {
   }
 
   /**
+   * Associates the specified float value with the specified key in this map. If
+   * the map previously contained a mapping for this key, the old value is
+   * replaced.
+   *
+   * @param key   key with which the specified value is to be associated
+   * @param value float value to be associated with the specified key
+   */
+  public void put(String key, float value) {
+    if (value == Float.POSITIVE_INFINITY) {
+      put(key, "INF");
+    } else if (value == Float.NEGATIVE_INFINITY) {
+      put(key, "-INF");
+    } else {
+      put(key, Float.toString(value));
+    }
+  }
+
+  /**
+   * Associates the specified double value with the specified key in this map.
+   * If the map previously contained a mapping for this key, the old value is
+   * replaced.
+   *
+   * @param key   key with which the specified value is to be associated
+   * @param value double value to be associated with the specified key
+   */
+  public void put(String key, double value) {
+    if (value == Double.POSITIVE_INFINITY) {
+      put(key, "INF");
+    } else if (value == Double.NEGATIVE_INFINITY) {
+      put(key, "-INF");
+    } else {
+      put(key, Double.toString(value));
+    }
+  }
+
+  /**
    * Associates the specified Object's {@link #toString()} value with the
    * specified key in this map. If the map previously contained a mapping for
    * this key, the old value is replaced.
@@ -64,8 +100,18 @@ public class AttributeGenerator extends LinkedHashMap<String, String> {
    * @param value Object whose {@link #toString()} value is to be associated
    *              with the specified key or <code>null</code>
    */
-  public void put(String key, Object value) {
-    put(key, value == null ? null : value.toString());
+  public void put(String key, Object value) {    
+    if (value == null) {
+      super.put(key, null);
+    } else if (value instanceof Float) {
+      Float boxedFloat = (Float) value;
+      put(key, boxedFloat.floatValue());
+    } else if (value instanceof Double) {
+      Double boxedDouble = (Double) value;
+      put(key, boxedDouble.doubleValue());
+    } else {
+      put(key, value.toString());
+    }
   }
 
   /**

@@ -19,13 +19,11 @@ package com.google.gdata.util.common.io;
 import java.io.IOException;
 
 /**
- * A class that can supply objects of a single type. Similar to
- * {@link com.google.gdata.util.common.base.Supplier} except that the act of supplying may
- * throw an {@code IOException}.
+ * An factory for readable streams of bytes or characters.
  *
  * 
  * @param <T> the type of object being supplied
  */
-public interface IoSupplier<T> {
-  T get() throws IOException;
+public interface InputSupplier<T> {
+  T getInput() throws IOException;
 }

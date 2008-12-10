@@ -16,7 +16,7 @@
 
 package com.google.gdata.util;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.client.Service;
 
 
@@ -34,8 +34,7 @@ public final class Namespaces {
     "http://www.w3.org/XML/1998/namespace";
   
   /** XML writer namespace */
-  public static final XmlWriter.Namespace xmlNs =
-    new XmlWriter.Namespace("xml", xml);
+  public static final XmlNamespace xmlNs = new XmlNamespace("xml", xml);
 
 
   /** Atom namespace. */
@@ -43,8 +42,7 @@ public final class Namespaces {
     "http://www.w3.org/2005/Atom";
 
   /** Atom XML writer namespace, for assigning {@code atom:} prefix. */
-  public static final XmlWriter.Namespace atomNs =
-    new XmlWriter.Namespace("atom", atom);
+  public static final XmlNamespace atomNs = new XmlNamespace("atom", atom);
 
 
   /**
@@ -62,8 +60,8 @@ public final class Namespaces {
    * @deprecated Use {@link #getAtomPubNs()} instead.
    */
   @Deprecated
-  public static final XmlWriter.Namespace atomPubNs =
-    new XmlWriter.Namespace("app", atomPub);
+  public static final XmlNamespace atomPubNs =
+    new XmlNamespace("app", atomPub);
 
   /**
    * Atom Publishing Protocol (final) namespace.
@@ -80,21 +78,21 @@ public final class Namespaces {
    * @deprecated Use {@link #getAtomPubNs()} instead.
    */
   @Deprecated
-  public static final XmlWriter.Namespace atomPubStandardNs =
-    new XmlWriter.Namespace("app", atomPubStandard);
+  public static final XmlNamespace atomPubStandardNs =
+    new XmlNamespace("app", atomPubStandard);
 
   /**
    * Returns the XML writer namespace associated with the Atom Publishing
    * Protocol.
    */
-  public static final XmlWriter.Namespace getAtomPubNs() {
+  public static final XmlNamespace getAtomPubNs() {
     return Service.getVersion().isCompatible(Service.Versions.V1) ?
         atomPubNs :
         atomPubStandardNs;
   }
 
   /** RSS XML writer namespace. */
-  public static final XmlWriter.Namespace rssNs = null;
+  public static final XmlNamespace rssNs = null;
 
   /**
    * Amazon OpenSearch/RSS namespace.
@@ -111,8 +109,8 @@ public final class Namespaces {
    * @deprecated Use {@link #getOpenSearchNs()} instead.
    */
   @Deprecated
-  public static final XmlWriter.Namespace openSearchNs =
-    new XmlWriter.Namespace("openSearch", openSearch);
+  public static final XmlNamespace openSearchNs =
+    new XmlNamespace("openSearch", openSearch);
 
   /**
    * Amazon OpenSearch 1.1 namespace.
@@ -129,13 +127,13 @@ public final class Namespaces {
    * @deprecated Use {@link #getOpenSearchNs()} instead.
    */
   @Deprecated
-  public static final XmlWriter.Namespace openSearch1_1Ns =
-    new XmlWriter.Namespace("openSearch", openSearch1_1);
+  public static final XmlNamespace openSearch1_1Ns = 
+      new XmlNamespace("openSearch", openSearch1_1);
 
   /**
    * Returns the XML writer namespace associated with OpenSearch.
    */
-  public static final XmlWriter.Namespace getOpenSearchNs() {
+  public static final XmlNamespace getOpenSearchNs() {
     return Service.getVersion().isCompatible(Service.Versions.V1) ?
         openSearchNs :
         openSearch1_1Ns;
@@ -156,8 +154,8 @@ public final class Namespaces {
    * @deprecated Use {@link #getOpenSearchDescNs()} instead.
    */
   @Deprecated
-  public static final XmlWriter.Namespace openSearchDescNs =
-    new XmlWriter.Namespace("openSearchDesc", openSearchDesc);
+  public static final XmlNamespace openSearchDescNs =
+    new XmlNamespace("openSearchDesc", openSearchDesc);
 
   /**
    * Amazon OpenSearch 1.1 Description Document namespace.
@@ -174,13 +172,13 @@ public final class Namespaces {
    * @deprecated Use {@link #getOpenSearchDescNs()} instead.
    */
   @Deprecated
-  public static final XmlWriter.Namespace openSearchDesc1_1Ns =
-    new XmlWriter.Namespace("openSearchDesc", openSearchDesc1_1);
+  public static final XmlNamespace openSearchDesc1_1Ns =
+    new XmlNamespace("openSearchDesc", openSearchDesc1_1);
 
   /**
    * Returns the XML writer namespace associated with OpenSearch Description.
    */
-  public static final XmlWriter.Namespace getOpenSearchDescNs() {
+  public static final XmlNamespace getOpenSearchDescNs() {
     return Service.getVersion().isCompatible(Service.Versions.V1) ?
         openSearchDescNs :
         openSearchDesc1_1Ns;
@@ -190,8 +188,8 @@ public final class Namespaces {
   public static final String xhtml = "http://www.w3.org/1999/xhtml";
 
   /** XHTML XML writer namespace. */
-  public static final XmlWriter.Namespace xhtmlNs =
-    new XmlWriter.Namespace("xh", xhtml);
+  public static final XmlNamespace xhtmlNs =
+    new XmlNamespace("xh", xhtml);
 
 
   /** GData configuration namespace. */
@@ -199,8 +197,8 @@ public final class Namespaces {
     "http://schemas.google.com/gdata/config/2005";
 
   /** GData XML writer namespace. */
-  public static final XmlWriter.Namespace gdataConfigNs =
-    new XmlWriter.Namespace("gc", gdataConfig);
+  public static final XmlNamespace gdataConfigNs =
+    new XmlNamespace("gc", gdataConfig);
 
 
   /** Google data (GD) namespace */
@@ -209,16 +207,15 @@ public final class Namespaces {
   public static final String gAlias = "gd";
 
   /** Google data XML writer namespace. */
-  public static final XmlWriter.Namespace gNs =
-    new XmlWriter.Namespace(gAlias, g);
+  public static final XmlNamespace gNs =
+    new XmlNamespace(gAlias, g);
 
 
   /** Google data runtime namespace. */
   public static final String gr = gPrefix + "runtime";
 
   /** Google data runtime XML writer namespace. */
-  public static final XmlWriter.Namespace grNs =
-    new XmlWriter.Namespace("gr", gr);
+  public static final XmlNamespace grNs = new XmlNamespace("gr", gr);
 
 
   /** Google data kind scheme. */
@@ -227,8 +224,8 @@ public final class Namespaces {
   /** Google data batch feeds namespace. */
   public static final String batch = "http://schemas.google.com/gdata/batch";
   public static final String batchAlias = "batch";
-  public static final XmlWriter.Namespace batchNs =
-      new XmlWriter.Namespace(batchAlias, batch);
+  public static final XmlNamespace batchNs =
+      new XmlNamespace(batchAlias, batch);
 
   // Inflation and deflation methods.
   // These allow short names to be used instead of full URIs.
@@ -284,5 +281,4 @@ public final class Namespaces {
    public static String deflate(String uri) {
      return deflate(uri, gPrefix);
    }
-
 }

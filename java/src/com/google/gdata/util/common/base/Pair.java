@@ -24,6 +24,9 @@ import java.io.Serializable;
  * may not want to use this (or you may at least wish to subclass).
  *
  *
+
+ *
+ * <p>This class may be used with the Google Web Toolkit (GWT).
  *
  */
 public class Pair<A,B> implements Serializable, Cloneable {
@@ -61,10 +64,17 @@ public class Pair<A,B> implements Serializable, Cloneable {
       return (Pair<A,B>) super.clone();
     } catch (CloneNotSupportedException e) {
       throw new AssertionError(e);
+
+
+
+
+
     }
   }
 
   @Override public boolean equals(Object object) {
+
+
     if (object instanceof Pair<?,?>) {
       Pair<?,?> other = (Pair<?,?>) object;
       return eq(first, other.first) && eq(second, other.second);
@@ -99,3 +109,4 @@ public class Pair<A,B> implements Serializable, Cloneable {
     return (object == null) ? nullHash : object.hashCode();
   }
 }
+

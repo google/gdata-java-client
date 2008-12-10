@@ -16,9 +16,9 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
-import com.google.gdata.util.common.xml.XmlWriter.Namespace;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
@@ -49,7 +49,7 @@ public class ExtensionDescription extends ExtensionPoint
   /**
    * The namespace of the XML extension type.
    */
-  private Namespace namespace;
+  private XmlNamespace namespace;
 
   /**
    * Local name of the XML extension type. A value of '*'
@@ -148,7 +148,7 @@ public class ExtensionDescription extends ExtensionPoint
     }
     return new ExtensionDescription(
         extensionClass,
-        new XmlWriter.Namespace(defAnnot.nsAlias(), defAnnot.nsUri()),
+        new XmlNamespace(defAnnot.nsAlias(), defAnnot.nsUri()),
         defAnnot.localName(),
         defAnnot.isRequired(),
         defAnnot.isRepeatable(),
@@ -165,7 +165,7 @@ public class ExtensionDescription extends ExtensionPoint
    * values.
    */
   public ExtensionDescription(Class<? extends Extension> extensionClass,
-                              Namespace namespace,
+                              XmlNamespace namespace,
                               String localName,
                               boolean required,
                               boolean repeatable,
@@ -184,16 +184,16 @@ public class ExtensionDescription extends ExtensionPoint
    * simple element.
    */
   public ExtensionDescription(Class<? extends Extension> extensionClass,
-                              Namespace namespace,
+                              XmlNamespace namespace,
                               String localName) {
     this(extensionClass, namespace, localName, false, false, false);
   }
 
-  public void setNamespace(Namespace namespace) {
+  public void setNamespace(XmlNamespace namespace) {
     this.namespace = namespace;
   }
 
-  final public Namespace getNamespace() { return namespace; }
+  final public XmlNamespace getNamespace() { return namespace; }
 
   public void setLocalName(String localName) {
     this.localName = localName;
@@ -259,7 +259,7 @@ public class ExtensionDescription extends ExtensionPoint
   public class Handler extends ExtensionPoint.ExtensionHandler {
 
     public Handler(ExtensionProfile configProfile, ClassLoader configLoader,
-                   List<XmlWriter.Namespace> namespaces, Attributes attrs)
+                   List<XmlNamespace> namespaces, Attributes attrs)
         throws ParseException {
       super(configProfile, ExtensionDescription.class);
 
@@ -271,7 +271,7 @@ public class ExtensionDescription extends ExtensionPoint
 
       // Find the namespace in the list of declared NamespaceDescriptions.
       // The attribute value can match either the alias or the uri
-      for (XmlWriter.Namespace declaredNs : namespaces) {
+      for (XmlNamespace declaredNs : namespaces) {
         if (declaredNs.getAlias().equals(nsValue) ||
             declaredNs.getUri().equals(nsValue)) {
           namespace = declaredNs;
@@ -309,6 +309,7 @@ public class ExtensionDescription extends ExtensionPoint
             CoreErrorDomain.ERR.cantLoadExtensionClass, e);
         pe.setInternalReason("Unable to load extensionClass: " +
             extensionClassName);
+        throw pe;
       }
 
       Boolean bool = getBooleanAttribute(attrs, "required");

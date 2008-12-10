@@ -14,28 +14,26 @@
  */
 
 
-package com.google.gdata.util;
+package com.google.gdata.data.calendar;
 
 /**
- * XML namespace type used by {@link XmlBlob}.
+ * Defines a value for the realm attribute that is used only in the calendar
+ * API.
  *
  * 
  */
-public class XmlNamespace {
+public class CalendarExtendedProperty {
 
-  public XmlNamespace(String alias, String uri) {
-    this.alias = alias;
-    this.uri = uri;
+  /** Limit on who may see and modify this extended property. */
+  public static final class Realm {
+
+    /** Indicates that this extended property can be accessed or modified
+     * through the current calendar. */
+    public static final String CALENDAR = Namespaces.gCalPrefix + "calendar";
+
   }
 
-  /** Namespace alias. */
-  protected String alias;
-  public String getAlias() { return alias; }
-  public void setAlias(String v) { alias = v; }
+  /** Private constructor to ensure class is not instantiated. */
+  private CalendarExtendedProperty() {}
 
-  /** Namespace URI. */
-  protected String uri;
-  public String getUri() { return uri; }
-  public void setUri(String v) { uri = v; }
 }
-

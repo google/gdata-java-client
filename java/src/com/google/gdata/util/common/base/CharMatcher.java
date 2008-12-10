@@ -890,6 +890,50 @@ public abstract class CharMatcher implements Predicate<Character> {
   }
 
   /**
+   * Returns a substring of the input character sequence that omits all
+   * characters this matcher matches from the beginning of the
+   * string. For example: <pre> {@code
+   *
+   *   CharMatcher.anyOf("ab").trimLeadingFrom("abacatbab")}</pre>
+   *
+   * ... returns {@code "catbab"}.
+   */
+  public String trimLeadingFrom(CharSequence sequence) {
+    int len = sequence.length();
+    int first;
+
+    for (first = 0; first < len; first++) {
+      if (!matches(sequence.charAt(first))) {
+        break;
+      }
+    }
+
+    return sequence.subSequence(first, len).toString();
+  }
+
+  /**
+   * Returns a substring of the input character sequence that omits all
+   * characters this matcher matches from the end of the
+   * string. For example: <pre> {@code
+   *
+   *   CharMatcher.anyOf("ab").trimTrailingFrom("abacatbab")}</pre>
+   *
+   * ... returns {@code "abacat"}.
+   */
+  public String trimTrailingFrom(CharSequence sequence) {
+    int len = sequence.length();
+    int last;
+
+    for (last = len - 1; last >= 0; last--) {
+      if (!matches(sequence.charAt(last))) {
+        break;
+      }
+    }
+
+    return sequence.subSequence(0, last + 1).toString();
+  }
+
+  /**
    * Returns a string copy of the input character sequence, with each group of
    * consecutive characters that match this matcher replaced by a single
    * replacement character. For example: <pre>   {@code
@@ -972,5 +1016,6 @@ public abstract class CharMatcher implements Predicate<Character> {
     return matches(character);
   }
 }
+
 
 

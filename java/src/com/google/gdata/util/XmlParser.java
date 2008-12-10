@@ -16,6 +16,9 @@
 
 package com.google.gdata.util;
 
+
+
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 
 import com.google.gdata.client.CoreErrorDomain;
@@ -224,7 +227,7 @@ public class XmlParser extends DefaultHandler {
                                           String qualifiedName,
                                           String localName,
                                           Attributes attrs,
-                                          List<XmlWriter.Namespace> namespaces)
+                                          List<XmlNamespace> namespaces)
         throws ParseException, IOException {
       return getChildHandler(namespace, localName, attrs);
     }
@@ -496,12 +499,12 @@ public class XmlParser extends DefaultHandler {
    */
   private static class NamespaceDecl {
 
-    private NamespaceDecl(XmlWriter.Namespace ns) {
+    private NamespaceDecl(XmlNamespace ns) {
       this.ns = ns;
     }
 
     /** The declared namespace */
-    XmlWriter.Namespace ns;
+    XmlNamespace ns;
 
     /**
      * {@code true} if the namespace declaration occurs inside an XmlBlob.
@@ -521,8 +524,8 @@ public class XmlParser extends DefaultHandler {
    * Namespace declarations for the current element.
    * Valid during {@link #startElement}.
    */
-  ArrayList<XmlWriter.Namespace> elementNamespaces =
-    new ArrayList<XmlWriter.Namespace>();
+  ArrayList<XmlNamespace> elementNamespaces =
+    new ArrayList<XmlNamespace>();
 
 
   /**
@@ -889,7 +892,7 @@ public class XmlParser extends DefaultHandler {
 
       // Flag all namespace declarations on the current element as occurring
       // within a blob
-      for (XmlWriter.Namespace ns : elementNamespaces) {
+      for (XmlNamespace ns : elementNamespaces) {
         Stack<NamespaceDecl> nsDecls = namespaceMap.get(ns.getAlias());
         if (nsDecls != null && nsDecls.size() > 0) {
           nsDecls.peek().inBlob = true;
@@ -1055,7 +1058,7 @@ public class XmlParser extends DefaultHandler {
       namespaceMap.put(alias, mapping);
     }
 
-    XmlWriter.Namespace ns = new XmlWriter.Namespace(alias, uri);
+    XmlNamespace ns = new XmlNamespace(alias, uri);
     NamespaceDecl nsDecl = new NamespaceDecl(ns);
     mapping.push(nsDecl);
     elementNamespaces.add(ns);
@@ -1099,3 +1102,4 @@ public class XmlParser extends DefaultHandler {
     }
   }
 }
+
