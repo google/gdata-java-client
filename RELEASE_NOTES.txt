@@ -1,5 +1,16 @@
 Google Data API - Release Notes
 
+Notes for v1.29.0
+-----------------
+Jan 9, 2008
+o  Added support for AppsForYourDomain Groups API.
+
+Notes for v1.28.0
+-----------------
+Dec 17, 2008
+o  Fixed bug in com.google.gdata.util.common.base.CharMatcher which shows up
+   only when executing in eclipse with JDK 1.5.
+
 Notes for v1.27.0
 -----------------
 Dec 10, 2008

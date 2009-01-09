@@ -16,21 +16,23 @@
 
 package sample.appsforyourdomain;
 
-import sample.util.SimpleCommandLineParser;
-
 import com.google.gdata.client.appsforyourdomain.AppsForYourDomainQuery;
+import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.EmailListRecipientService;
 import com.google.gdata.client.appsforyourdomain.EmailListService;
 import com.google.gdata.client.appsforyourdomain.NicknameService;
 import com.google.gdata.client.appsforyourdomain.UserService;
+import sample.util.SimpleCommandLineParser;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.appsforyourdomain.AppsForYourDomainErrorCode;
 import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
 import com.google.gdata.data.appsforyourdomain.EmailList;
 import com.google.gdata.data.appsforyourdomain.Login;
-import com.google.gdata.data.appsforyourdomain.Nickname;
 import com.google.gdata.data.appsforyourdomain.Name;
+import com.google.gdata.data.appsforyourdomain.Nickname;
 import com.google.gdata.data.appsforyourdomain.Quota;
+import com.google.gdata.data.appsforyourdomain.generic.GenericEntry;
+import com.google.gdata.data.appsforyourdomain.generic.GenericFeed;
 import com.google.gdata.data.appsforyourdomain.provisioning.EmailListEntry;
 import com.google.gdata.data.appsforyourdomain.provisioning.EmailListFeed;
 import com.google.gdata.data.appsforyourdomain.provisioning.EmailListRecipientEntry;
@@ -64,7 +66,7 @@ public class AppsForYourDomainClient {
 
   private static final String APPS_FEEDS_URL_BASE =
       "https://apps-apis.google.com/a/feeds/";
-  
+
   protected static final String SERVICE_VERSION = "2.0";
 
   protected String domainUrlBase;
@@ -73,9 +75,18 @@ public class AppsForYourDomainClient {
   protected EmailListService emailListService;
   protected NicknameService nicknameService;
   protected UserService userService;
+  protected AppsGroupsService groupService;
+
+  /**
+   * Public getter for AppsGroupsService
+   * @return the groupService
+   */
+  public AppsGroupsService getGroupService() {
+    return groupService;
+  }
 
   protected final String domain;
-  
+
   protected AppsForYourDomainClient(String domain) {
     this.domain = domain;
     this.domainUrlBase = APPS_FEEDS_URL_BASE + domain + "/";
@@ -109,6 +120,9 @@ public class AppsForYourDomainClient {
     emailListRecipientService = new EmailListRecipientService(
         "gdata-sample-AppsForYourDomain-EmailListRecipientService");
     emailListRecipientService.setUserCredentials(adminEmail, adminPassword);
+
+    groupService = new AppsGroupsService(adminEmail, adminPassword, domain, 
+        "gdata-sample-AppsForYourDomain-AppsGroupService");
   }
 
   /**
@@ -123,6 +137,20 @@ public class AppsForYourDomainClient {
     String givenName = "Susan";
     String familyName = "Jones";
     String password = "123$$abc";
+
+    String testGroupName = "discuss_general";
+    String testGroupId = "newgroup-" + randomFactor;
+    String testGroupDescription = "Discuss";
+
+    String memberUserName = "john.doe." + randomFactor;
+    String memberFirstName = "John";
+    String memberLastName = "Doe";
+    String memberPassword = "123$$$abc";
+
+    String ownerUserName = "jane.doe." + randomFactor;
+    String ownerFirstName = "Jane";
+    String ownerLastName = "Doe";
+    String ownerPassword = "123$$$abc";
 
     UserEntry createdUserEntry =
         createUser(username, givenName, familyName, password);
@@ -183,6 +211,102 @@ public class AppsForYourDomainClient {
     LOGGER.log(Level.INFO,
         "User '" + username + "' is in the following emailLists: {" +
         emailLists.toString() + "}.");
+     //*/
+    LOGGER.log(Level.INFO, "Creating users for groups sample run");
+    createUser(memberUserName, memberFirstName, memberLastName, memberPassword);
+    createUser(ownerUserName, ownerFirstName, ownerLastName, ownerPassword);
+
+    GenericFeed groupsFeed = null;
+    GenericEntry groupsEntry = null;
+    Iterator<GenericEntry> groupsEntryIterator = null;
+
+    LOGGER.log(Level.INFO, "Creating group: " + testGroupId);
+    groupsEntry =
+        groupService.createGroup(testGroupId, testGroupName,
+            testGroupDescription, "");
+    LOGGER.log(Level.INFO, "Group created with following properties:\n"
+        + groupsEntry.getAllProperties());
+
+    groupsEntry =
+        groupService.addMemberToGroup(testGroupId, memberUserName);
+    LOGGER.log(Level.INFO, "Added member: \n" + groupsEntry.getAllProperties());
+
+    groupsEntry = groupService.addOwnerToGroup(testGroupId, ownerUserName);
+    LOGGER.log(Level.INFO, "Added owner: \n" + groupsEntry.getAllProperties());
+
+    groupsEntry =
+        groupService.updateGroup(testGroupId, testGroupName,
+            testGroupDescription + "Updated: ", "");
+    LOGGER.log(Level.INFO, "Updated group description:\n"
+        + groupsEntry.getAllProperties());
+
+    groupsFeed = groupService.retrieveAllMembers(testGroupId);
+    groupsEntryIterator = groupsFeed.getEntries().iterator();
+
+    StringBuffer members = new StringBuffer();
+
+    while (groupsEntryIterator.hasNext()) {
+      members.append(groupsEntryIterator.next().getProperty(
+          AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
+      if (groupsEntryIterator.hasNext()) {
+        members.append(", ");
+      }
+    }
+    LOGGER.log(Level.INFO, testGroupId + " has these members: "
+        + members.toString());
+
+    groupsFeed = groupService.retreiveGroupOwners(testGroupId);
+    groupsEntryIterator = groupsFeed.getEntries().iterator();
+
+    StringBuffer owners = new StringBuffer();
+    while (groupsEntryIterator.hasNext()) {
+      owners.append(groupsEntryIterator.next().getProperty(
+          AppsGroupsService.APPS_PROP_GROUP_EMAIL));
+      if (groupsEntryIterator.hasNext()) {
+        owners.append(", ");
+      }
+    }
+
+    LOGGER.log(Level.INFO, testGroupName + " has these owners: "
+        + owners.toString());
+    groupsFeed = groupService.retrieveAllGroups();
+    groupsEntryIterator = groupsFeed.getEntries().iterator();
+
+    StringBuffer groups = new StringBuffer();
+    while (groupsEntryIterator.hasNext()) {
+      groups.append(groupsEntryIterator.next().getProperty(
+          AppsGroupsService.APPS_PROP_GROUP_ID));
+      if (groupsEntryIterator.hasNext()) {
+        groups.append(", ");
+      }
+    }
+    LOGGER.log(Level.INFO, "Domain has these groups:\n" + groups.toString());
+
+    groupsFeed = groupService.retrieveGroups(memberUserName, true);
+    groupsEntryIterator = groupsFeed.getEntries().iterator();
+
+    groups = new StringBuffer();
+    while (groupsEntryIterator.hasNext()) {
+      groups.append(groupsEntryIterator.next().getProperty(
+          AppsGroupsService.APPS_PROP_GROUP_ID));
+      if (groupsEntryIterator.hasNext()) {
+        groups.append(", ");
+      }
+    }
+    LOGGER.log(Level.INFO, memberUserName + " is subscribed to these groups:\n"
+        + groups.toString());
+
+    boolean isMember = groupService.isMember(testGroupId, memberUserName);
+    LOGGER.log(Level.INFO, memberUserName + " is member of " + testGroupId
+        + "?: " + isMember);
+
+    boolean isOwner = groupService.isOwner(testGroupId, ownerUserName);
+    LOGGER.log(Level.INFO, ownerUserName + " is owner of " + testGroupId
+        + "?: " + isOwner);
+
+    groupService.deleteGroup(testGroupId);
+    deleteUser(memberUserName);
+    deleteUser(ownerUserName);
 
     // Delete the email list.
     deleteEmailList(emailList);
@@ -240,7 +364,7 @@ public class AppsForYourDomainClient {
   public UserEntry createUser(String username, String givenName,
       String familyName, String password, Integer quotaLimitInMb)
       throws AppsForYourDomainException, ServiceException, IOException {
-    
+
     return createUser(username, givenName, familyName, password, null, 
         quotaLimitInMb);
   }
@@ -263,8 +387,8 @@ public class AppsForYourDomainClient {
   public UserEntry createUser(String username, String givenName,
       String familyName, String password, String passwordHashFunction)
       throws AppsForYourDomainException, ServiceException, IOException {
-      
-      return createUser(username, givenName, familyName, password,
+
+    return createUser(username, givenName, familyName, password,
         passwordHashFunction, null);
   }
 
@@ -399,7 +523,7 @@ public class AppsForYourDomainClient {
 
     LOGGER.log(Level.INFO, "Retrieving one page of users"
         + (startUsername != null ? " starting at " + startUsername : "") + ".");
-    
+
     URL retrieveUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/");
     AppsForYourDomainQuery query = new AppsForYourDomainQuery(retrieveUrl);
     query.setStartUsername(startUsername);
@@ -489,7 +613,7 @@ public class AppsForYourDomainClient {
     URL updateUrl = new URL(domainUrlBase + "user/" + SERVICE_VERSION + "/" + username);
     return userService.update(updateUrl, userEntry);
   }
-  
+
   /**
    * Set admin privilege for user. Note that executing this method for a user
    * who is already an admin has no effect.
@@ -553,7 +677,7 @@ public class AppsForYourDomainClient {
       throws AppsForYourDomainException, ServiceException, IOException {
 
     LOGGER.log(Level.INFO, "Requiring " + username + " to change password at " +
-            "next login.");
+        "next login.");
 
     URL retrieveUrl = new URL(domainUrlBase + "user/"
         + SERVICE_VERSION + "/" + username);
@@ -658,7 +782,7 @@ public class AppsForYourDomainClient {
         + (startNickname != null ? " starting at " + startNickname : "") + ".");
 
     URL retrieveUrl = new URL(
-	domainUrlBase + "nickname/" + SERVICE_VERSION + "/");
+        domainUrlBase + "nickname/" + SERVICE_VERSION + "/");
     AppsForYourDomainQuery query = new AppsForYourDomainQuery(retrieveUrl);
     query.setStartNickname(startNickname);
     return nicknameService.query(query, NicknameFeed.class);
@@ -720,14 +844,18 @@ public class AppsForYourDomainClient {
 
   /**
    * Creates an empty email list.
-   * 
+   *
    * @param emailList The name of the email list you wish to create.
    * @return An EmailListEntry object of the newly created email list.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
    *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#createGroup(String,String,String,String)} 
+   *             with Groups instead.
    */
+  @Deprecated
   public EmailListEntry createEmailList(String emailList) 
       throws AppsForYourDomainException, ServiceException, IOException {
 
@@ -752,8 +880,12 @@ public class AppsForYourDomainClient {
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#retrieveGroups(String,boolean)} 
+   *             with Groups.instead
    */
+  @Deprecated
   public EmailListFeed retrieveEmailLists(String recipient)
       throws AppsForYourDomainException, ServiceException, IOException {
 
@@ -769,8 +901,8 @@ public class AppsForYourDomainClient {
   }
 
   /**
-   * Retrieves all email lists in domain.  This method may be very slow for
-   * domains with a large number of email lists.  Any changes to email lists,
+   * Retrieves all email lists in domain. This method may be very slow for
+   * domains with a large number of email lists. Any changes to email lists,
    * including creations and deletions, which are made after this method is
    * called may or may not be included in the Feed which is returned.
    *
@@ -778,8 +910,12 @@ public class AppsForYourDomainClient {
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#retrieveAllGroups()}
+   *             with Groups instead.
    */
+  @Deprecated
   public EmailListFeed retrieveAllEmailLists()
       throws AppsForYourDomainException, ServiceException, IOException {
 
@@ -805,22 +941,25 @@ public class AppsForYourDomainClient {
   }
 
   /**
-   * Retrieves one page (100) of email lists in domain.  Any changes to
-   * email lists, including creations and deletions, which are made after
-   * this method is called may or may not be included in the Feed which is
-   * returned.  If the optional startEmailListName parameter is specified, one
-   * page of email lists is returned which have names at or after
-   * startEmailListName as per ASCII value ordering with case-insensitivity.
-   * A value of null or empty string indicates you want results from the
-   * beginning of the list.
+   * Retrieves one page (100) of email lists in domain. Any changes to email
+   * lists, including creations and deletions, which are made after this method
+   * is called may or may not be included in the Feed which is returned. If the
+   * optional startEmailListName parameter is specified, one page of email lists
+   * is returned which have names at or after startEmailListName as per ASCII
+   * value ordering with case-insensitivity. A value of null or empty string
+   * indicates you want results from the beginning of the list.
    *
    * @param startEmailListName The starting point of the page (optional).
    * @return A EmailListFeed object of the retrieved email lists.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#retrievePageOfGroups(Link)}
+   *             with Groups instead.
    */
+  @Deprecated
   public EmailListFeed retrievePageOfEmailLists(String startEmailListName)
       throws AppsForYourDomainException, ServiceException, IOException {
 
@@ -828,22 +967,26 @@ public class AppsForYourDomainClient {
         + (startEmailListName != null ? " starting at " + startEmailListName : "") + ".");
 
     URL retrieveUrl = new URL(
-	domainUrlBase + "emailList/" + SERVICE_VERSION + "/");
+          domainUrlBase + "emailList/" + SERVICE_VERSION + "/");
     AppsForYourDomainQuery query = new AppsForYourDomainQuery(retrieveUrl);
     query.setStartEmailListName(startEmailListName);
     return emailListService.query(query, EmailListFeed.class);
   }
 
   /**
-   * Retrieves an email list.  
+   * Retrieves an email list.
    *
    * @param emailList The name of the email list you want to retrieve.
    * @return An EmailListEntry object of the retrieved email list.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#retrieveGroup(String)}
+   *             with Groups instead.
    */
+  @Deprecated
   public EmailListEntry retrieveEmailList(String emailList)
       throws AppsForYourDomainException, ServiceException, IOException {
 
@@ -855,13 +998,17 @@ public class AppsForYourDomainClient {
 
   /**
    * Deletes an email list.
-   * 
+   *
    * @param emailList The email list you with to delete.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
    *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#deleteGroup(String)}
+   *             with Groups instead.
    */
+  @Deprecated
   public void deleteEmailList(String emailList)
       throws AppsForYourDomainException, ServiceException, IOException {
 
@@ -883,7 +1030,11 @@ public class AppsForYourDomainClient {
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
    *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#retrieveAllMembers(String)}
+   *             with Groups instead.
    */
+  @Deprecated
   public EmailListRecipientFeed retrieveAllRecipients(String emailList)
       throws AppsForYourDomainException, ServiceException, IOException {
 
@@ -910,24 +1061,28 @@ public class AppsForYourDomainClient {
   }
 
   /**
-   * Retrieves one page (100) of recipients in an email list.  Changes to the
+   * Retrieves one page (100) of recipients in an email list. Changes to the
    * email list recipients including creations and deletions, which are made
    * after this method is called may or may not be included in the Feed which is
-   * returned.  If the optional startRecipient parameter is specified, one
-   * page of recipients is returned which have email addresses at or after
-   * startRecipient as per ASCII value ordering with case-insensitivity.
-   * A value of null or empty string indicates you want results from the
-   * beginning of the list.
+   * returned. If the optional startRecipient parameter is specified, one page
+   * of recipients is returned which have email addresses at or after
+   * startRecipient as per ASCII value ordering with case-insensitivity. A value
+   * of null or empty string indicates you want results from the beginning of
+   * the list.
    *
-   * @param emailList The name of the email list for which we are
-   * retrieving recipients.
+   * @param emailList The name of the email list for which we are retrieving
+   *        recipients.
    * @param startRecipient The starting point of the page (optional).
    * @return A EmailListRecipientFeed object of the retrieved recipients.
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#retrievePageOfMembers(Link)}
+   *             with Groups instead.
    */
+  @Deprecated
   public EmailListRecipientFeed retrievePageOfRecipients(String emailList,
       String startRecipient) throws AppsForYourDomainException,
       ServiceException, IOException {
@@ -944,7 +1099,7 @@ public class AppsForYourDomainClient {
 
   /**
    * Adds an email address to an email list.
-   * 
+   *
    * @param recipientAddress The email address you wish to add.
    * @param emailList The email list you wish to modify.
    * @return The EmailListRecipientEntry of the newly created email list
@@ -953,11 +1108,15 @@ public class AppsForYourDomainClient {
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
    *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#addMemberToGroup(String,String)}
+   *             with Groups instead.
    */
+  @Deprecated
   public EmailListRecipientEntry addRecipientToEmailList(
       String recipientAddress, String emailList)
       throws AppsForYourDomainException, ServiceException, IOException {
-   
+
     LOGGER.log(Level.INFO, "Adding '" + recipientAddress + "' to emailList '" + emailList + "'.");
 
     EmailListRecipientEntry emailListRecipientEntry = new EmailListRecipientEntry();
@@ -978,8 +1137,12 @@ public class AppsForYourDomainClient {
    * @throws AppsForYourDomainException If a Provisioning API specific occurs.
    * @throws ServiceException If a generic GData framework error occurs.
    * @throws IOException If an error occurs communicating with the GData
-   * service.
+   *         service.
+   * @deprecated Email lists have been replaced by Groups. Use
+   *             {@link AppsGroupsService#deleteMemberFromGroup(String,String)}
+   *             with Groups instead.
    */
+  @Deprecated
   public void removeRecipientFromEmailList(String recipientAddress,
       String emailList) throws AppsForYourDomainException, ServiceException,
       IOException {
