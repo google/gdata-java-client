@@ -332,17 +332,18 @@ public class StringUtil {
       return null;
     }
 
-    CharMatcher matcher = CharMatcher.anyOf(what);
-    if (left) {
-	if (right) {
-	    return matcher.trimFrom(str);
-	}
-	return matcher.trimLeadingFrom(str);
-    } 
-    if (right) {
-	return matcher.trimTrailingFrom(str);
+    int limitLeft = 0;
+    int limitRight = str.length() - 1;
+
+    while (left && limitLeft <= limitRight &&
+           what.indexOf(str.charAt(limitLeft)) >= 0) {
+      limitLeft ++;
     }
-    return str;
+    while (right && limitRight>=limitLeft &&
+           what.indexOf(str.charAt(limitRight)) >= 0) {
+      limitRight --;
+     }
+    return str.substring(limitLeft, limitRight + 1);
   }
 
   /** lstrip - strips spaces from left
@@ -2901,5 +2902,3 @@ public class StringUtil {
         : capitalized + s.substring(1);
   }
 }
-
-
