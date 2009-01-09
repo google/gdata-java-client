@@ -8,6 +8,12 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.29.0 ==
+   * Added support for !AppsForYourDomain Groups API.
+
+== 1.28.0 ==
+   * Fixed bug in com.google.gdata.util.common.base.CharMatcher which shows up only when executing in eclipse with JDK 1.5.
+
 == 1.27.0 ==
    * Updated Contacts, Webmaster Tools Google Data APIs to use Version 2 of Google Data Protocol. With this change all requests from the above mentioned APIs will send requests with the "GData-Version" http header set to "2.0".  If you need to request older versions of the feed, you can do so by calling "{Property}Service#setProtocolVersion".
    * Contacts Version 2 API has few breaking changes.  For details refer to Contacts API version 2 [http://code.google.com/apis/contacts/docs/2.0/migration_guide.html migration guide].
