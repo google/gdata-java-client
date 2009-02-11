@@ -8,6 +8,12 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.30.0 ==
+   * Updated ant build configuration to reduce build time by ~60%.  Thanks to "mchenryc" for this [http://code.google.com/p/gdata-java-client/issues/detail?id=82 contribution].
+   * Added support for ChannelFeed and UserEventFeed in YouTube Data API.
+   * Fixed batch support issue in YouTube Data API Feed classes.
+   * Fixed bug relaed to GoogleService#delete fails in case of redirection in GData Protocol version 2. See [http://code.google.com/p/gdata-java-client/issues/detail?id=82 bug] for details.
+
 == 1.29.0 ==
    * Added support for !AppsForYourDomain Groups API.
 
