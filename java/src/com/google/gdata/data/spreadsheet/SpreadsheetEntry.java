@@ -105,7 +105,7 @@ public class SpreadsheetEntry extends BaseEntry<SpreadsheetEntry> {
    * @return a string representing the URL for the worksheets feed
    */
   private String getWorksheetFeedUrlString() {
-    Version spreadsheetVersion = SpreadsheetService.getVersion();
+    Version spreadsheetVersion = state.service.getProtocolVersion();
 
     if (spreadsheetVersion.isCompatible(SpreadsheetService.Versions.V1)) {
       Link feedLink = this.getLink(Namespaces.WORKSHEETS_LINK_REL,

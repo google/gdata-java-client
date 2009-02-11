@@ -11,7 +11,7 @@
     value="${build.jars}/gdata-calendar-${calendar.spec.version}.jar"/>
 
 
-  <target name="build.calendar" depends="core.build.core.client">
+  <target name="build.calendar" depends="build.core.client">
     <antcall target="template.build.service">
       <param name="template.service.name" value="calendar"/>
       <param name="template.service.version" value="${calendar.spec.version}"/>

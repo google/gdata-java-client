@@ -11,7 +11,7 @@
     value="${build.jars}/gdata-blogger-${blogger.spec.version}.jar"/>
 
 
-  <target name="build.blogger" depends="core.build.core.media">
+  <target name="build.blogger" depends="build.core.media">
     <antcall target="template.build.service">
       <param name="template.service.name" value="blogger"/>
       <param name="template.service.version" value="${blogger.spec.version}"/>

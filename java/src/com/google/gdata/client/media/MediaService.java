@@ -16,6 +16,7 @@
 
 package com.google.gdata.client.media;
 
+import com.google.gdata.util.common.base.PercentEscaper;
 import com.google.gdata.client.AuthTokenFactory;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.GDataProtocol;
@@ -42,7 +43,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
 
 /**
  * The MediaService class extends the base {@link GoogleService} class to add
@@ -261,15 +261,13 @@ public class MediaService extends GoogleService {
     return getMedia(mediaContent, null);
   }
 
-
   /**
    * Initializes the attributes of a media request.
    */
-  private void initMediaRequest(MediaSource media, GDataRequest request)
-      throws IOException {
+  private void initMediaRequest(MediaSource media, GDataRequest request) {
     String name = media.getName();
     if (name != null) {
-      request.setHeader("Slug", MimeUtility.encodeText(name, "utf-8", null));
+      request.setHeader("Slug", escapeSlug(name));
     }
     if (chunkedBufferSize != NO_CHUNKED_MEDIA_REQUEST
         && request instanceof HttpGDataRequest) {
@@ -278,6 +276,22 @@ public class MediaService extends GoogleService {
     }
   }
 
+  /**
+   * An escaper for slug header values.  From the atom spec, the range
+   * %20-24 and %26-7E are unescaped.  The {@link PercentEscaper} always
+   * includes [0-9a-zA-Z] as safe characters, so we add the rest of the
+   * unescaped characters: " !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~"
+   */
+  private static final PercentEscaper SLUG_ESCAPER =
+      new PercentEscaper(" !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~", false);
+
+  /**
+   * Escape the slug header by escaping anything outside the range %20-24,
+   * %26-7E using percent encoding.
+   */
+  static String escapeSlug(String slug) {
+    return SLUG_ESCAPER.escape(slug);
+  }
 
   /**
    * Inserts a new {@link com.google.gdata.data.Entry} into a feed associated

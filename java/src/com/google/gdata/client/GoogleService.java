@@ -21,6 +21,7 @@ import com.google.gdata.client.AuthTokenFactory.TokenListener;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
+import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.http.GoogleGDataRequest;
 import com.google.gdata.client.http.GoogleGDataRequest.GoogleCookie;
 import com.google.gdata.data.BaseEntry;
@@ -657,7 +658,7 @@ public class GoogleService extends Service implements TokenListener {
       handleSessionExpiredException(e);
     }
 
-    super.delete(entryUrl);
+    super.delete(entryUrl, etag);
   }
 
   /**
@@ -685,6 +686,46 @@ public class GoogleService extends Service implements TokenListener {
     authTokenFactory.handleSessionExpiredException(e);
   }
 
+  /**
+   * Executes several operations (insert, update or delete) on the entries that
+   * are part of the input {@link Feed}. It will return another feed that
+   * describes what was done while executing these operations.
+   * 
+   * It is possible for one batch operation to fail even though other operations
+   * have worked, so this method won't throw a ServiceException unless something
+   * really wrong is going on. You need to check the entries in the returned
+   * feed to know which operations succeeded and which operations failed (see
+   * {@link com.google.gdata.data.batch.BatchStatus} and
+   * {@link com.google.gdata.data.batch.BatchInterrupted} extensions.)
+   * 
+   * @param feedUrl the POST URI associated with the target feed.
+   * @param inputFeed a description of the operations to execute, described
+   *        using tags in the batch: namespace
+   * @return a feed with the result of each operation in a separate entry
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.ParseException error parsing the return entry
+   *         data.
+   * @throws ServiceException insert request failed due to system error.
+   * @throws BatchInterruptedException if something really wrong was detected by
+   *         the server while parsing the request, like invalid XML data. Some
+   *         operations might have succeeded when this exception is thrown.
+   *         Check {@link BatchInterruptedException#getFeed()}.
+   * 
+   * @see BaseFeed#getEntryPostLink()
+   * @see BaseFeed#insert(BaseEntry)
+   */
+  public <F extends BaseFeed<?, ?>> F batch(URL feedUrl, F inputFeed)
+      throws IOException, ServiceException, BatchInterruptedException {
+      try {
+        return super.batch(feedUrl, inputFeed);
+      } catch (RedirectRequiredException e) {
+        feedUrl = handleRedirectException(e);
+      } catch (SessionExpiredException e) {
+        handleSessionExpiredException(e);
+      }
+
+      return super.batch(feedUrl, inputFeed);
+  }
 
   /**
    * Get the {@link GoogleAuthTokenFactory} current associated with this
@@ -700,4 +741,5 @@ public class GoogleService extends Service implements TokenListener {
     return (GoogleAuthTokenFactory) authTokenFactory;
   }
 }
+
 

@@ -17,8 +17,10 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.batch.BatchUtils;
 
 /**
  * A feed that contains a list of {@link FriendEntry}.
@@ -42,5 +44,11 @@ public class FriendFeed
   /** Returns a link to the profile of this user. */
   public Link getUserProfileLink() {
     return getLink(Link.Rel.RELATED, Link.Type.ATOM);
+  }
+
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
   }
 }

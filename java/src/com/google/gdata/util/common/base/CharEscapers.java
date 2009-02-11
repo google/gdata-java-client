@@ -16,6 +16,10 @@
 
 package com.google.gdata.util.common.base;
 
+import static com.google.gdata.util.common.base.Preconditions.checkNotNull;
+
+import java.io.IOException;
+
 /**
  * Utility functions for dealing with {@code CharEscaper}s, and some commonly
  * used {@code CharEscaper} instances.
@@ -29,6 +33,57 @@ public final class CharEscapers {
   //                    For each xxxEscaper method, please add links to external
   //                    reference pages that we consider authoritative for what
   //                    that escaper should exactly be doing.
+
+  /**
+   * Performs no escaping.
+   */
+  private static final CharEscaper NULL_ESCAPER = new CharEscaper() {
+      @Override
+      public String escape(String string) {
+        checkNotNull(string);
+        return string;
+      }
+
+      @Override
+      public Appendable escape(final Appendable out) {
+        checkNotNull(out);
+
+        // we can't simply return out because the CharEscaper contract says that
+        // the returned Appendable will throw a NullPointerException if asked to
+        // append null.
+        return new Appendable() {
+            public Appendable append(CharSequence csq) throws IOException {
+              checkNotNull(csq);
+              out.append(csq);
+              return this;
+            }
+
+            public Appendable append(CharSequence csq, int start, int end)
+                throws IOException {
+              checkNotNull(csq);
+              out.append(csq, start, end);
+              return this;
+            }
+
+            public Appendable append(char c) throws IOException {
+              out.append(c);
+              return this;
+            }
+          };
+      }
+
+      @Override
+      protected char[] escape(char c) {
+        return null;
+      }
+    };
+
+  /**
+   * Returns a {@link CharEscaper} that does no escaping.
+   */
+  public static CharEscaper nullEscaper() {
+    return NULL_ESCAPER;
+  }
 
   /**
    * Returns a {@link CharEscaper} instance that escapes special characters in a
@@ -747,6 +802,33 @@ public final class CharEscapers {
   }
 
   /**
+   * Returns a composite {@link CharEscaper} instance that tries to escape
+   * characters using a primary {@code CharEscaper} first and falls back to a
+   * secondary one if there is no escaping.
+   *
+   * <p>The returned escaper will attempt to escape each character using the
+   * primary escaper, and if the primary escaper has no escaping for that
+   * character, it will use the secondary escaper. If the secondary escaper has
+   * no escaping for a character either, the original character will be used.
+   * If the primary escaper has an escape for a character, the secondary escaper
+   * will not be used at all for that character; the escaped output of the
+   * primary is not run through the secondary. For a case where you would like
+   * to first escape with one escaper, and then with another, it is recommended
+   * that you call each escaper in order.
+   *
+   * @param primary The primary {@code CharEscaper} to use
+   * @param secondary The secondary {@code CharEscaper} to use if the first one
+   *     has no escaping rule for a character
+   * @throws NullPointerException if any of the arguments is null
+   */
+  public static CharEscaper fallThrough(CharEscaper primary,
+      CharEscaper secondary) {
+    checkNotNull(primary);
+    checkNotNull(secondary);
+    return new FallThroughCharEscaper(primary, secondary);
+  }
+
+  /**
    * A fast {@link CharEscaper} that uses an array of replacement characters and
    * a range of safe characters. It overrides {@link #escape(String)} to improve
    * performance. Rough benchmarking shows that this almost doubles the speed
@@ -930,6 +1012,31 @@ public final class CharEscapers {
       for (; index > 1; index--) {
         result[index] = HEX_DIGITS[intValue % 10];
         intValue /= 10;
+      }
+      return result;
+    }
+  }
+
+  /**
+   * A composite {@code CharEscaper} object that tries to escape characters
+   * using a primary {@code CharEscaper} first and falls back to a secondary
+   * one if there is no escaping.
+   */
+  private static class FallThroughCharEscaper extends CharEscaper {
+
+    private final CharEscaper primary;
+    private final CharEscaper secondary;
+
+    public FallThroughCharEscaper(CharEscaper primary, CharEscaper secondary) {
+      this.primary = primary;
+      this.secondary = secondary;
+    }
+
+    @Override
+    protected char[] escape(char c) {
+      char result[] = primary.escape(c);
+      if (result == null) {
+        result = secondary.escape(c);
       }
       return result;
     }

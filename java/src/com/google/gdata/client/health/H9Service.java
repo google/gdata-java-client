@@ -31,7 +31,7 @@ public class H9Service extends GoogleService {
    * The abbreviated name of Health recognized by Google.  The service name is
    * used when requesting an authentication token.
    */
-  public static final String H9_SERVICE = "h9";
+  public static final String H9_SERVICE = "weaver";
 
   /**
    * The version ID of the service.

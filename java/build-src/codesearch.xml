@@ -10,7 +10,7 @@
   <property name="gdata-codesearch.jar"
     value="${build.jars}/gdata-codesearch-${codesearch.spec.version}.jar"/>
 
-  <target name="build.codesearch" depends="core.build.core.client">
+  <target name="build.codesearch" depends="build.core.client">
     <antcall target="template.build.service">
       <param name="template.service.name" value="codesearch"/>
       <param name="template.service.version" value="${codesearch.spec.version}"/>

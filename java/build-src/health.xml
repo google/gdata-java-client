@@ -10,7 +10,7 @@
   <property name="gdata-health.jar"
     value="${build.jars}/gdata-health-${health.spec.version}.jar"/>
 
-  <target name="build.health" depends="core.build.core.client">
+  <target name="build.health" depends="build.core.client">
     <antcall target="template.build.service">
       <param name="template.service.name" value="health"/>
       <param name="template.service.version" value="${health.spec.version}"/>

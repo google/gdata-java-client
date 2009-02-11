@@ -113,7 +113,13 @@ public class HealthNamespace {
      * values are the names
      * of a health record. [e.g. Lipitor].
      */
-    item("http://schemas.google.com/health/item");
+    item("http://schemas.google.com/health/item"),
+
+    /**
+     * Code scheme identifies CCR codes.  Possible term values are the codes.
+     *
+     */
+    code("http://schemas.google.com/health/code");
 
     CategoryScheme(final String iri) {
       this.iri = iri;

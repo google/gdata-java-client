@@ -62,6 +62,14 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
 
     // Extend Link semantics for WebContent
     extProfile.declare(Link.class, WebContent.getDefaultDescription());
+    extProfile.declare(CalendarEventEntry.class,
+        GuestsCanModifyProperty.getDefaultDescription(false, false));
+    extProfile.declare(CalendarEventEntry.class,
+        GuestsCanInviteOthersProperty.getDefaultDescription(false, false));
+    extProfile.declare(CalendarEventEntry.class,
+        GuestsCanSeeGuestsProperty.getDefaultDescription(false, false));
+    extProfile.declare(CalendarEventEntry.class,
+        AnyoneCanAddSelfProperty.getDefaultDescription(false, false));
   }
 
   /**
@@ -244,6 +252,70 @@ public class CalendarEventEntry extends BaseEventEntry<CalendarEventEntry> {
       getLinks().remove(oldWebContentLink);
       getLinks().add(wc.getLink());
     }
+  }
+
+  public void setGuestsCanModify(boolean guestsCanModify) {
+    setExtension(guestsCanModify
+        ? GuestsCanModifyProperty.TRUE
+        : GuestsCanModifyProperty.FALSE);
+  }
+
+  public boolean isGuestsCanModify() {
+    GuestsCanModifyProperty guestsCanModify =
+        getExtension(GuestsCanModifyProperty.class);
+    return (guestsCanModify != null) && guestsCanModify.getValue();
+  }
+
+  public boolean hasGuestsCanModify() {
+    return hasExtension(GuestsCanModifyProperty.class);
+  }
+
+  public void setGuestsCanInviteOthers(boolean guestsCanInviteOthers) {
+    setExtension(guestsCanInviteOthers
+        ? GuestsCanInviteOthersProperty.TRUE
+        : GuestsCanInviteOthersProperty.FALSE);
+  }
+
+  public boolean isGuestsCanInviteOthers() {
+    GuestsCanInviteOthersProperty guestsCanInviteOthers =
+        getExtension(GuestsCanInviteOthersProperty.class);
+    return (guestsCanInviteOthers != null) && guestsCanInviteOthers.getValue();
+  }
+
+  public boolean hasGuestsCanInviteOthers() {
+    return hasExtension(GuestsCanInviteOthersProperty.class);
+  }
+
+  public void setGuestsCanSeeGuests(boolean guestsCanSeeGuests) {
+    setExtension(guestsCanSeeGuests
+        ? GuestsCanSeeGuestsProperty.TRUE
+        : GuestsCanSeeGuestsProperty.FALSE);
+  }
+
+  public boolean isGuestsCanSeeGuests() {
+    GuestsCanSeeGuestsProperty guestsCanSeeGuests =
+        getExtension(GuestsCanSeeGuestsProperty.class);
+    return (guestsCanSeeGuests != null) && guestsCanSeeGuests.getValue();
+  }
+
+  public boolean hasGuestsCanSeeGuests() {
+    return hasExtension(GuestsCanSeeGuestsProperty.class);
+  }
+
+  public void setAnyoneCanAddSelf(boolean anyoneCanAddSelf) {
+    setExtension(anyoneCanAddSelf
+        ? AnyoneCanAddSelfProperty.TRUE
+        : AnyoneCanAddSelfProperty.FALSE);
+  }
+
+  public boolean isAnyoneCanAddSelf() {
+    AnyoneCanAddSelfProperty anyoneCanAddSelf =
+        getExtension(AnyoneCanAddSelfProperty.class);
+    return (anyoneCanAddSelf != null) && anyoneCanAddSelf.getValue();
+  }
+
+  public boolean hasAnyoneCanAddSelf() {
+    return hasExtension(AnyoneCanAddSelfProperty.class);
   }
 
 }

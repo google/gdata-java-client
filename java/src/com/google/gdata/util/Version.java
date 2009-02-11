@@ -14,9 +14,11 @@
  */
 package com.google.gdata.util;
 
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.client.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +33,36 @@ public class Version {
    * The ANY value indicates a version component that will match any revision.
    */
   public static final int ANY = -1;
+  
+
+  /**
+   * Finds a matching version for {@code serviceClass} in a list of versions,
+   * or returns {@code null} otherwise.
+   * @param versionList the list of versions to search.
+   * @param serviceClass the service class to match.
+   * @return the matching version or {@code null}.
+   */
+  public static Version findServiceVersion(
+      Collection<? extends Version> versionList,
+      Class<? extends Service> serviceClass) {
+    for (Version v : versionList) {
+      if (v.getServiceClass().equals(serviceClass)) {
+        return v;
+      }
+    }
+    return null;
+  }  
+  
+  /**
+   * Returns a version that matches the input service type and major version but
+   * {@link #ANY} minor version.
+   * 
+   * @param v input version type
+   * @return equivalent version with any minor version
+   */
+  public static Version anyMinorVersionOf(Version v) {
+    return new Version(v.getServiceClass(), v.getMajor(), Version.ANY);
+  }
   
   private Class<? extends Service> serviceClass;
   private int major;
@@ -173,6 +205,67 @@ public class Version {
       }
     }
     return false;
+  }
+
+  /**
+   * If the version number is {@link #ANY}, returns {@link Integer#MAX_VALUE};
+   * otherwise returns the input version number
+   */
+  private int raiseAny(int versionNumber) {
+    return (versionNumber != ANY) ? versionNumber : Integer.MAX_VALUE;
+  }
+
+  /**
+   * Returns {@code true} if this version is a later version than the argument,
+   * on the basis of comparing the major and minor versions. For the purposes of
+   * comparison, a value of {@link #ANY} is considered to be
+   * {@link Integer#MAX_VALUE}, so no finite version number may come after it.
+   * 
+   * @param v version to compare against
+   * @return {@code true} if this version is later than the argument
+   * @throws IllegalArgumentException if the provided version is not for the
+   *         same service as this version or for one implied by this version.
+   */
+  public final boolean isAfter(Version v) {
+    
+    Version serviceVersion = findServiceVersion(impliedVersions, 
+        v.getServiceClass());
+    Preconditions.checkArgument(serviceVersion != null,
+        "No relationship between versions");
+    int serviceMajor = raiseAny(serviceVersion.major);
+    int vMajor = raiseAny(v.major);
+    if (serviceMajor != vMajor) {
+      return serviceMajor > vMajor;
+    } else {
+      return raiseAny(serviceVersion.minor) > raiseAny(v.minor);
+    }
+  }
+
+  /**
+   * Returns {@code true} if this version is a earlier version than the
+   * argument, on the basis of comparing the major and minor versions. For the
+   * purposes of comparison, a value of {@link #ANY} is considered to be
+   * {@link Integer#MIN_VALUE}, so no finite version number may come before it.
+   * 
+   * @param v version to compare against
+   * @return {@code true} if this version is later than the argument
+   * @throws IllegalArgumentException if the provided version is not for the
+   *         same service as this version or for one implied by this version.
+   */
+  public final boolean isBefore(Version v) {
+   
+    Version serviceVersion = findServiceVersion(impliedVersions, 
+        v.getServiceClass());
+    Preconditions.checkArgument(serviceVersion != null,
+        "No relationship between versions");
+    
+    // No need to normalize the value of ANY here, since it's value (-1)
+    // is already less than all concrete versions
+    if (serviceVersion.major != v.major) {
+      return serviceVersion.major < v.major;
+    } else {
+      return serviceVersion.minor < v.minor;
+    }
   }
   
   /**

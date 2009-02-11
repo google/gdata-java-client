@@ -53,7 +53,7 @@ import java.util.List;
  *
  * 
  */
-public class Workspace extends ExtensionPoint {
+public class Workspace extends ExtensionPoint implements IWorkspace {
 
   // Locally case version-dependent information.   The assumption here is that
   // a single instance isn't used with multiple version of the protocol.
@@ -76,6 +76,14 @@ public class Workspace extends ExtensionPoint {
   public List<Collection> getCollections() { return collectionList; }
   public void addCollection(Collection coll) { collectionList.add(coll); }
 
+  public Collection addCollection(String collectionUri, String title,
+      String... acceptedTypes) {
+    Collection collection = new Collection(collectionUri,
+        new PlainTextConstruct(title), acceptedTypes);
+    addCollection(collection);
+    return collection;
+  }
+  
   @Override
   protected void visitChildren(ExtensionVisitor ev)
       throws ExtensionVisitor.StoppedException {

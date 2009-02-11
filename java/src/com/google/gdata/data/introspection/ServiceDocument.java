@@ -22,18 +22,18 @@ import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.ExtensionVisitor;
+import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlParser;
 
 import org.xml.sax.Attributes;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * The ServiceDocument class defines the basic Java object model
@@ -42,7 +42,8 @@ import java.util.List;
  *
  * 
  */
-public class ServiceDocument extends ExtensionPoint {
+public class ServiceDocument extends ExtensionPoint
+    implements IServiceDocument {
 
   // Locally cache the version-appropriate AtomPub namespace information.
   private XmlNamespace atomPubNs = Namespaces.getAtomPubNs();
@@ -54,6 +55,12 @@ public class ServiceDocument extends ExtensionPoint {
     workspaces.add(workspace);
   }
 
+  public Workspace addWorkspace(String title) {
+    Workspace workspace = new Workspace(new PlainTextConstruct(title));
+    workspaces.add(workspace);
+    return workspace;
+  }
+  
   @Override
   protected void visitChildren(ExtensionVisitor ev)
       throws ExtensionVisitor.StoppedException {

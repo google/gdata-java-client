@@ -32,45 +32,29 @@
 <!--  ===================================================================== -->
 
   <!-- Build core and service specific libraries -->
-  <target name="build">
-    <antcall target="core.build.core"/>
-    <antcall target="appsforyourdomain.build.appsforyourdomain"/>
-    <antcall target="blogger.build.blogger"/>
-    <antcall target="books.build.books"/>
-    <antcall target="calendar.build.calendar"/>
-    <antcall target="codesearch.build.codesearch"/>
-    <antcall target="contacts.build.contacts"/>
-    <antcall target="docs.build.docs"/>
-    <antcall target="finance.build.finance"/>
-    <antcall target="gbase.build.gbase"/>
-    <antcall target="health.build.health"/>
-    <antcall target="photos.build.photos"/>
-    <antcall target="spreadsheet.build.spreadsheet"/>
-    <antcall target="youtube.build.youtube"/>
-    <antcall target="webmastertools.build.webmastertools"/>
-  </target>
+  <target name="build" depends="build.core,
+                                build.appsforyourdomain,
+                                build.blogger,
+                                build.books,
+                                build.calendar,
+                                build.codesearch,
+                                build.contacts,
+                                build.docs,
+                                build.finance,
+                                build.gbase,
+                                build.health,
+                                build.photos,
+                                build.spreadsheet,
+                                build.youtube,
+                                build.webmastertools"/>
 
-  <target name="clean">
-    <antcall target="core.clean.core"/>
-    <antcall target="appsforyourdomain.clean.appsforyourdomain"/>
-    <antcall target="blogger.clean.blogger"/>
-    <antcall target="books.clean.books"/>
-    <antcall target="calendar.clean.calendar"/>
-    <antcall target="codesearch.clean.codesearch"/>
-    <antcall target="contacts.clean.contacts"/>
-    <antcall target="docs.clean.docs"/>
-    <antcall target="finance.clean.finance"/>
-    <antcall target="gbase.clean.gbase"/>
-    <antcall target="health.clean.health"/>
-    <antcall target="photos.clean.photos"/>
-    <antcall target="youtube.clean.youtube"/>
-    <antcall target="webmastertools.clean.webmastertools"/>
-  </target>
+  <target name="clean" depends="clean.core"/>
 
 
 <!--  ===================================================================== -->
 <!--                      Global target                                     -->
 <!--  ===================================================================== -->
+
   <target name="all" depends="clean,build"/>
 
 </project>

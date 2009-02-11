@@ -40,4 +40,6 @@ public interface ITextConstruct {
    */
   public int getType();
 
+  /** Returns a plain-text representation of this text construct. */
+  public String getPlainText();
 }

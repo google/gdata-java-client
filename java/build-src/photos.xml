@@ -11,7 +11,7 @@
   <property name="gdata-photos.jar"
     value="${build.jars}/gdata-photos-${photos.spec.version}.jar"/>
 
-  <target name="build.photos" depends="core.build.core.media">
+  <target name="build.photos" depends="build.core.media">
     <antcall target="template.build.service">
       <param name="template.service.name" value="photos"/>
       <param name="template.service.version" value="${photos.spec.version}"/>

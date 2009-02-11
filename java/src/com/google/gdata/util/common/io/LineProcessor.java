@@ -20,9 +20,9 @@ import java.io.IOException;
 
 /**
  * Package-protected abstract class that implements the line reading
- * algorithm shared by {@link LineReader} and {@link LineWriter}.  Line
- * separators are per {@link java.io.BufferedReader}: line feed, carriage return,
- * or carriage return followed immediately by a linefeed.
+ * algorithm used by {@link LineReader}. Line separators are per {@link
+ * java.io.BufferedReader}: line feed, carriage return, or carriage
+ * return followed immediately by a linefeed.
  *
  * <p>Subclasses must implement {@link #processLine}, call {@link #process}
  * to pass character data, and call {@link #finish} at the end of stream.

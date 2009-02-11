@@ -12,7 +12,7 @@
   <!--  ===================================================================== -->
 
   <!-- samples build Properties -->
-  <property name="sample.codesearch.basedir"       value="${basedir}/sample/codesearch"/>
+  <property name="sample.codesearch.basedir"       value="${build}/sample/codesearch"/>
   <property name="sample.codesearch.src.home"      value="${sample.codesearch.basedir}"/>
   <property name="sample.codesearch.build.classes" value="${sample.codesearch.basedir}/classes"/>
   <property name="sample.codesearch.build.lib"     value="${sample.codesearch.basedir}/lib"/>

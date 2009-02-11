@@ -40,11 +40,9 @@ public class Rfc3339Handler extends XmlParser.ElementHandler {
     try {
       dateTime = DateTime.parseDateTime(value);
     } catch (NumberFormatException e) {
-      ParseException pe = new ParseException(
-          CoreErrorDomain.ERR.invalidDatetime);
-      pe.setInternalReason(
-          "Invalid date/time format: '" + value + "'.");
-      throw pe;
+      throw new ParseException(
+          CoreErrorDomain.ERR.invalidDatetime.withInternalReason(
+              "Invalid date/time format: '" + value + "'."));
     }
   }
 }

@@ -49,6 +49,9 @@ public class GphotoAccess extends AbstractExtension {
     /** Unlisted album access. */
     PRIVATE,
 
+    /** Protected album access. */
+    PROTECTED,
+
     /** Public album access. */
     PUBLIC
 

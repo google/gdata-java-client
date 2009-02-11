@@ -19,6 +19,7 @@ package com.google.gdata.data.youtube;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.batch.BatchUtils;
 
 /**
  * A YouTube playlist feed.
@@ -52,7 +53,7 @@ public class PlaylistFeed extends BaseFeed<PlaylistFeed, PlaylistEntry> {
     extProfile.declareFeedExtension(YouTubeMediaGroup.class);
     extProfile.declare(PlaylistFeed.class, YtPlaylistId.class);
     new YouTubeMediaGroup().declareExtensions(extProfile);
-    
+    BatchUtils.declareExtensions(extProfile);
   }
   
   /**

@@ -16,7 +16,9 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.batch.BatchUtils;
 
 /**
  * Shared video feed (inbox).
@@ -34,5 +36,11 @@ public class VideoMessageFeed extends BaseFeed<VideoMessageFeed, VideoMessageEnt
   public VideoMessageFeed(BaseFeed<?,?> base) {
     super(VideoMessageEntry.class, base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
+  }
+
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
   }
 }

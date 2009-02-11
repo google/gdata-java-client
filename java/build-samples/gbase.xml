@@ -16,7 +16,7 @@
   <!--  ===================================================================== -->
 
   <!-- samples build Properties -->
-  <property name="sample.gbase.basedir"       value="${basedir}/sample/gbase"/>
+  <property name="sample.gbase.basedir"       value="${build}/sample/gbase"/>
   <property name="sample.gbase.cmdlinedir"    value="${sample.gbase.basedir}/cmdline"/>
   <property name="sample.gbase.recipe"        value="${sample.gbase.basedir}/recipe"/>
   <property name="sample.gbase.build.classes" value="${sample.gbase.basedir}/classes"/>

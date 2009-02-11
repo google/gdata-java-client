@@ -14,14 +14,19 @@
 
 package com.google.gdata.util.httputil;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.*;
+import com.google.gdata.util.common.annotations.VisibleForTesting;
+import com.google.gdata.util.common.base.PercentEscaper;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.BitSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()},
+ * This class has been <b>deprecated</b>; use {@link 
+ * com.google.gdata.util.common.base.CharEscapers#uriEscaper()},
  * {@link com.google.gdata.util.common.base.CharEscapers#cppUriEscaper()} or create your
  * own custom {@link com.google.gdata.util.common.base.PercentEscaper}.
  *
@@ -68,9 +73,11 @@ import java.util.BitSet;
  * @see java.net.URLEncoder
  * 
  */
-@Deprecated
 public class FastURLEncoder {
   private static boolean verifyAgainstJava = false;
+
+  private FastURLEncoder() {
+  }
 
   /**
    * Set this to 'true' if you are not certain that FastURLEncoder is
@@ -81,6 +88,7 @@ public class FastURLEncoder {
    * java.util.logging.Level.SEVERE message and return the value provided
    * by URLEncoder.
    */
+  @VisibleForTesting
   static void setVerifyAgainstJava(boolean shouldVerify) {
     verifyAgainstJava = shouldVerify;
   }
@@ -88,6 +96,7 @@ public class FastURLEncoder {
   /**
    * @return 'true' if we are going to verify all results against URLEncoder.
    */
+  @VisibleForTesting
   static boolean getVerifyAgainstJava() {
     return verifyAgainstJava;
   }
@@ -371,13 +380,24 @@ public class FastURLEncoder {
   }
 
   /**
+   * Instead of retrieving this set to add your own safe characters, simply 
+   * provide your additional safe characters to the 
+   * {@link PercentEscaper#PercentEscaper(String, boolean)} constructor. 
+   * If you don't need to add your own safe characters, just use 
+   * {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}.
+   * 
    * @return a BitSet suitable for passing to
    * {@link #encode(String,String,BitSet,boolean)} or
    * {@link #encode(String,BitSet,boolean)}. It defaults to containing the
    * octets that would not be escaped by
    * {@link java.net.URLEncoder#encode(String)}. Callers can edit the
    * result for specialized purposes.
+   *
+   * @deprecated Use {@link com.google.gdata.util.common.base.CharEscapers#uriEscaper()}.
+   * or create an instance of {@link com.google.gdata.util.common.base.PercentEscaper}.
+   * See {@link FastURLEncoder} for more details.
    */
+  @Deprecated
   public static BitSet createSafeOctetBitSet() {
     return (BitSet) DEFAULT_SAFE_OCTETS.clone();
   }

@@ -23,6 +23,7 @@ import com.google.gdata.data.acl.AclEntry;
 import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
+import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.docs.DocumentEntry;
 import com.google.gdata.data.docs.DocumentListFeed;
 import com.google.gdata.data.docs.FolderEntry;
@@ -167,6 +168,7 @@ public class DocsService extends MediaService {
     new PhotoEntry().declareExtensions(extProfile);
     new PresentationEntry().declareExtensions(extProfile);
     new SpreadsheetEntry().declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
   }
 
 
@@ -266,4 +268,3 @@ public class DocsService extends MediaService {
   }
 
 }
-

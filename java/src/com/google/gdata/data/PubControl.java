@@ -69,9 +69,9 @@ public class PubControl extends ExtensionPoint {
   /** Generates the atom representation for this tag. */
   public void generateAtom(XmlWriter w, ExtensionProfile extProfile)
       throws IOException {
-    w.startElement(atomPubNs, "control", null, null);
+    w.startElement(Namespaces.getAtomPubNs(), "control", null, null);
     if (isDraft()) {
-      w.simpleElement(atomPubNs, "draft", null, "yes");
+      w.simpleElement(Namespaces.getAtomPubNs(), "draft", null, "yes");
     }
     generateExtensions(w, extProfile);
     w.endElement();

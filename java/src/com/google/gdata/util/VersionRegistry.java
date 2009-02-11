@@ -157,24 +157,6 @@ public class VersionRegistry {
   }
 
   /**
-   * Finds a matching version for {@code serviceClass} in a list of versions,
-   * or returns {@code null} otherwise.
-   * @param versionList the list of versions to search.
-   * @param serviceClass the service class to match.
-   * @return the matching version or {@code null}.
-   */
-  @VisibleForTesting
-  static Version getVersion(List<Version> versionList, 
-      Class<? extends Service> serviceClass) {
-    for (Version v : versionList) {
-      if (v.getServiceClass().equals(serviceClass)) {
-        return v;
-      }
-    }
-    return null;
-  }  
-  
-  /**
    * Takes a list of {@link Version} instances and merges it into another
    * list.   A version in the source list will overwrite any value for the
    * same service (if any) in the target list.
@@ -186,10 +168,9 @@ public class VersionRegistry {
     
     // Check for conflicts with target list before making any changes,
     // accumulating the list of changed versions.
-    List<Version> newVersions = new ArrayList<Version>();
     for (Version checkVersion : source) {
       Version currentVersion = 
-          getVersion(target, checkVersion.getServiceClass());
+          Version.findServiceVersion(target, checkVersion.getServiceClass());
       if (currentVersion != null) {
         target.remove(currentVersion);
       }
@@ -317,10 +298,10 @@ public class VersionRegistry {
     Version v = null;
     List<Version> threadList = getThreadVersions();
     if (threadList != null) {
-      v = getVersion(threadList, serviceClass);
+      v = Version.findServiceVersion(threadList, serviceClass);
     }
     if (v == null) {
-      v = getVersion(getDefaultVersions(), serviceClass);
+      v = Version.findServiceVersion(getDefaultVersions(), serviceClass);
       if (v == null) {
         // This should never happen for client, server, or code running in a
         // unit test context.   Missing version information indicates that the

@@ -16,20 +16,23 @@
 
 package com.google.gdata.util.common.io;
 
+import com.google.gdata.util.common.base.Preconditions;
+
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.io.Reader;
-import java.io.EOFException;
+import java.io.StringReader;
+import java.io.Writer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Provides utility methods for working with character streams.
@@ -56,6 +59,7 @@ public final class Characters {
    * @return the factory
    */
   public static InputSupplier<StringReader> newReaderSupplier(final String value) {
+    Preconditions.checkNotNull(value);
     return new InputSupplier<StringReader>() {
       public StringReader getInput() {
         return new StringReader(value);
@@ -73,6 +77,8 @@ public final class Characters {
    */
   public static InputSupplier<InputStreamReader> newReaderSupplier(
       final InputSupplier<? extends InputStream> in, final Charset charset) {
+    Preconditions.checkNotNull(in);
+    Preconditions.checkNotNull(charset);
     return new InputSupplier<InputStreamReader>() {
       public InputStreamReader getInput() throws IOException {
         return new InputStreamReader(in.getInput(), charset);
@@ -90,11 +96,34 @@ public final class Characters {
    */
   public static OutputSupplier<OutputStreamWriter> newWriterSupplier(
       final OutputSupplier<? extends OutputStream> out, final Charset charset) {
+    Preconditions.checkNotNull(out);
+    Preconditions.checkNotNull(charset);
     return new OutputSupplier<OutputStreamWriter>() {
       public OutputStreamWriter getOutput() throws IOException {
         return new OutputStreamWriter(out.getOutput(), charset);
       }
     };
+  }
+
+  /**
+   * Writes a character sequence (such as a string) to an appendable
+   * object from the given supplier.
+   *
+   * @param from the character sequence to write
+   * @param to the output supplier
+   * @throws IOException if an I/O error occurs
+   */
+  public static <W extends Appendable & Closeable> void write(CharSequence from,
+      OutputSupplier<W> to) throws IOException {
+    Preconditions.checkNotNull(from);
+    boolean threw = true;
+    W out = to.getOutput();
+    try {
+      out.append(from);
+      threw = false;
+    } finally {
+      Closeables.close(out, threw);
+    }
   }
 
   /**
@@ -354,4 +383,22 @@ public final class Characters {
       }
     }
   }
+
+  /**
+   * Returns a Writer that sends all output to the given {@link Appendable}
+   * target. Closing the writer will close the target if it is {@link
+   * Closeable}, and flushing the writer will flush the target if it is {@link
+   * java.io.Flushable}.
+   *
+   * @param target the object to which output will be sent
+   * @return a new Writer object, unless target is a Writer, in which case the
+   *     target is returned
+   */
+  public static Writer asWriter(Appendable target) {
+    if (target instanceof Writer) {
+      return (Writer) target;
+    }
+    return new AppendableWriter(target);
+  }
 }
+

@@ -33,7 +33,7 @@ import java.util.ArrayList;
  *
  * 
  */
-public class OutOfLineContent extends Content {
+public class OutOfLineContent extends Content implements IOutOfLineContent {
 
   /** @return the type of this content */
   @Override
