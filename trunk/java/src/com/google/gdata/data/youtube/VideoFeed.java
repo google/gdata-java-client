@@ -16,9 +16,11 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.media.MediaFeed;
+import com.google.gdata.data.batch.BatchUtils;
 
 /**
  * Video feed returned by the feed providers.
@@ -37,6 +39,12 @@ public class VideoFeed extends MediaFeed<VideoFeed, VideoEntry> {
   public VideoFeed(BaseFeed base) {
     super(VideoEntry.class, base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO);
+  }
+
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
   }
 
   /**

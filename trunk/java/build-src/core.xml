@@ -67,6 +67,51 @@
     <pathelement location="${gdata-media.jar}"/>
   </path>
 
+  <!-- Prepare to build service: set properties and check status. -->
+  <target name="template.build.service.init">
+    <property name="template.service.meta"
+      value="${build.genfiles.meta}/${template.service.name}"/>
+    <property name="template.service.meta.kinds"
+      value="${template.service.meta}/META-INF/gdata/kinds"/>
+    <property name="template.service.meta.jar"
+      value="${build.jars}/gdata-${template.service.name}-meta-${template.service.version}.jar"/>
+    <property name="template.service.jar"
+      value="${build.jars}/gdata-${template.service.name}-${template.service.version}.jar"/>
+    <property name="template.service.classes"
+      value="${build.classes}/${template.service.name}"/>
+    <property name="template.service.manifest"
+      value="${build.genfiles.manifest}/${template.service.name}.manifest"/>
+    
+    <!-- Compare src files to the targetdir to see if src is more recent. -->
+    <!-- Will allow unecessary compilation still, but eliminates most -->
+    <uptodate property="template.build.service.meta.isCurrent"
+              targetfile="${template.service.meta.kinds}">
+      <srcfiles dir="${build.src}"
+                includes="${template.service.includes}"
+                excludes="${template.service.excludes}"/>
+    </uptodate>
+  </target>
+
+  <!-- Build the meta data for the service if it is out of date. -->
+  <target name="template.build.service.meta"
+          depends="template.build.service.init"
+          unless="template.build.service.meta.isCurrent">
+    <mkdir dir="${template.service.meta.kinds}"/>
+    <apt debug="false"
+         srcdir="${build.src}"
+         destdir="${template.service.meta.kinds}"
+         compile="false"
+         factory="com.google.gdata.data.apt.DataAnnotationProcessorFactory"
+         includes="${template.service.includes}"
+         excludes="${template.service.excludes}">
+        <classpath refid="${template.service.classpath}"/>
+    </apt>
+    <jar destfile="${template.service.meta.jar}">
+      <fileset dir="${template.service.meta}">
+        <include name="META-INF/**"/>
+      </fileset>
+    </jar>
+  </target>
 
   <!-- Generic template target to build service specific jar
   Params:
@@ -84,44 +129,16 @@
           to build service specific jar.  gdata-client.jar is included by
           default.  Specify "none" if there are no additional dependencies.
   -->
-  <target name="template.build.service">
-    <property name="template.service.meta"
-      value="${build.genfiles.meta}/${template.service.name}"/>
-    <property name="template.service.meta.kinds"
-      value="${template.service.meta}/META-INF/gdata/kinds"/>
-    <property name="template.service.meta.jar"
-      value="${build.jars}/gdata-${template.service.name}-meta-${template.service.version}.jar"/>
-    <property name="template.service.jar"
-      value="${build.jars}/gdata-${template.service.name}-${template.service.version}.jar"/>
-    <property name="template.service.classes"
-      value="${build.classes}/${template.service.name}"/>
-    <property name="template.service.manifest"
-      value="${build.genfiles.manifest}/${template.service.name}.manifest"/>
-
-    <!-- Build the meta data for the service -->
-    <mkdir dir="${template.service.meta.kinds}"/>
-    <apt srcdir="${build.src.gdata}"
-            destdir="${template.service.meta.kinds}"
-            compile="false"
-            factory="com.google.gdata.data.apt.DataAnnotationProcessorFactory"
-            includes="${template.service.includes}"
-            excludes="${template.service.excludes}">
-        <classpath refid="${template.service.classpath}"/>
-    </apt>
-    <jar destfile="${template.service.meta.jar}">
-      <fileset dir="${template.service.meta}">
-        <include name="META-INF/**"/>
-      </fileset>
-    </jar>
-
+  <target name="template.build.service" depends="template.build.service.meta">
     <!-- Build the service jar -->
     <mkdir dir="${template.service.classes}"/>
-    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}"
-                         sourcepath=""
-                         srcdir="${build.src}"
-                         destdir="${template.service.classes}"
-                         includes="${template.service.includes}"
-                         excludes="${template.service.excludes}">
+    <javac debug="${javac.debug}"
+           debuglevel="${javac.debuglevel}"
+           sourcepath=""
+           srcdir="${build.src}"
+           destdir="${template.service.classes}"
+           includes="${template.service.includes}"
+           excludes="${template.service.excludes}">
           <classpath>
             <path refid="${template.service.classpath}"/>
             <pathelement location="${template.service.meta.jar}"/>
@@ -140,6 +157,7 @@
   <target name="template.clean.service">
     <delete dir="${build.classes}/${template.service.name}"/>
     <delete dir="${build.genfiles.meta}/${template.service.name}"/>
+    <delete file="${build.genfiles.manifest}/${template.service.name}.manifest"/>
   </target>
 
   <!-- Template to check if Service libs are already built
@@ -193,48 +211,54 @@
 
   <!-- Path for source code -->
   <property name="build.src" value="${build}/src"/>
-  <property name="build.src.gdata" value="${build.src}/com/google/gdata"/>
-  <property name="build.src.gdata.data" value="${build.src.gdata}/data"/>
-  <property name="build.src.gdata.client" value="${build.src.gdata}/client"/>
 
 
   <!-- ===================== core library rules ========================== -->
-  <target name="build.core" description="Builds gdata client library">
-    <antcall target="build.core.client"/>
-    <antcall target="build.core.media"/>
+  <target name="build.core" description="Builds gdata client library"
+          depends="build.core.client,build.core.media"/>
+
+  <!-- Clean all files generated by project -->
+  <target name="clean.core" description="Cleans all generated files">
+    <delete dir="${build.genfiles}" />
+    <delete dir="${build.classes}" />
+    <delete dir="${build.jars}" />
   </target>
 
-  <target name="clean.core"
+
+
+  <!-- clean files generated for client and base libraries -->
+  <target name="clean.core.base"
       description="Cleans generated files client library">
     <delete dir="${build.classes.core}"/>
     <delete dir="${build.classes.client}"/>
     <delete dir="${build.genfiles.meta.client}"/>
-    <delete dir="${build.classes.media}"/>
+    <delete file="${gdata-core.manifest}"/>
+    <delete file="${gdata-client.manifest}"/>
   </target>
-
 
   <!-- build gdata-core.jar -->
   <target name="build.core.base" depends="dirs,build.manifest">
     <mkdir dir="${build.classes.core}"/>
 
-    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}"
-                         sourcepath=""
-                         srcdir="${build.src.gdata}"
-                         destdir="${build.classes.core}">
-      <include name="client/*.java"/>
-      <include name="client/authn/**/*.java"/>
-      <include name="client/batch/**/*.java"/>
-      <include name="client/http/**/*.java"/>
-      <include name="data/*.java"/>
-      <include name="data/acl/**/*.java"/>
-      <include name="data/apt/**/*.java"/>
-      <include name="data/batch/**/*.java"/>
-      <include name="data/dublincore/**/*.java"/>
-      <include name="data/geo/**/*.java"/>
-      <include name="data/introspection/**/*.java"/>
-      <include name="data/threading/**/*.java"/>
-      <include name="util/**/*.java"/>
-      <exclude name="data/MediaContent.java"/>
+    <javac debug="${javac.debug}"
+           debuglevel="${javac.debuglevel}"
+           sourcepath=""
+           srcdir="${build.src}"
+           destdir="${build.classes.core}">
+      <include name="com/google/gdata/client/*.java"/>
+      <include name="com/google/gdata/client/authn/**/*.java"/>
+      <include name="com/google/gdata/client/batch/**/*.java"/>
+      <include name="com/google/gdata/client/http/**/*.java"/>
+      <include name="com/google/gdata/data/*.java"/>
+      <include name="com/google/gdata/data/acl/**/*.java"/>
+      <include name="com/google/gdata/data/apt/**/*.java"/>
+      <include name="com/google/gdata/data/batch/**/*.java"/>
+      <include name="com/google/gdata/data/dublincore/**/*.java"/>
+      <include name="com/google/gdata/data/geo/**/*.java"/>
+      <include name="com/google/gdata/data/introspection/**/*.java"/>
+      <include name="com/google/gdata/data/threading/**/*.java"/>
+      <include name="com/google/gdata/util/**/*.java"/>
+      <exclude name="com/google/gdata/data/MediaContent.java"/>
     </javac>
     <jar destfile="${gdata-core.jar}"
          basedir="${build.classes.core}"
@@ -244,17 +268,28 @@
 
 
   <!-- build gdata-client-meta.jar -->
-  <target name="build.core.client.meta" depends="build.core.base">
+  <target name="chk.build.core.client.meta">
+    <!-- Compare src files to the targetdir to see if src is more recent. -->
+    <!-- Will allow unecessary compilation still, but eliminates most -->
+    <uptodate property="build.core.client.meta.isCurrent"
+              targetfile="${build.genfiles.meta.client.kinds}">
+      <srcfiles dir="${build.src}"
+                includes="com/google/gdata/data/extensions/*.java"/>
+    </uptodate>
+  </target>
+  <target name="build.core.client.meta"
+          depends="build.core.base,chk.build.core.client.meta"
+          unless="build.core.client.meta.isCurrent">
     <mkdir dir="${build.genfiles.meta.client.kinds}"/>
-    <apt debug="false" sourcepath=""
-            srcdir="${build.src.gdata}"
-            destdir="${build.genfiles.meta.client.kinds}"
-            compile="false"
-            factory="com.google.gdata.data.apt.DataAnnotationProcessorFactory">
+    <apt debug="false"
+         srcdir="${build.src}"
+         destdir="${build.genfiles.meta.client.kinds}"
+         compile="false"
+         factory="com.google.gdata.data.apt.DataAnnotationProcessorFactory">
         <classpath>
           <pathelement location="${gdata-core.jar}"/>
         </classpath>
-        <include name="data/extensions/*.java"/>
+        <include name="com/google/gdata/data/extensions/*.java"/>
     </apt>
     <jar destfile="${gdata-client-meta.jar}">
       <fileset dir="${build.genfiles.meta.client}">
@@ -267,10 +302,12 @@
   <!-- build gdata-client.jar -->
   <target name="build.core.client" depends="build.core.client.meta">
     <mkdir dir="${build.classes.client}"/>
-    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" sourcepath=""
-                         srcdir="${build.src.gdata}"
-                         destdir="${build.classes.client}">
-        <include name="data/extensions/*.java"/>
+    <javac debug="${javac.debug}"
+           debuglevel="${javac.debuglevel}"
+           sourcepath=""
+           srcdir="${build.src}"
+           destdir="${build.classes.client}">
+        <include name="com/google/gdata/data/extensions/*.java"/>
         <classpath>
           <pathelement location="${gdata-core.jar}"/>
           <pathelement location="${gdata-client-meta.jar}"/>
@@ -294,9 +331,11 @@
   <target name="build.core.media"
       depends="require.client.dependencies,build.core.client">
     <mkdir dir="${build.classes.media}"/>
-    <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" sourcepath=""
-                         srcdir="${build.src}"
-                         destdir="${build.classes.media}">
+    <javac debug="${javac.debug}"
+           debuglevel="${javac.debuglevel}"
+           sourcepath=""
+           srcdir="${build.src}"
+           destdir="${build.classes.media}">
       <classpath refid="build.media.classpath"/>
       <include name="**/data/MediaContent.java"/>
       <include name="**/data/media/**"/>
@@ -310,6 +349,7 @@
 
   <target name="clean.core.media">
     <delete dir="${build.classes.media}"/>
+    <delete file="${gdata-media.manifest}"/>
   </target>
 
 

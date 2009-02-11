@@ -41,12 +41,12 @@ public class ParseException extends ServiceException {
     initResponseCode();
   }
 
-  public ParseException(ErrorDomain.ErrorCode errorCode) {
+  public ParseException(ErrorContent errorCode) {
     super(errorCode);
     initResponseCode();
   }
 
-  public ParseException(ErrorDomain.ErrorCode errorCode, Throwable cause) {
+  public ParseException(ErrorContent errorCode, Throwable cause) {
     super(errorCode, cause);
     initResponseCode();
   }

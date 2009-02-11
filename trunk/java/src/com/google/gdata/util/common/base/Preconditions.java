@@ -315,6 +315,111 @@ public final class Preconditions {
   }
 
   /**
+   * Ensures that {@code index} specifies a valid <i>element</i> in an array,
+   * list or string of size {@code size}. An element index may range from zero,
+   * inclusive, to {@code size}, exclusive.
+   *
+   * @param index a user-supplied index identifying an element of an array, list
+   *     or string
+   * @param size the size of that array, list or string
+   * @throws IndexOutOfBoundsException if {@code index} is negative or is not
+   *     less than {@code size}
+   * @throws IllegalArgumentException if {@code size} is negative
+   */
+  public static void checkElementIndex(int index, int size) {
+    checkElementIndex(index, size, "index");
+  }
+
+  /**
+   * Ensures that {@code index} specifies a valid <i>element</i> in an array,
+   * list or string of size {@code size}. An element index may range from zero,
+   * inclusive, to {@code size}, exclusive.
+   *
+   * @param index a user-supplied index identifying an element of an array, list
+   *     or string
+   * @param size the size of that array, list or string
+   * @param desc the text to use to describe this index in an error message
+   * @throws IndexOutOfBoundsException if {@code index} is negative or is not
+   *     less than {@code size}
+   * @throws IllegalArgumentException if {@code size} is negative
+   */
+  public static void checkElementIndex(int index, int size, String desc) {
+    checkArgument(size >= 0, "negative size: %s", size);
+    if (index < 0) {
+      throw new IndexOutOfBoundsException(
+          format("%s (%s) must not be negative", desc, index));
+    }
+    if (index >= size) {
+      throw new IndexOutOfBoundsException(
+          format("%s (%s) must be less than size (%s)", desc, index, size));
+    }
+  }
+
+  /**
+   * Ensures that {@code index} specifies a valid <i>position</i> in an array,
+   * list or string of size {@code size}. A position index may range from zero
+   * to {@code size}, inclusive.
+   *
+   * @param index a user-supplied index identifying a position in an array, list
+   *     or string
+   * @param size the size of that array, list or string
+   * @throws IndexOutOfBoundsException if {@code index} is negative or is
+   *     greater than {@code size}
+   * @throws IllegalArgumentException if {@code size} is negative
+   */
+  public static void checkPositionIndex(int index, int size) {
+    checkPositionIndex(index, size, "index");
+  }
+
+  /**
+   * Ensures that {@code index} specifies a valid <i>position</i> in an array,
+   * list or string of size {@code size}. A position index may range from zero
+   * to {@code size}, inclusive.
+   *
+   * @param index a user-supplied index identifying a position in an array, list
+   *     or string
+   * @param size the size of that array, list or string
+   * @param desc the text to use to describe this index in an error message
+   * @throws IndexOutOfBoundsException if {@code index} is negative or is
+   *     greater than {@code size}
+   * @throws IllegalArgumentException if {@code size} is negative
+   */
+  public static void checkPositionIndex(int index, int size, String desc) {
+    checkArgument(size >= 0, "negative size: %s", size);
+    if (index < 0) {
+      throw new IndexOutOfBoundsException(format(
+          "%s (%s) must not be negative", desc, index));
+    }
+    if (index > size) {
+      throw new IndexOutOfBoundsException(format(
+          "%s (%s) must not be greater than size (%s)", desc, index, size));
+    }
+  }
+
+  /**
+   * Ensures that {@code start} and {@code end} specify a valid <i>positions</i>
+   * in an array, list or string of size {@code size}, and are in order. A
+   * position index may range from zero to {@code size}, inclusive.
+   *
+   * @param start a user-supplied index identifying a starting position in an
+   *     array, list or string
+   * @param end a user-supplied index identifying a ending position in an array,
+   *     list or string
+   * @param size the size of that array, list or string
+   * @throws IndexOutOfBoundsException if either index is negative or is
+   *     greater than {@code size}, or if {@code end} is less than {@code start}
+   * @throws IllegalArgumentException if {@code size} is negative
+   */
+  public static void checkPositionIndexes(int start, int end, int size) {
+    checkPositionIndex(start, size, "start index");
+    checkPositionIndex(end, size, "end index");
+    if (end < start) {
+      throw new IndexOutOfBoundsException(format(
+          "end index (%s) must not be less than start index (%s)", end, start));
+    }
+  }
+
+  /**
    * Substitutes each {@code %s} in {@code template} with an argument. These
    * are matched by position - the first {@code %s} gets {@code args[0]}, etc.
    * If there are more arguments than placeholders, the unmatched arguments will

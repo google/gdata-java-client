@@ -178,6 +178,11 @@ public class YouTubeNamespace {
    * Link Rel value for user playlists links.
    */
   public static final String PLAYLISTS_REL = URI + "#user.playlists";
+  
+  /**
+   * Link Rel value for user's friends activity.
+   */
+  public static final String FRIENDSACTIVITY_REL = URI + "#user.friendsactivity";
 
   /**
    * Link Rel value for user favorites links.

@@ -18,7 +18,7 @@
   <property name="sample.authsub.app.name"      value="authsub_sample"/>
   <property name="sample.authsub.app.path"      value="/${sample.authsub.app.name}"/>
   <property name="sample.authsub.app.version"   value="1.0"/>
-  <property name="sample.authsub.basedir"       value="${basedir}/sample/authsub"/>
+  <property name="sample.authsub.basedir"       value="${build}/sample/authsub"/>
   <property name="sample.authsub.build.home"    value="${sample.authsub.basedir}/build"/>
   <property name="sample.authsub.dist.home"     value="${sample.authsub.basedir}/dist"/>
   <property name="sample.authsub.src.home"      value="${sample.authsub.basedir}/src"/>

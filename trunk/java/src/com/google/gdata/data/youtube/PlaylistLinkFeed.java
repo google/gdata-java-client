@@ -18,6 +18,8 @@ package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.batch.BatchUtils;
 
 /**
  * A feed that contains playlist link entries.
@@ -40,5 +42,11 @@ public class PlaylistLinkFeed
   public PlaylistLinkFeed(BaseFeed<?, ?> base) {
     super(PlaylistLinkEntry.class, base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
+  }
+
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
   }
 }

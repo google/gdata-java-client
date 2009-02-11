@@ -17,7 +17,9 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.batch.BatchUtils;
 
 /**
  * Object representation for the comment feed.
@@ -36,5 +38,11 @@ public class CommentFeed
   public CommentFeed(BaseFeed base) {
     super(CommentEntry.class, base);
     EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_COMMENT);
+  }
+
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    BatchUtils.declareExtensions(extProfile);
   }
 }

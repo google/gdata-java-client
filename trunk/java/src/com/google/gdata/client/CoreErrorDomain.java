@@ -34,281 +34,281 @@ public class CoreErrorDomain extends ErrorDomain {
 
   public final ErrorCode versionNotSupported =
       new ErrorCode("versionNotSupported")
-      .setInternalReason("Version is not supported");
+      .withInternalReason("Version is not supported");
 
   public final ErrorCode accountDeleted =
       new ErrorCode("accountDeleted")
-      .setInternalReason("Account deleted");
+      .withInternalReason("Account deleted");
 
   public final ErrorCode accountDisabled =
       new ErrorCode("accountDisabled")
-      .setInternalReason("Account disabled");
+      .withInternalReason("Account disabled");
 
   public final ErrorCode accountUnverified =
       new ErrorCode("accountUnverified")
-      .setInternalReason("Account unverified");
+      .withInternalReason("Account unverified");
 
   public final ErrorCode atomFormatRequired =
       new ErrorCode("atomFormatRequired")
-      .setInternalReason("Batch requires Atom format");
+      .withInternalReason("Batch requires Atom format");
 
   public final ErrorCode batchingNotSupported =
       new ErrorCode("batchingNotSupported")
-      .setInternalReason("Batching not supported by feed");
+      .withInternalReason("Batching not supported by feed");
 
   public final ErrorCode cantAccessFeedData =
       new ErrorCode("cantAccessFeedData")
-      .setInternalReason("Unable to access feed data");
+      .withInternalReason("Unable to access feed data");
 
   public final ErrorCode cantCreateContentGenerator =
       new ErrorCode("cantCreateContentGenerator")
-      .setInternalReason("Unable to create ContentGenerator instance");
+      .withInternalReason("Unable to create ContentGenerator instance");
 
   public final ErrorCode cantCreateEntry =
       new ErrorCode("cantCreateEntry")
-      .setInternalReason("Unable to create entry");
+      .withInternalReason("Unable to create entry");
 
   public final ErrorCode cantCreateExtension =
       new ErrorCode("cantCreateExtension")
-      .setInternalReason("Unable to create extension");
+      .withInternalReason("Unable to create extension");
 
   public final ErrorCode cantCreateFeed =
       new ErrorCode("cantCreateFeed")
-      .setInternalReason("Unable to create feed");
+      .withInternalReason("Unable to create feed");
 
   public final ErrorCode cantCreateProvider =
       new ErrorCode("cantCreateProvider")
-      .setInternalReason("Unable to instantiate provider");
+      .withInternalReason("Unable to instantiate provider");
 
   public final ErrorCode cantDecodeCategoryQuery =
       new ErrorCode("cantDecodeCategoryQuery")
-      .setInternalReason("Unable to decode category query");
+      .withInternalReason("Unable to decode category query");
 
   public final ErrorCode cantEncodeQueryParams =
       new ErrorCode("cantEncodeQueryParams")
-      .setInternalReason("Unable to encode query parameters");
+      .withInternalReason("Unable to encode query parameters");
 
   public final ErrorCode cantExtractJsonValue =
       new ErrorCode("cantExtractJsonValue")
-      .setInternalReason("Cannot extract JSON value");
+      .withInternalReason("Cannot extract JSON value");
 
   public final ErrorCode cantLoadAuthProviderClass =
       new ErrorCode("cantLoadAuthProviderClass")
-      .setInternalReason("authProvider class cannot be loaded");
+      .withInternalReason("authProvider class cannot be loaded");
 
   public final ErrorCode cantLoadEntryClass =
       new ErrorCode("cantLoadEntryClass")
-      .setInternalReason("entry class cannot be loaded");
+      .withInternalReason("entry class cannot be loaded");
 
   public final ErrorCode cantLoadExtensionClass =
       new ErrorCode("cantLoadExtensionClass")
-      .setInternalReason(
+      .withInternalReason(
       "Extension classes must implement the Extension interface");
 
   public final ErrorCode cantLoadExtensionPoint =
       new ErrorCode("cantLoadExtensionPoint")
-      .setInternalReason(
+      .withInternalReason(
       "Unable to load ExtensionPoint class");
 
   public final ErrorCode cantLoadFeedClass =
       new ErrorCode("cantLoadFeedClass")
-      .setInternalReason("feed class cannot be loaded");
+      .withInternalReason("feed class cannot be loaded");
 
   public final ErrorCode cantLoadFeedProviderClass =
       new ErrorCode("cantLoadFeedProviderClass")
-      .setInternalReason("feedProvider class cannot be loaded");
+      .withInternalReason("feedProvider class cannot be loaded");
 
   public final ErrorCode cantLoadGeneratorClass =
       new ErrorCode("cantLoadGeneratorClass")
-      .setInternalReason("Unable to load ContentGenerator class");
+      .withInternalReason("Unable to load ContentGenerator class");
 
   public final ErrorCode cantLoadKindAdaptor =
-    new ErrorCode("cantLoadKindAdaptor")
-    .setInternalReason("Unable to load kind adaptor");
+      new ErrorCode("cantLoadKindAdaptor")
+      .withInternalReason("Unable to load kind adaptor");
 
   public final ErrorCode cantLoadServiceClass =
       new ErrorCode("cantLoadServiceClass")
-      .setInternalReason("Unable to load serviceClass class");
+      .withInternalReason("Unable to load serviceClass class");
 
   public final ErrorCode cantWriteMimeMultipart =
       new ErrorCode("cantWriteMimeMultipart")
-      .setInternalReason("Unable to write MIME multipart message");
+      .withInternalReason("Unable to write MIME multipart message");
 
   public final ErrorCode clientNotWhitelisted =
       new ErrorCode("clientNotWhitelisted")
-      .setInternalReason("Client not whitelisted for ONLINE access");
+      .withInternalReason("Client not whitelisted for ONLINE access");
 
   public final ErrorCode collectionTitleRequired =
       new ErrorCode("collectionTitleRequired")
-      .setInternalReason("Collection must contain a title");
+      .withInternalReason("Collection must contain a title");
 
   public final ErrorCode commentsFeedLinkRequired =
       new ErrorCode("commentsFeedLinkRequired")
-      .setInternalReason("g:comments/g:feedLink is required");
+      .withInternalReason("g:comments/g:feedLink is required");
 
   public final ErrorCode deleteNotSupported =
       new ErrorCode("deleteNotSupported")
-      .setInternalReason("Delete not supported by feed");
+      .withInternalReason("Delete not supported by feed");
 
   public final ErrorCode duplicateAlt =
       new ErrorCode("duplicateAlt")
-      .setInternalReason("Duplicate alt mapping");
+      .withInternalReason("Duplicate alt mapping");
 
   public final ErrorCode duplicateAttribute =
       new ErrorCode("duplicateAttribute")
-      .setInternalReason("Duplicate attribute");
+      .withInternalReason("Duplicate attribute");
 
   public final ErrorCode duplicateAttributeValue =
       new ErrorCode("duplicateAttributeValue")
-      .setInternalReason("Duplicate attribute value");
+      .withInternalReason("Duplicate attribute value");
 
   public final ErrorCode duplicateContent =
       new ErrorCode("duplicateContent")
-      .setInternalReason("Duplicate content");
+      .withInternalReason("Duplicate content");
 
   public final ErrorCode duplicateDraft =
       new ErrorCode("duplicateDraft")
-      .setInternalReason("Duplicate draft");
+      .withInternalReason("Duplicate draft");
 
   public final ErrorCode duplicateEmail =
       new ErrorCode("duplicateEmail")
-      .setInternalReason("Duplicate email");
+      .withInternalReason("Duplicate email");
 
   public final ErrorCode duplicateEntryId =
       new ErrorCode("duplicateEntryId")
-      .setInternalReason("Duplicate entry ID");
+      .withInternalReason("Duplicate entry ID");
 
   public final ErrorCode duplicateExtension =
       new ErrorCode("duplicateExtension")
-      .setInternalReason("Duplicate extension element");
+      .withInternalReason("Duplicate extension element");
 
   public final ErrorCode duplicateFeedId =
       new ErrorCode("duplicateFeedId")
-      .setInternalReason("Duplicate feed ID");
+      .withInternalReason("Duplicate feed ID");
 
   public final ErrorCode duplicateGenerator =
       new ErrorCode("duplicateGenerator")
-      .setInternalReason("Duplicate generator");
+      .withInternalReason("Duplicate generator");
 
   public final ErrorCode duplicateIcon =
       new ErrorCode("duplicateIcon")
-      .setInternalReason("Duplicate icon");
+      .withInternalReason("Duplicate icon");
 
   public final ErrorCode duplicateItemsPerPage =
       new ErrorCode("duplicateItemsPerPage")
-      .setInternalReason("Duplicate itemsPerPage");
+      .withInternalReason("Duplicate itemsPerPage");
 
   public final ErrorCode duplicateLogo =
       new ErrorCode("duplicateLogo")
-      .setInternalReason("Duplicate logo");
+      .withInternalReason("Duplicate logo");
 
   public final ErrorCode duplicateName =
       new ErrorCode("duplicateName")
-      .setInternalReason("Duplicate name");
+      .withInternalReason("Duplicate name");
 
   public final ErrorCode duplicatePathPrefix =
       new ErrorCode("duplicatePathPrefix")
-      .setInternalReason("Duplicate pathPrefix element");
+      .withInternalReason("Duplicate pathPrefix element");
 
   public final ErrorCode duplicateRights =
       new ErrorCode("duplicateRights")
-      .setInternalReason("Duplicate rights");
+      .withInternalReason("Duplicate rights");
 
   public final ErrorCode duplicateStartIndex =
       new ErrorCode("duplicateStartIndex")
-      .setInternalReason("Duplicate startIndex");
+      .withInternalReason("Duplicate startIndex");
 
   public final ErrorCode duplicateSubtitle =
       new ErrorCode("duplicateSubtitle")
-      .setInternalReason("Duplicate subtitle");
+      .withInternalReason("Duplicate subtitle");
 
   public final ErrorCode duplicateSummary =
       new ErrorCode("duplicateSummary")
-      .setInternalReason("Duplicate summary");
+      .withInternalReason("Duplicate summary");
 
   public final ErrorCode duplicateTextNodeValue =
       new ErrorCode("duplicateTextNodeValue")
-      .setInternalReason("Duplicate text node value");
+      .withInternalReason("Duplicate text node value");
 
   public final ErrorCode duplicateTitle =
       new ErrorCode("duplicateTitle")
-      .setInternalReason("Duplicate title");
+      .withInternalReason("Duplicate title");
 
   public final ErrorCode duplicateTotalResults =
       new ErrorCode("duplicateTotalResults")
-      .setInternalReason("Duplicate totalResults");
+      .withInternalReason("Duplicate totalResults");
 
   public final ErrorCode duplicateUri =
       new ErrorCode("duplicateUri")
-      .setInternalReason("Duplicate URI");
+      .withInternalReason("Duplicate URI");
 
   public final ErrorCode duplicateUrlBase =
       new ErrorCode("duplicateUrlBase")
-      .setInternalReason("Duplicate urlBase element");
+      .withInternalReason("Duplicate urlBase element");
 
   public final ErrorCode duplicateValue =
       new ErrorCode("duplicateValue")
-      .setInternalReason("Duplicate value");
+      .withInternalReason("Duplicate value");
 
   public final ErrorCode elementNotRepeatable =
       new ErrorCode("elementNotRepeatable")
-      .setInternalReason("Element is not repeatable");
+      .withInternalReason("Element is not repeatable");
 
   public final ErrorCode elementNotSimple =
       new ErrorCode("elementNotSimple")
-      .setInternalReason("Element is not simple");
+      .withInternalReason("Element is not simple");
 
   public final ErrorCode emailValueRequired =
       new ErrorCode("emailValueRequired")
-      .setInternalReason("email must have a value");
+      .withInternalReason("email must have a value");
 
   public final ErrorCode entityTagMatches =
       new ErrorCode("entityTagMatches")
-      .setInternalReason("At least one entity tag matches");
+      .withInternalReason("At least one entity tag matches");
 
   public final ErrorCode entryNotAssociated =
       new ErrorCode("entryNotAssociated")
-      .setInternalReason("Entry is not associated with a GData service");
+      .withInternalReason("Entry is not associated with a GData service");
 
   public final ErrorCode etagsMismatch =
       new ErrorCode("etagsMismatch")
-      .setInternalReason("Etags mismatch");
+      .withInternalReason("Etags mismatch");
 
   public final ErrorCode etagsUnsupported =
       new ErrorCode("etagsUnsupported")
-      .setInternalReason("Resource does not support Etags");
+      .withInternalReason("Resource does not support Etags");
 
   public final ErrorCode feedNotAssociated =
       new ErrorCode("feedNotAssociated")
-      .setInternalReason("Feed is not associated with a GData service");
+      .withInternalReason("Feed is not associated with a GData service");
 
   public final ErrorCode geoPtLatRequired =
       new ErrorCode("geoPtLatRequired")
-      .setInternalReason("g:geoPt/@lat is required");
+      .withInternalReason("g:geoPt/@lat is required");
 
   public final ErrorCode geoPtLonRequired =
       new ErrorCode("geoPtLonRequired")
-      .setInternalReason("g:geoPt/@lon is required");
+      .withInternalReason("g:geoPt/@lon is required");
 
   public final ErrorCode headerRequired =
       new ErrorCode("headerRequired")
-      .setInternalReason("Header required");
+      .withInternalReason("Header required");
 
   public final ErrorCode iconValueRequired =
       new ErrorCode("iconValueRequired")
-      .setInternalReason("icon must have a value");
+      .withInternalReason("icon must have a value");
 
   public final ErrorCode idRequired =
       new ErrorCode("idRequired")
-      .setInternalReason("g:originalEvent/@id is required");
+      .withInternalReason("g:originalEvent/@id is required");
 
   public final ErrorCode idValueRequired =
       new ErrorCode("idValueRequired")
-      .setInternalReason("ID must have a value");
+      .withInternalReason("ID must have a value");
 
   public final ErrorCode imsNotSupported =
       new ErrorCode("imsNotSupported")
-      .setInternalReason(
+      .withInternalReason(
       "If-Modified-Since HTTP precondition not supported on POST");
 
   public final ErrorCode incorrectDataVersion =
@@ -316,608 +316,624 @@ public class CoreErrorDomain extends ErrorDomain {
   
   public final ErrorCode insertNotSupported =
       new ErrorCode("insertNotSupported")
-      .setInternalReason("Insert not supported by feed");
+      .withInternalReason("Insert not supported by feed");
 
   public final ErrorCode insufficientSecurityLevel =
       new ErrorCode("insufficientSecurityLevel")
-      .setInternalReason("Insufficient security level");
+      .withInternalReason("Insufficient security level");
 
   public final ErrorCode invalidAltValue =
       new ErrorCode("invalidAltValue")
-      .setInternalReason("Invalid alt value for entry");
+      .withInternalReason("Invalid alt value for entry");
 
   public final ErrorCode invalidArbitraryXml =
       new ErrorCode("invalidArbitraryXml")
-      .setInternalReason("Invalid value for arbitrary XML");
+      .withInternalReason("Invalid value for arbitrary XML");
 
   public final ErrorCode invalidAttributeValue =
       new ErrorCode("invalidAttributeValue")
-      .setInternalReason("Invalid value for attribute");
+      .withInternalReason("Invalid value for attribute");
 
   public final ErrorCode invalidAverageRatingAttribute =
       new ErrorCode("invalidAverageRatingAttribute")
-      .setInternalReason(
+      .withInternalReason(
       "gd:rating/@average should lie in between " +
       "gd:rating/@min and gd:rating/@max");
 
   public final ErrorCode invalidBase64 =
       new ErrorCode("invalidBase64")
-      .setInternalReason("Expected Base-64 content");
+      .withInternalReason("Expected Base-64 content");
 
   public final ErrorCode invalidBatchOperationType =
       new ErrorCode("invalidBatchOperationType")
-      .setInternalReason("Invalid type for batch:operation");
+      .withInternalReason("Invalid type for batch:operation");
 
   public final ErrorCode invalidBooleanAttribute =
       new ErrorCode("invalidBooleanAttribute")
-      .setInternalReason("Invalid value for boolean attribute");
+      .withInternalReason("Invalid value for boolean attribute");
 
   public final ErrorCode invalidCacheControlOption =
       new ErrorCode("invalidCacheControlOption")
-      .setInternalReason("Invalid option in Cache-Control header");
+      .withInternalReason("Invalid option in Cache-Control header");
 
   public final ErrorCode invalidCategoryFilter =
       new ErrorCode("invalidCategoryFilter")
-      .setInternalReason("Invalid category filter");
+      .withInternalReason("Invalid category filter");
 
+  public final ErrorCode invalidChildElement =
+      new ErrorCode("invalidChildElement")
+      .withInternalReason("Child elements are not allowed.");
+  
   public final ErrorCode invalidContentType =
       new ErrorCode("invalidContentType")
-      .setInternalReason("Malformed Content-Type");
+      .withInternalReason("Malformed Content-Type");
 
   public final ErrorCode invalidCountHintAttribute =
       new ErrorCode("invalidCountHintAttribute")
-      .setInternalReason("Invalid gd:feedLink/@countHint");
+      .withInternalReason("Invalid gd:feedLink/@countHint");
 
   public final ErrorCode invalidDatetime =
       new ErrorCode("invalidDatetime")
-      .setInternalReason("Badly formatted datetime");
+      .withInternalReason("Badly formatted datetime");
 
   public final ErrorCode invalidDoubleAttribute =
       new ErrorCode("invalidDoubleAttribute")
-      .setInternalReason("Invalid value for double attribute");
+      .withInternalReason("Invalid value for double attribute");
 
   public final ErrorCode invalidDraft =
       new ErrorCode("invalidDraft")
-      .setInternalReason("Invalid value for draft");
+      .withInternalReason("Invalid value for draft");
 
   public final ErrorCode invalidEndValue =
       new ErrorCode("invalidEndValue")
-      .setInternalReason("Invalid end value");
+      .withInternalReason("Invalid end value");
 
   public final ErrorCode invalidEnumValue =
       new ErrorCode("invalidEnumValue")
-      .setInternalReason("Invalid enum value");
+      .withInternalReason("Invalid enum value");
   
   public final ErrorCode invalidErrorFormat =
       new ErrorCode("invalidErrorFormat")
-      .setInternalReason("Invalid error format");
+      .withInternalReason("Invalid error format");
+  
+  public final ErrorCode invalidExtension =
+      new ErrorCode("invalidExtension")
+      .withInternalReason("Invalid extension element");
   
   public final ErrorCode invalidFixedAttribute =
       new ErrorCode("invalidFixedAttribute")
-      .setInternalReason("Invalid value for fixed attribute");
+      .withInternalReason("Invalid value for fixed attribute");
 
   public final ErrorCode invalidFloatAttribute =
       new ErrorCode("invalidFloatAttribute")
-      .setInternalReason("Invalid value for float attribute");
+      .withInternalReason("Invalid value for float attribute");
 
   public final ErrorCode invalidGeoPtElev =
       new ErrorCode("invalidGeoPtElev")
-      .setInternalReason("Invalid geoPt/@elev");
+      .withInternalReason("Invalid geoPt/@elev");
 
   public final ErrorCode invalidGeoPtLat =
       new ErrorCode("invalidGeoPtLat")
-      .setInternalReason("Invalid geoPt/@lat");
+      .withInternalReason("Invalid geoPt/@lat");
 
   public final ErrorCode invalidGeoPtLon =
       new ErrorCode("invalidGeoPtLon")
-      .setInternalReason("Invalid geoPt/@lon");
+      .withInternalReason("Invalid geoPt/@lon");
 
   public final ErrorCode invalidGeoPtTime =
       new ErrorCode("invalidGeoPtTime")
-      .setInternalReason("Date/time value expected");
+      .withInternalReason("Date/time value expected");
 
   public final ErrorCode invalidIntegerAttribute =
       new ErrorCode("invalidIntegerAttribute")
-      .setInternalReason("Invalid value for integer attribute");
+      .withInternalReason("Invalid value for integer attribute");
 
   public final ErrorCode invalidJson =
       new ErrorCode("invalidJson")
-      .setInternalReason("Invalid JSON");
+      .withInternalReason("Invalid JSON");
 
   public final ErrorCode invalidLongAttribute =
       new ErrorCode("invalidLongAttribute")
-      .setInternalReason("Invalid value for long attribute");
+      .withInternalReason("Invalid value for long attribute");
 
   public final ErrorCode invalidMediaSourceUri =
       new ErrorCode("invalidMediaSourceUri")
-      .setInternalReason("Invalid media source URI");
+      .withInternalReason("Invalid media source URI");
 
   public final ErrorCode invalidMediaType =
       new ErrorCode("invalidMediaType")
-      .setInternalReason("Not a valid media type");
+      .withInternalReason("Not a valid media type");
 
   public final ErrorCode invalidMethodOverrideHeader =
       new ErrorCode("invalidMethodOverrideHeader")
-      .setInternalReason("Invalid method override header");
+      .withInternalReason("Invalid method override header");
 
   public final ErrorCode invalidMimeType =
       new ErrorCode("invalidMimeType")
-      .setInternalReason("Malformed MIME type");
+      .withInternalReason("Malformed MIME type");
 
   public final ErrorCode invalidParameterValue =
       new ErrorCode("invalidParameterValue")
-      .setInternalReason("Invalid parameter value");
+      .withInternalReason("Invalid parameter value");
 
   public final ErrorCode invalidRedirectedToUrl =
       new ErrorCode("invalidRedirectedToUrl")
-      .setInternalReason("Invalid redirected-to URL");
+      .withInternalReason("Invalid redirected-to URL");
 
   public final ErrorCode invalidReminderAbsoluteTime =
       new ErrorCode("invalidReminderAbsoluteTime")
-      .setInternalReason("Invalid g:reminder/@absoluteTime");
+      .withInternalReason("Invalid g:reminder/@absoluteTime");
 
   public final ErrorCode invalidReminderDays =
       new ErrorCode("invalidReminderDays")
-      .setInternalReason("Invalid g:reminder/@days");
+      .withInternalReason("Invalid g:reminder/@days");
 
   public final ErrorCode invalidReminderHours =
       new ErrorCode("invalidReminderHours")
-      .setInternalReason("Invalid g:reminder/@hours");
+      .withInternalReason("Invalid g:reminder/@hours");
 
   public final ErrorCode invalidReminderMethod =
       new ErrorCode("invalidReminderMethod")
-      .setInternalReason("Invalid g:reminder/@method");
+      .withInternalReason("Invalid g:reminder/@method");
 
   public final ErrorCode invalidReminderMinutes =
       new ErrorCode("invalidReminderMinutes")
-      .setInternalReason("Invalid g:reminder/@minutes");
+      .withInternalReason("Invalid g:reminder/@minutes");
 
   public final ErrorCode invalidRequestUri =
       new ErrorCode("invalidRequestUri")
-      .setInternalReason("Invalid request URI");
+      .withInternalReason("Invalid request URI");
 
   public final ErrorCode invalidRequestVersion =
       new ErrorCode("invalidRequestVersion")
-      .setInternalReason("Invalid request version");
+      .withInternalReason("Invalid request version");
 
   public final ErrorCode invalidResourceVersion =
       new ErrorCode("invalidResourceVersion")
-      .setInternalReason("Unexpected resource version ID");
+      .withInternalReason("Unexpected resource version ID");
 
   public final ErrorCode invalidSecurityProtocol =
       new ErrorCode("invalidSecurityProtocol")
-      .setInternalReason("Invalid security protocol");
+      .withInternalReason("Invalid security protocol");
 
   public final ErrorCode invalidServiceClass =
       new ErrorCode("invalidServiceClass")
-      .setInternalReason("Invalid service class attribute");
+      .withInternalReason("Invalid service class attribute");
 
   public final ErrorCode invalidStartValue =
       new ErrorCode("invalidStartValue")
-      .setInternalReason("Invalid start value");
+      .withInternalReason("Invalid start value");
 
+  public final ErrorCode invalidTextContent =
+      new ErrorCode("invalidTextContent")
+      .withInternalReason("Invalid text content");
+  
   public final ErrorCode invalidTextContentType =
       new ErrorCode("invalidTextContentType")
-      .setInternalReason("Invalid text content type");
+      .withInternalReason("Invalid text content type");
 
   public final ErrorCode invalidTimeOffset =
       new ErrorCode("invalidTimeOffset")
-      .setInternalReason("Invalid time offset");
+      .withInternalReason("Invalid time offset");
 
   public final ErrorCode invalidToDoDueTime =
       new ErrorCode("invalidToDoDueTime")
-      .setInternalReason("Invalid g:toDo/@dueTime");
+      .withInternalReason("Invalid g:toDo/@dueTime");
 
   public final ErrorCode invalidToDoHours =
       new ErrorCode("invalidToDoHours")
-      .setInternalReason("Invalid g:toDo/@hours");
+      .withInternalReason("Invalid g:toDo/@hours");
 
   public final ErrorCode invalidUri =
       new ErrorCode("invalidUri")
-      .setInternalReason("Badly formatted URI");
+      .withInternalReason("Badly formatted URI");
 
   public final ErrorCode invalidUriTemplate =
       new ErrorCode("invalidUriTemplate")
-      .setInternalReason("Invalid uriTemplate");
+      .withInternalReason("Invalid uriTemplate");
 
   public final ErrorCode invalidUrl =
       new ErrorCode("invalidUrl")
-      .setInternalReason("Badly formatted URL");
+      .withInternalReason("Badly formatted URL");
 
   public final ErrorCode invalidValueRatingAttribute =
       new ErrorCode("invalidValueRatingAttribute")
-      .setInternalReason(
+      .withInternalReason(
       "gd:rating/@value should lie in between " +
       "gd:rating/@min and gd:rating/@max");
 
   public final ErrorCode invalidVersion =
       new ErrorCode("invalidVersion")
-      .setInternalReason("Invalid version");
+      .withInternalReason("Invalid version");
 
   public final ErrorCode itemsPerPageNotInteger =
       new ErrorCode("itemsPerPageNotInteger")
-      .setInternalReason("itemsPerPage is not an integer");
+      .withInternalReason("itemsPerPage is not an integer");
 
   public final ErrorCode lengthNotInteger =
       new ErrorCode("lengthNotInteger")
-      .setInternalReason("Length must be an integer");
+      .withInternalReason("Length must be an integer");
 
   public final ErrorCode logoValueRequired =
       new ErrorCode("logoValueRequired")
-      .setInternalReason("logo must have a value");
+      .withInternalReason("logo must have a value");
 
   public final ErrorCode matchHeaderRequired =
       new ErrorCode("matchHeaderRequired")
-      .setInternalReason("If-Match or If-None-Match header required");
+      .withInternalReason("If-Match or If-None-Match header required");
 
   public final ErrorCode minGreaterThanMax =
       new ErrorCode("minGreaterThanMax")
-      .setInternalReason(
+      .withInternalReason(
       "'updatedMin' must be less than or equal to 'updatedMax'");
 
   public final ErrorCode missingAddressAttribute =
       new ErrorCode("missingAddressAttribute")
-      .setInternalReason("g:email/@address is required");
+      .withInternalReason("g:email/@address is required");
 
   public final ErrorCode missingAltAttribute =
       new ErrorCode("missingAltAttribute")
-      .setInternalReason("Missing alt attribute");
+      .withInternalReason("Missing alt attribute");
 
   public final ErrorCode missingAttribute =
       new ErrorCode("missingAttribute")
-      .setInternalReason("Missing attribute");
+      .withInternalReason("Missing attribute");
 
   public final ErrorCode missingContact =
       new ErrorCode("missingContact")
-      .setInternalReason("missing contact");
+      .withInternalReason("missing contact");
 
   public final ErrorCode missingContentType =
       new ErrorCode("missingContentType")
-      .setInternalReason("Response contains no content type");
+      .withInternalReason("Response contains no content type");
 
   public final ErrorCode missingConverter =
       new ErrorCode("missingConverter")
-      .setInternalReason("No converter for type");
+      .withInternalReason("No converter for type");
 
   public final ErrorCode missingDescription =
       new ErrorCode("missingDescription")
-      .setInternalReason("missing description");
+      .withInternalReason("missing description");
 
   public final ErrorCode missingEntry =
       new ErrorCode("missingEntry")
-      .setInternalReason("Entry not found");
+      .withInternalReason("Entry not found");
 
   public final ErrorCode missingExtensionClass =
       new ErrorCode("missingExtensionClass")
-      .setInternalReason("Missing extensionClass attribute");
+      .withInternalReason("Missing extensionClass attribute");
 
   public final ErrorCode missingExtensionElement =
       new ErrorCode("missingExtensionElement")
-      .setInternalReason("Required extension element");
+      .withInternalReason("Required extension element");
 
   public final ErrorCode missingFeed =
       new ErrorCode("missingFeed")
-      .setInternalReason("Feed not found");
+      .withInternalReason("Feed not found");
 
   public final ErrorCode missingFeedProvider =
       new ErrorCode("missingFeedProvider")
-      .setInternalReason("No FeedProvider instance");
+      .withInternalReason("No FeedProvider instance");
 
   public final ErrorCode missingFeedProviderClass =
       new ErrorCode("missingFeedProviderClass")
-      .setInternalReason("Missing feedProviderClass attribute");
+      .withInternalReason("Missing feedProviderClass attribute");
 
   public final ErrorCode missingFeedProviderDescription =
       new ErrorCode("missingFeedProviderDescription")
-      .setInternalReason(
+      .withInternalReason(
       "At least one FeedProviderDescription must be specified");
 
   public final ErrorCode missingFormat =
       new ErrorCode("missingFormat")
-      .setInternalReason("missing format");
+      .withInternalReason("missing format");
 
   public final ErrorCode missingGeneratorClass =
       new ErrorCode("missingGeneratorClass")
-      .setInternalReason("Missing generatorClass attribute");
+      .withInternalReason("Missing generatorClass attribute");
 
   public final ErrorCode missingHrefAttribute =
       new ErrorCode("missingHrefAttribute")
-      .setInternalReason("Link must have an 'href' attribute");
+      .withInternalReason("Link must have an 'href' attribute");
 
   public final ErrorCode missingLocalName =
       new ErrorCode("missingLocalName")
-      .setInternalReason("Missing localName");
+      .withInternalReason("Missing localName");
 
   public final ErrorCode missingNameAttribute =
       new ErrorCode("missingNameAttribute")
-      .setInternalReason("Missing name attribute for customParam");
+      .withInternalReason("Missing name attribute for customParam");
 
   public final ErrorCode missingNamespace =
       new ErrorCode("missingNamespace")
-      .setInternalReason("Missing namespace");
+      .withInternalReason("Missing namespace");
 
   public final ErrorCode missingNamespaceDescription =
       new ErrorCode("missingNamespaceDescription")
-      .setInternalReason("No matching NamespaceDescription");
+      .withInternalReason("No matching NamespaceDescription");
 
   public final ErrorCode missingPathPrefix =
       new ErrorCode("missingPathPrefix")
-      .setInternalReason("pathPrefix is missing");
+      .withInternalReason("pathPrefix is missing");
 
   public final ErrorCode missingPatternAttribute =
       new ErrorCode("missingPatternAttribute")
-      .setInternalReason("Missing pattern attribute for customParam");
+      .withInternalReason("Missing pattern attribute for customParam");
 
   public final ErrorCode missingProviderConstructor =
       new ErrorCode("missingProviderConstructor")
-      .setInternalReason("Provider constructor not found");
+      .withInternalReason("Provider constructor not found");
 
   public final ErrorCode missingRequiredContent =
       new ErrorCode("missingRequiredContent")
-      .setInternalReason("Missing required text content");
+      .withInternalReason("Missing required text content");
 
   public final ErrorCode missingResourceVersion =
       new ErrorCode("missingResourceVersion")
-      .setInternalReason("Missing resource version ID");
+      .withInternalReason("Missing resource version ID");
 
   public final ErrorCode missingServiceClass =
       new ErrorCode("missingServiceClass")
-      .setInternalReason("Missing serviceClass attribute");
+      .withInternalReason("Missing serviceClass attribute");
 
   public final ErrorCode missingShortName =
       new ErrorCode("missingShortName")
-      .setInternalReason("missing shortName");
+      .withInternalReason("missing shortName");
 
   public final ErrorCode missingSrcAttribute =
       new ErrorCode("missingSrcAttribute")
-      .setInternalReason("Missing src attribute");
+      .withInternalReason("Missing src attribute");
 
   public final ErrorCode missingTags =
       new ErrorCode("missingTags")
-      .setInternalReason("missing tags");
+      .withInternalReason("missing tags");
 
   public final ErrorCode missingTermAttribute =
       new ErrorCode("missingTermAttribute")
-      .setInternalReason("Category must have a 'term' attribute");
+      .withInternalReason("Category must have a 'term' attribute");
 
+  public final ErrorCode missingTextContent =
+      new ErrorCode("missingTextContent")
+      .withInternalReason("Text content is required for this element.");
+  
   public final ErrorCode missingUriTemplate =
       new ErrorCode("missingUriTemplate")
-      .setInternalReason("Missing uriTemplate");
+      .withInternalReason("Missing uriTemplate");
 
   public final ErrorCode missingVersion =
       new ErrorCode("missingVersion")
-      .setInternalReason("Missing version attribute");
+      .withInternalReason("Missing version attribute");
 
   public final ErrorCode mustBeBoolean =
       new ErrorCode("mustBeBoolean")
-      .setInternalReason("Attribute must be boolean");
+      .withInternalReason("Attribute must be boolean");
 
   public final ErrorCode mustExtendBaseEntry =
       new ErrorCode("mustExtendBaseEntry")
-      .setInternalReason("entry class must derive from BaseEntry");
+      .withInternalReason("entry class must derive from BaseEntry");
 
   public final ErrorCode mustExtendBaseFeed =
       new ErrorCode("mustExtendBaseFeed")
-      .setInternalReason("feed class must derive from BaseFeed");
+      .withInternalReason("feed class must derive from BaseFeed");
 
   public final ErrorCode mustExtendExtensionPoint =
       new ErrorCode("mustExtendExtensionPoint")
-      .setInternalReason(
+      .withInternalReason(
       "Extended classes must extend ExtensionPoint");
 
   public final ErrorCode mustImplementExtension =
       new ErrorCode("mustImplementExtension")
-      .setInternalReason(
+      .withInternalReason(
       "Extension classes must implement the Extension interface");
 
   public final ErrorCode nameRequired =
       new ErrorCode("nameRequired")
-      .setInternalReason("g:extendedProperty/@name is required");
+      .withInternalReason("g:extendedProperty/@name is required");
 
   public final ErrorCode nameValueRequired =
       new ErrorCode("nameValueRequired")
-      .setInternalReason("name must have a value");
+      .withInternalReason("name must have a value");
 
   public final ErrorCode noAcceptableType =
       new ErrorCode("noAcceptableType")
-      .setInternalReason("No acceptable type available");
+      .withInternalReason("No acceptable type available");
 
   public final ErrorCode noAcceptableLanguage =
       new ErrorCode("noAcceptableLanguage")
-      .setInternalReason("No acceptable language available");
+      .withInternalReason("No acceptable language available");
 
   public final ErrorCode noAvailableServers =
       new ErrorCode("noAvailableServers")
-      .setInternalReason("Cannot find any servers");
+      .withInternalReason("Cannot find any servers");
 
   public final ErrorCode noPostConcurrency =
       new ErrorCode("noPostConcurrency")
-      .setInternalReason("POST method does not support concurrency");
+      .withInternalReason("POST method does not support concurrency");
 
   public final ErrorCode notModifiedSinceTimestamp =
       new ErrorCode("notModifiedSinceTimestamp")
-      .setInternalReason("Entity not modified since specified time");
+      .withInternalReason("Entity not modified since specified time");
 
   public final ErrorCode nullJsonValue =
       new ErrorCode("nullJsonValue")
-      .setInternalReason("Null JSON values not supported");
+      .withInternalReason("Null JSON values not supported");
 
   public final ErrorCode optionsNotSupported =
       new ErrorCode("optionsNotSupported")
-      .setInternalReason("OPTIONS is not supported");
+      .withInternalReason("OPTIONS is not supported");
   
   public final ErrorCode optimisticConcurrencyNotSupported =
       new ErrorCode("optimisticConcurrencyNotSupported")
-      .setInternalReason("Optimistic concurrency is no longer supported");
+      .withInternalReason("Optimistic concurrency is no longer supported");
 
   public final ErrorCode pathPrefixValueRequired =
       new ErrorCode("pathPrefixValueRequired")
-      .setInternalReason("pathPrefix element must have a value");
+      .withInternalReason("pathPrefix element must have a value");
 
   public final ErrorCode predicatesNotAllowed =
       new ErrorCode("predicatesNotAllowed")
-      .setInternalReason(
+      .withInternalReason(
       "Cannot specify any predicates with requested content type");
 
   public final ErrorCode responseMissingContentType =
       new ErrorCode("responseMissingContentType")
-      .setInternalReason("Response contains no content type");
+      .withInternalReason("Response contains no content type");
 
   public final ErrorCode responseMissingEntry =
       new ErrorCode("responseMissingEntry")
-      .setInternalReason("Response contains no entry");
+      .withInternalReason("Response contains no entry");
 
   public final ErrorCode responseMissingFeed =
       new ErrorCode("responseMissingFeed")
-      .setInternalReason("Response contains no feed");
+      .withInternalReason("Response contains no feed");
 
   public final ErrorCode rpcUnsupported =
       new ErrorCode("rpcUnsupported")
-      .setInternalReason("RPC authentication not enabled");
+      .withInternalReason("RPC authentication not enabled");
 
   public final ErrorCode serverOverloaded =
       new ErrorCode("serverOverloaded")
-      .setInternalReason("Servers are overloaded");
+      .withInternalReason("Servers are overloaded");
 
   public final ErrorCode startIndexNotInteger =
       new ErrorCode("startIndexNotInteger")
-      .setInternalReason("startIndex is not an integer");
+      .withInternalReason("startIndex is not an integer");
 
   public final ErrorCode targetFeedReadOnly =
       new ErrorCode("targetFeedReadOnly")
-      .setInternalReason("Target feed is read-only");
+      .withInternalReason("Target feed is read-only");
 
   public final ErrorCode textNotAllowed =
       new ErrorCode("textNotAllowed")
-      .setInternalReason("This element must not have any text() data");
+      .withInternalReason("This element must not have any text() data");
 
   public final ErrorCode timestampAndEntityTagMatch =
       new ErrorCode("timestampAndEntityTagMatch")
-      .setInternalReason("Timestamp and entity tag match");
+      .withInternalReason("Timestamp and entity tag match");
 
   public final ErrorCode toDoCompletedRequired =
       new ErrorCode("toDoCompletedRequired")
-      .setInternalReason("g:toDo/@completed is required");
+      .withInternalReason("g:toDo/@completed is required");
 
   public final ErrorCode tooManyAttributes =
       new ErrorCode("tooManyAttributes")
-      .setInternalReason("g:reminder must have zero or one attribute");
+      .withInternalReason("g:reminder must have zero or one attribute");
 
   public final ErrorCode totalResultsNotInteger =
       new ErrorCode("totalResultsNotInteger")
-      .setInternalReason("totalResults is not an integer");
+      .withInternalReason("totalResults is not an integer");
 
   public final ErrorCode traceNotSupported =
       new ErrorCode("traceNotSupported")
-      .setInternalReason("TRACE is not supported");
+      .withInternalReason("TRACE is not supported");
 
   public final ErrorCode unknownMdbService =
       new ErrorCode("unknownMdbService")
-      .setInternalReason("Unknown MDB service");
+      .withInternalReason("Unknown MDB service");
 
   public final ErrorCode unparsableS2SHeader =
       new ErrorCode("unparsableS2SHeader")
-      .setInternalReason("Error parsing S2S auth header");
+      .withInternalReason("Error parsing S2S auth header");
 
   public final ErrorCode unrecognizedElement =
       new ErrorCode("unrecognizedElement")
-      .setInternalReason("Unrecognized element");
+      .withInternalReason("Unrecognized element");
 
   public final ErrorCode unrecognizedKey =
       new ErrorCode("unrecognizedKey")
-      .setInternalReason("Unrecognized key");
+      .withInternalReason("Unrecognized key");
 
   public final ErrorCode unrecognizedParserEvent =
       new ErrorCode("unrecognizedParserEvent")
-      .setInternalReason("Unrecognized parser event");
+      .withInternalReason("Unrecognized parser event");
 
   public final ErrorCode unsupportedContentType =
       new ErrorCode("unsupportedContentType")
-      .setInternalReason("Unsupported content type");
+      .withInternalReason("Unsupported content type");
 
   public final ErrorCode unsupportedEncoding =
       new ErrorCode("unsupportedEncoding")
-      .setInternalReason("Unsupported encoding");
+      .withInternalReason("Unsupported encoding");
 
   public final ErrorCode unsupportedHeader =
       new ErrorCode("unsupportedHeader")
-      .setInternalReason("Header not supported");
+      .withInternalReason("Header not supported");
 
   public final ErrorCode unsupportedHeaderIfModifiedSince =
       new ErrorCode("unsupportedHeaderIfModifiedSince")
-      .setInternalReason("If-Unmodified-Since header not supported");
+      .withInternalReason("If-Unmodified-Since header not supported");
 
   public final ErrorCode unsupportedHeaderIfNoneMatch =
       new ErrorCode("unsupportedHeaderIfNoneMatch")
-      .setInternalReason("If-None-Match: * is not supported");
+      .withInternalReason("If-None-Match: * is not supported");
 
   public final ErrorCode unsupportedNullJson =
       new ErrorCode("unsupportedNullJson")
-      .setInternalReason("Null JSON values not supported");
+      .withInternalReason("Null JSON values not supported");
 
   public final ErrorCode unsupportedOutputFormat =
       new ErrorCode("unsupportedOutputFormat")
-      .setInternalReason("Unsupported output format");
+      .withInternalReason("Unsupported output format");
 
   public final ErrorCode unsupportedQueryParam =
       new ErrorCode("unsupportedQueryParam")
-      .setInternalReason("Query parameter is not supported");
+      .withInternalReason("Query parameter is not supported");
 
   public final ErrorCode unsupportedQueryRequestType =
       new ErrorCode("unsupportedQueryRequestType")
-      .setInternalReason("Unsupported query request type");
+      .withInternalReason("Unsupported query request type");
 
   public final ErrorCode unsupportedQueryType =
       new ErrorCode("unsupportedQueryType")
-      .setInternalReason("Unsupported query type");
+      .withInternalReason("Unsupported query type");
 
   public final ErrorCode unsupportedTextType =
       new ErrorCode("unsupportedTextType")
-      .setInternalReason(
+      .withInternalReason(
       "Unsupported type. Valid types are 'plain' and 'html'");
 
   public final ErrorCode updateNotSupported =
       new ErrorCode("updateNotSupported")
-      .setInternalReason("Update not supported by feed");
+      .withInternalReason("Update not supported by feed");
 
   public final ErrorCode uriValueRequired =
       new ErrorCode("uriValueRequired")
-      .setInternalReason("URI must have a value");
+      .withInternalReason("URI must have a value");
 
   public final ErrorCode urlBaseValueRequired =
       new ErrorCode("urlBaseValueRequired")
-      .setInternalReason("urlBase element must have a value");
+      .withInternalReason("urlBase element must have a value");
 
   public final ErrorCode valueOrAverageRequired =
       new ErrorCode("valueOrAverageRequired")
-      .setInternalReason(
+      .withInternalReason(
       "at least one of g:rating/@value or gd:rating/@average is required");
 
   public final ErrorCode valueOrXmlRequired =
       new ErrorCode("valueOrXmlRequired")
-      .setInternalReason(
+      .withInternalReason(
       "exactly one of g:extendedProperty/@value, XML is required");
 
   public final ErrorCode valueXmlMutuallyExclusive =
       new ErrorCode("valueXmlMutuallyExclusive")
-      .setInternalReason(
+      .withInternalReason(
       "g:extendedProperty/@value and XML are mutually exclusive");
 
 
   public final ErrorCode whenRequired =
       new ErrorCode("whenRequired")
-      .setInternalReason("g:when inside g:originalEvent is required");
+      .withInternalReason("g:when inside g:originalEvent is required");
 
   public final ErrorCode whitelistAccessFailed =
       new ErrorCode("whitelistAccessFailed")
-      .setInternalReason("Failed to access whitelist");
+      .withInternalReason("Failed to access whitelist");
 
   public final ErrorCode workspaceRequired =
       new ErrorCode("workspaceRequired")
-      .setInternalReason("Service must contain at least one workspace");
+      .withInternalReason("Service must contain at least one workspace");
 
   public final ErrorCode workspaceTitleRequired =
       new ErrorCode("workspaceTitleRequired")
-      .setInternalReason("Workspace must contain a title");
+      .withInternalReason("Workspace must contain a title");
 
 }

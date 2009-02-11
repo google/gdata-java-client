@@ -16,6 +16,7 @@
 
 package com.google.gdata.util;
 
+import com.google.gdata.util.ErrorContent.LocationType;
 import com.google.gdata.util.XmlParser.ElementHandler;
 
 import org.xml.sax.Attributes;
@@ -202,84 +203,56 @@ public class ServiceExceptionInitializer {
   }
 
   private class DomainHandler extends ElementHandler {
-
-    @Override
-    public void processEndElement() {
-      currentException.errorDomainName = value;
+    @Override public void processEndElement() {
+      currentException.errorElement.setDomain(value);
     }
-
   }
 
   private class CodeHandler extends ElementHandler {
-
-    @Override
-    public void processEndElement() {
-      currentException.errorCodeName = value;
+    @Override public void processEndElement() {
+      currentException.errorElement.setCode(value);
     }
-
   }
 
   private class LocationHandler extends ElementHandler {
 
-    private String locationType = "other";
+    private LocationType locationType = LocationType.OTHER;
 
     @Override
     public void processAttribute(String namespace, String localName,
-        String value) throws ParseException {
+        String value) {
       if ("type".equals(localName)) {
-        locationType = value;
+        locationType = LocationType.fromString(value);
       }
     }
 
     @Override
     public void processEndElement() {
-      if ("xpath".equals(locationType)) {
-        currentException.errorLocationType =
-            ServiceException.LocationType.XPATH;
-      } else if ("header".equals(locationType)) {
-        currentException.errorLocationType =
-            ServiceException.LocationType.HEADER;
-      } else {
-        currentException.errorLocationType =
-            ServiceException.LocationType.OTHER;
-      }
-      currentException.errorLocation = value;
+      currentException.errorElement.setLocation(value, locationType);
     }
   }
 
   private class InternalReasonHandler extends ElementHandler {
-
-    @Override
-    public void processEndElement() {
-      currentException.errorInternalReason = value;
+    @Override public void processEndElement() {
+      currentException.errorElement.setInternalReason(value);
     }
-
   }
 
   private class ExtendedHelpHandler extends ElementHandler {
-
-    @Override
-    public void processEndElement() {
-      currentException.errorExtendedHelp = value;
+    @Override public void processEndElement() {
+      currentException.errorElement.setExtendedHelp(value);
     }
-
   }
 
   private class SendReportHandler extends ElementHandler {
-
-    @Override
-    public void processEndElement() {
-      currentException.errorSendReport = value;
+    @Override public void processEndElement() {
+      currentException.errorElement.setSendReport(value);
     }
-
   }
 
   private class DebugInfoHandler extends ElementHandler {
-
-    @Override
-    public void processEndElement() {
-      currentException.errorDebugInfo = value;
+    @Override public void processEndElement() {
+      currentException.errorElement.setDebugInfo(value);
     }
-
   }
 }

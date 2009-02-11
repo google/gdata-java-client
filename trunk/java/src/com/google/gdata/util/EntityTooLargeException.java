@@ -49,13 +49,12 @@ public class EntityTooLargeException extends ServiceException {
     initResponseCode();
   }
 
-  public EntityTooLargeException(ErrorDomain.ErrorCode errorCode) {
+  public EntityTooLargeException(ErrorContent errorCode) {
     super(errorCode);
     initResponseCode();
   }
 
-  public EntityTooLargeException(ErrorDomain.ErrorCode errorCode,
-      Throwable cause) {
+  public EntityTooLargeException(ErrorContent errorCode, Throwable cause) {
     super(errorCode, cause);
     initResponseCode();
   }

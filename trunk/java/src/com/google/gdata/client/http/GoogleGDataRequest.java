@@ -419,8 +419,15 @@ public class GoogleGDataRequest extends HttpGDataRequest {
    * The global CookieHandler instance for GData services.
    */
   @SuppressWarnings("unused") // instance init installs global hooks.
-  private static final GoogleCookieHandler googleCookieHandler =
-    new GoogleCookieHandler();
+  private static final GoogleCookieHandler googleCookieHandler;
+
+  static {
+    if (!Boolean.getBoolean(DISABLE_COOKIE_HANDLER_PROPERTY)) {
+      googleCookieHandler = new GoogleCookieHandler();
+    } else {
+      googleCookieHandler = null;
+    }
+  }
 
 
   /**

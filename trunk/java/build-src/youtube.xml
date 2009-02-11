@@ -11,7 +11,7 @@
   <property name="gdata-youtube.jar"
     value="${build.jars}/gdata-youtube-${youtube.spec.version}.jar"/>
 
-  <target name="build.youtube" depends="core.build.core.media">
+  <target name="build.youtube" depends="build.core.media">
     <antcall target="template.build.service">
       <param name="template.service.name" value="youtube"/>
       <param name="template.service.version" value="${youtube.spec.version}"/>

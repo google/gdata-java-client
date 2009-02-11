@@ -65,6 +65,7 @@ public enum AppsForYourDomainErrorCode {
   InvalidRouteAddress(1603),
 
   GroupCannotContainCycle(1700),
+  InvalidGroupPermissions(1701),
 
   InvalidDomainEdition(1800),
   InvalidValue(1801);

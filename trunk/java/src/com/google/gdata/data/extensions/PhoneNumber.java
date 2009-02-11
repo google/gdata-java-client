@@ -60,6 +60,7 @@ public class PhoneNumber implements Extension {
     public static final String ISDN = Namespaces.gPrefix + "isdn";
     public static final String TELEX = Namespaces.gPrefix + "telex";
     public static final String OTHER = Namespaces.gPrefix + "other";
+    public static final String MAIN = Namespaces.gPrefix + "main";
   }
 
   /** The phone number type. */

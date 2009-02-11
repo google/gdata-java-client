@@ -55,7 +55,7 @@ public abstract class CharMatcher implements Predicate<Character> {
     }
     @Override public int indexIn(CharSequence sequence, int start) {
       int length = sequence.length();
-      checkIndex(start, length);
+      Preconditions.checkPositionIndex(start, length);
       return (start == length) ? -1 : start;
     }
     @Override public int lastIndexIn(CharSequence sequence) {
@@ -112,7 +112,7 @@ public abstract class CharMatcher implements Predicate<Character> {
     }
     @Override public int indexIn(CharSequence sequence, int start) {
       int length = sequence.length();
-      checkIndex(start, length);
+      Preconditions.checkPositionIndex(start, length);
       return -1;
     }
     @Override public int lastIndexIn(CharSequence sequence) {
@@ -205,7 +205,7 @@ public abstract class CharMatcher implements Predicate<Character> {
       }.precomputed();
 
   /**
-   * Deterimnes whether a character is whitespace according to an arbitrary
+   * Determines whether a character is whitespace according to an arbitrary
    * definition used by {@link com.google.gdata.util.common.base.StringUtil} for years.
    * Most likely you don't want to use this. See a comparison of several
    * definitions of "whitespace" at
@@ -721,23 +721,13 @@ public abstract class CharMatcher implements Predicate<Character> {
    */
   public int indexIn(CharSequence sequence, int start) {
     int length = sequence.length();
-    checkIndex(start, length);
+    Preconditions.checkPositionIndex(start, length);
     for (int i = start; i < length; i++) {
       if (matches(sequence.charAt(i))) {
         return i;
       }
     }
     return -1;
-  }
-
-  private static void checkIndex(int start, int length) {
-    if (start < 0) {
-      throw new IndexOutOfBoundsException("negative start index: " + start);
-    }
-    if (start > length) {
-      throw new IndexOutOfBoundsException("start index " + start
-          + " greater than length " + length);
-    }
   }
 
   /**
@@ -1016,6 +1006,7 @@ public abstract class CharMatcher implements Predicate<Character> {
     return matches(character);
   }
 }
+
 
 
 

@@ -52,6 +52,7 @@ public class AclScope extends AbstractExtension {
   public enum Type {
     USER,
     DOMAIN,
+    GROUP,
     DEFAULT
   }
 

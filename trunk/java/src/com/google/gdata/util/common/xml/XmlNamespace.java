@@ -55,7 +55,7 @@ public class XmlNamespace {
 
   /**
    * Returns the fully qualified URI for the namespace.
-   * @returns namespace URI.
+   * @returns namespace URI
    */
   public final String getUri() { return uri; }
 

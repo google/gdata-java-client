@@ -15,7 +15,7 @@
   <!--  ===================================================================== -->
 
   <!-- samples build Properties -->
-  <property name="sample.spreadsheet.basedir"       value="${basedir}/sample/spreadsheet"/>
+  <property name="sample.spreadsheet.basedir"       value="${build}/sample/spreadsheet"/>
   <property name="sample.spreadsheet.src.home"      value="${sample.spreadsheet.basedir}"/>
   <property name="sample.spreadsheet.build.classes" value="${sample.spreadsheet.basedir}/classes"/>
   <property name="sample.spreadsheet.build.lib"     value="${sample.spreadsheet.basedir}/lib"/>

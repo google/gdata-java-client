@@ -31,6 +31,7 @@ import com.google.gdata.util.EntityTooLargeException;
 import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.util.LoggableInputStream;
 import com.google.gdata.util.LoggableOutputStream;
+import com.google.gdata.util.NoLongerAvailableException;
 import com.google.gdata.util.NotAcceptableException;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.NotModifiedException;
@@ -59,7 +60,7 @@ import java.util.zip.GZIPInputStream;
 /**
  * The HttpGDataRequest class provides a basic implementation of the
  * <code>GDataRequest</code> interface over HTTP.
- * 
+ *
  * @see GDataRequest
  */
 public class HttpGDataRequest implements GDataRequest {
@@ -83,7 +84,7 @@ public class HttpGDataRequest implements GDataRequest {
   /**
    * Name of HTTP header containing the method name that overrides the normal
    * HTTP method.
-   * 
+   *
    * @deprecated Use {@link GDataProtocol.Header#METHOD_OVERRIDE} instead
    */
   public static final String METHOD_OVERRIDE_HEADER =
@@ -208,7 +209,7 @@ public class HttpGDataRequest implements GDataRequest {
   /**
    * Constructs a new HttpGDataRequest instance of the specified RequestType,
    * targeting the specified URL.
-   * 
+   *
    * @param type type of GDataRequest.
    * @param requestUrl request target URL.
    * @param contentType the content type of request/response data.
@@ -486,7 +487,7 @@ public class HttpGDataRequest implements GDataRequest {
    * Handles an error response received while executing a GData service request.
    * Throws a {@link ServiceException} or one of its subclasses, depending on
    * the failure conditions.
-   * 
+   *
    * @throws ServiceException exception describing the failure.
    * @throws IOException error reading the error response from the GData
    *         service.
@@ -509,7 +510,7 @@ public class HttpGDataRequest implements GDataRequest {
 
       case HttpURLConnection.HTTP_NOT_MODIFIED:
         throw new NotModifiedException(httpConn);
-        
+
       case HttpURLConnection.HTTP_PRECON_FAILED:
         throw new PreconditionFailedException(httpConn);
 
@@ -524,6 +525,9 @@ public class HttpGDataRequest implements GDataRequest {
 
       case HttpURLConnection.HTTP_NOT_ACCEPTABLE:
         throw new NotAcceptableException(httpConn);
+
+      case HttpURLConnection.HTTP_GONE:
+        throw new NoLongerAvailableException(httpConn);
 
       default:
         throw new ServiceException(httpConn);
@@ -542,11 +546,11 @@ public class HttpGDataRequest implements GDataRequest {
     }
     return new ContentType(value);
   }
-  
+
   public String getResponseHeader(String headerName) {
     return httpConn.getHeaderField(headerName);
   }
-  
+
   public DateTime getResponseDateHeader(String headerName) {
     long dateValue = httpConn.getHeaderFieldDate(headerName, -1);
     return (dateValue >= 0) ? new DateTime(dateValue) : null;
@@ -580,7 +584,7 @@ public class HttpGDataRequest implements GDataRequest {
   /**
    * Returns the URLConnection instance that represents the underlying
    * connection to the GData service that will be used by this request.
-   * 
+   *
    * @return connection to GData service.
    */
   public HttpURLConnection getConnection() {

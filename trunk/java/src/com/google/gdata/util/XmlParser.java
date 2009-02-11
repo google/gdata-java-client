@@ -470,7 +470,9 @@ public class XmlParser extends DefaultHandler {
   }
 
 
-  /** Root element handler. */
+  /**
+   * Root element handler.
+   */
   protected ElementHandler rootHandler;
 
 
@@ -780,14 +782,24 @@ public class XmlParser extends DefaultHandler {
 
     ElementHandler parentHandler = curHandler;
 
-    if (curHandler == null &&
-        // Edge case, parsing the root element.
-        namespace.equals(rootNamespace) &&
-        localName.equals(rootElementName)) {
+    if (curHandler == null) {
 
-      curHandler = rootHandler;
+      // Edge case, parsing the root element.
+      if (namespace.equals(rootNamespace) &&
+          localName.equals(rootElementName)) {
 
-    } else if (curHandler != null && unrecognizedElements == 0) {
+        curHandler = rootHandler;
+      } else if (rootElementName != null) {
+
+        throw new SAXException(
+            new ParseException("Invalid root element, expected " +
+               "(namespace uri:local name) of " +
+               "(" + rootNamespace + ":" + rootElementName + ")" +
+               ", found (" + namespace + ":" + localName
+               ));
+      }
+
+    } else if (unrecognizedElements == 0) {
       // Common case, parsing an XML element. Event signals
       // the start of a child element.  Looks for child element
       // handler. If no handler is found, then parses element as
@@ -814,7 +826,7 @@ public class XmlParser extends DefaultHandler {
       }
 
       try {
-        
+
         // First pass to extract xml:lang and xml:base.
         for (int i = attrs.getLength() - 1; i >= 0; --i) {
 
@@ -880,7 +892,6 @@ public class XmlParser extends DefaultHandler {
     } else { // curHandler == null || unrecognizedElements > 0
 
       // INVARIANT: We're processing an unrecognized (blob) element.
-
       // If curHandler == null, we just encountered our first
       // unrecognized element, so make this element part of the
       // XmlBlob of the parent element.  Otherwise,
@@ -1102,4 +1113,5 @@ public class XmlParser extends DefaultHandler {
     }
   }
 }
+
 

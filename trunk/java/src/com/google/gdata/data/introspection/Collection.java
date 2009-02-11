@@ -56,7 +56,8 @@ import java.util.List;
  *
  * 
  */
-public class Collection extends ExtensionPoint implements Reference {
+public class Collection extends ExtensionPoint implements Reference,
+    ICollection {
 
   private Version coreVersion = Service.getVersion();
   private XmlNamespace atomPubNs = Namespaces.getAtomPubNs();

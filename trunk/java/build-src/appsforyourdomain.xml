@@ -17,7 +17,7 @@
     <pathelement location="${gdata-calendar.jar}"/>
   </path>
 
-  <target name="build.appsforyourdomain" depends="calendar.build.calendar">
+  <target name="build.appsforyourdomain" depends="build.calendar">
     <antcall target="template.build.service">
       <param name="template.service.name" value="appsforyourdomain"/>
       <param name="template.service.version" value="${appsforyourdomain.spec.version}"/>

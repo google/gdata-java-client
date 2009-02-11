@@ -39,6 +39,11 @@ public interface IEntry {
   public void setId(String id);
 
   /**
+   * Get the title of this entry.  Represents the atom:title element.
+   */
+  public ITextConstruct getTitle();
+  
+  /**
    * Version ID. This is a unique number representing this particular
    * entry. Every update changes the version ID (unless the update
    * doesn't modify anything, in which case it's permissible for

@@ -16,6 +16,8 @@
 
 package com.google.gdata.util;
 
+import com.google.gdata.util.common.base.Preconditions;
+
 /**
  * This is the parent class of all error domain classes.
  * Error domain classes package up a group of related error codes
@@ -38,8 +40,8 @@ package com.google.gdata.util;
  * foo = new ErrorCode("foo")}
  * (Note: not {@static}).
  * <li>Append to each field declaration
- * optional calls to {@code setInternalReason}, {@code
- * setExtendedHelp}, or {@code setSendReport}.
+ * optional calls to {@link ErrorCode#withInternalReason}, {@link
+ * ErrorCode#withExtendedHelp}, or {@link ErrorCode#withSendReport}.
  * </ul>
  * <p>Here's a complete example:
  * <pre>
@@ -51,19 +53,19 @@ package com.google.gdata.util;
  *   public static final FooErrorDomain ERR = new FooErrorDomain();
  * 
  *   public final ErrorCode bar = new ErrorCode("brokenBar")
- *       .setInternalReason("Bar is not working yet");
+ *       .withInternalReason("Bar is not working yet");
  * 
  *   public final ErrorCode unsupported = new ErrorCode("unsupported")
- *       .setInternalReason("Requested key is not supported");
+ *       .withInternalReason("Requested key is not supported");
  * 
  *   public final ErrorCode invalid = new ErrorCode("invalidValue")
- *       .setInternalReason("Invalid value for attribute")
- *       .setExtendedHelp("http://www.google.com/foo/validAttributes.html");
+ *       .withInternalReason("Invalid value for attribute")
+ *       .withExtendedHelp("http://www.google.com/foo/validAttributes.html");
  * 
  * }
  * </pre>
  * 
- * <p>Note that all setters return {@code this}.
+ * <p>Note that all {@code with} methods return a mutated copy.
  *
  * 
  */
@@ -88,7 +90,8 @@ public abstract class ErrorDomain {
   }
 
   /**
-   * Constructs an ErrorDomain with a default name.
+   * Constructs an ErrorDomain with a default eror domain name.  Use
+   * {@link #ErrorDomain(String)} to set a different domain name.
    */
   protected ErrorDomain() {
     domainName = getClass().getName();
@@ -99,37 +102,84 @@ public abstract class ErrorDomain {
    * An inner class is used to make it difficult to construct an ErrorCode
    * that accidentally refers to the wrong subclass of ErrorDomain,
    * or to have more than one ErrorDomain object of the same subclass.
+   * 
+   * <p>An ErrorCode is immutable.  The {@link #withInternalReason(String)},
+   * {@link #withExtendedHelp(String)}, and {@link #withSendReport(String)}
+   * methods can be used to create new ErrorCodes as modified versions of
+   * existing ones.
    */
-  public class ErrorCode {
+  public class ErrorCode implements ErrorContent {
 
     private final String codeName;
+    private final String extendedHelp;
+    private final String internalReason;
+    private final String sendReport;
+
     /**
-     * Gets the name of this ErrorCode, which must be unique within
-     * its domain.  The value will appear as the content of the {@code code}
-     * element in the XML error format.
+     * Construct a new error code with the given code name.
+     * 
+     * @param codeName the codename of this error code, must not be null.
+     */
+    public ErrorCode(String codeName) {
+      this(codeName, null, null, null);
+    }
+    
+    /**
+     * Private constructor that sets all fields.  Clients must use the
+     * {@code withFoo} methods to set fields.
+     */
+    private ErrorCode(String codeName, String extendedHelp,
+        String internalReason, String sendReport) {
+      Preconditions.checkNotNull(codeName, "codeName");
+      this.codeName = codeName;
+      this.extendedHelp = extendedHelp;
+      this.internalReason = internalReason;
+      this.sendReport = sendReport;
+    }
+
+    /**
+     * Retrieve the name of the domain of this ErrorCode.
+     */
+    public String getDomainName() {
+      return ErrorDomain.this.getDomainName();
+    }
+    
+    /**
+     * Gets the name of this ErrorCode, which must be unique within its domain.
+     * The value will appear as the content of the {@code code} element in the
+     * XML error format.
      */
     public String getCodeName() {
       return codeName;
     }
-    // Set only through the constructor
-
-    private String internalReason = null;
+    
     /**
-     * Gets the internal reason (un-internationalized explanation)
-     * associated with this ErrorCode.  The value will appear as the
-     * content of the {@code internalReason} element in the XML error
-     * format.
+     * Gets the internal reason (unlocalized explanation) associated with this
+     * ErrorCode.  The value will appear as the content of the
+     * {@code internalReason} element in the XML error format.
      */
     public String getInternalReason() {
       return internalReason;
     }
 
+    /**
+     * @deprecated Use {@link #withInternalReason(String)} instead.
+     */
+    @Deprecated
     public ErrorCode setInternalReason(String newInternalReason) {
-      this.internalReason = newInternalReason;
-      return this;
+      return withInternalReason(newInternalReason);
+    }
+    
+    /**
+     * Returns a copy of this ErrorCode with the given internal reason
+     * (un-internationalized explanation) set.  The value will appear as the
+     * content of the {@code internalReason} element in the XML error format.
+     */
+    public ErrorCode withInternalReason(String newInternalReason) {
+      return new ErrorCode(
+          codeName, extendedHelp, newInternalReason, sendReport);
     }
 
-    private String extendedHelp = null;
     /**
      * Gets the extended help URI.  This can be used to retrieve a
      * detailed explanation of the error code.  The value will appear
@@ -140,12 +190,16 @@ public abstract class ErrorDomain {
       return extendedHelp;
     }
 
-    public ErrorCode setExtendedHelp(String newExtendedHelp) {
-      this.extendedHelp = newExtendedHelp;
-      return this;
+    /**
+     * Returns a copy of this ErrorCode with the given extended help URI set.
+     * This can be used to provide a detailed explanation of the error code.
+     * The value will appear as the content of the {@code extendedHelp} element
+     * in the XML error format.
+     */
+    public ErrorCode withExtendedHelp(String newExtendedHelp) {
+      return new ErrorCode(
+          codeName, newExtendedHelp, internalReason, sendReport);
     }
-
-    private String sendReport = null;
 
     /**
      * Gets the URI to which a report should be sent when this error
@@ -156,21 +210,28 @@ public abstract class ErrorDomain {
       return sendReport;
     }
 
-    public ErrorCode setSendReport(String newSendReport) {
-      this.sendReport = newSendReport;
-      return this;
-    }
-
-    public ErrorCode(String codeName) {
-      this.codeName = codeName;
-    }
-
     /**
-     * Convenience method to retrieve the name of the domain
-     * given an error code.
+     * Returns a copy of this ErrorCode with the given send report URI set.
+     * This can be used to provide a URI to which a report should be sent when
+     * the error is received.  The value will appear as the content of the
+     * {@code sendReport} element in the XML error format.
      */
-    public String getDomainName() {
-      return ErrorDomain.this.getDomainName();
+    public ErrorCode withSendReport(String newSendReport) {
+      return new ErrorCode(
+          codeName, extendedHelp, internalReason, newSendReport);
+    }
+
+    // Local properties of error content that error codes do not specify.
+    public String getLocation() {
+      return null;
+    }
+    
+    public LocationType getLocationType() {
+      return null;
+    }
+    
+    public String getDebugInfo() {
+      return null;
     }
   }
 }

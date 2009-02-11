@@ -19,7 +19,7 @@
     <pathelement location="${gdata-spreadsheet.jar}"/>
   </path>
 
-  <target name="build.docs" depends="core.build.core.media,spreadsheet.build.spreadsheet">
+  <target name="build.docs" depends="build.core.media,build.spreadsheet">
     <antcall target="template.build.service">
       <param name="template.service.name" value="docs"/>
       <param name="template.service.version" value="${docs.spec.version}"/>

@@ -464,6 +464,11 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
   public FeedLink<?> getNewSubscriptionVideosFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.NEW_SUBSCRIPTION_VIDEOS_REL);
   }  
+  
+  /** Returns a link to the user's new subscription videos feed. */
+  public FeedLink<?> getFriendsActivityFeedLink() {
+    return EntryUtils.getFeedLink(this, YouTubeNamespace.FRIENDSACTIVITY_REL);
+  }  
 
   /** Returns a link to the playlist defined by the user as video log. */
   public Link getVideoLogLink() {

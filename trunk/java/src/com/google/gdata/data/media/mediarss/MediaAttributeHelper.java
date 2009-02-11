@@ -39,11 +39,10 @@ public class MediaAttributeHelper {
     try {
       return NormalPlayTime.parse(value);
     } catch (java.text.ParseException e) {
-      ParseException pe = new ParseException(
-          CoreErrorDomain.ERR.invalidTimeOffset, e);
-      pe.setInternalReason("Invalid time offset value for attribute '" +
-          name + "'");
-      throw pe;
+      throw new ParseException(
+          CoreErrorDomain.ERR.invalidTimeOffset.withInternalReason(
+              "Invalid time offset value for attribute '" + name + "'"),
+          e);
     }
   }
 }

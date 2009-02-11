@@ -10,7 +10,7 @@
   <property name="gdata-spreadsheet.jar"
     value="${build.jars}/gdata-spreadsheet-${spreadsheet.spec.version}.jar"/>
 
-  <target name="build.spreadsheet" depends="core.build.core.client">
+  <target name="build.spreadsheet" depends="build.core.client">
     <antcall target="template.build.service">
       <param name="template.service.name" value="spreadsheet"/>
       <param name="template.service.version" value="${spreadsheet.spec.version}"/>

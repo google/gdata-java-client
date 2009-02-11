@@ -38,6 +38,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PushbackInputStream;
+import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 import javax.activation.DataContentHandler;
@@ -256,10 +257,12 @@ public class GDataContentHandler implements DataContentHandler {
     if (obj instanceof Kind.Adaptor) {
       extProfile.addDeclarations((Kind.Adaptor)obj);
     }
+    
+    boolean generateRss = mimeType.equals("application/rss+xml");
     if (obj instanceof BaseFeed) {
 
       BaseFeed<?, ?> feed = (BaseFeed<?, ?>) obj;
-      if (mimeType.equals("application/rss+xml")) {
+      if (generateRss) {
         feed.generateRss(xw, extProfile);
       } else {
         xw.setDefaultNamespace(Namespaces.atomNs);
@@ -269,13 +272,13 @@ public class GDataContentHandler implements DataContentHandler {
     } else if (obj instanceof BaseEntry) {
 
       BaseEntry<?> entry = (BaseEntry<?>) obj;
-      if (mimeType.equals("application/rss+xml")) {
+      if (generateRss) {
         ((BaseEntry<?>) obj).generateRss(xw, extProfile);
       } else {
         xw.setDefaultNamespace(Namespaces.atomNs);
         ((BaseEntry<?>) obj).generateAtom(xw, extProfile);
       }
-
+      
     } else {
       throw new IllegalArgumentException("Cannot convert " + obj.getClass() +
           " object to " + mimeType);

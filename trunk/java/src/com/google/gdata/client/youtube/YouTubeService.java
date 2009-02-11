@@ -22,6 +22,7 @@ import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.ParseSource;
+import com.google.gdata.data.youtube.ChannelFeed;
 import com.google.gdata.data.youtube.CommentFeed;
 import com.google.gdata.data.youtube.ComplaintFeed;
 import com.google.gdata.data.youtube.FormUploadToken;
@@ -30,6 +31,7 @@ import com.google.gdata.data.youtube.PlaylistFeed;
 import com.google.gdata.data.youtube.PlaylistLinkFeed;
 import com.google.gdata.data.youtube.RatingFeed;
 import com.google.gdata.data.youtube.SubscriptionFeed;
+import com.google.gdata.data.youtube.UserEventFeed;
 import com.google.gdata.data.youtube.UserProfileFeed;
 import com.google.gdata.data.youtube.VideoFeed;
 import com.google.gdata.data.youtube.YouTubeNamespace;
@@ -136,9 +138,11 @@ public class YouTubeService extends MediaService {
     getRequestFactory().setHeader("X-GData-Client", applicationName);
 
     ExtensionProfile profile = getExtensionProfile();
+    profile.addDeclarations(new ChannelFeed());
     profile.addDeclarations(new ComplaintFeed());
     profile.addDeclarations(new CommentFeed());
     profile.addDeclarations(new FriendFeed());
+    profile.addDeclarations(new UserEventFeed());
     profile.addDeclarations(new PlaylistFeed());
     profile.addDeclarations(new PlaylistLinkFeed());
     profile.addDeclarations(new RatingFeed());

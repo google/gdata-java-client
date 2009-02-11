@@ -18,6 +18,7 @@ package com.google.gdata.util;
 
 import com.google.gdata.client.Service;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
  *
  * 
  */
-public class ContentType {
+public class ContentType implements Serializable {
 
   private static String TOKEN =
     "[\\p{ASCII}&&[^\\p{Cntrl} ;/=\\[\\]\\(\\)\\<\\>\\@\\,\\:\\\"\\?\\=]]+";

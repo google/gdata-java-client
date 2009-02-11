@@ -19,6 +19,7 @@ package com.google.gdata.data.docs;
 import com.google.gdata.util.common.base.StringUtil;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
+import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
@@ -28,6 +29,10 @@ import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclNamespace;
 import com.google.gdata.data.extensions.Deleted;
 import com.google.gdata.data.extensions.Labels;
+import com.google.gdata.data.extensions.LastModifiedBy;
+import com.google.gdata.data.extensions.LastViewed;
+import com.google.gdata.data.extensions.QuotaBytesUsed;
+import com.google.gdata.data.extensions.ResourceId;
 import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.media.MediaFileSource;
 import com.google.gdata.util.ContentType;
@@ -108,9 +113,6 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     return MediaType.fromFileName(fileName).getMimeType();
   }
 
-  public static final String DOCUMENT_NAMESPACE
-      = "http://schemas.google.com/docs/2007";
-
   /**
    * Label for category.
    */
@@ -120,8 +122,8 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * Kind category term used to label the entries which are
    * of document type.
    */
-  public static final String UNKNOWN_KIND = DocumentListFeed.DOCUMENT_NAMESPACE
-      + "#" + DocumentListEntry.UNKNOWN_LABEL;
+  public static final String UNKNOWN_KIND = DocsNamespace.DOCS_PREFIX
+      + DocumentListEntry.UNKNOWN_LABEL;
 
   /**
    * Category used to label entries which are of document type.
@@ -130,10 +132,13 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
       Namespaces.gKind, UNKNOWN_KIND, UNKNOWN_LABEL);
 
   public static final String FOLDERS_NAMESPACE =
-      DOCUMENT_NAMESPACE + "/folders";
+      DocsNamespace.DOCS + "/folders";
 
   public static final String PARENT_NAMESPACE =
-    DOCUMENT_NAMESPACE + "#parent";
+      DocsNamespace.DOCS_PREFIX + "parent";
+
+  public static final String REVISIONS_NAMESPACE =
+      DocsNamespace.DOCS + "/revisions";
 
   /**
    * Constructs a new uninitialized entry, to be populated by the
@@ -155,6 +160,10 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
     extProfile.declare(DocumentListEntry.class, DocumentListAclFeedLink.class);
+    extProfile.declare(DocumentListEntry.class, LastModifiedBy.class);
+    extProfile.declare(DocumentListEntry.class, LastViewed.class);
+    extProfile.declare(DocumentListEntry.class, QuotaBytesUsed.class);
+    extProfile.declare(DocumentListEntry.class, ResourceId.class);
   }
 
   /**
@@ -213,6 +222,28 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     content.setMediaSource(fileSource);
     content.setMimeType(new ContentType(mimeType));
     setContent(content);
+  }
+
+  /**
+   * Sets the hidden status of this document for the user this feed request
+   * has been authenticated under.
+   *
+   * @param hidden true if the document should be hidden
+   */
+  public void setHidden(boolean hidden) {
+    if (hidden) {
+      this.getCategories().add(Labels.HIDDEN);
+    } else {
+      this.getCategories().remove(Labels.HIDDEN);
+    }
+  }
+
+  /**
+   * @return true if the document represented by this entry has been hidden
+   * by the user this feed request has been authenticated under.
+   */
+  public boolean isHidden() {
+    return this.getCategories().contains(Labels.HIDDEN);
   }
 
   /**
@@ -310,5 +341,97 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
   public List<Link> getParentLinks() {
     return getLinks(PARENT_NAMESPACE, Link.Type.ATOM);
+  }
+
+  /**
+   * Returns the time when the document was last viewed by the user.
+   *
+   * @return the last viewed time
+   */
+  public DateTime getLastViewed() {
+    LastViewed lastViewed = getExtension(LastViewed.class);
+    return lastViewed == null ? null : lastViewed.getValue();
+  }
+
+  /**
+   * Sets the time when the document was last viewed by the user.
+   *
+   * @param lastViewed the last viewed time
+   */
+  public void setLastViewed(DateTime lastViewed) {
+    if (lastViewed == null) {
+      removeExtension(LastViewed.class);
+    } else {
+      setExtension(new LastViewed(lastViewed));
+    }
+  }
+
+  /**
+   * Returns the amount of quota consumed by the document.
+   *
+   * @return the quota used
+   */
+  public Long getQuotaBytesUsed() {
+    QuotaBytesUsed quotaBytes = getExtension(QuotaBytesUsed.class);
+    return quotaBytes == null ? null : quotaBytes.getValue();
+  }
+
+  /**
+   * Sets the amount of quota consumed by the document.
+   *
+   * @param quotaBytesUsed the quota used
+   */
+  public void setQuotaBytesUsed(Long quotaBytesUsed) {
+    if (quotaBytesUsed == null) {
+      removeExtension(QuotaBytesUsed.class);
+    } else {
+      setExtension(new QuotaBytesUsed(quotaBytesUsed));
+    }
+  }
+
+  /**
+   * Returns the user who last modified the document.
+   *
+   * @return the user who last modified the document
+   */
+  public LastModifiedBy getLastModifiedBy() {
+    LastModifiedBy lastModifiedBy = getExtension(LastModifiedBy.class);
+    return lastModifiedBy == null ? null : lastModifiedBy;
+  }
+
+  /**
+   * Sets the amount of quota consumed by the document.
+   *
+   * @param lastModifiedBy the quota used
+   */
+  public void setLastModifiedBy(LastModifiedBy lastModifiedBy) {
+    if (lastModifiedBy == null) {
+      removeExtension(LastModifiedBy.class);
+    } else {
+      setExtension(lastModifiedBy);
+    }
+  }
+
+  /**
+   * Returns the document's resource id.
+   *
+   * @return the resource id.
+   */
+  public String getResourceId() {
+    ResourceId resourceId = getExtension(ResourceId.class);
+    return resourceId == null ? null : resourceId.getValue();
+  }
+
+  /**
+   * Sets the document's resource id.
+   *
+   * @param resourceId the resource id.
+   */
+  public void setResourceId(String resourceId) {
+    if (resourceId == null) {
+      removeExtension(ResourceId.class);
+    } else {
+      setExtension(new ResourceId(resourceId));
+    }
   }
 }

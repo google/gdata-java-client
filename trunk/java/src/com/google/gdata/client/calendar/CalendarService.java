@@ -59,6 +59,9 @@ public class CalendarService extends GoogleService {
     public static final Version V2 = new Version(CalendarService.class, "2.0",
         Service.Versions.V2);
 
+    /** Version 2.1 of the Calendar Data API. */
+    public static final Version V2_1 = new Version(CalendarService.class, "2.1",
+        Service.Versions.V2);
   }
 
   /**

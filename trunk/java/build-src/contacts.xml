@@ -10,7 +10,7 @@
   <property name="gdata-contacts.jar"
     value="${build.jars}/gdata-contacts-${contacts.spec.version}.jar"/>
 
-  <target name="build.contacts" depends="core.build.core.client">
+  <target name="build.contacts" depends="build.core.client">
     <antcall target="template.build.service">
       <param name="template.service.name" value="contacts"/>
       <param name="template.service.version" value="${contacts.spec.version}"/>

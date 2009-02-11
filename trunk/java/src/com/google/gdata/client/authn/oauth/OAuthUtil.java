@@ -189,7 +189,7 @@ public class OAuthUtil {
         }
         String value = keyValuePair.length > 1 ? 
             URLDecoder.decode(keyValuePair[1], "UTF-8") : "";
-        map.put(name.toLowerCase(), value);
+        map.put(name, value);
       } catch (UnsupportedEncodingException e) {
         // ignore this parameter if it can't be decoded
       }

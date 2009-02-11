@@ -49,13 +49,12 @@ public class InvalidEntryException extends ServiceException {
     initResponseCode();
   }
 
-  public InvalidEntryException(ErrorDomain.ErrorCode errorCode) {
+  public InvalidEntryException(ErrorContent errorCode) {
     super(errorCode);
     initResponseCode();
   }
 
-  public InvalidEntryException(ErrorDomain.ErrorCode errorCode,
-      Throwable cause) {
+  public InvalidEntryException(ErrorContent errorCode, Throwable cause) {
     super(errorCode, cause);
     initResponseCode();
   }

@@ -17,7 +17,7 @@
 package com.google.gdata.util;
 
 import com.google.gdata.util.common.base.CharEscapers;
-
+import com.google.gdata.util.ErrorContent.LocationType;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -66,18 +66,8 @@ public class ServiceException extends Exception {
    */
   String responseBody;
 
-  // Error domain related instance variables
-
-  String errorDomainName;
-  String errorCodeName;
-  String errorLocation;
-  LocationType errorLocationType;
-  String errorInternalReason;
-  String errorExtendedHelp;
-  String errorSendReport;
-  String errorDebugInfo;
-
-  // Instance variables for siblings
+  // Structured error element.
+  ErrorElement errorElement = new ErrorElement();
 
   /**
    * Set to the exception we are filling during parsing.
@@ -127,14 +117,7 @@ public class ServiceException extends Exception {
       initializer.parse(httpConn);
     } catch (ParseException pe) {
       // Clean up after failed parse
-      errorDomainName = null;
-      errorCodeName = null;
-      errorLocation = null;
-      errorLocationType = null;
-      errorInternalReason = null;
-      errorExtendedHelp = null;
-      errorSendReport = null;
-      errorDebugInfo = null;
+      errorElement = new ErrorElement();
       siblings.clear();
       siblings.add(this);
       responseContentType = ContentType.TEXT_PLAIN;
@@ -142,37 +125,28 @@ public class ServiceException extends Exception {
   }
 
   /**
-   * Initializes the ServiceException using an {@link ErrorCode}
-   * object that encapsulates most of the information about the
-   * error.  ErrorCodes are declared in a subclass of
-   * {@link ErrorDomain} containing all the errors for this
-   * GData domain (service or portion of service).
+   * Initializes the ServiceException using an {@link ErrorContent} object that
+   * encapsulates most of the information about the error.  Most ErrorContent
+   * instances are declared in a subclass of {@link ErrorDomain} containing all
+   * the errors for a GData domain (service or portion of service).
    */
-  public ServiceException(ErrorDomain.ErrorCode errorCode) {
+  public ServiceException(ErrorContent errorCode) {
     super(nullsafe(errorCode.getInternalReason()));
     httpHeaders = new HashMap<String, List<String>>();
-    errorDomainName = errorCode.getDomainName();
-    errorCodeName = errorCode.getCodeName();
-    errorInternalReason = errorCode.getInternalReason();
-    errorExtendedHelp = errorCode.getExtendedHelp();
-    errorSendReport = errorCode.getSendReport();
+    this.errorElement = new ErrorElement(errorCode);
   }
 
   /**
-   * Initializes the ServiceException using an {@link ErrorCode} object
-   * that encapsulates most of the information about the error, and
-   * an embedded exception.  ErrorCodes are declared in a subclass of
+   * Initializes the ServiceException using an {@link ErrorContent} object that
+   * encapsulates most of the information about the error, and an embedded
+   * exception.  Most ErrorContent instances are declared in a subclass of
    * {@link ErrorDomain} containing all the errors for this GData domain
    * (service or portion of service).
    */
-  public ServiceException(ErrorDomain.ErrorCode errorCode, Throwable cause) {
+  public ServiceException(ErrorContent errorCode, Throwable cause) {
     super(nullsafe(errorCode.getInternalReason()), cause);
     httpHeaders = new HashMap<String, List<String>>();
-    errorDomainName = errorCode.getDomainName();
-    errorCodeName = errorCode.getCodeName();
-    errorInternalReason = errorCode.getInternalReason();
-    errorExtendedHelp = errorCode.getExtendedHelp();
-    errorSendReport = errorCode.getSendReport();
+    this.errorElement = new ErrorElement(errorCode);
   }
 
   // Private method used in constructors
@@ -266,11 +240,13 @@ public class ServiceException extends Exception {
     sb.append("</code>\n");
 
     String location = se.getLocation();
-    String locationType = (se.getLocationType() != null)
-        ? se.getLocationType().toString() : "other";
+    LocationType locationType = se.getLocationType();
+    if (locationType == null) {
+      locationType = LocationType.OTHER;
+    }
     if (location != null) {
       sb.append("<location type='");
-      sb.append(escape(locationType));
+      sb.append(escape(locationType.toString()));
       sb.append("'>");
       sb.append(escape(location));
       sb.append("</location>\n");
@@ -331,123 +307,99 @@ public class ServiceException extends Exception {
   }
 
   // Error model getters and setters
-
-
+  
   /**
    * Return error domain.
-   * Defaults to "GData", indicating an error that has
+   * 
+   * <p>Defaults to "GData", indicating an error that has
    * not yet been upgraded to the new architecture.
    */
   public String getDomainName() {
-    if (errorDomainName == null) {
-      return "GData";
-    } else {
-      return errorDomainName;
-    }
+    String domainName = errorElement.getDomainName();
+    return (domainName != null) ? domainName : "GData";
   }
 
   /**
    * Set error domain.
+   * 
+   * @throws NullPointerException if {@code domain} is {@code null}.
    */
   public void setDomain(String domain) {
-    if (domain == null) {
-      throw new NullPointerException("Null exception domain name");
-    }
-    errorDomainName = domain;
+    errorElement.setDomain(domain);
   }
 
   /**
    * Return error code.
-   * Defaults to the class name of <tt>this</tt>.
+   * 
+   * <p>Defaults to the class name of {@code this}.
    */
   public String getCodeName() {
-    if (errorCodeName == null) {
-      return this.getClass().getSimpleName();
-    } else {
-      return errorCodeName;
-    }
+    String codeName = errorElement.getCodeName();
+    return (codeName != null) ? codeName : getClass().getSimpleName();
   }
 
   /**
    * Set error code.
+   * 
+   * @throws NullPointerException if {@code code} is {@code null}.
    */
   public void setCode(String code) {
-    if (code == null) {
-      throw new NullPointerException("Null exception code name");
-    }
-    errorCodeName = code;
+    errorElement.setCode(code);
   }
-
+  
   /**
    * Return error location.
-   * No default.
    */
   public String getLocation() {
-    return errorLocation;
+    return errorElement.getLocation();
   }
-
-  /** Enumerated constants for error location types. */
-  public static enum LocationType {
-    XPATH, OTHER, HEADER;
-
-    @Override
-    public String toString() {
-      return super.toString().toLowerCase();
-    }
-
-  }
-
+  
+  /**
+   * Return error location type.
+   */
   public LocationType getLocationType() {
-    return errorLocationType;
+    return errorElement.getLocationType();
   }
-
+  
   /**
    * Set XPath-based error location.
    * This must be a valid XPath expression sibling to the atom:entry
    * element (or the atom:feed element if we are not in an entry).
+   * 
+   * @throws NullPointerException if {@code location} is {@code null}.
    */
   public void setXpathLocation(String location) {
-    if (location == null) {
-      throw new NullPointerException("Null exception location");
-    }
-    errorLocation = location;
-    errorLocationType = LocationType.XPATH;
+    errorElement.setXpathLocation(location);
   }
 
   /**
    * Set header name for an error in a header.
+   * 
+   * @throws NullPointerException if {@code location} is {@code null}.
    */
   public void setHeaderLocation(String location) {
-    if (location == null) {
-      throw new NullPointerException("Null exception location");
-    }
-    errorLocation = location;
-    errorLocationType = LocationType.HEADER;
+    errorElement.setHeaderLocation(location);
   }
 
   /**
    * Set generic error location.
+   * 
+   * @throws NullPointerException if {@code location} is {@code null}.
    */
   public void setLocation(String location) {
-    if (location == null) {
-      throw new NullPointerException("Null exception location");
-    }
-    errorLocation = location;
-    errorLocationType = LocationType.OTHER;
+    errorElement.setLocation(location);
   }
-
+  
   /**
    * Return error internal reason.
-   * Defaults to the message set at construction time.
+   * 
+   * <p>Defaults to the message set at construction time.
    */
   public String getInternalReason() {
-    if (errorInternalReason == null) {
-      return super.getMessage();
-    } else {
-      return errorInternalReason;
-    }
+    String internalReason = errorElement.getInternalReason();
+    return (internalReason != null) ? internalReason : super.getMessage();
   }
-
+  
   /**
    * Return message: same as getInternalReason.
    */
@@ -455,63 +407,48 @@ public class ServiceException extends Exception {
   public String getMessage() {
     return getInternalReason();
   }
-
+  
   /**
-   * Set error internal reason.
+   * Sets the internal reason of the error.
+   * 
+   * @throws NullPointerException if {@code internalReason} is {@code null}.
    */
   public void setInternalReason(String internalReason) {
-    if (internalReason == null) {
-      throw new NullPointerException("Null exception internal reason");
-    }
-    errorInternalReason = internalReason;
+    errorElement.setInternalReason(internalReason);
   }
 
   /**
    * Return URI for extended help
-   * No default.
    */
   public String getExtendedHelp() {
-    return errorExtendedHelp;
+    return errorElement.getExtendedHelp();
   }
-
-  // Matches a valid Google URI.
-  private static final String GOOGLE_URI_PATTERN = "http://.*google\\.com/.*";
 
   /**
    * Set URI for extended help.
+   * 
+   * @throws NullPointerException if {@code extendedHelp} is {@code null}.
    */
   public void setExtendedHelp(String extendedHelp) {
-    if (extendedHelp == null) {
-      throw new NullPointerException("Null exception extended help");
-    }
-    if (!extendedHelp.matches(GOOGLE_URI_PATTERN)) {
-      throw new IllegalArgumentException("Invalid extended help URI");
-    }
-    errorExtendedHelp = extendedHelp;
+    errorElement.setExtendedHelp(extendedHelp);
   }
 
   /**
    * Return URI to send report to.
-   * No default.
    */
   public String getSendReport() {
-    return errorSendReport;
+    return errorElement.getSendReport();
   }
 
   /**
    * Set URI to send report to.
-   * No default.
+   * 
+   * @throws NullPointerException if {@code sendReport} is {@code null}.
    */
   public void setSendReport(String sendReport) {
-    if (sendReport == null) {
-      throw new NullPointerException("Null exception send report URI");
-    }
-    if (!sendReport.matches(GOOGLE_URI_PATTERN)) {
-      throw new IllegalArgumentException("Invalid send report URI");
-    }
-    errorSendReport = sendReport;
+    errorElement.setSendReport(sendReport);
   }
-
+  
   /**
    * Return debugging information.
    * Defaults to the stack trace.
@@ -521,24 +458,23 @@ public class ServiceException extends Exception {
     if (true) {
      return null;
     } else {
-      if (errorDebugInfo == null) {
+      if (errorElement.getDebugInfo() == null) {
         return generateTrace(this, new StringBuilder(10000));
       } else {
-        return errorDebugInfo;
+        return errorElement.getDebugInfo();
       }
     }
   }
 
   /**
    * Set debugging information.
+   * 
+   * @throws NullPointerException if {@code debugInfo} is {@code null}.
    */
   public void setDebugInfo(String debugInfo) {
-    if (debugInfo == null) {
-      throw new NullPointerException("Null exception debug info");
-    }
-    errorDebugInfo = debugInfo;
+    errorElement.setDebugInfo(debugInfo);
   }
-
+  
   // Do what printStackTrace does, but to the StringBuilder.
   private String generateTrace(Throwable th, StringBuilder sb) {
     sb.append(toString());
@@ -557,7 +493,7 @@ public class ServiceException extends Exception {
     }
     return sb.toString();
   }
-
+  
   // Logic for handling sibling exceptions.
 
   // All the siblings, including this one.  We keep ourselves
@@ -592,24 +528,23 @@ public class ServiceException extends Exception {
   }
 
   /**
-   * Return true if this ServiceException matches the
-   * specified {@link ErrorDomain.ErrorCode} in domain name and code name.
-   * Sibling exceptions are not checked.
+   * Return true if this ServiceException matches the specified
+   * {@link ErrorContent} in domain name and code name. Sibling exceptions are
+   * not checked.
    */
-  public boolean matches(ErrorDomain.ErrorCode errorCode) {
-    return errorDomainName.equals(errorCode.getDomainName())
-        && errorCodeName.equals(errorCode.getCodeName());
+  public boolean matches(ErrorContent code) {
+    return getDomainName().equals(code.getDomainName())
+        && getCodeName().equals(code.getCodeName());
   }
 
   /**
-   * Return true if this ServiceException or any of its
-   * sibling exceptions matches the
-   * specified {@link ErrorDomain.ErrorCode} in domain name and code name.
-   * If you want to know <i>which</i> particular ServiceException
-   * matched, call {@link #getSiblings} and examine the
-   * individual ServiceExceptions with {@link #match}.
+   * Return true if this ServiceException or any of its sibling exceptions
+   * matches the specified {@link ErrorContent} in domain name and code name.
+   * If you want to know <i>which</i> particular ServiceException matched, call
+   * {@link #getSiblings} and examine the individual ServiceExceptions with
+   * {@link #matches}.
    */
-  public boolean matchesAny(ErrorDomain.ErrorCode errorCode) {
+  public boolean matchesAny(ErrorContent errorCode) {
     for (ServiceException se : siblings) {
       if (se.matches(errorCode)) {
         return true;
@@ -617,5 +552,4 @@ public class ServiceException extends Exception {
     }
     return false;
   }
-
 }
