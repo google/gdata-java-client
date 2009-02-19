@@ -33,6 +33,8 @@ import com.google.gdata.data.youtube.PlaylistEntry;
 import com.google.gdata.data.youtube.PlaylistFeed;
 import com.google.gdata.data.youtube.PlaylistLinkEntry;
 import com.google.gdata.data.youtube.PlaylistLinkFeed;
+import com.google.gdata.data.youtube.UserEventEntry;
+import com.google.gdata.data.youtube.UserEventFeed;
 import com.google.gdata.data.youtube.VideoEntry;
 import com.google.gdata.data.youtube.VideoFeed;
 import com.google.gdata.data.youtube.YouTubeMediaGroup;
@@ -81,6 +83,12 @@ public class YouTubeWriteClient {
    */
   public static final String USER_FEED_PREFIX = YOUTUBE_GDATA_SERVER
       + "/feeds/api/users/";
+  
+  /**
+   * The prefix of recent activity feeds
+   */
+  public static final String ACTIVITY_FEED_PREFIX = YOUTUBE_GDATA_SERVER
+      + "/feeds/api/events";
 
   /**
    * The URL suffix of the test user's uploads feed
@@ -96,6 +104,11 @@ public class YouTubeWriteClient {
    * The URL suffix of the test user's playlists feed
    */
   public static final String PLAYLISTS_FEED_SUFFIX = "/playlists";
+  
+  /**
+   * The URL suffix of the friends activity feed
+   */
+  public static final String FRIENDS_ACTIVITY_FEED_SUFFIX = "/friendsactivity";
 
   /**
    * The default username.
@@ -293,8 +306,10 @@ public class YouTubeWriteClient {
     System.out.println("\t4) Comment on a video");
     System.out.println("\t5) Upload a new video");
     System.out.println("\t6) Add a favorite");
+    System.out.println("\t7) Print user activity");
+    System.out.println("\t8) Print my friends' activity");
     System.out.println("\t0) Exit");
-    System.out.println("\nEnter Number (0-5): ");
+    System.out.println("\nEnter Number (0-8): ");
   }
 
   /**
@@ -360,7 +375,36 @@ public class YouTubeWriteClient {
   private static void showFavorites(YouTubeService service) throws IOException,
       ServiceException {
     printVideoFeed(service, USER_FEED_PREFIX + DEFAULT_USER
-        + FAVORITES_FEED_SUFFIX);
+        + FRIENDS_ACTIVITY_FEED_SUFFIX);
+  }
+  
+  /**
+   * Shows a user's activity feed.
+   * 
+   * @param service a YouTubeService object.
+   * @throws IOException Error sending request or reading the feed.
+   * @throws ServiceException If the service is unable to handle the request.
+   */
+  private static void showActivity(YouTubeService service) throws IOException,
+      ServiceException {
+    
+    System.out.println("Type in a comma separated list of YouTube usernames:");
+
+    String users = readLine();
+    printActivityFeed(service, ACTIVITY_FEED_PREFIX + "?author=" + users);
+  }
+  
+  /**
+   * Shows a user's friends' activity feed.
+   * 
+   * @param service a YouTubeService object.
+   * @throws IOException Error sending request or reading the feed.
+   * @throws ServiceException If the service is unable to handle the request.
+   */
+  private static void showFriendsActivity(YouTubeService service) throws IOException,
+      ServiceException {
+    printActivityFeed(service, USER_FEED_PREFIX + DEFAULT_USER
+        + FRIENDS_ACTIVITY_FEED_SUFFIX);
   }
 
   /**
@@ -593,6 +637,56 @@ public class YouTubeWriteClient {
 
     System.out.println();
   }
+ 
+  /**
+   * Fetches a feed of activities and prints information about them.
+   * 
+   * @param service An authenticated YouTubeService object
+   * @param feedUrl The url of the video feed to print.
+   * @throws IOException Error sending request or reading the feed.
+   * @throws ServiceException If the service is unable to handle the request.
+   */
+  private static void printActivityFeed(YouTubeService service, String feedUrl)
+      throws IOException, ServiceException {
+    UserEventFeed activityFeed = service.getFeed(new URL(feedUrl), 
+        UserEventFeed.class);
+    String title = activityFeed.getTitle().getPlainText();
+
+    printUnderlined(title);
+    if (activityFeed.getEntries().size() == 0) {
+      System.out.println("This feed contains no entries.");
+      return;
+    }
+    for (UserEventEntry entry : activityFeed.getEntries()) {
+      String user = entry.getAuthors().get(0).getName();
+      if(entry.getUserEventType() == UserEventEntry.Type.VIDEO_UPLOADED) {
+        System.out.println(user + " uploaded a video " + entry.getVideoId());
+      }
+      else if(entry.getUserEventType() == UserEventEntry.Type.VIDEO_RATED) {
+        System.out.println(user + " rated a video " + entry.getVideoId() +
+            " " + entry.getRating().getValue() + " stars");
+      }
+      else if(entry.getUserEventType() == UserEventEntry.Type.VIDEO_FAVORITED) {
+        System.out.println(user + " favorited a video " + entry.getVideoId());
+      }
+      else if(entry.getUserEventType() == UserEventEntry.Type.VIDEO_SHARED) {
+        System.out.println(user + " shared a video " + entry.getVideoId());
+      }
+      else if(entry.getUserEventType() == UserEventEntry.Type.VIDEO_COMMENTED) {
+        System.out.println(user + " commented on video " + entry.getVideoId());
+      }
+      else if(entry.getUserEventType() 
+          == UserEventEntry.Type.USER_SUBSCRIPTION_ADDED) {
+        System.out.println(user + " subscribed to the channel of " + 
+            entry.getUsername());
+      }
+      else if(entry.getUserEventType() == UserEventEntry.Type.FRIEND_ADDED) {
+        System.out.println(user + " friended " + entry.getUsername());
+      }
+    }
+
+    System.out.println();
+  }
 
   /**
    * Performs a given operation on the user's playlists feed
@@ -723,6 +817,14 @@ public class YouTubeWriteClient {
         case 6:
           // adds a new favorite video
           addFavorite(service);
+          break;
+        case 7:
+          // print the user's activities
+          showActivity(service);
+          break;
+        case 8:
+          // print the user's friends' activities
+          showFriendsActivity(service);
           break;
         case 0:
         default:
