@@ -9,9 +9,8 @@ o  Updated ant build configuration to reduce build time by ~60%.  Thanks to
 o  Added support for ChannelFeed and UserEventFeed in YouTube Data API.
 o  Fixed batch support issue in YouTube Data API Feed classes.
 o  Fixed bug relaed to GoogleService#delete fails in case of redirection in
-   GData Protocol version 2. See 
+   GData Protocol version 2. See
    http://code.google.com/p/gdata-java-client/issues/detail?id=82 for details.
-o  
 
 Notes for v1.29.0
 -----------------

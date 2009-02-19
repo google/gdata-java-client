@@ -234,9 +234,64 @@ public class OAuthHelper {
   }
 
   /**
+   * Retrieves the unauthorized request token and token secret from the remote
+   * server and sets the parameters in the {@link OAuthParameters} object.
+   * <p>
+   * The following parameter is required in {@link OAuthParameters}:
+   * <ul><li>consumer_key
+   * </ul>
+   * <p>
+   * If the request is successful, the following parameters will be set in
+   * {@link OAuthParameters}:
+   * <ul>
+   * <li>oauth_token
+   * <li>oauth_token_secret (if signing with HMAC)
+   * </ul>
+   * <p>
+   * @see <a href="http://oauth.net/core/1.0/#auth_step1">OAuth Step 1</a>
+   *
+   * @param oauthParameters the OAuth parameters necessary for this request.
+   * @throws OAuthException if there is an error with the OAuth request
+   */
+  public void getUnauthorizedRequestToken(OAuthParameters oauthParameters)
+      throws OAuthException {
+    // Validate the input parameters
+    oauthParameters.assertOAuthConsumerKeyExists();
+    if (signer instanceof OAuthHmacSha1Signer) {
+      oauthParameters.assertOAuthConsumerSecretExists();
+    }
+
+    // Generate a signed URL that allows the consumer to retrieve the
+    // unauthorized request token.
+    URL url = getOAuthUrl(requestTokenUrl, "GET", oauthParameters);
+
+    // Retrieve the unauthorized request token and store it in the
+    // oauthParameters
+    String response = httpClient.getResponse(url);
+    Map<String, String> queryString = OAuthUtil.parseQuerystring(response);
+    oauthParameters.setOAuthToken(
+        queryString.get(OAuthParameters.OAUTH_TOKEN_KEY));
+    oauthParameters.setOAuthTokenSecret(
+        queryString.get(OAuthParameters.OAUTH_TOKEN_SECRET_KEY));
+
+    // clear the request-specific parameters set in getOAuthUrl(), such as
+    // nonce, timestamp and signature, which are only needed for a single
+    // request.
+    oauthParameters.reset();
+  }
+
+  /**
    * Generates the url which the user should visit in order to authenticate and
    * authorize with the Service Provider. The url will look something like this:
-   * https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=CMiJx-LdFxCRkJbvBw&oauth_callback=http%3A%2F%2Fwww.google.com%2F
+   * https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=[OAUTHTOKENSTRING]&oauth_callback=http%3A%2F%2Fwww.google.com%2F
+   * This method first calls
+   * {@link #getUnauthorizedRequestToken(OAuthParameters)} to retrieve the
+   * unauthorized request token, and then calls
+   * {@link #createUserAuthorizationUrl(OAuthParameters)}.  Users who wish to
+   * add a token secret to the callback url should call
+   * {@link #getUnauthorizedRequestToken(OAuthParameters)} first, append the
+   * retrieved token secret to the callback url, and then call
+   * {@link #createUserAuthorizationUrl(OAuthParameters)}.
    * <p>
    * The following parameter is required in {@link OAuthParameters}:
    * <ul>
@@ -255,27 +310,39 @@ public class OAuthHelper {
    *         modifies the oauthParameters object by adding the request token and
    *         token secret.
    * @throws OAuthException if there is an error with the OAuth request
+   * @deprecated Call a combination of {@link #getUnauthorizedRequestToken} and
+   *     {@link #createUserAuthorizationUrl} instead.
    */
+  @Deprecated
   public String getUserAuthorizationUrl(OAuthParameters oauthParameters)
       throws OAuthException {
+    getUnauthorizedRequestToken(oauthParameters);
+    return createUserAuthorizationUrl(oauthParameters);
+  }
 
-    // STEP 1: Validate the input parameters
-    oauthParameters.assertOAuthConsumerKeyExists();
-
-    // STEP 2: Generates a signed URL that allows the consumer to retrieve the
-    // unauthorized request token.
-    URL url = getOAuthUrl(requestTokenUrl, "GET", oauthParameters);
-
-    // STEP 3: Retrieve the unauthorized request token and store it in the
-    // oauthParameters
-    String response = httpClient.getResponse(url);
-    Map<String, String> queryString = OAuthUtil.parseQuerystring(response);
-    oauthParameters.setOAuthToken(
-        queryString.get(OAuthParameters.OAUTH_TOKEN_KEY));
-    oauthParameters.setOAuthTokenSecret(
-        queryString.get(OAuthParameters.OAUTH_TOKEN_SECRET_KEY));
-
-    // STEP 4: Format and return the user authorization url.
+  /**
+   * Generates the url which the user should visit in order to authenticate and
+   * authorize with the Service Provider. This method does not modify the
+   * {@link OAuthParameters} object.  The url will look something like this:
+   * https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=[OAUTHTOKENSTRING]&oauth_callback=http%3A%2F%2Fwww.google.com%2F
+   * <p>
+   * The following parameter is required in {@link OAuthParameters}:
+   * <ul>
+   * <li>oauth_token
+   * </ul>
+   * <p>
+   * The following parameter is optional:
+   * <ul>
+   * <li>oauth_callback
+   * </ul>
+   *
+   * @param oauthParameters the OAuth parameters necessary for this request
+   * @return The full authorization url the user should visit.  The method also
+   *         modifies the oauthParameters object by adding the request token and
+   *         token secret.
+   */
+  public String createUserAuthorizationUrl(OAuthParameters oauthParameters) {
+    // Format and return the user authorization url.
     KeyValuePair queryParams = new QueryKeyValuePair();
     queryParams.add(OAuthParameters.OAUTH_TOKEN_KEY,
         oauthParameters.getOAuthToken());
@@ -283,14 +350,42 @@ public class OAuthHelper {
       queryParams.add(OAuthParameters.OAUTH_CALLBACK_KEY,
           oauthParameters.getOAuthCallback());
     }
-
-    // clear the request-specific parameters set in getOAuthUrl(), such as
-    // nonce, timestamp and signature, which are only needed for a single
-    // request.
-    oauthParameters.reset();
-
     return (new StringBuilder()).append(userAuthorizationUrl).append("?")
         .append(queryParams.toString()).toString();
+  }
+
+  /**
+   * Helper method which parses a url for the OAuth related parameters.
+   * It expects an OAuth token parameter to exist, while the OAuth token secret
+   * may or may not exist, depending on the implementation.  The parameters are
+   * set in the {@link OAuthParameters} object.
+   *
+   * @param url The url containing the OAuth parameters.
+   * @param oauthParameters OAuth parameters for this request
+   */
+  public void getOAuthParametersFromCallback(URL url,
+      OAuthParameters oauthParameters) {
+    getOAuthParametersFromCallback(url.getQuery(), oauthParameters);
+  }
+
+  /**
+   * Helper method which parses a querystring for the OAuth related parameters.
+   * It expects an OAuth token parameter to exist, while the OAuth token secret
+   * may or may not exist, depending on the implementation.  The parameters are
+   * set in the {@link OAuthParameters} object.
+   *
+   * @param queryString the query string containing the OAuth parameters
+   * @param oauthParameters OAuth parameters for this request
+   */
+  public void getOAuthParametersFromCallback(String queryString,
+      OAuthParameters oauthParameters) {
+    // parse the querystring, and store the parsed values in oauthParameters.
+    Map<String, String> params = OAuthUtil.parseQuerystring(queryString);
+    oauthParameters.setOAuthToken(params.get(OAuthParameters.OAUTH_TOKEN_KEY));
+    if (params.get(OAuthParameters.OAUTH_TOKEN_SECRET_KEY) != null) {
+      oauthParameters.setOAuthTokenSecret(
+          params.get(OAuthParameters.OAUTH_TOKEN_SECRET_KEY));
+    }
   }
 
   /**
@@ -335,11 +430,7 @@ public class OAuthHelper {
    */
   public String getAccessToken(String queryString,
       OAuthParameters oauthParameters) throws OAuthException {
-    // parse the querystring, and store the parsed values in oauthParameters.
-    Map<String, String> params = OAuthUtil.parseQuerystring(queryString);
-    oauthParameters.setOAuthToken(params.get(OAuthParameters.OAUTH_TOKEN_KEY));
-    oauthParameters.setOAuthTokenSecret(
-        params.get(OAuthParameters.OAUTH_TOKEN_SECRET_KEY));
+    getOAuthParametersFromCallback(queryString, oauthParameters);
     return getAccessToken(oauthParameters);
   }
 
@@ -354,7 +445,16 @@ public class OAuthHelper {
    * <ul>
    * <li>oauth_consumer_key
    * <li>oauth_token
+   * <li>oauth_token_secret (if signing with HMAC)
    * </ul>
+   * <p>
+   * If the request is successful, the following parameters will be set in
+   * {@link OAuthParameters}:
+   * <ul>
+   * <li>oauth_token
+   * <li>oauth_token_secret (if signing with HMAC)
+   * </ul>
+   * <p>
    * @see <a href="http://oauth.net/core/1.0/#auth_step3">OAuth Step 3</a>
    *
    * @param oauthParameters OAuth parameters for this request
@@ -368,6 +468,10 @@ public class OAuthHelper {
     // // STEP 1: Validate the input parameters
     oauthParameters.assertOAuthConsumerKeyExists();
     oauthParameters.assertOAuthTokenExists();
+    if (signer instanceof OAuthHmacSha1Signer) {
+      oauthParameters.assertOAuthConsumerSecretExists();
+      oauthParameters.assertOAuthTokenSecretExists();
+    }
 
     // STEP 2: Generate the OAuth request url based on the input parameters.
     URL url = getOAuthUrl(accessTokenUrl, "GET", oauthParameters);
@@ -402,6 +506,7 @@ public class OAuthHelper {
    * <ul>
    * <li>oauth_consumer_key
    * <li>oauth_token
+   * <li>oauth_token_secret (if signing with HMAC)
    * </ul>
    * @see <a href="http://oauth.net/core/1.0/#auth_header_authorization">OAuth
    *      Authorization Header</a>
@@ -417,6 +522,11 @@ public class OAuthHelper {
 
     // validate input parameters
     oauthParameters.assertOAuthConsumerKeyExists();
+    oauthParameters.assertOAuthTokenExists();
+    if (signer instanceof OAuthHmacSha1Signer) {
+      oauthParameters.assertOAuthConsumerSecretExists();
+      oauthParameters.assertOAuthTokenSecretExists();
+    }
 
     // add request-specific parameters
     addCommonRequestParameters(requestUrl, httpMethod, oauthParameters);
