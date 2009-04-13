@@ -2,7 +2,7 @@
 
 = Frequently Asked Question =
 
-=== How to handle <nop>com.google.gdata.util.RedirectRequiredException</nop> ===
+=== How to handle com.google.gdata.util.!RedirectRequiredException ===
 This means your request to Google Data APIs server is redirected more than once by a http proxy.  If the redirection is valid, you can choose to follow the redirected url as follows:
 {{{
 CalendarFeed feed;
