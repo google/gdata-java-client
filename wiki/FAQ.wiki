@@ -1,13 +1,13 @@
 #Answers for frequently asked questions.
 
-= Frequently Asked Question =
+<wiki:toc max_depth="1"/>
 
-=== How to handle com.google.gdata.util.!RedirectRequiredException ===
+= How to handle com.google.gdata.util.!RedirectRequiredException =
 This means your request to Google Data APIs server is redirected more than once by a http proxy.  If the redirection is valid, you can choose to follow the redirected url as follows:
 {{{
 CalendarFeed feed;
 try {
-  feed = calendarService.getFeed(url, CalendarFeed.class)
+  feed = calendarService.getFeed(feedUrl, CalendarFeed.class)
 } catch (RedirectRequiredException e) {
   feedUrl = new URL(re.getRedirectLocation());
   feed = cs.getFeed(feedUrl, CalendarFeed.class);
