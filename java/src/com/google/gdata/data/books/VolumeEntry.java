@@ -562,6 +562,15 @@ public class VolumeEntry extends BaseEntry<VolumeEntry> {
   }
 
   /**
+   * Returns the epub download link.
+   *
+   * @return Epub download link or {@code null} for none.
+   */
+  public Link getEpubDownloadLink() {
+    return getLink(BooksLink.Rel.EPUBDOWNLOAD, BooksLink.Type.EPUB);
+  }
+
+  /**
    * Returns the link to a description page.
    *
    * @return Link to a description page or {@code null} for none.
@@ -586,7 +595,7 @@ public class VolumeEntry extends BaseEntry<VolumeEntry> {
    *     none.
    */
   public Link getThumbnailLink() {
-    return getLink(BooksLink.Rel.THUMBNAIL, BooksLink.Type.JPEG);
+    return getLink(BooksLink.Rel.THUMBNAIL, null);
   }
 
   @Override

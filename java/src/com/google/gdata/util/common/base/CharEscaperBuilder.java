@@ -59,7 +59,7 @@ public class CharEscaperBuilder {
       }
       return s;
     }
-    
+
     @Override protected char[] escape(char c) {
       return c < replaceLength ? replacements[c] : null;
     }

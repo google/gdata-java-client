@@ -164,6 +164,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     extProfile.declare(DocumentListEntry.class, LastViewed.class);
     extProfile.declare(DocumentListEntry.class, QuotaBytesUsed.class);
     extProfile.declare(DocumentListEntry.class, ResourceId.class);
+    extProfile.declare(DocumentListEntry.class, WritersCanInvite.class);
   }
 
   /**
@@ -268,6 +269,28 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     return this.getCategories().contains(Labels.STARRED);
   }
 
+  /**
+   * Sets the viewed status of this document for the user this feed request
+   * has been authenticated under.
+   * 
+   * @param viewed true if the document has been viewed
+   */
+  public void setViewed(boolean viewed) {
+    if (viewed) {
+      this.getCategories().add(Labels.VIEWED);
+    } else {
+      this.getCategories().remove(Labels.VIEWED);
+    }
+  }
+  
+  /**
+   * @return true if the document represented by this entry has been viewed by
+   * the user this feed request has been authenticated under.
+   */
+  public boolean isViewed() {
+    return this.getCategories().contains(Labels.VIEWED);
+  }
+  
   /**
    * Sets the trashed status of this document for the user this feed request
    * has been authenticated under.
@@ -386,6 +409,29 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
       removeExtension(QuotaBytesUsed.class);
     } else {
       setExtension(new QuotaBytesUsed(quotaBytesUsed));
+    }
+  }
+
+  /** 
+   * Returns a flag for whether writers can invite other collaborators
+   *
+   * @return whether writers can invite
+   */
+  public Boolean isWritersCanInvite(){
+    WritersCanInvite writersCanInvite = getExtension(WritersCanInvite.class);
+    return writersCanInvite == null ? null : writersCanInvite.getValue();
+  }
+
+  /**
+   * Sets whether users classed as writers can invite other collaborators 
+   *
+   * @param writersCanInvite true if writers can invite
+   */
+  public void setWritersCanInvite(Boolean writersCanInvite) {
+    if (writersCanInvite == null) {
+      removeExtension(WritersCanInvite.class);
+    } else {
+      this.setExtension(new WritersCanInvite(writersCanInvite));
     }
   }
 

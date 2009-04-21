@@ -20,7 +20,7 @@
   <property name="sample.oauth.main"          value="sample.oauth.OAuthExample"/>
 
   <path id="sample.oauth.compile.classpath">
-     <path location="${gdata-client.jar}"/>
+     <path refid="build.service.core.classpath"/>
      <path location="${gdata-blogger.jar}"/>
      <path location="${gdata-contacts.jar}"/>
      <path location="${gdata-finance.jar}"/>

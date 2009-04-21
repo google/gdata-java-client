@@ -522,10 +522,8 @@ public class OAuthHelper {
 
     // validate input parameters
     oauthParameters.assertOAuthConsumerKeyExists();
-    oauthParameters.assertOAuthTokenExists();
     if (signer instanceof OAuthHmacSha1Signer) {
       oauthParameters.assertOAuthConsumerSecretExists();
-      oauthParameters.assertOAuthTokenSecretExists();
     }
 
     // add request-specific parameters

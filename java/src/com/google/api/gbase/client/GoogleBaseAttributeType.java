@@ -109,12 +109,24 @@ public class GoogleBaseAttributeType {
    *
    * Example:
    * <pre>&lt;country&gt;DE&lt;/country&gt;
+   * &lt;region&gt;Munich&lt;/region&gt;
    * &lt;price&gt;12.50 eur&lt;/price&gt;
    * &lt;service&gt;Deutsche Post&lt;/service&gt;
    * </pre>
    */
-  public static final GoogleBaseAttributeType SHIPPING =
-      createAndRegister("shipping");
+  public static final GoogleBaseAttributeType SHIPPING = createAndRegister("shipping");
+
+  /**
+   * Tax information.
+   *
+   * Example:
+   * <pre>&lt;country&gt;DE&lt;/country&gt;
+   * &lt;region&gt;Munich&lt;/region&gt;
+   * &lt;rate&gt;12.50 eur&lt;/rate&gt;
+   * &lt;tax_ship&gt;true&lt;/tax_ship&gt;
+   * </pre>
+   */
+  public static final GoogleBaseAttributeType TAX = createAndRegister("tax");
 
   /**
    * A location, a string describing the address.

@@ -24,9 +24,9 @@ import com.google.gdata.client.authn.oauth.OAuthSigner;
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.http.GoogleGDataRequest;
 import com.google.gdata.client.http.GoogleGDataRequest.GoogleCookie;
-import com.google.gdata.data.BaseEntry;
-import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.DateTime;
+import com.google.gdata.data.IEntry;
+import com.google.gdata.data.IFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.RedirectRequiredException;
@@ -298,9 +298,24 @@ public class GoogleService extends Service implements TokenListener {
   public void setUserCredentials(String username, String password)
       throws AuthenticationException {
 
-    setUserCredentials(username, password, null, null);
+    setUserCredentials(username, password,
+        ClientLoginAccountType.HOSTED_OR_GOOGLE);
   }
 
+  /**
+   * Sets the credentials of the user to authenticate requests to the server.
+   *
+   * @param username the name of the user (an email address)
+   * @param password the password of the user
+   * @param accountType the account type: HOSTED, GOOGLE, or HOSTED_OR_GOOGLE
+   * @throws AuthenticationException if authentication failed.
+   */
+  public void setUserCredentials(String username,
+                                 String password,
+                                 ClientLoginAccountType accountType)
+      throws AuthenticationException {
+    setUserCredentials(username, password, null, null, accountType);
+  }
 
   /**
    * Sets the credentials of the user to authenticate requests to the server.
@@ -319,13 +334,36 @@ public class GoogleService extends Service implements TokenListener {
                                  String captchaToken,
                                  String captchaAnswer)
       throws AuthenticationException {
+    setUserCredentials(username, password, captchaToken, captchaAnswer,
+        ClientLoginAccountType.HOSTED_OR_GOOGLE);
+  }
+
+  /**
+   * Sets the credentials of the user to authenticate requests to the server.
+   * A CAPTCHA token and a CAPTCHA answer can also be optionally provided
+   * to authenticate when the authentication server requires that a
+   * CAPTCHA be answered.
+   *
+   * @param username the name of the user (an email id)
+   * @param password the password of the user
+   * @param captchaToken the CAPTCHA token issued by the server
+   * @param captchaAnswer the answer to the respective CAPTCHA token
+   * @param accountType the account type: HOSTED, GOOGLE, or HOSTED_OR_GOOGLE
+   * @throws AuthenticationException if authentication failed
+   */
+  public void setUserCredentials(String username,
+                                 String password,
+                                 String captchaToken,
+                                 String captchaAnswer,
+                                 ClientLoginAccountType accountType)
+      throws AuthenticationException {
 
     GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
     googleAuthTokenFactory.setUserCredentials(username, password,
-                                              captchaToken, captchaAnswer);
+                                              captchaToken, captchaAnswer,
+                                              accountType);
     requestFactory.setAuthToken(authTokenFactory.getAuthToken());
   }
-
   /**
    * Sets the AuthToken that should be used to authenticate requests to the
    * server. This is useful if the caller has some other way of accessing the
@@ -502,9 +540,9 @@ public class GoogleService extends Service implements TokenListener {
   }
 
   @Override
-  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
-                                             Class<E> entryClass,
-                                             DateTime ifModifiedSince)
+  public <E extends IEntry> E getEntry(URL entryUrl,
+                                       Class<E> entryClass,
+                                       DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
     try {
@@ -520,9 +558,9 @@ public class GoogleService extends Service implements TokenListener {
 
 
   @Override
-  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
-                                             Class<E> entryClass,
-                                             String etag)
+  public <E extends IEntry> E getEntry(URL entryUrl,
+                                       Class<E> entryClass,
+                                       String etag)
       throws IOException, ServiceException {
 
     try {
@@ -538,7 +576,7 @@ public class GoogleService extends Service implements TokenListener {
 
 
   @Override
-  public <E extends BaseEntry<?>> E update(URL entryUrl, E entry)
+  public <E extends IEntry> E update(URL entryUrl, E entry)
       throws IOException, ServiceException {
 
     try {
@@ -554,7 +592,7 @@ public class GoogleService extends Service implements TokenListener {
 
 
   @Override
-  public <E extends BaseEntry<?>> E insert(URL feedUrl, E entry)
+  public <E extends IEntry> E insert(URL feedUrl, E entry)
       throws IOException, ServiceException {
 
     try {
@@ -570,9 +608,9 @@ public class GoogleService extends Service implements TokenListener {
 
 
   @Override
-  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl,
-                                              Class<F> feedClass,
-                                              DateTime ifModifiedSince)
+  public <F extends IFeed> F getFeed(URL feedUrl,
+                                     Class<F> feedClass,
+                                     DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
     try {
@@ -587,7 +625,7 @@ public class GoogleService extends Service implements TokenListener {
   }
 
   @Override
-  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl, Class<F> feedClass,
+  public <F extends IFeed> F getFeed(URL feedUrl, Class<F> feedClass,
       String etag) throws IOException, ServiceException {
     try {
       return super.getFeed(feedUrl, feedClass, etag);
@@ -601,9 +639,9 @@ public class GoogleService extends Service implements TokenListener {
   }
 
   @Override
-  public <F extends BaseFeed<?, ?>> F getFeed(Query query,
-                                              Class<F> feedClass,
-                                              DateTime ifModifiedSince)
+  public <F extends IFeed> F getFeed(Query query,
+                                     Class<F> feedClass,
+                                     DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
     try {
@@ -618,7 +656,7 @@ public class GoogleService extends Service implements TokenListener {
   }
 
   @Override
-  public <F extends BaseFeed<?, ?>> F getFeed(Query query, Class<F> feedClass,
+  public <F extends IFeed> F getFeed(Query query, Class<F> feedClass, 
       String etag) throws IOException, ServiceException {
     try {
       return super.getFeed(query, feedClass, etag);
@@ -688,16 +726,16 @@ public class GoogleService extends Service implements TokenListener {
 
   /**
    * Executes several operations (insert, update or delete) on the entries that
-   * are part of the input {@link Feed}. It will return another feed that
+   * are part of the input {@link IFeed}. It will return another feed that
    * describes what was done while executing these operations.
-   * 
+   *
    * It is possible for one batch operation to fail even though other operations
    * have worked, so this method won't throw a ServiceException unless something
    * really wrong is going on. You need to check the entries in the returned
    * feed to know which operations succeeded and which operations failed (see
    * {@link com.google.gdata.data.batch.BatchStatus} and
    * {@link com.google.gdata.data.batch.BatchInterrupted} extensions.)
-   * 
+   *
    * @param feedUrl the POST URI associated with the target feed.
    * @param inputFeed a description of the operations to execute, described
    *        using tags in the batch: namespace
@@ -710,11 +748,9 @@ public class GoogleService extends Service implements TokenListener {
    *         the server while parsing the request, like invalid XML data. Some
    *         operations might have succeeded when this exception is thrown.
    *         Check {@link BatchInterruptedException#getFeed()}.
-   * 
-   * @see BaseFeed#getEntryPostLink()
-   * @see BaseFeed#insert(BaseEntry)
    */
-  public <F extends BaseFeed<?, ?>> F batch(URL feedUrl, F inputFeed)
+  @Override
+  public <F extends IFeed> F batch(URL feedUrl, F inputFeed)
       throws IOException, ServiceException, BatchInterruptedException {
       try {
         return super.batch(feedUrl, inputFeed);
@@ -741,5 +777,4 @@ public class GoogleService extends Service implements TokenListener {
     return (GoogleAuthTokenFactory) authTokenFactory;
   }
 }
-
 

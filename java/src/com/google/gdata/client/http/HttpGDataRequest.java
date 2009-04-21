@@ -103,6 +103,8 @@ public class HttpGDataRequest implements GDataRequest {
     protected Map<String, String> privateHeaderMap
         = new LinkedHashMap<String, String>();
     protected boolean useSsl = false;
+    protected HttpUrlConnectionSource connectionSource = 
+        JdkHttpUrlConnectionSource.INSTANCE;
 
     public void setAuthToken(AuthTokenFactory.AuthToken authToken) {
       if (authToken != null && !(authToken instanceof HttpAuthToken)) {
@@ -136,6 +138,17 @@ public class HttpGDataRequest implements GDataRequest {
       extendHeaderMap(this.privateHeaderMap, header, value);
     }
 
+    /**
+     * Sets a specific {@link HttpUrlConnectionSource} instance to create
+     * backing {@link URLConnection} instance. 
+     */
+    public void setConnectionSource(HttpUrlConnectionSource connectionSource) {
+      if (connectionSource == null) {
+        throw new NullPointerException("connectionSource");
+      }
+      this.connectionSource = connectionSource;
+    }
+
     @SuppressWarnings("unused")
     public GDataRequest getRequest(RequestType type,
                                    URL requestUrl,
@@ -145,8 +158,7 @@ public class HttpGDataRequest implements GDataRequest {
         requestUrl = new URL(
             requestUrl.toString().replaceFirst("http", "https"));
       }
-      return new HttpGDataRequest(type, requestUrl, contentType,
-                                  authToken, headerMap, privateHeaderMap);
+      return createRequest(type, requestUrl, contentType);
     }
 
     @SuppressWarnings("unused")
@@ -154,8 +166,27 @@ public class HttpGDataRequest implements GDataRequest {
         throws IOException, ServiceException {
       return getRequest(RequestType.QUERY, query.getUrl(), contentType);
     }
+
+    /**
+     * Creates a {@link GDataRequest} instance. 
+     *
+     * <p>This method is called from {@link #getRequest} after any changes to
+     * the parameters have been applied.
+     *
+     * <p>Subclasses should overwrite this method and not {@link #getRequest}
+     */
+    protected GDataRequest createRequest(RequestType type,
+        URL requestUrl, ContentType contentType) 
+        throws IOException, ServiceException {
+      return new HttpGDataRequest(type, requestUrl, contentType,
+          authToken, headerMap, privateHeaderMap, connectionSource);
+    }
   }
 
+  /**
+   * Source of {@link HttpURLConnection} instances.
+   */
+  protected final HttpUrlConnectionSource connectionSource;
 
   /**
    * Underlying HTTP connection to the GData service.
@@ -184,7 +215,11 @@ public class HttpGDataRequest implements GDataRequest {
    * True if the request type expects input from the client.
    */
   protected boolean expectsInput;
-
+  
+  /**
+   * Contains the content type of the request data
+   */
+  protected ContentType inputType;
 
   /**
    * True if the request type returns output to the client.
@@ -204,7 +239,12 @@ public class HttpGDataRequest implements GDataRequest {
    * configured (use JDK default timeout behavior).
    */
   protected int readTimeout = -1;
-
+  
+  /**
+   * The input stream from which HTTP response data may be read or {@code null}
+   * if no response stream or not opened yet via {@link #getResponseStream()}.
+   */
+  private InputStream inputStream = null;
 
   /**
    * Constructs a new HttpGDataRequest instance of the specified RequestType,
@@ -212,19 +252,23 @@ public class HttpGDataRequest implements GDataRequest {
    *
    * @param type type of GDataRequest.
    * @param requestUrl request target URL.
-   * @param contentType the content type of request/response data.
+   * @param inputType the content type of request data (or {@code null}).
    * @param headerMap a set of headers to be included in each request
    * @param privateHeaderMap a set of headers to be included in each request
+   * @param connectionSource source of {@link HttpURLConnection}s
    * @throws IOException on error initializating service connection.
    */
   protected HttpGDataRequest(RequestType type, URL requestUrl,
-      ContentType contentType, HttpAuthToken authToken,
-      Map<String, String> headerMap, Map<String, String> privateHeaderMap)
+      ContentType inputType, HttpAuthToken authToken,
+      Map<String, String> headerMap, Map<String, String> privateHeaderMap,
+      HttpUrlConnectionSource connectionSource)
       throws IOException {
-
+    
+    this.connectionSource = connectionSource;
     this.type = type;
+    this.inputType = inputType;
     this.requestUrl = requestUrl;
-    httpConn = getRequestConnection(requestUrl);
+    this.httpConn = getRequestConnection(requestUrl);
 
     switch (type) {
 
@@ -237,7 +281,7 @@ public class HttpGDataRequest implements GDataRequest {
         expectsInput = true;
         hasOutput = true;
         setMethod("POST");
-        setHeader("Content-Type", contentType.toString());
+        setHeader("Content-Type", inputType.toString());
         break;
 
       case UPDATE:
@@ -249,7 +293,7 @@ public class HttpGDataRequest implements GDataRequest {
         } else {
           setMethod("PUT");
         }
-        setHeader("Content-Type", contentType.toString());
+        setHeader("Content-Type", inputType.toString());
         break;
 
       case DELETE:
@@ -297,8 +341,16 @@ public class HttpGDataRequest implements GDataRequest {
    * Protected default constructor for testing.
    */
   protected HttpGDataRequest() {
+    connectionSource = JdkHttpUrlConnectionSource.INSTANCE;
   }
 
+  public URL getRequestUrl() {
+    return requestUrl;
+  }
+
+  public ContentType getRequestContentType() {
+    return inputType;
+  }
 
   /**
    * Obtains a connection to the GData service.
@@ -306,11 +358,13 @@ public class HttpGDataRequest implements GDataRequest {
   protected HttpURLConnection getRequestConnection(URL requestUrl)
       throws IOException {
 
-    if (!requestUrl.getProtocol().startsWith("http")) {
+    HttpURLConnection uc;
+    try {
+      uc = connectionSource.openConnection(requestUrl);
+    } catch (IllegalArgumentException e) {
       throw new UnsupportedOperationException("Unsupported scheme:"
           + requestUrl.getProtocol());
     }
-    HttpURLConnection uc = (HttpURLConnection) requestUrl.openConnection();
 
     // Should never cache GData requests/responses
     uc.setUseCaches(false);
@@ -566,15 +620,19 @@ public class HttpGDataRequest implements GDataRequest {
     if (!hasOutput) {
       throw new IllegalStateException("Request doesn't have response data");
     }
+    
+    if (inputStream != null) {
+      return inputStream;
+    }
 
-    InputStream responseStream = httpConn.getInputStream();
+    inputStream = httpConn.getInputStream();
     if ("gzip".equalsIgnoreCase(httpConn.getContentEncoding())) {
-      responseStream = new GZIPInputStream(responseStream);
+      inputStream = new GZIPInputStream(inputStream);
     }
     if (logger.isLoggable(Level.FINEST)){
-      return new LoggableInputStream(logger, responseStream);
+      return new LoggableInputStream(logger, inputStream);
     }
-    return responseStream;
+    return inputStream;
   }
 
   public ParseSource getParseSource() throws IOException {
@@ -589,5 +647,15 @@ public class HttpGDataRequest implements GDataRequest {
    */
   public HttpURLConnection getConnection() {
     return httpConn;
+  }
+
+  public void end() {
+    try {
+      if (inputStream != null) {
+        inputStream.close();
+      }
+    } catch (IOException ioe) {
+      logger.log(Level.WARNING, "Error closing response stream", ioe);
+    }
   }
 }

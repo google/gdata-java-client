@@ -17,7 +17,7 @@
 package com.google.gdata.client;
 
 import com.google.gdata.util.common.base.CharEscapers;
-import com.google.gdata.data.Category;
+import com.google.gdata.data.ICategory;
 import com.google.gdata.data.DateTime;
 
 import java.io.UnsupportedEncodingException;
@@ -230,20 +230,20 @@ public class Query {
 
 
     /** List of categories that returned entries must match. */
-    private final List<Category> categories;
-    public List<Category> getCategories() { return categories; }
+    private final List<ICategory> categories;
+    public List<ICategory> getCategories() { return categories; }
 
     /** List of categories that returned entries must match. */
-    private final List<Category> excludeCategories;
-    public List<Category> getExcludeCategories() { return excludeCategories; }
+    private final List<ICategory> excludeCategories;
+    public List<ICategory> getExcludeCategories() { return excludeCategories; }
 
 
     /**
      * Creates an empty category filter.
      */
     public CategoryFilter() {
-      categories = new LinkedList<Category>();
-      excludeCategories = new LinkedList<Category>();
+      categories = new LinkedList<ICategory>();
+      excludeCategories = new LinkedList<ICategory>();
     }
 
     /**
@@ -251,64 +251,64 @@ public class Query {
      * exclusion lists.  A null value for either is equivalent to an
      * empty list.
      */
-    public CategoryFilter(List<Category> included,
-                          List<Category> excluded) {
+    public CategoryFilter(List<ICategory> included,
+                          List<ICategory> excluded) {
 
       if (included != null) {
         categories = included;
       } else {
-        categories = new LinkedList<Category>();
+        categories = new LinkedList<ICategory>();
       }
       if (excluded != null) {
         excludeCategories = excluded;
       } else {
-        excludeCategories = new LinkedList<Category>();
+        excludeCategories = new LinkedList<ICategory>();
       }
     }
 
     /**
      * Creates a simple category filter containing only a single
-     * {@link Category}.
+     * {@link ICategory}.
      *
      * @param category an initial category to add to the filter.
      */
-    public CategoryFilter(Category category) {
+    public CategoryFilter(ICategory category) {
       this();
       categories.add(category);
     }
 
 
     /**
-     * Adds a new {@link Category} to the query, indicating that entries
+     * Adds a new {@link ICategory} to the query, indicating that entries
      * containing the category should be considered to match.
      *
      * @param category the category to add to query parameters.
      */
-    public void addCategory(Category category) {
+    public void addCategory(ICategory category) {
       categories.add(category);
     }
 
 
     /**
-     * Adds a new {@link Category} to the query, indicating that entries
+     * Adds a new {@link ICategory} to the query, indicating that entries
      * that do not contain the category should be considered to
      * match.
      *
      * @param category the category to add to query parameters.
      */
-    public void addExcludeCategory(Category category) {
+    public void addExcludeCategory(ICategory category) {
       excludeCategories.add(category);
     }
 
 
-    private String getQueryString(Category category) {
+    private String getQueryString(ICategory category) {
       StringBuilder sb = new StringBuilder();
 
       String scheme = category.getScheme();
       if (scheme != null) {
-        sb.append(Category.SCHEME_PREFIX);
+        sb.append("{");
         sb.append(scheme);
-        sb.append(Category.SCHEME_SUFFIX);
+        sb.append("}");
       }
       sb.append(category.getTerm());
 
@@ -323,7 +323,7 @@ public class Query {
     @Override public String toString() {
       StringBuilder sb = new StringBuilder();
       boolean isFirst = true;
-      for (Category category : categories) {
+      for (ICategory category : categories) {
 
           if (isFirst) {
             isFirst = false;
@@ -332,7 +332,7 @@ public class Query {
           }
           sb.append(getQueryString(category));
       }
-      for (Category category : excludeCategories) {
+      for (ICategory category : excludeCategories) {
 
           if (isFirst) {
             isFirst = false;

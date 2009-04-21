@@ -82,3 +82,4 @@ public final class HtmlToText {
     return StringUtil.fixedWidth(text.split("\n"), EMAIL_LINE_WIDTH_MAX);
   }
 }
+

@@ -1,5 +1,13 @@
 Google Data API - Release Notes
 
+Notes for v1.31.0
+-----------------
+Apr 21, 2009
+o  Added support for Analytics Google Data API.
+o  Updated Books API, Docs API and OAuth samples code.
+o  Updated Apps Groups API to use https instead of http.
+o  Fixed non-blocking bugs related to comptability with Google Java App Engine.
+
 Notes for v1.30.0
 -----------------
 Feb 11, 2009

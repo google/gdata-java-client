@@ -15,11 +15,12 @@
 
 package com.google.api.gbase.client;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collections;
 
 /**
@@ -34,7 +35,7 @@ public class GoogleBaseAttribute {
   private String textValue;
 
   /** Tag sub-elements (element name, element value) if there are any. */
-  private Map<String, String> subElements;
+  private Multimap<String, String> subElements;
 
   /** Corresponds to the XML attribute {@code access="private"}. */
   private boolean privateAccess;
@@ -216,25 +217,54 @@ public class GoogleBaseAttribute {
    *   the sub-element
    */
   public void setSubElement(String name, String value) {
-    if (value == null) {
-      removeSubElement(name);
-    } else {
+    removeSubElement(name);
+    if (subElements == null) {
+      subElements = HashMultimap.create();
+    }
+    subElements.put(name, value);
+  }
+  
+  /**
+   * Appends the value to a sub-tag value list. If the sub-tag doesn't exist, it
+   * will be created first. If the value is null, the method will do nothing.
+   * 
+   * @param name tag name
+   * @param value tag content to be appended.
+   */
+  public void appendSubElement(String name, String value) {
+    if (value != null) {
       if (subElements == null) {
-        subElements = new HashMap<String, String>();
+        subElements = HashMultimap.create();
       }
       subElements.put(name, value);
     }
   }
 
   /**
-   * Gets the value of a sub-tag.
+   * Gets a value of a sub-tag. 
    *
-   * @param name
+   * @param name tag name
    * @return sub-tag text content or null
    */
   public String getSubElementValue(String name) {
+    if (subElements != null) {
+      Collection<String> elements = subElements.get(name);
+      if (! elements.isEmpty()) {
+        return elements.iterator().next();
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Gets all values correspond to the sub-tag.  
+   * 
+   * @param name name
+   * @return A colletion of text content corresponds to the sub-tag (can be empty)
+   */
+  public Collection<String> getSubElementValues(String name) {
     if (subElements == null) {
-      return null;
+      return Collections.<String>emptySet();
     }
     return subElements.get(name);
   }
@@ -253,13 +283,13 @@ public class GoogleBaseAttribute {
   }
 
   /**
-   * Removes a sub-element.
+   * Removes a sub-element. 
    *
    * @param name element names
    */
   public void removeSubElement(String name) {
     if (subElements != null) {
-      subElements.remove(name);
+      subElements.removeAll(name);
     }
   }
 

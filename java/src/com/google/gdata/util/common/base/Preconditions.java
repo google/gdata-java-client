@@ -16,8 +16,13 @@
 
 package com.google.gdata.util.common.base;
 
+import com.google.common.annotations.GwtCompatible;
+import com.google.common.annotations.VisibleForTesting;
+
 import java.util.Collection;
 import java.util.NoSuchElementException;
+
+import javax.annotation.Nullable;
 
 /**
  * Simple static methods to be called at the start of your own methods to verify
@@ -52,11 +57,10 @@ import java.util.NoSuchElementException;
  * #checkNotNull(Object)} -- and technically this parameter could be even marked
  * as {@link Nullable} -- yet the method will still throw an exception anyway,
  * because that's what its contract says to do.
- * 
- * <p>This class may be used with the Google Web Toolkit (GWT).
  *
  * 
  */
+@GwtCompatible
 public final class Preconditions {
   private Preconditions() {}
 
@@ -238,6 +242,7 @@ public final class Preconditions {
    * @throws NullPointerException if {@code iterable} is null or contains at
    *     least one null element
    */
+  // NOTE: not present in the external version of this library
   public static <T extends Iterable<?>> T checkContentsNotNull(T iterable) {
     if (containsOrIsNull(iterable)) {
       throw new NullPointerException();
@@ -256,6 +261,7 @@ public final class Preconditions {
    * @throws NullPointerException if {@code iterable} is null or contains at
    *     least one null element
    */
+  // NOTE: not present in the external version of this library
   public static <T extends Iterable<?>> T checkContentsNotNull(
       T iterable, Object errorMessage) {
     if (containsOrIsNull(iterable)) {
@@ -282,6 +288,7 @@ public final class Preconditions {
    * @throws NullPointerException if {@code iterable} is null or contains at
    *     least one null element
    */
+  // NOTE: not present in the external version of this library
   public static <T extends Iterable<?>> T checkContentsNotNull(T iterable,
       String errorMessageTemplate, Object... errorMessageArgs) {
     if (containsOrIsNull(iterable)) {
@@ -290,12 +297,12 @@ public final class Preconditions {
     }
     return iterable;
   }
-  
+
   private static boolean containsOrIsNull(Iterable<?> iterable) {
     if (iterable == null) {
       return true;
     }
-    
+
     if (iterable instanceof Collection) {
       Collection<?> collection = (Collection<?>) iterable;
       try {
@@ -344,7 +351,9 @@ public final class Preconditions {
    * @throws IllegalArgumentException if {@code size} is negative
    */
   public static void checkElementIndex(int index, int size, String desc) {
-    checkArgument(size >= 0, "negative size: %s", size);
+    if (size < 0) {
+      throw new IllegalArgumentException("negative size: " + size);
+    }
     if (index < 0) {
       throw new IndexOutOfBoundsException(
           format("%s (%s) must not be negative", desc, index));
@@ -385,7 +394,9 @@ public final class Preconditions {
    * @throws IllegalArgumentException if {@code size} is negative
    */
   public static void checkPositionIndex(int index, int size, String desc) {
-    checkArgument(size >= 0, "negative size: %s", size);
+    if (size < 0) {
+      throw new IllegalArgumentException("negative size: " + size);
+    }
     if (index < 0) {
       throw new IndexOutOfBoundsException(format(
           "%s (%s) must not be negative", desc, index));
@@ -431,8 +442,7 @@ public final class Preconditions {
    *     template. Arguments are converted to strings using
    *     {@link String#valueOf(Object)}. Arguments can be null.
    */
-  // VisibleForTesting
-  static String format(String template, Object... args) {
+  @VisibleForTesting static String format(String template, Object... args) {
     // start substituting the arguments into the '%s' placeholders
     StringBuilder builder = new StringBuilder(
         template.length() + 16 * args.length);

@@ -14,13 +14,14 @@
 
 package com.google.gdata.util.common.util;
 
+import com.google.common.annotations.GwtCompatible;
+
 /**
  * Exception thrown when encountering an invalid Base64 input character.
  * 
- * <p>This class may be used with the Google Web Toolkit (GWT).
- * 
  * 
  */
+@GwtCompatible
 public class Base64DecoderException extends Exception {
   public Base64DecoderException() {
     super();

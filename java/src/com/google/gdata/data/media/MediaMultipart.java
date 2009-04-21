@@ -16,6 +16,7 @@
 
 package com.google.gdata.data.media;
 
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.data.IEntry;
 import com.google.gdata.util.ContentType;
 
@@ -119,13 +120,9 @@ public class MediaMultipart extends MimeMultipart {
 
     super("related");
 
-    if (entry == null) {
-      throw new NullPointerException("Null Atom entry");
-    }
-    if (media == null) {
-      throw new NullPointerException("Null media source");
-    }
-
+    Preconditions.checkNotNull(entry, "entry");
+    Preconditions.checkNotNull(media, "media");
+    
     atomPart = new MediaBodyPart(entry);
     addBodyPart(atomPart);
     mediaPart = new MediaBodyPart(media);

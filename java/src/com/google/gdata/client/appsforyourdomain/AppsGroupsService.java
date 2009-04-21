@@ -37,7 +37,7 @@ import java.net.URL;
 public class AppsGroupsService extends AppsPropertyService {
 
   public static final String BASE_URL =
-      "http://apps-apis.google.com/a/feeds/group/2.0/";
+      "https://apps-apis.google.com/a/feeds/group/2.0/";
   public final String baseDomainUrl;
 
   public static final String APPS_PROP_GROUP_ID = "groupId";

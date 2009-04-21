@@ -17,50 +17,15 @@
 package com.google.gdata.data;
 
 import com.google.gdata.client.Query;
-import com.google.gdata.client.Service;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Shared interface for model and data BaseFeed to implement.
  * 
  * 
  */
-public interface IFeed {
-
-  /**
-   * Get the unique id for this feed.  Represents the atom:id element.
-   */
-  public String getId();
-
-  /**
-   * Sets the unique id for this feed.
-   */
-  public void setId(String id);
-  
-  /**
-   * The value of the atom:updated element, the date this feed was updated.
-   */
-  public DateTime getUpdated();
-
-  /**
-   * Sets the value of the atom:updated element, which is the date this feed
-   * was last updated.
-   */
-  public void setUpdated(DateTime v);
-
-  /**
-   * Returns the current entity tag value for this feed.  A value of
-   * {@code null} indicates the value is unknown.
-   */
-  public String getEtag();
-  
-  /**
-   * Sets the current entity tag value (for this feed.  A value of
-   * {@code null} indicates the value is unknown.
-   */
-  public void setEtag(String etag);
+public interface IFeed extends IAtom {
   
   /**
    * Returns the value of the atom:logo element.
@@ -71,11 +36,6 @@ public interface IFeed {
    * Sets the value of the logo field on this feed.
    */
   public void setLogo(String logo);
-
-  /**
-   * Returns the atom:title element of this feed.
-   */
-  public ITextConstruct getTitle();
   
   /**
    * Returns the atom:subtitle element of this feed.
@@ -144,11 +104,6 @@ public interface IFeed {
   public void setItemsPerPage(int numResults);
   
   /**
-   * Sets the service that this entry is being used with.
-   */
-  public void setService(Service s);
-  
-  /**
    * Returns a list of entries for this feed.  The actual type of this list will
    * depend on the data model used for the Feed.
    */
@@ -157,9 +112,6 @@ public interface IFeed {
   /** Returns the entry post link for the feed. */
   public ILink getEntryPostLink();
 
-  /** Returns the self link for the feed. */
-  public ILink getSelfLink();
-  
   /**
    * Returns the link that provides the URI of next page in a paged feed.
    *
@@ -185,26 +137,4 @@ public interface IFeed {
    *     for none.
    */
   public ILink getFeedBatchLink();
-  
-  /**
-   * Returns a list of atom:link elements on this feed.  If there are no links
-   * an empty list will be returned.
-   */
-  public List<? extends ILink> getLinks();
-
-  /**
-   * Returns a particular atom:link element with the given rel and type, or null
-   * if one was not found.
-   */
-  public ILink getLink(String rel, String type);
-
-  /**
-   * Adds a link with the given rel, type, and href.
-   */
-  public ILink addLink(String rel, String type, String href);
-
-  /**
-   * Returns a set of categories on this feed.
-   */
-  public Set<? extends ICategory> getCategories();
 }

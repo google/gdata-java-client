@@ -44,8 +44,7 @@
 
   <!-- samples dependencies -->
   <path id="sample.photos.compile.classpath">
-    <pathelement location="${activation.jar}"/>
-    <pathelement location="${mail.jar}"/>
+    <path refid="build.service.media.classpath"/>
     <pathelement location="${sample-util.jar}"/>
     <pathelement location="${gdata-photos.jar}"/>
   </path>

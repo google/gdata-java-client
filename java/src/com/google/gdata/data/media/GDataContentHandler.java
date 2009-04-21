@@ -16,30 +16,29 @@
 
 package com.google.gdata.data.media;
 
-import com.google.gdata.util.common.xml.XmlWriter;
-import com.google.gdata.data.BaseEntry;
-import com.google.gdata.data.BaseFeed;
+import com.google.gdata.util.common.base.Preconditions;
+import com.google.gdata.client.media.MediaService;
+import com.google.gdata.data.Entry;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.IEntry;
-import com.google.gdata.data.IFeed;
-import com.google.gdata.data.Kind;
+import com.google.gdata.data.IAtom;
 import com.google.gdata.data.ParseSource;
 import com.google.gdata.util.ContentType;
-import com.google.gdata.util.InvalidEntryException;
-import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
-import com.google.gdata.util.ParseUtil;
 import com.google.gdata.util.ServiceException;
-import com.google.gdata.util.io.base.UnicodeReader;
+import com.google.gdata.wireformats.AltFormat;
+import com.google.gdata.wireformats.AltRegistry;
+import com.google.gdata.wireformats.input.ForwardingInputProperties;
+import com.google.gdata.wireformats.input.InputProperties;
+import com.google.gdata.wireformats.input.InputParser;
+import com.google.gdata.wireformats.input.InputPropertiesBuilder;
+import com.google.gdata.wireformats.output.OutputGenerator;
+import com.google.gdata.wireformats.output.OutputProperties;
+import com.google.gdata.wireformats.output.OutputPropertiesBuilder;
 
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PushbackInputStream;
-import java.nio.charset.Charset;
-import java.util.regex.Pattern;
 
 import javax.activation.DataContentHandler;
 import javax.activation.DataSource;
@@ -57,7 +56,7 @@ import javax.activation.DataSource;
  * GData Kinds</a>, where the type of object returned might be triggered
  * by the GData kind category tags included within the content.
  * <p>
- * The current implentation does not include DataFlavor transfer support,
+ * The current implementation does not include DataFlavor transfer support,
  * only mapping from raw MIME data content to object model (and vice versa).
  *
  * 
@@ -65,57 +64,94 @@ import javax.activation.DataSource;
 public class GDataContentHandler implements DataContentHandler {
 
   /**
-   * The DataContext class represents the (optional) contextual information
-   * that can be configured on a per-thread basis when parsing GData content
-   * using Java activation.
-   *
-   * A value of {@code null} for entryClass or feedClass indicates that
-   * dynamic adaptation based upon kind category tags should be used to
-   * determine the resulting return type.
-   *
-   * A value of {@code null} for extProfile indicates that a new
-   * profile should be created for parsing and either initialized by
-   * the specified type (feed or entry class) for static typing or
-   * via auto-extension for dynamic typing.
+   * Defines the default {@link InputProperties} that are used for content
+   * parsing.  These properties will use the default media registry, expect
+   * Atom content, produces generic {@link Entry} instances, and use an
+   * empty extension profile.
    */
-  public static class DataContext {
-
-    private ExtensionProfile extProfile;
-    private Class <? extends IEntry> entryClass;
-    private Class <? extends IFeed> feedClass;
-
-    public DataContext(ExtensionProfile extProfile,
-                       Class <? extends IEntry> entryClass,
-                       Class <? extends IFeed> feedClass) {
-      this.extProfile = extProfile;
-      this.entryClass = entryClass;
-      this.feedClass = feedClass;
-    }
-
-    public ExtensionProfile getExtensionProfile() { return extProfile; }
-    public Class <? extends IEntry> getEntryClass() { return entryClass; }
-    public Class <? extends IFeed> getFeedClass() { return feedClass; }
-  }
-
-  private static final ThreadLocal<DataContext> threadDataContext =
-      new ThreadLocal<DataContext>();
+  private static final InputProperties DEFAULT_INPUT_PROPERTIES =
+    new InputPropertiesBuilder()
+        .setAltRegistry(MediaService.getDefaultAltRegistry())
+        .setContentType(ContentType.ATOM)
+        .setExpectType(Entry.class)
+        .setExtensionProfile(new ExtensionProfile())
+        .build();
+  
+  /**
+   * Thread local storage that defines the input properties that should be
+   * used when parsing GData content
+   */
+  private static final ThreadLocal<InputProperties> threadInputProperties =
+      new ThreadLocal<InputProperties>() {
+        @Override
+        protected InputProperties initialValue() {
+          return DEFAULT_INPUT_PROPERTIES;
+        }
+  };
+  
+  /**
+   * Defines the default {@link OutputProperties} that are used for content
+   * parsing.   These properties will use a default media registry and an
+   * empty extension profile.
+   */
+  private static final OutputProperties DEFAULT_OUTPUT_PROPERTIES =
+    new OutputPropertiesBuilder()
+        .setAltRegistry(MediaService.getDefaultAltRegistry())
+        .setExtensionProfile(new ExtensionProfile())
+        .build();
+  
+  /**
+   * Thread local storage that defines the output properties that should be
+   * used when generating GData content
+   */
+  private static final ThreadLocal<OutputProperties> threadOutputProperties =
+      new ThreadLocal<OutputProperties>() {
+        @Override
+        protected OutputProperties initialValue() {
+          return DEFAULT_OUTPUT_PROPERTIES;
+        }
+  };
 
   /**
-   * Sets the DataContext for the current {@link java.lang.Thread}. If
-   * {@code null}, the default behavior is dynamic adaptation with
-   * extension profile creation and auto-extension.
+   * Sets the input properties for the current {@link java.lang.Thread} and
+   * returns any existing input properties that have been set (so they can be
+   * restored later).
    */
-  public static void setThreadDataContext(DataContext dataContext) {
-    threadDataContext.set(dataContext);
+  public static InputProperties setThreadInputProperties(
+      InputProperties inputProperties) {
+    Preconditions.checkNotNull(inputProperties, "inputProperties");
+    
+    InputProperties currentProperties = getThreadInputProperties();
+    threadInputProperties.set(inputProperties);
+    return currentProperties;
   }
 
   /**
-   * Returns the DataContext for the current {@link java.lang.Thread}. If
-   * {@code null}, the default behavior is dynamic adaptation with
-   * extension profile creation and auto-extension.
+   * Returns the input properties for the current {@link java.lang.Thread}.
    */
-  public static DataContext getThreadDataContext() {
-    return threadDataContext.get();
+  public static InputProperties getThreadInputProperties() {
+    return threadInputProperties.get();
+  }
+  
+  /**
+   * Sets the output properties for the current {@link java.lang.Thread} and
+   * returns any existing input properties that have been set (so they can be
+   * restored later).
+   */
+  public static OutputProperties setThreadOutputProperties(
+      OutputProperties outputProperties) {
+    Preconditions.checkNotNull(outputProperties, "outputProperties");
+    
+    OutputProperties currentProperties = getThreadOutputProperties();
+    threadOutputProperties.set(outputProperties);
+    return currentProperties;
+  }
+
+  /**
+   * Returns the output properties for the current {@link java.lang.Thread}.
+   */
+  public static OutputProperties getThreadOutputProperties() {
+    return threadOutputProperties.get();
   }
 
   public DataFlavor[] getTransferDataFlavors() {
@@ -126,163 +162,84 @@ public class GDataContentHandler implements DataContentHandler {
                                 DataSource ds) {
     throw new UnsupportedOperationException("No DataFlavor support");
   }
+  
+  @SuppressWarnings("unchecked")
+  private <T> Object parseAtom(InputParser<?> parser, InputStream inputStream,
+      final ContentType contentType, InputProperties inputProperties, 
+      Class<T> resultClass) throws IOException, ServiceException {
+    Preconditions.checkArgument(
+        parser.getResultType().isAssignableFrom(IAtom.class),
+        "Parser does not handle atom content");
+    return ((InputParser<T>) parser).parse(
+        new ParseSource(inputStream), 
+        new ForwardingInputProperties(inputProperties) {
+          @Override
+          public ContentType getContentType() {
+            return contentType;
+          }
+        }, resultClass);
+  }
 
-  /**
-   * Regex string that describes XML directives or whitespace that might
-   * precede the first entry in an Atom XML document.
-   */
-  static final String XML_PREAMBLE = "((<\\?[^?]*\\?>)|(\\s))*";
-
-  /**
-   * See if the root element of the document is named 'feed'
-   */
-  static private final Pattern FEED_DOCUMENT_PATTERN =
-      Pattern.compile(XML_PREAMBLE + "<(\\w*:)?feed[\\s>].*", Pattern.DOTALL);
-
-  /**
-   * See if the root element of the document is named 'entry'
-   */
-  static private final Pattern ENTRY_DOCUMENT_PATTERN =
-      Pattern.compile(XML_PREAMBLE + "<(\\w*:)?entry[\\s>].*", Pattern.DOTALL);
-
+  @SuppressWarnings("unchecked")
   public Object getContent(DataSource ds) throws IOException {
-
-    // Only parsing of Atom content is currently supported by this handler.
+    
+    // Get the input properties to use when parsing content
+    InputProperties inputProperties = getThreadInputProperties();
+    
+    // Find the parser to handle the input content type
     ContentType contentType = new ContentType(ds.getContentType());
-    if (!contentType.getMediaType().equals("application/atom+xml")) {
-      throw new UnsupportedOperationException("Unable to parse media: " +
-          ds.getContentType());
+    AltRegistry altRegistry = inputProperties.getAltRegistry();
+    AltFormat altFormat = altRegistry.lookupType(contentType);
+    InputParser<?> parser = altRegistry.getParser(altFormat);
+    if (parser == null) {
+      IOException ioe = new IOException("Invalid multipart content");
+      ioe.initCause(
+          new ParseException(
+              "No parser for multipart content type:" + contentType));
     }
-    String charset = contentType.getCharset();
-
-    // Sniff ahead in the content stream to try and identify if this
-    // is a feed or an entry.  The regex matching is based upon the
-    // assumption that the feed or entry element <b>must</b> be the first
-    // element in the document for this to be a valid Atom syntax
-    // document, as defined by RFC4287, which defines the two valid
-    // formats:  Feed Document and Entry Document for the Atom MIME
-    // type.
-    //
-    byte [] buf = new byte[1024];        // search first 1k bytes (512 chars)
-    PushbackInputStream pushbackStream =
-      new PushbackInputStream(ds.getInputStream(), buf.length);
-    int n = pushbackStream.read(buf, 0, buf.length);
-    if (n == -1) {
-      throw new IOException("No content available from data source");
-    }
-
-    String parseString;
-    if (charset == null) {
-      parseString = new String(buf, 0, n);
-    } else {
-      parseString = new String(buf, 0, n, charset);
-    }
-    boolean isFeed;     // true = feed, false = entry
-    if (FEED_DOCUMENT_PATTERN.matcher(parseString).matches()) {
-      isFeed = true;
-    } else if (ENTRY_DOCUMENT_PATTERN.matcher(parseString).matches()) {
-      isFeed = false;
-    } else {
-      ServiceException e = new InvalidEntryException(
-          "Unable to find Atom feed or entry element");
-      throw new IOException(e.getMessage());
-    }
-    pushbackStream.unread(buf, 0, n);
-
-    // If the charset is known, construct a reader with the appropriate
-    // encoding otherwise, we'll use a stream and let the XML parser try to
-    // determine the encoding.
-    ParseSource source = null;
-    if (charset != null) {
-      if (charset.toLowerCase().startsWith("utf-")) {
-        // For unicode, use a special reader that includes BOM handling.
-        source = new ParseSource(new UnicodeReader(pushbackStream, charset));
-      } else {
-        source =
-            new ParseSource(new InputStreamReader(pushbackStream, charset));
-      }
-    }
-
-    Object retObject;
-    DataContext dataContext = getThreadDataContext();
+    
     try {
-      if (isFeed) {
-        if (dataContext != null) {
-          retObject = ParseUtil.readFeed(
-              source, dataContext.feedClass, dataContext.extProfile);
-        } else {
-          retObject = BaseFeed.readFeed(source);
-        }
-      } else {
-        if (dataContext != null) {
-          retObject = ParseUtil.readEntry(
-              source, dataContext.entryClass, dataContext.extProfile);
-        } else {
-          retObject = BaseEntry.readEntry(source);
-        }
-      }
-    } catch (ParseException pe) {
-      IOException ioe = new IOException("Unable to parse DataSource");
-      ioe.initCause(pe);
-      throw ioe;
+      return parseAtom(parser, ds.getInputStream(), contentType, 
+          inputProperties, inputProperties.getExpectType());
     } catch (ServiceException se) {
-      IOException ioe = new IOException("Error reading content");
+      IOException ioe = new IOException("Error parsing content");
       ioe.initCause(se);
       throw ioe;
     }
-    return retObject;
   }
 
+  private void generateAtom(OutputGenerator<?> generator, 
+      OutputStream outputStream, OutputProperties outputProperties, 
+      Object source) throws IOException {
+    
+    // Make sure the parser will accept any IAtom type
+    Preconditions.checkArgument(
+        generator.getSourceType().isAssignableFrom(IAtom.class),
+        "Generator does not handle atom content");
+    Preconditions.checkArgument(source instanceof IAtom,
+        "Source object must be Atom content");
+    IAtom atomSource = (IAtom) source;
+    @SuppressWarnings("unchecked")  // safe given above check
+    OutputGenerator<IAtom> atomGenerator = (OutputGenerator<IAtom>) generator;
+    atomGenerator.generate(outputStream, outputProperties, atomSource);
+  }
+  
   public void writeTo(Object obj, String mimeType, OutputStream os)
       throws IOException {
 
-    if (obj == null) {
-      throw new NullPointerException("Invalid source object");
-    }
-
-    ContentType contentType = new ContentType(mimeType);
-
-    OutputStreamWriter osw;
-    String charset = contentType.getCharset();
-    if (contentType.getCharset() != null) {
-      osw = new OutputStreamWriter(os, contentType.getCharset());
-    } else {
-      osw = new OutputStreamWriter(os);
-    }
-    XmlWriter xw = new XmlWriter(osw);
-
-    // Create an extension profile, that will be extended by the target
-    // object as needed.
-    ExtensionProfile extProfile = new ExtensionProfile();
-    if (obj instanceof Kind.Adaptor) {
-      extProfile.addDeclarations((Kind.Adaptor)obj);
-    }
+    Preconditions.checkNotNull(obj, "obj");
     
-    boolean generateRss = mimeType.equals("application/rss+xml");
-    if (obj instanceof BaseFeed) {
-
-      BaseFeed<?, ?> feed = (BaseFeed<?, ?>) obj;
-      if (generateRss) {
-        feed.generateRss(xw, extProfile);
-      } else {
-        xw.setDefaultNamespace(Namespaces.atomNs);
-        ((BaseFeed<?, ?>) obj).generateAtom(xw, extProfile);
-      }
-
-    } else if (obj instanceof BaseEntry) {
-
-      BaseEntry<?> entry = (BaseEntry<?>) obj;
-      if (generateRss) {
-        ((BaseEntry<?>) obj).generateRss(xw, extProfile);
-      } else {
-        xw.setDefaultNamespace(Namespaces.atomNs);
-        ((BaseEntry<?>) obj).generateAtom(xw, extProfile);
-      }
-      
-    } else {
-      throw new IllegalArgumentException("Cannot convert " + obj.getClass() +
-          " object to " + mimeType);
+    // Get the output properties to use when generating content
+    OutputProperties outputProperties = getThreadOutputProperties();
+  
+    AltRegistry altRegistry = outputProperties.getAltRegistry();
+    ContentType contentType = new ContentType(mimeType);
+    AltFormat altFormat = altRegistry.lookupType(contentType);
+    OutputGenerator<?> generator = altRegistry.getGenerator(altFormat);
+    if (generator == null) {
+      throw new IllegalStateException("Unable to generate media: " +
+          contentType);
     }
-    osw.flush();
+    generateAtom(generator, os, outputProperties, obj);
   }
 }

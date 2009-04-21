@@ -452,6 +452,10 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("invalidMimeType")
       .withInternalReason("Malformed MIME type");
 
+  public final ErrorCode invalidMixedContent =
+      new ErrorCode("invalidMixedContent")
+      .withInternalReason("Invalid value for mixed content");
+
   public final ErrorCode invalidParameterValue =
       new ErrorCode("invalidParameterValue")
       .withInternalReason("Invalid parameter value");
@@ -586,6 +590,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode missingContentType =
       new ErrorCode("missingContentType")
       .withInternalReason("Response contains no content type");
+
+   public final ErrorCode missingContentTypeAttribute =
+      new ErrorCode("missingContentTypeAttribute")
+      .withInternalReason("Missing content type attribute");
 
   public final ErrorCode missingConverter =
       new ErrorCode("missingConverter")

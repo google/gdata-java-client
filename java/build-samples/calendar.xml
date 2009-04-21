@@ -32,7 +32,7 @@
   </target>
 
   <path id="sample.calendar.compile.classpath">
-    <pathelement location="${gdata-client.jar}"/>
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${gdata-calendar.jar}"/>
     <pathelement location="${sample-util.jar}"/>
   </path>

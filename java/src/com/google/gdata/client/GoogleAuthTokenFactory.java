@@ -263,7 +263,6 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     this.tokenListener = tokenListener;
   }
 
-
   /**
    * Sets the credentials of the user to authenticate requests to the server.
    *
@@ -273,10 +272,24 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
    */
   public void setUserCredentials(String username, String password)
       throws AuthenticationException {
-
-    setUserCredentials(username, password, null, null);
+    setUserCredentials(username, password,
+        ClientLoginAccountType.HOSTED_OR_GOOGLE);
   }
 
+  /**
+   * Sets the credentials of the user to authenticate requests to the server.
+   *
+   * @param username the name of the user (an email address)
+   * @param password the password of the user
+   * @param accountType the account type: HOSTED, GOOGLE, or HOSTED_OR_GOOGLE
+   * @throws AuthenticationException if authentication failed.
+   */
+  public void setUserCredentials(String username,
+                                 String password,
+                                 ClientLoginAccountType accountType)
+      throws AuthenticationException {
+    setUserCredentials(username, password, null, null, accountType);
+  }
 
   /**
    * Sets the credentials of the user to authenticate requests to the server.
@@ -295,11 +308,33 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
                                  String captchaToken,
                                  String captchaAnswer)
       throws AuthenticationException {
+    setUserCredentials(username, password, captchaToken, captchaAnswer,
+        ClientLoginAccountType.HOSTED_OR_GOOGLE);
+  }
 
+  /**
+   * Sets the credentials of the user to authenticate requests to the server.
+   * A CAPTCHA token and a CAPTCHA answer can also be optionally provided
+   * to authenticate when the authentication server requires that a
+   * CAPTCHA be answered.
+   *
+   * @param username the name of the user (an email id)
+   * @param password the password of the user
+   * @param captchaToken the CAPTCHA token issued by the server
+   * @param captchaAnswer the answer to the respective CAPTCHA token
+   * @param accountType the account type: HOSTED, GOOGLE, or HOSTED_OR_GOOGLE
+   * @throws AuthenticationException if authentication failed
+   */
+  public void setUserCredentials(String username,
+                                 String password,
+                                 String captchaToken,
+                                 String captchaAnswer,
+                                 ClientLoginAccountType accountType)
+      throws AuthenticationException {
     this.username = username;
     this.password = password;
     String token = getAuthToken(username, password, captchaToken, captchaAnswer,
-                                serviceName, applicationName);
+                                serviceName, applicationName, accountType);
     setUserToken(token);
   }
 
@@ -377,9 +412,9 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     return authToken;
   }
 
-
   /**
-   * Retrieves the authentication token for the provided set of credentials.
+   * Retrieves the authentication token for the provided set of credentials for
+   * either a Google or a hosted domain.
    *
    * @param username the name of the user (an email address)
    * @param password the password of the user
@@ -397,13 +432,38 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
                              String serviceName,
                              String applicationName)
       throws AuthenticationException {
+    return getAuthToken(username, password, captchaToken, captchaAnswer,
+        serviceName, applicationName, ClientLoginAccountType.HOSTED_OR_GOOGLE);
+  }
+
+  /**
+   * Retrieves the authentication token for the provided set of credentials.
+   *
+   * @param username the name of the user (an email address)
+   * @param password the password of the user
+   * @param captchaToken the CAPTCHA token if CAPTCHA is required (Optional)
+   * @param captchaAnswer the respective answer of the CAPTCHA token (Optional)
+   * @param serviceName the name of the service to which a token is required
+   * @param applicationName the application requesting the token
+   * @param accountType the account type: HOSTED, GOOGLE, or HOSTED_OR_GOOGLE
+   * @return the token
+   * @throws AuthenticationException if authentication failed
+   */
+  public String getAuthToken(String username,
+                             String password,
+                             String captchaToken,
+                             String captchaAnswer,
+                             String serviceName,
+                             String applicationName,
+                             ClientLoginAccountType accountType)
+      throws AuthenticationException {
 
     Map<String, String> params = new HashMap<String, String>();
     params.put("Email", username);
     params.put("Passwd", password);
     params.put("source", applicationName);
     params.put("service", serviceName);
-    params.put("accountType", "HOSTED_OR_GOOGLE");
+    params.put("accountType", accountType.getValue());
 
     if (captchaToken != null) {
       params.put("logintoken", captchaToken);
@@ -455,6 +515,7 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     urlConnection.setDoInput(true);
     urlConnection.setDoOutput(true);
     urlConnection.setUseCaches(false);
+    urlConnection.setRequestMethod("POST");
     urlConnection.setRequestProperty("Content-Type",
                                      "application/x-www-form-urlencoded");
 

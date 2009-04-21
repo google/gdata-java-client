@@ -691,7 +691,7 @@ public class XmlParser extends DefaultHandler {
 
       } else {
 
-        LogUtils.logException(logger, Level.WARNING, null, e);
+        LogUtils.logException(logger, Level.FINE, null, e);
         throw new ParseException(e);
       }
     } catch (ParserConfigurationException e) {
@@ -717,13 +717,13 @@ public class XmlParser extends DefaultHandler {
         ", Column " + String.valueOf(locator.getColumnNumber()) +
         elementLocation + "] ";
 
-      LogUtils.logException(logger, Level.WARNING, location, e);
+      LogUtils.logException(logger, Level.FINE, location, e);
 
       throw new ParseException(location + e.getMessage(), e);
 
     } else {
 
-      LogUtils.logException(logger, Level.WARNING, null, e);
+      LogUtils.logException(logger, Level.FINE, null, e);
       throw e;
     }
   }
@@ -1113,5 +1113,4 @@ public class XmlParser extends DefaultHandler {
     }
   }
 }
-
 

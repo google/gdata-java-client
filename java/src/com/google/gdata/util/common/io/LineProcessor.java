@@ -13,105 +13,33 @@
  * limitations under the License.
  */
 
-
 package com.google.gdata.util.common.io;
 
 import java.io.IOException;
 
 /**
- * Package-protected abstract class that implements the line reading
- * algorithm used by {@link LineReader}. Line separators are per {@link
- * java.io.BufferedReader}: line feed, carriage return, or carriage
- * return followed immediately by a linefeed.
+ * A callback to be used with the streaming {@code readLines} methods.
  *
- * <p>Subclasses must implement {@link #processLine}, call {@link #process}
- * to pass character data, and call {@link #finish} at the end of stream.
+ * <p>{@link #processLine} will be called for each line that is read, and
+ * should return {@code false} when you want to stop processing.
  *
  * 
+ * @param <T> the type of the result of processing the lines seen
+ * @see Characters#readLines(InputSupplier, LineProcessor)
+ * @see Files#readLines(java.io.File, java.nio.charset.Charset, LineProcessor)
+ * @see Resources#readLines(java.net.URL, java.nio.charset.Charset, LineProcessor)
  */
-abstract class LineProcessor {
-  /** Holds partial line contents. */
-  private StringBuilder line = new StringBuilder();
-  /** Whether a line ending with a CR is pending processing. */
-  private boolean sawReturn;
+public interface LineProcessor<T> {
 
   /**
-   * Process additional characters from the stream. When a line separator
-   * is found the contents of the line and the line separator itself
-   * are passed to the abstract {@link #processLine} method.
+   * This method will be called once for each line.
    *
-   * @param cbuf the character buffer to process
-   * @param off the offset into the buffer
-   * @param len the number of characters to process
-   * @throws IOException if an I/O error occurs
-   * @see #finish
+   * @return true if we want to continue processing, false if we want to stop 
    */
-  @SuppressWarnings("fallthrough")
-  protected void process(char[] cbuf, int off, int len) throws IOException {
-    int pos = off;
-    if (sawReturn && len > 0) {
-      // Last call to process ended with a CR; we can process the line now.
-      if (finishLine(cbuf[pos] == '\n')) {
-        pos++;
-      }
-    }
-
-    int start = pos;
-    for (int end = off + len; pos < end; pos++) {
-      switch (cbuf[pos]) {
-        case '\r':
-          line.append(cbuf, start, pos - start);
-          sawReturn = true;
-          if (pos + 1 < end) {
-            if (finishLine(cbuf[pos + 1] == '\n')) {
-              pos++;
-            }
-          }
-          start = pos + 1;
-          break;
-
-        case '\n':
-          line.append(cbuf, start, pos - start);
-          finishLine(true);
-          start = pos + 1;
-          break;
-      }
-    }
-    line.append(cbuf, start, off + len - start);
-  }
-
-  /** Called when a line is complete. */
-  private boolean finishLine(boolean sawNewline) throws IOException {
-    processLine(line.toString(), sawReturn
-        ? (sawNewline ? "\r\n" : "\r")
-        : (sawNewline ? "\n" : ""));
-    line = new StringBuilder();
-    sawReturn = false;
-    return sawNewline;
-  }
+  boolean processLine(String line) throws IOException;
 
   /**
-   * Subclasses must call this method after finishing character processing,
-   * in order to ensure that any unterminated line in the buffer is
-   * passed to {@link #processLine}.
-   *
-   * @throws IOException if an I/O error occurs
+   * @return the result of processing all of the lines seen
    */
-  protected void finish() throws IOException {
-    if (sawReturn || line.length() > 0) {
-      finishLine(false);
-    }
-  }
-
-  /**
-   * Called for each line found in the character data passed to
-   * {@link #process}.
-   *
-   * @param line a line of text (possibly empty), without any line separators
-   * @param end the line separator; one of {@code "\r"}, {@code "\n"},
-   *     {@code "\r\n"}, or {@code ""}
-   * @throws IOException if an I/O error occurs
-   */
-  protected abstract void processLine(String line, String end)
-      throws IOException;
+  T getResult();
 }

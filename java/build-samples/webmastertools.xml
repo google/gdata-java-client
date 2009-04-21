@@ -30,7 +30,7 @@
   </target>
 
   <path id="sample.webmastertools.compile.classpath">
-    <pathelement location="${gdata-client.jar}"/>
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${gdata-webmastertools.jar}"/>
     <pathelement location="${sample-util.jar}"/>
   </path>

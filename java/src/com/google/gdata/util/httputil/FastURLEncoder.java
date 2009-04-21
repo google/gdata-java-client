@@ -14,7 +14,7 @@
 
 package com.google.gdata.util.httputil;
 
-import com.google.gdata.util.common.annotations.VisibleForTesting;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gdata.util.common.base.PercentEscaper;
 
 import java.io.IOException;

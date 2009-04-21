@@ -58,6 +58,13 @@ public class ExtensionManifest {
   boolean arbitraryXml = false;
 
   /**
+   * Specifies whether the extension point supports mixed content.  Has no
+   * effect if arbitraryXml is false. If it does, it is available through
+   * {@link ExtensionPoint#xmlBlob}.
+   */
+  boolean mixedContent = false;
+
+  /**
    * The list of manifests for subtypes of extendedType.  This is used
    * to propagate declarations down to subtypes.
    */

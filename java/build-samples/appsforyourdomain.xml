@@ -45,6 +45,7 @@
 
   <!-- samples build -->
   <path id="sample.appsforyourdomain.compile.classpath">
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${gdata-appsforyourdomain.jar}"/>
     <pathelement location="${sample-util.jar}"/>
   </path>

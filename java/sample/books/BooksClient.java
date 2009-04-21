@@ -41,7 +41,7 @@ import java.util.List;
  * Demonstrates Books API operations using the Java client library.
  */
 public class BooksClient {
-  private BooksClient() {}
+  protected BooksClient() {}
 
   /**
    * Input stream for reading user input.

@@ -18,7 +18,6 @@ package com.google.gdata.client.http;
 
 import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.GoogleService;
-import com.google.gdata.client.Query;
 import com.google.gdata.client.GoogleService.SessionExpiredException;
 import com.google.gdata.client.Service.GDataRequest;
 import com.google.gdata.util.AuthenticationException;
@@ -67,29 +66,12 @@ public class GoogleGDataRequest extends HttpGDataRequest {
    * constructing new GoogleGDataRequest instances.
    */
   public static class Factory extends HttpGDataRequest.Factory {
-
-    @SuppressWarnings("unused")
     @Override
-    public GDataRequest getRequest(RequestType type,
-                                  URL requestUrl,
-                                  ContentType contentType)
+    protected GDataRequest createRequest(RequestType type,
+        URL requestUrl, ContentType contentType)
         throws IOException, ServiceException {
-      return new GoogleGDataRequest(type,
-                                    requestUrl,
-                                    contentType,
-                                    authToken,
-                                    headerMap,
-                                    privateHeaderMap);
-    }
-
-    @SuppressWarnings("unused")
-    @Override
-    public GDataRequest getRequest(Query query,
-                                   ContentType contentType)
-        throws IOException, ServiceException {
-      return new GoogleGDataRequest(RequestType.QUERY, query.getUrl(),
-                                    contentType, authToken, headerMap,
-                                    privateHeaderMap);
+      return new GoogleGDataRequest(type, requestUrl, contentType, authToken, 
+          headerMap, privateHeaderMap, connectionSource);
     }
   }
 
@@ -429,7 +411,6 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     }
   }
 
-
   /**
    * Constructs a new GoogleGDataRequest instance of the specified
    * RequestType, targeting the specified URL with the specified
@@ -448,14 +429,14 @@ public class GoogleGDataRequest extends HttpGDataRequest {
                                ContentType contentType,
                                HttpAuthToken authToken,
                                Map<String, String> headerMap,
-                               Map<String, String> privateHeaderMap)
+                               Map<String, String> privateHeaderMap,
+                               HttpUrlConnectionSource connectionSource)
       throws IOException {
 
     super(type, requestUrl, contentType, authToken,
-        headerMap, privateHeaderMap);
+        headerMap, privateHeaderMap, connectionSource);
   }
-  
-  
+    
   /**
    * The GoogleService instance that constructed the request.
    */

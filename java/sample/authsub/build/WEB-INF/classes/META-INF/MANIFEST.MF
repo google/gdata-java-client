@@ -1,13 +1,4 @@
 Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.7.0
-Created-By: 1.5.0_15-b04 (Sun Microsystems Inc.)
-Class-Path: gdata-core-1.0.jar gdata-client-meta-1.0.jar
-
-Name: com/google/gdata/client/
-Specification-Title: Google Data Protocol Extensions
-Specification-Version: 1.0
-Specification-Vendor: Google Inc.
-Implementation-Title: GData media client library for Java
-Implementation-Version: 1.30.0
-Implementation-Vendor: Google Inc.
+Ant-Version: Apache Ant 1.7.1
+Created-By: 1.6.0_01-b06 (Sun Microsystems Inc.)
 

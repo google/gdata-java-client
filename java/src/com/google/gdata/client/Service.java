@@ -16,20 +16,22 @@
 
 package com.google.gdata.client;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.net.UriParameterMap;
+
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.client.AuthTokenFactory.AuthToken;
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.http.HttpGDataRequest;
-import com.google.gdata.data.BaseEntry;
-import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.Feed;
-import com.google.gdata.data.Link;
+import com.google.gdata.data.IAtom;
+import com.google.gdata.data.IEntry;
+import com.google.gdata.data.IFeed;
+import com.google.gdata.data.ILink;
 import com.google.gdata.data.ParseSource;
-import com.google.gdata.data.batch.BatchInterrupted;
-import com.google.gdata.data.batch.BatchUtils;
-import com.google.gdata.data.introspection.ServiceDocument;
+import com.google.gdata.data.introspection.IServiceDocument;
+import com.google.gdata.model.MetadataContext;
+import com.google.gdata.model.batch.BatchUtils;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ParseException;
@@ -38,12 +40,24 @@ import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
+import com.google.gdata.wireformats.AltFormat;
+import com.google.gdata.wireformats.AltRegistry;
+import com.google.gdata.wireformats.StreamProperties;
+import com.google.gdata.wireformats.input.AtomDualParser;
+import com.google.gdata.wireformats.input.AtomServiceDualParser;
+import com.google.gdata.wireformats.input.InputParser;
+import com.google.gdata.wireformats.input.InputProperties;
+import com.google.gdata.wireformats.output.AtomDualGenerator;
+import com.google.gdata.wireformats.output.AtomServiceDualGenerator;
+import com.google.gdata.wireformats.output.OutputGenerator;
+import com.google.gdata.wireformats.output.OutputProperties;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
 
 /**
  * The Service class represents a client connection to a GData service. It
@@ -59,10 +73,11 @@ import java.net.URL;
  * <li><b>Authentication</b> - implementing a custom authentication
  * mechanism for services that require authentication and use something other
  * than HTTP basic or digest authentication.
- * <li><b>Extensions</b> - define expected ExtensionPoints and Extensions with
- * the {@link ExtensionProfile} associated with the service to allow Atom/RSS
- * extension elements to be automatically converted to/from the {@link Feed} /
- * {@link com.google.gdata.data.Entry} object model.
+ * <li><b>Extensions</b> - define expected extensions for feed, entry, and
+ * other types associated with a the service.
+ * <li><b>Formats</b> - define additional custom resource representations that
+ * might be consumed or produced by the service and client side parsers and
+ * generators to handle them.
  * </ul>
  * 
  * 
@@ -132,6 +147,8 @@ public class Service {
    *    // handle errors writing to / reading from server
    * } catch (ServiceException se) {
    *    // handle service invocation errors
+   * } finally {
+   *   request.end();
    * }
    * </pre>
    * 
@@ -226,6 +243,11 @@ public class Service {
      * @param value the header value
      */
     public void setPrivateHeader(String name, String value);
+    
+    /**
+     * Returns the {@link URL} that is the target of the GData request
+     */
+    public URL getRequestUrl();
 
     /**
      * Returns a stream that can be used to write request data to the GData
@@ -235,16 +257,14 @@ public class Service {
      * @throws IOException error obtaining the request output stream.
      */
     public OutputStream getRequestStream() throws IOException;
-
+    
     /**
-     * Returns an XML writer that can be used to write XML request data to the
-     * GData service.
-     * 
-     * @return XmlWriter that can be used to write GData XML request data.
-     * @throws IOException error obtaining the request writer.
-     * @throws ServiceException error obtaining the request writer.
+     * Returns the {@link ContentType} of the data that will be written to the
+     * service by this request or {@code null} if no data is written to the
+     * server by the request.
+
      */
-    public XmlWriter getRequestWriter() throws IOException, ServiceException;
+    public ContentType getRequestContentType();
 
     /**
      * Executes the GData service request.
@@ -319,6 +339,12 @@ public class Service {
      * @throws ServiceException error obtaining the response data.
      */
     public ParseSource getParseSource() throws IOException, ServiceException;
+    
+    /**
+     * Ends all processing associated with this request and releases any
+     * transient resources (such as open data streams) required for execution.
+     */
+    public void end();
   }
 
 
@@ -363,6 +389,9 @@ public class Service {
 
     /**
      * Creates a new GDataRequest instance of the specified RequestType.
+     * <p>
+     * Clients should be sure to call {@link GDataRequest#end()} on the
+     * returned request once they have finished using it.
      */
     public GDataRequest getRequest(GDataRequest.RequestType type,
         URL requestUrl, ContentType contentType) throws IOException,
@@ -373,6 +402,9 @@ public class Service {
      * pushes the query parameters down to the factory method instead of
      * serializing them as a URL. Some factory implementations prefer to get
      * access to query parameters in their original form, not as a URL.
+     * <p>
+     * Clients should be sure to call {@link GDataRequest#end()} on the
+     * returned request once they have finished using it.
      */
     public GDataRequest getRequest(Query query, ContentType contentType)
         throws IOException, ServiceException;
@@ -419,25 +451,6 @@ public class Service {
   public static Version getVersion() {
     return VersionRegistry.get().getVersion(Service.class);
   }
-
-  /**
-   * Constructs a new Service instance that is configured to accept arbitrary
-   * extension data within feed or entry elements.
-   */
-  public Service() {
-
-    // Set the default User-Agent value for requests
-    requestFactory.setHeader("User-Agent", getServiceVersion());
-    
-    // Initialize the protocol version for this Service instance
-    protocolVersion = initProtocolVersion(getClass());
-
-    // The default extension profile is configured to accept arbitrary XML
-    // at the feed or entry level. A client never wants to lose any
-    // foreign markup, so capture everything even if not explicitly
-    // understood.
-    new Feed().declareExtensions(extProfile);
-  }
   
   @SuppressWarnings("unchecked")
   private static Version initProtocolVersion(
@@ -464,7 +477,55 @@ public class Service {
       return CORE_VERSION;
     }
   }
+
+  /**
+   * Constructs a new Service instance that is configured to accept arbitrary
+   * extension data within feed or entry elements.
+   */
+  public Service() {
+
+    // Set the default User-Agent value for requests
+    requestFactory.setHeader("User-Agent", getServiceVersion());
+    
+    // Initialize the protocol version for this Service instance
+    protocolVersion = initProtocolVersion(getClass());
+
+    // The default extension profile is configured to accept arbitrary XML
+    // at the feed or entry level. A client never wants to lose any
+    // foreign markup, so capture everything even if not explicitly
+    // understood.
+    new com.google.gdata.data.Feed().declareExtensions(extProfile);
+  }
   
+  /**
+   * Returns an {@link AltRegistry} instance that is configured with the
+   * default parser/generator configuration for a media service. 
+   */
+  public static AltRegistry getDefaultAltRegistry() {
+    return BASE_REGISTRY;
+  }
+  
+  /**
+   * The DEFAULT_REGISTRY contains the default set of representations and
+   * associated parser/generator configurations for all services.  It will be
+   * used as the default configuration for all Service instances unless
+   * {@link #setAltRegistry(AltRegistry)} is called.
+   */
+  private static final AltRegistry BASE_REGISTRY = new AltRegistry();
+  
+  static {
+    BASE_REGISTRY.register(AltFormat.ATOM, 
+        new AtomDualParser(), 
+        new AtomDualGenerator());
+
+    BASE_REGISTRY.register(AltFormat.ATOM_SERVICE, 
+        new AtomServiceDualParser(),
+        new AtomServiceDualGenerator());
+
+    // protect against subsequent changes
+    BASE_REGISTRY.lock();
+  }
+
   /**
    * The version of the service protocol to use for this service instance. It
    * will be initialized to the service default version but can be set
@@ -590,8 +651,9 @@ public class Service {
 
   /**
    * Creates a new GDataRequest for use by the service.
-   * 
-   * For query requests, use {@link #createRequest(Query, ContentType)} instead.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
    */
   public GDataRequest createRequest(GDataRequest.RequestType type,
       URL requestUrl, ContentType inputType) throws IOException,
@@ -606,10 +668,13 @@ public class Service {
 
   /**
    * Creates a new GDataRequest for querying the service.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
    */
   protected GDataRequest createRequest(Query query, ContentType inputType)
       throws IOException, ServiceException {
-
+    
     GDataRequest request = requestFactory.getRequest(query, inputType);
     setTimeouts(request);
     return request;
@@ -700,17 +765,30 @@ public class Service {
     }
     readTimeout = timeout;
   }
-
+  
   /**
-   * Parse an entry of the specified class from a parse source.
+   * The alternate representation registry that describes formats supported by
+   * the remote GData service.
    */
-  protected <E extends BaseEntry<?>> E parseEntry(Class<E> entryClass,
-      ParseSource entrySource) throws IOException, ServiceException {
-
-    E entry = BaseEntry.readEntry(entrySource, entryClass, extProfile);
-    entry.setService(this);
-    return entry;
+  private AltRegistry altRegistry = BASE_REGISTRY;
+  
+  /**
+   * Returns the alternate registration registry that describes representations
+   * that may be parsed from or generated to the remote GData service.
+   */
+  public AltRegistry getAltRegistry() {
+    return altRegistry;
   }
+  
+  public void setAltRegistry(AltRegistry altRegistry) {
+    this.altRegistry = altRegistry;
+  }
+  
+  // Helper method that narrows the scope of unchecked (but safe) class casting.
+  @SuppressWarnings("unchecked")
+  protected <T> Class<T> classOf(T object) {
+    return (Class<T>) object.getClass();
+  }  
 
   /**
    * Returns the Atom introspection Service Document associated with a
@@ -719,8 +797,8 @@ public class Service {
    * 
    * @param feedUrl the URL associated with a feed. This URL can not include any
    *        query parameters.
-   * @param serviceClass the class used to represent a service document.
-   * 
+   * @param serviceClass the class used to represent a service document,
+   *        not {@code null}.
    * @return ServiceDocument resource referenced by the input URL.
    * @throws IOException error sending request or reading the feed.
    * @throws com.google.gdata.util.ParseException error parsing the returned
@@ -728,41 +806,27 @@ public class Service {
    * @throws com.google.gdata.util.ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving service document.
    */
-  public <S extends ServiceDocument> S introspect(URL feedUrl,
+  public <S extends IServiceDocument> S introspect(URL feedUrl,
       Class<S> serviceClass) throws IOException, ServiceException {
 
     String feedQuery = feedUrl.getQuery();
-    if (feedQuery == null || feedQuery.indexOf("alt=atom-service") == -1) {
+    String altParam = 
+        GDataProtocol.Parameter.ALT + "=" + AltFormat.ATOM_SERVICE.getName();
+    if (feedQuery == null || feedQuery.indexOf(altParam) == -1) {
       char appendChar = (feedQuery == null) ? '?' : '&';
-      feedUrl = new URL(feedUrl.toString() + appendChar + "alt=atom-service");
+      feedUrl = new URL(feedUrl.toString() + appendChar + altParam);
     }
 
-    InputStream responseStream = null;
     GDataRequest request = createFeedRequest(feedUrl);
     try {
       startVersionScope();
       request.execute();
-      responseStream = request.getResponseStream();
-      if (responseStream == null) {
-        throw new ServiceException("Unable to obtain service document");
-      }
+      return parseResponseData(request, serviceClass);
 
-      S serviceDoc = serviceClass.newInstance();
-      serviceDoc.parse(extProfile, responseStream);
-
-      return serviceDoc;
-
-    } catch (InstantiationException e) {
-      throw new ServiceException("Unable to create service document instance",
-          e);
-    } catch (IllegalAccessException e) {
-      throw new ServiceException("Unable to create service document instance",
-          e);
     } finally {
       endVersionScope();
-      if (responseStream != null) {
-        responseStream.close();
-      }
+      request.end();
+
     }
   }
 
@@ -787,7 +851,7 @@ public class Service {
    * @throws ServiceException system error retrieving feed.
    */
   @SuppressWarnings("unchecked")
-  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl, Class<F> feedClass,
+  public <F extends IFeed> F getFeed(URL feedUrl, Class<F> feedClass,
       DateTime ifModifiedSince) throws IOException, ServiceException {
     GDataRequest request = createFeedRequest(feedUrl);
     return getFeed(request, feedClass, ifModifiedSince);
@@ -813,7 +877,7 @@ public class Service {
    * @throws ServiceException system error retrieving feed.
    */
   @SuppressWarnings("unchecked")
-  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl, Class<F> feedClass,
+  public <F extends IFeed> F getFeed(URL feedUrl, Class<F> feedClass,
       String etag) throws IOException, ServiceException {
     GDataRequest request = createFeedRequest(feedUrl);
     return getFeed(request, feedClass, etag);
@@ -833,31 +897,31 @@ public class Service {
    * @throws com.google.gdata.util.ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving feed.
    */
-  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl, Class<F> feedClass)
+  public <F extends IFeed> F getFeed(URL feedUrl, Class<F> feedClass)
       throws IOException, ServiceException {
     return getFeed(feedUrl, feedClass, (String) null);
   }
  
   
   /**
-   * Returns the Feed associated with a particular query.
+   * Returns the feed resulting from execution of a query.
    * 
    * @param query feed query.
-   * @param feedClass the class used to represent a service Feed.
-   * @return Feed resource referenced by the input URL.
+   * @param feedClass the class used to represent query results.
+   * @return feed resource referenced by the input URL.
    * @throws IOException error sending request or reading the feed.
    * @throws ParseException error parsing the returned feed data.
    * @throws ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving feed.
    */
-  public <F extends BaseFeed<?, ?>> F getFeed(Query query, Class<F> feedClass)
+  public <F extends IFeed> F getFeed(Query query, Class<F> feedClass)
       throws IOException, ServiceException {
     return getFeed(query, feedClass, (String) null);
   }
   
 
   /**
-   * Returns the Feed associated with a particular query, if it's been modified
+   * Returns the Feed resulting from executing a query, if it's been modified
    * since the specified date.
    * 
    * @param query feed query.
@@ -869,18 +933,18 @@ public class Service {
    * @throws IOException error sending request or reading the feed.
    * @throws ServiceException system error retrieving feed.
    */
-  public <F extends BaseFeed<?, ?>> F getFeed(Query query, Class<F> feedClass,
+  public <F extends IFeed> F getFeed(Query query, Class<F> feedClass,
       DateTime ifModifiedSince) throws IOException, ServiceException {
     GDataRequest request = createFeedRequest(query);
     return getFeed(request, feedClass, ifModifiedSince);
   }
 
   /**
-   * Returns the Feed associated with a particular query, if  if the entity tag
+   * Returns the Feed resulting from query execution, if  if the entity tag
    * associated with it has changed.
    * 
    * @param query feed query.
-   * @param feedClass the class used to represent a service Feed.
+   * @param feedClass the class used to represent query results.
    * @param etag used to provide an entity tag that indicates the feed should be
    *        returned only if the entity tag of the current representation is
    *        different from the provided value. A value of {@code null} indicates
@@ -892,7 +956,7 @@ public class Service {
    * @throws ResourceNotFoundException invalid feed URL.
    * @throws ServiceException system error retrieving feed.
    */
-  public <F extends BaseFeed<?, ?>> F getFeed(Query query, Class<F> feedClass,
+  public <F extends IFeed> F getFeed(Query query, Class<F> feedClass,
       String etag) throws IOException, ServiceException {
     GDataRequest request = createFeedRequest(query);
     return getFeed(request, feedClass, etag);
@@ -903,7 +967,8 @@ public class Service {
    * modified since the specified date.
    *
    * @param request the GData request.
-   * @param feedClass the class used to represent a service Feed.
+   * @param feedClass the class used to represent a service Feed,
+   *        not {@code null}.
    * @param ifModifiedSince used to set a precondition date that indicates the
    *        feed should be returned only if it has been modified after the
    *        specified date. A value of {@code null} indicates no precondition.
@@ -911,34 +976,30 @@ public class Service {
    * @throws IOException error sending request or reading the feed.
    * @throws ServiceException system error retrieving feed.
    */
-  @SuppressWarnings("unchecked")
-  private <F extends BaseFeed<?, ?>> F getFeed(GDataRequest request,
+  private <F extends IFeed> F getFeed(GDataRequest request,
+
       Class<F> feedClass, DateTime ifModifiedSince) throws IOException,
       ServiceException {
 
-    ParseSource feedSource = null;
     try {
       startVersionScope();
       request.setIfModifiedSince(ifModifiedSince);
       request.execute();
-      feedSource = request.getParseSource();
+      return parseResponseData(request, feedClass);
 
-      BaseFeed<?, ?> feed =
-          BaseFeed.readFeed(feedSource, feedClass, extProfile);
-      feed.setService(this);
-      return (F) feed;
     } finally {
       endVersionScope();
-      closeSource(feedSource);
+      request.end();
     }
   }
 
   /**
-   * Returns the Feed associated with a particular feed URL if its entity tag
+   * Returns the feed associated with a particular feed URL if its entity tag
    * is different than the provided value.
    * 
    * @param request the GData request.
-   * @param feedClass the class used to represent a service Feed.
+   * @param feedClass the class used to represent the resulting feed,
+   *        not {@code null}.
    * @param etag used to provide an entity tag that indicates the feed should be
    *        returned only if the entity tag of the current representation is
    *        different from the provided value. A value of {@code null} indicates
@@ -952,23 +1013,18 @@ public class Service {
    * @throws ServiceException system error retrieving feed.
    */
   @SuppressWarnings("unchecked")
-  private <F extends BaseFeed<?, ?>> F getFeed(GDataRequest request,
+  private <F extends IFeed> F getFeed(GDataRequest request,
       Class<F> feedClass, String etag) throws IOException, ServiceException {
 
-    ParseSource feedSource = null;
     try {
       startVersionScope();
       request.setEtag(etag);
       request.execute();
-      feedSource = request.getParseSource();
+      return parseResponseData(request, feedClass);
 
-      BaseFeed<?, ?> feed =
-          BaseFeed.readFeed(feedSource, feedClass, extProfile);
-      feed.setService(this);
-      return (F) feed;
     } finally {
       endVersionScope();
-      closeSource(feedSource);
+      request.end();
     }
   }
   
@@ -987,11 +1043,97 @@ public class Service {
       ServiceException {
     return createRequest(GDataRequest.RequestType.QUERY, feedUrl, contentType);
   }
+  
 
+  /**
+   * Executes a GData query against the target service and returns the
+   * {@link IFeed} containing entries that match the query result.
+   * 
+   * @param query Query instance defining target feed and query parameters.
+
+   * @param feedClass the Class used to represent a service Feed,
+   *        not {@code null}.
+
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.ServiceForbiddenException feed does not
+   *         support the query.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *         feed data.
+   * @throws ServiceException query request failed.
+   */
+  public <F extends IFeed> F query(Query query, Class<F> feedClass)
+      throws IOException, ServiceException {
+
+    // A query is really same as getFeed against the combined feed + query URL
+    return query(query, feedClass, (String) null);
+  }
+  
+  
+  /**
+   * Executes a GData query against the target service and returns the
+   * {@link IFeed} containing entries that match the query result, if it's been
+   * modified since the specified date.
+   * 
+   * @param query Query instance defining target feed and query parameters.
+
+   * @param feedClass the Class used to represent a service Feed,
+   *        not {@code null}.
+   * @param ifModifiedSince used to set a precondition date that indicates the
+   *        query result feed should be returned only if contains entries that
+   *        have been modified after the specified date. A value of {@code null}
+   *        indicates no precondition.
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.NotModifiedException if the query resource
+   *         does not contain entries modified since the specified precondition
+   *         date.
+   * @throws com.google.gdata.util.ServiceForbiddenException feed does not
+   *         support the query.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *         feed data.
+   * @throws ServiceException query request failed.
+   */
+  public <F extends IFeed> F query(Query query, Class<F> feedClass,
+      DateTime ifModifiedSince) throws IOException, ServiceException {
+
+    // A query is really same as getFeed against the combined feed + query URL
+    return getFeed(query, feedClass, ifModifiedSince);
+  }
+  
+  
+  /**
+   * Executes a GData query against the target service and returns the
+   * {@link IFeed} containing entries that match the query result if the etag
+   * for the target feed does not match the provided value.
+   * 
+   * @param query Query instance defining target feed and query parameters.
+   * @param feedClass the Class used to represent a service Feed,
+   *        not {@code null}.
+   * @param etag used to provide an entity tag that indicates the query should be
+   *        be performed only if the entity tag of the current representation is
+   *        different from the provided value. A value of {@code null} indicates
+   *        unconditional return.
+   * @throws IOException error communicating with the GData service.
+   * @throws NotModifiedException if the feed resource entity tag matches the
+   *         provided value.
+   * @throws com.google.gdata.util.ServiceForbiddenException feed does not
+   *         support the query.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *         feed data.
+   * @throws ServiceException query request failed.
+   */
+  public <F extends IFeed> F query(Query query, Class<F> feedClass,
+      String etag) throws IOException, ServiceException {
+
+    // A query is really same as getFeed against the combined feed + query URL
+    return getFeed(query, feedClass, etag);
+  }
 
   /**
    * Executes a GData query request against the target service and returns the
    * resulting feed results via an input stream.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
    * 
    * @param query feed query.
    * @return GData request instance that can be used to read the feed data.
@@ -1005,12 +1147,12 @@ public class Service {
     return createRequest(query, contentType);
   }
 
-
   /**
    * Returns an Atom entry instance, given the URL of the entry.
    * 
    * @param entryUrl resource URL for the entry.
-   * @param entryClass class used to represent service entries.
+   * @param entryClass class used to represent service entries,
+   *        not {@code null}.
    * @return the entry referenced by the URL parameter.
    * @throws IOException error communicating with the GData service.
    * @throws com.google.gdata.util.ParseException error parsing the returned
@@ -1022,18 +1164,18 @@ public class Service {
    * @throws ServiceException if a system error occurred when retrieving the
    *         entry.
    */
-  public <E extends BaseEntry<?>> E getEntry(URL entryUrl, Class<E> entryClass)
+  public <E extends IEntry> E getEntry(URL entryUrl, Class<E> entryClass)
       throws IOException, ServiceException {
     return getEntry(entryUrl, entryClass, (String) null);
   }
-  
   
   /**
    * Returns an Atom entry instance, given the URL of the entry and an
    * if-modified-since date.
    * 
    * @param entryUrl resource URL for the entry.
-   * @param entryClass class used to represent service entries.
+   * @param entryClass class used to represent service entries,
+   *        not {@code null}.
    * @param ifModifiedSince used to set a precondition date that indicates the
    *        entry should be returned only if it has been modified after the
    *        specified date. A value of {@code null} indicates no precondition.
@@ -1050,7 +1192,7 @@ public class Service {
    * @throws ServiceException if a system error occurred when retrieving the
    *         entry.
    */
-  public <E extends BaseEntry<?>> E getEntry(URL entryUrl, Class<E> entryClass,
+  public <E extends IEntry> E getEntry(URL entryUrl, Class<E> entryClass,
       DateTime ifModifiedSince) throws IOException, ServiceException {
 
     ParseSource entrySource = null;
@@ -1058,23 +1200,23 @@ public class Service {
     try {
       startVersionScope();
       request.setIfModifiedSince(ifModifiedSince);
-      request.execute();
-      entrySource = request.getParseSource();
-      return parseEntry(entryClass, entrySource);
+      request.execute();     
+      return parseResponseData(request, entryClass);
+
 
     } finally {
       endVersionScope();
-      closeSource(entrySource);
+      request.end();
     }
   }
-
 
   /**
    * Returns an Atom entry instance given the URL of the entry, if its current
    * entity tag is different than the provided value.
    * 
    * @param entryUrl resource URL for the entry.
-   * @param entryClass class used to represent service entries.
+   * @param entryClass class used to represent service entries,
+   *        not {@code null}.
    * @param etag used to provide an entity tag that indicates the entry should
    *        be returned only if the entity tag of the current representation is
    *        different from the provided value. A value of {@code null} indicates
@@ -1091,7 +1233,7 @@ public class Service {
    * @throws ServiceException if a system error occurred when retrieving the
    *         entry.
    */
-  public <E extends BaseEntry<?>> E getEntry(URL entryUrl, Class<E> entryClass,
+  public <E extends IEntry> E getEntry(URL entryUrl, Class<E> entryClass,
       String etag) throws IOException, ServiceException {
 
     ParseSource entrySource = null;
@@ -1100,19 +1242,21 @@ public class Service {
       startVersionScope();
       request.setEtag(etag);
       request.execute();
-      entrySource = request.getParseSource();
-      return parseEntry(entryClass, entrySource);
+      return parseResponseData(request, entryClass);
+
 
     } finally {
       endVersionScope();
-      closeSource(entrySource);
+      request.end();
     }
   }
-  
   
   /**
    * Returns a GDataRequest instance that can be used to access an entry's
    * contents as a stream, given the URL of the entry.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
    * 
    * @param entryUrl resource URL for the entry.
    * @return GData request instance that can be used to read the entry.
@@ -1122,92 +1266,13 @@ public class Service {
   public GDataRequest createEntryRequest(URL entryUrl) throws IOException,
       ServiceException {
     return createRequest(GDataRequest.RequestType.QUERY, entryUrl, contentType);
-  }
-  
-
-  /**
-   * Executes a GData query against the target service and returns the
-   * {@link Feed} containing entries that match the query result.
-   * 
-   * @param query Query instance defining target feed and query parameters.
-   * @param feedClass the Class used to represent a service Feed.
-   * @throws IOException error communicating with the GData service.
-   * @throws com.google.gdata.util.ServiceForbiddenException feed does not
-   *         support the query.
-   * @throws com.google.gdata.util.ParseException error parsing the returned
-   *         feed data.
-   * @throws ServiceException query request failed.
-   */
-  public <F extends BaseFeed<?, ?>> F query(Query query, Class<F> feedClass)
-      throws IOException, ServiceException {
-
-    // A query is really same as getFeed against the combined feed + query URL
-    return query(query, feedClass, (String) null);
-  }
-  
-  
-  /**
-   * Executes a GData query against the target service and returns the
-   * {@link Feed} containing entries that match the query result, if it's been
-   * modified since the specified date.
-   * 
-   * @param query Query instance defining target feed and query parameters.
-   * @param feedClass the Class used to represent a service Feed.
-   * @param ifModifiedSince used to set a precondition date that indicates the
-   *        query result feed should be returned only if contains entries that
-   *        have been modified after the specified date. A value of {@code null}
-   *        indicates no precondition.
-   * @throws IOException error communicating with the GData service.
-   * @throws com.google.gdata.util.NotModifiedException if the query resource
-   *         does not contain entries modified since the specified precondition
-   *         date.
-   * @throws com.google.gdata.util.ServiceForbiddenException feed does not
-   *         support the query.
-   * @throws com.google.gdata.util.ParseException error parsing the returned
-   *         feed data.
-   * @throws ServiceException query request failed.
-   */
-  public <F extends BaseFeed<?, ?>> F query(Query query, Class<F> feedClass,
-      DateTime ifModifiedSince) throws IOException, ServiceException {
-
-    // A query is really same as getFeed against the combined feed + query URL
-    return getFeed(query, feedClass, ifModifiedSince);
-  }
-  
-  
-  /**
-   * Executes a GData query against the target service and returns the
-   * {@link Feed} containing entries that match the query result if the etag
-   * for the target feed does not match the provided value.
-   * 
-   * @param query Query instance defining target feed and query parameters.
-   * @param feedClass the Class used to represent a service Feed.
-   * @param etag used to provide an entity tag that indicates the query should be
-   *        be performed only if the entity tag of the current representation is
-   *        different from the provided value. A value of {@code null} indicates
-   *        unconditional return.
-   * @throws IOException error communicating with the GData service.
-   * @throws NotModifiedException if the feed resource entity tag matches the
-   *         provided value.
-   * @throws com.google.gdata.util.ServiceForbiddenException feed does not
-   *         support the query.
-   * @throws com.google.gdata.util.ParseException error parsing the returned
-   *         feed data.
-   * @throws ServiceException query request failed.
-   */
-  public <F extends BaseFeed<?, ?>> F query(Query query, Class<F> feedClass,
-      String etag) throws IOException, ServiceException {
-
-    // A query is really same as getFeed against the combined feed + query URL
-    return getFeed(query, feedClass, etag);
-  }
-
-
+  } 
 
 
   /**
-   * Inserts a new {@link com.google.gdata.data.Entry} into a feed associated
-   * with the target service. It will return the inserted Entry, including any
+   * Inserts a new {@link IEntry} into a feed associated
+   * with the target service. It will return the inserted entry, including any
+
    * additional attributes or extensions set by the GData server.
    * 
    * @param feedUrl the POST URI associated with the target feed.
@@ -1221,40 +1286,36 @@ public class Service {
    *         service.
    * @throws ServiceException insert request failed due to system error.
    * 
-   * @see BaseFeed#getEntryPostLink()
-   * @see BaseFeed#insert(BaseEntry)
+   * @see IFeed#getEntryPostLink()
+
    */
   @SuppressWarnings("unchecked")
-  public <E extends BaseEntry<?>> E insert(URL feedUrl, E entry)
+  public <E extends IEntry> E insert(URL feedUrl, E entry)
       throws IOException, ServiceException {
 
     if (entry == null) {
       throw new NullPointerException("Must supply entry");
     }
 
-    ParseSource resultEntrySource = null;
+    GDataRequest request = createInsertRequest(feedUrl);
     try {
       startVersionScope();
-      GDataRequest request = createInsertRequest(feedUrl);
-      XmlWriter xw = request.getRequestWriter();
-      entry.generateAtom(xw, extProfile);
-      xw.flush();
+      
+      writeRequestData(request, entry);
 
       request.execute();
-
-      resultEntrySource = request.getParseSource();
-      return (E) parseEntry(entry.getClass(), resultEntrySource);
+      return parseResponseData(request, classOf(entry));
 
     } finally {
       endVersionScope();
-      closeSource(resultEntrySource);
+      request.end();
     }
   }
 
 
   /**
    * Executes several operations (insert, update or delete) on the entries that
-   * are part of the input {@link Feed}. It will return another feed that
+   * are part of the input {@link IFeed}. It will return another feed that
    * describes what was done while executing these operations.
    * 
    * It is possible for one batch operation to fail even though other operations
@@ -1275,45 +1336,32 @@ public class Service {
    * @throws BatchInterruptedException if something really wrong was detected by
    *         the server while parsing the request, like invalid XML data. Some
    *         operations might have succeeded when this exception is thrown.
-   *         Check {@link BatchInterruptedException#getFeed()}.
+   *         Check {@link BatchInterruptedException#getIFeed()}.
    * 
-   * @see BaseFeed#getEntryPostLink()
-   * @see BaseFeed#insert(BaseEntry)
+   * @see IFeed#getEntryPostLink()
+
    */
   @SuppressWarnings("unchecked")
-  public <F extends BaseFeed<?, ?>> F batch(URL feedUrl, F inputFeed)
+  public <F extends IFeed> F batch(URL feedUrl, F inputFeed)
       throws IOException, ServiceException, BatchInterruptedException {
-    ParseSource resultFeedSource = null;
+    
     GDataRequest request = createInsertRequest(feedUrl);
     try {
       startVersionScope();
-      XmlWriter xw = request.getRequestWriter();
-      inputFeed.generateAtom(xw, extProfile);
-      xw.flush();
+      writeRequestData(request, inputFeed);
 
       request.execute();
-
-      resultFeedSource = request.getParseSource();
-      F resultFeed =
-          (F) BaseFeed.readFeed(resultFeedSource, inputFeed.getClass(),
-              extProfile);
-      resultFeed.setService(this);
+      F resultFeed = parseResponseData(request, classOf(inputFeed));
 
       // Detect BatchInterrupted
       int count = resultFeed.getEntries().size();
-      if (count > 0) {
-        BaseEntry<?> entry = resultFeed.getEntries().get(count - 1);
-        BatchInterrupted interrupted = BatchUtils.getBatchInterrupted(entry);
-        if (interrupted != null) {
-          throw new BatchInterruptedException(resultFeed, interrupted);
-        }
-      }
+      BatchUtils.throwIfInterrupted(resultFeed);
 
       return resultFeed;
 
     } finally {
       endVersionScope();
-      closeSource(resultFeedSource);
+      request.end();
     }
   }
 
@@ -1321,6 +1369,9 @@ public class Service {
    * Creates a new GDataRequest that can be used to insert a new entry into a
    * feed using the request stream and to read the resulting entry content from
    * the response stream.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
    * 
    * @param feedUrl the POST URI associated with the target feed.
    * @return GDataRequest to interact with remote GData service.
@@ -1337,6 +1388,9 @@ public class Service {
    * insert/update/delete operations in one request by writing a feed into the
    * request stream to read a feed containing the result of the batch operations
    * from the response stream.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
    * 
    * @param feedUrl the POST URI associated with the target feed.
    * @return GDataRequest to interact with remote GData service.
@@ -1350,7 +1404,7 @@ public class Service {
 
 
   /**
-   * Updates an existing {@link com.google.gdata.data.Entry} by writing it to
+   * Updates an existing {@link IEntry} by writing it to
    * the specified entry edit URL. The resulting Entry (after update) will be
    * returned.
    * 
@@ -1362,11 +1416,11 @@ public class Service {
    *         entry data.
    * @throws ServiceException update request failed due to system error.
    * 
-   * @see BaseEntry#getEditLink()
-   * @see BaseEntry#update()
+   * @see IEntry#getEditLink()
+
    */
   @SuppressWarnings("unchecked")
-  public <E extends BaseEntry<?>> E update(URL entryUrl, E entry)
+  public <E extends IEntry> E update(URL entryUrl, E entry)
       throws IOException, ServiceException {
     
     // If the entry has a strong etag, use it as a precondition.
@@ -1376,21 +1430,21 @@ public class Service {
     }
     return update(entryUrl, entry, etag);
   }
-  
-  
+
+
   /**
-   * Updates an existing {@link com.google.gdata.data.Entry} by writing it to
-   * the specified entry edit URL. The resulting Entry (after update) will be
-   * returned. This update is conditional upon the provided tag matching the
-   * current entity tag for the entry. If (and only if) they match, the update
-   * will be performed.
+   * Updates an existing {@link IEntry} by writing it to the specified entry
+   * edit URL. The resulting entry (after update) will be returned. This update
+   * is conditional upon the provided tag matching the current entity tag for
+   * the entry. If (and only if) they match, the update will be performed.
+
    * 
    * @param entryUrl the edit URL associated with the entry.
-   * @param entry the modified Entry to be written to the server.
+   * @param entry the modified entry to be written to the server.
    * @param etag the entity tag value that is the expected value for the target
-   *        resource.   A value of {@code null} will not set an etag 
-   *        precondition and a value of <code>"*"</code> will perform an
-   *        unconditional update.
+   *        resource. A value of {@code null} will not set an etag precondition
+   *        and a value of <code>"*"</code> will perform an unconditional
+   *        update.
    * @return the updated Entry returned by the service.
    * @throws IOException error communicating with the GData service.
    * @throws PreconditionFailedException if the resource entity tag does not
@@ -1399,35 +1453,25 @@ public class Service {
    *         entry data.
    * @throws ServiceException update request failed due to system error.
    * 
-   * @see BaseEntry#getEditLink()
-   * @see BaseEntry#update()
+   * @see IEntry#getEditLink()
+
    */
-  @SuppressWarnings("unchecked")
-  public <E extends BaseEntry<?>> E update(URL entryUrl, E entry, String etag)
+  public <E extends IEntry> E update(URL entryUrl, E entry, String etag)
+
       throws IOException, ServiceException {
 
-    ParseSource resultEntrySource = null;
     GDataRequest request = createUpdateRequest(entryUrl);
-
     try {
       startVersionScope();
       request.setEtag(etag);
-      
-      // Send the entry
-      XmlWriter xw = request.getRequestWriter();
-      entry.generateAtom(xw, extProfile);
-      xw.flush();
+      writeRequestData(request, entry);
 
-      // Execute the request
       request.execute();
-
-      // Handle the update
-      resultEntrySource = request.getParseSource();
-      return (E) parseEntry(entry.getClass(), resultEntrySource);
+      return parseResponseData(request, classOf(entry));
 
     } finally {
       endVersionScope();
-      closeSource(resultEntrySource);
+      request.end();
     }
   }
 
@@ -1437,6 +1481,9 @@ public class Service {
    * entry. The updated entry content can be written to the GDataRequest request
    * stream and the resulting updated entry can be obtained from the
    * GDataRequest response stream.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
    * 
    * @param entryUrl the edit URL associated with the entry.
    * @throws IOException error communicating with the GData service.
@@ -1494,13 +1541,13 @@ public class Service {
   public void delete(URL resourceUrl, String etag) 
       throws IOException, ServiceException {
 
+    GDataRequest request = createDeleteRequest(resourceUrl);
     try {
       startVersionScope();
-      GDataRequest request = createDeleteRequest(resourceUrl);
       request.setEtag(etag);
       request.execute();
     } finally {
-      endVersionScope();
+      request.end();
     }
   }
   
@@ -1528,6 +1575,9 @@ public class Service {
    * Creates a new GDataRequest that can be used to delete an Atom entry. For
    * delete requests, no input is expected from the request stream nor will any
    * response data be returned.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
    * 
    * @param entryUrl the edit URL associated with the entry.
    * @throws IOException error communicating with the GData service.
@@ -1539,32 +1589,234 @@ public class Service {
     return createRequest(GDataRequest.RequestType.DELETE, entryUrl, 
         contentType);
   }
-
-
-  /**
-   * Closes streams and readers associated with a parse source.
-   * 
-   * @param source Parse source.
-   * @throws IOException
-   */
-  protected void closeSource(ParseSource source) throws IOException {
-    if (source != null) {
-      if (source.getInputStream() != null) {
-        source.getInputStream().close();
-      }
-      if (source.getReader() != null) {
-        source.getReader().close();
-      }
-    }
-  }
   
-  public InputStream getStreamFromLink(Link link) throws IOException, ServiceException {
-    GDataRequest request = createRequest(GDataRequest.RequestType.QUERY, 
-        new URL(link.getHref()), null);
+  /**
+   * Returns an InputStream that contains the content referenced by a link.
+   * 
+   * @param link link that references the target resource.
+   * @return input stream that can be used to access the resource content.
+   * @throws IOException error communication with the remote service.
+   * @throws ServiceException resource access failed due to system error.
+   * 
+   * @deprecated Use {{@link #createLinkQueryRequest(ILink)} instead.
+   */
+  @Deprecated
+  public InputStream getStreamFromLink(ILink link) 
+      throws IOException, ServiceException {
+    GDataRequest request = createLinkQueryRequest(link);
 
     request.execute();
     InputStream resultStream = request.getResponseStream();
 
     return resultStream;
   }
+  
+  /**
+   * Returns a query (GET) request that targets the provided link.   This
+   * can be used to execute the request and access the link's content via
+   * the response stream of the request (if successful).
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
+   * 
+   * @param link link to target resource for created request
+   * @return query request to retrieve linked content.
+   * @throws IOException error communicating with the GData service.
+   * @throws ServiceException creation of query request failed.
+   */
+  public GDataRequest createLinkQueryRequest(ILink link) 
+  throws IOException, ServiceException {
+    return createRequest(GDataRequest.RequestType.QUERY, 
+        new URL(link.getHref()), null);
+  }
+
+  /**
+   * The ClientStreamProperties class is an abstract adaptor class that
+   * implements the {@link StreamProperties} interface for content to be written
+   * to or read from the target service based upon its attributes and a
+   * {@link GDataRequest}.
+   * <p>
+   * Subclasses must implement the {@link StreamProperties#getContentType()}
+   * method since the expected content type depends on the direction of data
+   * transfer for the request.
+   */
+  private abstract class ClientStreamProperties implements StreamProperties {
+    
+    protected final GDataRequest req;
+    protected final UriParameterMap queryMap;
+    
+    protected ClientStreamProperties(GDataRequest req) {
+      this.req = req;
+      this.queryMap = computeQueryMap(req);
+    }
+    
+    public GDataRequest getGDataRequest() {
+      return req;
+    }
+
+    public AltRegistry getAltRegistry() {    
+      return Service.this.getAltRegistry();
+    }
+
+    public ExtensionProfile getExtensionProfile() {
+      return Service.this.getExtensionProfile();
+    }
+
+    public MetadataContext getMetadataContext() {
+      return null;
+    }
+
+    private UriParameterMap computeQueryMap(GDataRequest req) {
+      String query = req.getRequestUrl().getQuery();
+      if (query == null) {
+        return UriParameterMap.EMPTY_MAP;
+      }
+      return UriParameterMap.parse(query);
+    }
+
+    public Collection<String> getQueryParameterNames() {
+      return queryMap.keySet();
+    }
+
+    public String getQueryParameter(String name) {
+      return queryMap.getFirst(name);
+    }
+  }
+  
+  /**
+   * The ClientOutputProperties class is an adaptor class that implements
+   * the {@link OutputProperties} interface for content to be written to the
+   * target service based upon its attributes and a {@link GDataRequest}.
+   */
+  public class ClientOutputProperties extends ClientStreamProperties 
+      implements OutputProperties {
+
+    private ClientOutputProperties(GDataRequest req) {
+      super(req);
+    }
+
+    public ContentType getContentType() {
+      return req.getRequestContentType();
+    }
+  }
+  
+  protected OutputProperties getOutputProperties(GDataRequest req) {
+    return new ClientOutputProperties(req);
+  }
+  
+  /**
+   * Writes the request body to the target service based upon the attributes of
+   * the request and the source object.
+   * 
+   * @param req gdata request under execution
+   * @param source source object to be written
+   * @throws IOException
+   */
+  protected void writeRequestData(GDataRequest req, Object source) 
+      throws IOException {
+    
+    OutputProperties outProps = new ClientOutputProperties(req);
+    AltFormat outputFormat = altRegistry.lookupType(outProps.getContentType());
+    if (outputFormat == null) {
+      // If no registered type, see if the target service supports media
+      outputFormat = altRegistry.lookupName(AltFormat.MEDIA.getName());
+    }
+    if (outputFormat == null) {
+      throw new IllegalStateException("Unsupported request type: " +
+          outProps.getContentType());
+    }
+    OutputGenerator<?> generator = altRegistry.getGenerator(outputFormat);
+    if (!generator.getSourceType().isAssignableFrom(source.getClass())) {
+      throw new IllegalArgumentException("Invalid source type: " + 
+          source.getClass() + " for output format " + outputFormat);
+    }
+    
+    // The cast here is safe because of the runtime check above
+    @SuppressWarnings("unchecked")
+    OutputGenerator<Object> typedGenerator = 
+        (OutputGenerator<Object>) generator;
+    typedGenerator.generate(req.getRequestStream(), outProps, source);
+  }
+    
+  /**
+   * The ClientInputProperties class is an adaptor class that implements the
+   * {@link InputProperties} interface for content to be read from the target
+   * service based upon its attributes and a {@link GDataRequest}.
+   */
+  private class ClientInputProperties extends ClientStreamProperties 
+      implements InputProperties {
+
+    private Class<?> expectType;
+    ContentType inputType;
+
+    private ClientInputProperties(GDataRequest req, Class<?> expectType) 
+        throws IOException, ServiceException {
+      super(req);
+      this.expectType = expectType;
+      inputType = req.getResponseContentType();
+    }
+
+    public ContentType getContentType() {
+      return inputType;
+    }
+
+    public Class<?> getExpectType() {
+      return expectType;
+    }
+  }
+
+  /**
+   * Parses the response stream for a request based upon request properties and
+   * an expected result type.   The parser will be selected based upon the
+   * request alt type or response content type and used to parse the response
+   * content into the result object.
+   * 
+   * @param <E> expected result type
+   * @param req request that has been executed but not yet read from.
+
+   * @param resultType expected result type, not {@code null}.
+   * @return an instance of the expected result type resulting from the parse.
+   * @throws IOException
+   * @throws ServiceException
+   */
+  protected <E> E parseResponseData(GDataRequest req, Class<E> resultType) 
+      throws IOException, ServiceException {
+    Preconditions.checkNotNull("resultType", resultType);
+    InputProperties inputProperties = 
+      new ClientInputProperties(req, resultType);
+    
+    AltFormat inputFormat = null;
+    String alt = inputProperties.getQueryParameter(GDataProtocol.Parameter.ALT);
+    if (alt != null) {
+      inputFormat = altRegistry.lookupName(alt);
+    }
+    if (inputFormat == null) {
+      inputFormat = altRegistry.lookupType(inputProperties.getContentType());
+      if (inputFormat == null) {
+        throw new ParseException("Unrecognized content type:" +
+            inputProperties.getContentType());
+      }
+    }
+    InputParser<?> inputParser = altRegistry.getParser(inputFormat);
+    if (inputParser == null) {
+      throw new ParseException("No parser for content type:" + inputFormat);
+    }
+    if (!inputParser.getResultType().isAssignableFrom(resultType)) {
+      throw new IllegalStateException("Input parser (" + inputParser + 
+          ") does not produce expected result type: " + resultType);
+    }
+    
+    // The cast here is safe because of the runtime check above
+    @SuppressWarnings("unchecked")
+    InputParser<E> typedParser = (InputParser<E>) inputParser;
+    E result = typedParser.parse(req.getParseSource(), 
+        inputProperties, resultType);
+    
+    // Associate service with the result if atom content
+    if (result instanceof IAtom) {
+      ((IAtom) result).setService(this);
+    }
+    return result;
+  }
 }
+

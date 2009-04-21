@@ -23,6 +23,7 @@ import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.Feed;
 
 import java.net.URL;
 
@@ -97,7 +98,7 @@ public class TwoLeggedOAuthExample {
     googleService.setOAuthCredentials(oauthParameters, signer);
 
     // Make the request to Google
-    BaseFeed resultFeed = googleService.getFeed(feedUrl, null);
+    BaseFeed resultFeed = googleService.getFeed(feedUrl, Feed.class);
     System.out.println("Response Data:");
     System.out.println("=====================================================");
     System.out.println("| TITLE: " + resultFeed.getTitle().getPlainText());

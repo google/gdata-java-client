@@ -504,15 +504,25 @@ public class ExtensionPoint extends AbstractExtension {
    */
   protected void initializeArbitraryXml(ExtensionProfile profile,
       Class<? extends ExtensionPoint> extPoint, ElementHandler handler) {
-
     boolean arbitraryXml = profile.allowsArbitraryXml();
-    if (!arbitraryXml) {
-      ExtensionManifest profManifest = getManifest(profile, extPoint);
-      arbitraryXml = profManifest != null && profManifest.arbitraryXml;
+    boolean mixedContent = false;
+
+    ExtensionManifest profManifest = getManifest(profile, extPoint);
+    if (profManifest != null) {
+      if (profManifest.arbitraryXml) {
+        arbitraryXml = profManifest.arbitraryXml;
+
+        // mixedContent is only enabled if the profile manifest is present, and
+        // supports mixed content, regardless of if the profile allows
+        // arbitrary xml.
+        mixedContent = profManifest.mixedContent;
+      }
     }
+
     if (arbitraryXml) {
-      handler.initializeXmlBlob(xmlBlob,
-          /* mixedContent */false,
+      handler.initializeXmlBlob(
+          xmlBlob,
+          mixedContent,
           /* fullTextIndex */false);
     }
   }

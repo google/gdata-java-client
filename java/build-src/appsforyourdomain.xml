@@ -13,7 +13,7 @@
     value="${build.jars}/gdata-appsforyourdomain-${appsforyourdomain.spec.version}.jar"/>
 
   <path id="build.service.appsforyourdomain.classpath">
-    <pathelement location="${gdata-client.jar}"/>
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${gdata-calendar.jar}"/>
   </path>
 

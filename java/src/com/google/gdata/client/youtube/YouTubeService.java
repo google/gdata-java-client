@@ -16,11 +16,10 @@
 
 package com.google.gdata.client.youtube;
 
-import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.media.MediaService;
-import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.IEntry;
 import com.google.gdata.data.ParseSource;
 import com.google.gdata.data.youtube.ChannelFeed;
 import com.google.gdata.data.youtube.CommentFeed;
@@ -133,7 +132,9 @@ public class YouTubeService extends MediaService {
    */
   protected YouTubeService(String applicationName, String developerId, URL authBaseUrl) {
     super(SERVICE_NAME, applicationName, authBaseUrl.getProtocol(),
-        authBaseUrl.getHost() + ":" + authBaseUrl.getPort() + authBaseUrl.getPath());
+        authBaseUrl.getHost()
+            + (authBaseUrl.getPort() == -1 ? "" : ":" + authBaseUrl.getPort())
+            + authBaseUrl.getPath());
     getRequestFactory().setHeader("X-GData-Key", developerId != null ? "key=" + developerId : null);
     getRequestFactory().setHeader("X-GData-Client", applicationName);
 
@@ -193,7 +194,7 @@ public class YouTubeService extends MediaService {
    * @param entry XML metadata of a new media entry
    */
   @SuppressWarnings("unchecked")
-  public <E extends BaseEntry<?>> FormUploadToken getFormUploadToken(URL url, E entry) 
+  public <E extends IEntry> FormUploadToken getFormUploadToken(URL url, E entry) 
       throws ServiceException, IOException {
 
     if (entry == null) {
@@ -201,17 +202,14 @@ public class YouTubeService extends MediaService {
     }
 
     Service.GDataRequest request = createInsertRequest(url);
-    XmlWriter xw = request.getRequestWriter();
-    entry.generateAtom(xw, extProfile);
-    xw.flush();
-
+    writeRequestData(request, entry);
     request.execute();
 
     ParseSource resultEntrySource = request.getParseSource();
     try {
       return FormUploadToken.parse(resultEntrySource.getInputStream());
     } finally {
-      closeSource(resultEntrySource);
+      request.end();
     }
   }
 }
