@@ -13,6 +13,7 @@ The wiki page shows the release notes for the current binary download, the subve
    * Updated Books API, Docs API and OAuth samples code.
    * Updated Apps Groups API to use https instead of http.
    * Fixed non-blocking bugs related to comptability with Google Java App Engine.
+   * Introduced dependency on Google Collections library.  This library is shipped with the src and samples package under java/deps/google-collect-1.0-rc1.jar and java/deps/jsr305.jar.
 
 == 1.30.0 ==
    * Updated ant build configuration to reduce build time by ~60%.  Thanks to "mchenryc" for this [http://code.google.com/p/gdata-java-client/issues/detail?id=82 contribution].
