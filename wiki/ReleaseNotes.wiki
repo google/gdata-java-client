@@ -8,6 +8,12 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.31.0 ==
+   * Added support for Analytics Google Data API.
+   * Updated Books API, Docs API and OAuth samples code.
+   * Updated Apps Groups API to use https instead of http.
+   * Fixed non-blocking bugs related to comptability with Google Java App Engine.
+
 == 1.30.0 ==
    * Updated ant build configuration to reduce build time by ~60%.  Thanks to "mchenryc" for this [http://code.google.com/p/gdata-java-client/issues/detail?id=82 contribution].
    * Added support for ChannelFeed and UserEventFeed in YouTube Data API.
