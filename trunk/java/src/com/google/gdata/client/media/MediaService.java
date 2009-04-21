@@ -17,27 +17,32 @@
 package com.google.gdata.client.media;
 
 import com.google.gdata.util.common.base.PercentEscaper;
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.client.AuthTokenFactory;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.http.HttpGDataRequest;
-import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.DateTime;
-import com.google.gdata.data.MediaContent;
-import com.google.gdata.data.ParseSource;
-import com.google.gdata.data.media.MediaEntry;
+import com.google.gdata.data.IEntry;
+import com.google.gdata.data.media.IMediaContent;
+import com.google.gdata.data.media.IMediaEntry;
 import com.google.gdata.data.media.MediaMultipart;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.media.MediaStreamSource;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.RedirectRequiredException;
 import com.google.gdata.util.ServiceException;
+import com.google.gdata.wireformats.AltFormat;
+import com.google.gdata.wireformats.AltRegistry;
+import com.google.gdata.wireformats.input.media.MediaMultipartParser;
+import com.google.gdata.wireformats.input.media.MediaParser;
+import com.google.gdata.wireformats.output.media.MediaGenerator;
+import com.google.gdata.wireformats.output.media.MediaMultipartGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -76,6 +81,36 @@ public class MediaService extends GoogleService {
   private int chunkedBufferSize = DEFAULT_CHUNKED_BUFFER_SIZE;
   
   /**
+   * Returns an {@link AltRegistry} instance that is configured with the
+   * default parser/generator configuration for a media service. 
+   */
+  public static AltRegistry getDefaultAltRegistry() {
+    return MEDIA_REGISTRY;
+  }
+  
+  /**
+   * The DEFAULT_REGISTRY contains the default set of representations and
+   * associated parser/generator configurations for media services.  It will be
+   * used as the default configuration for all MediaService instances unless
+   * {@link #setAltRegistry(AltRegistry)} is called.
+   */
+  private static final AltRegistry MEDIA_REGISTRY;
+  
+  static {
+    // Start with the contents of the base default registry
+    MEDIA_REGISTRY = new AltRegistry(Service.getDefaultAltRegistry());
+    
+    // Register media formats
+    MEDIA_REGISTRY.register(AltFormat.MEDIA, 
+        new MediaParser(), new MediaGenerator());
+    MEDIA_REGISTRY.register(AltFormat.MEDIA_MULTIPART, 
+        new MediaMultipartParser(), new MediaMultipartGenerator()); 
+    
+    // protect against subsequent changes
+    MEDIA_REGISTRY.lock();
+  }
+  
+  /**
    * Constructs a MediaService instance connecting to the service with name
    * {@code serviceName} for an application with the name
    * {@code applicationName}. The default domain (www.google.com) will be
@@ -95,6 +130,7 @@ public class MediaService extends GoogleService {
                       String applicationName) {
 
     super(serviceName, applicationName);
+    setAltRegistry(MEDIA_REGISTRY);
   }
   
   /**
@@ -117,6 +153,7 @@ public class MediaService extends GoogleService {
       AuthTokenFactory authTokenFactory) {
     
     super(applicationName, requestFactory, authTokenFactory);
+    setAltRegistry(MEDIA_REGISTRY);
   }
 
   /**
@@ -144,6 +181,7 @@ public class MediaService extends GoogleService {
                       String domainName) {
 
     super(serviceName, applicationName, protocol, domainName);
+    setAltRegistry(MEDIA_REGISTRY);
   }
 
   /**
@@ -225,7 +263,7 @@ public class MediaService extends GoogleService {
    * @throws IOException error communicating with the GData service.
    * @throws ServiceException entry request creation failed.
    */
-  public MediaSource getMedia(MediaContent mediaContent,
+  public MediaSource getMedia(IMediaContent mediaContent,
                               DateTime ifModifiedSince)
       throws IOException, ServiceException {
 
@@ -256,7 +294,7 @@ public class MediaService extends GoogleService {
    * @throws IOException error communicating with the GData service.
    * @throws ServiceException entry request creation failed.
    */
-  public MediaSource getMedia(MediaContent mediaContent)
+  public MediaSource getMedia(IMediaContent mediaContent)
       throws IOException, ServiceException {
     return getMedia(mediaContent, null);
   }
@@ -299,7 +337,7 @@ public class MediaService extends GoogleService {
    * any additional attributes or extensions set by the GData server.
    *
    * If the Entry has been associated with a {@link MediaSource} through the
-   * {@link MediaEntry#setMediaSource(MediaSource)} method then both the entry
+   * {@link IMediaEntry#setMediaSource(MediaSource)} method then both the entry
    * and the media resource will be inserted into the media feed associated
    * with the target service.
    * If the media source has a name ({@link MediaSource#getName()} that is
@@ -318,49 +356,48 @@ public class MediaService extends GoogleService {
    *         entry data.
    * @throws ServiceException insert request failed due to system error.
    *
-   * @see com.google.gdata.data.BaseFeed#getEntryPostLink()
-   * @see com.google.gdata.data.BaseFeed#insert(BaseEntry)
+   * @see com.google.gdata.data.IFeed#getEntryPostLink()
    */
   @Override
   @SuppressWarnings({"unchecked"})
-  public <E extends BaseEntry<?>> E insert(URL feedUrl, E entry)
+  public <E extends IEntry> E insert(URL feedUrl, E entry)
       throws IOException, ServiceException {
 
-    if (entry == null) {
-      throw new NullPointerException("Must supply entry");
-    }
+    Preconditions.checkNotNull(entry, "entry");
 
     // Delegate non-media handling to base class
-    MediaSource media = (entry instanceof MediaEntry) ?
-        ((MediaEntry) entry).getMediaSource() : null;
+    MediaSource media = (entry instanceof IMediaEntry) ?
+        ((IMediaEntry) entry).getMediaSource() : null;
     if (media == null) {
       return super.insert(feedUrl, entry);
     }
 
-    ParseSource resultEntrySource = null;
+    GDataRequest request = null;
     try {
       startVersionScope();
       
-      // Write as MIME multipart containing the entry and media
+      // Write as MIME multipart containing the entry and media.  Use the
+      // content type from the multipart since this contains auto-generated
+      // boundary attributes.
       MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
-      GDataRequest request =
+      request = 
           createRequest(GDataRequest.RequestType.INSERT, feedUrl,
-              new ContentType(mediaMultipart.getContentType()));
+              new ContentType(mediaMultipart.getContentType()));  
+      
       initMediaRequest(media, request);
-      OutputStream outputStream = request.getRequestStream();
-      mediaMultipart.writeTo(outputStream);
-
+      
+      writeRequestData(request, mediaMultipart);
       request.execute();
-
-      resultEntrySource = request.getParseSource();
-      return (E) parseEntry(entry.getClass(), resultEntrySource);
+      return parseResponseData(request, classOf(entry));
 
     } catch (MessagingException e) {
       throw new ServiceException(
           CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
     } finally {
       endVersionScope();
-      closeSource(resultEntrySource);
+      if (request != null) {
+        request.end();
+      }
     }
   }
 
@@ -370,7 +407,7 @@ public class MediaService extends GoogleService {
    * resulting entry that describes the inserted media, including
    * any additional attributes or extensions set by the GData server.
    * To insert both the entry and the media content in a single request, use
-   * {@link #insert(URL, BaseEntry)}.
+   * {@link #insert(URL, IEntry)}.
    * <p>
    * If the media source has a name ({@link MediaSource#getName()} that is
    * non-null), the name will be provided as a Slug header that is sent
@@ -386,37 +423,31 @@ public class MediaService extends GoogleService {
    *         entry data.
    * @throws ServiceException insert request failed due to system error.
    *
-   * @see com.google.gdata.data.BaseFeed#getEntryPostLink()
+   * @see com.google.gdata.data.IFeed#getEntryPostLink()
    * @see com.google.gdata.data.media.MediaFeed#insert(MediaSource)
    */
   @SuppressWarnings({"unchecked"})
-  public <E extends BaseEntry> E insert(URL feedUrl, Class<E> entryClass,
-                                        MediaSource media)
+  public <E extends IEntry> E insert(URL feedUrl, Class<E> entryClass,
+                                     MediaSource media)
       throws IOException, ServiceException {
 
-    if (media == null) {
-      throw new NullPointerException("Must supply media source");
-    }
+    Preconditions.checkNotNull(media, "media");
 
-    ParseSource resultEntrySource = null;
+    // Write media content only.
+    GDataRequest request = 
+      createRequest(GDataRequest.RequestType.INSERT, feedUrl,
+          new ContentType(media.getContentType()));
     try {
       startVersionScope();
-        
-      // Write media content only.
-      GDataRequest request =
-          createRequest(GDataRequest.RequestType.INSERT, feedUrl,
-              new ContentType(media.getContentType()));
-      initMediaRequest(media, request);
 
-      // Write the media data
-      MediaSource.Output.writeTo(media, request.getRequestStream());
+      initMediaRequest(media, request);
+      writeRequestData(request, media);
       request.execute();
-      resultEntrySource = request.getParseSource();
-      return parseEntry(entryClass, resultEntrySource);
+      return parseResponseData(request, entryClass);
 
     } finally {
       endVersionScope();
-      closeSource(resultEntrySource);
+      request.end();
     }
   }
 
@@ -434,58 +465,56 @@ public class MediaService extends GoogleService {
    *         entry data.
    * @throws ServiceException update request failed due to system error.
    *
-   * @see BaseEntry#getMediaEditLink()
-   * @see MediaEntry#updateMedia(boolean)
+   * @see IEntry#getMediaEditLink()
    */
   @SuppressWarnings({"unchecked"})
-  public <E extends BaseEntry> E updateMedia(URL mediaUrl, E entry)
+  public <E extends IEntry> E updateMedia(URL mediaUrl, E entry)
       throws IOException, ServiceException {
 
-    if (entry == null) {
-      throw new NullPointerException("Must supply entry");
-    }
+    Preconditions.checkNotNull(entry, "entry");
 
     // Since the input parameter is a media-edit URL, this method should
     // not be used to post Atom-only entries.  These entries should be
     // sent to the edit URL.
-    MediaSource media = (entry instanceof MediaEntry) ?
-        ((MediaEntry) entry).getMediaSource() : null;
+    MediaSource media = (entry instanceof IMediaEntry) ?
+        ((IMediaEntry) entry).getMediaSource() : null;
     if (media == null) {
-      throw new NullPointerException("Must supply media source");
+      throw new IllegalArgumentException(
+          "Must supply media entry with a media source");
     }
 
-    ParseSource resultEntrySource = null;
+    GDataRequest request = null;
     try {
       startVersionScope();
       
-      // Write as MIME multipart containing the entry and media
-      MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
-      GDataRequest request =
-          createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
-              new ContentType(mediaMultipart.getContentType()));
-      OutputStream outputStream = request.getRequestStream();
-      mediaMultipart.writeTo(outputStream);
-      request.execute();
+      // Write as MIME multipart containing the entry and media.  Use the
+      // content type from the multipart since this contains auto-generated
+      // boundary attributes.
+      MediaMultipart mediaMultipart = new MediaMultipart(entry, media); 
+      request =  createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
+          new ContentType(mediaMultipart.getContentType()));
 
-      resultEntrySource = request.getParseSource();
-      return (E) parseEntry(entry.getClass(), resultEntrySource);
+      writeRequestData(request, mediaMultipart);
+      request.execute();
+      return parseResponseData(request, classOf(entry));
 
     } catch (MessagingException e) {
       throw new ServiceException(
           CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
     } finally {
       endVersionScope();
-      closeSource(resultEntrySource);
+      if (request != null) {
+        request.end();
+      }
     }
   }
-
 
   /**
    * Updates an existing media resource with data read from the
    * {@link MediaSource} by writing it it to the specified media edit URL.
    * The resulting entry (after update) will be returned.  To update both
    * the entry and the media content in a single request, use
-   * {@link #updateMedia(URL, BaseEntry)}.
+   * {@link #updateMedia(URL, IEntry)}.
    *
    * @param mediaUrl the media edit URL associated with the resource.
    * @param entryClass the class that will be used to represent the
@@ -497,37 +526,33 @@ public class MediaService extends GoogleService {
    *         entry data.
    * @throws ServiceException update request failed due to system error.
    *
-   * @see BaseEntry#getMediaEditLink()
-   * @see MediaEntry#updateMedia(boolean)
+   * @see IEntry#getMediaEditLink()
    */
   @SuppressWarnings({"unchecked"})
-  public <E extends BaseEntry> E updateMedia(URL mediaUrl,
-                                        Class<E> entryClass,
-                                        MediaSource media)
+  public <E extends IEntry> E updateMedia(URL mediaUrl,
+                                          Class<E> entryClass,
+                                          MediaSource media)
       throws IOException, ServiceException {
 
     // Since the input parameter is a media-edit URL, this method should
     // not be used to post Atom-only entries.  These entries should be
     // sent to the edit URL.
-    if (media == null) {
-      throw new NullPointerException("Must supply media source");
-    }
+    Preconditions.checkNotNull(media, "media");
 
-    ParseSource resultEntrySource = null;
+    ContentType mediaContentType = new ContentType(media.getContentType());
+    GDataRequest request =
+        createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
+            mediaContentType);
     try {
       startVersionScope();
-      GDataRequest request =
-          createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
-              new ContentType(media.getContentType()));
-      MediaSource.Output.writeTo(media, request.getRequestStream());
-      request.execute();
 
-      resultEntrySource = request.getParseSource();
-      return parseEntry(entryClass, resultEntrySource);
+      writeRequestData(request, media);
+      request.execute();
+      return parseResponseData(request, entryClass);
 
     } finally {
       endVersionScope();
-      closeSource(resultEntrySource);
+      request.end();
     }
   }
 }

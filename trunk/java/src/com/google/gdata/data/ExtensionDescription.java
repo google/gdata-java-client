@@ -76,10 +76,22 @@ public class ExtensionDescription extends ExtensionPoint
   private boolean repeatable = false;
 
   /**
-   * Specifies whather the extension type aggregates the contents of multiple
+   * Specifies whether the extension type aggregates the contents of multiple
    * elements within its parent.
    */
   private boolean aggregate = false;
+
+  /**
+   * Specifies whether the extension type allows arbitrary xml children.
+   */
+  private boolean arbitraryXml = false;
+
+  /**
+   * If the extension type allows arbitrary xml, specifies whether the
+   * extension allows mixed content. If the extension type does not permit
+   * arbitrary xml, then mixed content is meaningless.
+   */
+  private boolean mixedContent = false;
 
   /**
    * The Default interface defines a simple annotation model for describing
@@ -126,6 +138,18 @@ public class ExtensionDescription extends ExtensionPoint
      * otherwise.
      */
     public boolean isAggregate() default false;
+
+    /**
+     * {@code true} if the extension allows arbitrary XML, {@code false}
+     * otherwise.
+     */
+    public boolean allowsArbitraryXml() default false;
+
+    /**
+     * {@code true} if the extension allows mixed content, {@code false}
+     * otherwise.
+     */
+    public boolean allowsMixedContent() default false;
   }
 
   /**
@@ -152,7 +176,9 @@ public class ExtensionDescription extends ExtensionPoint
         defAnnot.localName(),
         defAnnot.isRequired(),
         defAnnot.isRepeatable(),
-        defAnnot.isAggregate());
+        defAnnot.isAggregate(),
+        defAnnot.allowsArbitraryXml(),
+        defAnnot.allowsMixedContent());
   }
 
   /**
@@ -170,13 +196,29 @@ public class ExtensionDescription extends ExtensionPoint
                               boolean required,
                               boolean repeatable,
                               boolean aggregate) {
+    this(extensionClass, namespace, localName, required, repeatable, aggregate, false, false);
+  }
 
+  /**
+   * Constructs a new ExtensionDescription populated with the parameter
+   * values.
+   */
+  public ExtensionDescription(Class<? extends Extension> extensionClass,
+                              XmlNamespace namespace,
+                              String localName,
+                              boolean required,
+                              boolean repeatable,
+                              boolean aggregate,
+                              boolean arbitraryXml,
+                              boolean mixedContent) {
     this.namespace = namespace;
     this.localName = localName;
     this.extensionClass = extensionClass;
     this.required = required;
     this.repeatable = repeatable;
     this.aggregate = aggregate;
+    this.arbitraryXml = arbitraryXml;
+    this.mixedContent = mixedContent;
   }
 
   /**
@@ -226,6 +268,18 @@ public class ExtensionDescription extends ExtensionPoint
   }
 
   final public boolean isAggregate() { return aggregate; }
+
+  public void setArbitraryXml(boolean arbitraryXml) {
+    this.arbitraryXml = arbitraryXml;
+  }
+
+  final public boolean allowsArbitraryXml() { return arbitraryXml; }
+
+  public void setMixedContent(boolean mixedContent) {
+    this.mixedContent = mixedContent;
+  }
+
+  final public boolean allowsMixedContent() { return mixedContent; }
 
   /**
    * Defines a natural ordering for ExtensionDescription based upon
@@ -320,6 +374,12 @@ public class ExtensionDescription extends ExtensionPoint
 
       bool = getBooleanAttribute(attrs, "aggregate");
       aggregate = (bool != null) && bool.booleanValue();
+
+      bool = getBooleanAttribute(attrs, "arbitraryXml");
+      arbitraryXml = (bool != null) && bool.booleanValue();
+
+      bool = getBooleanAttribute(attrs, "mixedContent");
+      mixedContent = (bool != null) && bool.booleanValue();
     }
   }
 
@@ -344,6 +404,8 @@ public class ExtensionDescription extends ExtensionPoint
     attrs.add(new Attribute("required", required));
     attrs.add(new Attribute("repeatable", repeatable));
     attrs.add(new Attribute("aggregate", aggregate));
+    attrs.add(new Attribute("arbitraryXml", arbitraryXml));
+    attrs.add(new Attribute("mixedContent", mixedContent));
     generateStartElement(w, Namespaces.gdataConfigNs, "extensionDescription",
                          attrs, null);
 

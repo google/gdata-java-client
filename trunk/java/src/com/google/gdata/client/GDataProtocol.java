@@ -138,6 +138,14 @@ public class GDataProtocol {
      * formatted.
      */
     public static final String PRETTYPRINT = "prettyprint";
+    
+    /**
+     * The CALLBACK parameter is used to specify the name of the 
+     * JavaScript callback function that should be invoked when the response is
+     * received for in-script response formats.   The default callback (if
+     * unspecified) is "gdata.io.handleScriptLoaded".
+     */
+    public static final String CALLBACK = "callback";
   }
 
   /**

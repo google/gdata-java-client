@@ -460,12 +460,12 @@ public final class CharEscapers {
    * than):
    * <ul>
    * <li>{@link com.google.gdata.util.httputil.FastURLEncoder#encode(String)}
-   * <li>{@link com.google.gdata.util.httputil.FastURLEncoder#encode(String,String)} 
+   * <li>{@link com.google.gdata.util.httputil.FastURLEncoder#encode(String,String)}
    *     with the encoding name "UTF-8"
    * <li>{@link com.google.gdata.util.common.net.UriEncoder#encode(String)}
    * <li>{@link com.google.gdata.util.common.net.UriEncoder#encode(String,java.nio.charset.Charset)}
    *     with the UTF_8 Charset
-   * <li>{@link java.net.URLEncoder#encode(String, String)} 
+   * <li>{@link java.net.URLEncoder#encode(String, String)}
    *     with the encoding name "UTF-8"
    * </ul>
    *
@@ -1044,3 +1044,4 @@ public final class CharEscapers {
 
   private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
 }
+

@@ -42,6 +42,20 @@ public class OAuthRsaSha1Signer implements OAuthSigner {
   /**
    * Sets the RSA-SHA1 private key object used to sign this request.
    *
+   * @param privateKey the {@link java.security.PrivateKey} to use to initialize
+   *        the signer.
+   * @throws OAuthException if setting the private key fails
+   */
+  public OAuthRsaSha1Signer(PrivateKey privateKey) throws OAuthException {
+    if (privateKey == null) {
+      throw new OAuthException("Private key cannot be null");
+    }
+    this.privateKey = privateKey;
+  }
+
+  /**
+   * Sets the RSA-SHA1 private key object used to sign this request.
+   *
    * @param privateKeyString the Base-64 encoded private key string conforming
             to the PKCS #8 standard.
    * @throws OAuthException if setting the private key fails
@@ -53,14 +67,45 @@ public class OAuthRsaSha1Signer implements OAuthSigner {
       throw new OAuthException("Private key string cannot be empty");
     }
     try {
-      KeyFactory fac = KeyFactory.getInstance("RSA");
-      byte[] privateKeyBase64 = Base64.decode(privateKeyString);
-      EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(privateKeyBase64);
-      privateKey = fac.generatePrivate(privKeySpec);
-    } catch (NoSuchAlgorithmException e) {
-      throw new OAuthException(e);
+      privateKey = getPrivateKeyFromBytes(Base64.decode(privateKeyString));
     } catch (Base64DecoderException e) {
       throw new OAuthException("Invalid private key", e);
+    }
+  }
+
+  /**
+   * Sets the RSA-SHA1 private key object used to sign this request.
+   *
+   * @param privateKeyBytes the Base-64 encoded private key conforming to the
+   *        PKCS #8 standard.
+   * @throws OAuthException if setting the private key fails
+   */
+  public OAuthRsaSha1Signer(byte[] privateKeyBytes) throws OAuthException {
+    if (privateKeyBytes == null) {
+      throw new OAuthException("Private key bytes cannot be null");
+    } else if (privateKeyBytes.length == 0) {
+      throw new OAuthException("Private key bytes cannot be empty");
+    }
+    privateKey = getPrivateKeyFromBytes(privateKeyBytes);
+  }
+
+  /**
+   * Turns bytes of a private key into a {@link java.security.PrivateKey}
+   * object.
+   *
+   * @param privateKeyBytes the Base-64 encoded private key string conforming
+   *        to the PKCS #8 standard.
+   * @return a {@link java.security.PrivateKey} object.
+   * @throws OAuthException if creating the private key fails.
+   */
+  private PrivateKey getPrivateKeyFromBytes(byte[] privateKeyBytes)
+      throws OAuthException {
+    try {
+      KeyFactory fac = KeyFactory.getInstance("RSA");
+      EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+      return fac.generatePrivate(privKeySpec);
+    } catch (NoSuchAlgorithmException e) {
+      throw new OAuthException(e);
     } catch (InvalidKeySpecException e) {
       throw new OAuthException("Invalid private key", e);
     }

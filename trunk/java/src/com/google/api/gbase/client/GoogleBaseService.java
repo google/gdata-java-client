@@ -19,9 +19,11 @@ import com.google.gdata.client.Query;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.media.MediaService;
+import com.google.gdata.data.DateTime;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
-import com.google.gdata.data.DateTime;
+import com.google.gdata.data.IEntry;
+import com.google.gdata.data.IFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.batch.BatchOperationType;
 import com.google.gdata.data.batch.BatchUtils;
@@ -396,21 +398,21 @@ public class GoogleBaseService extends MediaService {
   }
 
   @Override
-  public <E extends BaseEntry<?>> E update(URL url, E e)
+  public <E extends IEntry> E update(URL url, E e)
       throws IOException, ServiceException {
     addApplicationAttribute(e);
     return super.update(url, e);
   }
 
   @Override
-  public <E extends BaseEntry<?>> E insert(URL url, E e)
+  public <E extends IEntry> E insert(URL url, E e)
       throws IOException, ServiceException {
     addApplicationAttribute(e);
     return super.insert(url, e);
   }
 
   @Override
-  public <F extends BaseFeed<?, ?>> F batch(URL url, F f)
+  public <F extends IFeed> F batch(URL url, F f)
       throws IOException, ServiceException, BatchInterruptedException {
     addApplicationAttribute(f);
     return super.batch(url, f);
@@ -423,7 +425,13 @@ public class GoogleBaseService extends MediaService {
    *
    * @param e
    */
-  private void addApplicationAttribute(BaseEntry<?> e) {
+  private void addApplicationAttribute(IEntry iEntry) {
+    if (!(iEntry instanceof BaseEntry)) {
+      throw new IllegalArgumentException(
+          "Unexpected entry type: " + iEntry.getClass());
+    }
+    BaseEntry<?> e = (BaseEntry<?>) iEntry;
+
     GoogleBaseAttributesExtension attrs = e.getExtension(GoogleBaseAttributesExtension.class);
     if (attrs == null) {
       return;
@@ -438,13 +446,17 @@ public class GoogleBaseService extends MediaService {
    * @param batchFeed
    */
   @SuppressWarnings("unchecked")
-  private void addApplicationAttribute(BaseFeed batchFeed) {
+  private void addApplicationAttribute(IFeed iFeed) {
+    if (! (iFeed instanceof BaseFeed)) {
+      throw new IllegalArgumentException("Unexpected feed type: " + iFeed);
+    }
+    BaseFeed<?, ?> batchFeed = (BaseFeed<?, ?>) iFeed;
     BatchOperationType defaultType = BatchUtils.getBatchOperationType(batchFeed);
     if (defaultType == null) {
         defaultType = BatchOperationType.INSERT;
     }
-    List<BaseEntry> entries = batchFeed.getEntries();
-    for (BaseEntry entry: entries) {
+    List<? extends BaseEntry> entries = batchFeed.getEntries();
+    for (BaseEntry<?> entry: entries) {
       BatchOperationType type = BatchUtils.getBatchOperationType(entry);
       if (type == null) {
         type = defaultType;

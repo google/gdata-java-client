@@ -16,6 +16,8 @@
 
 package com.google.gdata.util.common.base;
 
+import com.google.common.annotations.GwtCompatible;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,12 +28,11 @@ import java.lang.annotation.Target;
  * The presence of this annotation on a method parameter indicates that
  * {@code null} is an acceptable value for that parameter.  It should not be
  * used for parameters of primitive types.
- * 
- * <p>This annotation may be used with the Google Web Toolkit (GWT).
- * 
+ *
  * 
  */
 @Documented
+@GwtCompatible
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface Nullable { }

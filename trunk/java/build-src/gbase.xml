@@ -19,7 +19,7 @@
   <path id="build.gbase.classpath">
     <pathelement location="${mail.jar}"/>
     <pathelement location="${activation.jar}"/>
-    <pathelement location="${gdata-media.jar}"/>
+    <path refid="build.service.media.classpath"/>
   </path>
 
   <target name="build.gbase" depends="build.core.media">

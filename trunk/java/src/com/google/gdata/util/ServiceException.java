@@ -211,11 +211,26 @@ public class ServiceException extends Exception {
 
   /** Generate error message in XML format. */
 
+  /**
+   * Converts the exception into a well-formated XML error
+   * message suitable for external uses.
+   */
   public String toXmlErrorMessage() {
+    return toXmlErrorMessage(false);
+  }
+
+  /**
+   * Converts the exception into a well-formated XML error
+   * message suitable.
+   *
+   * @param includeDebugInfo if {@code true}, include debug information.
+   *        Such error message should only be returned to internal clients.
+   */
+  public String toXmlErrorMessage(boolean includeDebugInfo) {
     StringBuilder sb = new StringBuilder();
     sb.append("<errors xmlns='http://schemas.google.com/g/2005'>\n");
     for (ServiceException sibling : siblings) {
-      addXmlError(sibling, sb);
+      addXmlError(sibling, sb, includeDebugInfo);
     }
     sb.append("</errors>\n");
     return sb.toString();
@@ -225,7 +240,8 @@ public class ServiceException extends Exception {
     return CharEscapers.xmlEscaper().escape(src);
   }
 
-  private void addXmlError(ServiceException se, StringBuilder sb) {
+  private void addXmlError(ServiceException se, StringBuilder sb, 
+      boolean includeDebugInfo) {
     // Simplistic StringBuffer implementation because the XML is trivial.
     sb.append("<error>\n");
 
@@ -273,11 +289,13 @@ public class ServiceException extends Exception {
       sb.append("</sendReport>\n");
     }
 
-    String debugInfo = se.getDebugInfo();
-    if (debugInfo != null) {
-      sb.append("<debugInfo>");
-      sb.append(escape(debugInfo));
-      sb.append("</debugInfo>\n");
+    if (includeDebugInfo) {
+      String debugInfo = se.getDebugInfo();
+      if (debugInfo != null) {
+        sb.append("<debugInfo>");
+        sb.append(escape(debugInfo));
+        sb.append("</debugInfo>\n");
+      }
     }
 
     sb.append("</error>\n");
@@ -288,6 +306,26 @@ public class ServiceException extends Exception {
    */
   public Map<String, List<String>> getHttpHeaders() { return httpHeaders; }
 
+
+  /**
+   * Return the value for requested internal HTTP header or {@code null} if
+   * the header is not present.
+   *
+   * @param header requested header name
+   * @return list of string values for the specified header or {@code null} if
+   *         requested header is not found.
+   */
+  public List<String> getHttpHeader(String header) {
+    if (header == null) {
+      return httpHeaders.get(header);
+    }
+    for (String key : httpHeaders.keySet()) {
+      if (key != null && key.toLowerCase().equals(header.toLowerCase())) {
+        return httpHeaders.get(key);
+      }
+    }
+    return null;
+  }
 
    // Override the default Throwable toString() implementation to add
    // the response body (either an explicitly set one or the default XML
@@ -454,16 +492,7 @@ public class ServiceException extends Exception {
    * Defaults to the stack trace.
    */
   public String getDebugInfo() {
-    // until we figure out how to determine who gets it.
-    if (true) {
-     return null;
-    } else {
-      if (errorElement.getDebugInfo() == null) {
-        return generateTrace(this, new StringBuilder(10000));
-      } else {
-        return errorElement.getDebugInfo();
-      }
-    }
+    return errorElement.getDebugInfo();
   }
 
   /**
@@ -473,25 +502,6 @@ public class ServiceException extends Exception {
    */
   public void setDebugInfo(String debugInfo) {
     errorElement.setDebugInfo(debugInfo);
-  }
-  
-  // Do what printStackTrace does, but to the StringBuilder.
-  private String generateTrace(Throwable th, StringBuilder sb) {
-    sb.append(toString());
-    sb.append('\n');
-    for (StackTraceElement element : getStackTrace()) {
-      sb.append("\tat ");
-      sb.append(element.toString());
-      sb.append('\n');
-    }
-    Throwable cause = getCause();
-    if (cause != null) {
-      sb.append("Caused by: ");
-      sb.append(cause.toString());
-      sb.append('\n');
-      generateTrace(cause, sb);
-    }
-    return sb.toString();
   }
   
   // Logic for handling sibling exceptions.

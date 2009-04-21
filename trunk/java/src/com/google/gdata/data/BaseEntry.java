@@ -22,6 +22,8 @@ import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.Service;
+import com.google.gdata.data.batch.BatchInterrupted;
+import com.google.gdata.data.batch.BatchStatus;
 import com.google.gdata.util.EventSourceParser;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
@@ -1135,6 +1137,16 @@ public abstract class BaseEntry<E extends BaseEntry>
       }
 
       return null;
+    }
+
+    @Override
+    public void processEndElement() throws ParseException {
+      
+      // Skip extension point validation for batch response entries
+      if (getExtension(BatchStatus.class) == null &&
+          getExtension(BatchInterrupted.class) == null) {
+        super.processEndElement();
+      }
     }
 
 

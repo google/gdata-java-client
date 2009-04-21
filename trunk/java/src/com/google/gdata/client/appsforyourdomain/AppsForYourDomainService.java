@@ -18,9 +18,9 @@ package com.google.gdata.client.appsforyourdomain;
 
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Query;
-import com.google.gdata.data.BaseEntry;
-import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.DateTime;
+import com.google.gdata.data.IEntry;
+import com.google.gdata.data.IFeed;
 import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
 import com.google.gdata.util.ServiceException;
 
@@ -91,7 +91,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <E extends BaseEntry<?>> E insert(URL feedUrl, E entry)
+  public <E extends IEntry> E insert(URL feedUrl, E entry)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.insert(feedUrl, entry);
@@ -109,8 +109,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
-                                             Class<E> entryClass)
+  public <E extends IEntry> E getEntry(URL entryUrl,Class<E> entryClass)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.getEntry(entryUrl, entryClass);
@@ -129,7 +128,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl, Class<F> feedClass)
+  public <F extends IFeed> F getFeed(URL feedUrl, Class<F> feedClass)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.getFeed(feedUrl, feedClass);
@@ -148,7 +147,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <F extends BaseFeed<?, ?>> F query(Query query, Class<F> feedClass)
+  public <F extends IFeed> F query(Query query, Class<F> feedClass)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.query(query, feedClass);
@@ -164,7 +163,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * occurred.
    */
   @Override
-  public <E extends BaseEntry<?>> E update(URL entryUrl, E entry)
+  public <E extends IEntry> E update(URL entryUrl, E entry)
       throws IOException, ServiceException, AppsForYourDomainException {
     try {
       return super.update(entryUrl, entry);
@@ -219,9 +218,9 @@ public abstract class AppsForYourDomainService extends GoogleService {
    *          the entry.
    */
   @Override
-  public <E extends BaseEntry<?>> E getEntry(URL entryUrl,
-                                             Class<E> entryClass,
-                                             DateTime ifModifiedSince)
+  public <E extends IEntry> E getEntry(URL entryUrl,
+                                       Class<E> entryClass,
+                                       DateTime ifModifiedSince)
       throws IOException, ServiceException {
     try {
       return super.getEntry(entryUrl, entryClass);
@@ -234,7 +233,7 @@ public abstract class AppsForYourDomainService extends GoogleService {
 
   /**
    * Executes a GData query against the target service and returns the
-   * {@link BaseFeed} containing entries that match the query result, if
+   * {@link IFeed} containing entries that match the query result, if
    * it's been modified since the specified date.  Note that this method is
    * overridden to prevent the usage of a non-null if-modified-since value.  The
    * Google Apps for Your Domain Provisioning API does not support the use of
@@ -256,9 +255,9 @@ public abstract class AppsForYourDomainService extends GoogleService {
    * @throws ServiceException query request failed.
    */
   @Override
-  public <F extends BaseFeed<?, ?>> F getFeed(URL feedUrl,
-                                              Class<F> feedClass,
-                                              DateTime ifModifiedSince)
+  public <F extends IFeed> F getFeed(URL feedUrl,
+                                     Class<F> feedClass,
+                                     DateTime ifModifiedSince)
       throws IOException, ServiceException {
     try {
       return super.getFeed(feedUrl, feedClass);
@@ -268,6 +267,4 @@ public abstract class AppsForYourDomainService extends GoogleService {
       throw (ae != null) ? ae : se;
     }
   }
-
-
 }

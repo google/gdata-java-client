@@ -16,6 +16,10 @@
 
 package com.google.gdata.util.common.base;
 
+import com.google.common.annotations.GwtCompatible;
+
+import javax.annotation.Nullable;
+
 /**
  * Determines a true or false value for a given input. For example, a
  * {@code RegexPredicate} might implement {@code Predicate<String>}, and return
@@ -23,11 +27,10 @@ package com.google.gdata.util.common.base;
  *
  * <p>Implementations which may cause side effects upon evaluation are strongly
  * encouraged to state this fact clearly in their API documentation.
- * 
- * <p>This interface may be used with the Google Web Toolkit (GWT).
  *
  * 
  */
+@GwtCompatible
 public interface Predicate<T> {
 
   /*
@@ -38,7 +41,7 @@ public interface Predicate<T> {
   /**
    * Applies this predicate to the given object.
    *
-   * @param input the input that the predicate should act on 
+   * @param input the input that the predicate should act on
    * @return the value of this predicate when applied to the input {@code t}
    */
   boolean apply(T input);

@@ -19,8 +19,10 @@ package com.google.gdata.util;
 import com.google.gdata.client.Service;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,7 +83,7 @@ public class ContentType implements Serializable {
    * type.
    */
   public static final ContentType ATOM =
-    new ContentType("application/atom+xml;" + DEFAULT_CHARSET);
+      new ContentType("application/atom+xml;" + DEFAULT_CHARSET).lock();
 
   /**
    * A ContentType constant that describes the qualified Atom entry content
@@ -90,14 +92,8 @@ public class ContentType implements Serializable {
    * @see #getAtomEntry()
    */
   public static final ContentType ATOM_ENTRY =
-    new ContentType("application/atom+xml;type=entry;" + DEFAULT_CHARSET) {
-      @Override
-      public boolean match(ContentType acceptedContentType) {
-        String type = acceptedContentType.getAttribute("type");
-        return super.match(acceptedContentType) &&
-            (type == null || type.equals("entry"));
-      }
-    };
+      new ContentType("application/atom+xml;type=entry;" + DEFAULT_CHARSET)
+          .lock();
 
   /**
    * A ContentType constant that describes the qualified Atom feed content
@@ -106,14 +102,8 @@ public class ContentType implements Serializable {
    * @see #getAtomFeed()
    */
   public static final ContentType ATOM_FEED =
-    new ContentType("application/atom+xml;type=feed;" + DEFAULT_CHARSET) {
-      @Override
-      public boolean match(ContentType acceptedContentType) {
-        String type = acceptedContentType.getAttribute("type");
-        return super.match(acceptedContentType) &&
-            (type == null || type.equals("feed"));
-      }
-    };
+      new ContentType("application/atom+xml;type=feed;" + DEFAULT_CHARSET)
+          .lock();
 
   /**
    * Returns the ContentType that should be used in contexts that expect
@@ -139,56 +129,68 @@ public class ContentType implements Serializable {
    * A ContentType constant that describes the Atom Service content type.
    */
   public static final ContentType ATOM_SERVICE =
-    new ContentType("application/atomsvc+xml;" + DEFAULT_CHARSET);
+      new ContentType("application/atomsvc+xml;" + DEFAULT_CHARSET).lock();
 
   /**
    * A ContentType constant that describes the RSS channel/item content type.
    */
   public static final ContentType RSS =
-    new ContentType("application/rss+xml;" + DEFAULT_CHARSET);
+      new ContentType("application/rss+xml;" + DEFAULT_CHARSET).lock();
 
   /**
    * A ContentType constant that describes the JSON content type.
    */
   public static final ContentType JSON =
-    new ContentType("application/json;" + DEFAULT_CHARSET);
+      new ContentType("application/json;" + DEFAULT_CHARSET).lock();
 
   /**
    * A ContentType constant that describes the Javascript content type.
    */
   public static final ContentType JAVASCRIPT =
-    new ContentType("text/javascript;" + DEFAULT_CHARSET);
+      new ContentType("text/javascript;" + DEFAULT_CHARSET).lock();
 
   /**
    * A ContentType constant that describes the generic text/xml content type.
    */
   public static final ContentType TEXT_XML =
-    new ContentType("text/xml;" + DEFAULT_CHARSET);
+      new ContentType("text/xml;" + DEFAULT_CHARSET).lock();
 
   /**
    * A ContentType constant that describes the generic text/html content type.
    */
   public static final ContentType TEXT_HTML =
-    new ContentType("text/html;" + DEFAULT_CHARSET);
+      new ContentType("text/html;" + DEFAULT_CHARSET).lock();
 
   /**
    * A ContentType constant that describes the generic text/plain content type.
    */
   public static final ContentType TEXT_PLAIN =
-    new ContentType("text/plain;" + DEFAULT_CHARSET);
+      new ContentType("text/plain;" + DEFAULT_CHARSET).lock();
 
   /**
    * A ContentType constant that describes the GData error content type.
    */
   public static final ContentType GDATA_ERROR =
-    new ContentType("application/vnd.google.gdata.error+xml");
+      new ContentType("application/vnd.google.gdata.error+xml").lock();
+
+  /**
+   * A ContentType constant that describes the OpenSearch description document
+   */
+  public static final ContentType OPENSEARCH =
+      new ContentType("application/opensearchdescription+xml").lock();
+  
 
   /**
    * A ContentType constant that describes the MIME multipart/related content
    * type.
    */
   public static final ContentType MULTIPART_RELATED =
-    new ContentType("multipart/related");
+      new ContentType("multipart/related").lock();
+  
+  /**
+   * Wildcard content type that will match any MIME type
+   */
+  public static final ContentType ANY = new ContentType("*/*").lock();
 
   /**
    * Determines the best "Content-Type" header to use in a servlet response
@@ -349,17 +351,26 @@ public class ContentType implements Serializable {
     }
   }
 
-  /** {code True} if parsed input didn't contain charset encoding info */
+  /** {@code true} if parsed input didn't contain charset encoding info */
   private boolean inferredCharset = false;
+
+  /** If set to {@code true}, the object is immutable. */
+  private boolean locked;
 
   private String type;
   public String getType() { return type; }
-  public void setType(String type) { this.type = type; }
+  public void setType(String type) { 
+    assertNotLocked();
+    this.type = type; 
+  }
 
 
   private String subType;
   public String getSubType() { return subType; }
-  public void setSubType(String subType) { this.subType = subType; }
+  public void setSubType(String subType) { 
+    assertNotLocked();
+    this.subType = subType; 
+  }
 
   /** Returns the full media type */
   public String getMediaType() {
@@ -376,10 +387,31 @@ public class ContentType implements Serializable {
   private HashMap<String, String> attributes = new HashMap<String, String>();
 
   /**
+   * Makes the object immutable and returns it.
+   *
+   * This should at least be used when keeping a {@link ContentType} instance as
+   * a static.
+   */
+  public ContentType lock() {
+    locked = true;
+    return this;
+  }
+
+  private void assertNotLocked() {
+    if (locked) {
+      throw new IllegalStateException("Unmodifiable instance");
+    }
+  }
+
+  /**
    * Returns the additional attributes of the content type.
    */
-  public HashMap<String, String> getAttributes() { return attributes; }
-
+  public Map<String, String> getAttributes() { 
+    if (locked) {
+      return Collections.unmodifiableMap(attributes);
+    } 
+    return attributes; 
+  }
 
   /**
    * Returns the additional attribute by name of the content type.
@@ -401,16 +433,44 @@ public class ContentType implements Serializable {
    * Returns whether this content type is match by the content type found in the
    * "Accept" header field of an HTTP request.
    *
+   * <p>For atom content type, this method will check the optional attribute
+   * 'type'. If the type attribute is set in both this and {@code
+   * acceptedContentType}, then they must be the same. That is, {@code
+   * application/atom+xml} will match both {@code
+   * application/atom+xml;type=feed} and {@code
+   * application/atom+xml;type=entry}, but {@code
+   * application/atom+xml;type=entry} will not match {@code
+   * application/atom+xml;type=feed}.a
+   *
    * @param acceptedContentType content type found in the "Accept" header field
    *                            of an HTTP request
    */
   public boolean match(ContentType acceptedContentType) {
     String acceptedType = acceptedContentType.getType();
     String acceptedSubType = acceptedContentType.getSubType();
-    return STAR.equals(acceptedType) || type.equals(acceptedType) &&
-        (STAR.equals(acceptedSubType) || subType.equals(acceptedSubType));
+    return STAR.equals(acceptedType) || type.equals(acceptedType) 
+        && (STAR.equals(acceptedSubType) || subType.equals(acceptedSubType)) 
+        && (!isAtom() || matchAtom(acceptedContentType));
   }
 
+  /** Returns true if this is an atom content type. */
+  private boolean isAtom() {
+    return "application".equals(type) && "atom+xml".equals(subType);
+  }
+
+  /** 
+   * Compares the optional 'type' attribute of two content types.
+   *
+   * <p>This method accepts atom content type without the 'type' attribute
+   * but if the types are specified, they must match.
+   */
+  private boolean matchAtom(ContentType acceptedContentType) {
+    String atomType = getAttribute("type");
+    String acceptedAtomType = acceptedContentType.getAttribute("type");
+
+    return atomType == null || acceptedAtomType == null
+        || atomType.equals(acceptedAtomType);
+  }
 
   /**
    * Generates the Content-Type value

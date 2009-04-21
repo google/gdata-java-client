@@ -78,6 +78,14 @@ public abstract class CharMatcher implements Predicate<Character> {
       Arrays.fill(array, replacement);
       return new String(array);
     }
+    @Override public String replaceFrom(
+        CharSequence sequence, CharSequence replacement) {
+      StringBuilder retval = new StringBuilder(sequence.length() * replacement.length());
+      for (int i = 0; i < sequence.length(); i++) {
+        retval.append(replacement);
+      }
+      return retval.toString();
+    }
     @Override public String collapseFrom(CharSequence sequence, char replacement) {
       return (sequence.length() == 0) ? "" : String.valueOf(replacement);
     }
@@ -131,6 +139,11 @@ public abstract class CharMatcher implements Predicate<Character> {
     }
     @Override public String replaceFrom(
         CharSequence sequence, char replacement) {
+      return sequence.toString();
+    }
+    @Override public String replaceFrom(
+        CharSequence sequence, CharSequence replacement) {
+      checkNotNull(replacement);
       return sequence.toString();
     }
     @Override public String collapseFrom(
@@ -846,6 +859,53 @@ public abstract class CharMatcher implements Predicate<Character> {
   }
 
   /**
+   * Returns a string copy of the input character sequence, with each character
+   * that matches this matcher replaced by a given replacement sequence. For
+   * example: <pre>   {@code
+   *
+   *   CharMatcher.is('a').replaceFrom("yaha", "oo")}</pre>
+   *
+   * ... returns {@code "yoohoo"}.
+   *
+   * <p><b>Note:</b> If the replacement is a fixed string with only one character,
+   * you are better off calling {@link #replaceFrom(CharSequence, char)} directly.
+   *
+   * @param sequence the character sequence to replace matching characters in
+   * @param replacement the characters to append to the result string in place
+   *     of each matching character in {@code sequence}
+   * @return the new string
+   */
+  public String replaceFrom(CharSequence sequence, CharSequence replacement) {
+    int replacementLen = replacement.length();
+    if (replacementLen == 0) {
+      return removeFrom(sequence);
+    }
+    if (replacementLen == 1) {
+      return replaceFrom(sequence, replacement.charAt(0));
+    }
+
+    String string = sequence.toString();
+    int pos = indexIn(string);
+    if (pos == -1) {
+      return string;
+    }
+
+    int len = string.length();
+    StringBuilder buf = new StringBuilder((int) (len * 1.5) + 16);
+
+    int oldpos = 0;
+    do {
+      buf.append(string, oldpos, pos);
+      buf.append(replacement);
+      oldpos = pos + 1;
+      pos = indexIn(string, oldpos);
+    } while (pos != -1);
+
+    buf.append(string, oldpos, len);
+    return buf.toString();
+  }
+
+  /**
    * Returns a substring of the input character sequence that omits all
    * characters this matcher matches from the beginning and from the end of the
    * string. For example: <pre> {@code
@@ -1006,7 +1066,4 @@ public abstract class CharMatcher implements Predicate<Character> {
     return matches(character);
   }
 }
-
-
-
 

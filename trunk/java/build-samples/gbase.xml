@@ -44,14 +44,12 @@
 
   <!-- samples compile -->
   <path id="sample.gbase.cmdline.compile.classpath">
-    <pathelement location="${mail.jar}"/>
-    <pathelement location="${activation.jar}"/>
+    <path refid="build.service.media.classpath"/>
     <pathelement location="${gdata-base.jar}"/>
   </path>
 
   <path id="sample.gbase.recipe.compile.classpath">
-    <pathelement location="${mail.jar}"/>
-    <pathelement location="${activation.jar}"/>
+    <path refid="build.service.media.classpath"/>
     <pathelement location="${servlet.jar}"/>
     <pathelement location="${gdata-base.jar}"/>
   </path>
@@ -104,6 +102,7 @@
         <include name="**/sample/gbase/recipe/**"/>
       </classes>
       <lib dir="${build.jars}" >
+        <include name="${google-collect.jar}"/>
         <include name="${gdata-client.jar}"/>
         <include name="${gdata-base.jar}"/>
       </lib>

@@ -27,31 +27,15 @@ import java.util.logging.Logger;
  */
 public final class LogUtils {
 
-
   public static void logException(Logger logger,
                                   Level level,
                                   String prefix,
                                   Throwable e) {
-
-    StackTraceElement[] trace = e.getStackTrace();
-    StringBuilder logMessage = new StringBuilder();
-
+    String message = e.toString();
     if (prefix != null) {
-      logMessage.append(prefix);
-      logMessage.append('\n');
+      message = prefix + ": " + message;
     }
 
-    logMessage.append(e.toString());
-    logMessage.append("\nMessage: ");
-    logMessage.append(e.getMessage());
-    logMessage.append('\n');
-
-    for (int i = 0; i < trace.length; i++) {
-      logMessage.append("\n\tat ");
-      logMessage.append(trace[i]);
-    }
-
-    logger.log(level, logMessage.toString());
+    logger.log(level, message, e);
   }
 }
-

@@ -55,6 +55,7 @@
 
   <!-- samples dependencies -->
   <path id="sample.spreadsheet.compile.classpath">
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${gdata-spreadsheet.jar}"/>
     <pathelement location="${sample-util.jar}"/>
   </path>

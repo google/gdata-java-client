@@ -104,12 +104,14 @@ public class DocumentList {
     DOWNLOAD_DOCUMENT_FORMATS.put("png", "png");
     DOWNLOAD_DOCUMENT_FORMATS.put("rtf", "rtf");
     DOWNLOAD_DOCUMENT_FORMATS.put("html", "html");
+    DOWNLOAD_DOCUMENT_FORMATS.put("zip", "zip");
   }
 
   private static final Map<String, String> DOWNLOAD_PRESENTATION_FORMATS;
   static {
     DOWNLOAD_PRESENTATION_FORMATS = new HashMap<String, String>();
     DOWNLOAD_PRESENTATION_FORMATS.put("pdf", "pdf");
+    DOWNLOAD_PRESENTATION_FORMATS.put("png", "png");
     DOWNLOAD_PRESENTATION_FORMATS.put("ppt", "ppt");
     DOWNLOAD_PRESENTATION_FORMATS.put("swf", "swf");
   }

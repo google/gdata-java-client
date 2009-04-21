@@ -361,7 +361,7 @@ public class PicasawebCommandLine extends PicasawebClient {
     } else {
       for (CommentEntry comment : comments) {
         println("Comment " + count++ + ") " + comment.getTitle().getPlainText());
-        println(comment.getDescription().getPlainText());
+        println(comment.getPlainTextContent());
       }
     }
     while (true) {

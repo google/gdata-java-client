@@ -24,6 +24,7 @@ import com.google.gdata.client.authn.oauth.OAuthRsaSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.Feed;
 
 import java.net.URL;
 
@@ -93,12 +94,16 @@ class OAuthExample {
     // Set the scope for this particular service.
     oauthParameters.setScope(variables.getScope());
 
+    // This method also makes a request to get the unauthorized request token,
+    // and adds it to the oauthParameters object, along with the token secret
+    // (if it is present).
+    oauthHelper.getUnauthorizedRequestToken(oauthParameters);
+
     // Get the authorization url.  The user of your application must visit
     // this url in order to authorize with Google.  If you are building a
     // browser-based application, you can redirect the user to the authorization
-    // url.  This method also makes a behind-the-scenes request to get the
-    // request token, and adds it to the oauthParameters object.
-    String requestUrl = oauthHelper.getUserAuthorizationUrl(oauthParameters);
+    // url.
+    String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
     System.out.println(requestUrl);
     System.out.println("Please visit the URL above to authorize your OAuth "
         + "request token.  Once that is complete, press any key to "
@@ -134,7 +139,7 @@ class OAuthExample {
     googleService.setOAuthCredentials(oauthParameters, signer);
 
     // Make the request to Google
-    BaseFeed resultFeed = googleService.getFeed(feedUrl, null);
+    BaseFeed resultFeed = googleService.getFeed(feedUrl, Feed.class);
     System.out.println("Response Data:");
     System.out.println("=====================================================");
     System.out.println("| TITLE: " + resultFeed.getTitle().getPlainText());

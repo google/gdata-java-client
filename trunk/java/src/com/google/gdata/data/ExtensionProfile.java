@@ -85,7 +85,6 @@ public class ExtensionProfile {
    */
   public synchronized void declare(Class<? extends ExtensionPoint> extendedType,
                                    ExtensionDescription extDescription) {
-
     // When configuring an extension profile that is auto-extensible, remap
     // th extension point assocations from the specific type down to any
     // base adaptable type.  This ensures that extensions will be parseable
@@ -97,6 +96,7 @@ public class ExtensionProfile {
     }
 
     ExtensionManifest manifest = getOrCreateManifest(extendedType);
+    profile.put(extendedType, manifest);
 
     Pair<String, String> extensionQName =
         new Pair<String,String>(extDescription.getNamespace().getUri(),
@@ -109,7 +109,13 @@ public class ExtensionProfile {
       subclassManifest.supportedExtensions.put(extensionQName, extDescription);
     }
 
-    profile.put(extendedType, manifest);
+    if (extDescription.allowsArbitraryXml()) {
+      Class<? extends ExtensionPoint> extType =
+          (Class<? extends ExtensionPoint>) extDescription.getExtensionClass();
+      ExtensionManifest extManifest = getOrCreateManifest(extType);
+      profile.put(extType, extManifest);
+      declareArbitraryXmlExtension(extType, extDescription.allowsMixedContent());
+    }
 
     nsDecls = null;
   }
@@ -199,17 +205,33 @@ public class ExtensionProfile {
     declare(BaseEntry.class, extClass);
   }
 
-
-  /** Specifies that type {@code extendedType} can contain arbitrary XML. */
+  /**
+   * Specifies that type {@code extendedType} can contain arbitrary XML.
+   *
+   * @param extendedType the type being declared for
+   */
   public synchronized void declareArbitraryXmlExtension(
       Class<? extends ExtensionPoint> extendedType) {
+    declareArbitraryXmlExtension(extendedType, false);
+  }
 
+  /**
+   * Specifies that type {@code extendedType} can contain arbitrary XML.
+   *
+   * @param extendedType the type being declared for
+   * @param mixedContent if true, permit mixed content in the arbitrary XML.
+   */
+  public synchronized void declareArbitraryXmlExtension(
+      Class<? extends ExtensionPoint> extendedType,
+      boolean mixedContent) {
     ExtensionManifest manifest = getOrCreateManifest(extendedType);
     manifest.arbitraryXml = true;
+    manifest.mixedContent = mixedContent;
 
     // Propagate the arbitrary xml declaration to any profiled subtypes.
     for(ExtensionManifest subclassManifest : manifest.subclassManifests) {
       subclassManifest.arbitraryXml = true;
+      subclassManifest.mixedContent = mixedContent;
     }
 
     profile.put(extendedType, manifest);
@@ -430,20 +452,9 @@ public class ExtensionProfile {
       this.configLoader = configLoader;
 
       if (attrs != null) {
-        String arbitraryXmlAttr = attrs.getValue("", "arbitraryXml");
-        if (arbitraryXmlAttr != null) {
-          if (arbitraryXmlAttr.equals("true") || arbitraryXmlAttr.equals("1")) {
-            allowsArbitraryXml = true;
-          } else if (arbitraryXmlAttr.equals("false") ||
-                     arbitraryXmlAttr.equals("0")) {
-            allowsArbitraryXml = false;
-          } else {
-            ParseException pe = new ParseException(
-                CoreErrorDomain.ERR.invalidArbitraryXml);
-            pe.setInternalReason("Invalid value for arbitaryXml: " +
-                                     arbitraryXmlAttr);
-            throw pe;
-          }
+        Boolean val = getBooleanAttribute(attrs, "arbitraryXml");
+        if (val != null) {
+          allowsArbitraryXml = val;
         }
       }
     }
@@ -547,20 +558,9 @@ public class ExtensionProfile {
       }
       extensionPoint = extensionPointClass(loadedClass);
 
-      String arbitraryXmlAttr = attrs.getValue("", "arbitraryXml");
-      if (arbitraryXmlAttr != null) {
-        if (arbitraryXmlAttr.equals("true") || arbitraryXmlAttr.equals("1")) {
-          arbitraryXml = true;
-        } else if (arbitraryXmlAttr.equals("false") ||
-                   arbitraryXmlAttr.equals("0")) {
-          arbitraryXml = false;
-        } else {
-          ParseException pe = new ParseException(
-              CoreErrorDomain.ERR.invalidArbitraryXml);
-          pe.setInternalReason("Invalid value for arbitaryXml: " +
-                                   arbitraryXmlAttr);
-          throw pe;
-        }
+      Boolean val = getBooleanAttribute(attrs, "arbitraryXml");
+      if (val != null) {
+        arbitraryXml = val;
       }
     }
 

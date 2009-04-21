@@ -49,7 +49,8 @@ public class AuthenticationException extends ServiceException {
 
   /**
    * Creates a new AuthenticationException without any authentication
-   * header information.
+   * header information. The WWW-Authenticate header will have
+   * to be set separately to build a valid HTTP 401 error response.
    */
   public AuthenticationException(String message) {
     super(message);

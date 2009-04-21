@@ -1,0 +1,32 @@
+<project name="analytics" default="build.analytics" basedir=".">
+  <!-- Path containing analytics.xml -->
+  <dirname property="build_dir" file="${ant.file.analytics}"/>
+  <import file="${build_dir}/core.xml"/>
+
+  <!--  ===================================================================== -->
+  <!--                 Build GData Analytics library.                          -->
+  <!--  ===================================================================== -->
+
+  <property name="gdata-analytics.jar"
+    value="${build.jars}/gdata-analytics-${analytics.spec.version}.jar"/>
+
+
+  <target name="build.analytics" depends="build.core.client">
+    <antcall target="template.build.service">
+      <param name="template.service.name" value="analytics"/>
+      <param name="template.service.version" value="${analytics.spec.version}"/>
+      <param name="template.service.includes" value="**/analytics/**"/>
+      <param name="template.service.excludes" value="none"/>
+      <param name="template.service.classpath" value="build.service.core.classpath"/>
+      <param name="template.service.name" value="analytics"/>
+    </antcall>
+  </target>
+
+  <target name="clean.analytics">
+    <antcall target="template.clean.service">
+      <param name="template.service.name" value="analytics"/>
+    </antcall>
+  </target>
+
+
+</project>

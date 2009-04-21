@@ -29,7 +29,7 @@
 
   <!-- samples dependencies -->
   <path id="sample.codesearch.compile.classpath">
-    <pathelement location="${gdata-client.jar}"/>
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${gdata-codesearch.jar}"/>
     <pathelement location="${sample-util.jar}"/>
   </path>

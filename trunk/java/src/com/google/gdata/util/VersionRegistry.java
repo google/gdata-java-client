@@ -15,7 +15,7 @@
 
 package com.google.gdata.util;
 
-import com.google.gdata.util.common.annotations.VisibleForTesting;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gdata.client.Service;
 
 import java.util.ArrayList;

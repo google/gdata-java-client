@@ -35,9 +35,7 @@
   </target>
 
   <path id="sample.docs.compile.classpath">
-    <pathelement location="${mail.jar}"/>
-    <pathelement location="${activation.jar}"/>
-    <pathelement location="${gdata-media.jar}"/>
+    <path refid="build.service.media.classpath"/>
     <pathelement location="${gdata-spreadsheet.jar}"/>
     <pathelement location="${gdata-docs.jar}"/>
     <pathelement location="${sample-util.jar}"/>

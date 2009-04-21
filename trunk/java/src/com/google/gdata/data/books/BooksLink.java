@@ -30,6 +30,10 @@ public class BooksLink {
     public static final String ANNOTATION =
         "http://schemas.google.com/books/2008/annotation";
 
+    /** Epub download link. */
+    public static final String EPUBDOWNLOAD =
+        "http://schemas.google.com/books/2008/epubdownload";
+
     /** Link to a description page. */
     public static final String INFO =
         "http://schemas.google.com/books/2008/info";
@@ -46,6 +50,12 @@ public class BooksLink {
 
   /** MIME type of link target. */
   public static final class Type {
+
+    /** Link type used for any image. */
+    public static final String ANY_IMAGE = "image/x-unknown";
+
+    /** Link type used for epub downloads. */
+    public static final String EPUB = "application/epub";
 
     /** Link type used for JPEG images. */
     public static final String JPEG = "image/jpeg";

@@ -157,19 +157,31 @@ public class GoogleBaseAttributesExtension implements Extension {
   public static final String SHIPPING_ATTRIBUTE = "shipping";
 
   /**
+   * Attribute {@code <g:tax>}.
+   *
+   * @see #getTax()
+   * @see #addTax(Tax)
+   */
+  public static final String TAX_ATTRIBUTE = "tax";
+  
+  /**
    * Attribute {@code <g:tax_percent>}.
    *
-   * @see #getTaxPercent()
-   * @see #setTaxPercent(float)
+   * @see #getTax()
+   * @see #addTax(Tax)
+   * @deprecated use {@link #TAX_ATTRIBUTE} instead
    */
+  @Deprecated 
   public static final String TAX_PERCENT_ATTRIBUTE = "tax percent";
 
   /**
    * Attribute {@code <g:tax_region>}.
    *
-   * @see #getTaxRegion()
-   * @see #setTaxRegion(String)
+   * @see #getTax()
+   * @see #addTax(Tax)
+   * @deprecated use {@link #TAX_ATTRIBUTE} instead
    */
+  @Deprecated
   public static final String TAX_REGION_ATTRIBUTE = "tax region";
 
   /**
@@ -413,24 +425,54 @@ public class GoogleBaseAttributesExtension implements Extension {
     return getShippingAttributes(SHIPPING_ATTRIBUTE);
   }
 
-  /** Sets tax percent attribute. */
+  /** Adds tax attribute. */
+  public void addTax(Tax tax) {
+    addTaxAttribute(TAX_ATTRIBUTE, tax);
+  }
+  
+  /** Gets tax attributes. */
+  public Collection<? extends Tax> getTax() {
+    return getTaxAttributes(TAX_ATTRIBUTE);
+  }
+  
+  /** 
+   * Sets tax percent attribute.
+   * 
+   * @deprecated use {@link #addTax(Tax)} instead
+   */
+  @Deprecated
   public void setTaxPercent(float taxPercent) {
     removeAttributes(TAX_PERCENT_ATTRIBUTE);
     addFloatAttribute(TAX_PERCENT_ATTRIBUTE, taxPercent);
   }
 
-  /** Gets tax percent attribute, or null. */
+  /** 
+   * Gets tax percent attribute, or null. 
+   * 
+   * @deprecated use {@link #getTax()} instead
+   */
+  @Deprecated
   public Float getTaxPercent() {
     return getFloatAttribute(TAX_PERCENT_ATTRIBUTE);
   }
 
-  /** Sets tax region attribute. */
+  /** 
+   * Sets tax region attribute. 
+   * 
+   * @deprecated use {@link #addTax(Tax)} instead 
+   */
+  @Deprecated
   public void setTaxRegion(String region) {
     removeAttributes(TAX_REGION_ATTRIBUTE);
     addTextAttribute(TAX_REGION_ATTRIBUTE, region);
   }
 
-  /** Gets tax region attribute. */
+  /** 
+   * Gets tax region attribute. 
+   * 
+   * @deprecated use {@link #getTax()} instead
+   */
+  @Deprecated
   public String getTaxRegion() {
     return getTextAttribute(TAX_REGION_ATTRIBUTE);
   }
@@ -1274,7 +1316,68 @@ public class GoogleBaseAttributesExtension implements Extension {
   public void addShippingAttribute(String name, Shipping shipping) {
     addAttribute(ConversionUtil.createAttribute(name, shipping));
   }
+  
+  /**
+   * Gets the first value of a specific attribute, as a
+   * {@link com.google.api.gbase.client.Tax}.
+   *
+   * This method does not check the type of the attribute
+   * that's being queried, it just gets the value and try
+   * and convert it.
+   *
+   * @param name attribute name
+   * @return value of the attribute or null if no attribute
+   *   with this name was found on the list
+   * @exception NumberFormatException if some value was
+   *   found that could not be converted.
+   */
+  public Tax getTaxAttribute(String name) {
+    GoogleBaseAttribute value = getAttribute(name);
+    if (value == null) {
+      return null;
+    }
+    return ConversionUtil.extractTax(value);
+  }
+  
+  /**
+   * Gets all the values of a specific attribute, as a list of
+   * {@link com.google.api.gbase.client.Tax}s.
+   *
+   * This method does not check the type of the attribute
+   * that's being queried, it just gets the values and try
+   * and convert them.
+   *
+   * @param name attribute name
+   * @return a list of Tax, which might be empty but not null
+   * @exception NumberFormatException if some value was
+   *   found that could not be converted
+   */
+  public List<? extends Tax> getTaxAttributes(String name) {
+    List<Tax> retval = new ArrayList<Tax>();
+    for (GoogleBaseAttribute attr: attributes) {
+      if (hasNameAndType(attr, name, GoogleBaseAttributeType.TAX)) {
+        retval.add(ConversionUtil.extractTax(attr));
+      }
+    }
+    return retval;
+  }
 
+  /**
+   * Adds an attribute of type
+   * {@link com.google.api.gbase.client.GoogleBaseAttributeType#TAX}.
+   *
+   * This method will never remove an attribute, even if it has
+   * the same name as the new attribute. If you would like to set
+   * an attribute that can only appear once, call
+   * {@link #removeAttributes(String, GoogleBaseAttributeType)} first.
+   *
+   * @param name attribute name
+   * @param tax attribute value
+   */
+  public void addTaxAttribute(String name, Tax tax) {
+    addAttribute(ConversionUtil.createAttribute(name, tax));
+  }
+  
   /**
    * Gets the first value of a specific location attribute, as an
    * address.
@@ -1505,8 +1608,9 @@ public class GoogleBaseAttributesExtension implements Extension {
       XmlWriter xmlWriter) throws IOException {
     if (attribute.hasSubElements()) {
       for (String name : attribute.getSubElementNames()) {
-        writeXmlNameValue(xmlWriter, GoogleBaseNamespaces.G, name, 
-            attribute.getSubElementValue(name));
+        for (String element : attribute.getSubElementValues(name)) {
+          writeXmlNameValue(xmlWriter, GoogleBaseNamespaces.G, name, element);
+        }
       }
     }
   }
@@ -1736,7 +1840,7 @@ public class GoogleBaseAttributesExtension implements Extension {
             // if the uri is gm but the name is not recognized, we ignore it
           } else {
             // only non-gm uris are considered sub-elements
-            attribute.setSubElement(localName, super.value);
+            attribute.appendSubElement(localName, super.value);
           }
         }
         

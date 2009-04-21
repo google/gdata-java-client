@@ -27,6 +27,9 @@ import java.net.URL;
  */
 public class VolumeQuery extends Query {
 
+  /** Ebook. */
+  private String ebook;
+
   /** Min-viewability. */
   private MinViewability minViewability = MinViewability.NONE;
 
@@ -68,6 +71,30 @@ public class VolumeQuery extends Query {
    */
   public VolumeQuery(URL feedUrl) {
     super(feedUrl);
+  }
+
+  /**
+   * Returns the ebook.
+   *
+   * @return ebook or <code>null</code> to indicate that the parameter is not
+   *     set.
+   */
+  public String getEbook() {
+    return ebook;
+  }
+
+  /**
+   * Sets the ebook.
+   *
+   * @param ebook ebook or <code>null</code> to remove this parameter if set.
+   */
+  public void setEbook(String ebook) {
+    // check if setting to existing value
+    if (this.ebook == null ? ebook != null : !this.ebook.equals(ebook)) {
+      // set to new value for customer parameter
+      this.ebook = ebook;
+      setStringCustomParameter("ebook", ebook);
+    }
   }
 
   /**

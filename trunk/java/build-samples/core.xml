@@ -13,19 +13,35 @@
   <property name="build.jars" value="${build}/lib"/>
 
   <!-- User properties -->
+  <property name="version.properties" value="${build}/version.properties"/>
   <property name="build.properties" value="${build_dir}/build.properties"/>
-  <property name="version.properties" value="${build_dir}/version.properties"/>
-  <property file="${build.properties}"/>
   <property file="${version.properties}"/>
+  <property file="${build.properties}"/>
 
+  <property name="gdata-core.jar"
+            value="${build.jars}/gdata-core-${client.spec.version}.jar"/>
+  <property name="gdata-client-meta.jar"
+            value="${build.jars}/gdata-client-meta-${client.spec.version}.jar"/>
+  <property name="gdata-client.jar"
+            value="${build.jars}/gdata-client-${client.spec.version}.jar"/>
+  <property name="gdata-media.jar"
+            value="${build.jars}/gdata-media-${media.spec.version}.jar"/>
+
+  <!-- path for third_party google dependencies -->
+  <path id="build.google-deps.classpath">
+    <pathelement location="${google-jsr305.jar}"/>
+    <pathelement location="${google-collect.jar}"/>
+  </path>
 
   <!-- Dependency path for all services -->
   <path id="build.service.core.classpath">
+    <path refid="build.google-deps.classpath"/>
     <pathelement location="${gdata-client.jar}"/>
   </path>
 
   <!-- Dependency path for all media enabled services -->
   <path id="build.service.media.classpath">
+    <path refid="build.google-deps.classpath"/>
     <pathelement location="${mail.jar}"/>
     <pathelement location="${activation.jar}"/>
     <pathelement location="${gdata-media.jar}"/>
@@ -47,15 +63,6 @@
       Please run "ant ${template.service.name}.build.${template.service.name}".
     </fail>
   </target>
-
-  <property name="gdata-core.jar"
-            value="${build.jars}/gdata-core-${client.spec.version}.jar"/>
-  <property name="gdata-client-meta.jar"
-            value="${build.jars}/gdata-client-meta-${client.spec.version}.jar"/>
-  <property name="gdata-client.jar"
-            value="${build.jars}/gdata-client-${client.spec.version}.jar"/>
-  <property name="gdata-media.jar"
-            value="${build.jars}/gdata-media-${media.spec.version}.jar"/>
 
 
 <!-- ==================== Build Core samples ============================= -->

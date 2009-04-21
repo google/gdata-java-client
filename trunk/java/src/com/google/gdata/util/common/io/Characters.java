@@ -329,6 +329,35 @@ public final class Characters {
   }
 
   /**
+   * Streams lines from a {@link Readable} and {@link Closeable} object
+   * supplied by a factory, stopping when our callback returns false, or we
+   * have read all of the lines.
+   *
+   * @param supplier the factory to read from
+   * @param callback the LineProcessor to use to handle the lines
+   * @return the output of processing the lines
+   * @throws IOException if an I/O error occurs
+   */
+  public static <R extends Readable & Closeable, T> T readLines(
+      InputSupplier<R> supplier, LineProcessor<T> callback) throws IOException {
+    boolean threw = true;
+    R r = supplier.getInput();
+    try {
+      LineReader lineReader = new LineReader(r);
+      String line;
+      while ((line = lineReader.readLine()) != null) {
+        if (!callback.processLine(line)) {
+          break;
+        }
+      }
+      threw = false;
+    } finally {
+      Closeables.close(r, threw);
+    }
+    return callback.getResult();
+  }
+
+  /**
    * Joins multiple {@link Reader} suppliers into a single supplier.
    * Reader returned from the supplier will contain the concatenated data
    * from the readers of the underlying suppliers.
@@ -401,4 +430,5 @@ public final class Characters {
     return new AppendableWriter(target);
   }
 }
+
 

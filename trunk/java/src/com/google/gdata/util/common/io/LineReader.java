@@ -17,12 +17,12 @@
 package com.google.gdata.util.common.io;
 
 import com.google.gdata.util.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.Queue;
-import java.util.LinkedList;
 
 /**
  * A class for reading lines of text. Provides the same functionality
@@ -34,10 +34,15 @@ import java.util.LinkedList;
 public final class LineReader {
   private final Readable readable;
   private final Reader reader;
-  private final LineProcessor processor;
-  private final Queue<String> lines = new LinkedList<String>();
   private final char[] buf = new char[0x1000]; // 4K
   private final CharBuffer cbuf = CharBuffer.wrap(buf);
+
+  private final Queue<String> lines = Lists.newLinkedList();
+  private final LineBuffer lineBuf = new LineBuffer() {
+    @Override protected void handleLine(String line, String end) {
+      lines.add(line);
+    }
+  };
 
   /**
    * Creates a new instance that will read lines from the given
@@ -47,11 +52,6 @@ public final class LineReader {
     Preconditions.checkNotNull(readable);
     this.readable = readable;
     this.reader = (readable instanceof Reader) ? (Reader) readable : null;
-    processor = new LineProcessor() {
-      @Override protected void processLine(String line, String end) {
-        lines.add(line);
-      }
-    };
   }
 
   /**
@@ -74,10 +74,10 @@ public final class LineReader {
           ? reader.read(buf, 0, buf.length)
           : readable.read(cbuf);
       if (read == -1) {
-        processor.finish();
+        lineBuf.finish();
         break;
       }
-      processor.process(buf, 0, read);
+      lineBuf.add(buf, 0, read);
     }
     return lines.poll();
   }

@@ -12,6 +12,7 @@
 
   <!-- Include property specific build scripts -->
   <import file="build-samples/appsforyourdomain.xml"/>
+  <import file="build-samples/analytics.xml"/>
   <import file="build-samples/authsub.xml"/>
   <import file="build-samples/blogger.xml"/>
   <import file="build-samples/books.xml"/>
@@ -33,45 +34,44 @@
 <!--                      Build samples                                     -->
 <!--  ===================================================================== -->
 
-  <target name="build">
-    <antcall target="appsforyourdomain.sample.appsforyourdomain.build"/>
-    <antcall target="authsub.sample.authsub.build"/>
-    <antcall target="blogger.sample.blogger.build"/>
-    <antcall target="books.sample.books.build"/>
-    <antcall target="calendar.sample.calendar.build"/>
-    <antcall target="codesearch.sample.codesearch.build"/>
-    <antcall target="contacts.sample.contacts.build"/>
-    <antcall target="core.sample.core.build"/>
-    <antcall target="docs.sample.docs.build"/>
-    <antcall target="finance.sample.finance.build"/>
-    <antcall target="gbase.sample.gbase.build"/>
-    <antcall target="health.sample.health.build"/>
-    <antcall target="oauth.sample.oauth.build"/>
-    <antcall target="photos.sample.photos.build"/>
-    <antcall target="spreadsheet.sample.spreadsheet.build"/>
-    <antcall target="youtube.sample.youtube.build"/>
-    <antcall target="webmastertools.sample.webmastertools.build"/>
-  </target>
+  <target name="build" depends="sample.appsforyourdomain.build,
+              sample.analytics.build,
+              sample.authsub.build,
+              sample.blogger.build,
+              sample.books.build,
+              sample.calendar.build,
+              sample.codesearch.build,
+              sample.contacts.build,
+              sample.core.build,
+              sample.docs.build,
+              sample.finance.build,
+              sample.gbase.build,
+              sample.health.build,
+              sample.oauth.build,
+              sample.photos.build,
+              sample.spreadsheet.build,
+              sample.youtube.build,
+              sample.webmastertools.build"/>
 
-  <target name="clean">
-    <antcall target="appsforyourdomain.sample.appsforyourdomain.clean"/>
-    <antcall target="authsub.sample.authsub.clean"/>
-    <antcall target="blogger.sample.blogger.clean"/>
-    <antcall target="books.sample.books.clean"/>
-    <antcall target="calendar.sample.calendar.clean"/>
-    <antcall target="codesearch.sample.codesearch.clean"/>
-    <antcall target="contacts.sample.contacts.clean"/>
-    <antcall target="core.sample.core.clean"/>
-    <antcall target="docs.sample.docs.clean"/>
-    <antcall target="finance.sample.finance.clean"/>
-    <antcall target="gbase.sample.gbase.clean"/>
-    <antcall target="health.sample.health.clean"/>
-    <antcall target="oauth.sample.oauth.clean"/>
-    <antcall target="photos.sample.photos.clean"/>
-    <antcall target="spreadsheet.sample.spreadsheet.clean"/>
-    <antcall target="youtube.sample.youtube.clean"/>
-    <antcall target="webmastertools.sample.webmastertools.clean"/>
-  </target>
+  <target name="clean"
+      depends="sample.appsforyourdomain.clean,
+              sample.analytics.clean,
+              sample.authsub.clean,
+              sample.blogger.clean,
+              sample.books.clean,
+              sample.calendar.clean,
+              sample.codesearch.clean,
+              sample.contacts.clean,
+              sample.core.clean,
+              sample.docs.clean,
+              sample.finance.clean,
+              sample.gbase.clean,
+              sample.health.clean,
+              sample.oauth.clean,
+              sample.photos.clean,
+              sample.spreadsheet.clean,
+              sample.youtube.clean,
+              sample.webmastertools.clean"/>
 
 
 <!--  ===================================================================== -->

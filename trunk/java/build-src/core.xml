@@ -23,10 +23,15 @@
 
 
   <!-- User properties -->
+  <property name="version.properties" value="${build}/version.properties"/>
   <property name="build.properties" value="${build_dir}/build.properties"/>
-  <property name="version.properties" value="${build_dir}/version.properties"/>
-  <property file="${build.properties}"/>
   <property file="${version.properties}"/>
+  <property file="${build.properties}"/>
+
+  <property name="gdata-client.jar"
+            value="${build.jars}/gdata-client-${client.spec.version}.jar"/>
+  <property name="gdata-media.jar"
+            value="${build.jars}/gdata-media-${media.spec.version}.jar"/>
 
 
   <!-- ========================= global rules ============================ -->
@@ -55,13 +60,21 @@
 <!--  =================================================================== -->
 <!--                  Template to build service jars                      -->
 <!--  =================================================================== -->
+  <!-- path for third_party google dependencies -->
+  <path id="build.google-deps.classpath">
+    <pathelement location="${google-jsr305.jar}"/>
+    <pathelement location="${google-collect.jar}"/>
+  </path>
+
   <!-- Dependency path for all services -->
   <path id="build.service.core.classpath">
+    <path refid="build.google-deps.classpath"/>
     <pathelement location="${gdata-client.jar}"/>
   </path>
 
   <!-- Dependency path for all media enabled services -->
   <path id="build.service.media.classpath">
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${mail.jar}"/>
     <pathelement location="${activation.jar}"/>
     <pathelement location="${gdata-media.jar}"/>
@@ -81,7 +94,7 @@
       value="${build.classes}/${template.service.name}"/>
     <property name="template.service.manifest"
       value="${build.genfiles.manifest}/${template.service.name}.manifest"/>
-    
+
     <!-- Compare src files to the targetdir to see if src is more recent. -->
     <!-- Will allow unecessary compilation still, but eliminates most -->
     <uptodate property="template.build.service.meta.isCurrent"
@@ -204,10 +217,6 @@
             value="${build.jars}/gdata-core-${client.spec.version}.jar"/>
   <property name="gdata-client-meta.jar"
             value="${build.jars}/gdata-client-meta-${client.spec.version}.jar"/>
-  <property name="gdata-client.jar"
-            value="${build.jars}/gdata-client-${client.spec.version}.jar"/>
-  <property name="gdata-media.jar"
-            value="${build.jars}/gdata-media-${media.spec.version}.jar"/>
 
   <!-- Path for source code -->
   <property name="build.src" value="${build}/src"/>
@@ -236,6 +245,7 @@
     <delete file="${gdata-client.manifest}"/>
   </target>
 
+
   <!-- build gdata-core.jar -->
   <target name="build.core.base" depends="dirs,build.manifest">
     <mkdir dir="${build.classes.core}"/>
@@ -257,8 +267,18 @@
       <include name="com/google/gdata/data/geo/**/*.java"/>
       <include name="com/google/gdata/data/introspection/**/*.java"/>
       <include name="com/google/gdata/data/threading/**/*.java"/>
+      <include name="com/google/gdata/model/*.java"/>
+      <include name="com/google/gdata/model/atom/*.java"/>
+      <include name="com/google/gdata/model/atompub/*.java"/>
+      <include name="com/google/gdata/model/batch/*.java"/>
+      <include name="com/google/gdata/model/transforms/atom/*.java"/>
+      <include name="com/google/gdata/model/transforms/atompub/*.java"/>
       <include name="com/google/gdata/util/**/*.java"/>
+      <include name="com/google/gdata/wireformats/*.java"/>
+      <include name="com/google/gdata/wireformats/input/*.java"/>
+      <include name="com/google/gdata/wireformats/output/*.java"/>
       <exclude name="com/google/gdata/data/MediaContent.java"/>
+      <classpath refid="build.google-deps.classpath"/>
     </javac>
     <jar destfile="${gdata-core.jar}"
          basedir="${build.classes.core}"
@@ -288,6 +308,7 @@
          factory="com.google.gdata.data.apt.DataAnnotationProcessorFactory">
         <classpath>
           <pathelement location="${gdata-core.jar}"/>
+          <path refid="build.google-deps.classpath"/>
         </classpath>
         <include name="com/google/gdata/data/extensions/*.java"/>
     </apt>
@@ -309,6 +330,7 @@
            destdir="${build.classes.client}">
         <include name="com/google/gdata/data/extensions/*.java"/>
         <classpath>
+          <path refid="build.google-deps.classpath"/>
           <pathelement location="${gdata-core.jar}"/>
           <pathelement location="${gdata-client-meta.jar}"/>
         </classpath>
@@ -336,10 +358,15 @@
            sourcepath=""
            srcdir="${build.src}"
            destdir="${build.classes.media}">
-      <classpath refid="build.media.classpath"/>
+      <classpath>
+        <path refid="build.google-deps.classpath"/>
+        <path refid="build.media.classpath"/>
+      </classpath>
       <include name="**/data/MediaContent.java"/>
       <include name="**/data/media/**"/>
       <include name="**/client/media/**"/>
+      <include name="**/wireformats/input/media/*.java"/>
+      <include name="**/wireformats/output/media/*.java"/>
     </javac>
     <jar destfile="${gdata-media.jar}"
          basedir="${build.classes.media}"

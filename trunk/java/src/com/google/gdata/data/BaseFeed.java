@@ -163,6 +163,9 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
      * If there is no entity tag, this variable is null.
      */
     public String etag;
+
+    /** Resource version id to use when generating etag. */
+    public String versionId;
   }
 
   /**
@@ -254,6 +257,18 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * to the feed.
    */
   public void setCanPost(boolean v) { feedState.canPost = v; }
+
+  /**
+   * Sets the entity version for this feed. This value will
+   * be used to compute a weak etag for the feed. If {@code null}
+   * the last modified date is used to generate the etag.
+   */
+  public void setVersionId(String v) { feedState.versionId = v; }
+
+  /**
+   * Returns the entity version for this feed. 
+   */
+  public String getVersionId() { return feedState.versionId; }
 
   /**
    * Returns the current entity tag value for this feed.  A value of

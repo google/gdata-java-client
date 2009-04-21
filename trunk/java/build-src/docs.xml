@@ -13,9 +13,7 @@
     value="${build.jars}/gdata-docs-${docs.spec.version}.jar"/>
 
   <path id="build.service.docs.classpath">
-    <pathelement location="${mail.jar}"/>
-    <pathelement location="${activation.jar}"/>
-    <pathelement location="${gdata-media.jar}"/>
+    <path refid="build.service.media.classpath"/>
     <pathelement location="${gdata-spreadsheet.jar}"/>
   </path>
 

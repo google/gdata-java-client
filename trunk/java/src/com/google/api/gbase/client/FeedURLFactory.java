@@ -179,7 +179,7 @@ public class FeedURLFactory {
    * @see #getItemsFeedURL()
    * @param entryId
    * @return an URL to be used when reading an item or when
-   *         performing an insert, update or delete operation with a
+   *         performing an update or delete operation with a
    *         {@link GoogleBaseService}
    * @throws MalformedURLException
    */

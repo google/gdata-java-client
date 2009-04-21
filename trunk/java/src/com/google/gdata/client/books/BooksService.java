@@ -58,6 +58,7 @@ public class BooksService extends GoogleService {
     public static final Version V2 = new Version(BooksService.class, "2.0",
         Service.Versions.V2);
 
+    private Versions() {}
   }
 
   /**

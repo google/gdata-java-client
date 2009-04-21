@@ -12,6 +12,7 @@
 
   <!-- Include property specific build scripts -->
   <import file="build-src/appsforyourdomain.xml"/>
+  <import file="build-src/analytics.xml"/>
   <import file="build-src/blogger.xml"/>
   <import file="build-src/books.xml"/>
   <import file="build-src/calendar.xml"/>
@@ -34,6 +35,7 @@
   <!-- Build core and service specific libraries -->
   <target name="build" depends="build.core,
                                 build.appsforyourdomain,
+                                build.analytics,
                                 build.blogger,
                                 build.books,
                                 build.calendar,

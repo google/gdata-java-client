@@ -15,6 +15,7 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.data.media.IMediaContent;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.util.ParseException;
 
@@ -31,7 +32,7 @@ import java.io.IOException;
  *
  * 
  */
-public class MediaContent extends OutOfLineContent {
+public class MediaContent extends OutOfLineContent implements IMediaContent {
 
   /**
    * MediaSource associated with the external content.

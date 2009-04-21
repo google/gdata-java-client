@@ -57,4 +57,8 @@ public final class Labels {
 
   /** Common category for a hidden item */
   public static final Category HIDDEN = newLabel("hidden");
+  
+  /** Common category for a viewed item */
+  public static final Category VIEWED = newLabel("viewed");
+  
 }

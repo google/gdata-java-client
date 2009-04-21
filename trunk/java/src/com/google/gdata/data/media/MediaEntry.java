@@ -40,7 +40,8 @@ import java.net.URL;
  * @param <E> the entry class for the bound subtype.
  * 
  */
-public abstract class MediaEntry<E extends BaseEntry<E>> extends BaseEntry<E> {
+public abstract class MediaEntry<E extends BaseEntry<E>> extends BaseEntry<E> 
+    implements IMediaEntry {
 
   /**
    * Constructs a new BaseEntry instance.

@@ -38,8 +38,8 @@
 <!-- ==================== Compilation class path ========================= -->
 
   <path id="sample.authsub.compile.classpath">
-
     <!-- Include all JAR files that will be included in /WEB-INF/lib -->
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${servlet.jar}"/>
     <pathelement location="${gdata-calendar.jar}"/>
     <pathelement location="${gdata-codesearch.jar}"/>
@@ -94,6 +94,10 @@
     <unjar src="${gdata-client-meta.jar}"
            dest="${sample.authsub.build.home}/WEB-INF/classes"/>
     <unjar src="${gdata-client.jar}"
+           dest="${sample.authsub.build.home}/WEB-INF/classes"/>
+    <unjar src="${google-collect.jar}"
+           dest="${sample.authsub.build.home}/WEB-INF/classes"/>
+    <unjar src="${google-jsr305.jar}"
            dest="${sample.authsub.build.home}/WEB-INF/classes"/>
 
     <!-- Create dist directory -->

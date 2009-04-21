@@ -55,7 +55,7 @@ public class RedirectRequiredException extends ServiceException {
   }
 
   public String getRedirectLocation() {
-    List<String> location = getHttpHeaders().get(LOCATION);
+    List<String> location = getHttpHeader(LOCATION);
     if (location != null && location.size() > 0) {
       return location.get(0);
     }

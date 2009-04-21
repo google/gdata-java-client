@@ -30,7 +30,7 @@
   </target>
 
   <path id="sample.contacts.compile.classpath">
-    <pathelement location="${gdata-client.jar}"/>
+    <path refid="build.service.core.classpath"/>
     <pathelement location="${gdata-contacts.jar}"/>
   </path>
 

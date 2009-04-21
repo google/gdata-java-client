@@ -26,8 +26,12 @@ import com.google.gdata.data.Feed;
 import com.google.gdata.data.IEntry;
 import com.google.gdata.data.IFeed;
 import com.google.gdata.data.ParseSource;
-
-
+import com.google.gdata.model.Element;
+import com.google.gdata.model.MetadataContext;
+import com.google.gdata.wireformats.ContentCreationException;
+import com.google.gdata.wireformats.ContentValidationException;
+import com.google.gdata.wireformats.WireFormat;
+import com.google.gdata.wireformats.WireFormatParser;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -89,20 +93,24 @@ public class ParseUtil {
           CoreErrorDomain.ERR.cantCreateEntry, ie);
     }
 
-    BaseEntry<?> baseEntry = (BaseEntry<?>) entry;
-    
-    // Initialize the extension profile (if not provided)
-    if (extProfile == null) {
-      extProfile = getExtProfile(baseEntry, isAdapting);
-    }
+    if (entry instanceof Element) {
+      entry = entryClass.cast(parseElement(source, (Element) entry));
+    } else {
+      BaseEntry<?> baseEntry = (BaseEntry<?>) entry;
+      
+      // Initialize the extension profile (if not provided)
+      if (extProfile == null) {
+        extProfile = getExtProfile(baseEntry, isAdapting);
+      }
 
-    parseEntry(source, baseEntry, extProfile);
-    
-    // Adapt if requested and the entry contained a kind tag
-    if (isAdapting) {
-      BaseEntry<?> adaptedEntry = baseEntry.getAdaptedEntry();
-      if (responseClass.isInstance(adaptedEntry)) {
-        entry = adaptedEntry;
+      parseEntry(source, baseEntry, extProfile);
+      
+      // Adapt if requested and the entry contained a kind tag
+      if (isAdapting) {
+        BaseEntry<?> adaptedEntry = baseEntry.getAdaptedEntry();
+        if (responseClass.isInstance(adaptedEntry)) {
+          entry = adaptedEntry;
+        }
       }
     }
 
@@ -158,27 +166,55 @@ public class ParseUtil {
     }
 
     // Parse the content
-    BaseFeed<?, ?> baseFeed = (BaseFeed<?, ?>) feed;
-    
-    // Initialize the extension profile (if not provided)
-    if (extProfile == null) {
-      extProfile = getExtProfile(baseFeed, isAdapting);
-    }
+    if (feed instanceof Element) {
+      feed = feedClass.cast(parseElement(source, (Element) feed));
+    } else {
+      BaseFeed<?, ?> baseFeed = (BaseFeed<?, ?>) feed;
+      
+      // Initialize the extension profile (if not provided)
+      if (extProfile == null) {
+        extProfile = getExtProfile(baseFeed, isAdapting);
+      }
 
-    parseFeed(source, baseFeed, extProfile);
-    
-    // Adapt if requested and the feed contained a kind tag
-    if (isAdapting) {
-      BaseFeed<?, ?> adaptedFeed = baseFeed.getAdaptedFeed();
-      if (responseClass.isInstance(adaptedFeed)) {
-        feed = adaptedFeed;
+      parseFeed(source, baseFeed, extProfile);
+      
+      // Adapt if requested and the feed contained a kind tag
+      if (isAdapting) {
+        BaseFeed<?, ?> adaptedFeed = baseFeed.getAdaptedFeed();
+        if (responseClass.isInstance(adaptedFeed)) {
+          feed = adaptedFeed;
+        }
       }
     }
 
     return (F) responseClass.cast(feed);
   }
   
-
+  private static Element parseElement(ParseSource source, Element element)
+      throws ParseException, IOException {
+    WireFormat format = WireFormat.XML;
+    MetadataContext context = element.getContext();
+    WireFormatParser parser;
+    if (source.getReader() != null) {
+      parser = format.createParser(context, source.getReader(), Charsets.UTF_8);
+    } else if (source.getInputStream() != null) {
+      InputStreamReader reader = new InputStreamReader(source.getInputStream());
+      parser = format.createParser(context, reader, Charsets.UTF_8);
+    } else if (source.getEventSource() != null) {
+      parser = format.createParser(context, source.getEventSource());
+    } else {
+      throw new IllegalStateException("Unexpected source: " + source);
+    }
+    try {
+      return parser.parse(element);
+    } catch (ContentCreationException e) {
+      throw new ParseException(
+          CoreErrorDomain.ERR.cantCreateExtension, e);
+    } catch (ContentValidationException e) {
+      throw e.toParseException();
+    }
+  }
+  
   private static void parseEntry(ParseSource source, BaseEntry<?> entry,
       ExtensionProfile extProfile) throws ParseException, IOException {
     if (source.getReader() != null) {
@@ -207,7 +243,9 @@ public class ParseUtil {
   
   private static boolean isAdapting(Class<?> clazz) {
     return clazz == Entry.class
-        || clazz == Feed.class;
+        || clazz == com.google.gdata.model.atom.Entry.class
+        || clazz == Feed.class
+        || clazz == com.google.gdata.model.atom.Feed.class;
   }
   
   private static ExtensionProfile getExtProfile(BaseEntry<?> entry,
@@ -232,4 +270,3 @@ public class ParseUtil {
     return extProfile;
   }
 }
-

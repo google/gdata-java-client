@@ -51,7 +51,7 @@ public class EventSourceParser extends XmlParser {
         LogUtils.logException(LOGGER, Level.WARNING, null, e);
         throw (IOException)rootException;
       } else {
-        LogUtils.logException(LOGGER, Level.WARNING, null, e);
+        LogUtils.logException(LOGGER, Level.FINE, null, e);
         throw new ParseException(e);
       }
     }

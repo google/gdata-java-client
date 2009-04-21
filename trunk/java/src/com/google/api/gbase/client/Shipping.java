@@ -15,15 +15,21 @@
 
 package com.google.api.gbase.client;
 
+import com.google.common.collect.ImmutableList;
+
+import java.util.Collection;
+import java.util.Collections;
+
 /**
- * Shipping information, defined using destination country,
- * a price (in the item's currency), and optionally a
- * shipping service and comments (notes).
+ * Shipping information, defined using destination country, a region,
+ * a price (in the item's currency), and a shipping service. 
  */
 public class Shipping {
-  /** Destination country, never null. */
+  /** Destination country, optional.*/
   private final String country;
-  /** Shipping service, may be null. */
+  /** The regions, optional and repeatable. */
+  private final Collection<String> regions;
+  /** Shipping service, optional. */
   private final String service;
   /** Price, always set. */
   private final float price;
@@ -33,22 +39,41 @@ public class Shipping {
   /**
    * Creates a shipping object.
    *
-   * @param country destination country (ISO 3312 2-letter code)
-   * @param service shipping method
+   * @param country destination country (ISO 3312 2-letter code), can be null.
+   * @param service shipping method, can be null.
    * @param price price
-   * @param currency price currency
+   * @param currency price currency, can be null.
    */
-  public Shipping(String country, String service, float price,
+  public Shipping(String country, String service, float price, String currency) {
+    this(country, null, service, price, currency);
+  }
+  
+  /**
+   * Creates a shipping object.
+   * 
+   * @param country destination country (ISO 3312 2-letter code), can be null.
+   * @param regions A list of shipping regions within the destination country. Can be null. 
+   * @param service shipping method, can be null.
+   * @param price price
+   * @param currency price currency, can be null.
+   */
+  public Shipping(String country, Collection<String> regions, String service, float price, 
       String currency) {
     this.country = country;
+    if (regions != null) {
+      this.regions = ImmutableList.copyOf(regions);
+    } else {
+      this.regions = Collections.emptySet();
+    }
     this.price = price;
     this.service = service;
     this.currency = currency;
   }
 
+  @Override
   public String toString() {
-    return "Shipping(country=" + country +", service=" + service + ", price= " +
-        price + ", currency=" + currency + ")";
+    return "Shipping(country=" + country +", regions=" + regions + ", service=" + service 
+    + ", price= " + price + ", currency=" + currency + ")";
   }
 
   /** Gets the price. */
@@ -73,6 +98,11 @@ public class Shipping {
     return country;
   }
 
+  /** Gets the regions. This method never returns null, but the returned list can be empty. */
+  public Collection<String> getRegions() {
+    return regions;
+  }
+  
   /** Gets the shipping service, or null. */
   public String getService() {
     return service;
