@@ -14,3 +14,7 @@ try {
 }
 }}}
 Caution: You may want to evaluate the redirected url, before retrying to the new url.
+
+
+= Process hangs when retrieving a Feed or Entry using Service#getFeed or Service#getEntry in JDK 1.5 in MacOS =
+This is a known JDK bug.  As a workaround use jvm flag "-Xint" to run the program in interpreted mode.
