@@ -8,6 +8,9 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.31.1 ==
+   * Fixed bug in com.google.gdata.util.net.!UriEncoder which causes infinite when run in JDK 1.5 in !MacOS because of a JDK bug.
+
 == 1.31.0 ==
    * Added support for Analytics Google Data API.
    * Updated Books API, Docs API and OAuth samples code.
