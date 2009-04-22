@@ -18,7 +18,7 @@ package com.google.gdata.model;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.common.base.Preconditions;
+import com.google.gdata.util.common.base.Preconditions;
 
 import java.util.Map;
 

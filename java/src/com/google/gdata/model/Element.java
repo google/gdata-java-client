@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -62,8 +61,6 @@ import java.util.logging.Logger;
  * methods they provide.
  *
  * @see #setTextValue(Object)
- * @see #addAttribute(Attribute)
- * @see #addAttribute(AttributeKey, Attribute)
  * @see #addAttribute(AttributeKey, Object)
  * @see #addElement(Element)
  * @see #addElement(ElementKey, Element)
@@ -214,42 +211,59 @@ public class Element {
   /**
    * Changes the metadata of this element to a different set of metadata.
    */
-  void setMetadata(ElementMetadata<?, ?> metadata) {
-    Preconditions.checkNotNull(metadata, "Metadata cannot be null.");
+  void setMetadata(ElementMetadata<?, ?> newMeta) {
+    Preconditions.checkNotNull(newMeta, "Metadata cannot be null.");
 
     // Ignore if we already have this metadata.
-    if (this.metadata == metadata) {
+    if (this.metadata == newMeta) {
       return;
     }
 
-    this.metadata = metadata;
-    this.context = metadata.getContext();
+    this.metadata = newMeta;
+    this.context = newMeta.getContext();
 
-    resolveMetadata();
+    resolveMetadata(newMeta);
   }
 
   /**
    * Synchronize the state of declared elements and attributes based on changes
    * to the element's metadata.
    */
-  private void resolveMetadata() {
-    resolveAttributeMetadata();
-    resolveElementMetadata();
+  private void resolveMetadata(ElementMetadata<?, ?> newMeta) {
+    resolveTextContent(newMeta);
+    resolveAttributeMetadata(newMeta);
+    resolveElementMetadata(newMeta);
+  }
+
+  /**
+   * Resolve the text content against the changed metadata.  This may need to
+   * adapt from a more general type to a more specific one.
+   */
+  private void resolveTextContent(ElementMetadata<?, ?> newMeta) {
+    Class<?> datatype = newMeta.getKey().getDatatype();
+    if (value == null || datatype == Void.class) {
+      return;
+    }
+    try {
+      value = ObjectConverter.getValue(value, datatype);
+    } catch (ParseException e) {
+      throw new IllegalArgumentException("Invalid metadata", e);
+    }
   }
 
   /**
    * Resolve changes to attribute metadata.  This will loop through the
    * attributes, binding them to the new metadata.
    */
-  private void resolveAttributeMetadata() {
+  private void resolveAttributeMetadata(ElementMetadata<?, ?> newMeta) {
     if (attributes == null) {
       return;
     }
     for (Attribute attribute : attributes.values()) {
-      AttributeMetadata<?> newMeta = metadata.bindAttribute(
+      AttributeMetadata<?> attMeta = newMeta.bindAttribute(
           attribute.getAttributeKey());
-      if (newMeta != null) {
-        attribute.setMetadata(newMeta);
+      if (attMeta != null) {
+        attribute.setMetadata(attMeta);
       }
     }
   }
@@ -261,7 +275,7 @@ public class Element {
    * {@link IllegalArgumentException} if the new metadata would set a child
    * to single that has multiple elements.
    */
-  private void resolveElementMetadata() {
+  private void resolveElementMetadata(ElementMetadata<?, ?> newMeta) {
     if (elements == null) {
       return;
     }
@@ -269,7 +283,7 @@ public class Element {
     while (iter.hasNext()) {
       Entry<QName, Object> entry = iter.next();
       Object obj = entry.getValue();
-      ElementMetadata<?, ?> newMeta;
+      ElementMetadata<?, ?> childMeta;
       if (obj instanceof Collection<?>) {
         Collection<Element> elementCollect = castElementCollection(obj);
 
@@ -286,9 +300,9 @@ public class Element {
           // value with the single value.
           case 1:
             Element single = elementCollect.iterator().next();
-            newMeta = metadata.bindElement(single.getElementKey());
-            if (newMeta != null) {
-              single.setMetadata(newMeta);
+            childMeta = newMeta.bindElement(single.getElementKey());
+            if (childMeta != null) {
+              single.setMetadata(childMeta);
             }
             entry.setValue(single);
             break;
@@ -298,24 +312,24 @@ public class Element {
           // {@code SINGLE} cardinality it is an error.
           default:
             for (Element element : elementCollect) {
-              newMeta = metadata.bindElement(element.getElementKey());
-              if (newMeta != null) {
-                if (newMeta.getCardinality() == Cardinality.SINGLE) {
+              childMeta = newMeta.bindElement(element.getElementKey());
+              if (childMeta != null) {
+                if (childMeta.getCardinality() == Cardinality.SINGLE) {
                   throw new IllegalArgumentException(
                       "Element metadata states that " + element.getElementId()
                       + " is not repeating, but " + elementCollect.size()
                       + " elements were found.");
                 }
-                element.setMetadata(newMeta);
+                element.setMetadata(childMeta);
               }
             }
             break;
         }
       } else {
         Element single = (Element) obj;
-        newMeta = metadata.bindElement(single.getElementKey());
-        if (newMeta != null) {
-          single.setMetadata(newMeta);
+        childMeta = newMeta.bindElement(single.getElementKey());
+        if (childMeta != null) {
+          single.setMetadata(childMeta);
         }
       }
     }
@@ -341,130 +355,20 @@ public class Element {
   }
 
   /**
-   * Returns an iterator over all element attributes with a well-defined order
-   * of iteration.  All declared attributes are returned first (by order of
-   * declaration), followed by undeclared attributes in the order in which they
-   * were added to the element.
-   *
-   * @return attribute iterator
+   * Returns an iterator over all attributes on this element.
    */
   public Iterator<Attribute> getAttributeIterator() {
-    return new AttributeIterator();
+    return getAttributeIterator(null);
   }
 
-  private enum Mode {DECLARED, UNDECLARED, DONE}
-
   /**
-   * The AttributeIterator class provider the ability to iterate over all
-   * attributes of an element with a well-defined order.   Declared attributes
-   * will be returned first (in order by declaration) followed by undeclared
-   * attributes in the order that they were added to the element.
+   * Returns an iterator over the attributes of this element based on the given
+   * metadata.  Public so that it can be accessed from selection metadata, which
+   * lives in a separate package.
    */
-  private class AttributeIterator implements Iterator<Attribute> {
-
-    private Attribute nextAttribute;
-    Iterator<AttributeKey<?>> metadataIterator;
-    private Iterator<Attribute> attributeIterator;
-    private Mode mode = Mode.DECLARED;
-
-    private AttributeIterator() {
-      metadataIterator = metadata.getAttributes().iterator();
-      attributeIterator = (attributes == null) ? null
-          : attributes.values().iterator();
-      nextAttribute = findNextAttribute();
-    }
-
-    public boolean hasNext() {
-      return nextAttribute != null;
-    }
-
-    public Attribute next() {
-      if (nextAttribute == null) {
-        throw new NoSuchElementException("No remaining attributes");
-      }
-      Attribute retval = nextAttribute;
-      nextAttribute = findNextAttribute();
-      return retval;
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException(
-          "Removal not supported on attribute iterator");
-    }
-
-    /**
-     * Find the next attribute in the correct order.
-     */
-    private Attribute findNextAttribute() {
-
-      while (mode != Mode.DONE) {
-        Attribute next = null;
-        switch(mode) {
-          case DECLARED:
-            next = findNextDeclaredAttribute();
-            break;
-          case UNDECLARED:
-            next = findNextUndeclaredAttribute();
-            break;
-          default:
-            break;
-        }
-        if (next != null) {
-          return next;
-        }
-      }
-
-      // Nothing remains.
-      return null;
-    }
-
-    /**
-     * Finds the next declared attribute, or null if no more exist.
-     */
-    private Attribute findNextDeclaredAttribute() {
-      if (metadataIterator != null) {
-        while (metadataIterator.hasNext()) {
-          AttributeKey<?> nextKey = metadataIterator.next();
-          if (ElementCreatorImpl.ATTRIBUTE_MARKER == nextKey) {
-            mode = Mode.UNDECLARED;
-            return null;
-          }
-          Attribute attribute = getAttribute(nextKey.getId());
-          if (attribute != null) {
-            return attribute;
-          }
-        }
-
-        // No more declared attributes, turn the iterator off.
-        metadataIterator = null;
-      }
-
-      // Check undeclared next.
-      mode = Mode.UNDECLARED;
-      return null;
-    }
-
-    /**
-     * Finds the next valid undeclared attribute in the map.
-     */
-    private Attribute findNextUndeclaredAttribute() {
-      if (attributeIterator != null) {
-        while (attributeIterator.hasNext()) {
-          Attribute attribute = attributeIterator.next();
-          if (!metadata.isDeclared(attribute.getAttributeKey())) {
-            return attribute;
-          }
-        }
-
-        // No more attributes, turn the iterator off.
-        attributeIterator = null;
-      }
-
-      // Go back and check for any remaining declared attributes if needed.
-      mode = metadataIterator != null && metadataIterator.hasNext()
-          ? Mode.DECLARED : Mode.DONE;
-      return null;
-    }
+  public Iterator<Attribute> getAttributeIterator(
+      ElementMetadata<?, ?> metadata) {
+    return new AttributeIterator(this, metadata, attributes);
   }
 
   /**
@@ -564,28 +468,6 @@ public class Element {
   }
 
   /**
-   * Add an attribute object to this element.
-   */
-  public Element addAttribute(Attribute attribute) {
-    addAttribute(attribute.getAttributeKey(), attribute);
-    return this;
-  }
-
-  /**
-   * Add an attribute by id.
-   */
-  public Element addAttribute(QName id, Attribute attribute) {
-    if (attribute == null) {
-      removeAttribute(id);
-      return this;
-    }
-
-    return addAttribute(
-        AttributeKey.of(id, attribute.getAttributeKey().getDatatype()),
-        attribute);
-  }
-
-  /**
    * Add an attribute by qname.  If attribute is {@code null} the attribute will
    * be removed.
    *
@@ -593,7 +475,7 @@ public class Element {
    * @param attribute attribute or {@code null} to remove.
    * @return this to enable chaining.
    */
-  public Element addAttribute(AttributeKey<?> attKey, Attribute attribute) {
+  private Element addAttribute(AttributeKey<?> attKey, Attribute attribute) {
 
     // This is a remove, not an add, if attribute is null.
     if (attribute == null) {
@@ -617,8 +499,9 @@ public class Element {
    * @param id the qualified name of the attribute.
    * @return this element
    */
-  public Attribute removeAttribute(QName id) {
-    return (attributes == null) ? null : attributes.remove(id);
+  public Object removeAttribute(QName id) {
+    Attribute removed = (attributes == null) ? null : attributes.remove(id);
+    return (removed == null) ? null : removed.getValue();
   }
 
   /**
@@ -627,186 +510,24 @@ public class Element {
    * @param key the key of the attribute.
    * @return this element
    */
-  public Attribute removeAttribute(AttributeKey<?> key) {
+  public Object removeAttribute(AttributeKey<?> key) {
     return removeAttribute(key.getId());
   }
 
   /**
-   * Returns an iterator over all child elements. The order of iteration is
-   * predictable, in that elements that have been declared in
-   * {@link ElementMetadata} will appear in the order of declaration, with
-   * repeating elements of a given type appearing in the order they have been
-   * added. Elements of any undeclared types (if any) will appear last in the
-   * iteration, in the order they were added.
-   *
-   * @return iterator over child elements ordered by declaration and addition.
+   * Returns an iterator over all child elements of this element.
    */
   public Iterator<Element> getElementIterator() {
-    return new ElementIterator();
+    return getElementIterator(null);
   }
 
   /**
-   * The ElementIterator class implements the {@link Iterator} interface over
-   * the declared and undeclared child elements of an Element instance. The
-   * iteration order is predictable, with declared elements being returned in
-   * the order that the child ElementMetadata was declared and with repeating
-   * elements (for a given child type) returned in the order in which they were
-   * added. After all declared elements have been returned then undeclared
-   * element types will be returned, in the order that they were added to the
-   * parent element.
+   * Implementation of getting an attribute iterator for this element based on
+   * the given metadata.  <p>Public so that it can be accessed from selection
+   * metadata, which lives in a separate package.
    */
-  private class ElementIterator implements Iterator<Element> {
-
-    private Iterator<ElementKey<?, ?>> metadataIterator;
-    private Iterator<Element> sublistIterator;
-    private Iterator<Object> elementIterator;
-    private Element nextElement = null;
-    private Mode mode = Mode.DECLARED;
-
-    private ElementIterator() {
-      metadataIterator = metadata.getElements().iterator();
-      elementIterator = (elements == null) ? null
-          : elements.values().iterator();
-      nextElement = findNextElement();
-    }
-
-    public boolean hasNext() {
-      return nextElement != null;
-    }
-
-    public Element next() {
-      if (nextElement == null) {
-        throw new NoSuchElementException("No remaining elements");
-      }
-      Element retval = nextElement;
-      nextElement = findNextElement();
-      return retval;
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException(
-          "Removal not supported on element iterator");
-    }
-
-    /**
-     * Returns the next sequential element in the iteration order or
-     * {@code null} if there are no remaining elements.
-     *
-     * @return next element or {@code null}
-     */
-    private Element findNextElement() {
-
-      // If we are iterating a sublist and elements remain, return the element
-      // in the sublist.
-      if (sublistIterator != null) {
-        if (sublistIterator.hasNext()) {
-          return sublistIterator.next();
-        }
-        // Done with the sublist iterator.
-        sublistIterator = null;
-      }
-
-      Element next = null;
-      while (next == null && mode != Mode.DONE) {
-        switch(mode) {
-          case DECLARED:
-            next = findNextDeclaredElement();
-            break;
-          case UNDECLARED:
-            next = findNextUndeclaredElement();
-            break;
-          case DONE:
-            break;
-        }
-      }
-
-      return next;
-    }
-
-    /**
-     * Finds the next declared element, if one exists, otherwise returns null.
-     * Will set the mode to undeclared if nothing was found.
-     */
-    private Element findNextDeclaredElement() {
-      if (metadataIterator != null) {
-        while (metadataIterator.hasNext()) {
-          ElementKey<?, ?> nextKey = metadataIterator.next();
-          if (ElementCreatorImpl.ELEMENT_MARKER == nextKey) {
-            mode = Mode.UNDECLARED;
-            return null;
-          }
-          Object obj = getElementObject(nextKey);
-          Element first = firstElement(obj);
-          if (first != null) {
-            return first;
-          }
-        }
-
-        // No more declared elements, turn the iterator off.
-        metadataIterator = null;
-      }
-
-      // Check undeclared next.
-      mode = Mode.UNDECLARED;
-      return null;
-    }
-
-    /**
-     * Find the next undeclared element, or null if no more undeclared elements
-     * exist.
-     */
-    private Element findNextUndeclaredElement() {
-      if (elementIterator != null) {
-        while (elementIterator.hasNext()) {
-          Object next = elementIterator.next();
-          Element first = firstElement(next);
-          if (first != null && !metadata.isDeclared(first.getElementKey())) {
-            return first;
-          } else {
-
-            // Clear the sublist iterator if the first element wasn't valid.
-            sublistIterator = null;
-          }
-        }
-
-        // No more undeclared elements, turn the iterators off.
-        sublistIterator = null;
-        elementIterator = null;
-      }
-
-      // Go back and check for any remaining declared metadata.
-      mode = metadataIterator != null && metadataIterator.hasNext()
-          ? Mode.DECLARED : Mode.DONE;
-      return null;
-    }
-
-    /**
-     * Get the first element from either a singleton or a collection of
-     * elements.  This method will also set the sublistIterator as a side effect
-     * of retrieving the first element in a collection.
-     */
-    private Element firstElement(Object obj) {
-      if (obj == null) {
-        return null;
-      }
-      // If the next declared element is a single instance, then just
-      // return it.  On the next call we will move to the next declared
-      // type.
-      if (obj instanceof Element) {
-        return (Element) obj;
-      } else {
-        // If the next declared element is a collection of elements, set the
-        // sublist iterator to the content of the collection and return the
-        // first element.  The next call will continue iteration on this
-        // collection.
-        Collection<Element> elementCollection = castElementCollection(obj);
-        if (!elementCollection.isEmpty()) {
-          sublistIterator = elementCollection.iterator();
-          return sublistIterator.next();
-        }
-      }
-      return null;
-    }
+  public Iterator<Element> getElementIterator(ElementMetadata<?, ?> metadata) {
+    return new ElementIterator(this, metadata, elements);
   }
 
   /**
@@ -1452,7 +1173,7 @@ public class Element {
 
     // Resolve all child elements.
     List<Pair<Element, Element>> replacements = Lists.newArrayList();
-    Iterator<Element> childIterator = narrowed.getElementIterator();
+    Iterator<Element> childIterator = narrowed.getElementIterator(metadata);
     while (childIterator.hasNext()) {
       Element child = childIterator.next();
       Element resolved = child.resolve(vc);
@@ -1578,7 +1299,7 @@ public class Element {
       throws ElementVisitor.StoppedException {
 
     // Visit children
-    Iterator<Element> childIterator = getElementIterator();
+    Iterator<Element> childIterator = getElementIterator(metadata);
     while (childIterator.hasNext()) {
       childIterator.next().visit(ev, this);
     }

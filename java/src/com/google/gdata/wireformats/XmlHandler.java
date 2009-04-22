@@ -163,10 +163,13 @@ public class XmlHandler extends XmlParser.ElementHandler {
   @Override
   public void processEndElement() throws ParseException {
 
-    if (value != null && !value.trim().equals("")) {
-      ElementKey<?, ?> elementKey = element.getElementKey();
-      element.setTextValue(
-          ObjectConverter.getValue(value, elementKey.getDatatype()));
+    if (value != null) {
+      value = value.trim();
+      if (!value.equals("")) {
+        ElementKey<?, ?> elementKey = element.getElementKey();
+        element.setTextValue(
+            ObjectConverter.getValue(value, elementKey.getDatatype()));
+      }
     }
     
     if (parentElement != null) {

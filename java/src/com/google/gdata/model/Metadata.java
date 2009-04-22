@@ -16,6 +16,8 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.ParseException;
+
 /**
  * The Metadata interface defines operations that are common to all content
  * model properties (elements or attributes).  This interface describes the id,
@@ -29,6 +31,28 @@ package com.google.gdata.model;
  * 
  */
 public interface Metadata<D> {
+
+  /**
+   * Defines a virtual value.  A virtual value exists only as metadata,
+   * and handles both parsing and generation between the DOM and the content of
+   * the property.
+   */
+  public interface VirtualValue {
+
+    /**
+     * Generate the value of either an attribute or text content based on the
+     * containing element.
+     */
+    Object generate(Element element);
+
+    /**
+     * Parses the virtual value, storing it into the element or attribute as
+     * appropriate.
+     *
+     * @throws ParseException if parsing fails.
+     */
+    void parse(Element element, Object value) throws ParseException;
+  }
 
   /**
    * Returns the attribute key for this metadata.
@@ -80,4 +104,26 @@ public interface Metadata<D> {
    * @return true if the property is visible in its parent element.
    */
   boolean isVisible();
+
+  /**
+   * Returns the virtual value for this property, or {@code null} if no
+   * virtual value exists.
+   */
+  VirtualValue getVirtualValue();
+
+  /**
+   * Generate the value of this property on the given element.  If the property
+   * is virtual, it will be used to generate the value, otherwise the regular
+   * property value will be used.
+   */
+  Object generateValue(Element element);
+
+  /**
+   * Parses the value of this property into the given element.  If the property
+   * is virtual, it will be used to parse the value, otherwise the value will be
+   * stored directly in the property.
+   *
+   * @throws ParseException if parsing fails.
+   */
+  void parseValue(Element element, Object value) throws ParseException;
 }

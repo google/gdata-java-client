@@ -16,6 +16,8 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.ParseException;
+
 /**
  * Immutable base implementation of {@link Metadata}.
  *
@@ -31,6 +33,7 @@ abstract class MetadataImpl<D> implements Metadata<D> {
   final boolean isRequired;
   final boolean isUndeclared;
   final boolean isVisible;
+  final VirtualValue virtualValue;
 
   /**
    * Constructs a new immutable metadata instance with the given declared data.
@@ -45,6 +48,8 @@ abstract class MetadataImpl<D> implements Metadata<D> {
     this.name = nullToDefault(transform.name, key.getId());
     this.isRequired = nullToDefault(transform.required, false);
     this.isVisible = nullToDefault(transform.visible, true);
+    this.virtualValue = transform.virtualValue;
+
     this.isUndeclared = false;
   }
 
@@ -59,6 +64,8 @@ abstract class MetadataImpl<D> implements Metadata<D> {
     this.name = key.getId();
     this.isRequired = false;
     this.isVisible = true;
+    this.virtualValue = null;
+
     this.isUndeclared = true;
   }
 
@@ -97,5 +104,22 @@ abstract class MetadataImpl<D> implements Metadata<D> {
 
   public boolean isVisible() {
     return isVisible;
+  }
+
+  public VirtualValue getVirtualValue() {
+    return virtualValue;
+  }
+
+  public Object generateValue(Element element) {
+    if (virtualValue != null) {
+      return virtualValue.generate(element);
+    }
+    return null;
+  }
+
+  public void parseValue(Element element, Object value) throws ParseException {
+    if (virtualValue != null) {
+      virtualValue.parse(element, value);
+    }
   }
 }

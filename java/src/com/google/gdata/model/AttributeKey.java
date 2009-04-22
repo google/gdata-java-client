@@ -103,9 +103,12 @@ public final class AttributeKey<D> extends MetadataKey<D> {
 
   @Override
   public int hashCode() {
-    int hashCode = 37;
-    hashCode = (hashCode * 17) + (id == null ? 0 : id.hashCode());
-    return (hashCode * 17) + datatype.hashCode();
+    int hashCode = datatype.hashCode();
+    hashCode *= 17;
+    if (id != null) {
+      hashCode += id.hashCode();
+    }
+    return hashCode;
   }
 
   @Override

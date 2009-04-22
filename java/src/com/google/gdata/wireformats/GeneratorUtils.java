@@ -16,46 +16,63 @@
 
 package com.google.gdata.wireformats;
 
+import com.google.common.collect.Maps;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.model.Attribute;
 import com.google.gdata.model.Element;
+import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
-import com.google.common.collect.Maps;
 
 import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Utility functions shared across generators.
- * 
+ *
  * 
  */
 public class GeneratorUtils {
 
+  /**
+   * Calculate the set of namespaces on an element.  This will find all
+   * namespaces declared on the element or child elements, ordered in
+   * depth-first order.
+   */
   public static Map<String, XmlNamespace> calculateNamespaces(Element root) {
     Map<String, XmlNamespace> namespaceMap = Maps.newHashMap();
     calculateNamespaces(namespaceMap, root);
     return namespaceMap;
   }
-  
-  public static void calculateNamespaces(Map<String, XmlNamespace> namespaces,
+
+  /**
+   * Calculate the namespaces on an element using the given visitor to store
+   * the namespaces.  We cheat by using an attribute visitor for even visiting
+   * the element names, because all we're doing with the visitor is adding a
+   * QName.
+   */
+  private static void calculateNamespaces(Map<String, XmlNamespace> namespaces,
       Element root) {
-    QName name = root.getMetadata().getName();
+    ElementMetadata<?, ?> metadata = root.getMetadata();
+    QName name = metadata.getName();
     addNamespace(namespaces, name);
-    
-    Iterator<Attribute> attIter = root.getAttributeIterator();
+
+    Iterator<Attribute> attIter = metadata.getAttributeIterator(root);
     while (attIter.hasNext()) {
       Attribute att = attIter.next();
       addNamespace(namespaces, att.getMetadata().getName());
     }
-    
-    Iterator<Element> childIter = root.getElementIterator();
+
+    Iterator<Element> childIter = metadata.getElementIterator(root);
     while (childIter.hasNext()) {
       Element child = childIter.next();
       calculateNamespaces(namespaces, child);
     }
   }
-  
+
+  /**
+   * Add a qualified name to the map by URI.  Only the first namespace with a
+   * given URI is added to the map.
+   */
   private static void addNamespace(Map<String, XmlNamespace> namespaces,
       QName name) {
     if (name == null) {

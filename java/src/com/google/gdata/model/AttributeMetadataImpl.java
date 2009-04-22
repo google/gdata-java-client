@@ -16,6 +16,9 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.ParseException;
+import com.google.gdata.wireformats.ObjectConverter;
+
 /**
  * Immutable implementation of the attribute metadata.  Delegates to the
  * registry for binding to an alternate context, so this class can be extremely
@@ -63,5 +66,24 @@ final class AttributeMetadataImpl<D> extends MetadataImpl<D>
   @Override
   public AttributeKey<D> getKey() {
     return attKey;
+  }
+
+  @Override
+  public Object generateValue(Element element) {
+    Object result = super.generateValue(element);
+    if (result == null) {
+      result = element.getAttributeValue(attKey);
+    }
+    return result;
+  }
+
+  @Override
+  public void parseValue(Element element, Object value) throws ParseException {
+    if (virtualValue != null) {
+      super.parseValue(element, value);
+    } else {
+      element.addAttribute(
+          attKey, ObjectConverter.getValue(value, attKey.getDatatype()));
+    }
   }
 }

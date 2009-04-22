@@ -16,6 +16,8 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.model.Metadata.VirtualValue;
+
 /**
  * Implementation of {@link AttributeCreator}.  See the superclass for the
  * implementation details, this class just delegates to the superclass and
@@ -61,5 +63,10 @@ final class AttributeCreatorImpl extends MetadataCreatorImpl
   @Override
   public AttributeCreatorImpl setVisible(boolean visible) {
     return (AttributeCreatorImpl) super.setVisible(visible);
+  }
+
+  @Override
+  public AttributeCreatorImpl setVirtualValue(VirtualValue virtualValue) {
+    return (AttributeCreatorImpl) super.setVirtualValue(virtualValue);
   }
 }

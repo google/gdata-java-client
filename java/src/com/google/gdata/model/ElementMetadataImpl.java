@@ -20,12 +20,14 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gdata.model.ContentModel.Cardinality;
-import com.google.gdata.model.ElementCreator.ValueTransform;
 import com.google.gdata.model.ElementCreatorImpl.AttributeInfo;
 import com.google.gdata.model.ElementCreatorImpl.ElementInfo;
+import com.google.gdata.util.ParseException;
 import com.google.gdata.wireformats.ContentCreationException;
+import com.google.gdata.wireformats.ObjectConverter;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Immutable implementation of the element metadata.  This class delegates to
@@ -46,7 +48,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   private final boolean isContentRequired;
   private final ElementValidator validator;
   private final Object properties;
-  private final ValueTransform valueTransform;
+  private final VirtualElement virtualElement;
 
   /** Metadata for element's attributes and child elements. */
   private final ImmutableMap<QName, AttributeKey<?>> attributes;
@@ -68,7 +70,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     this.isContentRequired = nullToDefault(transform.contentRequired, true);
     this.validator = nullToDefault(transform.validator, DEFAULT_VALIDATOR);
     this.properties = transform.properties;
-    this.valueTransform = transform.valueTransform;
+    this.virtualElement = transform.virtualElement;
 
     this.attributes = getAttributes(transform.attributes.values());
     this.elements = getElements(transform.elements.values());
@@ -92,7 +94,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     this.isContentRequired = false;
     this.validator = null;
     this.properties = null;
-    this.valueTransform = null;
+    this.virtualElement = null;
 
     this.attributes = ImmutableMap.of();
     this.elements = ImmutableMap.of();
@@ -275,12 +277,20 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     }
   }
 
+  public Iterator<Attribute> getAttributeIterator(Element element) {
+    return element.getAttributeIterator(this);
+  }
+
   public ImmutableCollection<AttributeKey<?>> getAttributes() {
     return attributes.values();
   }
 
   public <K> AttributeMetadata<K> bindAttribute(AttributeKey<K> key) {
     return (registry == null) ? null : registry.bind(elemKey, key, context);
+  }
+
+  public Iterator<Element> getElementIterator(Element element) {
+    return element.getElementIterator(this);
   }
 
   public ImmutableCollection<ElementKey<?, ?>> getElements() {
@@ -293,12 +303,27 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     return (registry == null) ? null : registry.bind(elemKey, key, context);
   }
 
-  public String getValueAsString(Element element) {
-    if (valueTransform != null) {
-      return valueTransform.transform(element);
+  @Override
+  public Object generateValue(Element element) {
+    Object result = super.generateValue(element);
+    if (result == null) {
+      result = element.getTextValue(elemKey);
     }
-    D value = element.getTextValue(getKey());
-    return (value == null) ? null : value.toString();
+    return result;
+  }
+
+  @Override
+  public void parseValue(Element element, Object value) throws ParseException {
+    if (virtualValue != null) {
+      super.parseValue(element, value);
+    } else {
+      element.setTextValue(
+          ObjectConverter.getValue(value, elemKey.getDatatype()));
+    }
+  }
+
+  public VirtualElement getVirtualElement() {
+    return virtualElement;
   }
 
   public E createElement() throws ContentCreationException {

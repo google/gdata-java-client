@@ -18,11 +18,13 @@ package com.google.gdata.model;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.gdata.model.ContentModel.Cardinality;
+import com.google.gdata.model.ElementMetadata.VirtualElement;
+import com.google.gdata.model.Metadata.VirtualValue;
 
 import java.util.Collection;
 import java.util.Map;
@@ -66,7 +68,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   private Boolean contentRequired;
   private ElementValidator validator;
   private Object properties;
-  private ValueTransform valueTransform;
+  private VirtualElement virtualElement;
 
   private final Map<QName, AttributeInfo> attributes = Maps.newLinkedHashMap();
   private final Map<QName, ElementInfo> elements = Maps.newLinkedHashMap();
@@ -101,7 +103,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
     this.contentRequired = source.contentRequired;
     this.validator = source.validator;
     this.properties = source.properties;
-    this.valueTransform = source.valueTransform;
+    this.virtualElement = source.virtualElement;
 
     // We copy the attributes and elements over by re-adding them, as they need
     // to get the actual metadata builders from the registry.
@@ -197,12 +199,12 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   }
 
   /**
-   * Sets the value transform for the element.  This is used to retrieve the
-   * value of the element if the normal text content is not appropriate.
+   * Sets the virtual element for the element.  This is used to create a
+   * fully virtual element that doesn't map directly to the DOM.
    */
-  public ElementCreatorImpl setValueTransform(ValueTransform valueTransform) {
+  public ElementCreator setVirtualElement(VirtualElement virtualElement) {
     synchronized (registry) {
-      this.valueTransform = valueTransform;
+      this.virtualElement = virtualElement;
       registry.dirty();
     }
     return this;
@@ -239,6 +241,20 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    */
   public AttributeCreator replaceAttribute(AttributeKey<?> attributeKey) {
     return addAttribute(attributeKey, Action.REPLACE);
+  }
+
+  /**
+   * Whitelists a set of attributes as well as setting their order.  Adding an
+   * attribute pushes it to the end of the stack, so we just add the attributes
+   * in the order given and then whitelist them.
+   */
+  public ElementCreatorImpl orderAndWhitelistAttributes(
+      AttributeKey<?>... attributeKeys) {
+    for (AttributeKey<?> attributeKey : attributeKeys) {
+      addAttribute(attributeKey);
+    }
+
+    return whitelistAttributes(attributeKeys);
   }
 
   /**
@@ -311,6 +327,20 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   }
 
   /**
+   * Whitelists a set of child elements as well as setting their order.  Adding
+   * an element pushes it to the end of the stack, so we just add the child
+   * elements in the order given and then whitelist them.
+   */
+  public ElementCreatorImpl orderAndWhitelistElements(
+      ElementKey<?,?>... elementKeys) {
+    for (ElementKey<?, ?> elementKey : elementKeys) {
+      addElement(elementKey);
+    }
+
+    return whitelistElements(elementKeys);
+  }
+
+  /**
    * Whitelists a set of child elements for this element metadata.  This will
    * hide all declared child elements on the metadata instance that will be
    * created from this builder.
@@ -353,44 +383,24 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
     }
   }
 
-  /**
-   * Sets the name of the element.  This can be used after copying some other
-   * metadata to change the name.
-   *
-   * @param name the new name of the element.
-   * @return this element metadata builder for chaining.
-   */
   @Override
   public ElementCreatorImpl setName(QName name) {
     return (ElementCreatorImpl) super.setName(name);
   }
 
-  /**
-   * Sets the requiredness of this element.  This means that the element
-   * must appear in the parent element for the parent element to be valid.
-   *
-   * @param required true to set the element to required, false to set it
-   *     to optional (the default).
-   * @return this element metadata builder for chaining.
-   */
   @Override
   public ElementCreatorImpl setRequired(boolean required) {
     return (ElementCreatorImpl) super.setRequired(required);
   }
 
-  /**
-   * Sets whether this element is visible.  If the element is not visible
-   * then it will not be included in the output.  This can be used to set the
-   * state of an element to invisible if it is not part of the default set
-   * of metadata for its parent.
-   *
-   * @param visible true to make the element visible (the default), false to
-   *     hide it from the output.
-   * @return this element metadata builder for chaining.
-   */
   @Override
   public ElementCreatorImpl setVisible(boolean visible) {
     return (ElementCreatorImpl) super.setVisible(visible);
+  }
+
+  @Override
+  public ElementCreatorImpl setVirtualValue(VirtualValue virtualValue) {
+    return (ElementCreatorImpl) super.setVirtualValue(virtualValue);
   }
 
   // Package-level read-only access to the fields of this creator.
@@ -411,8 +421,8 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
     return properties;
   }
 
-  ValueTransform getValueTransform() {
-    return valueTransform;
+  VirtualElement getVirtualElement() {
+    return virtualElement;
   }
 
   /**
