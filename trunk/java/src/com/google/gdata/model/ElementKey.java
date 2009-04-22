@@ -148,7 +148,13 @@ public final class ElementKey<D, E extends Element> extends MetadataKey<D> {
 
   @Override
   public int hashCode() {
-    return (17 * super.hashCode()) + elementType.hashCode();
+    int hashCode = datatype.hashCode();
+    hashCode *= 17;
+    if (id != null) {
+      hashCode += id.hashCode();
+    }
+    hashCode *= 17;
+    return hashCode + elementType.hashCode();
   }
 
   @Override

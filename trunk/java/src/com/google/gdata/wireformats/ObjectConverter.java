@@ -16,38 +16,39 @@
 
 package com.google.gdata.wireformats;
 
+import com.google.common.collect.MapMaker;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.util.ParseException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Converts values from strings to typed values (objects).
- * 
+ *
  * @param <T> data type handled by this converter
  * 
  */
 public abstract class ObjectConverter<T> {
 
   /**
-   * Map from data type to value convert. This is used for
-   * types that don't have a string-arg constructor.
+   * Map from data type to value convert. This is used for types that don't have
+   * a string-arg constructor or need special handling.
    */
-  protected static final Map<Class<?>, ObjectConverter<?>> CONVERTERS =
-      new HashMap<Class<?>, ObjectConverter<?>>();
+  private static final ConcurrentMap<Class<?>, ObjectConverter<?>> CONVERTERS =
+      new MapMaker().makeMap();
 
   static {
-    CONVERTERS.put(DateTime.class, new DateTimeConverter());
-    CONVERTERS.put(Enum.class, new EnumConverter());
+    addConverter(DateTime.class, new DateTimeConverter());
+    addConverter(Enum.class, new EnumConverter());
+    addConverter(Boolean.class, new BooleanConverter());
   }
 
   /**
    * Add converter for a data type.
-   * 
+   *
    * @param type data type
    * @param converter converter
    */
@@ -59,7 +60,7 @@ public abstract class ObjectConverter<T> {
   /**
    * Converts an object to the given datatype by casting if possible, and if not
    * by narrowing from {@link String} using the registered object converters.
-   * 
+   *
    * @param <V> the type of value to return.
    * @param value the value to convert.
    * @param datatype the datatype to convert to.
@@ -78,10 +79,10 @@ public abstract class ObjectConverter<T> {
     throw new ParseException("Cannot convert value " + value
         + " of type " + value.getClass() + " to " + datatype);
   }
-  
+
   /**
    * Translate an untyped (string) value to a typed value.
-   * 
+   *
    * @param <V> data type
    * @param value value
    * @param datatype class of value type
@@ -93,13 +94,13 @@ public abstract class ObjectConverter<T> {
     if (value == null || datatype.isInstance(value)) {
       return datatype.cast(value);
     }
-    
+
     try {
       ObjectConverter<V> handler = getHandler(datatype);
       if (handler != null) {
         return handler.convertValue(value, datatype);
       }
-      
+
       Constructor<V> cons = datatype.getConstructor(String.class);
       return cons.newInstance(value);
     } catch (NoSuchMethodException e) {
@@ -120,7 +121,7 @@ public abstract class ObjectConverter<T> {
 
   /**
    * Translate an untyped (string) value to a typed value.
-   * 
+   *
    * @param value value to convert.
    * @return value converted to type {@code T}.
    * @throws ParseException if value cannot be parsed according to type
@@ -131,7 +132,7 @@ public abstract class ObjectConverter<T> {
   /**
    * Get handler associated with a data type.  Unchecked because we know that
    * the class type and the handler type match, but we can't tell the compiler.
-   * 
+   *
    * @param type data type to retrieve a handler for.
    * @return an object converter that can convert to type {@code V}.
    */
@@ -159,7 +160,7 @@ public abstract class ObjectConverter<T> {
       }
     }
   }
-  
+
   /**
    * Object converter for {@link Enum} instances.  Unchecked because
    * we don't actually care about the return type from
@@ -176,13 +177,41 @@ public abstract class ObjectConverter<T> {
       }
       Enum<?> result = Enum.valueOf(datatype, value.toUpperCase());
       if (result == null) {
-        ParseException pe = new ParseException(
-            CoreErrorDomain.ERR.invalidEnumValue);
-        pe.setInternalReason("No such enum of type " + datatype
-            + " named " + value.toUpperCase());
-        throw pe;
+        throw new ParseException(
+            CoreErrorDomain.ERR.invalidEnumValue.withInternalReason(
+                "No such enum of type " + datatype + " named "
+                + value.toUpperCase()));
       }
       return result;
+    }
+  }
+
+  /**
+   * Object converter for {@code boolean} values, because the construct
+   * {@link Boolean#Boolean(String)} is too lenient, anything that isn't "true"
+   * counts as {@code false}.  Instead we want to be strict about boolean values
+   * like we were in the old data model.
+   */
+  private static class BooleanConverter extends ObjectConverter<Boolean> {
+    @Override
+    public Boolean convertValue(String value, Class<? extends Boolean> datatype)
+        throws ParseException {
+      if (value == null) {
+        return null;
+      }
+
+      // NOTE(sven): "ture" is a hack for panasonic, they shipped cameras with
+      // this set before we became strict about boolean values.  Photos could
+      // try to override this but it seemed easier to just allow it here.
+      if ("true".equals(value) || "1".equals(value) || "ture".equals(value)) {
+        return Boolean.TRUE;
+      } else if ("false".equals(value) || "0".equals(value)) {
+        return Boolean.FALSE;
+      } else {
+        throw new ParseException(
+            CoreErrorDomain.ERR.invalidBooleanAttribute.withInternalReason(
+                "Invalid boolean value: '" + value + "'"));
+      }
     }
   }
 }

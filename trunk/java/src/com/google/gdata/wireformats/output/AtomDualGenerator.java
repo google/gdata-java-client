@@ -17,25 +17,16 @@
 package com.google.gdata.wireformats.output;
 
 import com.google.gdata.data.IAtom;
-import com.google.gdata.model.DefaultRegistry;
-import com.google.gdata.model.transforms.atom.AtomVersionTransforms;
-import com.google.gdata.model.transforms.atompub.AtompubVersionTransforms;
 import com.google.gdata.wireformats.AltFormat;
 import com.google.gdata.wireformats.WireFormat;
 
 /**
  * A dual-mode generator for atom.
- * 
+ *
  * 
  */
 public class AtomDualGenerator extends DualModeGenerator<IAtom> {
-  
-  static {
-    // Register common transforms for Atom and AtomPub elements
-    AtomVersionTransforms.addTransforms(DefaultRegistry.builder());
-    AtompubVersionTransforms.addTransforms(DefaultRegistry.builder());
-  }
-  
+
   public AtomDualGenerator() {
     super(new AtomGenerator());
   }

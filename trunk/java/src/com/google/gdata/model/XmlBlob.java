@@ -41,10 +41,10 @@ public class XmlBlob extends Element {
    */
   public static final ElementKey<Void, XmlBlob> KEY = ElementKey.of(
       null, XmlBlob.class);
-  
+
   /**
    * Constructs a new instance using the specified element metadata.
-   * 
+   *
    * @param elementMetadata metadata describing the expected attributes and
    *        child elements.
    */
@@ -101,14 +101,14 @@ public class XmlBlob extends Element {
   /**
    * Get blob content. Depending on how the blob was parsed, it may contain
    * top-level text() nodes mixed together with child elements.
-   * 
+   *
    * @return blob content
    */
   public String getBlob() {
     StringWriter sw = new StringWriter();
     // formatting model should be aligned with the broader context.
     WireFormatGenerator generator = WireFormat.XML.createGenerator(
-        MetadataContext.forAlt("xml"), sw, Charsets.UTF_8, false); 
+        null, sw, Charsets.UTF_8, false);
     try {
       generator.generate(this);
     } catch (ContentValidationException e) {
@@ -118,17 +118,16 @@ public class XmlBlob extends Element {
     }
     return sw.toString();
   }
-  
+
   /**
    * Set blob content.
-   * 
+   *
    * @param v blob content
    */
   public void setBlob(String v) {
     clear();
     WireFormatParser parser = WireFormat.XML.createParser(
-        MetadataContext.forAlt("xml"), new StringReader(v),
-        Charset.forName("utf-8"));
+        null, new StringReader(v), Charset.forName("utf-8"));
     try {
       parser.parse(this);
     } catch (ParseException e) {

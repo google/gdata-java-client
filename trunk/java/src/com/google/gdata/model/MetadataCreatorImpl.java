@@ -17,6 +17,7 @@
 package com.google.gdata.model;
 
 import com.google.gdata.util.common.base.Preconditions;
+import com.google.gdata.model.Metadata.VirtualValue;
 
 /**
  * Shared implementation of the basic metadata fields for
@@ -36,6 +37,7 @@ abstract class MetadataCreatorImpl {
   private QName name;
   private Boolean required;
   private Boolean visible;
+  private VirtualValue virtualValue;
 
   /**
    * Construct a new empty metadata creator, with all fields defaulted to null.
@@ -89,6 +91,17 @@ abstract class MetadataCreatorImpl {
     return this;
   }
 
+  /**
+   * Set the metadata to visible or hidden.
+   */
+  MetadataCreatorImpl setVirtualValue(VirtualValue virtualValue) {
+    synchronized (registry) {
+      this.virtualValue = virtualValue;
+      registry.dirty();
+    }
+    return this;
+  }
+
   // Package-level read-only access.
 
   QName getName() {
@@ -101,5 +114,9 @@ abstract class MetadataCreatorImpl {
 
   Boolean getVisible() {
     return visible;
+  }
+
+  VirtualValue getVirtualValue() {
+    return virtualValue;
   }
 }

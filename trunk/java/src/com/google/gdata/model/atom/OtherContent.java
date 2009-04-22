@@ -79,9 +79,6 @@ public class OtherContent extends Content {
    */
   public OtherContent(Content content) {
     super(DefaultRegistry.get(KEY), content);
-    setMimeType(content.getMimeType());
-    setLang(content.getLang());
-    setTextValue(content.getTextValue());
   }
 
   /** @return the type of this content */
@@ -99,19 +96,6 @@ public class OtherContent extends Content {
   /** Specifies the MIME type. */
   public void setMimeType(ContentType v) {
     addAttribute(TYPE, v.getMediaType());
-  }
-
-  /** @return  the human language that this content is written in */
-  @Override
-  public String getLang() {
-    throw new UnsupportedOperationException("Not supported yet");
-  }
-
-  /** Specifies the human language that this content is written in. */
-  public void setLang(String v) {
-    if (v != null) {
-      throw new UnsupportedOperationException("Not supported yet");
-    }
   }
 
   /** @return the XML contents */

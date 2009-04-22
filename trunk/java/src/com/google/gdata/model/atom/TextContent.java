@@ -70,7 +70,6 @@ public class TextContent extends Content implements ITextConstruct {
     ElementCreator constructBuilder =
         DefaultRegistry.build(CONSTRUCT)
             .setValidator(new TextContentValidator());
-    constructBuilder.addAttribute(Content.XML_LANG);
     constructBuilder.addElement(DIV);
 
     ElementCreator builder = DefaultRegistry.build(KEY);
@@ -353,17 +352,6 @@ public class TextContent extends Content implements ITextConstruct {
   public void setXhtml(XmlBlob div) {
     addAttribute(Content.TYPE, "xhtml");
     addElement(DIV, div);
-  }
-
-  /** Returns the human language that this text is written in */
-  @Override
-  public String getLang() {
-    return getAttributeValue(Content.XML_LANG);
-  }
-
-  /** Sets the human language that this text was is written in. */
-  public void setLang(String lang) {
-    addAttribute(Content.XML_LANG, lang);
   }
 
   /**

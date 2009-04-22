@@ -16,26 +16,53 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.model.transforms.atom.AtomRssTransforms;
+import com.google.gdata.model.transforms.atom.AtomVersionTransforms;
+import com.google.gdata.model.transforms.atompub.AtompubVersionTransforms;
 import com.google.gdata.util.Version;
+import com.google.gdata.wireformats.AltFormat;
 
 /**
  * A context that metadata is operating under.  Currently this contains the
- * alt type and version of the current request.  Immutable.
+ * alt format, projection and version of the current request.  Immutable.
+ *
+ * <p>This class also contains static initializers for the transforms required
+ * by each of our alt formats, which guarantees they will be loaded.  We may
+ * want to put them somewhere else, but we need to move the constants for the
+ * contexts along with them.
  *
  * 
  */
 public final class MetadataContext implements Comparable<MetadataContext> {
 
+  /** The ATOM metadata context. */
+  public static final MetadataContext ATOM = MetadataContext.forAlt(
+      AltFormat.ATOM);
+
+  // Add the default set of atom transforms.
+  static {
+    AtomVersionTransforms.addTransforms(DefaultRegistry.builder());
+    AtompubVersionTransforms.addTransforms(DefaultRegistry.builder());
+  }
+
+  /** The RSS metadata context. */
+  public static final MetadataContext RSS = MetadataContext.forAlt(
+      AltFormat.RSS);
+
+  // Add the default set of RSS transforms.
+  static {
+    AtomRssTransforms.addTransforms(DefaultRegistry.builder());
+  }
+
   /**
-   * Creates a new immutable metadata context with just alt.  If the alt type is
-   * null this will return null, which is the default context.
+   * Creates a new immutable metadata context with just an alt format.  The
+   * format must not be null or this will throw a null pointer exception.
    *
-   * @param altType the alt type of the context.
-   * @return an immutable metadata context with the given alt type, or null if
-   *     the alt type was null.
+   * @param format the alt format for the context, not {@code null}.
+   * @return a metadata context for the alt format.
    */
-  public static MetadataContext forAlt(String altType) {
-    return forContext(altType, null, null);
+  public static MetadataContext forAlt(AltFormat format) {
+    return forContext(format, null, null);
   }
 
   /**
@@ -67,22 +94,22 @@ public final class MetadataContext implements Comparable<MetadataContext> {
    * type are all null this method will return null, which is the default
    * context.
    *
-   * @param altType the alt type of the context.
+   * @param format the alt format of the context.
    * @param projection the projection for the context.
    * @param version the version of the context.
    * @return an immutable metadata context with the given alt type, projection
    *     and version, or null if all parameters are null.
    */
-  public static MetadataContext forContext(String altType, String projection,
+  public static MetadataContext forContext(AltFormat format, String projection,
       Version version) {
-    if (altType == null && projection == null && version == null) {
+    if (format == null && projection == null && version == null) {
       return null;
     }
-    return new MetadataContext(altType, projection, version);
+    return new MetadataContext(format, projection, version);
   }
 
   // The alt type of the request.
-  private final String altType;
+  private final AltFormat altFormat;
 
   // The projection of the request.
   private final String projection;
@@ -93,8 +120,9 @@ public final class MetadataContext implements Comparable<MetadataContext> {
   /**
    * Private constructor, callers must use the static factory methods.
    */
-  private MetadataContext(String altType, String projection, Version version) {
-    this.altType = altType;
+  private MetadataContext(
+      AltFormat format, String projection, Version version) {
+    this.altFormat = format;
     this.projection = projection;
     this.version = version;
   }
@@ -107,19 +135,19 @@ public final class MetadataContext implements Comparable<MetadataContext> {
    */
   public boolean matches(MetadataContext other) {
     return other != null
-        && (altType == null || altType.equals(other.altType))
+        && (altFormat == null || altFormat.equals(other.altFormat))
         && (projection == null || projection.equals(other.projection))
         && (version == null
             || (other.version != null && other.version.isCompatible(version)));
   }
 
   /**
-   * The alt type the context represents.
+   * The alt format the context represents.
    *
-   * @return the alt type or null if the context doesn't have an alt type.
+   * @return the alt format or null if the context doesn't have an alt format.
    */
-  public String getAltType() {
-    return altType;
+  public AltFormat getAltFormat() {
+    return altFormat;
   }
 
   /**
@@ -150,7 +178,7 @@ public final class MetadataContext implements Comparable<MetadataContext> {
     if (this == other) {
       return 0;
     }
-    int compare = compareString(altType, other.altType);
+    int compare = compareAltFormat(altFormat, other.altFormat);
     if (compare != 0) {
       return compare;
     }
@@ -161,6 +189,16 @@ public final class MetadataContext implements Comparable<MetadataContext> {
 
     // Compare versions.
     return compareVersion(version, other.version);
+  }
+
+  /**
+   * Compares two alt formats, where either may be null.  Just compares them
+   * based on their names.
+   */
+  static int compareAltFormat(AltFormat a, AltFormat b) {
+    return compareString(
+        (a == null) ? null : a.getName(),
+        (b == null) ? null : b.getName());
   }
 
   /**
@@ -213,8 +251,8 @@ public final class MetadataContext implements Comparable<MetadataContext> {
   @Override
   public int hashCode() {
     int hash = 0;
-    if (altType != null) {
-      hash += altType.hashCode();
+    if (altFormat != null) {
+      hash += altFormat.hashCode();
     }
     if (projection != null) {
       hash = hash * 37;
@@ -241,11 +279,11 @@ public final class MetadataContext implements Comparable<MetadataContext> {
     }
 
     MetadataContext other = (MetadataContext) obj;
-    if (altType == null) {
-      if (other.altType != null) {
+    if (altFormat == null) {
+      if (other.altFormat != null) {
         return false;
       }
-    } else if (!altType.equals(other.altType)) {
+    } else if (!altFormat.equals(other.altFormat)) {
       return false;
     }
     if (projection == null) {
@@ -269,7 +307,7 @@ public final class MetadataContext implements Comparable<MetadataContext> {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("{MetadataContext(");
-    sb.append(altType);
+    sb.append(altFormat);
     sb.append(',');
     sb.append(projection);
     sb.append(',');

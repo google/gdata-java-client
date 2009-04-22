@@ -77,6 +77,7 @@ public class Content extends Element implements IContent {
         DefaultRegistry.build(CONSTRUCT).setContentRequired(false);
     constructBuilder.addAttribute(TYPE);
     constructBuilder.addAttribute(SRC);
+    constructBuilder.addAttribute(XML_LANG);
 
     // The basic atom:content just uses the same fields as the construct.
     DefaultRegistry.build(KEY);
@@ -122,11 +123,14 @@ public class Content extends Element implements IContent {
     return Type.TEXT;
   }
 
-  /** Returns the human language that this content is written in. */
+  /** Returns the human language that this content is written in */
   public String getLang() {
-    // operation exception because we use this in the copy constructor when
-    // narrowing from the base class to a more specific class.
-    return null;
+    return getAttributeValue(XML_LANG);
+  }
+
+  /** Sets the human language that this content was is written in. */
+  public void setLang(String lang) {
+    addAttribute(Content.XML_LANG, lang);
   }
 
   /** @return the MIME content type, or {@code null} if none exists */

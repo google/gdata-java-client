@@ -17,6 +17,7 @@
 package com.google.gdata.model.atom;
 
 import com.google.gdata.data.IOutOfLineContent;
+import com.google.gdata.data.Reference;
 import com.google.gdata.model.AttributeKey;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.ElementCreator;
@@ -31,7 +32,8 @@ import java.net.URISyntaxException;
 /**
  * Variant of {@link Content} for entries that reference external content.
  */
-public class OutOfLineContent extends Content implements IOutOfLineContent {
+public class OutOfLineContent extends Content 
+    implements IOutOfLineContent, Reference {
 
   /** The kind name for adaptation. */
   public static final String KIND = "out-of-line";
@@ -82,9 +84,7 @@ public class OutOfLineContent extends Content implements IOutOfLineContent {
    * @param content generic content
    */
   public OutOfLineContent(Content content) {
-    this();
-    setMimeType(content.getMimeType());
-    setSrc(content.getSrc());
+    super(DefaultRegistry.get(KEY), content);
   }
 
   /** @return the type of this content */
@@ -96,12 +96,6 @@ public class OutOfLineContent extends Content implements IOutOfLineContent {
   /** Specifies the MIME Content type. */
   public void setMimeType(ContentType v) {
     addAttribute(TYPE, v == null ? null : v.getMediaType());
-  }
-
-  /** @return always null, since language is undefined for external content. */
-  @Override
-  public String getLang() {
-    return null;
   }
 
   /**
@@ -147,6 +141,40 @@ public class OutOfLineContent extends Content implements IOutOfLineContent {
       removeAttribute(LENGTH);
     } else {
       addAttribute(LENGTH, length);
+    }
+  }
+
+  /**
+   * Returns the external URI or {@code null} if none exists.
+   *
+   * This method exists only so that {@link Content} implements 
+   * {@link Reference}. Callers should use {@link #getSrc()} 
+   * instead whenever possible.
+   */
+  public String getHref() {
+    URI uri = getAttributeValue(SRC);
+    return uri == null ? null : uri.toString();
+  }
+
+  /**
+   * Sets the external URI.
+   *
+   * This method exists only so that {@link Content} implements 
+   * {@link Reference}. Callers should use {@link #setSrc(URI)} 
+   * instead whenever possible.
+   *
+   * @param href external URI or {@code null}
+   * @throws IllegalArgumentException if {@code href} is not a valid URI
+   */
+  public void setHref(String href) {
+    if (href == null) {
+      removeAttribute(SRC);
+    } else {
+      try {
+        addAttribute(SRC, new URI(href));
+      } catch (URISyntaxException e) {
+        throw new IllegalArgumentException("Not a URI: " + href, e);
+      }
     }
   }
 

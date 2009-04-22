@@ -16,6 +16,8 @@
 
 package com.google.gdata.model.transforms.atom;
 
+import static com.google.gdata.model.MetadataContext.RSS;
+
 import com.google.common.collect.Lists;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
@@ -23,11 +25,10 @@ import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementMetadata;
-import com.google.gdata.model.MetadataContext;
 import com.google.gdata.model.MetadataRegistryBuilder;
 import com.google.gdata.model.MetadataValueTransform;
 import com.google.gdata.model.QName;
-import com.google.gdata.model.ElementCreator.ValueTransform;
+import com.google.gdata.model.Metadata.VirtualValue;
 import com.google.gdata.model.atom.Author;
 import com.google.gdata.model.atom.Category;
 import com.google.gdata.model.atom.Content;
@@ -44,6 +45,7 @@ import com.google.gdata.model.atom.Source.Generator;
 import com.google.gdata.model.atompub.Edited;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
+import com.google.gdata.util.ParseException;
 import com.google.gdata.wireformats.XmlGenerator;
 import com.google.gdata.wireformats.XmlWireFormatProperties;
 
@@ -62,12 +64,10 @@ import java.util.List;
  */
 public class AtomRssTransforms {
 
-  private static final MetadataContext CONTEXT = MetadataContext.forAlt("rss");
-
   /**
    * Add the RSS transforms to the default metadata trees.
    */
-  public static void addRssTransforms(MetadataRegistryBuilder registry) {
+  public static void addTransforms(MetadataRegistryBuilder registry) {
     addCategoryTransforms(registry);
     addContentTransforms(registry);
     addEntryTransforms(registry);
@@ -81,34 +81,34 @@ public class AtomRssTransforms {
   }
 
   private static void addCategoryTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Category.KEY, CONTEXT)
+    registry.build(Category.KEY, RSS)
         .setName(new QName(Namespaces.rssNs, "category"))
-        .setValueTransform(
+        .setVirtualValue(
             new MetadataValueTransform(Category.TERM, Category.LABEL));
 
-    registry.build(Category.KEY, Category.SCHEME, CONTEXT)
+    registry.build(Category.KEY, Category.SCHEME, RSS)
         .setName(new QName("domain"));
 
-    registry.build(Category.KEY, Category.LABEL, CONTEXT)
+    registry.build(Category.KEY, Category.LABEL, RSS)
         .setVisible(false);
 
-    registry.build(Category.KEY, Category.TERM, CONTEXT)
+    registry.build(Category.KEY, Category.TERM, RSS)
         .setVisible(false);
   }
 
   private static void addContentTransforms(MetadataRegistryBuilder registry) {
-    registry.build(TextContent.KEY, CONTEXT)
+    registry.build(TextContent.KEY, RSS)
         .setName(new QName(Namespaces.rssNs, "description"))
         .whitelistAttributes();
-    registry.build(TextContent.CONSTRUCT, CONTEXT)
+    registry.build(TextContent.CONSTRUCT, RSS)
         .whitelistAttributes();
   }
 
   private static void addEntryTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Entry.KEY, CONTEXT)
+    registry.build(Entry.KEY, RSS)
         .setName(new QName(Namespaces.rssNs, "item"));
 
-    registry.build(Entry.KEY, Entry.ETAG, CONTEXT)
+    registry.build(Entry.KEY, Entry.ETAG, RSS)
         .setVisible(false);
 
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
@@ -130,19 +130,25 @@ public class AtomRssTransforms {
         return true;
       }
     });
-    registry.build(Entry.KEY, Entry.ID, CONTEXT)
+    registry.build(Entry.KEY, Entry.ID, RSS)
         .setName(new QName(Namespaces.rssNs, "guid"))
         .setProperties(properties);
 
-    registry.build(Entry.KEY, Entry.TITLE, CONTEXT)
+    registry.build(Entry.KEY, Entry.TITLE, RSS)
         .setName(new QName(Namespaces.rssNs, "title"));
 
-    registry.build(Entry.KEY, Entry.PUBLISHED, CONTEXT)
+    registry.build(Entry.KEY, Entry.PUBLISHED, RSS)
         .setName(new QName(Namespaces.rssNs, "pubDate"))
-        .setValueTransform(new ValueTransform() {
-          public String transform(Element e) {
-            DateTime date = e.getTextValue(Entry.PUBLISHED);
+        .setVirtualValue(new VirtualValue() {
+          public Object generate(Element element) {
+            DateTime date = element.getTextValue(Entry.PUBLISHED);
             return date == null ? "" : date.toStringRfc822();
+          }
+
+          public void parse(Element element, Object value)
+              throws ParseException {
+            DateTime parsed = DateTime.parseRfc822(value.toString());
+            element.setTextValue(parsed);
           }
         });
 
@@ -190,15 +196,15 @@ public class AtomRssTransforms {
       public void endElement(XmlWriter xw, Element e) {}
     });
 
-    registry.build(Entry.KEY, Author.KEY, CONTEXT)
+    registry.build(Entry.KEY, Author.KEY, RSS)
         .setName(new QName(Namespaces.rssNs, "author"))
         .setProperties(personProperties);
 
-    registry.build(Entry.KEY, Contributor.KEY, CONTEXT)
+    registry.build(Entry.KEY, Contributor.KEY, RSS)
         .setName(new QName(Namespaces.rssNs, "author"))
         .setProperties(personProperties);
 
-    registry.build(Entry.KEY, Entry.RIGHTS, CONTEXT).setVisible(false);
+    registry.build(Entry.KEY, Entry.RIGHTS, RSS).setVisible(false);
   }
 
   private static void addEntryOutOfLineContentTransforms(
@@ -229,12 +235,12 @@ public class AtomRssTransforms {
       public void endElement(XmlWriter xw, Element e) {}
     });
 
-    registry.build(OutOfLineContent.KEY, CONTEXT)
+    registry.build(OutOfLineContent.KEY, RSS)
         .setProperties(properties);
   }
 
   private static void addFeedTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Feed.KEY, Entry.ETAG, CONTEXT)
+    registry.build(Feed.KEY, Entry.ETAG, RSS)
         .setVisible(false);
 
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
@@ -267,16 +273,22 @@ public class AtomRssTransforms {
         super.endElement(xw, e);
       }
     });
-    registry.build(Feed.KEY, CONTEXT)
+    registry.build(Feed.KEY, RSS)
         .setName(new QName(Namespaces.rssNs, "rss"))
         .setProperties(properties);
 
-    registry.build(Feed.KEY, Feed.UPDATED, CONTEXT)
+    registry.build(Feed.KEY, Feed.UPDATED, RSS)
         .setName(new QName(Namespaces.rssNs, "lastBuildDate"))
-        .setValueTransform(new ValueTransform() {
-          public String transform(Element e) {
-            DateTime date = e.getTextValue(Feed.UPDATED);
+        .setVirtualValue(new VirtualValue() {
+          public Object generate(Element element) {
+            DateTime date = element.getTextValue(Feed.UPDATED);
             return date == null ? "" : date.toStringRfc822();
+          }
+
+          public void parse(Element element, Object value)
+              throws ParseException {
+            DateTime parsed = DateTime.parseRfc822(value.toString());
+            element.setTextValue(parsed);
           }
         });
   }
@@ -321,15 +333,15 @@ public class AtomRssTransforms {
       public void endElement(XmlWriter xw, Element e) {}
     });
 
-    registry.build(Link.KEY, CONTEXT)
+    registry.build(Link.KEY, RSS)
         .setProperties(properties);
   }
 
   private static void addSourceTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Source.CONSTRUCT, Source.TITLE, CONTEXT)
+    registry.build(Source.CONSTRUCT, Source.TITLE, RSS)
         .setName(new QName(Namespaces.rssNs, "title"));
 
-    registry.build(Source.CONSTRUCT, Source.SUBTITLE, CONTEXT)
+    registry.build(Source.CONSTRUCT, Source.SUBTITLE, RSS)
         .setName(new QName(Namespaces.rssNs, "description"));
 
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
@@ -374,42 +386,41 @@ public class AtomRssTransforms {
       @Override
       public void endElement(XmlWriter xw, Element e) {}
     });
-    registry.build(Source.CONSTRUCT, Source.ICON, CONTEXT)
+    registry.build(Source.CONSTRUCT, Source.ICON, RSS)
         .setProperties(properties);
-    registry.build(Source.CONSTRUCT, Source.LOGO, CONTEXT)
+    registry.build(Source.CONSTRUCT, Source.LOGO, RSS)
         .setProperties(properties);
 
-    registry.build(Source.CONSTRUCT, Source.RIGHTS, CONTEXT)
+    registry.build(Source.CONSTRUCT, Source.RIGHTS, RSS)
         .setVisible(true)
         .setName(new QName(Namespaces.rssNs, "copyright"));
 
-    registry.build(Source.CONSTRUCT, Author.KEY, CONTEXT)
+    registry.build(Source.CONSTRUCT, Author.KEY, RSS)
         .setName(new QName(Namespaces.rssNs, "managingEditor"))
-        .setValueTransform(
-            new MetadataValueTransform(Person.NAME));
+        .setVirtualValue(new MetadataValueTransform(Person.NAME));
   }
 
   private static void addPersonTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Person.KEY, Person.EMAIL, CONTEXT)
+    registry.build(Person.KEY, Person.EMAIL, RSS)
         .setVisible(false);
-    registry.build(Person.KEY, Person.NAME, CONTEXT)
+    registry.build(Person.KEY, Person.NAME, RSS)
         .setVisible(false);
-    registry.build(Person.KEY, Person.URI, CONTEXT)
+    registry.build(Person.KEY, Person.URI, RSS)
         .setVisible(false);
   }
 
   private static void addGeneratorTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Generator.KEY, CONTEXT)
+    registry.build(Generator.KEY, RSS)
         .setName(new QName(Namespaces.rssNs, "generator"));
 
-    registry.build(Generator.KEY, Generator.URI, CONTEXT)
+    registry.build(Generator.KEY, Generator.URI, RSS)
         .setVisible(false);
-    registry.build(Generator.KEY, Generator.VERSION, CONTEXT)
+    registry.build(Generator.KEY, Generator.VERSION, RSS)
         .setVisible(false);
   }
 
   private static void addAppEditedTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Edited.KEY, CONTEXT).setVisible(false);
+    registry.build(Edited.KEY, RSS).setVisible(false);
   }
 
   private static void generateEnclosure(XmlWriter xw, String type, String href,

@@ -17,23 +17,16 @@
 package com.google.gdata.wireformats.output;
 
 import com.google.gdata.data.IAtom;
-import com.google.gdata.model.DefaultRegistry;
-import com.google.gdata.model.transforms.atom.AtomRssTransforms;
 import com.google.gdata.wireformats.AltFormat;
 import com.google.gdata.wireformats.WireFormat;
 
 /**
  * An RSS generator that can generate from both old and new data model formats.
- * 
+ *
  * 
  */
 public class RssDualGenerator extends DualModeGenerator<IAtom> {
 
-  static {
-    // Add default rss transforms.
-    AtomRssTransforms.addRssTransforms(DefaultRegistry.builder());
-  }
-  
   public RssDualGenerator() {
     super(new RssGenerator());
   }
@@ -45,7 +38,7 @@ public class RssDualGenerator extends DualModeGenerator<IAtom> {
   public AltFormat getAltFormat() {
     return AltFormat.RSS;
   }
-  
+
   @Override
   public WireFormat getWireFormat() {
     return WireFormat.XML;

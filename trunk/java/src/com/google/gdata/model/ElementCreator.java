@@ -17,6 +17,8 @@
 package com.google.gdata.model;
 
 import com.google.gdata.model.ContentModel.Cardinality;
+import com.google.gdata.model.ElementMetadata.VirtualElement;
+import com.google.gdata.model.Metadata.VirtualValue;
 
 /**
  * An element creator allows setting element information, which includes the
@@ -41,7 +43,7 @@ import com.google.gdata.model.ContentModel.Cardinality;
  * {@code null}.</li>
  * <li>valueTransform: Allows changing where the value of the element comes
  * from. By default the value comes from the text content field, but this can
- * be overridden by using a {@link ValueTransform}.</li>
+ * be overridden by using a {@link VirtualValue}.</li>
  * <li>attributes: The ordered set of attributes expected for this element.
  * Defaults to empty. Adding an attribute can be accomplished by calling either
  * {@link #addAttribute} or {@link #replaceAttribute}, based on the desired
@@ -60,40 +62,28 @@ import com.google.gdata.model.ContentModel.Cardinality;
 public interface ElementCreator {
 
   /**
-   * This interface represents a transformation of a value.  The transform
-   * method will be called on output to generate the correct representation.
-   */
-  public interface ValueTransform {
-
-    /**
-     * Runs this transformation on the given element.
-     */
-    public String transform(Element e);
-  }
-
-  /**
-   * Sets the name of the property.  This can be used after copying some other
+   * Sets the name of the element.  This can be used after copying some other
    * metadata to change the name.
    *
-   * @param name the new name to use for the property.
+   * @param name the new name to use for the element.
    * @return this metadata creator for chaining.
    */
   ElementCreator setName(QName name);
 
   /**
-   * Sets the requiredness of this property.  This means that the property
+   * Sets the requiredness of this element.  This means that the element
    * must appear in the parent element for the parent element to be valid.
    *
-   * @param required true to set the property to required, false to set it
+   * @param required true to set the element to required, false to set it
    *     to optional (the default).
    * @return this metadata creator for chaining.
    */
   ElementCreator setRequired(boolean required);
 
   /**
-   * Sets whether this property is visible.  If the property is not visible
+   * Sets whether this element is visible.  If the element is not visible
    * then it will not be included in the output.  This can be used to set the
-   * state of a property to invisible if it is not part of the default set
+   * state of an element to hidden if it is not part of the default set
    * of metadata.
    *
    * @param visible true to make the property visible (the default), false to
@@ -154,10 +144,19 @@ public interface ElementCreator {
   ElementCreator setProperties(Object properties);
 
   /**
-   * Sets the value transform for the element.  This is used to retrieve the
-   * value of the element if the normal text content is not appropriate.
+   * Sets the virtual text content of this element. This can change how the
+   * text content of the element is rendered, but cannot be used for structural
+   * changes to the element. For that use
+   * {@link #setVirtualElement(VirtualElement)}.
    */
-  ElementCreator setValueTransform(ValueTransform valueTransform);
+  ElementCreator setVirtualValue(VirtualValue virtualValue);
+
+  /**
+   * Sets this metadata as representing a virtual element.  A virtual element
+   * is an element that only exists in the metadata, and is used during parsing
+   * and generation to map to the base DOM.
+   */
+  ElementCreator setVirtualElement(VirtualElement virtualElement);
 
   /**
    * Sets the location of the undeclared attributes. By default, undeclared
@@ -186,9 +185,15 @@ public interface ElementCreator {
   AttributeCreator replaceAttribute(AttributeKey<?> key);
 
   /**
+   * Sets a list of attributes as the only visible attributes for an element,
+   * and also places them into the given order in the element.
+   */
+  ElementCreator orderAndWhitelistAttributes(AttributeKey<?>... keys);
+
+  /**
    * Whitelists a set of attributes for this element metadata.  This will hide
    * all declared attributes on the metadata instance that will be created from
-   * this builder.
+   * this builder.  This will not change the current order.
    */
   ElementCreator whitelistAttributes(AttributeKey<?>... keys);
 
@@ -220,9 +225,15 @@ public interface ElementCreator {
   ElementCreator replaceElement(ElementKey<?, ?> key);
 
   /**
+   * Sets a list of elements as the only visible child elements for an element,
+   * and also places them into the given order in the element.
+   */
+  ElementCreator orderAndWhitelistElements(ElementKey<?, ?>... keys);
+
+  /**
    * Whitelists a set of child elements for this element metadata.  This will
    * hide all declared child elements on the metadata instance that will be
-   * created from this builder.
+   * created from this builder.  This will not change the current order.
    */
   ElementCreator whitelistElements(ElementKey<?, ?>... keys);
 

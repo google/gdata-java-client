@@ -49,17 +49,17 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
    */
   private static final XmlNamespace USE_ROOT_ELEMENT_NAMESPACE =
       new XmlNamespace("__USE_ROOT_ELEMENT_NAMESPACE__");
-  
+
   /**
    * XML writer used by this generator.
    */
   protected final XmlWriter xw;
-  
+
   /**
    * The default namespace to use for this generator.
    */
   private final XmlNamespace defaultNamespace;
-  
+
   /**
    * Creates a new xml generator for generating xml output.  This constructor
    * will use the namespace of the root element as the default namespace of the
@@ -70,7 +70,7 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
   public XmlGenerator(Writer w, Charset cs, boolean prettyPrint) {
     this(w, cs, prettyPrint, USE_ROOT_ELEMENT_NAMESPACE);
   }
-  
+
   /**
    * Creates a new xml generator for generating xml output, using the
    * given namespace as the default namespace.
@@ -81,16 +81,16 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
     if (prettyPrint) {
       flags.add(WriterFlags.PRETTY_PRINT);
     }
-    
+
     try {
       this.xw = new XmlWriter(w, flags, cs.name());
     } catch (IOException ioe) {
       throw new RuntimeException("Unable to create XML generator", ioe);
     }
-    
+
     this.defaultNamespace = defaultNamespace;
   }
-  
+
   /**
    * The ElementGenerator interface is implemented by helper classes that
    * will generate the start element, text content, and end element syntax
@@ -102,12 +102,12 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
    * element.
    */
   public interface ElementGenerator {
-    
+
     /**
      * Start an element.  If an ElementGenerator instances writes a full
      * element tag, it should return {@code false} to indicate that textContent
      * and child elements should not be added.
-     * 
+     *
      * @param xw the xml writer to write to.
      * @param parent the parent element, or null if this is a root element.
      * @param e the element to start.
@@ -117,18 +117,18 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
      */
     public boolean startElement(XmlWriter xw, Element parent, Element e)
         throws IOException;
-    
+
     /**
      * Write the text content for an element.
      */
     public void textContent(XmlWriter xw, Element e) throws IOException;
-    
+
     /**
      * End an element, writing a close tag if needed.
      */
     public void endElement(XmlWriter xw, Element e) throws IOException;
   }
-  
+
   /**
    * The XmlElementGenerator class provides the default implementation of the
    * {@link ElementGenerator interface}.   It will generate start and end
@@ -141,13 +141,13 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
 
       Collection<XmlNamespace> namespaces = getNamespaces(parent, e);
       List<XmlWriter.Attribute> attrs = getAttributes(e);
-      
+
       ElementMetadata<?, ?> meta = e.getMetadata();
       xw.startElement(meta.getName().getNs(), meta.getName().getLocalName(),
           attrs, namespaces);
       return true;
     }
-    
+
     /**
      * Get a collection of namespaces for the current element and parent.
      */
@@ -158,25 +158,23 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       }
       return null;
     }
-    
+
     /**
      * Get a list of attributes for the given element.
      */
     protected List<XmlWriter.Attribute> getAttributes(Element e) {
+      ElementMetadata<?, ?> metadata = e.getMetadata();
       List<XmlWriter.Attribute> attrs = null;
-      Iterator<Attribute> attributeIterator = e.getAttributeIterator();
+      Iterator<Attribute> attributeIterator = metadata.getAttributeIterator(e);
       if (attributeIterator.hasNext()) {
         attrs = new ArrayList<XmlWriter.Attribute>();
         while (attributeIterator.hasNext()) {
           Attribute attribute = attributeIterator.next();
           AttributeMetadata<?> attMeta = attribute.getMetadata();
-          if (!attMeta.isVisible()) {
-            continue;
-          }
           QName qName = attMeta.getName();
-          String alias = (qName.getNs() != null) ? 
+          String alias = (qName.getNs() != null) ?
               qName.getNs().getAlias() : null;
-          attrs.add(new XmlWriter.Attribute(alias, qName.getLocalName(), 
+          attrs.add(new XmlWriter.Attribute(alias, qName.getLocalName(),
               attribute.getValue().toString()));
         }
       }
@@ -185,9 +183,12 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
 
     public void textContent(XmlWriter xw, Element e) throws IOException {
       ElementMetadata<?, ?> meta = e.getMetadata();
-      String valueString = meta.getValueAsString(e);
-      if (valueString != null && valueString.length() > 0) {
-        xw.characters(valueString);
+      Object value = meta.generateValue(e);
+      if (value != null) {
+        String valStr = value.toString();
+        if (valStr.length() > 0) {
+          xw.characters(valStr);
+        }
       }
     }
     
@@ -196,7 +197,7 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
                     e.getMetadata().getName().getLocalName());
     }
   }
-  
+
   // A singleton default generator that is used in all cases where element
   // generation has not been customized via metadata.
   private static final ElementGenerator DEFAULT_GENERATOR =
@@ -213,13 +214,13 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       throw se;  // unexpected
     }
   }
-  
+
   /**
    * Returns the {@link ElementGenerator} that should be used to generator
    * the specified element.   The method will return the custom generator
    * configured in the {@link XmlWireFormatProperties} of element metadata, or
    * the default generator if none has been configured.
-   * 
+   *
    * @param e the element.
    * @return the element generator for elements of this type.
    */
@@ -248,14 +249,14 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
     }
     return false;
   }
-  
+
   /**
    * Sets the root element for generation.  This is used to derive the default
    * metadata that should be used.
    */
   private void setRootNamespace(Element element) {
     XmlNamespace rootNs = defaultNamespace;
-    
+
     // If no default has been set, we use the namespace of the root element as
     // the default namespace.
     if (rootNs == USE_ROOT_ELEMENT_NAMESPACE) {
@@ -278,3 +279,4 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
     }
   }
 }
+

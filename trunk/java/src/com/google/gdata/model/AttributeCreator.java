@@ -16,6 +16,8 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.model.Metadata.VirtualValue;
+
 /**
  * An attribute creator allows setting attribute information, which includes the
  * following pieces:
@@ -67,4 +69,10 @@ public interface AttributeCreator {
    * @return this attribute creator for chaining.
    */
   AttributeCreator setVisible(boolean visible);
+
+  /**
+   * Sets the virtual value for the attribute.  This is used as the value
+   * of the attribute during parsing and generation.
+   */
+  AttributeCreator setVirtualValue(VirtualValue virtualValue);
 }

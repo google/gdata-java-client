@@ -22,10 +22,10 @@ import com.google.gdata.wireformats.WireFormat;
 
 /**
  * A dual-mode generator for atom-service.
- * 
+ *
  * 
  */
-public class AtomServiceDualGenerator 
+public class AtomServiceDualGenerator
     extends DualModeGenerator<IServiceDocument> {
 
   public AtomServiceDualGenerator() {
@@ -39,7 +39,8 @@ public class AtomServiceDualGenerator
   public Class<IServiceDocument> getSourceType() {
     return IServiceDocument.class;
   }
-  
+
+  @Override
   public WireFormat getWireFormat() {
     return WireFormat.XML;
   }

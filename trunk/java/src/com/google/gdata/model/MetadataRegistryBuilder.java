@@ -19,7 +19,7 @@ package com.google.gdata.model;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gdata.model.MetadataRegistry.RootKey;
-import com.google.common.base.Preconditions;
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
@@ -133,7 +133,7 @@ public final class MetadataRegistryBuilder {
    * Here is what we do to deal with whitelisted attributes:
    * 1) Find each transform(parent, child, context)-> whitelisted attributes
    * 2) Find composite(parent, child, context)-> all attributes.
-   * 3) Add transforms(child, attribute, context) -> hide or unhide.
+   * 3) For each attribute not in the whitelist -> hide the attribute.
    */
   private void whitelistAttributes() {
 
@@ -179,9 +179,10 @@ public final class MetadataRegistryBuilder {
         }
 
         for (AttributeKey<?> attribute : allAttributes) {
-          ElementKey<?, ?> parent = (ElementKey<?, ?>) key.getKey();
-          build(parent, attribute, key.getContext())
-              .setVisible(whitelistNames.contains(attribute.getId()));
+          if (!whitelistNames.contains(attribute.getId())) {
+            ElementKey<?, ?> parent = (ElementKey<?, ?>) key.getKey();
+            build(parent, attribute, key.getContext()).setVisible(false);
+          }
         }
       }
     }
@@ -191,7 +192,7 @@ public final class MetadataRegistryBuilder {
    * Here is what we do to deal with whitelisted children:
    * 1) Find each transform(parent, child, context)-> whitelisted children
    * 2) Find composite(parent, child, context)-> all children.
-   * 3) Add transforms(child, grandchild, context) -> hide or unhide.
+   * 3) For each child element not in the whitelist -> hide the child element.
    */
   private void whitelistElements() {
 
@@ -239,9 +240,10 @@ public final class MetadataRegistryBuilder {
         }
 
         for (ElementKey<?, ?> child : allChildren) {
-          ElementKey<?, ?> parent = (ElementKey<?, ?>) key.getKey();
-          build(parent, child, key.getContext())
-              .setVisible(whitelistNames.contains(child.getId()));
+          if (!whitelistNames.contains(child.getId())) {
+            ElementKey<?, ?> parent = (ElementKey<?, ?>) key.getKey();
+            build(parent, child, key.getContext()).setVisible(false);
+          }
         }
       }
     }

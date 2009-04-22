@@ -17,7 +17,6 @@
 package com.google.gdata.client;
 
 import com.google.gdata.util.common.net.UriParameterMap;
-
 import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.client.AuthTokenFactory.AuthToken;
 import com.google.gdata.client.batch.BatchInterruptedException;
@@ -262,7 +261,6 @@ public class Service {
      * Returns the {@link ContentType} of the data that will be written to the
      * service by this request or {@code null} if no data is written to the
      * server by the request.
-
      */
     public ContentType getRequestContentType();
 
@@ -822,11 +820,9 @@ public class Service {
       startVersionScope();
       request.execute();
       return parseResponseData(request, serviceClass);
-
     } finally {
       endVersionScope();
       request.end();
-
     }
   }
 
@@ -977,7 +973,6 @@ public class Service {
    * @throws ServiceException system error retrieving feed.
    */
   private <F extends IFeed> F getFeed(GDataRequest request,
-
       Class<F> feedClass, DateTime ifModifiedSince) throws IOException,
       ServiceException {
 
@@ -986,7 +981,6 @@ public class Service {
       request.setIfModifiedSince(ifModifiedSince);
       request.execute();
       return parseResponseData(request, feedClass);
-
     } finally {
       endVersionScope();
       request.end();
@@ -1021,7 +1015,6 @@ public class Service {
       request.setEtag(etag);
       request.execute();
       return parseResponseData(request, feedClass);
-
     } finally {
       endVersionScope();
       request.end();
@@ -1050,10 +1043,8 @@ public class Service {
    * {@link IFeed} containing entries that match the query result.
    * 
    * @param query Query instance defining target feed and query parameters.
-
    * @param feedClass the Class used to represent a service Feed,
    *        not {@code null}.
-
    * @throws IOException error communicating with the GData service.
    * @throws com.google.gdata.util.ServiceForbiddenException feed does not
    *         support the query.
@@ -1075,7 +1066,6 @@ public class Service {
    * modified since the specified date.
    * 
    * @param query Query instance defining target feed and query parameters.
-
    * @param feedClass the Class used to represent a service Feed,
    *        not {@code null}.
    * @param ifModifiedSince used to set a precondition date that indicates the
@@ -1203,7 +1193,6 @@ public class Service {
       request.execute();     
       return parseResponseData(request, entryClass);
 
-
     } finally {
       endVersionScope();
       request.end();
@@ -1244,7 +1233,6 @@ public class Service {
       request.execute();
       return parseResponseData(request, entryClass);
 
-
     } finally {
       endVersionScope();
       request.end();
@@ -1268,11 +1256,9 @@ public class Service {
     return createRequest(GDataRequest.RequestType.QUERY, entryUrl, contentType);
   } 
 
-
   /**
    * Inserts a new {@link IEntry} into a feed associated
    * with the target service. It will return the inserted entry, including any
-
    * additional attributes or extensions set by the GData server.
    * 
    * @param feedUrl the POST URI associated with the target feed.
@@ -1287,7 +1273,6 @@ public class Service {
    * @throws ServiceException insert request failed due to system error.
    * 
    * @see IFeed#getEntryPostLink()
-
    */
   @SuppressWarnings("unchecked")
   public <E extends IEntry> E insert(URL feedUrl, E entry)
@@ -1302,7 +1287,6 @@ public class Service {
       startVersionScope();
       
       writeRequestData(request, entry);
-
       request.execute();
       return parseResponseData(request, classOf(entry));
 
@@ -1339,7 +1323,6 @@ public class Service {
    *         Check {@link BatchInterruptedException#getIFeed()}.
    * 
    * @see IFeed#getEntryPostLink()
-
    */
   @SuppressWarnings("unchecked")
   public <F extends IFeed> F batch(URL feedUrl, F inputFeed)
@@ -1349,14 +1332,12 @@ public class Service {
     try {
       startVersionScope();
       writeRequestData(request, inputFeed);
-
       request.execute();
       F resultFeed = parseResponseData(request, classOf(inputFeed));
 
       // Detect BatchInterrupted
       int count = resultFeed.getEntries().size();
       BatchUtils.throwIfInterrupted(resultFeed);
-
       return resultFeed;
 
     } finally {
@@ -1417,7 +1398,6 @@ public class Service {
    * @throws ServiceException update request failed due to system error.
    * 
    * @see IEntry#getEditLink()
-
    */
   @SuppressWarnings("unchecked")
   public <E extends IEntry> E update(URL entryUrl, E entry)
@@ -1437,7 +1417,6 @@ public class Service {
    * edit URL. The resulting entry (after update) will be returned. This update
    * is conditional upon the provided tag matching the current entity tag for
    * the entry. If (and only if) they match, the update will be performed.
-
    * 
    * @param entryUrl the edit URL associated with the entry.
    * @param entry the modified entry to be written to the server.
@@ -1454,10 +1433,8 @@ public class Service {
    * @throws ServiceException update request failed due to system error.
    * 
    * @see IEntry#getEditLink()
-
    */
   public <E extends IEntry> E update(URL entryUrl, E entry, String etag)
-
       throws IOException, ServiceException {
 
     GDataRequest request = createUpdateRequest(entryUrl);
@@ -1465,10 +1442,8 @@ public class Service {
       startVersionScope();
       request.setEtag(etag);
       writeRequestData(request, entry);
-
       request.execute();
       return parseResponseData(request, classOf(entry));
-
     } finally {
       endVersionScope();
       request.end();
@@ -1773,7 +1748,6 @@ public class Service {
    * 
    * @param <E> expected result type
    * @param req request that has been executed but not yet read from.
-
    * @param resultType expected result type, not {@code null}.
    * @return an instance of the expected result type resulting from the parse.
    * @throws IOException
@@ -1819,4 +1793,3 @@ public class Service {
     return result;
   }
 }
-

@@ -16,6 +16,8 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.model.Metadata.VirtualValue;
+
 /**
  * An immutable transform on a piece of metadata.  This contains all of the
  * base metadata fields, every value is optional (anything may be null).
@@ -30,13 +32,15 @@ abstract class Transform {
   static boolean isEmptyTransform(Transform transform) {
     return transform.name == null
         && transform.required == null
-        && transform.visible == null;
+        && transform.visible == null
+        && transform.virtualValue == null;
   }
 
   // Our final, nullable fields.
   final QName name;
   final Boolean required;
   final Boolean visible;
+  final VirtualValue virtualValue;
 
   /**
    * Constructs an empty transform with all null values.  This should only be
@@ -47,6 +51,7 @@ abstract class Transform {
     this.name = null;
     this.required = null;
     this.visible = null;
+    this.virtualValue = null;
   }
 
   /**
@@ -60,6 +65,7 @@ abstract class Transform {
     this.name = creator.getName();
     this.required = creator.getRequired();
     this.visible = creator.getVisible();
+    this.virtualValue = creator.getVirtualValue();
   }
 
   /**
@@ -69,6 +75,7 @@ abstract class Transform {
     QName compositeName = null;
     Boolean compositeRequired = null;
     Boolean compositeVisible = null;
+    VirtualValue compositeVirtualValue = null;
 
     for (Transform part : parts) {
       if (part.name != null) {
@@ -80,10 +87,14 @@ abstract class Transform {
       if (part.visible != null) {
         compositeVisible = part.visible;
       }
+      if (part.virtualValue != null) {
+        compositeVirtualValue = part.virtualValue;
+      }
     }
 
     this.name = compositeName;
     this.required = compositeRequired;
     this.visible = compositeVisible;
+    this.virtualValue = compositeVirtualValue;
   }
 }

@@ -16,6 +16,8 @@
 
 package com.google.gdata.data;
 
+import com.google.gdata.util.ParseException;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -99,8 +101,8 @@ public class DateTime implements Comparable<Object> {
    * Compares instance with DateTime or Date objects.
    *
    * Does not take the tzShift value into account.
-   * Therefore, two DateTime objects are equal independent to 
-   * the time zone they refer to. 
+   * Therefore, two DateTime objects are equal independent to
+   * the time zone they refer to.
    * Equals with a instance of java.util.Date is asymmetric.
    */
   @Override
@@ -202,13 +204,13 @@ public class DateTime implements Comparable<Object> {
       }
 
       if (tzShift != null) {
-        
+
         if (tzShift.intValue() == 0) {
-          
+
           sb.append('Z');
-          
+
         } else {
-          
+
           int absTzShift = tzShift.intValue();
           if (tzShift > 0) {
             sb.append('+');
@@ -216,7 +218,7 @@ public class DateTime implements Comparable<Object> {
             sb.append('-');
             absTzShift = -absTzShift;
           }
-          
+
           int tzHours = absTzShift / 60;
           int tzMinutes = absTzShift % 60;
           appendInt(sb, tzHours, 2);
@@ -240,6 +242,19 @@ public class DateTime implements Comparable<Object> {
     }
   }
 
+  /** Parses the value as an RFC 822 date/time. */
+  public static DateTime parseRfc822(String str) throws ParseException {
+    Date date;
+    synchronized (dateTimeFormat822) {
+      try {
+        date = dateTimeFormat822.parse(str);
+      } catch (java.text.ParseException e) {
+        throw new ParseException(e);
+      }
+    }
+
+    return new DateTime(date);
+  }
 
   /** Formats the value as a human-readable string. */
   public String toUiString() {
