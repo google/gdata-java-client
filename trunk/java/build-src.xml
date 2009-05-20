@@ -52,7 +52,22 @@
                                 build.youtube,
                                 build.webmastertools"/>
 
-  <target name="clean" depends="clean.core"/>
+  <target name="clean" depends="clean.appsforyourdomain,
+                                clean.analytics,
+                                clean.blogger,
+                                clean.books,
+                                clean.calendar,
+                                clean.codesearch,
+                                clean.contacts,
+                                clean.docs,
+                                clean.finance,
+                                clean.gbase,
+                                clean.health,
+                                clean.maps,
+                                clean.photos,
+                                clean.spreadsheet,
+                                clean.youtube,
+                                clean.webmastertools"/>
 
 
 <!--  ===================================================================== -->

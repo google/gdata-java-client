@@ -4,7 +4,7 @@
   <import file="${build_dir}/core.xml"/>
 
   <!--  ===================================================================== -->
-  <!--                 Build GData Mapshop library.                           -->
+  <!--                 Build GData Maps Data library.                         -->
   <!--  ===================================================================== -->
 
   <property name="gdata-maps.jar"

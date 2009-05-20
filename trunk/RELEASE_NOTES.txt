@@ -1,5 +1,16 @@
 Google Data API - Release Notes
 
+Notes for v1.32.0
+-----------------
+May 20, 2009
+o  Added support for Google Maps Data API.
+
+Notes for v1.31.1
+-----------------
+Apr 22, 2009
+o  Fixed bug in com.google.gdata.util.net.UriEncoder which causes infinite
+   when run in JDK 1.5 in MacOS because of a JDK bug.
+
 Notes for v1.31.0
 -----------------
 Apr 21, 2009
