@@ -23,6 +23,7 @@
   <import file="build-samples/finance.xml"/>
   <import file="build-samples/gbase.xml"/>
   <import file="build-samples/health.xml"/>
+  <import file="build-samples/maps.xml"/>
   <import file="build-samples/oauth.xml"/>
   <import file="build-samples/photos.xml"/>
   <import file="build-samples/spreadsheet.xml"/>
@@ -47,6 +48,7 @@
               sample.finance.build,
               sample.gbase.build,
               sample.health.build,
+              sample.maps.build,
               sample.oauth.build,
               sample.photos.build,
               sample.spreadsheet.build,
@@ -67,6 +69,7 @@
               sample.finance.clean,
               sample.gbase.clean,
               sample.health.clean,
+              sample.maps.clean,
               sample.oauth.clean,
               sample.photos.clean,
               sample.spreadsheet.clean,
