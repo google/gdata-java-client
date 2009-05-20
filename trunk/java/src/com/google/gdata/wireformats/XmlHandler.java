@@ -19,13 +19,12 @@ package com.google.gdata.wireformats;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.AttributeMetadata;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.util.ParseException;
 
 import org.xml.sax.Attributes;
@@ -50,7 +49,10 @@ public class XmlHandler extends XmlParser.ElementHandler {
    * it has been fully parsed.
    */
   protected final Element parentElement;
-  
+
+  /** Metadata for this element. */
+  protected final ElementMetadata<?, ?> metadata;
+
   /**
    * Element being parsed.
    */
@@ -60,10 +62,12 @@ public class XmlHandler extends XmlParser.ElementHandler {
    * Construct an xml parser that will add the element to its parent after
    * parsing is completed.
    */
-  public XmlHandler(ValidationContext vc, Element parent, Element element) {
+  public XmlHandler(ValidationContext vc, Element parent,
+      Element element, ElementMetadata<?, ?> metadata) {
     this.vc = vc;
     this.parentElement = parent;
     this.element = element;
+    this.metadata = metadata;
   }
 
   /**
@@ -82,14 +86,12 @@ public class XmlHandler extends XmlParser.ElementHandler {
           CoreErrorDomain.ERR.duplicateAttributeValue.withInternalReason(
               "Duplicate value for attribute " + qn));
     }
-    ElementMetadata<?, ?> metadata = element.getMetadata();
-    AttributeMetadata<?> attMeta = metadata.findAttribute(qn);
-    if (attMeta != null) {
-      AttributeKey<?> attKey = attMeta.getKey();
-      element.addAttribute(
-          attKey, ObjectConverter.getValue(value, attKey.getDatatype()));
+    AttributeKey<?> attKey = (metadata == null) ? null
+        : metadata.findAttribute(qn);
+    if (attKey != null) {
+      element.setAttributeValue(attKey, ObjectConverter.getValue(value, attKey.getDatatype()));
     } else {
-      element.addAttribute(qn, value);
+      element.setAttributeValue(qn, value);
     }
   }
 
@@ -97,7 +99,7 @@ public class XmlHandler extends XmlParser.ElementHandler {
    * Default child handler for xml.  This will parse into a {@link Element} if
    * the element has not been declared, otherwise it will parse into the type
    * defined by the metadata.
-   * 
+   *
    * @throws ParseException if a non-repeating element is repeated, or if the
    *     element type requested cannot be created.
    * @throws IOException from overriding code.  Not thrown by the default
@@ -107,51 +109,46 @@ public class XmlHandler extends XmlParser.ElementHandler {
   public XmlHandler getChildHandler(QName qName, Attributes attrs,
       List<XmlNamespace> namespaces)
       throws ParseException, IOException {
-    
+
     Element childElement = createChildElement(qName);
-    ElementMetadata<?, ?> childMetadata = childElement.getMetadata();
-    
+    ElementMetadata<?, ?> childMeta = (metadata == null) ? null
+        : metadata.bindElement(childElement.getElementKey());
+
     // "SET" cardinality elements cannot be added to the parent element until
     // fully initialized, otherwise we'll have duplicates.  So we track the
     // parent element and add to it after the element has been processed.
     Element parent;
-    if (childMetadata.getCardinality() == Cardinality.SET) {
+    if (childMeta != null && childMeta.getCardinality() == Cardinality.SET) {
       parent = element;
     } else {
       element.addElement(childElement);
       parent = null;
     }
-    return createHandler(qName, parent, childElement);
+    return createHandler(qName, parent, childElement, childMeta);
   }
-  
+
   /**
    * Hook to allow subclasses to change the type of handler being returned.
    */
   protected XmlHandler createHandler(QName qName, Element parent,
-      Element child) {
-    return new XmlHandler(vc, parent, child);
+      Element child, ElementMetadata<?, ?> metadata) {
+    return new XmlHandler(vc, parent, child, metadata);
   }
-  
+
   /**
    * Create a child element for the given qualified name.
    */
   protected Element createChildElement(QName qName) throws ParseException {
     Element childElement;
-    
-    ElementMetadata<?, ?> metadata = element.getMetadata();
-    ElementMetadata<?, ?> childMeta = metadata.findElement(qName);
-    if (childMeta == null) {
+
+    ElementKey<?, ?> childKey = (metadata == null) ? null
+        : metadata.findElement(qName);
+    if (childKey == null) {
       // qualified name has not been declared (foreign xml)
       childElement = new Element(qName);
-    } else if (childMeta.getCardinality() == Cardinality.SINGLE
-        && element.hasElement(childMeta.getKey())) {
-      ParseException pe = new ParseException(
-          CoreErrorDomain.ERR.elementNotRepeatable);
-      pe.setInternalReason("Element is not repeatable: " + qName);
-      throw pe;
     } else {
       try {
-        childElement = childMeta.createElement();
+        childElement = Element.createElement(childKey);
       } catch (ContentCreationException e) {
         // to ElementHandler interface?
         throw new ParseException(e);
@@ -171,7 +168,7 @@ public class XmlHandler extends XmlParser.ElementHandler {
             ObjectConverter.getValue(value, elementKey.getDatatype()));
       }
     }
-    
+
     if (parentElement != null) {
       parentElement.addElement(element);
     }

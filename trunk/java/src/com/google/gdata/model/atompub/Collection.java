@@ -23,12 +23,12 @@ import com.google.gdata.client.Service.Versions;
 import com.google.gdata.data.Reference;
 import com.google.gdata.data.introspection.ICollection;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.atom.Source;
@@ -60,7 +60,6 @@ public class Collection extends Element implements Reference, ICollection {
   /**
    * The key for this element.
    */
-  @SuppressWarnings("deprecation")
   public static final ElementKey<Void, Collection> KEY = ElementKey.of(
       new QName(Namespaces.atomPubStandardNs, "collection"), Collection.class);
 
@@ -92,14 +91,14 @@ public class Collection extends Element implements Reference, ICollection {
    * Default mutable constructor.
    */
   public Collection() {
-    this(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using custom metadata.
+   * Lets subclasses create an instance using a custom key.
    */
-  protected Collection(ElementMetadata<Void, ? extends Collection> metadata) {
-    super(metadata);
+  protected Collection(ElementKey<?, ? extends Collection> key) {
+    super(key);
   }
 
   /**
@@ -107,12 +106,11 @@ public class Collection extends Element implements Reference, ICollection {
    * {@link Element} instance. Will use the given {@link ElementMetadata} as the
    * metadata for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key the element key to use for this element
    * @param source source element
    */
-  public Collection(ElementMetadata<Void, ? extends Collection> metadata,
-      Element source) {
-    super(metadata, source);
+  public Collection(ElementKey<?, ? extends Collection> key, Element source) {
+    super(key, source);
   }
 
   /**
@@ -121,7 +119,7 @@ public class Collection extends Element implements Reference, ICollection {
    * @param href href.
    */
   public Collection(String href) {
-    super(DefaultRegistry.get(KEY));
+    this();
     setHref(href);
   }
 
@@ -129,7 +127,7 @@ public class Collection extends Element implements Reference, ICollection {
    * Construct a collection with all fields.
    */
   public Collection(String href, TextContent title, String... accepts) {
-    super(DefaultRegistry.get(KEY));
+    this();
     setHref(href);
     setTitle(title);
     for (String accept : accepts) {
@@ -183,8 +181,9 @@ public class Collection extends Element implements Reference, ICollection {
    *
    * @param accept accept element
    */
-  public void addAccept(Accept accept) {
+  public Collection addAccept(Accept accept) {
     super.addElement(Accept.KEY, accept);
+    return this;
   }
 
   /**
@@ -192,8 +191,9 @@ public class Collection extends Element implements Reference, ICollection {
    *
    * @param accept accept string
    */
-  public void addAccept(String accept) {
+  public Collection addAccept(String accept) {
     super.addElement(Accept.KEY, new Accept(accept));
+    return this;
   }
 
   /**
@@ -246,8 +246,9 @@ public class Collection extends Element implements Reference, ICollection {
    *
    * @param categories app categories document
    */
-  public void addCategories(Categories categories) {
+  public Collection addCategories(Categories categories) {
     super.addElement(Categories.KEY, categories);
+    return this;
   }
 
   /**
@@ -274,12 +275,7 @@ public class Collection extends Element implements Reference, ICollection {
    * @param href href or <code>null</code> to reset
    */
   public void setHref(String href) {
-    throwExceptionIfImmutable();
-    if (href == null) {
-      super.removeAttribute(HREF);
-    } else {
-      super.addAttribute(HREF, href);
-    }
+    setAttributeValue(HREF, href);
   }
 
   /**
@@ -305,9 +301,10 @@ public class Collection extends Element implements Reference, ICollection {
    *
    * @param title title or <code>null</code> to reset
    */
-  public void setTitle(TextContent title) {
-    super.addAttribute(TITLE, title == null ? null : title.getPlainText());
+  public Collection setTitle(TextContent title) {
+    setAttributeValue(TITLE, (title == null ? null : title.getPlainText()));
     super.setElement(Source.TITLE, title);
+    return this;
   }
 
   /**
@@ -320,7 +317,7 @@ public class Collection extends Element implements Reference, ICollection {
   }
 
   @Override
-  public Element resolve(ValidationContext vc) {
+  public Element resolve(ElementMetadata<?, ?> metadata, ValidationContext vc) {
     String titleAttribute = getAttributeValue(TITLE);
     TextContent title = getElement(Source.TITLE);
 
@@ -339,7 +336,7 @@ public class Collection extends Element implements Reference, ICollection {
       }
     } else if (title != null) {
       titleAttribute = title.getPlainText();
-      addAttribute(TITLE, titleAttribute);
+      setAttributeValue(TITLE, titleAttribute);
     }
 
     // HACK(sven):  In v1 accept was a comma separated list, in v2 it is
@@ -361,7 +358,7 @@ public class Collection extends Element implements Reference, ICollection {
       }
     }
 
-    return super.resolve(vc);
+    return super.resolve(metadata, vc);
   }
 
   @Override

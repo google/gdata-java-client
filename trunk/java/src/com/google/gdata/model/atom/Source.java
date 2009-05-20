@@ -24,7 +24,6 @@ import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
-import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -189,17 +188,16 @@ public class Source extends Element {
      * Constructs a new instance using the default metadata.
      */
     public Generator() {
-      super(DefaultRegistry.get(KEY));
+      super(KEY);
     }
 
     /**
      * Constructs a new instance using the specified element metadata.
      *
-     * @param elementMetadata metadata describing the expected attributes and
-     *        child elements.
+     * @param key element key for this element.
      */
-    public Generator(ElementMetadata<?, ? extends Source> elementMetadata) {
-      super(elementMetadata);
+    public Generator(ElementKey<?, ? extends Generator> key) {
+      super(key);
     }
 
     /** Version. */
@@ -208,7 +206,7 @@ public class Source extends Element {
     }
 
     public void setVersion(String v) {
-      addAttribute(VERSION, v);
+      setAttributeValue(VERSION, v);
     }
 
     /**
@@ -258,7 +256,7 @@ public class Source extends Element {
      * @param v URI
      */
     public void setUri(URI v) {
-      addAttribute(URI, v);
+      setAttributeValue(URI, v);
     }
 
     /** Generator name. */
@@ -275,17 +273,16 @@ public class Source extends Element {
    * Constructs a new instance using the default metadata.
    */
   public Source() {
-    this(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
    * Constructs a new instance using the specified element metadata.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key element key for this element.
    */
-  public Source(ElementMetadata<?, ? extends Source> elementMetadata) {
-    super(elementMetadata);
+  public Source(ElementKey<?, ? extends Source> key) {
+    super(key);
   }
 
   /**
@@ -294,7 +291,7 @@ public class Source extends Element {
    * element instances. Default metadata is used.
    */
   protected Source(Source sourceSource) {
-    this(DefaultRegistry.get(KEY), sourceSource);
+    this(KEY, sourceSource);
   }
 
   /**
@@ -302,12 +299,11 @@ public class Source extends Element {
    * contents to another instance, using a shared reference to the same child
    * element instances. Metadata is given by caller.
    *
-   * @param metadata element metadata to associate with copy
-   * @param sourceSource source to copy data from
+   * @param key element key to associate with copy
+   * @param source source to copy data from
    */
-  protected Source(ElementMetadata<?, ? extends Source> metadata,
-      Source sourceSource) {
-    super(metadata, sourceSource);
+  protected Source(ElementKey<?, ? extends Source> key, Source source) {
+    super(key, source);
   }
 
   public String getId() {
@@ -315,8 +311,7 @@ public class Source extends Element {
   }
 
   public void setId(String v) {
-    addElement(ID,
-        new Element(DefaultRegistry.get(ID)).setTextValue(v));
+    setElement(ID, (v == null) ? null : new Element(ID).setTextValue(v));
   }
 
   public DateTime getUpdated() {
@@ -324,9 +319,8 @@ public class Source extends Element {
   }
 
   public void setUpdated(DateTime v) {
-    addElement(UPDATED,
-        new Element(DefaultRegistry.get(UPDATED))
-            .setTextValue(v));
+    setElement(UPDATED,
+        (v == null) ? null : new Element(UPDATED).setTextValue(v));
   }
 
   public Set<Category> getCategories() {
@@ -412,9 +406,7 @@ public class Source extends Element {
    * @param v icon URI
    */
   public void setIcon(URI v) {
-    addElement(ICON,
-        new Element(DefaultRegistry.get(ICON))
-            .setTextValue(v));
+    setElement(ICON, (v == null) ? null : new Element(ICON).setTextValue(v));
   }
 
   /**
@@ -464,9 +456,7 @@ public class Source extends Element {
    * @param v logo URI
    */
   public void setLogo(URI v) {
-    addElement(LOGO,
-        new Element(DefaultRegistry.get(LOGO))
-            .setTextValue(v));
+    setElement(LOGO, (v == null) ? null : new Element(LOGO).setTextValue(v));
   }
 
   public List<Link> getLinks() {
@@ -546,7 +536,7 @@ public class Source extends Element {
   }
 
   public void setGenerator(Generator v) {
-    addElement(Generator.KEY, v);
+    setElement(Generator.KEY, v);
   }
 
   public Generator setGenerator(String version, String uri, String name) {

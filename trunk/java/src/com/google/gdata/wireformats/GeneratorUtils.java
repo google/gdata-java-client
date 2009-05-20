@@ -19,6 +19,8 @@ package com.google.gdata.wireformats;
 import com.google.common.collect.Maps;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.model.Attribute;
+import com.google.gdata.model.AttributeKey;
+import com.google.gdata.model.AttributeMetadata;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
@@ -38,9 +40,10 @@ public class GeneratorUtils {
    * namespaces declared on the element or child elements, ordered in
    * depth-first order.
    */
-  public static Map<String, XmlNamespace> calculateNamespaces(Element root) {
+  public static Map<String, XmlNamespace> calculateNamespaces(
+      Element root, ElementMetadata<?, ?> metadata) {
     Map<String, XmlNamespace> namespaceMap = Maps.newHashMap();
-    calculateNamespaces(namespaceMap, root);
+    calculateNamespaces(namespaceMap, root, metadata);
     return namespaceMap;
   }
 
@@ -51,21 +54,26 @@ public class GeneratorUtils {
    * QName.
    */
   private static void calculateNamespaces(Map<String, XmlNamespace> namespaces,
-      Element root) {
-    ElementMetadata<?, ?> metadata = root.getMetadata();
-    QName name = metadata.getName();
+      Element e, ElementMetadata<?, ?> metadata) {
+    QName name = (metadata == null) ? e.getElementId() : metadata.getName();
     addNamespace(namespaces, name);
 
-    Iterator<Attribute> attIter = metadata.getAttributeIterator(root);
+    Iterator<Attribute> attIter = e.getAttributeIterator(metadata);
     while (attIter.hasNext()) {
       Attribute att = attIter.next();
-      addNamespace(namespaces, att.getMetadata().getName());
+      AttributeKey<?> attKey = att.getAttributeKey();
+      AttributeMetadata<?> attMeta = (metadata == null) ? null
+          : metadata.bindAttribute(attKey);
+      name = (attMeta == null) ? attKey.getId() : attMeta.getName();
+      addNamespace(namespaces, name);
     }
 
-    Iterator<Element> childIter = metadata.getElementIterator(root);
+    Iterator<Element> childIter = e.getElementIterator(metadata);
     while (childIter.hasNext()) {
       Element child = childIter.next();
-      calculateNamespaces(namespaces, child);
+      ElementMetadata<?, ?> childMeta = (metadata == null) ? null
+          : metadata.bindElement(child.getElementKey());
+      calculateNamespaces(namespaces, child, childMeta);
     }
   }
 

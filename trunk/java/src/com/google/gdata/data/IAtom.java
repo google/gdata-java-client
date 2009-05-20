@@ -88,6 +88,11 @@ public interface IAtom {
    *     {@code type} value.
    */
   public void removeLinks(String relToMatch, String typeToMatch);
+  
+  /**
+   * Removes all links from the this resource.
+   */
+  public void removeLinks();
 
   /**
    * Returns the self link for the resource.

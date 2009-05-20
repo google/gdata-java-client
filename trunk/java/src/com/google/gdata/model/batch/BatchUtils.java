@@ -60,11 +60,8 @@ public class BatchUtils {
    */
   public static void setBatchId(IEntry entry, String id) {
     if (entry instanceof Element) {
-      if (id == null) {
-        ((Element) entry).removeElement(BatchId.KEY);
-      } else {
-        ((Element) entry).addElement(new BatchId(id));
-      }
+      ((Element) entry).setElement(BatchId.KEY,
+          (id == null) ? null : new BatchId(id));
     } else {
       com.google.gdata.data.batch.BatchUtils.setBatchId(
           (ExtensionPoint) entry, id);
@@ -148,11 +145,8 @@ public class BatchUtils {
    */
   private static void setBatchOperationType(Element entry,
       BatchOperationType op) {
-    if (op == null) {
-      entry.removeElement(BatchOperation.KEY);
-    } else {
-      entry.addElement(new BatchOperation(op));
-    }
+    entry.setElement(BatchOperation.KEY,
+        (op == null) ? null : new BatchOperation(op));
   }
 
   /**

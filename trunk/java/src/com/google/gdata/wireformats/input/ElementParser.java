@@ -18,7 +18,6 @@ package com.google.gdata.wireformats.input;
 
 import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.model.Element;
-import com.google.gdata.model.MetadataContext;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.wireformats.AltFormat;
@@ -36,16 +35,16 @@ import java.nio.charset.UnsupportedCharsetException;
 /**
  * The ElementParser class is a generic {@link InputParser} implementation for
  * {@link Element} data model types.
- * 
+ *
  * 
  */
 public class ElementParser<T> extends CharacterParser<T> {
-  
+
   /**
    * Provides a factory method to create a new {@link ElementParser} that
    * handles a particular representation to produce a particular type of
    * result.
-   * 
+   *
    * @param <T> base type of parse result objects
    * @param altFormat alternate representation parsed
    * @param resultType type of result object produced
@@ -53,7 +52,7 @@ public class ElementParser<T> extends CharacterParser<T> {
    * @throws IllegalArgumentException if the representation does not have an
    *         associated wire format that can be used to parse the content.
    */
-  public static <T> ElementParser<T> of(AltFormat altFormat, 
+  public static <T> ElementParser<T> of(AltFormat altFormat,
       Class<T> resultType) {
     Preconditions.checkArgument(altFormat.getWireFormat() != null,
           "No wire format defined for " + altFormat);
@@ -63,7 +62,7 @@ public class ElementParser<T> extends CharacterParser<T> {
   /**
    * Constructs a new ElementParser instance for parsing content in a a
    * particular representation to produce results of a specified type.
-   * 
+   *
    * @param altFormat parsed alternate representation
    * @param resultType expected result type
    * @throws IllegalArgumentException if the representation does not have an
@@ -76,19 +75,17 @@ public class ElementParser<T> extends CharacterParser<T> {
   @Override
   public <R extends T> R parse(Reader inputReader, InputProperties inProps,
       Class<R> resultClass) throws IOException, ServiceException {
- 
+
     Preconditions.checkNotNull(inProps.getMetadataContext(),
         "No metadata context");
-    
+
     R result = createResult(resultClass);
     if (result instanceof Element) {
       Element element = (Element) result;
       WireFormat format = altFormat.getWireFormat();
-      MetadataContext context = element.getContext();
       try {
-        WireFormatParser parser = 
-          format.createParser(context, inputReader, 
-              Charset.forName(getCharset(inProps)));
+        WireFormatParser parser = format.createParser(
+            inProps, inputReader, Charset.forName(getCharset(inProps)));
         result = resultClass.cast(parser.parse(element));
       } catch (IllegalCharsetNameException ice) {
         throw new ParseException("Invalid charset:" + getCharset(inProps), ice);

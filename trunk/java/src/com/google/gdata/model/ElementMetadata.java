@@ -16,11 +16,9 @@
 
 package com.google.gdata.model;
 
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.wireformats.ContentCreationException;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Element metadata.  This describes the metadata for an individual element,
@@ -35,6 +33,11 @@ import java.util.Iterator;
  *     of the key and is used during parsing.  See {@link #getKey()}.
  */
 public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
+
+  /**
+   * Cardinality of an element.
+   */
+  public enum Cardinality { SINGLE, MULTIPLE, SET }
 
   /**
    * A virtual element is one which exists only as metadata, and handles both
@@ -54,10 +57,11 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
   }
 
   /**
-   * Adapts this metadata instance to another type, based on the {@code kind}
-   * parameter.
+   * Adapts this metadata to another type, based on the given kind.  Will return
+   * the element key that the kind represents, or {@code null} if no adaptation
+   * was found.
    */
-  ElementMetadata<?, ?> adapt(String kind);
+  ElementKey<?, ?> adapt(String kind);
 
   /**
    * Binds this element metadata to the given context.
@@ -106,19 +110,6 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
   Object getProperties();
 
   /**
-   * Returns an iterator over the attributes of the element with a well-defined
-   * iteration order based on this metadata.  All declared attributes are
-   * returned first, in the order of declaration, followed by undeclared
-   * attributes in the order in which they were added to the element.  If this
-   * metadata declares virtual attributes those attributes will be included in
-   * the iterator, likewise any attributes which are hidden will be excluded.
-   *
-   * @param element the element whose attributes we are iterating over.
-   * @return an iterator over the attributes of the element.
-   */
-  Iterator<Attribute> getAttributeIterator(Element element);
-
-  /**
    * Returns an immutable collection of attribute keys in declaration order.
    */
   Collection<AttributeKey<?>> getAttributes();
@@ -140,20 +131,7 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
    * parsing an element.  This will include attributes that are not declared as
    * part of this metadata, but are declared on adaptations.
    */
-  AttributeMetadata<?> findAttribute(QName id);
-
-  /**
-   * Returns an iterator over all child elements with a well-defined iteration
-   * order based on this metadata.  All declared elements are returned first, in
-   * the order of declaration, followed by undeclared elements in the order in
-   * which they were added to the element.  If this metadata declares virtual
-   * elements, those elements will be included in the iterator, likewise any
-   * elements which are hidden will be excluded.
-   *
-   * @param element the element whose child elements we are iterating over.
-   * @return iterator over the child elements of the element.
-   */
-  Iterator<Element> getElementIterator(Element element);
+  AttributeKey<?> findAttribute(QName id);
 
   /**
    * Returns an immutable set of child keys in declaration order.
@@ -177,7 +155,7 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
    * can be used to find appropriate element metadata to parse into while
    * parsing an element.
    */
-  ElementMetadata<?, ?> findElement(QName id);
+  ElementKey<?, ?> findElement(QName id);
 
   /**
    * Returns the virtual element associated with this metadata.  A virtual

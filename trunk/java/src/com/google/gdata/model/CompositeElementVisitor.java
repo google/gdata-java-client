@@ -57,7 +57,7 @@ public class CompositeElementVisitor implements ElementVisitor {
    * visitor instances passed in. The order in which each visitor instance
    * appears in the array is significant; it defines the order in which events
    * for a given element will be delivered to the nested instances.
-   * 
+   *
    * @param visitors list of ElementVisitor instances to compose.
    */
   public CompositeElementVisitor(ElementVisitor... visitors) {
@@ -72,7 +72,7 @@ public class CompositeElementVisitor implements ElementVisitor {
    * any element, events will be delivered to the added visitor after events
    * have been delivered to other visitors already contained in the composite
    * visitor at the time of addition.
-   * 
+   *
    * @param visitor the new visitor to add.
    */
   public void addVisitor(ElementVisitor visitor) {
@@ -82,7 +82,7 @@ public class CompositeElementVisitor implements ElementVisitor {
   /**
    * Returns the list of active element visitor instances. Any stopped visitors
    * will not appear in this list.
-   * 
+   *
    * @return list of visitor instances in order of event delivery.
    */
   public List<ElementVisitor> getVisitors() {
@@ -97,8 +97,9 @@ public class CompositeElementVisitor implements ElementVisitor {
     return stoppedVisitors.get(visitor);
   }
 
-  public boolean visit(Element parent, Element target)
-      throws ElementVisitor.StoppedException {
+  public boolean visit(Element parent, Element target,
+      ElementMetadata<?, ?> metadata) throws StoppedException {
+
     // True if any nested visitor has stopped
     boolean newStopped = false;
 
@@ -111,7 +112,7 @@ public class CompositeElementVisitor implements ElementVisitor {
         continue;
       }
       try {
-        boolean visitChildren = visitor.visit(parent, target);
+        boolean visitChildren = visitor.visit(parent, target, metadata);
         if (!visitChildren) {
           ignoringVisitors.put(visitor, target);
         }
@@ -133,7 +134,8 @@ public class CompositeElementVisitor implements ElementVisitor {
     return visitors.size() != ignoringVisitors.size();
   }
 
-  public void visitComplete(Element target) throws StoppedException {
+  public void visitComplete(Element parent, Element target,
+      ElementMetadata<?, ?> metadata) throws StoppedException {
 
     // Check any visitors that are currently ignoring children to see if
     // they should be re-enabled as a result of this event.
@@ -159,7 +161,7 @@ public class CompositeElementVisitor implements ElementVisitor {
     // Deliver the visitComplete event to all active visitors.
     for (ElementVisitor visitor : visitors) {
       if (!ignoringVisitors.containsKey(visitor)) {
-        visitor.visitComplete(target);
+        visitor.visitComplete(parent, target, metadata);
       }
     }
   }

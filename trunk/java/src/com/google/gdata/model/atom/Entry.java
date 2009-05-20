@@ -28,9 +28,9 @@ import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.model.atompub.Edited;
 import com.google.gdata.model.atompub.PubControl;
 import com.google.gdata.model.batch.BatchId;
@@ -200,14 +200,14 @@ public class Entry extends Element implements IEntry {
    * Constructs a new Entry instance, using default metadata.
    */
   public Entry() {
-    this(DefaultRegistry.get(KEY));
+    this(KEY);
   }
 
   /**
-   * Constructs a new Entry instance, using given metadata.
+   * Constructs a new Entry instance, using the given key.
    */
-  public Entry(ElementMetadata<?, ? extends Entry> metadata) {
-    super(metadata);
+  public Entry(ElementKey<?, ? extends Entry> key) {
+    super(key);
     state = new EntryState();
   }
 
@@ -218,13 +218,12 @@ public class Entry extends Element implements IEntry {
    * constructor to create adaptor instances of an entry that share state with
    * the original.
    *
-   * @param metadata metadata to use for this entry
-   * @param sourceEntry entry to copy data from
+   * @param key the element key to use for this entry.
+   * @param source to copy data from
    */
-  public Entry(ElementMetadata<?, ? extends Entry> metadata,
-      Entry sourceEntry) {
-    super(metadata, sourceEntry);
-    state = sourceEntry.state;
+  public Entry(ElementKey<?, ? extends Entry> key, Entry source) {
+    super(key, source);
+    state = source.state;
   }
 
   public String getId() {
@@ -242,8 +241,7 @@ public class Entry extends Element implements IEntry {
       // cannot be an entry ID.
       throw new IllegalArgumentException("Entry.id must not be equal to '-'.");
     }
-    setElement(ID, (v == null)
-        ? null : new Element(DefaultRegistry.get(ID)).setTextValue(v));
+    setElement(ID, (v == null) ? null : new Element(ID).setTextValue(v));
   }
 
   public String getVersionId() {
@@ -259,7 +257,7 @@ public class Entry extends Element implements IEntry {
   }
 
   public void setEtag(String v) {
-    addAttribute(ETAG, v);
+    setAttributeValue(ETAG, v);
   }
 
   public DateTime getPublished() {
@@ -271,8 +269,8 @@ public class Entry extends Element implements IEntry {
       throw new IllegalArgumentException(
           "Entry.published must have a timezone.");
     }
-    setElement(PUBLISHED, (v == null)
-        ? null : new Element(DefaultRegistry.get(PUBLISHED)).setTextValue(v));
+    setElement(PUBLISHED,
+        (v == null) ? null : new Element(PUBLISHED).setTextValue(v));
   }
 
   public DateTime getUpdated() {
@@ -283,8 +281,8 @@ public class Entry extends Element implements IEntry {
     if (v != null && v.getTzShift() == null) {
       throw new IllegalArgumentException("Entry.updated must have a timezone.");
     }
-    setElement(UPDATED, (v == null)
-        ? null : new Element(DefaultRegistry.get(UPDATED)).setTextValue(v));
+    setElement(UPDATED,
+        (v == null) ? null : new Element(UPDATED).setTextValue(v));
   }
 
 
@@ -409,7 +407,7 @@ public class Entry extends Element implements IEntry {
     return removeElement(Link.KEY, link);
   }
 
-  public void clearLinks() {
+  public void removeLinks() {
     removeElement(Link.KEY);
   }
 
@@ -461,22 +459,12 @@ public class Entry extends Element implements IEntry {
    * @param v   Draft status, or null to clear.
    */
   public void setDraft(Boolean v) {
-    PubControl control = getPubControl();
-    if (control == null) {
-      if (!Boolean.TRUE.equals(v)) {
-        // No need to create a PubControl entry for that. False is
-        // the default draft value.
-        return;
-      }
+    PubControl control = null;
+    if (Boolean.TRUE.equals(v)) {
       control = new PubControl();
-      addElement(control);
+      control.setDraft(true);
     }
-    control.setDraft(v);
-    if (control.getElementCount() == 0 &&
-        control.getAttributeCount() == 0) {
-      // If PubControl is completely empty, remove it.
-      removeElement(PubControl.KEY);
-    }
+    setElement(PubControl.KEY, control);
   }
 
   /**
@@ -486,10 +474,7 @@ public class Entry extends Element implements IEntry {
    */
   public boolean isDraft() {
     PubControl control = getPubControl();
-    if (control != null) {
-      return control.isDraft();
-    }
-    return false;
+    return (control != null && control.isDraft());
   }
 
   /**
@@ -746,110 +731,14 @@ public class Entry extends Element implements IEntry {
    * that could be found.
    */
   @Override
-  protected Element narrow(ValidationContext vc) {
-    Element narrowed = super.narrow(vc);
+  protected Element narrow(ElementMetadata<?,?> meta, ValidationContext vc) {
+    Element narrowed = super.narrow(meta, vc);
     for (Category category : getCategories()) {
       if (Namespaces.gKind.equals(category.getScheme())) {
-        narrowed = adapt(narrowed, category.getTerm());
+        narrowed = adapt(narrowed, meta, category.getTerm());
       }
     }
 
     return narrowed;
   }
-
-//  /**
-//   * Generates XML in the RSS format.
-//   *
-//   * @param   w
-//   *            Output writer.
-//   *
-//   * @param   extProfile
-//   *            Extension profile.
-//   *
-//   * @throws  IOException
-//   */
-//  public void generateRss(XmlWriter w,
-//                          ExtensionProfile extProfile) throws IOException {
-//
-//    Vector<XmlWriter.Namespace> nsDecls =
-//      new Vector<XmlWriter.Namespace>(namespaceDeclsRss);
-//    nsDecls.addAll(extProfile.getNamespaceDecls());
-//
-//    generateStartElement(w, Namespaces.rssNs, "item", null, nsDecls);
-//
-//    if (state.id != null) {
-//      List<Attribute> attrs = new ArrayList<Attribute>(1);
-//      attrs.add(new Attribute("isPermaLink", "false"));
-//      w.simpleElement(Namespaces.rssNs, "guid", attrs, state.id);
-//    }
-//
-//    String lang = null;
-//
-//    if (state.content != null) {
-//      lang = state.content.getLang();
-//    }
-//
-//    if (lang == null && state.summary != null) {
-//      lang = state.summary.getLang();
-//    }
-//
-//    if (lang == null && state.title != null) {
-//      lang = state.title.getLang();
-//    }
-//
-//    if (lang != null) {
-//      w.simpleElement(Namespaces.rssNs, "language", null, lang);
-//    }
-//
-//    if (state.published != null) {
-//      w.simpleElement(Namespaces.rssNs, "pubDate", null,
-//                      state.published.toStringRfc822());
-//    }
-//
-//    if (state.updated != null) {
-//      w.simpleElement(Namespaces.atomNs, "updated", null,
-//          state.updated.toString());
-//    }
-//
-//    w.startRepeatingElement();
-//    for (Category cat : state.categories) {
-//      cat.generateRss(w);
-//    }
-//    w.endRepeatingElement();
-//
-//    if (state.title != null) {
-//      state.title.generateRss(w, "title", TextConstruct.RssFormat.PLAIN_TEXT);
-//    }
-//
-//    if (state.summary != null) {
-//      state.summary.generateAtom(w, "summary");
-//    }
-//
-//    if (state.content != null) {
-//      state.content.generateRss(w);
-//    }
-//
-//    w.startRepeatingElement();
-//    for (Link link : state.links) {
-//      link.generateRss(w);
-//    }
-//    w.endRepeatingElement();
-//
-//    w.startRepeatingElement();
-//    for (Person author : state.authors) {
-//      author.generateRss(w, "author");
-//    }
-//    w.endRepeatingElement();
-//
-//    w.startRepeatingElement();
-//    for (Person contributor : state.contributors) {
-//      contributor.generateRss(w, "author");
-//    }
-//    w.endRepeatingElement();
-//
-//    // Invoke ExtensionPoint.
-//    generateExtensions(w, extProfile);
-//
-//    w.endElement(Namespaces.rssNs, "item");
-//  }
 }

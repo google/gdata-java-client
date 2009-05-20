@@ -21,8 +21,9 @@ import com.google.gdata.util.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gdata.model.ContentModel.Cardinality;
+import com.google.common.collect.Sets;
+import com.google.gdata.model.ElementMetadata.Cardinality;
+import com.google.gdata.model.atom.Category;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.wireformats.ContentCreationException;
 import com.google.gdata.wireformats.ContentValidationException;
@@ -30,15 +31,12 @@ import com.google.gdata.wireformats.ObjectConverter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,10 +48,10 @@ import java.util.logging.Logger;
  * so setter invocations can be chained, as in the following example:
  *
  * <p><pre>
- * Element who = new Element(METADATA)
- *     .addAttribute(ATTR_METADATA, "value")
+ * Element who = new Element(KEY)
+ *     .addAttribute(ATTR_KEY, "value")
  *     .addElement(
- *         new Element(EXT_METADATA_NOEXT)
+ *         new Element(EXT_KEY_NOEXT)
  *             .setValue("yolk"));
  * </pre>
  *
@@ -61,75 +59,68 @@ import java.util.logging.Logger;
  * methods they provide.
  *
  * @see #setTextValue(Object)
- * @see #addAttribute(AttributeKey, Object)
+ * @see #setAttributeValue(AttributeKey, Object)
  * @see #addElement(Element)
  * @see #addElement(ElementKey, Element)
  */
 public class Element {
 
+  // Logger for logging warnings and errors.
   private static final Logger LOGGER =
       Logger.getLogger(Element.class.getName());
 
   /**
-   * Indicates that the element is constant after construction ({@code false}
-   * by default).
+   * This class contains the element state, which is the attributes, elements,
+   * and text content of this element.
    */
-  protected boolean immutable = false;
+  private static class ElementState {
 
-  /**
-   * Element metadata, used for looking up attributes and child elements.
-   */
-  protected ElementMetadata<?, ?> metadata;
+    /**
+     * Map of all attributes that were added to this element, in the order they
+     * were added to the element.
+     */
+    private Map<QName, Attribute> attributes;
 
-  /**
-   * Metadata context this element is operating in.
-   */
-  protected MetadataContext context = null;
+    /**
+     * Map of child elements, keyed by their ID.  The value of a map
+     * entry is either an instance of the class (for {@link Cardinality#SINGLE}
+     * elements) or a list of instances (for {@link Cardinality#MULTIPLE}), or
+     * a set of instances (for {@link Cardinality#SET}).  This map is maintained
+     * in the order the child elements were added to this element.
+     */
+    private Map<QName, Object> elements;
 
-  /**
-   * Map of all attributes that were added to this element, in the order they
-   * were added to the element.
-   */
-  private Map<QName, Attribute> attributes = null;
+    /**
+     * Element's text node value.
+     */
+    private Object value;
 
-  /**
-   * Map of child elements, keyed by their ID.  The value of a map
-   * entry is either an instance of the class (for {@link Cardinality#SINGLE}
-   * elements) or a list of instances (for {@link Cardinality#MULTIPLE}), or
-   * a set of instances (for {@link Cardinality#SET}).  This map is maintained
-   * in the order the child elements were added to this element.
-   */
-  protected Map<QName, Object> elements = null;
-
-  /**
-   * Construct element and associate with metadata.
-   *
-   * @param metadata element metadata
-   */
-  public Element(ElementMetadata<?, ?> metadata) {
-    setMetadata(metadata);
+    /**
+     * Indicates that the element has been locked.
+     */
+    private volatile boolean locked;
   }
 
   /**
-   * Copy constructor that initializes a new Element instance to have identical
-   * contents to another instance, using a shared reference to the same child
-   * element instances. Metadata is given by caller.
-   *
-   * @param metadata element metadata to associate with copy
-   * @param element element to copy data from
+   * The element key associated with this element.
    */
-  public Element(ElementMetadata<?, ?> metadata, Element element) {
-    this.immutable = element.immutable;
-    this.value = element.value;
-    if (element.attributes != null) {
-      attributes = Maps.newLinkedHashMap(element.attributes);
-    }
-    if (element.elements != null) {
-      elements = Maps.newLinkedHashMap(element.elements);
-    }
+  private final ElementKey<?, ?> key;
 
-    // Set the metadata and context for this element.
-    setMetadata(metadata);
+  /**
+   * The state of this element, contains all actual data.  This allows shallow
+   * copies to be very efficient.
+   */
+  private final ElementState state;
+
+  /**
+   * Construct element and associate with a key.
+   *
+   * @param elementKey the key to this element, contains the ID and datatype.
+   */
+  public Element(ElementKey<?, ?> elementKey) {
+    Preconditions.checkNotNull(elementKey, "elementKey");
+    this.key = bindKey(elementKey, getClass());
+    this.state = new ElementState();
   }
 
   /**
@@ -138,220 +129,94 @@ public class Element {
    * @param qName qualified name
    */
   public Element(QName qName) {
-    this(createUndeclaredElementMetadata(ElementKey.of(qName)));
+    this.key = ElementKey.of(qName, String.class, getClass());
+    this.state = new ElementState();
   }
 
   /**
-   * Creates undeclared metadata for use in a simple element.
-   */
-  private static <D, T extends Element> ElementMetadata<D, T>
-      createUndeclaredElementMetadata(ElementKey<D, T> key) {
-    return new ElementMetadataImpl<D, T>(key);
-  }
-
-  /**
-   * @return true if element is immutable
-   */
-  public final boolean isImmutable() {
-    return immutable;
-  }
-
-  /**
-   * Sets element to be immutable or not.
-   * as immutable you can't make it mutable.
-   * and attributes and affect not just the value but also the container.
+   * Copy constructor that initializes a new Element instance to be a wrapper
+   * around another element instance.  The element will use the given element
+   * as its source for any content.
    *
-   * @param isImmutable true if element is immutable
+   * @param elementKey the element key to associate with the copy.
+   * @param source the element to copy data from.
    */
-  public final void setImmutable(boolean isImmutable) {
-    this.immutable = isImmutable;
+  public Element(ElementKey<?, ?> elementKey, Element source) {
+    this.key = bindKey(elementKey, getClass());
+    this.state = source.state;
   }
 
   /**
-  * Throws an {@link IllegalStateException} if this instance is immutable.
-  * Should only be used in a value-setter method.
-  */
-  protected final void throwExceptionIfImmutable() {
-    if (immutable) {
-      throw new IllegalStateException(getElementId()
-          + " instance is read only");
+   * Binds an element key to a specific element subclass.  This guarantees that
+   * the key on an element will always have exactly that element's type as its
+   * element type, and not some other element type.  This makes it possible to
+   * believe an element's key without needing to check the element type when
+   * looking up metadata.
+   */
+  private static ElementKey<?, ?> bindKey(ElementKey<?, ?> key,
+      Class<? extends Element> type) {
+    Class<?> keyType = key.getElementType();
+    if (keyType == type) {
+      return key;
     }
+    return ElementKey.of(key.getId(), key.getDatatype(), type);
+  }
+
+  /**
+   * Returns true if this element has been locked using {@link #lock}. Once an
+   * element has been locked it cannot be unlocked.
+   */
+  public final boolean isLocked() {
+    return state.locked;
+  }
+
+  /**
+   * Locks this element.  A locked element cannot have any changes made to its
+   * content or its attributes or child elements.  This will also lock all
+   * attributes and child elements as well.  Once this method has been called,
+   * this element can be safely published to other threads.
+   */
+  public Element lock() {
+    state.locked = true;
+    if (state.attributes != null) {
+      for (Attribute att : state.attributes.values()) {
+        att.lock();
+      }
+    }
+    if (state.elements != null) {
+      for (Object childObj : state.elements.values()) {
+        if (childObj instanceof Element) {
+          ((Element) childObj).lock();
+        } else {
+          for (Element child : castElementCollection(childObj)) {
+            child.lock();
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /**
+  * Throws an {@link IllegalStateException} if this instance is locked.
+  */
+  private void throwExceptionIfLocked() {
+    Preconditions.checkState(!state.locked,
+        "%s instance is read only", getElementId());
   }
 
   /**
    * Returns the key to this element.
    */
   public ElementKey<?, ?> getElementKey() {
-    return metadata.getKey();
+    return key;
   }
 
   /**
    * Get the id of this element.
    */
   public QName getElementId() {
-    return getElementKey().getId();
-  }
-
-  /**
-   * Return metadata for the current context.
-   */
-  public ElementMetadata<?, ?> getMetadata() {
-    return metadata;
-  }
-
-  /**
-   * Changes the registry this element is a part of.  This will regenerate the
-   * metadata for the new registry instead of the old registry.
-   */
-  public void setRegistry(MetadataRegistry registry) {
-    setMetadata(registry.bind(
-        metadata.getParent(), metadata.getKey(), metadata.getContext()));
-  }
-
-  /**
-   * Changes the metadata of this element to a different set of metadata.
-   */
-  void setMetadata(ElementMetadata<?, ?> newMeta) {
-    Preconditions.checkNotNull(newMeta, "Metadata cannot be null.");
-
-    // Ignore if we already have this metadata.
-    if (this.metadata == newMeta) {
-      return;
-    }
-
-    this.metadata = newMeta;
-    this.context = newMeta.getContext();
-
-    resolveMetadata(newMeta);
-  }
-
-  /**
-   * Synchronize the state of declared elements and attributes based on changes
-   * to the element's metadata.
-   */
-  private void resolveMetadata(ElementMetadata<?, ?> newMeta) {
-    resolveTextContent(newMeta);
-    resolveAttributeMetadata(newMeta);
-    resolveElementMetadata(newMeta);
-  }
-
-  /**
-   * Resolve the text content against the changed metadata.  This may need to
-   * adapt from a more general type to a more specific one.
-   */
-  private void resolveTextContent(ElementMetadata<?, ?> newMeta) {
-    Class<?> datatype = newMeta.getKey().getDatatype();
-    if (value == null || datatype == Void.class) {
-      return;
-    }
-    try {
-      value = ObjectConverter.getValue(value, datatype);
-    } catch (ParseException e) {
-      throw new IllegalArgumentException("Invalid metadata", e);
-    }
-  }
-
-  /**
-   * Resolve changes to attribute metadata.  This will loop through the
-   * attributes, binding them to the new metadata.
-   */
-  private void resolveAttributeMetadata(ElementMetadata<?, ?> newMeta) {
-    if (attributes == null) {
-      return;
-    }
-    for (Attribute attribute : attributes.values()) {
-      AttributeMetadata<?> attMeta = newMeta.bindAttribute(
-          attribute.getAttributeKey());
-      if (attMeta != null) {
-        attribute.setMetadata(attMeta);
-      }
-    }
-  }
-
-  /**
-   * Resolve changes to child metadata.  This will loop through the child
-   * elements, binding their metadata to the new metadata. This will also
-   * handle a change in cardinality from multiple to single, and throw an
-   * {@link IllegalArgumentException} if the new metadata would set a child
-   * to single that has multiple elements.
-   */
-  private void resolveElementMetadata(ElementMetadata<?, ?> newMeta) {
-    if (elements == null) {
-      return;
-    }
-    Iterator<Map.Entry<QName, Object>> iter = elements.entrySet().iterator();
-    while (iter.hasNext()) {
-      Entry<QName, Object> entry = iter.next();
-      Object obj = entry.getValue();
-      ElementMetadata<?, ?> childMeta;
-      if (obj instanceof Collection<?>) {
-        Collection<Element> elementCollect = castElementCollection(obj);
-
-        switch(elementCollect.size()) {
-
-          // Empty list, shouldn't actually be possible, but if it occurs
-          // we remove the entry from the element map.
-          case 0:
-            iter.remove();
-            break;
-
-          // Single element, this occurs if we had multiple then removed
-          // them until only one was left.  In this case we replace the
-          // value with the single value.
-          case 1:
-            Element single = elementCollect.iterator().next();
-            childMeta = newMeta.bindElement(single.getElementKey());
-            if (childMeta != null) {
-              single.setMetadata(childMeta);
-            }
-            entry.setValue(single);
-            break;
-
-          // Greater than 1 element in the collectiuon.  We create metadata
-          // for each element in the collection, and if any of them are of
-          // {@code SINGLE} cardinality it is an error.
-          default:
-            for (Element element : elementCollect) {
-              childMeta = newMeta.bindElement(element.getElementKey());
-              if (childMeta != null) {
-                if (childMeta.getCardinality() == Cardinality.SINGLE) {
-                  throw new IllegalArgumentException(
-                      "Element metadata states that " + element.getElementId()
-                      + " is not repeating, but " + elementCollect.size()
-                      + " elements were found.");
-                }
-                element.setMetadata(childMeta);
-              }
-            }
-            break;
-        }
-      } else {
-        Element single = (Element) obj;
-        childMeta = newMeta.bindElement(single.getElementKey());
-        if (childMeta != null) {
-          single.setMetadata(childMeta);
-        }
-      }
-    }
-  }
-
-  /**
-   * Returns the current metadata context of this element.
-   */
-  public MetadataContext getContext() {
-    return context;
-  }
-
-  /**
-   * Binds a new context for this element.  This sets the metadata to the
-   * transformed metadata based on the new context, and then propogates the
-   * context change down to any attributes or elements.
-   */
-  public void bind(MetadataContext newContext) {
-    if (context != null && context.equals(newContext)) {
-      return;
-    }
-    setMetadata(metadata.bind(newContext));
+    return key.getId();
   }
 
   /**
@@ -362,13 +227,19 @@ public class Element {
   }
 
   /**
-   * Returns an iterator over the attributes of this element based on the given
-   * metadata.  Public so that it can be accessed from selection metadata, which
-   * lives in a separate package.
+   * Returns an iterator over the attributes of this element with a well-defined
+   * iteration order based on the metadata. All declared attributes are
+   * returned first, in the order of declaration, followed by undeclared
+   * attributes in the order in which they were added to this element.  If the
+   * metadata declares virtual attributes, those attributes will be included in
+   * the iterator, likewise any attributes which are hidden will be excluded.
+   *
+   * @param metadata the element metadata to use for iteration.
+   * @return an iterator over the attributes of this element.
    */
   public Iterator<Attribute> getAttributeIterator(
       ElementMetadata<?, ?> metadata) {
-    return new AttributeIterator(this, metadata, attributes);
+    return new AttributeIterator(this, metadata, state.attributes);
   }
 
   /**
@@ -377,14 +248,15 @@ public class Element {
    * @return count of attributes
    */
   public int getAttributeCount() {
-    return (attributes != null) ? attributes.size() : 0;
+    return (state.attributes != null) ? state.attributes.size() : 0;
   }
 
   /**
    * Returns true if the element has an attribute with the given id.
    */
   public boolean hasAttribute(QName id) {
-    return (attributes == null) ? false : attributes.containsKey(id);
+    return (state.attributes == null)
+        ? false : state.attributes.containsKey(id);
   }
 
   /**
@@ -395,41 +267,47 @@ public class Element {
   }
 
   /**
-   * Retrieve an attribute by id.
-   */
-  public Attribute getAttribute(QName id) {
-    return (attributes == null) ? null : attributes.get(id);
-  }
-
-  /**
-   * Retrieve an attribute by key.
-   */
-  public Attribute getAttribute(AttributeKey<?> key) {
-    return getAttribute(key.getId());
-  }
-
-  /**
    * Get the value of an attribute by id.
    */
   public Object getAttributeValue(QName id) {
-    Attribute attribute = getAttribute(id);
+    if (state.attributes == null) {
+      return null;
+    }
+    Attribute attribute = state.attributes.get(id);
     return (attribute == null) ? null : attribute.getValue();
   }
 
   /**
-   * Get the value of an attribute by key.
+   * Returns the attribute value cast to the appropriate type, based on the
+   * given key.
+   *
+   * @param <T> return type.
+   * @param key the attribute key to use to cast the attribute value
+   * @return typed attribute value
+   * @throws IllegalArgumentException if the value cannot be converted to the
+   *     key type.
    */
   public <T> T getAttributeValue(AttributeKey<T> key) {
-    Attribute attribute = getAttribute(key);
-    return (attribute == null) ? null : attribute.getValue(key);
+    Attribute attribute = (state.attributes == null) ? null
+        : state.attributes.get(key.getId());
+    Object value = (attribute == null) ? null : attribute.getValue();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return ObjectConverter.getValue(value, key.getDatatype());
+    } catch (ParseException e) {
+      throw new IllegalArgumentException("Unable to convert value " + e
+          + " to datatype " + key.getDatatype());
+    }
   }
 
   /**
    * Add attribute by id and value.  If the value is {@code null} this is
    * equivalent to removing the attribute with the given id.
    */
-  public Element addAttribute(QName id, Object attrValue) {
-    return addAttribute(AttributeKey.of(id), attrValue);
+  public Element setAttributeValue(QName id, Object attrValue) {
+    return setAttributeValue(AttributeKey.of(id), attrValue);
   }
 
   /**
@@ -439,58 +317,24 @@ public class Element {
    * @param key attribute key that is being added.
    * @param attrValue attribute value or {@code null} to remove.
    */
-  public Element addAttribute(AttributeKey<?> key, Object attrValue) {
-    Attribute att = null;
-    if (attrValue instanceof Attribute) {
-      att = (Attribute) attrValue;
-      key = att.getAttributeKey();
-    } else if (attrValue != null) {
-
-      AttributeMetadata<?> attMeta;
-      if (metadata.isDeclared(key)) {
-        attMeta = metadata.bindAttribute(key);
-      } else {
-        attMeta = createUndeclaredAttributeMetadata(key);
-      }
-      att = new Attribute(attMeta, attrValue);
+  public Element setAttributeValue(AttributeKey<?> key, Object attrValue) {
+    if (attrValue == null) {
+      removeAttribute(key);
+    } else {
+      setAttribute(key, new Attribute(key, attrValue));
     }
-
-    // This will be a remove if attrValue was null.
-    return addAttribute(key, att);
-  }
-
-  /**
-   * Creates an undeclared attribute metadata for the given key.
-   */
-  private static <T> AttributeMetadata<T> createUndeclaredAttributeMetadata(
-      AttributeKey<T> key) {
-    return new AttributeMetadataImpl<T>(key);
-  }
-
-  /**
-   * Add an attribute by qname.  If attribute is {@code null} the attribute will
-   * be removed.
-   *
-   * @param attKey attribute key.
-   * @param attribute attribute or {@code null} to remove.
-   * @return this to enable chaining.
-   */
-  private Element addAttribute(AttributeKey<?> attKey, Attribute attribute) {
-
-    // This is a remove, not an add, if attribute is null.
-    if (attribute == null) {
-      removeAttribute(attKey);
-      return this;
-    }
-
-    if (attributes == null) {
-      attributes = new LinkedHashMap<QName, Attribute>();
-    }
-    if (metadata.isDeclared(attKey)) {
-      attribute.setMetadata(metadata.bindAttribute(attKey));
-    }
-    attributes.put(attKey.getId(), attribute);
     return this;
+  }
+
+  /**
+   * Puts an attribute into the attribute map, creating the map if needed.
+   */
+  private void setAttribute(AttributeKey<?> attKey, Attribute attribute) {
+    throwExceptionIfLocked();
+    if (state.attributes == null) {
+      state.attributes = new LinkedHashMap<QName, Attribute>();
+    }
+    state.attributes.put(attKey.getId(), attribute);
   }
 
   /**
@@ -500,7 +344,9 @@ public class Element {
    * @return this element
    */
   public Object removeAttribute(QName id) {
-    Attribute removed = (attributes == null) ? null : attributes.remove(id);
+    throwExceptionIfLocked();
+    Attribute removed = (state.attributes == null) ? null
+        : state.attributes.remove(id);
     return (removed == null) ? null : removed.getValue();
   }
 
@@ -522,12 +368,18 @@ public class Element {
   }
 
   /**
-   * Implementation of getting an attribute iterator for this element based on
-   * the given metadata.  <p>Public so that it can be accessed from selection
-   * metadata, which lives in a separate package.
+   * Returns an iterator over all child elements with a well-defined iteration
+   * order based on this metadata.  All declared elements are returned first, in
+   * the order of declaration, followed by undeclared elements in the order in
+   * which they were added to this element.  If the metadata declares virtual
+   * elements, those elements will be included in the iterator, likewise any
+   * elements which are hidden will be excluded.
+   *
+   * @param metadata the metadata to use for iteration.
+   * @return iterator over the child elements of the element.
    */
   public Iterator<Element> getElementIterator(ElementMetadata<?, ?> metadata) {
-    return new ElementIterator(this, metadata, elements);
+    return new ElementIterator(this, metadata, state.elements);
   }
 
   /**
@@ -536,8 +388,8 @@ public class Element {
    */
   public int getElementCount() {
     int elementCount = 0;
-    if (elements != null) {
-      for (Object elementValue : elements.values()) {
+    if (state.elements != null) {
+      for (Object elementValue : state.elements.values()) {
         if (elementValue instanceof Collection) {
           elementCount += (castElementCollection(elementValue)).size();
         } else {
@@ -558,10 +410,12 @@ public class Element {
    */
   public Element getElement(QName id) {
     Object mapValue = getElementObject(id);
-    throwIfNotSingle(mapValue);
     if (mapValue instanceof Element) {
       return (Element) mapValue;
     }
+    Preconditions.checkArgument(!(mapValue instanceof Collection<?>),
+        "The getElement(*) method was called for a repeating element.  " +
+        "Use getElements(*) instead.");
     return null;
   }
 
@@ -576,31 +430,15 @@ public class Element {
    * @throws IllegalArgumentException if the key referenced a repeating element.
    */
   public <D, T extends Element> T getElement(ElementKey<D, T> childKey) {
-    Element element = getElement(childKey.getId());
-    if (element == null) {
+    Element child = getElement(childKey.getId());
+    if (child == null) {
       return null;
     }
-    ElementMetadata<D, T> childMeta = metadata.bindElement(childKey);
-    if (childMeta == null) {
-      childMeta = createUndeclaredElementMetadata(childKey);
-    }
     try {
-      return adapt(element, childMeta);
+      return adapt(childKey, child);
     } catch (ContentCreationException e) {
       throw new IllegalArgumentException("Unable to adapt to "
           + childKey.getElementType(), e);
-    }
-  }
-
-  /**
-   * Throws an illegal argument exception if the given value is a collection
-   * rather than a single value.
-   */
-  private void throwIfNotSingle(Object mapValue) {
-    if (mapValue instanceof Collection<?>) {
-      throw new IllegalArgumentException(
-          "The getElement(*) method was called for a repeating element.  " +
-          "Use getElements(*) instead.");
     }
   }
 
@@ -609,7 +447,7 @@ public class Element {
    * either the map didn't contain the object or the map is null.
    */
   private Object getElementObject(QName id) {
-    return (elements != null) ? elements.get(id) : null;
+    return (state.elements != null) ? state.elements.get(id) : null;
   }
 
   /**
@@ -617,7 +455,8 @@ public class Element {
    * either the map didn't contain the object or the map is null.
    */
   private Object getElementObject(ElementKey<?, ?> childKey) {
-    return (elements != null) ? elements.get(childKey.getId()) : null;
+    return (state.elements != null)
+        ? state.elements.get(childKey.getId()) : null;
   }
 
   /**
@@ -650,7 +489,7 @@ public class Element {
    * Returns true if the element has child element(s) with the given id.
    */
   public boolean hasElement(QName id) {
-    return (elements == null) ? false : elements.containsKey(id);
+    return (state.elements == null) ? false : state.elements.containsKey(id);
   }
 
   /**
@@ -681,13 +520,14 @@ public class Element {
   }
 
   /**
-   * Get child elements matching the specified metadata.  This list cannot be
+   * Get child elements matching the specified key.  This list cannot be
    * used to add new child elements, instead the {@link #addElement(Element)}
-   * method should be used.
+   * method should be used. If the elements at the given key are not of the
+   * correct type an {@link IllegalArgumentException} will be thrown.
    *
-   * @param key child metadata to lookup child elements based on.
+   * @param key child key to lookup child elements based on.
    * @return element's children, or an empty list if there are no children with
-   *     the given metadata's id.
+   *     the given key's id.
    */
   public <T extends Element> List<T> getElements(ElementKey<?, T> key) {
 
@@ -695,14 +535,10 @@ public class Element {
     ImmutableList.Builder<T> builder = ImmutableList.builder();
     Object obj = getElementObject(key);
     if (obj != null) {
-      ElementMetadata<?, T> childMeta = metadata.bindElement(key);
-      if (childMeta == null) {
-        childMeta = createUndeclaredElementMetadata(key);
-      }
 
       try {
         if (obj instanceof Element) {
-          T adapted = adapt((Element) obj, childMeta);
+          T adapted = adapt(key, (Element) obj);
           builder.add(adapted);
         } else {
 
@@ -713,7 +549,7 @@ public class Element {
 
           for (Object o : (Collection<?>) obj) {
             Element e = (Element) o;
-            builder.add(adapt((Element) o, childMeta));
+            builder.add(adapt(key, (Element) o));
           }
         }
       } catch (ContentCreationException e) {
@@ -747,13 +583,14 @@ public class Element {
   }
 
   /**
-   * Get child elements matching the specified metadata.  This set cannot be
+   * Get child elements matching the specified key.  This set cannot be
    * used to add new child elements, instead the {@link #addElement(Element)}
-   * method should be used.
+   * method should be used. If the elements at the given key are not of the
+   * correct type an {@link IllegalArgumentException} will be thrown.
    *
    * @param key the child key to lookup child elements based on.
    * @return elements children, or an empty set if there are no children with
-   *     the given metadata's id.
+   *     the given key's id.
    */
   public <T extends Element> Set<T> getElementSet(ElementKey<?, T> key) {
 
@@ -761,14 +598,9 @@ public class Element {
     ImmutableSet.Builder<T> builder = ImmutableSet.builder();
     Object obj = getElementObject(key);
     if (obj != null) {
-      ElementMetadata<?, T> childMeta = metadata.bindElement(key);
-      if (childMeta == null) {
-        childMeta = createUndeclaredElementMetadata(key);
-      }
-
       try {
         if (obj instanceof Element) {
-          T adapted = adapt((Element) obj, childMeta);
+          T adapted = adapt(key, (Element) obj);
           builder.add(adapted);
         } else {
 
@@ -779,7 +611,7 @@ public class Element {
 
           for (Object o : (Collection<?>) obj) {
             Element e = (Element) o;
-            builder.add(adapt((Element) o, childMeta));
+            builder.add(adapt(key, (Element) o));
           }
         }
       } catch (ContentCreationException e) {
@@ -788,18 +620,6 @@ public class Element {
       }
     }
     return builder.build();
-  }
-
-  /**
-   * Add a child element. Get parent-child linkage from parent's
-   * metadata map. Element will be added using the ID of the metadata on the
-   * child element.
-   *
-   * @param childElement child element
-   * @return this element for chaining
-   */
-  public Element addElement(Element childElement) {
-    return addElement(childElement.getElementId(), childElement);
   }
 
   /**
@@ -820,104 +640,128 @@ public class Element {
    * element will replace all existing elements at the given key.  If the given
    * element is null, this is equivalent to {@link #removeElement(ElementKey)}.
    *
-   * @param childKey key for the child element
+   * @param key the key for the child element
    * @param element child element
    * @return this element for chaining
    */
-  public Element setElement(ElementKey<?, ?> childKey, Element element) {
-    removeElement(childKey);
+  public Element setElement(ElementKey<?, ?> key, Element element) {
+    removeElement(key);
     if (element != null) {
-      addElement(childKey, element);
+      addElement(key, element);
     }
     return this;
   }
 
   /**
-   * Add a child element with the given ID.  The metadata will be retrieved by
-   * looking it up on the metadata of the parent element.
-   * <p>
-   * If the metadata declares element to be of cardinality
-   * {@link Cardinality#SINGLE}, a simple {@link Element} is added. If element
-   * already exists in the map, the old value is replaced. If the metadata
-   * declares the element to be of cardinality {@link Cardinality#MULTIPLE},
-   * an {@link Element} is added to a list and stored in the map.
+   * Add a child element, using the key of the child element as the key into
+   * this element's children.
    *
-   * @param childKey key for the child element
-   * @param element child element
+   * @param childElement child element
    * @return this element for chaining
    */
-  public Element addElement(ElementKey<?, ?> childKey, Element element) {
-    return addElement(childKey.getId(), element);
+  public Element addElement(Element childElement) {
+    return addElement(childElement.getElementKey(), childElement);
   }
 
   /**
-   * Add a child element with the given Key.  The metadata will be retrieved by
-   * looking it up on the metadata of the parent element.
-   * <p>
-   * If the metadata declares element to be of cardinality
-   * {@link Cardinality#SINGLE}, a simple {@link Element} is added. If element
-   * already exists in the map, the old value is replaced. If the metadata
-   * declares the element to be of cardinality {@link Cardinality#MULTIPLE},
-   * an {@link Element} is added to a list and stored in the map.
+   * Add a child element with the given ID.  This will add the given element to
+   * the end of the collection of elements with the same ID.  If you want to
+   * replace any existing elements use {@link #setElement(QName, Element)}
+   * instead.
    *
    * @param id the qualified name to use for the child
    * @param element child element
    * @return this element for chaining
    */
   public Element addElement(QName id, Element element) {
+    return addElement(
+        ElementKey.of(id, element.getElementKey().getDatatype(),
+            element.getClass()),
+        element);
+  }
 
-    if (elements == null) {
-      elements = new LinkedHashMap<QName, Object>();
+  /**
+   * Add a child element with the given key.  This will add the given element to
+   * the end of the collection of elements with the same ID.  If you want to
+   * replace any existing elements use {@link #setElement(ElementKey, Element)}
+   * instead.
+   *
+   * @param key the key of the child.
+   * @param element child element
+   * @return this element for chaining
+   */
+  public Element addElement(ElementKey<?, ?> key, Element element) {
+    throwExceptionIfLocked();
+    if (state.elements == null) {
+      state.elements = new LinkedHashMap<QName, Object>();
     }
 
-    ElementKey<?, ?> childKey = ElementKey.of(
-        id, element.getElementKey().getDatatype(), element.getClass());
-
-    Cardinality cardinality = Cardinality.MULTIPLE;
-    if (metadata.isDeclared(childKey)) {
-      ElementMetadata<?, ?> childMeta = metadata.bindElement(childKey);
-      element.setMetadata(childMeta);
-      cardinality = childMeta.getCardinality();
-    }
-
-    if (cardinality == Cardinality.SINGLE) {
-      elements.put(id, element);
-    } else {
-      Object obj = elements.get(id);
-      if (obj == null) {
-        elements.put(id, element);
-      } else if (obj instanceof Collection<?>) {
-        Collection<Element> collect = castElementCollection(obj);
-        collect.add(element);
-      } else {
-        Collection<Element> collect = createCollection(cardinality);
-        collect.add((Element) obj);
-        collect.add(element);
-        elements.put(id, collect);
+    ElementKey<?, ?> elementKey = element.getElementKey();
+    key = calculateKey(key, elementKey);
+    if (!key.equals(elementKey)) {
+      try {
+        element = createElement(key, element);
+      } catch (ContentCreationException e) {
+        throw new IllegalArgumentException("Key " + key + " cannot be applied"
+            + " to element with key " + elementKey);
       }
+    }
+
+    QName id = key.getId();
+    Object obj = state.elements.get(id);
+    if (obj == null) {
+      state.elements.put(id, element);
+    } else if (obj instanceof Collection<?>) {
+      Collection<Element> collect = castElementCollection(obj);
+      collect.add(element);
+    } else {
+      Collection<Element> collect = createCollection(key);
+      collect.add((Element) obj);
+      collect.add(element);
+      state.elements.put(id, collect);
     }
     return this;
   }
 
   /**
-   * Remove child element(s) of a given name. All elements with the given name
+   * Calculates the actual key that should be used for adding an element.  This
+   * uses the ID and datatype of the key, but if the element types are in the
+   * same type hierarchy the narrowest element type is used.
+   */
+  private ElementKey<?, ?> calculateKey(ElementKey<?, ?> key,
+      ElementKey<?, ?> sourceKey) {
+    Class<?> keyType = key.getElementType();
+    Class<? extends Element> sourceType = sourceKey.getElementType();
+
+    // If the sourceType is a subtype of the key type, we want to use it
+    // as the type of element that we create, because it is more specific but
+    // still compatible.
+    if (keyType != sourceType && keyType.isAssignableFrom(sourceType)) {
+      key = ElementKey.of(key.getId(), key.getDatatype(), sourceType);
+    }
+    return key;
+  }
+
+  /**
+   * Remove child element(s) of a given name. All elements with the given id
    * will be removed.
    *
    * @param id the id of the child element(s) to remove.
    * @return this element for chaining.
    */
   public Element removeElement(QName id) {
-    if (elements != null) {
-      elements.remove(id);
+    throwExceptionIfLocked();
+    if (state.elements != null) {
+      state.elements.remove(id);
     }
     return this;
   }
 
   /**
-   * Remove child element(s) of a given name.  All elements with the given name
-   * will be removed.
+   * Remove child element(s) of a given name.  All elements with the same ID as
+   * the given key will be removed.
    *
-   * @param childKey key of the element to remove.
+   * @param childKey key of the element(s) to remove.
    * @return this element for chaining.
    */
   public Element removeElement(ElementKey<?, ?> childKey) {
@@ -946,8 +790,9 @@ public class Element {
    * @return true if the child element was removed from this element.
    */
   public boolean removeElement(ElementKey<?, ?> childKey, Element element) {
+    throwExceptionIfLocked();
     boolean removed = false;
-    if (elements != null) {
+    if (state.elements != null) {
       Object obj = getElementObject(childKey);
       if (obj instanceof Collection<?>) {
         Collection<Element> collect = castElementCollection(obj);
@@ -980,6 +825,7 @@ public class Element {
    * @return true if the replacement succeeded.
    */
   public boolean replaceElement(Element toRemove, Element toAdd) {
+    throwExceptionIfLocked();
 
     // If toAdd is null, this is just a remove.
     if (toAdd == null) {
@@ -997,8 +843,8 @@ public class Element {
     }
 
     // Matched IDs, try to find the removed element and replace it.
-    if (elements != null) {
-      Object obj = elements.get(id);
+    if (state.elements != null) {
+      Object obj = state.elements.get(id);
       if (obj instanceof List<?>) {
         List<Element> list = castElementList(obj);
         for (int i = 0; i < list.size(); i++) {
@@ -1013,7 +859,7 @@ public class Element {
           set.add(toAdd);
         }
       } else if (obj == toRemove) {
-        elements.put(id, toAdd);
+        state.elements.put(id, toAdd);
         return true;
       }
     }
@@ -1049,14 +895,17 @@ public class Element {
   }
 
   /**
-   * Creates a collection based on the cardinality.
+   * Creates a collection based on the given key.
    */
-  private <T extends Element> Collection<T> createCollection(Cardinality card) {
-    switch(card) {
-      case MULTIPLE: return new ArrayList<T>();
-      case SET: return new HashSet<T>();
-      default: throw new IllegalArgumentException(
-          "Cannot create collection for " + card);
+  private <T extends Element> Collection<T> createCollection(
+      ElementKey<?, ?> key) {
+
+    // is part of resolve?
+    Class<?> elementType = key.getElementType();
+    if (Category.class.isAssignableFrom(elementType)) {
+      return Sets.newHashSet();
+    } else {
+      return Lists.newArrayList();
     }
   }
 
@@ -1065,15 +914,11 @@ public class Element {
    * namespaces and any element value.
    */
   public void clear() {
-    value = null;
-    attributes = null;
-    elements = null;
+    throwExceptionIfLocked();
+    state.value = null;
+    state.attributes = null;
+    state.elements = null;
   }
-
-  /**
-   * Element's text node value.
-   */
-  protected Object value;
 
   /**
    * Returns the untyped element value or null if it has no value.
@@ -1081,21 +926,20 @@ public class Element {
    * @return untyped element value
    */
   public Object getTextValue() {
-    return value;
+    return state.value;
   }
 
   /**
-   * Returns the element value cast to the metadata's datatype.
-   * not compatible.
+   * Returns the element value adapted to the key's datatype.
    *
-   * @param <V> data type of the metadata.
-   * @param key element key used to cast the value.
+   * @param <V> data type of the key.
+   * @param key the element key used to convert the value.
    * @return typed element value.
    */
   public <V> V getTextValue(ElementKey<V, ?> key) {
-    if (value != null) {
+    if (state.value != null) {
       try {
-        return ObjectConverter.getValue(value, key.getDatatype());
+        return ObjectConverter.getValue(state.value, key.getDatatype());
       } catch (ParseException e) {
         throw new IllegalArgumentException("Unable to convert value " + e
             + " to datatype " + key.getDatatype());
@@ -1114,45 +958,48 @@ public class Element {
    *     if this element does not allow a value
    */
   public Element setTextValue(Object newValue) {
-    throwExceptionIfImmutable();
-
-    // Some elements e.g. text constructs aren't associated
-    // with metadata until they're added to a parent element.
-    // Their content is validated later, in {@link validate()}.
-    if (metadata != null) {
-      Class<?> datatype = getElementKey().getDatatype();
-      if (datatype == null) {
-        throw new IllegalArgumentException(
-            "Element must not contain a text node");
-      }
-      if (newValue != null && !datatype.isInstance(newValue)) {
-        throw new IllegalArgumentException(
-            "Invalid class: " + newValue.getClass().getCanonicalName());
-      }
-    }
-    this.value = newValue;
+    throwExceptionIfLocked();
+    state.value = checkValue(key, newValue);
     return this;
+  }
+
+  /**
+   * Checks that the datatype of this element allows setting the value to the
+   * given object.  Throws an {@link IllegalArgumentException} if the value
+   * is not valid for this element.
+   */
+  Object checkValue(ElementKey<?, ?> elementKey, Object newValue) {
+    if (newValue != null) {
+      Class<?> datatype = elementKey.getDatatype();
+      Preconditions.checkArgument(datatype != null,
+          "Element must not contain a text node");
+      Preconditions.checkArgument(datatype.isInstance(newValue),
+          "Invalid class: %s", newValue.getClass().getCanonicalName());
+    }
+    return newValue;
   }
 
   /**
    * @return true if element has a text node value
    */
   public boolean hasTextValue() {
-    return value != null;
+    return state.value != null;
   }
 
   /**
    * Resolve the state of all elements in the tree, rooted at this
-   * element, against their metadata. Throws an exception if the tree
+   * element, against the metadata. Throws an exception if the tree
    * cannot be resolved.
    *
+   * @param metadata the metadata to resolve against.
    * @return the narrowed element if narrowing took place
    * @throws ContentValidationException if tree cannot be resolved
    */
-  public Element resolve() throws ContentValidationException {
+  public Element resolve(ElementMetadata<?, ?> metadata)
+      throws ContentValidationException {
 
     ValidationContext vc = new ValidationContext();
-    Element narrowed = resolve(vc);
+    Element narrowed = resolve(metadata, vc);
     if (!vc.isValid()) {
       throw new ContentValidationException("Invalid data", vc);
     }
@@ -1160,31 +1007,41 @@ public class Element {
   }
 
   /**
-   * Resolve this element's state against its metadata. Accumulates
+   * Resolve this element's state against the metadata. Accumulates
    * errors in caller's validation context.
    *
    * @param vc validation context
    * @return the narrowed element if narrowing took place.
    */
-  public Element resolve(ValidationContext vc) {
+  public Element resolve(ElementMetadata<?, ?> metadata, ValidationContext vc) {
 
-    Element narrowed = narrow(vc);
-    narrowed.validate(vc);
-
-    // Resolve all child elements.
-    List<Pair<Element, Element>> replacements = Lists.newArrayList();
-    Iterator<Element> childIterator = narrowed.getElementIterator(metadata);
-    while (childIterator.hasNext()) {
-      Element child = childIterator.next();
-      Element resolved = child.resolve(vc);
-      if (resolved != child) {
-        replacements.add(Pair.of(child, resolved));
-      }
+    // Return immediately if the metadata is null, no resolve necessary.
+    if (metadata == null) {
+      return this;
     }
 
-    // Replace any resolved child elements with their replacement.
-    for (Pair<Element, Element> pair : replacements) {
-      narrowed.replaceElement(pair.getFirst(), pair.getSecond());
+    Element narrowed = narrow(metadata, vc);
+    narrowed.validate(metadata, vc);
+
+    // Resolve all child elements.
+    Iterator<Element> childIterator = narrowed.getElementIterator();
+    if (childIterator.hasNext()) {
+      List<Pair<Element, Element>> replacements = Lists.newArrayList();
+
+      while (childIterator.hasNext()) {
+        Element child = childIterator.next();
+        ElementMetadata<?, ?> childMeta = metadata.bindElement(
+            child.getElementKey());
+        Element resolved = child.resolve(childMeta, vc);
+        if (resolved != child) {
+          replacements.add(Pair.of(child, resolved));
+        }
+      }
+
+      // Replace any resolved child elements with their replacement.
+      for (Pair<Element, Element> pair : replacements) {
+        narrowed.replaceElement(pair.getFirst(), pair.getSecond());
+      }
     }
     return narrowed;
   }
@@ -1199,11 +1056,14 @@ public class Element {
    * Subclasses may override this function to narrow the type
    * in some custom fashion.
    *
+   * @param metadata the element metadata to narrow to.
    * @param vc validation context
    * @return element narrowed down to the most specific type
    */
-  protected Element narrow(ValidationContext vc) {
-    Class<?> narrowedType = metadata.getKey().getElementType();
+  protected Element narrow(ElementMetadata<?, ?> metadata,
+      ValidationContext vc) {
+    ElementKey<?, ?> narrowedKey = metadata.getKey();
+    Class<?> narrowedType = narrowedKey.getElementType();
     if (!narrowedType.isInstance(this)) {
 
       // Make sure the narrowing is valid.
@@ -1214,7 +1074,7 @@ public class Element {
 
       // Adapt to the more narrow type.
       try {
-        return adapt(this, metadata);
+        return adapt(narrowedKey, this);
       } catch (ContentCreationException e) {
         LOGGER.log(Level.SEVERE, "Unable to adapt " +
             getClass() + " to " + narrowedType, e);
@@ -1229,107 +1089,119 @@ public class Element {
    * adaptation is found this will return the source element.
    *
    * @param source the element we are narrowing from.
+   * @param sourceMeta the source metadata to adapt from.
    * @param kind the kind name to lookup the adaptation for.
    * @return the adapted element if one was found.
    */
-  protected Element adapt(Element source, String kind) {
-    ElementMetadata<?, ?> meta = metadata.adapt(kind);
-    if (meta != null) {
+  protected Element adapt(Element source,
+      ElementMetadata<?, ?> sourceMeta, String kind) {
+    ElementKey<?, ?> adaptorKey = sourceMeta.adapt(kind);
+    if (adaptorKey != null) {
       try {
-        return adapt(source, meta);
+        return adapt(adaptorKey, source);
       } catch (ContentCreationException e) {
         // Not usable as a adaptable kind, skip.
         LOGGER.log(Level.SEVERE, "Unable to adapt "
-            + source.getClass() + " to " + meta.getKey().getElementType(), e);
+            + source.getClass() + " to " + adaptorKey.getElementType(), e);
       }
     }
     return source;
   }
 
   /**
-   * Adapts an element based on some new metadata.  If the metadata represents
+   * Adapts an element based on a different key.  If the key represents
    * a more narrow type than {@code source}, an instance of the more narrow
    * type will be returned, containing the same information as the source.  If
    * the source is {@code null}, a null instance of {@code T} will be returned.
    *
    * @param <T> the type of element to adapt to.
-   * @param source the element we are narrowing from.
-   * @param meta metadata to adapt based on.
+   * @param key the element key to adapt to.
+   * @param source the element we are adapting from.
    * @return the adapted element if one was found.
    * @throws ContentCreationException if the metadata cannot be used to adapt.
    * @throws NullPointerException if meta is null.
    */
-  protected <T extends Element> T adapt(
-      Element source, ElementMetadata<?, T> meta)
+  protected <T extends Element> T adapt(ElementKey<?, T> key, Element source)
       throws ContentCreationException {
-    if (meta == null) {
-      throw new NullPointerException("Metadata cannot be null.");
-    }
-    Class<? extends T> adaptingTo = meta.getKey().getElementType();
+    Preconditions.checkNotNull(key);
+    Class<? extends T> adaptingTo = key.getElementType();
     if (source == null || adaptingTo.isInstance(source)) {
       return adaptingTo.cast(source);
     }
     Class<? extends Element> adaptingFrom = source.getClass();
-    if (!adaptingFrom.isAssignableFrom(adaptingTo)) {
-      throw new IllegalArgumentException("Cannot adapt from element of type "
-          + adaptingFrom + " to an element of type " + adaptingTo);
-    }
-    return createElement(meta, source);
+    Preconditions.checkArgument(adaptingFrom.isAssignableFrom(adaptingTo),
+        "Cannot adapt from element of type %s to an element of type %s",
+        adaptingFrom, adaptingTo);
+    return createElement(key, source);
   }
 
   /**
-   * Validate element content against element metadata. Validates
-   * element's attributes and child elements, but does not recurse
-   * into child elements. Accumulates validation errors in caller's
-   * validation context.
-   *
-   * @param vc validation context
+   * Validate the element using the given metadata, and placing any errors into
+   * the validation context.  The default behavior is to use the metadata
+   * validation, subclasses may override this to add their own validation. If
+   * the metadata is null (undeclared), no validation will be performed.
    */
-  public void validate(ValidationContext vc) {
-    metadata.validate(vc, this);
+  protected void validate(ElementMetadata<?, ?> metadata,
+      ValidationContext vc) {
+    if (metadata != null) {
+      metadata.validate(vc, this);
+    }
   }
 
   /**
-   * Called to visit all children of this element.
+   * Visits the element using the specified {@link ElementVisitor} and metadata.
+   * A {@code null} metadata indicates that the element is undeclared, and
+   * child elements will be visited in the order they were added to the element.
    *
-   * @param ev the element visitor.
+   * @param ev the element visitor instance to use.
+   * @param meta the metadata for the element, or {@code null} for undeclared
+   *     metadata.
    * @throws ElementVisitor.StoppedException if traversal must be stopped
    */
-  protected void visitChildren(ElementVisitor ev)
+  public void visit(ElementVisitor ev, ElementMetadata<?, ?> meta) {
+    visit(ev, null, meta);
+  }
+
+  /**
+   * Visit implementation, recursively visits this element and all of its
+   * children.
+   */
+  private void visit(ElementVisitor ev, Element parent,
+      ElementMetadata<?, ?> meta) throws ElementVisitor.StoppedException {
+
+    // Visit the current element.
+    boolean visitChildren = ev.visit(parent, this, meta);
+    if (visitChildren) {
+      visitChildren(ev, meta);
+    }
+    ev.visitComplete(parent, this, meta);
+  }
+
+  /**
+   * Visit all of the children of this element, calling the element visitor
+   * with the child element and child metadata for each child.
+   */
+  private void visitChildren(ElementVisitor ev, ElementMetadata<?, ?> meta)
       throws ElementVisitor.StoppedException {
 
     // Visit children
-    Iterator<Element> childIterator = getElementIterator(metadata);
+    Iterator<Element> childIterator = getElementIterator(meta);
     while (childIterator.hasNext()) {
-      childIterator.next().visit(ev, this);
+      Element child = childIterator.next();
+      ElementMetadata<?, ?> childMeta = (meta == null) ? null
+          : meta.bindElement(child.getElementKey());
+      child.visit(ev, this, childMeta);
     }
   }
 
   /**
-   * Visits the tree of element data using the specified {@link ElementVisitor}.
+   * Returns {@code true} if the element contains a simple value.
    *
-   * @param ev the element visitor instance to use.
-   * @param parent the parent of this element (or {@code null} if no
-   *        parent or unspecified.
-   * @throws ElementVisitor.StoppedException if traversal must be stopped
-   */
-  public void visit(ElementVisitor ev, Element parent)
-      throws ElementVisitor.StoppedException {
-
-    // Visit the current extension point
-    boolean visitChildren = ev.visit(parent, this);
-    if (visitChildren) {
-      visitChildren(ev);
-    }
-    ev.visitComplete(this);
-  }
-
-  /**
    * @return true if element contains a simple value, meaning it has
    *     a text node but no attributes or child elements, or it has one
    *     attribute but no text node or child elements.
    */
-  public boolean containsSimpleValue() {
+  public static boolean containsSimpleValue(ElementMetadata<?, ?> metadata) {
     Class<?> datatype = metadata.getKey().getDatatype();
     return metadata.getElements().isEmpty() &&
         ((datatype != Void.class &&
@@ -1363,40 +1235,40 @@ public class Element {
    * Helper method that constructs a new {@link Element} instance of the type
    * defined by the type parameter {@code E}.
    *
-   * @param metadata metadata to initialize the element with
+   * @param key the element key to create the element from
    * @return element that was created
    * @throws ContentCreationException if content cannot be created
    */
   public static <E extends Element> E createElement(
-      ElementMetadata<?, E> metadata) throws ContentCreationException {
-    return createElement(metadata, null);
+      ElementKey<?, E> key) throws ContentCreationException {
+    return createElement(key, null);
   }
 
   /**
    * Helper method that constructs a new {@link Element} instance of the type
    * defined by the type parameter {@code E}.
    *
-   * @param metadata metadata to initialize the element with
+   * @param key the element key to create the element for.
    * @param source the source element to use, or null if a fresh instance should
    *     be created.
    * @return element that was created
    * @throws ContentCreationException if content cannot be created
    */
   public static <E extends Element> E createElement(
-      ElementMetadata<?, E> metadata, Element source)
+      ElementKey<?, E> key, Element source)
       throws ContentCreationException {
     Class<?>[] argTypes;
     Object[] args;
-    Class<? extends E> elementClass = metadata.getKey().getElementType();
+    Class<? extends E> elementClass = key.getElementType();
     try {
       try {
-        // First try the constructor that takes in {@link ElementMetadata}.
+        // First try the constructor that takes in {@link ElementKey}.
         if (source != null) {
-          argTypes = new Class<?>[] {ElementMetadata.class, source.getClass()};
-          args = new Object[] {metadata, source};
+          argTypes = new Class<?>[] {ElementKey.class, source.getClass()};
+          args = new Object[] {key, source};
         } else {
-          argTypes = new Class<?>[] {ElementMetadata.class};
-          args = new Object[] {metadata};
+          argTypes = new Class<?>[] {ElementKey.class};
+          args = new Object[] {key};
         }
         return construct(elementClass, argTypes, args);
       } catch (NoSuchMethodException e) {
@@ -1409,9 +1281,7 @@ public class Element {
           argTypes = new Class<?>[] {};
           args = new Object[] {};
         }
-        E result = construct(elementClass, argTypes, args);
-        result.setMetadata(metadata);
-        return result;
+        return construct(elementClass, argTypes, args);
       }
     } catch (NoSuchMethodException e) {
       throw new ContentCreationException(
@@ -1437,9 +1307,46 @@ public class Element {
       Object[] args) throws SecurityException, NoSuchMethodException,
       InstantiationException, IllegalAccessException,
       InvocationTargetException {
-    Constructor<? extends T> ctc = clazz.getDeclaredConstructor(argTypes);
-    ctc.setAccessible(true);
-    return ctc.newInstance(args);
+    @SuppressWarnings("unchecked")
+    Constructor<T>[] ctcs = (Constructor<T>[]) clazz.getDeclaredConstructors();
+    for (Constructor<T> ctc : ctcs) {
+      Class<?>[] paramTypes = ctc.getParameterTypes();
+      if (paramsValid(paramTypes, argTypes)) {
+        ctc.setAccessible(true);
+        return ctc.newInstance(args);
+      }
+    }
+
+    // We didn't find a constructor, this will report an error consistent
+    // with not finding a valid public constructor.
+    return clazz.getConstructor(argTypes).newInstance(args);
+  }
+
+  private static boolean paramsValid(Class<?>[] paramTypes,
+      Class<?>[] argTypes) {
+    if (paramTypes.length != argTypes.length) {
+      return false;
+    }
+    for (int i = 0; i < paramTypes.length; i++) {
+      if (!paramTypes[i].isAssignableFrom(argTypes[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return state.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Element)) {
+      return false;
+    }
+    return state.equals(((Element) obj).state);
   }
 
   @Override

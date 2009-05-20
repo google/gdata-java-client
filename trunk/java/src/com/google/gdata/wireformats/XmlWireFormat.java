@@ -17,7 +17,8 @@
 package com.google.gdata.wireformats;
 
 import com.google.gdata.data.XmlEventSource;
-import com.google.gdata.model.MetadataContext;
+import com.google.gdata.wireformats.input.InputProperties;
+import com.google.gdata.wireformats.output.OutputProperties;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -27,26 +28,26 @@ import java.nio.charset.Charset;
  * JSON wire format properties.
  */
 public class XmlWireFormat extends WireFormat {
-  
+
   public XmlWireFormat() {
     super("xml");
   }
 
   @Override
-  public WireFormatGenerator createGenerator(MetadataContext context, Writer w,
-      Charset cs, boolean prettyPrint) {
-    return new XmlGenerator(w, cs, prettyPrint);
+  public WireFormatGenerator createGenerator(OutputProperties outProps,
+      Writer w, Charset cs, boolean prettyPrint) {
+    return new XmlGenerator(outProps, w, cs, prettyPrint);
   }
 
   @Override
-  public WireFormatParser createParser(MetadataContext context, Reader r,
-      Charset cs) {
-    return new XmlParser(context, r, cs);
+  public WireFormatParser createParser(InputProperties inProps,
+      Reader r, Charset cs) {
+    return new XmlParser(inProps, r, cs);
   }
-  
+
   @Override
-  public WireFormatParser createParser(MetadataContext context,
+  public WireFormatParser createParser(InputProperties inProps,
       XmlEventSource source) {
-    return new EventSourceParser(context, source);
+    return new EventSourceParser(inProps, source);
   }
 }

@@ -19,6 +19,7 @@ package com.google.gdata.wireformats;
 import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.model.MetadataContext;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.util.ContentType;
 
 import java.util.Collection;
@@ -32,12 +33,12 @@ import java.util.Collection;
  *
  * 
  */
-public class ForwardingStreamProperties implements StreamProperties { 
+public class ForwardingStreamProperties implements StreamProperties {
   private final StreamProperties delegate;
 
   public ForwardingStreamProperties(StreamProperties delegate) {
     Preconditions.checkNotNull(delegate, "delegate");
-    
+
     this.delegate = delegate;
   }
 
@@ -55,6 +56,10 @@ public class ForwardingStreamProperties implements StreamProperties {
 
   public ExtensionProfile getExtensionProfile() {
     return delegate.getExtensionProfile();
+  }
+
+  public MetadataRegistry getMetadataRegistry() {
+    return delegate.getMetadataRegistry();
   }
 
   public MetadataContext getMetadataContext() {

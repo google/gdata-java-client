@@ -21,7 +21,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gdata.util.common.html.HtmlToText;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.Service;
+import com.google.gdata.data.IContent;
 import com.google.gdata.data.ITextConstruct;
+import com.google.gdata.data.ITextContent;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
@@ -37,7 +39,8 @@ import com.google.gdata.util.Namespaces;
 /**
  * Variant of {@link Content} for entries containing text.
  */
-public class TextContent extends Content implements ITextConstruct {
+public class TextContent extends Content 
+    implements ITextContent, ITextConstruct {
 
   /** The kind name for adaptation. */
   public static final String KIND = "text";
@@ -82,12 +85,12 @@ public class TextContent extends Content implements ITextConstruct {
   // A map of type attribute values to content types.
   private static final ImmutableMap<String, Integer> TYPE_MAP =
       ImmutableMap.<String, Integer>builder()
-      .put("plain", Content.Type.TEXT)
-      .put("text", Content.Type.TEXT)
-      .put("text/plain", Content.Type.TEXT)
-      .put("html", Content.Type.HTML)
-      .put("text/html", Content.Type.HTML)
-      .put("xhtml", Content.Type.XHTML)
+      .put("plain", IContent.Type.TEXT)
+      .put("text", IContent.Type.TEXT)
+      .put("text/plain", IContent.Type.TEXT)
+      .put("html", IContent.Type.HTML)
+      .put("text/html", IContent.Type.HTML)
+      .put("xhtml", IContent.Type.XHTML)
       .build();
 
   /**
@@ -101,7 +104,8 @@ public class TextContent extends Content implements ITextConstruct {
      * <p>
      * Also adds an error if the tyep attribute on the given element is unknown.
      */
-    public void validate(ValidationContext vc, Element e) {
+    public void validate(ValidationContext vc, Element e,
+        ElementMetadata<?, ?> metadata) {
       int type = getType(e);
       switch (type) {
         case UNKNOWN_TYPE:
@@ -110,8 +114,8 @@ public class TextContent extends Content implements ITextConstruct {
                   "Invalid type: " + type));
           break;
 
-        case Content.Type.TEXT:
-        case Content.Type.HTML:
+        case IContent.Type.TEXT:
+        case IContent.Type.HTML:
           if (!e.hasTextValue()) {
             vc.addError(e, CoreErrorDomain.ERR.missingTextContent);
           }
@@ -122,7 +126,7 @@ public class TextContent extends Content implements ITextConstruct {
           }
           break;
 
-        case Content.Type.XHTML:
+        case IContent.Type.XHTML:
           if (!e.hasElement(DIV)) {
             vc.addError(e,
                 CoreErrorDomain.ERR.missingExtensionElement.withInternalReason(
@@ -164,13 +168,13 @@ public class TextContent extends Content implements ITextConstruct {
    */
   public static TextContent create(int type, String textOrHtml, XmlBlob xhtml) {
     switch (type) {
-      case Content.Type.TEXT:
+      case IContent.Type.TEXT:
         return plainText(textOrHtml);
 
-      case Content.Type.HTML:
+      case IContent.Type.HTML:
         return html(textOrHtml);
 
-      case Content.Type.XHTML:
+      case IContent.Type.XHTML:
         return xhtml(xhtml);
 
       default:
@@ -214,36 +218,34 @@ public class TextContent extends Content implements ITextConstruct {
    */
   private static int getType(Element e) {
     String type = e.getAttributeValue(Content.TYPE);
-    Integer typeVal = (type == null) ? Content.Type.TEXT : TYPE_MAP.get(type);
+    Integer typeVal = (type == null) ? IContent.Type.TEXT : TYPE_MAP.get(type);
     return (typeVal == null) ? UNKNOWN_TYPE : typeVal.intValue();
   }
 
   /**
-   * Constructs a new plain text instance using the default metadata.
+   * Constructs a new plain text instance using the default key.
    */
   public TextContent() {
-    this(DefaultRegistry.get(KEY));
+    super(CONSTRUCT);
   }
 
   /**
-   * Constructs a new instance using the specified element metadata. Defaults
-   * to an empty plain text content.
+   * Constructs a new instance using the specified key.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key the element key for this element
    */
-  public TextContent(ElementMetadata<?, ?> elementMetadata) {
-    super(elementMetadata);
+  public TextContent(ElementKey<?, ?> key) {
+    super(key);
   }
 
   /**
    * Constructs a new instance from a more generic {@link Content} type.
    *
-   * @param metadata metadata to use for this instance
+   * @param key the element key to use for this instance
    * @param content generic content
    */
-  public TextContent(ElementMetadata<?, ?> metadata, Content content) {
-    super(metadata, content);
+  public TextContent(ElementKey<?, ?> key, Content content) {
+    super(key, content);
   }
 
   /**
@@ -255,7 +257,7 @@ public class TextContent extends Content implements ITextConstruct {
   @Override
   public int getType() {
     int type = getType(this);
-    return (type == UNKNOWN_TYPE) ? Content.Type.TEXT : type;
+    return (type == UNKNOWN_TYPE) ? IContent.Type.TEXT : type;
   }
 
   /**
@@ -273,13 +275,13 @@ public class TextContent extends Content implements ITextConstruct {
    */
   public String getPlainText() {
     switch (getType()) {
-      case Content.Type.XHTML:
+      case IContent.Type.XHTML:
         return getXhtml().getBlob();
 
-      case Content.Type.TEXT:
+      case IContent.Type.TEXT:
         return getText();
 
-      case Content.Type.HTML:
+      case IContent.Type.HTML:
         return HtmlToText.htmlToPlainText(getText());
 
       default:
@@ -318,7 +320,7 @@ public class TextContent extends Content implements ITextConstruct {
 
     XmlBlob div = getElement(DIV);
     if (div == null) {
-      div = new XmlBlob(DefaultRegistry.get(DIV));
+      div = new XmlBlob(DIV);
       setXhtml(div);
     }
     return div;
@@ -329,9 +331,9 @@ public class TextContent extends Content implements ITextConstruct {
    */
   public void setText(String text) {
     if (Service.getVersion().isBefore(Service.Versions.V2)) {
-      addAttribute(Content.TYPE, "text");
+      setAttributeValue(Content.TYPE, "text");
     } else {
-      removeAttribute(Content.TYPE);
+      setAttributeValue(Content.TYPE, null);
     }
     setTextValue(text);
   }
@@ -341,7 +343,7 @@ public class TextContent extends Content implements ITextConstruct {
    * element if it wasn't already.
    */
   public void setHtml(String html) {
-    addAttribute(Content.TYPE, "html");
+    setAttributeValue(Content.TYPE, "html");
     setTextValue(html);
   }
 
@@ -350,8 +352,8 @@ public class TextContent extends Content implements ITextConstruct {
    * text content element if it wasn't already.
    */
   public void setXhtml(XmlBlob div) {
-    addAttribute(Content.TYPE, "xhtml");
-    addElement(DIV, div);
+    setAttributeValue(Content.TYPE, "xhtml");
+    setElement(DIV, div);
   }
 
   /**
@@ -361,19 +363,23 @@ public class TextContent extends Content implements ITextConstruct {
    * to an empty string.
    */
   @Override
-  public Element resolve(ValidationContext vc) {
+  public Element resolve(ElementMetadata<?,?> metadata, ValidationContext vc) {
     int type = getType();
-    if (type == Content.Type.TEXT
+    if (type == IContent.Type.TEXT
         && Service.getVersion().isBefore(Service.Versions.V2)
-        && getAttribute(Content.TYPE) == null) {
-      addAttribute(Content.TYPE, "text");
+        && getAttributeValue(Content.TYPE) == null) {
+      setAttributeValue(Content.TYPE, "text");
     }
-    if (type == Content.Type.TEXT || type == Content.Type.HTML) {
+    if (type == IContent.Type.TEXT || type == IContent.Type.HTML) {
       if (getTextValue() == null) {
         setTextValue("");
       }
     }
 
-    return super.resolve(vc);
+    return super.resolve(metadata, vc);
+  }
+
+  public ITextConstruct getContent() {
+    return this;
   }
 }

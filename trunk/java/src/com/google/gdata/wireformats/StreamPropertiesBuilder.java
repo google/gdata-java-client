@@ -19,6 +19,7 @@ package com.google.gdata.wireformats;
 import com.google.common.collect.Maps;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.model.MetadataContext;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.util.ContentType;
 
 import java.util.Collection;
@@ -27,10 +28,10 @@ import java.util.Map;
 /**
  * The StreamPropertiesBuilder class is a abstract builder base class that aids
  * in the construction of new {@link StreamProperties} instances.
- * 
+ *
  * @param <T> the concrete subtype of StreamPropertiesBuilder that will be used
  *        as the return type for property setters to enable chaining.
- * 
+ *
  * 
  */
 public abstract class StreamPropertiesBuilder
@@ -39,6 +40,7 @@ public abstract class StreamPropertiesBuilder
   protected AltRegistry altRegistry;
   protected ContentType contentType;
   protected ExtensionProfile extensionProfile;
+  protected MetadataRegistry metadataRegistry;
   protected MetadataContext metadataContext;
   protected final Map<String, String> queryMap;
 
@@ -52,7 +54,7 @@ public abstract class StreamPropertiesBuilder
   /**
    * Constructs a new StreamPropertiesBuilder instance with the initial value of
    * all properties copied from another {@link StreamProperties} instance.
-   * 
+   *
    * @param source stream properties instance to copy from.
    */
   protected StreamPropertiesBuilder(StreamProperties source) {
@@ -65,7 +67,7 @@ public abstract class StreamPropertiesBuilder
       queryMap.put(name, source.getQueryParameter(name));
     }
   }
-  
+
   @SuppressWarnings("unchecked")
   public final T thisInstance() {
     return (T) this;
@@ -74,7 +76,7 @@ public abstract class StreamPropertiesBuilder
   /**
    * Sets the {@link AltRegistry} property that should be used for instances
    * created by the builder.
-   * 
+   *
    * @param altRegistry alt registry to set in built instances.
    * @return this builder (to enable initialization chaining).
    */
@@ -85,7 +87,7 @@ public abstract class StreamPropertiesBuilder
   /**
    * Sets the {@link ContentType} property that should be used for instances
    * created by the builder.
-   * 
+   *
    * @param contentType content type to set in built instances.
    * @return this builder (to enable initialization chaining).
    */
@@ -97,7 +99,7 @@ public abstract class StreamPropertiesBuilder
   /**
    * Sets the {@link ExtensionProfile} property that should be used for
    * instances created by the builder.
-   * 
+   *
    * @param extensionProfile extension profile to set in built instances.
    * @return this builder (to enable initialization chaining).
    */
@@ -106,11 +108,23 @@ public abstract class StreamPropertiesBuilder
     this.extensionProfile = extensionProfile;
     return thisInstance();
   }
-  
+
+  /**
+   * Sets the {@link MetadataRegistry} property that should be used for
+   * instances created by the builder.
+   *
+   * @param metadataRegistry to set in built instances.
+   * @return this builder (to enable initialization chaining).
+   */
+  public T setMetadataRegistry(MetadataRegistry metadataRegistry) {
+    this.metadataRegistry = metadataRegistry;
+    return thisInstance();
+  }
+
   /**
    * Sets the {@link MetadataContext} property that should be used for instances
    * created by the builder.
-   * 
+   *
    * @param metadataContext to set in built instances.
    * @return this builder (to enable initialization chaining).
    */
@@ -119,12 +133,12 @@ public abstract class StreamPropertiesBuilder
     this.metadataContext = metadataContext;
     return thisInstance();
   }
-  
+
   /**
    * Sets the value of a query parameter in the query {@link Map} that should be
    * used for instances created by the builder.   Any existing value with the
    * same name will be overwritten.
-   * 
+   *
    * @param name query parameter name
    * @param value query parameter value
    * @return this builder (to enable initialization chaining).
@@ -139,7 +153,7 @@ public abstract class StreamPropertiesBuilder
    * the set of query parameters used for instances created by the builder.
    * Any existing query parameter mappings with names contained in the map will
    * be overwritten.
-   * 
+   *
    * @param queryMap query map to set in built instances.
    * @return this builder (to enable initialization chaining).
    */
@@ -157,19 +171,21 @@ public abstract class StreamPropertiesBuilder
     private final AltRegistry altRegistry;
     private final ContentType contentType;
     private final ExtensionProfile extensionProfile;
+    private final MetadataRegistry metadataRegistry;
     private final MetadataContext metadataContext;
     private final Map<String, String> queryMap;
 
     /**
      * Constructs a new StreamPropertiesImpl instance from the values contained
      * in a builder instance.
-     * 
+     *
      * @param builder build instance.
      */
     protected StreamPropertiesImpl(StreamPropertiesBuilder<?> builder) {
       this.altRegistry = builder.altRegistry;
       this.contentType = builder.contentType;
       this.extensionProfile = builder.extensionProfile;
+      this.metadataRegistry = builder.metadataRegistry;
       this.metadataContext = builder.metadataContext;
       this.queryMap = builder.queryMap;
     }
@@ -186,10 +202,14 @@ public abstract class StreamPropertiesBuilder
       return extensionProfile;
     }
 
+    public MetadataRegistry getMetadataRegistry() {
+      return metadataRegistry;
+    }
+
     public MetadataContext getMetadataContext() {
       return metadataContext;
     }
-    
+
     public Collection<String> getQueryParameterNames() {
       return queryMap.keySet();
     }

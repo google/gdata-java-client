@@ -114,20 +114,14 @@ public class AtomRssTransforms {
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
     properties.setElementGenerator(new XmlGenerator.XmlElementGenerator() {
       @Override
-      public boolean startElement(XmlWriter xw, Element parent, Element e)
-          throws IOException {
-        List<Attribute> attrs = getAttributes(e);
+      protected List<Attribute> getAttributes(Element e,
+          ElementMetadata<?, ?> metadata) {
+        List<Attribute> attrs = super.getAttributes(e, metadata);
         if (attrs == null) {
-          attrs = new ArrayList<Attribute>();
+          attrs = Lists.newArrayListWithExpectedSize(1);
         }
         attrs.add(new Attribute("isPermaLink", "false"));
-
-        Collection<XmlNamespace> namespaces = getNamespaces(parent, e);
-
-        ElementMetadata<?, ?> meta = e.getMetadata();
-        xw.startElement(meta.getName().getNs(), meta.getName().getLocalName(),
-            attrs, namespaces);
-        return true;
+        return attrs;
       }
     });
     registry.build(Entry.KEY, Entry.ID, RSS)
@@ -140,13 +134,14 @@ public class AtomRssTransforms {
     registry.build(Entry.KEY, Entry.PUBLISHED, RSS)
         .setName(new QName(Namespaces.rssNs, "pubDate"))
         .setVirtualValue(new VirtualValue() {
-          public Object generate(Element element) {
+          public Object generate(Element element,
+              ElementMetadata<?, ?> metadata) {
             DateTime date = element.getTextValue(Entry.PUBLISHED);
             return date == null ? "" : date.toStringRfc822();
           }
 
-          public void parse(Element element, Object value)
-              throws ParseException {
+          public void parse(Element element, ElementMetadata<?, ?> metadata,
+              Object value) throws ParseException {
             DateTime parsed = DateTime.parseRfc822(value.toString());
             element.setTextValue(parsed);
           }
@@ -156,10 +151,10 @@ public class AtomRssTransforms {
     personProperties.setElementGenerator(
         new XmlGenerator.XmlElementGenerator() {
       @Override
-      public boolean startElement(XmlWriter xw, Element parent, Element e)
-          throws IOException {
+      public boolean startElement(XmlWriter xw, Element parent, Element e,
+          ElementMetadata<?, ?> metadata) throws IOException {
         if (!(e instanceof Person)) {
-          return super.startElement(xw, parent, e);
+          return super.startElement(xw, parent, e, metadata);
         }
 
         Person person = (Person) e;
@@ -183,17 +178,19 @@ public class AtomRssTransforms {
           }
         }
 
-        ElementMetadata<?, ?> meta = e.getMetadata();
-        xw.simpleElement(meta.getName().getNs(),
-            meta.getName().getLocalName(), null, text.toString());
+        QName xmlName = getName(e, metadata);
+        xw.simpleElement(xmlName.getNs(), xmlName.getLocalName(),
+            null, text.toString());
         return false;
       }
 
       @Override
-      public void textContent(XmlWriter xw, Element e) {}
+      public void textContent(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) {}
 
       @Override
-      public void endElement(XmlWriter xw, Element e) {}
+      public void endElement(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) {}
     });
 
     registry.build(Entry.KEY, Author.KEY, RSS)
@@ -212,10 +209,10 @@ public class AtomRssTransforms {
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
     properties.setElementGenerator(new XmlGenerator.XmlElementGenerator() {
       @Override
-      public boolean startElement(XmlWriter xw, Element parent, Element e)
-          throws IOException {
+      public boolean startElement(XmlWriter xw, Element parent, Element e,
+          ElementMetadata<?, ?> metadata) throws IOException {
         if (!(e instanceof OutOfLineContent)) {
-          return super.startElement(xw, parent, e);
+          return super.startElement(xw, parent, e, metadata);
         }
 
         OutOfLineContent content = (OutOfLineContent) e;
@@ -229,27 +226,31 @@ public class AtomRssTransforms {
       }
 
       @Override
-      public void textContent(XmlWriter xw, Element e) {}
+      public void textContent(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) {}
 
       @Override
-      public void endElement(XmlWriter xw, Element e) {}
+      public void endElement(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) {}
     });
 
     registry.build(OutOfLineContent.KEY, RSS)
         .setProperties(properties);
   }
 
-  private static void addFeedTransforms(MetadataRegistryBuilder registry) {
+  private static void addFeedTransforms(final MetadataRegistryBuilder registry) {
     registry.build(Feed.KEY, Entry.ETAG, RSS)
         .setVisible(false);
 
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
     properties.setElementGenerator(new XmlGenerator.XmlElementGenerator() {
       @Override
-      public boolean startElement(XmlWriter xw, Element parent, Element e)
-          throws IOException {
-        Collection<XmlNamespace> namespaces = getNamespaces(parent, e);
-        List<XmlWriter.Attribute> attrs = getAttributes(e);
+      public boolean startElement(XmlWriter xw, Element parent, Element e,
+          ElementMetadata<?, ?> metadata) throws IOException {
+
+        Collection<XmlNamespace> namespaces =
+            getNamespaces(parent, e, metadata);
+        List<XmlWriter.Attribute> attrs = getAttributes(e, metadata);
         if (attrs == null) {
           attrs = Lists.newArrayList();
         }
@@ -268,9 +269,10 @@ public class AtomRssTransforms {
       }
 
       @Override
-      public void endElement(XmlWriter xw, Element e) throws IOException {
+      public void endElement(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) throws IOException {
         xw.endElement(Namespaces.rssNs, "channel");
-        super.endElement(xw, e);
+        super.endElement(xw, e, metadata);
       }
     });
     registry.build(Feed.KEY, RSS)
@@ -280,13 +282,14 @@ public class AtomRssTransforms {
     registry.build(Feed.KEY, Feed.UPDATED, RSS)
         .setName(new QName(Namespaces.rssNs, "lastBuildDate"))
         .setVirtualValue(new VirtualValue() {
-          public Object generate(Element element) {
+          public Object generate(Element element,
+              ElementMetadata<?, ?> metadata) {
             DateTime date = element.getTextValue(Feed.UPDATED);
             return date == null ? "" : date.toStringRfc822();
           }
 
-          public void parse(Element element, Object value)
-              throws ParseException {
+          public void parse(Element element, ElementMetadata<?, ?> metadata,
+              Object value) throws ParseException {
             DateTime parsed = DateTime.parseRfc822(value.toString());
             element.setTextValue(parsed);
           }
@@ -297,10 +300,10 @@ public class AtomRssTransforms {
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
     properties.setElementGenerator(new XmlGenerator.XmlElementGenerator() {
       @Override
-      public boolean startElement(XmlWriter xw, Element parent, Element e)
-          throws IOException {
+      public boolean startElement(XmlWriter xw, Element parent, Element e,
+          ElementMetadata<?, ?> metadata) throws IOException {
         if (!(e instanceof Link)) {
-          return super.startElement(xw, parent, e);
+          return super.startElement(xw, parent, e, metadata);
         }
         Link link = (Link) e;
         String rel = link.getRel();
@@ -327,10 +330,12 @@ public class AtomRssTransforms {
       }
 
       @Override
-      public void textContent(XmlWriter xw, Element e) {}
+      public void textContent(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) {}
 
       @Override
-      public void endElement(XmlWriter xw, Element e) {}
+      public void endElement(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) {}
     });
 
     registry.build(Link.KEY, RSS)
@@ -347,12 +352,13 @@ public class AtomRssTransforms {
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
     properties.setElementGenerator(new XmlGenerator.XmlElementGenerator() {
       @Override
-      public boolean startElement(XmlWriter xw, Element parent, Element e)
-          throws IOException {
+      public boolean startElement(XmlWriter xw, Element parent, Element e,
+          ElementMetadata<?, ?> metadata) throws IOException {
         boolean isIcon = e.getElementId().equals(Source.ICON.getId());
         boolean isLogo = e.getElementId().equals(Source.LOGO.getId());
+
         if ((!isIcon && !isLogo) || !(parent instanceof Source)) {
-          return super.startElement(xw, parent, e);
+          return super.startElement(xw, parent, e, metadata);
         }
 
         Source source = (Source) parent;
@@ -381,10 +387,12 @@ public class AtomRssTransforms {
       }
 
       @Override
-      public void textContent(XmlWriter xw, Element e) {}
+      public void textContent(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) {}
 
       @Override
-      public void endElement(XmlWriter xw, Element e) {}
+      public void endElement(XmlWriter xw, Element e,
+          ElementMetadata<?, ?> metadata) {}
     });
     registry.build(Source.CONSTRUCT, Source.ICON, RSS)
         .setProperties(properties);

@@ -16,8 +16,6 @@
 
 package com.google.gdata.model;
 
-import com.google.gdata.util.common.base.Pair;
-
 import java.util.Map;
 
 /**
@@ -46,13 +44,6 @@ import java.util.Map;
 class AdaptationRegistry {
 
   /**
-   * The metadata registry that this adaptation registry is a part of. This is
-   * used to bind the metadata returned from the {@link #findAttribute} and
-   * {@link #findElement} methods.
-   */
-  private final MetadataRegistry metadataRegistry;
-
-  /**
    * Map from adaptation keys to the metadata for that adaptation.
    */
   private final Map<String, ElementKey<?, ?>> adaptations;
@@ -60,21 +51,19 @@ class AdaptationRegistry {
   /**
    * The union of attributes for this element and any adaptors.
    */
-  private final Map<QName, Pair<ElementKey<?, ?>, AttributeKey<?>>> attributes;
+  private final Map<QName, AttributeKey<?>> attributes;
 
   /**
    * The union of elements for this element and any adaptors.
    */
-  private final Map<QName, Pair<ElementKey<?, ?>, ElementKey<?, ?>>> elements;
+  private final Map<QName, ElementKey<?, ?>> elements;
 
   /**
    * Constructs a new adaptation registry.
    */
-  AdaptationRegistry(MetadataRegistry metadataRegistry,
-      Map<String, ElementKey<?, ?>> adaptations,
-      Map<QName, Pair<ElementKey<?, ?>, AttributeKey<?>>> attributes,
-      Map<QName, Pair<ElementKey<?, ?>, ElementKey<?, ?>>> elements) {
-    this.metadataRegistry = metadataRegistry;
+  AdaptationRegistry(Map<String, ElementKey<?, ?>> adaptations,
+      Map<QName, AttributeKey<?>> attributes,
+      Map<QName, ElementKey<?, ?>> elements) {
     this.adaptations = adaptations;
     this.attributes = attributes;
     this.elements = elements;
@@ -90,22 +79,14 @@ class AdaptationRegistry {
   /**
    * Finds the first matching parent/attribute pair with the given id.
    */
-  AttributeMetadata<?> findAttribute(QName id) {
-    Pair<ElementKey<?, ?>, AttributeKey<?>> found = attributes.get(id);
-    if (found != null) {
-      return metadataRegistry.bind(found.getFirst(), found.getSecond());
-    }
-    return null;
+  AttributeKey<?> findAttribute(QName id) {
+    return attributes.get(id);
   }
 
   /**
    * Finds the first matching parent/child pair with the given id.
    */
-  ElementMetadata<?, ?> findElement(QName id) {
-    Pair<ElementKey<?, ?>, ElementKey<?, ?>> found = elements.get(id);
-    if (found != null) {
-      return metadataRegistry.bind(found.getFirst(), found.getSecond());
-    }
-    return null;
+  ElementKey<?, ?> findElement(QName id) {
+    return elements.get(id);
   }
 }

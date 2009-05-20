@@ -18,7 +18,6 @@ package com.google.gdata.model.atompub;
 
 import com.google.common.collect.Maps;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.ContentModel;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
@@ -111,51 +110,40 @@ public class Categories extends Element {
     builder.addAttribute(HREF);
     builder.addAttribute(SCHEME);
     builder.addElement(Category.KEY).setCardinality(
-        ContentModel.Cardinality.MULTIPLE);
+        ElementMetadata.Cardinality.MULTIPLE);
   }
 
   /**
    * Default mutable constructor.
    */
   public Categories() {
-    this(DefaultRegistry.get(KEY));
+    this(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using custom metadata.
+   * Create an instance using a different key.
    */
-  protected Categories(ElementMetadata<Void, ? extends Categories> metadata) {
-    super(metadata);
+  public Categories(ElementKey<Void, ? extends Categories> key) {
+    super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Element} instance. Will use the given {@link ElementMetadata} as the
-   * metadata for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key The key to use for this element.
    * @param source source element
    */
-  public Categories(ElementMetadata<Void, ? extends Categories> metadata,
+  public Categories(ElementKey<Void, ? extends Categories> key,
       Element source) {
-    super(metadata, source);
+    super(key, source);
   }
 
-  /**
-   * Immutable constructor.
-   *
-   * @param fixed indicates whether the list of categories is a fixed or an open
-   *     set.
-   * @param href an IRI reference to a Category Document.
-   * @param scheme default scheme of the contained category elements.
-   */
-  public Categories(Fixed fixed, String href, String scheme) {
-    this();
-    setFixed(fixed);
-    setHref(href);
-    setScheme(scheme);
-    setImmutable(true);
-  }
+   @Override
+   public Categories lock() {
+     return (Categories) super.lock();
+   }
 
   /**
    * Returns the categories.
@@ -171,8 +159,9 @@ public class Categories extends Element {
    *
    * @param category category
    */
-  public void addCategory(Category category) {
+  public Categories addCategory(Category category) {
     super.addElement(Category.KEY, category);
+    return this;
   }
 
   /**
@@ -211,13 +200,9 @@ public class Categories extends Element {
    * @param fixed indicates whether the list of categories is a fixed or an open
    *     set or <code>null</code> to reset
    */
-  public void setFixed(Fixed fixed) {
-    throwExceptionIfImmutable();
-    if (fixed == null) {
-      super.removeAttribute(FIXED);
-    } else {
-      super.addAttribute(FIXED, fixed);
-    }
+  public Categories setFixed(Fixed fixed) {
+    super.setAttributeValue(FIXED, fixed);
+    return this;
   }
 
   /**
@@ -246,13 +231,9 @@ public class Categories extends Element {
    * @param href an IRI reference to a Category Document or <code>null</code> to
    *     reset
    */
-  public void setHref(String href) {
-    throwExceptionIfImmutable();
-    if (href == null) {
-      super.removeAttribute(HREF);
-    } else {
-      super.addAttribute(HREF, href);
-    }
+  public Categories setHref(String href) {
+    super.setAttributeValue(HREF, href);
+    return this;
   }
 
   /**
@@ -279,13 +260,9 @@ public class Categories extends Element {
    * @param scheme default scheme of the contained category elements or
    *     <code>null</code> to reset
    */
-  public void setScheme(String scheme) {
-    throwExceptionIfImmutable();
-    if (scheme == null) {
-      super.removeAttribute(SCHEME);
-    } else {
-      super.addAttribute(SCHEME, scheme);
-    }
+  public Categories setScheme(String scheme) {
+    super.setAttributeValue(SCHEME, scheme);
+    return this;
   }
 
   /**

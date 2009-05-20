@@ -41,18 +41,24 @@ public interface Metadata<D> {
 
     /**
      * Generate the value of either an attribute or text content based on the
-     * containing element.
+     * containing element and metadata.
      */
-    Object generate(Element element);
+    Object generate(Element element, ElementMetadata<?, ?> metadata);
 
     /**
-     * Parses the virtual value, storing it into the element or attribute as
-     * appropriate.
+     * Parses the virtual value using the given metadata, storing it into the
+     * element or attribute as appropriate.
      *
      * @throws ParseException if parsing fails.
      */
-    void parse(Element element, Object value) throws ParseException;
+    void parse(Element element, ElementMetadata<?, ?> metadata, Object value)
+        throws ParseException;
   }
+
+  /**
+   * Returns the metadata registry that this metadata is a part of.
+   */
+  MetadataRegistry getRegistry();
 
   /**
    * Returns the attribute key for this metadata.
@@ -89,14 +95,6 @@ public interface Metadata<D> {
   boolean isRequired();
 
   /**
-   * Returns true if this property was not declared (foreign).  This is used
-   * for parsing and generation of foreign attributes and foreign xml elements.
-   *
-   * @return true if the property was not declared.
-   */
-  boolean isUndeclared();
-
-  /**
    * Returns true if this property is visible.  If a property is visible it will
    * be included in the output generation for its parent element, if it is
    * hidden (not visible) it will not be included.
@@ -116,7 +114,7 @@ public interface Metadata<D> {
    * is virtual, it will be used to generate the value, otherwise the regular
    * property value will be used.
    */
-  Object generateValue(Element element);
+  Object generateValue(Element element, ElementMetadata<?, ?> metadata);
 
   /**
    * Parses the value of this property into the given element.  If the property
@@ -125,5 +123,6 @@ public interface Metadata<D> {
    *
    * @throws ParseException if parsing fails.
    */
-  void parseValue(Element element, Object value) throws ParseException;
+  void parseValue(Element element, ElementMetadata<?, ?> metadata, Object value)
+      throws ParseException;
 }

@@ -37,6 +37,7 @@ class AttributeIterator implements Iterator<Attribute> {
 
   private final Element element;
   private final ElementMetadata<?, ?> metadata;
+  private final Map<QName, Attribute> attributes;
 
   private Iterator<AttributeKey<?>> metadataIterator;
   private Iterator<Map.Entry<QName, Attribute>> attributeIterator;
@@ -47,6 +48,7 @@ class AttributeIterator implements Iterator<Attribute> {
       Map<QName, Attribute> attributes) {
     this.element = element;
     this.metadata = metadata;
+    this.attributes = attributes;
     this.metadataIterator = (metadata == null) ? null
         : metadata.getAttributes().iterator();
     this.attributeIterator = (attributes == null) ? null
@@ -113,13 +115,13 @@ class AttributeIterator implements Iterator<Attribute> {
 
         VirtualValue virtual = attMeta.getVirtualValue();
         if (virtual != null) {
-          Object value = virtual.generate(element);
+          Object value = virtual.generate(element, metadata);
           if (value != null) {
-            return new Attribute(attMeta, value);
+            return new Attribute(nextKey, value);
           }
         }
 
-        Attribute attribute = element.getAttribute(nextKey);
+        Attribute attribute = getAttribute(nextKey);
         if (attribute != null) {
           return attribute;
         }
@@ -132,6 +134,13 @@ class AttributeIterator implements Iterator<Attribute> {
     // Check undeclared next.
     mode = Mode.UNDECLARED;
     return null;
+  }
+
+  /**
+   * Returns the attribute with the given key, or null if none was found.
+   */
+  private Attribute getAttribute(AttributeKey<?> key) {
+    return (attributes == null) ? null : attributes.get(key.getId());
   }
 
   /**

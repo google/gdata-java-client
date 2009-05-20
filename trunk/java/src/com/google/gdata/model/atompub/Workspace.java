@@ -19,12 +19,12 @@ package com.google.gdata.model.atompub;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.introspection.IWorkspace;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.atom.Source;
@@ -44,7 +44,6 @@ public class Workspace extends Element implements IWorkspace {
   /**
    * The key for this element.
    */
-  @SuppressWarnings("deprecation")
   public static final ElementKey<Void, Workspace> KEY = ElementKey.of(
       new QName(Namespaces.atomPubStandardNs, "workspace"), Workspace.class);
 
@@ -68,27 +67,26 @@ public class Workspace extends Element implements IWorkspace {
    * Default mutable constructor.
    */
   public Workspace() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using custom metadata.
+   * Lets subclasses create an instance using custom key.
    */
-  protected Workspace(ElementMetadata<Void, ? extends Workspace> metadata) {
-    super(metadata);
+  protected Workspace(ElementKey<Void, ? extends Workspace> key) {
+    super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Element} instance. Will use the given {@link ElementMetadata} as the
-   * metadata for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the
+   * key for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key the element key to use for this element.
    * @param source source element
    */
-  public Workspace(ElementMetadata<Void, ? extends Workspace> metadata,
-      Element source) {
-    super(metadata, source);
+  public Workspace(ElementKey<Void, ? extends Workspace> key, Element source) {
+    super(key, source);
   }
 
   /**
@@ -162,7 +160,7 @@ public class Workspace extends Element implements IWorkspace {
    * @param title title or <code>null</code> to reset
    */
   public void setTitle(TextContent title) {
-    super.addAttribute(TITLE, title == null ? null : title.getPlainText());
+    setAttributeValue(TITLE, (title == null ? null : title.getPlainText()));
     super.setElement(Source.TITLE, title);
   }
 
@@ -176,7 +174,7 @@ public class Workspace extends Element implements IWorkspace {
   }
 
   @Override
-  public Element resolve(ValidationContext vc) {
+  public Element resolve(ElementMetadata<?, ?> meta, ValidationContext vc) {
     String titleAttribute = getAttributeValue(TITLE);
     TextContent title = getElement(Source.TITLE);
 
@@ -195,10 +193,10 @@ public class Workspace extends Element implements IWorkspace {
       }
     } else if (title != null) {
       titleAttribute = title.getPlainText();
-      addAttribute(TITLE, titleAttribute);
+      setAttributeValue(TITLE, titleAttribute);
     }
 
-    return super.resolve(vc);
+    return super.resolve(meta, vc);
   }
 
   @Override

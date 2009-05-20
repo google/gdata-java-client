@@ -16,7 +16,6 @@
 
 package com.google.gdata.model;
 
-import com.google.gdata.util.common.base.Pair;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -46,7 +45,7 @@ class AdaptationRegistryFactory {
    */
   static AdaptationRegistry create(MetadataRegistry registry,
       ElementTransform transform) {
-    return new AdaptationRegistry(registry, transform.adaptations,
+    return new AdaptationRegistry(transform.adaptations,
         unionAttributes(registry, transform),
         unionElements(registry, transform));
   }
@@ -63,10 +62,9 @@ class AdaptationRegistryFactory {
    * parsing the incompatible attributes will be parsed as if they were
    * undeclared, and later adapted to the correct datatype during resolution.
    */
-  private static Map<QName, Pair<ElementKey<?, ?>, AttributeKey<?>>>
-      unionAttributes(MetadataRegistry registry, ElementTransform transform) {
-    Map<QName, Pair<ElementKey<?, ?>, AttributeKey<?>>> union =
-        Maps.newLinkedHashMap();
+  private static Map<QName, AttributeKey<?>> unionAttributes(
+      MetadataRegistry registry, ElementTransform transform) {
+    Map<QName, AttributeKey<?>> union = Maps.newLinkedHashMap();
     Set<QName> base = getAttributeNames(transform);
     Set<QName> invalid = Sets.newHashSet();
 
@@ -92,17 +90,16 @@ class AdaptationRegistryFactory {
           continue;
         }
 
-        Pair<ElementKey<?, ?>, AttributeKey<?>> existing = union.get(id);
+        AttributeKey<?> existing = union.get(id);
         if (existing != null) {
 
           // Check that multiple attributes with the same ID are compatible.
-          if (!checkCompatible(existing.getSecond(), key)) {
+          if (!checkCompatible(existing, key)) {
             union.remove(id);
             invalid.add(id);
           }
         } else {
-          union.put(id,
-              Pair.<ElementKey<?, ?>, AttributeKey<?>>of(adaptorKey, key));
+          union.put(id, key);
         }
       }
     }
@@ -136,10 +133,9 @@ class AdaptationRegistryFactory {
    * parsing the incompatible elements will be parsed as if they were
    * undeclared, and later adapted to the correct type during resolution.
    */
-  private static Map<QName, Pair<ElementKey<?, ?>, ElementKey<?, ?>>>
-      unionElements(MetadataRegistry registry, ElementTransform transform) {
-    Map<QName, Pair<ElementKey<?, ?>, ElementKey<?, ?>>> union =
-        Maps.newLinkedHashMap();
+  private static Map<QName, ElementKey<?, ?>> unionElements(
+      MetadataRegistry registry, ElementTransform transform) {
+    Map<QName, ElementKey<?, ?>> union = Maps.newLinkedHashMap();
     Set<QName> invalid = Sets.newHashSet();
     Set<QName> base = getElementNames(transform);
 
@@ -162,21 +158,19 @@ class AdaptationRegistryFactory {
           continue;
         }
 
-        Pair<ElementKey<?, ?>, ElementKey<?, ?>> existing = union.get(id);
-        ElementKey<?, ?> compatible = adaptorKey;
+        ElementKey<?, ?> existing = union.get(id);
+        ElementKey<?, ?> compatible = key;
         if (existing != null) {
 
           // Check that multiple elements with the same ID are compatible.
-          compatible = checkCompatibleElements(
-              existing.getFirst(), existing.getSecond(), adaptorKey, key);
+          compatible = checkCompatibleElements(existing, key);
         }
 
         if (compatible == null) {
           union.remove(id);
           invalid.add(id);
-        } else if (compatible == adaptorKey) {
-          union.put(id,
-              new Pair<ElementKey<?, ?>, ElementKey<?, ?>>(adaptorKey, key));
+        } else if (compatible == key) {
+          union.put(id, key);
         }
       }
     }
@@ -227,10 +221,9 @@ class AdaptationRegistryFactory {
    * first and later adapt to a more specific type if necessary.
    */
   private static ElementKey<?, ?> checkCompatibleElements(
-      ElementKey<?, ?> firstParent, ElementKey<?, ?> first,
-      ElementKey<?, ?> secondParent, ElementKey<?, ?> second) {
+      ElementKey<?, ?> first, ElementKey<?, ?> second) {
 
-    ElementKey<?, ?> match = firstParent;
+    ElementKey<?, ?> match = first;
 
     boolean compatible = true;
 
@@ -243,7 +236,7 @@ class AdaptationRegistryFactory {
     if (firstType != secondType
         && !firstType.isAssignableFrom(secondType)) {
       if (secondType.isAssignableFrom(firstType)) {
-        match = secondParent;
+        match = second;
       } else {
         logger.warning("Incompatible element types."
             + " First(" + first + "): " + firstType

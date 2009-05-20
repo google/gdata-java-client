@@ -28,12 +28,11 @@ public interface WireFormatGenerator {
 
   /**
    * Generate wire content for tree rooted at {@code root}.
-   * 
+   *
    * @param root root of tree
    * @throws IOException if content generation failed
-   * @throws ContentValidationException if content fails metadata validation 
+   * @throws ContentValidationException if content fails metadata validation
    */
-  public void generate(Element root)
-      throws IOException, ContentValidationException;
-
+  public void generate(Element root) throws IOException,
+      ContentValidationException;
 }

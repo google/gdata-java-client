@@ -18,12 +18,12 @@ package com.google.gdata.model;
 
 import com.google.gdata.util.common.base.Join;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.ErrorContent;
 import com.google.gdata.util.ParseException;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,22 +36,21 @@ import java.util.Map;
  *     public static class ValidationContext { ... }
  *     public boolean validate(ValidationContext vc);
  *   }
- *   
+ *
  *   public class Element implements Validatable { ... }
  * </pre>
- *   
+ *
  *  Then we could eventually reuse the context class and the accumulation
  *  model in other places (attribute validation? metadata validation?).
  *  In that case, we might want to make the 1st arg of addError
  *  more generic (like 'Object relatedTo') or something.
  */
 public class ValidationContext {
-  
+
   /**
    * Collection of validation error messages associated with elements.
    */
-  private Map<Element, List<ErrorContent>> errors =
-      new HashMap<Element, List<ErrorContent>>();
+  private Map<Element, List<ErrorContent>> errors = Maps.newLinkedHashMap();
 
   /**
    * @return map of validation errors
@@ -70,10 +69,10 @@ public class ValidationContext {
     addError(element,
         CoreErrorDomain.ERR.invalidExtension.withInternalReason(error));
   }
-  
+
   /**
    * Add a validation error to list.
-   * 
+   *
    * @param element element that was found to be invalid
    * @param error error message
    */

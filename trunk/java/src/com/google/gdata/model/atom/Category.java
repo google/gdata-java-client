@@ -16,14 +16,15 @@
 
 package com.google.gdata.model.atom;
 
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.data.ICategory;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -81,17 +82,16 @@ public class Category extends Element implements ICategory {
    * Constructs a new category instance using the default metadata.
    */
   public Category() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
    * Constructs a new category instance using the specified element metadata.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key the element key for the category.
    */
-  protected Category(ElementMetadata<?, ? extends Category> elementMetadata) {
-    super(elementMetadata);
+  protected Category(ElementKey<?, ? extends Category> key) {
+    super(key);
   }
 
   /**
@@ -99,12 +99,11 @@ public class Category extends Element implements ICategory {
    * {@link Category} instance. Will use the given {@link ElementMetadata} as
    * the metadata for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key the element key to use for the category
    * @param source source element
    */
-  public Category(ElementMetadata<Void, ? extends Category> metadata,
-      Category source) {
-    super(metadata, source);
+  public Category(ElementKey<?, ? extends Category> key, Category source) {
+    super(key, source);
   }
 
   // A simple pattern matcher for the "{scheme}term" syntax
@@ -154,6 +153,11 @@ public class Category extends Element implements ICategory {
     setLabel(label);
   }
 
+   @Override
+   public Category lock() {
+     return (Category) super.lock();
+   }
+
   /**
    * Returns the category scheme or {@code null} if the category does not have
    * a scheme.
@@ -168,7 +172,7 @@ public class Category extends Element implements ICategory {
    * @param scheme category scheme URI.
    */
   public void setScheme(String scheme) {
-    addAttribute(SCHEME, scheme);
+    setAttributeValue(SCHEME, scheme);
   }
 
   /**
@@ -184,10 +188,8 @@ public class Category extends Element implements ICategory {
    * @param term
    */
   public void setTerm(String term) {
-    if (term == null) {
-      throw new NullPointerException("Null category term");
-    }
-    addAttribute(TERM, term);
+    Preconditions.checkNotNull(term, "Null category term");
+    setAttributeValue(TERM, term);
   }
 
   /**
@@ -204,7 +206,7 @@ public class Category extends Element implements ICategory {
    * @param label category label value.
    */
   public void setLabel(String label) {
-    addAttribute(LABEL, label);
+    setAttributeValue(LABEL, label);
   }
 
   /**
@@ -221,7 +223,7 @@ public class Category extends Element implements ICategory {
    * @param lang label language.
    */
   public void setLabelLang(String lang) {
-    addAttribute(XML_LANG, lang);
+    setAttributeValue(XML_LANG, lang);
   }
 
   @Override

@@ -241,6 +241,13 @@ public class Source extends ExtensionPoint {
       }
     }
   }
+  
+  /**
+   * Removes all links.
+   */
+  public void removeLinks() {
+    srcState.links.clear();
+  }
 
   /**
    * Adds a link pointing to an HTML representation.

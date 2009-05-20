@@ -19,11 +19,11 @@ package com.google.gdata.model;
 /**
  * The ElementVisitor interface describes the implementation of a visitor
  * pattern for GData data model processing.
- * 
- * @see Element#visit(ElementVisitor, Element)
+ *
+ * @see Element#visit(ElementVisitor, ElementMetadata)
  */
 public interface ElementVisitor {
-  
+
   /**
    * The StoppedException is thrown by ElementVisitor instances to
    * immediately exit from element tree processing.   The is a runtime
@@ -47,15 +47,16 @@ public interface ElementVisitor {
 
     public StoppedException(Throwable cause) {
       super(cause);
-    }  
+    }
   }
 
   /**
    * Called during Element tree traversal to allow the visitor instance
    * to process an element in the tree.
    *
-   * @param parent the parent of the visited element.
-   * @param target the target element being visited.
+   * @param parent the parent of the target element
+   * @param target the target element being visited
+   * @param metadata the metadata for the target element
    * @return boolean value indicating whether child elements (if any) should
    * be visited.
    * @throws StoppedException if the data model traversal should be stopped
@@ -63,18 +64,21 @@ public interface ElementVisitor {
    * visitor implementations may extend this exception type to signal
    * specific exit conditions.
    */
-  public boolean visit(Element parent, Element target)
-      throws StoppedException;
+  public boolean visit(Element parent, Element target,
+      ElementMetadata<?, ?> metadata) throws StoppedException;
 
   /**
    * The visitComplete method is called when traversal for an Element
    * and all of its nested children has been completed.
    *
+   * @param parent the parent of the target element
    * @param target the visited element
+   * @param metadata the metadata for the target element
    * @throws StoppedException if the data model traversal should be stopped
    * immediately.  This may be the result of an unexpected error, or some
    * visitor implementations may extend this exception type to signal
    * specific exit conditions.
    */
-  public void visitComplete(Element target) throws StoppedException;
+  public void visitComplete(Element parent, Element target,
+      ElementMetadata<?, ?> metadata) throws StoppedException;
 }

@@ -17,7 +17,6 @@
 package com.google.gdata.model.atompub;
 
 import com.google.gdata.data.introspection.IServiceDocument;
-import com.google.gdata.model.ContentModel;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
@@ -50,36 +49,40 @@ public class ServiceDocument extends Element implements IServiceDocument {
   static {
     ElementCreator builder = DefaultRegistry.build(KEY);
     builder.addElement(Workspace.KEY).setCardinality(
-        ContentModel.Cardinality.MULTIPLE).setRequired(true);
+        ElementMetadata.Cardinality.MULTIPLE).setRequired(true);
   }
 
   /**
    * Default mutable constructor.
    */
   public ServiceDocument() {
-    this(DefaultRegistry.get(KEY));
+    this(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using custom metadata.
+   * Create an instance using a different key.
    */
-  protected ServiceDocument(ElementMetadata<Void,
-      ? extends ServiceDocument> metadata) {
-    super(metadata);
+  public ServiceDocument(ElementKey<Void, ? extends ServiceDocument> key) {
+    super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Element} instance. Will use the given {@link ElementMetadata} as the
-   * metadata for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key The key to use for this element.
    * @param source source element
    */
-  public ServiceDocument(ElementMetadata<Void,
-      ? extends ServiceDocument> metadata, Element source) {
-    super(metadata, source);
+  public ServiceDocument(ElementKey<Void, ? extends ServiceDocument> key,
+      Element source) {
+    super(key, source);
   }
+
+   @Override
+   public ServiceDocument lock() {
+     return (ServiceDocument) super.lock();
+   }
 
   /**
    * Returns the workspaces.
@@ -95,8 +98,9 @@ public class ServiceDocument extends Element implements IServiceDocument {
    *
    * @param workspace workspace
    */
-  public void addWorkspace(Workspace workspace) {
+  public ServiceDocument addWorkspace(Workspace workspace) {
     super.addElement(Workspace.KEY, workspace);
+    return this;
   }
 
   /**

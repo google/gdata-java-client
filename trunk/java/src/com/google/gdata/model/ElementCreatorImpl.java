@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableSet.Builder;
-import com.google.gdata.model.ContentModel.Cardinality;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.ElementMetadata.VirtualElement;
 import com.google.gdata.model.Metadata.VirtualValue;
 

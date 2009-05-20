@@ -471,6 +471,13 @@ public abstract class BaseEntry<E extends BaseEntry>
       }
     }
   }
+  
+  /**
+   * Remove all links.
+   */
+  public void removeLinks() {
+    state.links.clear();
+  }
 
 
   /**

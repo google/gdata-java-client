@@ -104,6 +104,11 @@ public interface IFeed extends IAtom {
   public void setItemsPerPage(int numResults);
   
   /**
+   * Creates a new entry of the appropriate type for this feed.
+   */
+  public IEntry createEntry();
+  
+  /**
    * Returns a list of entries for this feed.  The actual type of this list will
    * depend on the data model used for the Feed.
    */

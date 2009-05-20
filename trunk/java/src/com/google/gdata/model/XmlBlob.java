@@ -23,6 +23,10 @@ import com.google.gdata.wireformats.ContentValidationException;
 import com.google.gdata.wireformats.WireFormat;
 import com.google.gdata.wireformats.WireFormatGenerator;
 import com.google.gdata.wireformats.WireFormatParser;
+import com.google.gdata.wireformats.input.InputProperties;
+import com.google.gdata.wireformats.input.InputPropertiesBuilder;
+import com.google.gdata.wireformats.output.OutputProperties;
+import com.google.gdata.wireformats.output.OutputPropertiesBuilder;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -43,13 +47,12 @@ public class XmlBlob extends Element {
       null, XmlBlob.class);
 
   /**
-   * Constructs a new instance using the specified element metadata.
+   * Constructs a new instance using the specified element key.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key the element key for this element.
    */
-  public XmlBlob(ElementMetadata<?, XmlBlob> elementMetadata) {
-    super(elementMetadata);
+  public XmlBlob(ElementKey<?, ? extends XmlBlob> key) {
+    super(key);
   }
 
   /**
@@ -106,9 +109,14 @@ public class XmlBlob extends Element {
    */
   public String getBlob() {
     StringWriter sw = new StringWriter();
-    // formatting model should be aligned with the broader context.
+    // formatting model should be aligned with the broader context, and its
+    // context and registry should come from the other content too.
+    MetadataRegistry registry = DefaultRegistry.get();
+    OutputProperties outProps = new OutputPropertiesBuilder()
+        .setMetadataRegistry(registry)
+        .build();
     WireFormatGenerator generator = WireFormat.XML.createGenerator(
-        null, sw, Charsets.UTF_8, false);
+        outProps, sw, Charsets.UTF_8, false);
     try {
       generator.generate(this);
     } catch (ContentValidationException e) {
@@ -126,8 +134,14 @@ public class XmlBlob extends Element {
    */
   public void setBlob(String v) {
     clear();
+
+    MetadataRegistry registry = DefaultRegistry.get();
+    InputProperties inProps = new InputPropertiesBuilder()
+        .setMetadataRegistry(registry)
+        .build();
+
     WireFormatParser parser = WireFormat.XML.createParser(
-        null, new StringReader(v), Charset.forName("utf-8"));
+        inProps, new StringReader(v), Charset.forName("utf-8"));
     try {
       parser.parse(this);
     } catch (ParseException e) {
