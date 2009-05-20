@@ -17,7 +17,7 @@
 package com.google.gdata.wireformats.output;
 
 import com.google.gdata.model.Element;
-import com.google.gdata.model.MetadataContext;
+import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.wireformats.ContentValidationException;
 import com.google.gdata.wireformats.WireFormat;
 import com.google.gdata.wireformats.WireFormatGenerator;
@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
 /**
  * An {@link OutputGenerator} using a {@link WireFormat} to serialize to the
  * output stream.
- * 
+ *
  * 
  */
 public abstract class WireFormatOutputGenerator<T>
@@ -39,29 +39,29 @@ public abstract class WireFormatOutputGenerator<T>
    * Returns the wire format to use when generating this output.
    */
   public abstract WireFormat getWireFormat();
-  
+
   /**
    * Generates content to the writer based upon the provided request/response.
    */
   @Override
   public void generate(Writer w, OutputProperties outProps, T source)
       throws IOException {
-    
+
     WireFormat wireFormat = getWireFormat();
-    MetadataContext context = outProps.getMetadataContext();
-    
     String encoding = getCharsetEncoding(outProps);
     Charset cs = Charset.forName(encoding);
-    WireFormatGenerator gen = 
-        wireFormat.createGenerator(context, w, cs, usePrettyPrint(outProps));
-    
+    WireFormatGenerator gen = wireFormat.createGenerator(
+        outProps, w, cs, usePrettyPrint(outProps));
+
     // Only types that extends Element are supported by the wire format code
     if (source instanceof Element) {
       Element elem = (Element) source;
       try {
 
-        elem.bind(context);
-        Element resolved = elem.resolve();
+        ElementMetadata<?, ?> meta = outProps.getMetadataRegistry().bind(
+            elem.getElementKey(), outProps.getMetadataContext());
+
+        Element resolved = elem.resolve(meta);
         gen.generate(resolved);
       } catch (ContentValidationException e) {
         throw new IOException("Invalid content: " + e.getMessage());
@@ -73,3 +73,4 @@ public abstract class WireFormatOutputGenerator<T>
     }
   }
 }
+

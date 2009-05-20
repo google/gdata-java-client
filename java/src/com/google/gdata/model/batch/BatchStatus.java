@@ -88,12 +88,12 @@ public class BatchStatus extends Element implements IBatchStatus {
     status.setReason("Created");
     return status;
   }
-  
+
   /**
    * Default mutable constructor.
    */
   public BatchStatus() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
@@ -123,19 +123,15 @@ public class BatchStatus extends Element implements IBatchStatus {
     Integer code = getAttributeValue(CODE);
     return code == null ? 0 : code.intValue();
   }
-  
+
   /**
    * Sets the HTTP response code.
    *
    * @param code HTTP response code or <code>null</code> to reset
    */
-  public void setCode(Integer code) {
-    throwExceptionIfImmutable();
-    if (code == null) {
-      super.removeAttribute(CODE);
-    } else {
-      super.addAttribute(CODE, code);
-    }
+  public BatchStatus setCode(Integer code) {
+    setAttributeValue(CODE, code);
+    return this;
   }
 
   /**
@@ -165,8 +161,9 @@ public class BatchStatus extends Element implements IBatchStatus {
    * @param content error message explaining what went wrong while processing
    *     the request or <code>null</code> to reset
    */
-  public void setContent(String content) {
+  public BatchStatus setContent(String content) {
     setTextValue(content);
+    return this;
   }
 
   /**
@@ -198,14 +195,10 @@ public class BatchStatus extends Element implements IBatchStatus {
    * @param contentType MIME type for the content of the error message contained
    *     in this element or <code>null</code> to reset
    */
-  public void setContentType(ContentType contentType) {
-    throwExceptionIfImmutable();
-    if (contentType == null) {
-      super.removeAttribute(CONTENT_TYPE);
-    } else {
-      super.addAttribute(CONTENT_TYPE, 
-          new ContentType(contentType.getMediaType()));
-    }
+  public BatchStatus setContentType(ContentType contentType) {
+    setAttributeValue(CONTENT_TYPE, (contentType == null) ? null
+        : new ContentType(contentType.getMediaType()));
+    return this;
   }
 
   /**
@@ -234,13 +227,9 @@ public class BatchStatus extends Element implements IBatchStatus {
    * @param reason short message describing this status or <code>null</code> to
    *     reset
    */
-  public void setReason(String reason) {
-    throwExceptionIfImmutable();
-    if (reason == null) {
-      super.removeAttribute(REASON);
-    } else {
-      super.addAttribute(REASON, reason);
-    }
+  public BatchStatus setReason(String reason) {
+    setAttributeValue(REASON, reason);
+    return this;
   }
 
   /**

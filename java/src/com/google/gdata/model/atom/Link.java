@@ -18,12 +18,12 @@ package com.google.gdata.model.atom;
 
 import com.google.gdata.data.ILink;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
@@ -213,17 +213,16 @@ public class Link extends Element implements ILink {
    * Constructs a new instance using the default metadata.
    */
   public Link() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
    * Constructs a new instance using the specified element metadata.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key the element key for this link.
    */
-  public Link(ElementMetadata<?, ? extends Link> elementMetadata) {
-    super(elementMetadata);
+  public Link(ElementKey<?, ? extends Link> key) {
+    super(key);
   }
 
   /**
@@ -231,12 +230,11 @@ public class Link extends Element implements ILink {
    * {@link Element} instance. Will use the given {@link ElementMetadata} as the
    * metadata for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key the element key to use for this element.
    * @param source source element
    */
-  public Link(ElementMetadata<Void, ? extends Link> metadata,
-      Element source) {
-    super(metadata, source);
+  public Link(ElementKey<Void, ? extends Link> key, Element source) {
+    super(key, source);
   }
 
   /**
@@ -273,7 +271,7 @@ public class Link extends Element implements ILink {
     return rel != null ? rel : Rel.ALTERNATE;
   }
   public void setRel(String v) {
-    addAttribute(REL, v);
+    setAttributeValue(REL, v);
   }
 
   /** MIME type of the link target. */
@@ -281,7 +279,7 @@ public class Link extends Element implements ILink {
     return getAttributeValue(TYPE);
   }
   public void setType(String v) {
-    addAttribute(TYPE, v);
+    setAttributeValue(TYPE, v);
   }
 
   /** Link URI. */
@@ -297,7 +295,7 @@ public class Link extends Element implements ILink {
     }
   }
   public void setHref(String v) {
-    addAttribute(HREF, v);
+    setAttributeValue(HREF, v);
   }
   public void setHref(URI v) {
     String href = v == null ? null : v.toString();
@@ -309,7 +307,7 @@ public class Link extends Element implements ILink {
     return getAttributeValue(HREFLANG);
   }
   public void setHrefLang(String v) {
-    addAttribute(HREFLANG, v);
+    setAttributeValue(HREFLANG, v);
   }
 
   /** Link title. */
@@ -317,7 +315,7 @@ public class Link extends Element implements ILink {
     return getAttributeValue(TITLE);
   }
   public void setTitle(String v) {
-    addAttribute(TITLE, v);
+    setAttributeValue(TITLE, v);
   }
 
   /** Language of link title. */
@@ -325,7 +323,7 @@ public class Link extends Element implements ILink {
     return getAttributeValue(XML_LANG);
   }
   public void setTitleLang(String v) {
-    addAttribute(XML_LANG, v);
+    setAttributeValue(XML_LANG, v);
   }
 
   /** Length of the resource pointed to by href, in bytes. */
@@ -338,7 +336,7 @@ public class Link extends Element implements ILink {
     return value;
   }
   public void setLength(long v) {
-    addAttribute(LENGTH, v);
+    setAttributeValue(LENGTH, v);
   }
 
   /** Etag of linked resource or {@code null} if unknown. */
@@ -346,7 +344,7 @@ public class Link extends Element implements ILink {
     return getAttributeValue(ETAG);
   }
   public void setEtag(String v) {
-    addAttribute(ETAG, v);
+    setAttributeValue(ETAG, v);
   }
 
   /**
@@ -365,7 +363,7 @@ public class Link extends Element implements ILink {
    * @param c the content to place inside the link.
    */
   public void setContent(Content c) {
-    addElement(c);
+    setElement(Content.KEY, c);
   }
 
   /**

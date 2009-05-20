@@ -22,16 +22,16 @@ import com.google.gdata.client.CoreErrorDomain;
  * Default {@link ElementValidator} implementation that validates an
  * {@link Element} based upon constraints expressed in its
  * {@link ElementMetadata}.
- * 
+ *
  * 
  */
 public class MetadataValidator implements ElementValidator {
 
-  public void validate(ValidationContext vc, Element e) {
-    ElementMetadata<?, ?> metadata = e.getMetadata();
+  public void validate(ValidationContext vc, Element e,
+      ElementMetadata<?, ?> metadata) {
+
     ElementKey<?, ?> key = metadata.getKey();
-    MetadataContext context = e.getContext();
-    
+
     // Check text node content.
     if (e.hasTextValue()) {
       if (key.getDatatype() == Void.class) {
@@ -49,13 +49,13 @@ public class MetadataValidator implements ElementValidator {
     // Check that all required attributes are present.
     for (AttributeKey<?> attributeKey : metadata.getAttributes()) {
       AttributeMetadata<?> attMeta = metadata.bindAttribute(attributeKey);
-      if (attMeta.isRequired() &&  e.getAttribute(attributeKey) == null) {
+      if (attMeta.isRequired() &&  e.getAttributeValue(attributeKey) == null) {
         vc.addError(e, CoreErrorDomain.ERR.missingAttribute.withInternalReason(
             "Element must contain value for attribute "
             + attributeKey));
       }
     }
- 
+
     // Check that all required child elements are present.
     for (ElementKey<?, ?> childKey : metadata.getElements()) {
       ElementMetadata<?, ?> childMeta = metadata.bindElement(childKey);

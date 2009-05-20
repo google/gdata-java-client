@@ -18,7 +18,6 @@ package com.google.gdata.model.atom;
 
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.ElementKey;
-import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -26,7 +25,7 @@ import java.net.URI;
 
 /**
  * Contributor element, modifies {@link Person} to add contributor QName.
- * 
+ *
  * 
  */
 public class Contributor extends Person {
@@ -41,33 +40,33 @@ public class Contributor extends Person {
   static {
     DefaultRegistry.build(KEY);
   }
-  
+
   /**
    * Constructs a new Contributor instance. Default metadata is associated with
    * this instance.
    */
   public Contributor() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
-  
+
   /**
    * Constructs a new Contributor instance with the given metadata.
    */
-  public Contributor(ElementMetadata<?, ?> elementMetadata) {
-    super(elementMetadata);
+  public Contributor(ElementKey<?, ?> key) {
+    super(key);
   }
-  
+
   /**
    * Constructs a new Contributor instance with the given name.
    */
   public Contributor(String name) {
-    super(DefaultRegistry.get(KEY), name);
+    super(KEY, name);
   }
 
   /**
    * Constructs a new Contributor instance with the given name, uri, and email.
    */
   public Contributor(String name, URI uri, String email) {
-    super(DefaultRegistry.get(KEY), name, uri, email);
+    super(KEY, name, uri, email);
   }
 }

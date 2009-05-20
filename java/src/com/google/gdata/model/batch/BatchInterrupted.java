@@ -95,7 +95,7 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * Default mutable constructor.
    */
   public BatchInterrupted() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
@@ -160,8 +160,9 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @param content error message explaining what went wrong while processing
    *     the request or <code>null</code> to reset
    */
-  public void setContent(String content) {
+  public BatchInterrupted setContent(String content) {
     setTextValue(content);
+    return this;
   }
 
   /**
@@ -181,7 +182,7 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @return MIME type of the content of this element
    */
   public ContentType getContentType() {
-    return super.getAttributeValue(CONTENT_TYPE);
+    return getAttributeValue(CONTENT_TYPE);
   }
 
   /**
@@ -190,14 +191,10 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @param contentType MIME type of the content of this element or
    *     <code>null</code> to reset
    */
-  public void setContentType(ContentType contentType) {
-    throwExceptionIfImmutable();
-    if (contentType == null) {
-      super.removeAttribute(CONTENT_TYPE);
-    } else {
-      super.addAttribute(CONTENT_TYPE,
-          new ContentType(contentType.getMediaType()));
-    }
+  public BatchInterrupted setContentType(ContentType contentType) {
+    setAttributeValue(CONTENT_TYPE, (contentType == null) ? null
+        : new ContentType(contentType.getMediaType()));
+    return this;
   }
 
   /**
@@ -215,7 +212,7 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @return number of entries for which processing failed
    */
   public int getErrorCount() {
-    Integer count = super.getAttributeValue(ERROR_COUNT);
+    Integer count = getAttributeValue(ERROR_COUNT);
     return count == null ? 0 : count.intValue();
   }
 
@@ -225,13 +222,9 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @param errorCount number of entries for which processing failed or
    *     <code>null</code> to reset
    */
-  public void setErrorCount(Integer errorCount) {
-    throwExceptionIfImmutable();
-    if (errorCount == null) {
-      super.removeAttribute(ERROR_COUNT);
-    } else {
-      super.addAttribute(ERROR_COUNT, errorCount);
-    }
+  public BatchInterrupted setErrorCount(Integer errorCount) {
+    setAttributeValue(ERROR_COUNT, errorCount);
+    return this;
   }
 
   /**
@@ -247,7 +240,7 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @return reason
    */
   public String getReason() {
-    return super.getAttributeValue(REASON);
+    return getAttributeValue(REASON);
   }
 
   /**
@@ -255,13 +248,9 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    *
    * @param reason reason or <code>null</code> to reset
    */
-  public void setReason(String reason) {
-    throwExceptionIfImmutable();
-    if (reason == null) {
-      super.removeAttribute(REASON);
-    } else {
-      super.addAttribute(REASON, reason);
-    }
+  public BatchInterrupted setReason(String reason) {
+    setAttributeValue(REASON, reason);
+    return this;
   }
 
   /**
@@ -279,7 +268,7 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @return number of entries parsed but not processed
    */
   public int getSkippedCount() {
-    Integer count = super.getAttributeValue(SKIPPED_COUNT);
+    Integer count = getAttributeValue(SKIPPED_COUNT);
     return count == null ? 0 : count.intValue();
   }
 
@@ -289,13 +278,9 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @param skippedCount number of entries parsed but not processed or
    *     <code>null</code> to reset
    */
-  public void setSkippedCount(Integer skippedCount) {
-    throwExceptionIfImmutable();
-    if (skippedCount == null) {
-      super.removeAttribute(SKIPPED_COUNT);
-    } else {
-      super.addAttribute(SKIPPED_COUNT, skippedCount);
-    }
+  public BatchInterrupted setSkippedCount(Integer skippedCount) {
+    setAttributeValue(SKIPPED_COUNT, skippedCount);
+    return this;
   }
 
   /**
@@ -313,7 +298,7 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @return number of entries processed successfully
    */
   public int getSuccessCount() {
-    Integer count = super.getAttributeValue(SUCCESS_COUNT);
+    Integer count = getAttributeValue(SUCCESS_COUNT);
     return count == null ? 0 : count.intValue();
   }
 
@@ -323,13 +308,9 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @param successCount number of entries processed successfully or
    *     <code>null</code> to reset
    */
-  public void setSuccessCount(Integer successCount) {
-    throwExceptionIfImmutable();
-    if (successCount == null) {
-      super.removeAttribute(SUCCESS_COUNT);
-    } else {
-      super.addAttribute(SUCCESS_COUNT, successCount);
-    }
+  public BatchInterrupted setSuccessCount(Integer successCount) {
+    setAttributeValue(SUCCESS_COUNT, successCount);
+    return this;
   }
 
   /**
@@ -347,7 +328,7 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @return number of entries that were parsed
    */
   public int getTotalCount() {
-    Integer count = super.getAttributeValue(TOTAL_COUNT);
+    Integer count = getAttributeValue(TOTAL_COUNT);
     return count == null ? 0 : count.intValue();
   }
 
@@ -357,13 +338,9 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
    * @param totalCount number of entries that were parsed or <code>null</code>
    *     to reset
    */
-  public void setTotalCount(Integer totalCount) {
-    throwExceptionIfImmutable();
-    if (totalCount == null) {
-      super.removeAttribute(TOTAL_COUNT);
-    } else {
-      super.addAttribute(TOTAL_COUNT, totalCount);
-    }
+  public BatchInterrupted setTotalCount(Integer totalCount) {
+    setAttributeValue(TOTAL_COUNT, totalCount);
+    return this;
   }
 
   /**

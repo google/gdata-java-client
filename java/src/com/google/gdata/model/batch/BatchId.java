@@ -41,7 +41,7 @@ public class BatchId extends Element {
   static {
     DefaultRegistry.build(KEY);
   }
-  
+
   /**
    * Convenience method for getting a batchId from
    * an element if it's there.
@@ -53,23 +53,22 @@ public class BatchId extends Element {
     BatchId tag = element.getElement(KEY);
     return tag == null ? null : tag.getId();
   }
-  
+
   /**
    * Default mutable constructor.
    */
   public BatchId() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
-   * Immutable constructor.
+   * Constructs a new instance with the given value.
    *
    * @param id value.
    */
   public BatchId(String id) {
-    super(DefaultRegistry.get(KEY));
+    this();
     setId(id);
-    setImmutable(true);
   }
 
   /**
@@ -86,8 +85,9 @@ public class BatchId extends Element {
    *
    * @param id value or <code>null</code> to reset
    */
-  public void setId(String id) {
+  public BatchId setId(String id) {
     super.setTextValue(id);
+    return this;
   }
 
   /**

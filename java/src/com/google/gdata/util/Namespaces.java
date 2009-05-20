@@ -44,42 +44,69 @@ public final class Namespaces {
   /** Atom XML writer namespace, for assigning {@code atom:} prefix. */
   public static final XmlNamespace atomNs = new XmlNamespace("atom", atom);
 
-
   /**
    * Atom Publishing Protocol (draft) namespace.
    *
-   * @deprecated Use {@code getAtomPubNs().getUri()} instead.
+   * <p>Use this only when you are sure you want the draft version
+   * of the namespace. Use {@code getAtomPubNs().getUri()} when
+   * you want the atom pub namespace that should be used for the
+   * current version.
    */
-  @Deprecated
-  public static final String atomPub =
+  public static final String atomPubDraft = 
     "http://purl.org/atom/app#";
 
   /**
    * Atom Publishing Protocol (draft) XML writer namespace.
    *
-   * @deprecated Use {@link #getAtomPubNs()} instead.
+   * <p>Use this only when you are sure you want the draft version
+   * of the namespace. Use {@link #getAtomPubNs()} when
+   * you want the atom pub namespace that should be used for the
+   * current version.
    */
-  @Deprecated
-  public static final XmlNamespace atomPubNs =
-    new XmlNamespace("app", atomPub);
+  public static final XmlNamespace atomPubDraftNs =
+    new XmlNamespace("app", atomPubDraft);
 
   /**
    * Atom Publishing Protocol (final) namespace.
    *
-   * @deprecated Use {@code getAtomPubNs().getUri()} instead.
+   * <p>Use this only when you are sure you want the standard version
+   * of the namespace. Use {@code getAtomPubNs().getUri()} when
+   * you want the atom pub namespace that should be used for the
+   * current version.
    */
-  @Deprecated
   public static final String atomPubStandard =
     "http://www.w3.org/2007/app";
 
   /**
    * Atom Publishing Protocol (final) XML writer namespace.
    *
-   * @deprecated Use {@link #getAtomPubNs()} instead.
+   * <p>Use this only when you are sure you want the standard version
+   * of the namespace. Use {@link #getAtomPubNs()} when
+   * you want the atom pub namespace that should be used for the
+   * current version.
    */
-  @Deprecated
   public static final XmlNamespace atomPubStandardNs =
     new XmlNamespace("app", atomPubStandard);
+
+  /**
+   * Atom Publishing Protocol (draft) namespace.
+   *
+   * @deprecated Use {@code getAtomPubNs().getUri()} instead. Use
+   * {@link #atomPubDraft} if you absolutely want the draft app namespace
+   * and not the standard one.
+   */
+  @Deprecated
+  public static final String atomPub = atomPubDraft;
+
+  /**
+   * Atom Publishing Protocol (draft) XML writer namespace.
+   *
+   * @deprecated Use {@link #getAtomPubNs()} instead. Use
+   * {@link #atomPubDraftNs} if you absolutely want the draft app namespace
+   * and not the standard one.
+   */
+  @Deprecated
+  public static final XmlNamespace atomPubNs = atomPubDraftNs;
 
   /**
    * Returns the XML writer namespace associated with the Atom Publishing
@@ -95,40 +122,69 @@ public final class Namespaces {
   public static final XmlNamespace rssNs = null;
 
   /**
-   * Amazon OpenSearch/RSS namespace.
+   * Amazon OpenSearch/RSS 1.0 namespace.
    *
-   * @deprecated Use {@code getOpenSearchNs().getUri()} instead.
+   * <p>Use this only when you are sure you want the version 1.0
+   * of the namespace. Use {@code getOpenSearchNs().getUri()} when
+   * you want the opensearch uri that should be used for the
+   * current version.
    */
-  @Deprecated
-  public static final String openSearch =
+  public static final String openSearch1_0 =
     "http://a9.com/-/spec/opensearchrss/1.0/";
 
   /**
-   * Amazon OpenSearch/RSS XML writer namespace.
+   * Amazon OpenSearch/RSS 1.0 XML writer namespace.
    *
-   * @deprecated Use {@link #getOpenSearchNs()} instead.
+   * <p>Use this only when you are sure you want the version 1.0
+   * of the namespace. Use {@link #getOpenSearchNs()} when
+   * you want the opensearch uri that should be used for the
+   * current version.
    */
-  @Deprecated
-  public static final XmlNamespace openSearchNs =
-    new XmlNamespace("openSearch", openSearch);
+  public static final XmlNamespace openSearch1_0Ns =
+    new XmlNamespace("openSearch", openSearch1_0);
 
   /**
    * Amazon OpenSearch 1.1 namespace.
    *
-   * @deprecated Use {@code getOpenSearchNs().getUri()} instead.
+   * <p>Use this only when you are sure you want the version 1.1
+   * of the namespace. Use {@code getOpenSearchNs().getUri()} when
+   * you want the opensearch uri that should be used for the
+   * current version.
    */
-  @Deprecated
   public static final String openSearch1_1 =
     "http://a9.com/-/spec/opensearch/1.1/";
 
   /**
    * Amazon OpenSearch 1.1 XML writer namespace.
    *
-   * @deprecated Use {@link #getOpenSearchNs()} instead.
+   * <p>Use this only when you are sure you want the version 1.1
+   * of the namespace. Use {@code getOpenSearchNs().getUri()} when
+   * you want the opensearch uri that should be used for the
+   * current version.
    */
-  @Deprecated
   public static final XmlNamespace openSearch1_1Ns = 
       new XmlNamespace("openSearch", openSearch1_1);
+
+
+  /**
+   * Amazon OpenSearch/RSS namespace.
+   *
+   * @deprecated Use {@code getOpenSearchNs().getUri()} instead. Use 
+   * {@link #openSearch1_0} if you absolutely want the namespace of 
+   * opensearch 1.0 and not 1.1.
+   */
+  @Deprecated
+  public static final String openSearch = openSearch1_0;
+
+  /**
+   * Amazon OpenSearch/RSS XML writer namespace.
+   *
+   * @deprecated Use {@link #getOpenSearchNs()} instead. Use 
+   * {@link #openSearch1_0Ns} if you absolutely want the namespace of 
+   * opensearch 1.0.
+   */
+  @Deprecated
+  public static final XmlNamespace openSearchNs = openSearch1_0Ns;
 
   /**
    * Returns the XML writer namespace associated with OpenSearch.

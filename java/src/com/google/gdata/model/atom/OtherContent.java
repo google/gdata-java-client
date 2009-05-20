@@ -18,6 +18,7 @@ package com.google.gdata.model.atom;
 
 import com.google.gdata.util.common.util.Base64;
 import com.google.gdata.util.common.util.Base64DecoderException;
+import com.google.gdata.data.IContent;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
@@ -56,20 +57,19 @@ public class OtherContent extends Content {
   }
 
   /**
-   * Constructs a new instance using the default metadata.
+   * Constructs a new instance using the default key.
    */
   public OtherContent() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
-   * Constructs a new instance using the specified element metadata.
+   * Constructs a new instance using the specified element key.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key the element key for this element.
    */
-  public OtherContent(ElementMetadata<?, ?> elementMetadata) {
-    super(elementMetadata);
+  public OtherContent(ElementKey<?, ?> key) {
+    super(key);
   }
 
   /**
@@ -78,24 +78,24 @@ public class OtherContent extends Content {
    * @param content generic content
    */
   public OtherContent(Content content) {
-    super(DefaultRegistry.get(KEY), content);
+    super(KEY, content);
   }
 
   /** @return the type of this content */
   @Override
   public int getType() {
     if (getXml() != null || getXmlContent() != null) {
-      return Content.Type.OTHER_XML;
+      return IContent.Type.OTHER_XML;
     }
     if (getMimeType().getMediaType().equals("text")) {
-      return Content.Type.OTHER_TEXT;
+      return IContent.Type.OTHER_TEXT;
     }
-    return Content.Type.OTHER_BINARY;
+    return IContent.Type.OTHER_BINARY;
   }
 
   /** Specifies the MIME type. */
   public void setMimeType(ContentType v) {
-    addAttribute(TYPE, v.getMediaType());
+    setAttributeValue(TYPE, v.getMediaType());
   }
 
   /** @return the XML contents */
@@ -153,8 +153,9 @@ public class OtherContent extends Content {
   }
 
   @Override
-  public void validate(ValidationContext vc) {
-    super.validate(vc);
+  protected void validate(ElementMetadata<?, ?> metadata,
+      ValidationContext vc) {
+    super.validate(metadata, vc);
 
     int maximumChildren = hasTextValue() ? 0 : 1;
 

@@ -21,7 +21,6 @@ import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
-import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -91,39 +90,42 @@ public class Draft extends Element {
    * Default mutable constructor.
    */
   public Draft() {
-    this(DefaultRegistry.get(KEY));
+    this(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using custom metadata.
+   * Create an instance using a different key.
    */
-  protected Draft(ElementMetadata<Draft.Value, ? extends Draft> metadata) {
-    super(metadata);
+  public Draft(ElementKey<Draft.Value, ? extends Draft> key) {
+    super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Element} instance. Will use the given {@link ElementMetadata} as the
-   * metadata for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key The key to use for this element.
    * @param source source element
    */
-  public Draft(ElementMetadata<Draft.Value, ? extends Draft> metadata,
-      Element source) {
-    super(metadata, source);
+  public Draft(ElementKey<Draft.Value, ? extends Draft> key, Element source) {
+    super(key, source);
   }
 
   /**
-   * Immutable constructor.
+   * Constructs a new instance with the given value.
    *
    * @param value value.
    */
   public Draft(Value value) {
     this();
     setValue(value);
-    setImmutable(true);
   }
+
+   @Override
+   public Draft lock() {
+     return (Draft) super.lock();
+   }
 
   /**
    * Returns the value.
@@ -139,8 +141,9 @@ public class Draft extends Element {
    *
    * @param value value or <code>null</code> to reset
    */
-  public void setValue(Value value) {
+  public Draft setValue(Value value) {
     super.setTextValue(value);
+    return this;
   }
 
   /**

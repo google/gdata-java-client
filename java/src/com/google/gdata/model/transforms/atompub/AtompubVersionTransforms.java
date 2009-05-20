@@ -72,10 +72,9 @@ public class AtompubVersionTransforms {
     }
   }
   
-  @SuppressWarnings("deprecation")
   private static void addAtompubTransform(MetadataRegistryBuilder registry,
       ElementKey<?, ?> key) {
     registry.build(key, V1_CONTEXT).setName(
-        new QName(Namespaces.atomPubNs, key.getId().getLocalName()));
+        new QName(Namespaces.atomPubDraftNs, key.getId().getLocalName()));
   }
 }

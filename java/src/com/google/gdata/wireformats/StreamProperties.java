@@ -16,6 +16,7 @@ package com.google.gdata.wireformats;
 
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.model.MetadataContext;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.util.ContentType;
 
 import java.util.Collection;
@@ -32,13 +33,13 @@ public interface StreamProperties {
    * @return data content type
    */
   public ContentType getContentType();
-  
+
   /**
    * Returns a {@link Collection} that contains the name of all query parameters
    * found in the request.
    */
   public Collection<String> getQueryParameterNames();
-  
+
   /**
    * Returns the value of a request query parameter by name or {@code null}
    * if not found.
@@ -49,9 +50,16 @@ public interface StreamProperties {
    * Returns the {@link ExtensionProfile} associated with the stream.
    *
    * @return extension profile or {@code null} for requests that use the
-   * data model classes in com.google.gdata.data.
+   * data model classes in com.google.gdata.model.
    */
   public ExtensionProfile getExtensionProfile();
+
+  /**
+   * Returns the {@link MetadataRegistry} associated with the stream.
+   *
+   * @return the metadata registry.
+   */
+  public MetadataRegistry getMetadataRegistry();
 
   /**
    * Returns the metadata context associated with the stream.
@@ -60,7 +68,7 @@ public interface StreamProperties {
    * model classes in com.google.gdata.model.
    */
   public MetadataContext getMetadataContext();
-  
+
   /**
    * Returns the {@link AltRegistry} that contains the set of supported
    * representations and the parser/generator configuration for them.

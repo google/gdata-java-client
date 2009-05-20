@@ -83,26 +83,13 @@ public class Content extends Element implements IContent {
     DefaultRegistry.build(KEY);
   }
 
-  /** Defines the possible content types. */
-  public static class Type {
-
-    public static final int TEXT = 1;
-    public static final int HTML = 2;
-    public static final int XHTML = 3;
-    public static final int OTHER_TEXT = 4;     // inlined text
-    public static final int OTHER_XML = 5;      // inlined xml
-    public static final int OTHER_BINARY = 6;   // inlined base64 binary
-    public static final int MEDIA = 7;          // external media
-  }
-
   /**
    * Constructs a new instance using the specified element metadata.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key the element key for the content element.
    */
-  public Content(ElementMetadata<?, ?> elementMetadata) {
-    super(elementMetadata);
+  public Content(ElementKey<?, ?> key) {
+    super(key);
   }
 
   /**
@@ -110,15 +97,19 @@ public class Content extends Element implements IContent {
    * copying all attributes, elements, and text content from the source
    * Content instance.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key the element key for the content element.
    * @param source source content.
    */
-  public Content(ElementMetadata<?, ?> elementMetadata, Content source) {
-    super(elementMetadata, source);
+  public Content(ElementKey<?, ?> key, Content source) {
+    super(key, source);
   }
 
-  /** Returns this content's type. */
+  /** 
+   * Returns this content's type.   The list of valid value is defined in
+   * {@link IContent.Type}.
+   * 
+   * @see IContent.Type
+   */
   public int getType() {
     return Type.TEXT;
   }
@@ -130,7 +121,7 @@ public class Content extends Element implements IContent {
 
   /** Sets the human language that this content was is written in. */
   public void setLang(String lang) {
-    addAttribute(Content.XML_LANG, lang);
+    setAttributeValue(Content.XML_LANG, lang);
   }
 
   /** @return the MIME content type, or {@code null} if none exists */
@@ -148,7 +139,7 @@ public class Content extends Element implements IContent {
   }
 
   @Override
-  protected Element narrow(ValidationContext vc) {
+  protected Element narrow(ElementMetadata<?, ?> meta, ValidationContext vc) {
 
     // Don't create a new instance if type is already narrow.
     if (!Content.class.equals(this.getClass())) {
@@ -162,14 +153,14 @@ public class Content extends Element implements IContent {
           type.equals("xhtml")) {
 
         // In-line text content
-        return adapt(this, TextContent.KIND);
+        return adapt(this, meta, TextContent.KIND);
       } else {
         // Other in-line content
-        return adapt(this, OtherContent.KIND);
+        return adapt(this, meta, OtherContent.KIND);
       }
     } else {
       // Out-of-line content
-      return adapt(this, OutOfLineContent.KIND);
+      return adapt(this, meta, OutOfLineContent.KIND);
     }
   }
 }

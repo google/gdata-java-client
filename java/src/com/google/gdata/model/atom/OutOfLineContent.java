@@ -16,15 +16,16 @@
 
 package com.google.gdata.model.atom;
 
+import com.google.gdata.data.IContent;
 import com.google.gdata.data.IOutOfLineContent;
 import com.google.gdata.data.Reference;
 import com.google.gdata.model.AttributeKey;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
-import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.ContentType;
+import com.google.gdata.util.Namespaces;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,7 +33,7 @@ import java.net.URISyntaxException;
 /**
  * Variant of {@link Content} for entries that reference external content.
  */
-public class OutOfLineContent extends Content 
+public class OutOfLineContent extends Content
     implements IOutOfLineContent, Reference {
 
   /** The kind name for adaptation. */
@@ -50,6 +51,14 @@ public class OutOfLineContent extends Content
    */
   public static final AttributeKey<Long> LENGTH = AttributeKey.of(
       new QName("length"), Long.class);
+  
+  /**
+   * The gd:etag attribute.
+   *
+   * See RFC 2616, Section 3.11.
+   */
+  public static final AttributeKey<String> ETAG = AttributeKey.of(
+      new QName(Namespaces.gNs, "etag"));
 
   /*
    * Generate the default metadata for this element.
@@ -58,6 +67,7 @@ public class OutOfLineContent extends Content
     ElementCreator builder = DefaultRegistry.build(KEY);
     builder.replaceAttribute(Content.SRC).setRequired(true);
     builder.addAttribute(LENGTH).setVisible(false);
+    builder.addAttribute(ETAG);
     DefaultRegistry.adapt(Content.KEY, KIND, KEY);
   }
 
@@ -65,17 +75,16 @@ public class OutOfLineContent extends Content
    * Constructs a new instance using the default metadata.
    */
   public OutOfLineContent() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
    * Constructs a new instance using the specified element metadata.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key the element key for this element.
    */
-  public OutOfLineContent(ElementMetadata<?, ?> elementMetadata) {
-    super(elementMetadata);
+  public OutOfLineContent(ElementKey<?, ?> key) {
+    super(key);
   }
 
   /**
@@ -84,18 +93,18 @@ public class OutOfLineContent extends Content
    * @param content generic content
    */
   public OutOfLineContent(Content content) {
-    super(DefaultRegistry.get(KEY), content);
+    super(KEY, content);
   }
 
   /** @return the type of this content */
   @Override
   public int getType() {
-    return Content.Type.MEDIA;
+    return IContent.Type.MEDIA;
   }
 
   /** Specifies the MIME Content type. */
   public void setMimeType(ContentType v) {
-    addAttribute(TYPE, v == null ? null : v.getMediaType());
+    setAttributeValue(TYPE, (v == null ? null : v.getMediaType()));
   }
 
   /**
@@ -132,23 +141,19 @@ public class OutOfLineContent extends Content
 
   /** Specifies the external URI. */
   public void setSrc(URI v) {
-    addAttribute(SRC, v);
+    setAttributeValue(SRC, v);
   }
 
   /** Specifies the file length (RSS only). */
   public void setLength(long length) {
-    if (length == -1) {
-      removeAttribute(LENGTH);
-    } else {
-      addAttribute(LENGTH, length);
-    }
+    setAttributeValue(LENGTH, length == -1 ? null : length);
   }
 
   /**
    * Returns the external URI or {@code null} if none exists.
    *
-   * This method exists only so that {@link Content} implements 
-   * {@link Reference}. Callers should use {@link #getSrc()} 
+   * This method exists only so that {@link Content} implements
+   * {@link Reference}. Callers should use {@link #getSrc()}
    * instead whenever possible.
    */
   public String getHref() {
@@ -159,27 +164,41 @@ public class OutOfLineContent extends Content
   /**
    * Sets the external URI.
    *
-   * This method exists only so that {@link Content} implements 
-   * {@link Reference}. Callers should use {@link #setSrc(URI)} 
+   * This method exists only so that {@link Content} implements
+   * {@link Reference}. Callers should use {@link #setSrc(URI)}
    * instead whenever possible.
    *
    * @param href external URI or {@code null}
    * @throws IllegalArgumentException if {@code href} is not a valid URI
    */
   public void setHref(String href) {
-    if (href == null) {
-      removeAttribute(SRC);
-    } else {
-      try {
-        addAttribute(SRC, new URI(href));
-      } catch (URISyntaxException e) {
-        throw new IllegalArgumentException("Not a URI: " + href, e);
-      }
+    try {
+      setAttributeValue(SRC, (href == null) ? null : new URI(href));
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Not a URI: " + href, e);
     }
   }
 
   public long getLength() {
     Long length = getAttributeValue(LENGTH);
     return length == null ? -1 : length;
+  }
+  
+  /**
+   * Returns the HTTP etag for the referenced content or {@code null} if
+   * unknown.
+   */
+  public String getEtag() {  
+    return getAttributeValue(ETAG);
+  }
+  
+  /**
+   * Sets the HTTP etag for the referenced content. A value of {@code null}
+   * indicates it is unknown.
+   * 
+   * @param etag HTTP etag value
+   */
+  public void setEtag(String etag) {
+    setAttributeValue(ETAG, etag);
   }
 }

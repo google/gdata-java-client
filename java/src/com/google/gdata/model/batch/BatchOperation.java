@@ -56,18 +56,17 @@ public class BatchOperation extends Element {
    * Default mutable constructor.
    */
   public BatchOperation() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
-   * Immutable constructor.
+   * Constructs a new instance with the given operation type.
    *
    * @param type operation type.
    */
   public BatchOperation(BatchOperationType type) {
-    super(DefaultRegistry.get(KEY));
+    this();
     setType(type);
-    setImmutable(true);
   }
 
   /**
@@ -84,13 +83,9 @@ public class BatchOperation extends Element {
    *
    * @param type operation type or <code>null</code> to reset
    */
-  public void setType(BatchOperationType type) {
-    throwExceptionIfImmutable();
-    if (type == null) {
-      super.removeAttribute(TYPE);
-    } else {
-      super.addAttribute(TYPE, type);
-    }
+  public BatchOperation setType(BatchOperationType type) {
+    setAttributeValue(TYPE, type);
+    return this;
   }
 
   /**

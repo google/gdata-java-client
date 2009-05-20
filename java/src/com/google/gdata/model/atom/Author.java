@@ -18,7 +18,6 @@ package com.google.gdata.model.atom;
 
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.ElementKey;
-import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -26,7 +25,7 @@ import java.net.URI;
 
 /**
  * Author element, modifies {@link Person} to add author QName.
- * 
+ *
  * 
  */
 public class Author extends Person {
@@ -37,53 +36,52 @@ public class Author extends Person {
   @SuppressWarnings("hiding")
   public static final ElementKey<Void, Author> KEY = ElementKey.of(
       new QName(Namespaces.atomNs, "author"), Author.class);
-  
+
   /*
    * Generate the default metadata for this element.
    */
   static {
     DefaultRegistry.build(KEY);
   }
-  
+
   /**
-   * Constructs a new Author instance. Default metadata is associated with this
+   * Constructs a new Author instance. The default key is associated with this
    * instance.
    */
   public Author() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
-  
+
   /**
-   * Lets subclasses create an instance using custom metadata.
+   * Lets subclasses create an instance using a custom key.
    */
-  protected Author(ElementMetadata<?, ?> elementMetadata) {
-    super(elementMetadata);
+  protected Author(ElementKey<?, ?> key) {
+    super(key);
   }
-  
+
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Person} instance. Will use the given {@link ElementMetadata} as the
-   * metadata for the element.
+   * {@link Person} instance. Will use the given {@link ElementKey} as the
+   * key for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key the element key to use for this element.
    * @param source source element
    */
-  public Author(ElementMetadata<Void, ? extends Author> metadata,
-      Person source) {
-    super(metadata, source);
+  public Author(ElementKey<Void, ? extends Author> key, Person source) {
+    super(key, source);
   }
 
   /**
    * Constructs a new Author instance with the given name.
    */
   public Author(String name) {
-    super(DefaultRegistry.get(KEY), name);
+    super(KEY, name);
   }
 
   /**
    * Constructs a new author instance with the given name, uri, and email.
    */
   public Author(String name, URI uri, String email) {
-    super(DefaultRegistry.get(KEY), name, uri, email);
+    super(KEY, name, uri, email);
   }
 }

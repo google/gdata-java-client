@@ -16,7 +16,9 @@
 
 package com.google.gdata.wireformats;
 
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.util.common.base.StringUtil;
+import com.google.common.collect.Maps;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 
@@ -24,6 +26,7 @@ import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.MetadataContext;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.util.LogUtils;
@@ -44,9 +47,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -55,7 +58,6 @@ import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 
 /**
  * XML parser, branched from {@link com.google.gdata.util.XmlParser}.
@@ -81,7 +83,7 @@ import javax.xml.parsers.SAXParserFactory;
  * XmlParser.ElementHandler} type (usually one per XML schema type),
  * specify the root element handler, and pass a reader to the
  * {@link #parse(Element)} method.
- * 
+ *
  * @see     XmlParser.ElementHandler
  */
 public class XmlParser extends DefaultHandler implements WireFormatParser {
@@ -203,15 +205,15 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
     /** String writer underlying the full-text index string. */
     StringWriter fullTextIndexWriter;
 
-    
+
     /**
      * Determines a handler for a child element.
      * <p>
      *
      * The default implementation doesn't recognize anything. The result is a
      * schema error <i>unless</i> the parent handler accepts unrecognized XML.
-     * 
-     * 
+     *
+     *
      * @param   qn
      *            Child element's qualified name.
      *
@@ -221,7 +223,7 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
      *            {@link #processAttribute} method. They are passed here because
      *            sometimes the value of some attribute determines the element's
      *            content type, so different element handlers may be needed.
-     *            
+     *
      * @param namespaces
      *            List of namespaces in effect for child element.
      *
@@ -403,8 +405,8 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
     }
   }
 
-  /** Metadata context being parsed into. */
-  protected final MetadataContext context;
+  /** Input properties for parsing */
+  protected final StreamProperties props;
 
   /** Reader used by this parser. */
   protected final Reader r;
@@ -412,29 +414,20 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
   /** Character set used to encode input. */
   protected final Charset cs;
 
-  /** Metadata for root element of parsed content. */
-  protected ElementMetadata<?, ?> metadata;
-
-
   /** Root element handler. */
   protected ElementHandler rootHandler;
-
 
   /** Root element namespace URI. */
   protected String rootNamespace;
 
-
   /** Root element name. */
   protected String rootElementName;
-
 
   /** Top of the element handler stack. */
   ElementHandler curHandler;
 
-
   /** Number of unrecognized elements on the stack. */
   int unrecognizedElements = 0;
-
 
   /** Document locator used to get line and column numbers for SAX events. */
   Locator locator;
@@ -462,9 +455,7 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
    * Set of all namespace declarations valid at the current location.
    * Includes namespace declarations from all ancestor elements.
    */
-  protected HashMap<String, Stack<NamespaceDecl>> namespaceMap =
-    new HashMap<String, Stack<NamespaceDecl>>();
-
+  protected Map<String, Stack<NamespaceDecl>> namespaceMap = Maps.newHashMap();
 
   /**
    * Namespace declarations for the current element.
@@ -474,13 +465,15 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
 
   /**
    * Construct XML parser for given reader.
-   * 
-   * @param context metadata context we're parsing into.
+   *
+   * @param props stream properties for parsing
    * @param r reader where input is retrieved from
    * @param cs character set used to encode input
    */
-  public XmlParser(MetadataContext context, Reader r, Charset cs) {
-    this.context = context;
+  public XmlParser(StreamProperties props, Reader r, Charset cs) {
+    Preconditions.checkNotNull(props, "stream properties");
+    Preconditions.checkNotNull(r, "reader");
+    this.props = props;
     this.r = r;
     this.cs = cs;
   }
@@ -489,15 +482,32 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
       throws IOException, ParseException, ContentValidationException {
 
     ValidationContext vc = new ValidationContext();
-    this.metadata = element.getMetadata();
-    this.rootHandler = new XmlHandler(vc, null, element);
-    QName elementName = metadata.getName();
+    ElementMetadata<?, ?> metadata = getMetadata(element);
+
+    this.rootHandler = createRootHandler(vc, element, metadata);
+    QName elementName = (metadata == null) ? element.getElementId()
+        : metadata.getName();
     XmlNamespace elementNs = elementName.getNs();
     this.rootNamespace = elementNs == null ? null : elementNs.getUri();
     this.rootElementName = elementName.getLocalName();
     InputSource is = new InputSource(r);
     parse(is);
-    return element.resolve();
+    return element.resolve(metadata);
+  }
+
+  protected ElementMetadata<?, ?> getMetadata(Element element) {
+    MetadataRegistry registry = props.getMetadataRegistry();
+    MetadataContext context = props.getMetadataContext();
+    return registry.bind(element.getElementKey(), context);
+  }
+
+  /**
+   * Create the xml handler for the root element.  Subclasses can supply their
+   * own parse handlers.
+   */
+  protected XmlHandler createRootHandler(ValidationContext vc,
+      Element element, ElementMetadata<?, ?> metadata) {
+    return new XmlHandler(vc, null, element, metadata);
   }
 
   /**
@@ -682,7 +692,7 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
       }
 
       try {
-        
+
         // First pass to extract xml:lang and xml:base.
         for (int i = 0; i < attrs.getLength(); i++) {
 
@@ -971,7 +981,7 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
           new XmlNamespace(alias, nsDecl.ns.getUri()));
     }
   }
-  
+
   private static QName createQName(
       String qName, String nsUri, String localName) {
 

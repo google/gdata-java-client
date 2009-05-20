@@ -18,10 +18,10 @@ package com.google.gdata.model;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.model.ElementCreatorImpl.Action;
 import com.google.gdata.model.ElementCreatorImpl.AttributeInfo;
 import com.google.gdata.model.ElementCreatorImpl.ElementInfo;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.ElementMetadata.VirtualElement;
 
 import java.util.Map;

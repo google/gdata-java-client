@@ -20,11 +20,16 @@ import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.WriterFlags;
 import com.google.gdata.model.Attribute;
+import com.google.gdata.model.AttributeKey;
 import com.google.gdata.model.AttributeMetadata;
 import com.google.gdata.model.Element;
+import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.ElementVisitor;
+import com.google.gdata.model.MetadataContext;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
+import com.google.gdata.wireformats.output.OutputProperties;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -44,11 +49,21 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
   /**
    * A namespace marker that means we should use the root element namespace
    * as the default namespace.  This can be overridden by calling
-   * {@link #XmlGenerator(Writer, Charset, boolean, XmlNamespace)} and giving
-   * it a different namespace.
+   * {@link #XmlGenerator(OutputProperties, Writer, Charset, boolean, XmlNamespace)}
+   * and giving it a different namespace.
    */
   private static final XmlNamespace USE_ROOT_ELEMENT_NAMESPACE =
       new XmlNamespace("__USE_ROOT_ELEMENT_NAMESPACE__");
+
+  /**
+   * Metadata registry holding metadata information.
+   */
+  protected final MetadataRegistry registry;
+
+  /**
+   * The context the xml generator is operating within.
+   */
+  protected final MetadataContext context;
 
   /**
    * XML writer used by this generator.
@@ -64,19 +79,20 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
    * Creates a new xml generator for generating xml output.  This constructor
    * will use the namespace of the root element as the default namespace of the
    * output.  Callers that would like to change the default namespace should
-   * call {@link #XmlGenerator(Writer, Charset, boolean, XmlNamespace)} with
-   * the namespace that should be used as the default.
+   * call {@link #XmlGenerator(OutputProperties, Writer, Charset, boolean, XmlNamespace)}
+   * with the namespace that should be used as the default.
    */
-  public XmlGenerator(Writer w, Charset cs, boolean prettyPrint) {
-    this(w, cs, prettyPrint, USE_ROOT_ELEMENT_NAMESPACE);
+  public XmlGenerator(StreamProperties props, Writer w, Charset cs,
+      boolean prettyPrint) {
+    this(props, w, cs, prettyPrint, USE_ROOT_ELEMENT_NAMESPACE);
   }
 
   /**
    * Creates a new xml generator for generating xml output, using the
    * given namespace as the default namespace.
    */
-  public XmlGenerator(Writer w, Charset cs, boolean prettyPrint,
-      XmlNamespace defaultNamespace) {
+  public XmlGenerator(StreamProperties props, Writer w, Charset cs,
+      boolean prettyPrint, XmlNamespace defaultNamespace) {
     EnumSet<WriterFlags> flags = EnumSet.of(WriterFlags.WRITE_HEADER);
     if (prettyPrint) {
       flags.add(WriterFlags.PRETTY_PRINT);
@@ -88,6 +104,8 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       throw new RuntimeException("Unable to create XML generator", ioe);
     }
 
+    this.registry = props.getMetadataRegistry();
+    this.context = props.getMetadataContext();
     this.defaultNamespace = defaultNamespace;
   }
 
@@ -109,24 +127,27 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
      * and child elements should not be added.
      *
      * @param xw the xml writer to write to.
-     * @param parent the parent element, or null if this is a root element.
+     * @param parent the parent element.
      * @param e the element to start.
+     * @param metadata the metadata for the element
      * @return true if child elements should be written, false if the element
      *     was fully written.
      * @throws IOException if an error occurs while writing to the writer.
      */
-    public boolean startElement(XmlWriter xw, Element parent, Element e)
-        throws IOException;
+    public boolean startElement(XmlWriter xw, Element parent, Element e,
+        ElementMetadata<?, ?> metadata) throws IOException;
 
     /**
      * Write the text content for an element.
      */
-    public void textContent(XmlWriter xw, Element e) throws IOException;
+    public void textContent(XmlWriter xw, Element e,
+        ElementMetadata<?, ?> metadata) throws IOException;
 
     /**
      * End an element, writing a close tag if needed.
      */
-    public void endElement(XmlWriter xw, Element e) throws IOException;
+    public void endElement(XmlWriter xw, Element e,
+        ElementMetadata<?, ?> metadata) throws IOException;
   }
 
   /**
@@ -136,25 +157,34 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
    */
   public static class XmlElementGenerator implements ElementGenerator {
 
-    public boolean startElement(XmlWriter xw, Element parent, Element e)
-        throws IOException {
+    public boolean startElement(XmlWriter xw, Element parent, Element e,
+        ElementMetadata<?, ?> metadata) throws IOException {
 
-      Collection<XmlNamespace> namespaces = getNamespaces(parent, e);
-      List<XmlWriter.Attribute> attrs = getAttributes(e);
+      Collection<XmlNamespace> namespaces = getNamespaces(parent, e, metadata);
+      List<XmlWriter.Attribute> attrs = getAttributes(e, metadata);
 
-      ElementMetadata<?, ?> meta = e.getMetadata();
-      xw.startElement(meta.getName().getNs(), meta.getName().getLocalName(),
-          attrs, namespaces);
+      QName name = getName(e, metadata);
+      xw.startElement(name.getNs(), name.getLocalName(), attrs, namespaces);
       return true;
     }
 
     /**
-     * Get a collection of namespaces for the current element and parent.
+     * Returns the QName of an element, possibly using the given metadata for
+     * the name if it is not {@code null}.
      */
-    protected Collection<XmlNamespace> getNamespaces(Element parent,
-        Element e) {
+    protected QName getName(Element e, ElementMetadata<?, ?> metadata) {
+      return (metadata == null) ? e.getElementId() : metadata.getName();
+    }
+
+    /**
+     * Get a collection of namespaces for the current element and parent.  This
+     * will only return namespaces for the root element, because we bubble all
+     * namespaces up to the root for wire efficiency.
+     */
+    protected Collection<XmlNamespace> getNamespaces(
+        Element parent, Element e, ElementMetadata<?, ?> metadata) {
       if (parent == null) {
-        return GeneratorUtils.calculateNamespaces(e).values();
+        return GeneratorUtils.calculateNamespaces(e, metadata).values();
       }
       return null;
     }
@@ -162,16 +192,19 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
     /**
      * Get a list of attributes for the given element.
      */
-    protected List<XmlWriter.Attribute> getAttributes(Element e) {
-      ElementMetadata<?, ?> metadata = e.getMetadata();
+    protected List<XmlWriter.Attribute> getAttributes(Element e,
+        ElementMetadata<?, ?> metadata) {
       List<XmlWriter.Attribute> attrs = null;
-      Iterator<Attribute> attributeIterator = metadata.getAttributeIterator(e);
+      Iterator<Attribute> attributeIterator = e.getAttributeIterator(metadata);
       if (attributeIterator.hasNext()) {
+        ElementKey<?, ?> key = e.getElementKey();
         attrs = new ArrayList<XmlWriter.Attribute>();
         while (attributeIterator.hasNext()) {
           Attribute attribute = attributeIterator.next();
-          AttributeMetadata<?> attMeta = attribute.getMetadata();
-          QName qName = attMeta.getName();
+          AttributeKey<?> attKey = attribute.getAttributeKey();
+          AttributeMetadata<?> attMeta = (metadata == null) ? null
+              : metadata.bindAttribute(attKey);
+          QName qName = attMeta != null ? attMeta.getName() : attKey.getId();
           String alias = (qName.getNs() != null) ?
               qName.getNs().getAlias() : null;
           attrs.add(new XmlWriter.Attribute(alias, qName.getLocalName(),
@@ -181,9 +214,10 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       return attrs;
     }
 
-    public void textContent(XmlWriter xw, Element e) throws IOException {
-      ElementMetadata<?, ?> meta = e.getMetadata();
-      Object value = meta.generateValue(e);
+    public void textContent(XmlWriter xw, Element e,
+        ElementMetadata<?, ?> metadata) throws IOException {
+      Object value = (metadata == null) ? e.getTextValue()
+          : metadata.generateValue(e, metadata);
       if (value != null) {
         String valStr = value.toString();
         if (valStr.length() > 0) {
@@ -191,10 +225,11 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
         }
       }
     }
-    
-    public void endElement(XmlWriter xw, Element e) throws IOException {
-      xw.endElement(e.getMetadata().getName().getNs(),
-                    e.getMetadata().getName().getLocalName());
+
+    public void endElement(XmlWriter xw, Element e,
+        ElementMetadata<?, ?> metadata) throws IOException {
+      QName name = getName(e, metadata);
+      xw.endElement(name.getNs(), name.getLocalName());
     }
   }
 
@@ -204,8 +239,12 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       new XmlElementGenerator();
 
   public void generate(Element element) throws IOException {
+
+    ElementMetadata<?, ?> metadata = registry.bind(
+        element.getElementKey(), context);
+
     try {
-      element.visit(this, null);
+      element.visit(this, metadata);
     } catch (StoppedException se) {
       Throwable cause = se.getCause();
       if (cause instanceof IOException) {
@@ -221,28 +260,32 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
    * configured in the {@link XmlWireFormatProperties} of element metadata, or
    * the default generator if none has been configured.
    *
-   * @param e the element.
+   * @param metadata the element metadata
    * @return the element generator for elements of this type.
    */
-  private ElementGenerator getElementGenerator(Element e) {
-    XmlWireFormatProperties xmlProperties = (XmlWireFormatProperties)
-        e.getMetadata().getProperties();
-    if (xmlProperties != null) {
-      ElementGenerator elementGenerator = xmlProperties.getElementGenerator();
-      if (elementGenerator != null) {
-        return elementGenerator;
+  private ElementGenerator getElementGenerator(ElementMetadata<?, ?> metadata) {
+    if (metadata != null) {
+      XmlWireFormatProperties xmlProperties =
+          (XmlWireFormatProperties) metadata.getProperties();
+      if (xmlProperties != null) {
+        ElementGenerator elementGenerator = xmlProperties.getElementGenerator();
+        if (elementGenerator != null) {
+          return elementGenerator;
+        }
       }
     }
     return DEFAULT_GENERATOR;
   }
 
-  public boolean visit(Element parent, Element e) throws StoppedException {
+  public boolean visit(Element parent, Element e,
+      ElementMetadata<?, ?> metadata) throws StoppedException {
     try {
       if (parent == null) {
-        setRootNamespace(e);
+        setRootNamespace(metadata, e);
       }
-      if (e.getMetadata().isVisible()) {
-        return getElementGenerator(e).startElement(xw, parent, e);
+      if (metadata == null || metadata.isVisible()) {
+        ElementGenerator gen = getElementGenerator(metadata);
+        return gen.startElement(xw, parent, e, metadata);
       }
     } catch (IOException ioe) {
       throw new StoppedException(ioe);
@@ -254,25 +297,30 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
    * Sets the root element for generation.  This is used to derive the default
    * metadata that should be used.
    */
-  private void setRootNamespace(Element element) {
+  private void setRootNamespace(ElementMetadata<?, ?> meta, Element e) {
     XmlNamespace rootNs = defaultNamespace;
 
     // If no default has been set, we use the namespace of the root element as
     // the default namespace.
     if (rootNs == USE_ROOT_ELEMENT_NAMESPACE) {
-      rootNs = element.getMetadata().getName().getNs();
+      if (meta != null) {
+        rootNs = meta.getName().getNs();
+      } else {
+        rootNs = e.getElementId().getNs();
+      }
     }
     if (rootNs != null) {
       xw.setDefaultNamespace(rootNs);
     }
   }
-  
-  public void visitComplete(Element e) throws StoppedException {
+
+  public void visitComplete(Element parent, Element e,
+      ElementMetadata<?, ?> metadata) throws StoppedException {
     try {
-      if (e.getMetadata().isVisible()) {
-        ElementGenerator elementGenerator = getElementGenerator(e);
-        elementGenerator.textContent(xw, e);
-        elementGenerator.endElement(xw, e);
+      if (metadata == null || metadata.isVisible()) {
+        ElementGenerator elementGenerator = getElementGenerator(metadata);
+        elementGenerator.textContent(xw, e, metadata);
+        elementGenerator.endElement(xw, e, metadata);
       }
     } catch (IOException ioe) {
       throw new StoppedException(ioe);

@@ -19,11 +19,12 @@ package com.google.gdata.wireformats;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.XmlEventSource;
 import com.google.gdata.model.Element;
-import com.google.gdata.model.MetadataContext;
+import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.util.LogUtils;
 import com.google.gdata.util.ParseException;
+import com.google.gdata.wireformats.input.InputProperties;
 
 import org.xml.sax.SAXException;
 
@@ -33,33 +34,34 @@ import java.util.logging.Logger;
 
 /**
  * A parser of xml event sources.
- * 
+ *
  * 
  */
 public class EventSourceParser extends XmlParser {
 
   private static final Logger LOGGER =
     Logger.getLogger(EventSourceParser.class.getName());
-  
+
   private final XmlEventSource source;
-  
-  public EventSourceParser(MetadataContext context, XmlEventSource source) {
-    super(context, null, null);
+
+  public EventSourceParser(InputProperties inProps, XmlEventSource source) {
+    super(inProps, null, null);
     this.source = source;
   }
-  
+
   @Override
   public Element parse(Element element)
       throws IOException, ParseException, ContentValidationException {
 
     ValidationContext vc = new ValidationContext();
-    this.metadata = element.getMetadata();
-    this.rootHandler = new XmlHandler(vc, null, element);
+    ElementMetadata<?, ?> metadata = getMetadata(element);
+
+    this.rootHandler = new XmlHandler(vc, null, element, metadata);
     QName elementName = metadata.getName();
     XmlNamespace elementNs = elementName.getNs();
     this.rootNamespace = elementNs == null ? null : elementNs.getUri();
     this.rootElementName = elementName.getLocalName();
-    
+
     try {
       source.parse(this);
     } catch (SAXException e) {
@@ -74,7 +76,7 @@ public class EventSourceParser extends XmlParser {
         throw new ParseException(e);
       }
     }
-    
-    return element.resolve();
+
+    return element.resolve(metadata);
   }
 }

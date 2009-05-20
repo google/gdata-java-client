@@ -21,12 +21,14 @@ package com.google.gdata.model;
  * element state is valid.
  */
 public interface ElementValidator {
-  
+
   /**
    * Validate the target element using the specified validation context.
-   * 
+   *
    * @param vc validation context.
    * @param e element to be validated.
+   * @param metadata the metadata the element is being validated against.
    */
-  public void validate(ValidationContext vc, Element e);
+  public void validate(ValidationContext vc, Element e,
+      ElementMetadata<?, ?> metadata);
 }

@@ -16,7 +16,7 @@
 
 package com.google.gdata.model;
 
-import com.google.gdata.model.ContentModel.Cardinality;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.ElementMetadata.VirtualElement;
 import com.google.gdata.model.Metadata.VirtualValue;
 
@@ -98,8 +98,9 @@ public interface ElementCreator {
    * variant type. Adaptations are used to allow adaptive parsing; the data is
    * first parsed into the base type and then adapted to a more specific variant
    * during resolution. If you are adding adaptations you should also override
-   * {@link Element#narrow(ValidationContext)} and call
-   * {@link Element#adapt(Element, String)} with the appropriate key.
+   * {@link Element#narrow} and call
+   * {@link Element#adapt(Element, ElementMetadata, String)} with the
+   * appropriate key.
    */
   ElementCreator addAdaptation(String kind, ElementKey<?, ?> adaptation);
 

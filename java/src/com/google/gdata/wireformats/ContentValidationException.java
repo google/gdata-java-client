@@ -33,7 +33,7 @@ import java.util.Map;
 public class ContentValidationException extends ServiceException {
 
   protected ValidationContext vc;
-  
+
   public ContentValidationException(String message, ValidationContext vc) {
     super(message);
     this.vc = vc;
@@ -53,7 +53,7 @@ public class ContentValidationException extends ServiceException {
     Map<Element, List<ErrorContent>> errors = vc.getErrors();
     for (Map.Entry<Element, List<ErrorContent>> entry : errors.entrySet()) {
       Element element = entry.getKey();
-      String location = element.getMetadata().getName().toString();
+      String location = element.getElementKey().getId().toString();
       List<ErrorContent> codes = entry.getValue();
       for (ErrorContent errorCode : codes) {
         ParseException pe = new ParseException(errorCode);
@@ -65,7 +65,7 @@ public class ContentValidationException extends ServiceException {
         }
       }
     }
-    
+
     return result;
   }
 }

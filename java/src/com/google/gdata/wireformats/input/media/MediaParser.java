@@ -51,8 +51,7 @@ public class MediaParser extends AbstractParser<MediaSource> {
         "Parse source must be stream-based");   
     
     MediaStreamSource mediaSource = 
-        new MediaStreamSource(inputStream,
-            inProps.getContentType().getMediaType());
+        new MediaStreamSource(inputStream, inProps.getContentType().toString());
    
     return resultClass.cast(mediaSource);
   }

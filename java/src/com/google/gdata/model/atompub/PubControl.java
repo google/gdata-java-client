@@ -20,7 +20,6 @@ import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
-import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -50,28 +49,33 @@ public class PubControl extends Element {
    * Default mutable constructor.
    */
   public PubControl() {
-    this(DefaultRegistry.get(KEY));
+    this(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using custom metadata.
+   * Create an instance using a different key.
    */
-  protected PubControl(ElementMetadata<Void, ? extends PubControl> metadata) {
-    super(metadata);
+  public PubControl(ElementKey<Void, ? extends PubControl> key) {
+    super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Element} instance. Will use the given {@link ElementMetadata} as the
-   * metadata for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key The key to use for this element.
    * @param source source element
    */
-  public PubControl(ElementMetadata<Void, ? extends PubControl> metadata,
+  public PubControl(ElementKey<Void, ? extends PubControl> key,
       Element source) {
-    super(metadata, source);
+    super(key, source);
   }
+
+   @Override
+   public PubControl lock() {
+     return (PubControl) super.lock();
+   }
 
   /**
    * Returns the draft tag.
@@ -87,12 +91,9 @@ public class PubControl extends Element {
    *
    * @param draft draft tag or <code>null</code> to reset
    */
-  public void setDraft(Draft draft) {
-    if (draft == null) {
-      super.removeElement(Draft.KEY);
-    } else {
-      super.addElement(Draft.KEY, draft);
-    }
+  public PubControl setDraft(Draft draft) {
+    super.setElement(Draft.KEY, draft);
+    return this;
   }
 
   /**

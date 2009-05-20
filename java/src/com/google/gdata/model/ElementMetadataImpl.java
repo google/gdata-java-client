@@ -19,7 +19,6 @@ package com.google.gdata.model;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.model.ElementCreatorImpl.AttributeInfo;
 import com.google.gdata.model.ElementCreatorImpl.ElementInfo;
 import com.google.gdata.util.ParseException;
@@ -83,25 +82,6 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   /**
-   * Constructs a new immutable undeclared element metadata for the given
-   * key.
-   */
-  ElementMetadataImpl(ElementKey<D, E> key) {
-    super(key);
-
-    this.elemKey = key;
-    this.cardinality = Cardinality.MULTIPLE;
-    this.isContentRequired = false;
-    this.validator = null;
-    this.properties = null;
-    this.virtualElement = null;
-
-    this.attributes = ImmutableMap.of();
-    this.elements = ImmutableMap.of();
-    this.adaptations = null;
-  }
-
-  /**
    * Creates an immutable map of attributes from the given collection of
    * attribute info objects.  The info objects are used in transforms to allow
    * bumping attributes to the end of the list, to change their order, but once
@@ -139,14 +119,8 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    * If an adaptation does exist it will bind the adaptation under the same
    * parent and context as this element.
    */
-  public ElementMetadata<?, ?> adapt(String kind) {
-    if (adaptations != null) {
-      ElementKey<?, ?> adaptorKey = adaptations.getAdaptation(kind);
-      if (adaptorKey != null) {
-        return registry.bind(parent, adaptorKey, context);
-      }
-    }
-    return null;
+  public ElementKey<?, ?> adapt(String kind) {
+    return (adaptations != null) ? adaptations.getAdaptation(kind) : null;
   }
 
   /**
@@ -163,30 +137,30 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    * with the "*" local name (used to allow foo:* attribute metadata), and then
    * if that fails it looks in the adaptations.  This allows us to parse an
    * attribute that is declared in adaptations as declared metadata instead
-   * of undeclared metadata.
+   * of undeclared metadata.  If it still hasn't found an attribute this method
+   * will return null.
    */
-  public AttributeMetadata<?> findAttribute(QName id) {
+  public AttributeKey<?> findAttribute(QName id) {
     if (!attributes.isEmpty()) {
-      AttributeKey<?> attributeKey = attributes.get(id);
-      if (attributeKey != null) {
-        return registry.bind(elemKey, attributeKey, context);
+      AttributeKey<?> attKey = attributes.get(id);
+      if (attKey != null) {
+        return attKey;
       }
 
       // See if there is a foo:* match for the given id.
-      if (!"*".equals(id.getLocalName())) {
-        attributeKey = attributes.get(new QName(id.getNs(), "*"));
+      if (!isStarId(id)) {
+        attKey = attributes.get(toStarId(id));
 
-        if (attributeKey != null) {
-          attributeKey = AttributeKey.of(id, attributeKey.getDatatype());
-          return registry.bind(elemKey, attributeKey, context);
+        if (attKey != null) {
+          return AttributeKey.of(id, attKey.getDatatype());
         }
       }
     }
 
     if (adaptations != null) {
-      AttributeMetadata<?> adapted = adaptations.findAttribute(id);
-      if (adapted != null) {
-        return adapted.bind(context);
+      AttributeKey<?> attKey = adaptations.findAttribute(id);
+      if (attKey != null) {
+        return attKey;
       }
     }
 
@@ -206,31 +180,31 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    * with the "*" local name (used to allow foo:* element metadata), and then
    * if that fails it looks in the adaptations.  This allows us to parse an
    * element that is declared in adaptations as declared metadata instead
-   * of undeclared metadata.
+   * of undeclared metadata.  If after looking in the adaptations we still have
+   * not found a key for the QName, we return null.
    */
-  public ElementMetadata<?, ?> findElement(QName id) {
+  public ElementKey<?, ?> findElement(QName id) {
     if (!elements.isEmpty()) {
       ElementKey<?, ?> childKey = elements.get(id);
       if (childKey != null) {
-        return registry.bind(elemKey, childKey, context);
+        return childKey;
       }
 
       // See if there is a foo:* match for the given id.
-      if (!"*".equals(id.getLocalName())) {
-        childKey = elements.get(new QName(id.getNs(), "*"));
+      if (!isStarId(id)) {
+        childKey = elements.get(toStarId(id));
 
         if (childKey != null) {
-          childKey = ElementKey.of(
+          return ElementKey.of(
               id, childKey.getDatatype(), childKey.getElementType());
-          return registry.bind(elemKey, childKey, context);
         }
       }
     }
 
     if (adaptations != null) {
-      ElementMetadata<?, ?> adapted = adaptations.findElement(id);
-      if (adapted != null) {
-        return adapted.bind(context);
+      ElementKey<?, ?> childKey = adaptations.findElement(id);
+      if (childKey != null) {
+        return childKey;
       }
     }
 
@@ -243,7 +217,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    */
   public ElementMetadata<D, E> bind(
       MetadataContext context) {
-    return (registry == null) ? this : registry.bind(parent, elemKey, context);
+    return registry.bind(parent, elemKey, context);
   }
 
   @Override
@@ -273,7 +247,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
 
   public void validate(ValidationContext vc, Element e) {
     if (validator != null) {
-      validator.validate(vc, e);
+      validator.validate(vc, e, this);
     }
   }
 
@@ -286,7 +260,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   public <K> AttributeMetadata<K> bindAttribute(AttributeKey<K> key) {
-    return (registry == null) ? null : registry.bind(elemKey, key, context);
+    return registry.bind(elemKey, key, context);
   }
 
   public Iterator<Element> getElementIterator(Element element) {
@@ -300,12 +274,12 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   @SuppressWarnings("unchecked")
   public <K, L extends Element> ElementMetadata<K, L> bindElement(
       ElementKey<K, L> key) {
-    return (registry == null) ? null : registry.bind(elemKey, key, context);
+    return registry.bind(elemKey, key, context);
   }
 
   @Override
-  public Object generateValue(Element element) {
-    Object result = super.generateValue(element);
+  public Object generateValue(Element element, ElementMetadata<?, ?> metadata) {
+    Object result = super.generateValue(element, metadata);
     if (result == null) {
       result = element.getTextValue(elemKey);
     }
@@ -313,9 +287,10 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   @Override
-  public void parseValue(Element element, Object value) throws ParseException {
+  public void parseValue(Element element, ElementMetadata<?, ?> metadata,
+      Object value) throws ParseException {
     if (virtualValue != null) {
-      super.parseValue(element, value);
+      super.parseValue(element, metadata, value);
     } else {
       element.setTextValue(
           ObjectConverter.getValue(value, elemKey.getDatatype()));
@@ -327,6 +302,22 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   public E createElement() throws ContentCreationException {
-    return Element.createElement(this);
+    return Element.createElement(elemKey);
+  }
+
+  /**
+   * Returns true if this ID is a star ID, which represents any name in the
+   * namespace.
+   */
+  private boolean isStarId(QName id) {
+    return "*".equals(id.getLocalName());
+  }
+
+  /**
+   * Returns an id of the form ns:*, if the given id does not already represent
+   * the * localname.
+   */
+  private QName toStarId(QName id) {
+    return new QName(id.getNs(), "*");
   }
 }

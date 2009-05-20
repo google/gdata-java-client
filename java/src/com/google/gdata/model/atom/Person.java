@@ -17,12 +17,12 @@
 package com.google.gdata.model.atom;
 
 import com.google.gdata.data.IPerson;
-import com.google.gdata.model.ContentModel.Cardinality;
 import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -74,17 +74,16 @@ public class Person extends Element implements IPerson {
    * associated with this instance.
    */
   public Person() {
-    super(DefaultRegistry.get(KEY));
+    super(KEY);
   }
 
   /**
    * Lets subclasses create an instance using custom metadata.
    *
-   * @param elementMetadata metadata describing the expected attributes and
-   *        child elements.
+   * @param key element key for this element
    */
-  protected Person(ElementMetadata<?, ?> elementMetadata) {
-    super(elementMetadata);
+  protected Person(ElementKey<?, ?> key) {
+    super(key);
   }
 
   /**
@@ -92,20 +91,19 @@ public class Person extends Element implements IPerson {
    * {@link Author} instance. Will use the given {@link ElementMetadata} as the
    * metadata for the element.
    *
-   * @param metadata metadata to use for this element.
+   * @param key the key to use for this element.
    * @param source source element
    */
-  public Person(ElementMetadata<Void, ? extends Person> metadata,
-      Element source) {
-    super(metadata, source);
+  public Person(ElementKey<?, ? extends Person> key, Element source) {
+    super(key, source);
   }
 
   /**
    * Constructs a new Person instance with the specified name
-   * and metadata.
+   * and key.
    */
-  public Person(ElementMetadata<?, ?> elementMetadata, String name) {
-    super(elementMetadata);
+  public Person(ElementKey<?, ?> key, String name) {
+    super(key);
     if (name == null) {
       throw new NullPointerException("Name must have a value");
     }
@@ -116,14 +114,13 @@ public class Person extends Element implements IPerson {
    * Constructs a new Person instance with the specified name, URI,
    * and email address.
    *
-   * @param elementMetadata element metadata
+   * @param key the element key
    * @param name person's name
    * @param uri person's URI
    * @param email person's email address
    */
-  public Person(ElementMetadata<?, ?> elementMetadata, String name,
-                URI uri, String email) {
-    super(elementMetadata);
+  public Person(ElementKey<?, ?> key, String name, URI uri, String email) {
+    super(key);
     setName(name);
     setUri(uri);
     setEmail(email);
@@ -138,7 +135,7 @@ public class Person extends Element implements IPerson {
   }
 
   public void setName(String v) {
-    addElement(NAME, new Element(DefaultRegistry.get(NAME)).setTextValue(v));
+    setElement(NAME, (v == null) ? null : new Element(NAME).setTextValue(v));
   }
 
   /** Language of name. Derived from the current state of {@code xml:lang}. */
@@ -172,9 +169,6 @@ public class Person extends Element implements IPerson {
    * @return URI
    */
   public URI getUriUri() {
-    if (!hasElement(URI)) {
-      return null;
-    }
     return getElementValue(URI);
   }
 
@@ -200,18 +194,15 @@ public class Person extends Element implements IPerson {
    * @param v URI
    */
   public void setUri(URI v) {
-    addElement(URI, new Element(DefaultRegistry.get(URI)).setTextValue(v));
+    setElement(URI, (v == null) ? null : new Element(URI).setTextValue(v));
   }
 
   /** Email address. */
   public String getEmail() {
-    if (!hasElement(EMAIL)) {
-      return null;
-    }
     return getElementValue(EMAIL);
   }
 
   public void setEmail(String v) {
-    addElement(EMAIL, new Element(DefaultRegistry.get(EMAIL)).setTextValue(v));
+    setElement(EMAIL, (v == null) ? null : new Element(EMAIL).setTextValue(v));
   }
 }

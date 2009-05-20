@@ -16,6 +16,7 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.util.ParseException;
 
 /**
@@ -31,7 +32,6 @@ abstract class MetadataImpl<D> implements Metadata<D> {
   final MetadataContext context;
   final QName name;
   final boolean isRequired;
-  final boolean isUndeclared;
   final boolean isVisible;
   final VirtualValue virtualValue;
 
@@ -41,32 +41,14 @@ abstract class MetadataImpl<D> implements Metadata<D> {
    */
   MetadataImpl(MetadataRegistry registry, Transform transform,
       ElementKey<?, ?> parent, MetadataKey<D> key, MetadataContext context) {
-    this.registry = registry;
-    this.key = key;
+    this.registry = Preconditions.checkNotNull(registry, "registry");
+    this.key = Preconditions.checkNotNull(key, "key");
     this.parent = parent;
     this.context = context;
     this.name = nullToDefault(transform.name, key.getId());
     this.isRequired = nullToDefault(transform.required, false);
     this.isVisible = nullToDefault(transform.visible, true);
     this.virtualValue = transform.virtualValue;
-
-    this.isUndeclared = false;
-  }
-
-  /**
-   * Constructs a new immutable undeclared metadata instance.
-   */
-  MetadataImpl(MetadataKey<D> key) {
-    this.registry = null;
-    this.parent = null;
-    this.key = key;
-    this.context = null;
-    this.name = key.getId();
-    this.isRequired = false;
-    this.isVisible = true;
-    this.virtualValue = null;
-
-    this.isUndeclared = true;
   }
 
   /**
@@ -76,6 +58,10 @@ abstract class MetadataImpl<D> implements Metadata<D> {
    */
   static <T> T nullToDefault(T value, T defaultValue) {
     return (value != null) ? value : defaultValue;
+  }
+
+  public MetadataRegistry getRegistry() {
+    return registry;
   }
 
   public MetadataKey<D> getKey() {
@@ -98,10 +84,6 @@ abstract class MetadataImpl<D> implements Metadata<D> {
     return isRequired;
   }
 
-  public boolean isUndeclared() {
-    return isUndeclared;
-  }
-
   public boolean isVisible() {
     return isVisible;
   }
@@ -110,16 +92,17 @@ abstract class MetadataImpl<D> implements Metadata<D> {
     return virtualValue;
   }
 
-  public Object generateValue(Element element) {
+  public Object generateValue(Element element, ElementMetadata<?, ?> metadata) {
     if (virtualValue != null) {
-      return virtualValue.generate(element);
+      return virtualValue.generate(element, metadata);
     }
     return null;
   }
 
-  public void parseValue(Element element, Object value) throws ParseException {
+  public void parseValue(Element element, ElementMetadata<?, ?> metadata,
+      Object value) throws ParseException {
     if (virtualValue != null) {
-      virtualValue.parse(element, value);
+      virtualValue.parse(element, metadata, value);
     }
   }
 }

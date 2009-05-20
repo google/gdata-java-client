@@ -162,7 +162,7 @@ public class Feed extends Source implements IFeed {
      * string in the most convenient way. Some services may choose to use
      * a monotonically increasing sequence of version IDs. Other services
      * may compute a hash of entry properties and use that.
-     * 
+     *
      * <p>This property is only used for services to communicate the current
      * version ID back to the servlet. It is NOT set when entries are
      * parsed (either from requests or from arbitrary XML).
@@ -180,16 +180,16 @@ public class Feed extends Source implements IFeed {
    * Constructs a new Feed instance, using default metadata.
    */
   public Feed() {
-    this(DefaultRegistry.get(KEY));
+    this(KEY);
   }
 
   /**
    * Creates a new feed instance using the specified metadata.
    *
-   * @param elementMetadata feed metadata for element.
+   * @param key the feed key.
    */
-  public Feed(ElementMetadata<?, ? extends Feed> elementMetadata) {
-    super(elementMetadata);
+  public Feed(ElementKey<?, ? extends Feed> key) {
+    super(key);
     feedState = new FeedState();
   }
 
@@ -200,10 +200,9 @@ public class Feed extends Source implements IFeed {
    * create adaptor instances of a feed that share state with the original but
    * use a different set of metadata.
    */
-  protected Feed(ElementMetadata<?, ? extends Feed> elementMetadata,
-      Feed sourceFeed) {
-    super(elementMetadata, sourceFeed);
-    feedState = sourceFeed.feedState;
+  protected Feed(ElementKey<?, ? extends Feed> key, Feed source) {
+    super(key, source);
+    feedState = source.feedState;
   }
 
   /**
@@ -253,7 +252,7 @@ public class Feed extends Source implements IFeed {
   /**
    * Set the resource version id for this feed. This will be
    * used to generate an etag value on output. If {@code null},
-   * the updated time will be used instead to generate an etag. 
+   * the updated time will be used instead to generate an etag.
    */
   public void setVersionId(String v) {
     feedState.versionId = v;
@@ -272,7 +271,7 @@ public class Feed extends Source implements IFeed {
    * indicates the value is unknown.
    */
   public void setEtag(String v) {
-    addAttribute(ETAG, v);
+    setAttributeValue(ETAG, v);
   }
 
   /**
@@ -294,8 +293,7 @@ public class Feed extends Source implements IFeed {
    * {@link Query#UNDEFINED} indicates the total size is undefined.
    */
   public void setTotalResults(int v) {
-    addElement(TOTAL_RESULTS,
-        new Element(DefaultRegistry.get(TOTAL_RESULTS)).setTextValue(v));
+    setElement(TOTAL_RESULTS, new Element(TOTAL_RESULTS).setTextValue(v));
   }
 
   /**
@@ -315,8 +313,7 @@ public class Feed extends Source implements IFeed {
    * of {@link Query#UNDEFINED} indicates the start index is undefined.
    */
   public void setStartIndex(int v) {
-    addElement(START_INDEX,
-        new Element(DefaultRegistry.get(START_INDEX)).setTextValue(v));
+    setElement(START_INDEX, new Element(START_INDEX).setTextValue(v));
   }
 
   /**
@@ -338,8 +335,7 @@ public class Feed extends Source implements IFeed {
    * undefined.
    */
   public void setItemsPerPage(int v) {
-    addElement(ITEMS_PER_PAGE,
-        new Element(DefaultRegistry.get(ITEMS_PER_PAGE)).setTextValue(v));
+    setElement(ITEMS_PER_PAGE, new Element(ITEMS_PER_PAGE).setTextValue(v));
   }
 
   /** Returns the list of entries in this feed */
@@ -379,9 +375,16 @@ public class Feed extends Source implements IFeed {
    * Creates a new entry for the feed.
    */
   public Entry createEntry() {
-    Entry entry;
+    return createEntry(Entry.KEY);
+  }
+
+  /**
+   * Creates a new entry for the feed.
+   */
+  public <E extends Entry> E createEntry(ElementKey<?, E> entryKey) {
+    E entry;
     try {
-      entry = getMetadata().bindElement(Entry.KEY).createElement();
+      entry = Element.createElement(entryKey);
     } catch (ContentCreationException cce) {
       throw new IllegalStateException(cce);
     }
@@ -469,6 +472,13 @@ public class Feed extends Source implements IFeed {
     // return (F) this;
     // }
   }
+  
+  /**
+   * Removes all links.
+   */
+  public void removeLinks() {
+    removeElement(Link.KEY);
+  }
 
   /**
    * Inserts a new Entry into the feed, if the feed is currently associated with
@@ -507,28 +517,28 @@ public class Feed extends Source implements IFeed {
    * found. This will return the most specific subtype of the narrowed type.
    */
   @Override
-  protected Element narrow(ValidationContext vc) {
+  protected Element narrow(ElementMetadata<?,?> meta, ValidationContext vc) {
     Element narrowed = this;
     for (Category category : getCategories()) {
       if (Namespaces.gKind.equals(category.getScheme())) {
-        narrowed = adapt(narrowed, category.getTerm());
+        narrowed = adapt(narrowed, meta, category.getTerm());
       }
     }
 
     if (narrowed == this) {
-      narrowed = super.narrow(vc);
+      narrowed = super.narrow(meta, vc);
     }
     return narrowed;
   }
 
   @Override
-  public void validate(ValidationContext vc) {
+  public Element resolve(ElementMetadata<?, ?> metadata, ValidationContext vc) {
 
     // Fix "setCanPost" based on the existence of an entry post link.
     feedState.canPost = getEntryPostLink() != null;
 
-    // Continue parent validation.
-    super.validate(vc);
+    // Continue parent resolution.
+    return super.resolve(metadata, vc);
   }
 
   /**

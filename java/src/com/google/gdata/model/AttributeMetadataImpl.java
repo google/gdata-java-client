@@ -45,22 +45,12 @@ final class AttributeMetadataImpl<D> extends MetadataImpl<D>
   }
 
   /**
-   * Construct a new undeclared attribute metadata instance for the given keys.
-   */
-  AttributeMetadataImpl(AttributeKey<D> key) {
-    super(key);
-
-    this.attKey = key;
-  }
-
-  /**
    * Binds this attribute metadata to a different context.  Reuses the current
    * parent and attribute keys and just has the registry bind to a different
-   * context.  If this is an undeclared metadata, just returns the same
-   * instance (undeclared metadata cannot have transforms).
+   * context.
    */
   public AttributeMetadata<D> bind(MetadataContext context) {
-    return (registry == null) ? this : registry.bind(parent, attKey, context);
+    return registry.bind(parent, attKey, context);
   }
 
   @Override
@@ -69,8 +59,8 @@ final class AttributeMetadataImpl<D> extends MetadataImpl<D>
   }
 
   @Override
-  public Object generateValue(Element element) {
-    Object result = super.generateValue(element);
+  public Object generateValue(Element element, ElementMetadata<?, ?> metadata) {
+    Object result = super.generateValue(element, metadata);
     if (result == null) {
       result = element.getAttributeValue(attKey);
     }
@@ -78,12 +68,12 @@ final class AttributeMetadataImpl<D> extends MetadataImpl<D>
   }
 
   @Override
-  public void parseValue(Element element, Object value) throws ParseException {
+  public void parseValue(Element element, ElementMetadata<?, ?> metadata,
+      Object value) throws ParseException {
     if (virtualValue != null) {
-      super.parseValue(element, value);
+      super.parseValue(element, metadata, value);
     } else {
-      element.addAttribute(
-          attKey, ObjectConverter.getValue(value, attKey.getDatatype()));
+      element.setAttributeValue(attKey, ObjectConverter.getValue(value, attKey.getDatatype()));
     }
   }
 }
