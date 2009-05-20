@@ -22,6 +22,7 @@
   <import file="build-src/finance.xml"/>
   <import file="build-src/gbase.xml"/>
   <import file="build-src/health.xml"/>
+  <import file="build-src/maps.xml"/>
   <import file="build-src/photos.xml"/>
   <import file="build-src/spreadsheet.xml"/>
   <import file="build-src/youtube.xml"/>
@@ -45,6 +46,7 @@
                                 build.finance,
                                 build.gbase,
                                 build.health,
+                                build.maps,
                                 build.photos,
                                 build.spreadsheet,
                                 build.youtube,
