@@ -1,4 +1,4 @@
-#Answers for frequently asked questions.
+#summary Frequently asked questions
 
 <wiki:toc max_depth="1"/>
 
