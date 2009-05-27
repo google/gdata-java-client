@@ -63,6 +63,10 @@ public class Namespaces {
   public static final String GVIZ_PREFIX = GVIZ + "#";
 
 
+  /** Link "rel" for tables feed. */
+  public static final String TABLES_LINK_REL =
+      gSpreadPrefix + "tablesfeed";
+
   /** Link "rel" for worksheets feed. */
   public static final String WORKSHEETS_LINK_REL =
       gSpreadPrefix + "worksheetsfeed";

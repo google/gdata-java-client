@@ -16,23 +16,18 @@
 
 package sample.spreadsheet;
 
-import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.client.spreadsheet.FeedURLFactory;
-
-import com.google.gdata.client.spreadsheet.SpreadsheetQuery;
-import com.google.gdata.client.spreadsheet.WorksheetQuery;
-
-import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
-import com.google.gdata.data.spreadsheet.WorksheetFeed;
-import com.google.gdata.data.spreadsheet.CellFeed;
-
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetEntry;
-import com.google.gdata.data.spreadsheet.CellEntry;
-
-import com.google.gdata.data.Link;
-
 import sample.util.SimpleCommandLineParser;
+import com.google.gdata.client.spreadsheet.FeedURLFactory;
+import com.google.gdata.client.spreadsheet.SpreadsheetQuery;
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
+import com.google.gdata.client.spreadsheet.WorksheetQuery;
+import com.google.gdata.data.Link;
+import com.google.gdata.data.spreadsheet.CellEntry;
+import com.google.gdata.data.spreadsheet.CellFeed;
+import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
+import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
+import com.google.gdata.data.spreadsheet.WorksheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetFeed;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -52,6 +47,11 @@ public class ImportClient {
 
   private FeedURLFactory factory;
 
+  public ImportClient() throws Exception {
+    factory = FeedURLFactory.getDefault();
+    service = new SpreadsheetService("gdata-sample-spreadsheetimport");
+  }
+
   /**
    * Creates a client object for which the provided username and password
    * produces a valid authentication.
@@ -62,8 +62,7 @@ public class ImportClient {
    * password pair
    */
   public ImportClient(String username, String password) throws Exception {
-    factory = FeedURLFactory.getDefault();
-    service = new SpreadsheetService("gdata-sample-spreadsheetimport");
+    this();
     service.setUserCredentials(username, password);
   }
 
@@ -215,9 +214,9 @@ public class ImportClient {
       
         // Break up the line by the delimiter and insert the cells
         String[] cells = delim.split(line, -1);  
-        for (int col=0; col< cells.length; col++) {
+        for (int col = 0; col < cells.length; col++) {
           client.insertCellEntry(spreadsheet, worksheet, 
-              row+1, col+1, cells[col]);
+              row + 1, col + 1, cells[col]);
         }
       
         // Advance the loop

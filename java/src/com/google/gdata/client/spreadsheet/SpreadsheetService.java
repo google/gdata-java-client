@@ -21,7 +21,9 @@ import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Service;
 import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.data.spreadsheet.ListFeed;
+import com.google.gdata.data.spreadsheet.RecordFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
+import com.google.gdata.data.spreadsheet.TableFeed;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
@@ -62,6 +64,12 @@ public class SpreadsheetService extends GoogleService {
     public static final Version V2 = new Version(SpreadsheetService.class,
         "2.0", Service.Versions.V2);
 
+    /** Version 3 of the Spreadsheet Google Data API. This adds a new Table Feed
+     * and deprecates the old feeds. */
+    public static final Version V3 = new Version(SpreadsheetService.class,
+        "3.0", Service.Versions.V2);
+
+    private Versions() {}
   }
 
   /**
@@ -143,10 +151,10 @@ public class SpreadsheetService extends GoogleService {
   private void declareExtensions() {
     new CellFeed().declareExtensions(extProfile);
     new ListFeed().declareExtensions(extProfile);
-
+    new RecordFeed().declareExtensions(extProfile);
     new SpreadsheetFeed().declareExtensions(extProfile);
+    new TableFeed().declareExtensions(extProfile);
     new WorksheetFeed().declareExtensions(extProfile);
   }
 
 }
-
