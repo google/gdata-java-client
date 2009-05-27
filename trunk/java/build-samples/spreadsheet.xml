@@ -27,10 +27,18 @@
             value="${sample.spreadsheet.build.lib}/ListDemo.jar"/>
   <property name="sample.spreadsheet.listdemo.main"
             value="sample.spreadsheet.list.ListDemo"/>
+  <property name="sample.spreadsheet.recorddemo.jar"
+            value="${sample.spreadsheet.build.lib}/RecordDemo.jar"/>
+  <property name="sample.spreadsheet.recorddemo.main"
+            value="sample.spreadsheet.record.RecordDemo"/>
   <property name="sample.spreadsheet.worksheetdemo.jar"
             value="${sample.spreadsheet.build.lib}/WorksheetDemo.jar"/>
   <property name="sample.spreadsheet.worksheetdemo.main"
             value="sample.spreadsheet.worksheet.WorksheetDemo"/>
+  <property name="sample.spreadsheet.tabledemo.jar"
+            value="${sample.spreadsheet.build.lib}/TableDemo.jar"/>
+  <property name="sample.spreadsheet.tabledemo.main"
+            value="sample.spreadsheet.table.TableDemo"/>
   <property name="sample.spreadsheet.guidemo.jar"
             value="${sample.spreadsheet.build.lib}/GUIDemo.jar"/>
   <property name="sample.spreadsheet.guidemo.main"
@@ -97,12 +105,30 @@
       </manifest>
     </jar>
 
+    <!-- Create RecordDemo JAR file -->
+    <jar jarfile="${sample.spreadsheet.recorddemo.jar}"
+         basedir="${sample.spreadsheet.build.classes}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="${sample.spreadsheet.recorddemo.main}"/>
+      </manifest>
+    </jar>
+
     <!-- Create WorksheetDemo JAR file -->
     <jar jarfile="${sample.spreadsheet.worksheetdemo.jar}"
          basedir="${sample.spreadsheet.build.classes}">
       <manifest>
         <attribute name="Main-Class"
                    value="${sample.spreadsheet.worksheetdemo.main}"/>
+      </manifest>
+    </jar>
+
+    <!-- Create TableDemo JAR file -->
+    <jar jarfile="${sample.spreadsheet.tabledemo.jar}"
+         basedir="${sample.spreadsheet.build.classes}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="${sample.spreadsheet.tabledemo.main}"/>
       </manifest>
     </jar>
 
@@ -168,6 +194,19 @@
 
   </target>
 
+  <target name="sample.spreadsheet.recorddemo.run"
+          depends="sample.spreadsheet.build"
+   description="Runs the Spreadsheet Record Demo sample">
+    <java fork="true" classname="${sample.spreadsheet.recorddemo.main}">
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.spreadsheet.compile.classpath"/>
+        <path location="${sample.spreadsheet.recorddemo.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
   <target name="sample.spreadsheet.worksheetdemo.run"
           depends="sample.spreadsheet.build"
    description="Runs the Spreadsheet WorksheetDemo sample">
@@ -176,6 +215,19 @@
       <classpath>
         <path refid="sample.spreadsheet.compile.classpath"/>
         <path location="${sample.spreadsheet.worksheetdemo.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.spreadsheet.tabledemo.run"
+          depends="sample.spreadsheet.build"
+   description="Runs the Spreadsheet Table Demo sample">
+    <java fork="true" classname="${sample.spreadsheet.tabledemo.main}">
+      <arg line="-u ${sample.credentials.username} -p ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.spreadsheet.compile.classpath"/>
+        <path location="${sample.spreadsheet.tabledemo.jar}"/>
       </classpath>
     </java>
 

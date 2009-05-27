@@ -1,5 +1,10 @@
 Google Data API - Release Notes
 
+Notes for v1.32.1
+-----------------
+May 27, 2009
+o  Added support for Table and Record feeds in Google Spreadsheets Data API.
+
 Notes for v1.32.0
 -----------------
 May 20, 2009

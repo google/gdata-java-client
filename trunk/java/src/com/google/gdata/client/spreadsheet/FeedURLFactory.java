@@ -41,6 +41,9 @@ public class FeedURLFactory {
   private static final String WORKSHEETS_PATH = "feeds/worksheets/";
   private static final String LIST_PATH = "feeds/list/";
   private static final String CELLS_PATH = "feeds/cells/";
+  private static final String TABLE_PATH = "/tables/";
+  private static final String RECORD_PATH = "/records/";
+  private static final String BASE_PATH = "feeds";
       
 
   /** The url used as a base when creating urls. */
@@ -154,6 +157,34 @@ public class FeedURLFactory {
   }
 
   /**
+   * Creates a url that you can use to get a Table Feed of all the tables 
+   * within a spreadsheet.  
+   * @param spreadsheetKey key of the workbook to get the table feed from. 
+   * @throws MalformedURLException
+   */
+  public URL getTableFeedUrl(String spreadsheetKey) 
+      throws MalformedURLException {
+    if (spreadsheetKey == null) {
+      throw new NullPointerException("spreadsheetKey is null");
+    }
+    return new URL(baseUrl, encode(spreadsheetKey) + TABLE_PATH);
+  }
+  
+  /**
+   * Creates a url that you can use to get a feed of records from a table. 
+   * @param spreadsheetKey key of the workbook to get the table feed from.
+   * @param tableId id of the table to get a record feed from.
+   * @throws MalformedURLException
+   */
+  public URL getRecordFeedUrl(String spreadsheetKey, String tableId) 
+      throws MalformedURLException {
+    if (spreadsheetKey == null) {
+      throw new NullPointerException("spreadsheetKey is null");
+    }
+    return new URL(baseUrl, encode(spreadsheetKey) + RECORD_PATH + tableId);
+  }
+  
+  /**
    * Creates a URL you can use to get a ListFeed, which treats
    * the spreadsheet as a list of rows.
    *
@@ -194,17 +225,18 @@ public class FeedURLFactory {
 
   /**
    * Creates a new URL by urlencoding the parameters and adding 
-   * "spreadsheetKey/worksheetId/visibility/projection" to the provided url.
+   * "spreadsheetKey/parentResourceId/visibility/projection" 
+   * to the provided url.
    */
-  private URL makeUrl(URL url, String spreadsheetKey, String worksheetId, 
+  private URL makeUrl(URL url, String spreadsheetKey, String parentResourceId, 
       String visibility, String projection) throws MalformedURLException {
     if (spreadsheetKey == null) {
       throw new NullPointerException("spreadsheetKey is null");
     }
-    if (worksheetId == null) {
+    if (parentResourceId == null) {
       throw new NullPointerException("worksheetId is null");
     }
-    String path = encode(spreadsheetKey) + "/" + encode(worksheetId);
+    String path = encode(spreadsheetKey) + "/" + encode(parentResourceId);
     return makeUrl(url, path, visibility, projection);
   }
 
@@ -223,7 +255,6 @@ public class FeedURLFactory {
     path = path + "/" + encode(visibility) + "/" + encode(projection);
     return new URL(url, path);
   }
-
 
   /**
    * Turns a Google Spreadsheets URL directly into the spreadsheet key.
