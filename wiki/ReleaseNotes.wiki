@@ -8,6 +8,20 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.33.0 ==
+   * Update Google Contacts Data API to support version 3 of Contacts API. Version 3.0 brings greatly expanded data schema, including support for structured name and postal address.
+   * Added support for generic group attributes in Google Base Data API.
+   * Updated !OAuth implementation to support changes related to !OAuth 1.0a specification.
+
+== 1.32.1 ==
+   * Added support for Table and Record feeds in Google Spreadsheets Data API
+
+== 1.32.0 ==
+   * Added support for Analytics Google Data API.
+   * Updated Books API, Docs API and !OAuth samples code.
+   * Updated Apps Groups API to use https instead of http.
+   * Fixed non-blocking bugs related to comptability with Google Java App Engine.
+
 == 1.31.1 ==
    * Fixed bug in com.google.gdata.util.net.!UriEncoder which causes infinite when run in JDK 1.5 in !MacOS because of a JDK bug.
 
