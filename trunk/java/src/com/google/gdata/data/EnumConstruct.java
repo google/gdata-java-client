@@ -54,20 +54,22 @@ public abstract class EnumConstruct extends ValueConstruct {
                           String attrName,
                           Set<String> values,
                           String initialValue) {
-    super(namespace, tagName, attrName, initialValue);
+    // initialValue is *not* passed here by design, to ensure that we don't
+    // try to set it before this.values has been initialized
+    super(namespace, tagName, attrName);
     if (values == null) {
       throw new NullPointerException("Null values set");
     }
-    if (initialValue != null && !values.contains(initialValue)) {
-      throw new IllegalArgumentException("Invalid " + localName + " value:"
-          + initialValue);
-    }
     this.values = values;
+    if (initialValue != null) {
+      setValue(initialValue);
+      setImmutable(true);
+    }
   }
 
   @Override
   public void setValue(String v) throws IllegalArgumentException {
-    if (values != null && !values.contains(v)) {
+    if (!values.contains(v)) {
       throw new IllegalArgumentException("Invalid " + localName + " value:" +v);
     }
     super.setValue(v);

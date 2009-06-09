@@ -19,6 +19,8 @@ package com.google.gdata.data;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.IOException;
+
 /**
  * A generic source of xml events that can be parsed by an instance of
  * {@link DefaultHandler}.
@@ -33,5 +35,5 @@ public interface XmlEventSource {
    * @param handler an xml handler that can handle the xml event source.
    * @throws SAXException if parsing fails.
    */
-  public void parse(DefaultHandler handler) throws SAXException;
+  public void parse(DefaultHandler handler) throws SAXException, IOException;
 }

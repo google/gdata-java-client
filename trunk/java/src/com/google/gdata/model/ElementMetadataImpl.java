@@ -19,6 +19,7 @@ package com.google.gdata.model;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Maps;
 import com.google.gdata.model.ElementCreatorImpl.AttributeInfo;
 import com.google.gdata.model.ElementCreatorImpl.ElementInfo;
 import com.google.gdata.util.ParseException;
@@ -27,11 +28,15 @@ import com.google.gdata.wireformats.ObjectConverter;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Immutable implementation of the element metadata.  This class delegates to
  * the registry for binding to other contexts and for retrieving children, and
  * uses an {@link AdaptationRegistry} for dealing with adaptations.
+ * 
+ * <p>Each instance of this class is bound to a specific registry, parent key,
+ * element key, and metadata context, see {@link MetadataImpl}.
  *
  * 
  */
@@ -47,11 +52,13 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   private final boolean isContentRequired;
   private final ElementValidator validator;
   private final Object properties;
-  private final VirtualElement virtualElement;
+  private final VirtualElementHolder virtualElementHolder;
 
   /** Metadata for element's attributes and child elements. */
   private final ImmutableMap<QName, AttributeKey<?>> attributes;
+  private final ImmutableMap<QName, AttributeKey<?>> renamedAttributes;
   private final ImmutableMap<QName, ElementKey<?, ?>> elements;
+  private final ImmutableMap<QName, ElementKey<?, ?>> renamedElements;
 
   /** Adaptation helper for dealing with adaptors on this element. */
   private final AdaptationRegistry adaptations;
@@ -69,10 +76,12 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     this.isContentRequired = nullToDefault(transform.contentRequired, true);
     this.validator = nullToDefault(transform.validator, DEFAULT_VALIDATOR);
     this.properties = transform.properties;
-    this.virtualElement = transform.virtualElement;
+    this.virtualElementHolder = transform.virtualElementHolder;
 
     this.attributes = getAttributes(transform.attributes.values());
+    this.renamedAttributes = getRenamedAttributes();
     this.elements = getElements(transform.elements.values());
+    this.renamedElements = getRenamedElements();
 
     if (transform.adaptations.isEmpty()) {
       this.adaptations = null;
@@ -98,10 +107,28 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   /**
+   * Creates an immutable map of renamed attributes from the collection of
+   * attribute keys. This binds the attributes and checks if they have a
+   * different name under the context of this metadata, and returns any
+   * attributes with an alternate name in the map.
+   */
+  private ImmutableMap<QName, AttributeKey<?>> getRenamedAttributes() {
+    Builder<QName, AttributeKey<?>> builder = ImmutableMap.builder();
+    for (AttributeKey<?> key : attributes.values()) {
+      AttributeMetadata<?> bound = bindAttribute(key);
+      QName boundName = bound.getName();
+      if (!boundName.equals(key.getId())) {
+        builder.put(boundName, key);
+      }
+    }
+    return builder.build();
+  }
+
+  /**
    * Creates an immutable map of child elements from the given collection of
-   * element info objects.  The info objects are used in transforms to allow
-   * bumping elements to the end of the list, to change their order, but once
-   * we are creating the element metadata the order is set and we just need the
+   * element info objects. The info objects are used in transforms to allow
+   * bumping elements to the end of the list, to change their order, but once we
+   * are creating the element metadata the order is set and we just need the
    * keys.
    */
   private ImmutableMap<QName, ElementKey<?, ?>> getElements(
@@ -114,10 +141,34 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   /**
-   * Adapts this element metadata to a different kind, using the provided
-   * key.  Will return {@code null} if no adaptation on the given kind exists.
-   * If an adaptation does exist it will bind the adaptation under the same
-   * parent and context as this element.
+   * Creates an immutable map of renamed child elements from the collection of
+   * element keys. This gets the transform for each child and checks if there
+   * is a new, different name, and if so creates a map of those new names back
+   * to the appropriate key, for use during parsing.
+   */
+  private ImmutableMap<QName, ElementKey<?, ?>> getRenamedElements() {
+    
+    Map<QName, ElementKey<?, ?>> renamed = Maps.newLinkedHashMap();
+    
+    for (ElementKey<?, ?> key : elements.values()) {
+      ElementTransform transform = registry.getTransform(elemKey, key, context);
+      if (transform.name != null && !transform.name.equals(key.getId())) {
+        
+        // We only use the first renamed element if multiple elements are named
+        // the same.
+        if (!renamed.containsKey(transform.name)) {
+          renamed.put(transform.name, key);
+        }
+      }
+    }
+    return ImmutableMap.copyOf(renamed);
+  }
+
+  /**
+   * Adapts this element metadata to a different kind, using the provided key.
+   * Will return {@code null} if no adaptation on the given kind exists. If an
+   * adaptation does exist it will bind the adaptation under the same parent and
+   * context as this element.
    */
   public ElementKey<?, ?> adapt(String kind) {
     return (adaptations != null) ? adaptations.getAdaptation(kind) : null;
@@ -141,6 +192,13 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    * will return null.
    */
   public AttributeKey<?> findAttribute(QName id) {
+    // First check any renamed attributes, as those take precedence.
+    if (!renamedAttributes.isEmpty()) {
+      AttributeKey<?> attKey = renamedAttributes.get(id);
+      if (attKey != null) {
+        return attKey;
+      }
+    }
     if (!attributes.isEmpty()) {
       AttributeKey<?> attKey = attributes.get(id);
       if (attKey != null) {
@@ -184,12 +242,19 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    * not found a key for the QName, we return null.
    */
   public ElementKey<?, ?> findElement(QName id) {
+    // First check any renamed elements, as those take precedence.
+    if (!renamedElements.isEmpty()) {
+      ElementKey<?, ?> childKey = renamedElements.get(id);
+      if (childKey != null) {
+        return childKey;
+      }
+    }
     if (!elements.isEmpty()) {
       ElementKey<?, ?> childKey = elements.get(id);
       if (childKey != null) {
         return childKey;
       }
-
+      
       // See if there is a foo:* match for the given id.
       if (!isStarId(id)) {
         childKey = elements.get(toStarId(id));
@@ -234,6 +299,10 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   public boolean isReferenced() {
+    return isVisible();
+  }
+  
+  public boolean isSelected(Element e) {
     return isVisible();
   }
 
@@ -297,8 +366,14 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     }
   }
 
-  public VirtualElement getVirtualElement() {
-    return virtualElement;
+  public SingleVirtualElement getSingleVirtualElement() {
+    return virtualElementHolder == null 
+        ? null : virtualElementHolder.getSingleVirtualElement();
+  }
+
+  public MultipleVirtualElement getMultipleVirtualElement() {
+    return virtualElementHolder == null 
+        ? null : virtualElementHolder.getMultipleVirtualElement();
   }
 
   public E createElement() throws ContentCreationException {

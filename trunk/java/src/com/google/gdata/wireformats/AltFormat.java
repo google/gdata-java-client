@@ -61,6 +61,7 @@ public class AltFormat {
 
 
 
+
   /**
    * Constant value representing the OpenSearch Description Document, as
    * described by <a href="http://www.opensearch.org/Home">OpenSearch 1.1</a>.
@@ -78,6 +79,15 @@ public class AltFormat {
   public static final AltFormat ATOM_SERVICE =
     new AltFormat("atom-service", WireFormat.XML, ContentType.ATOM_SERVICE,
         xmlAcceptTypes(ContentType.ATOM_SERVICE), true);
+  
+  /**
+   * Constant value representing application/xml, which is used for partial
+   * document representations of xml formats.
+   */
+  public static final AltFormat APPLICATION_XML =
+    new AltFormat("application-xml", WireFormat.XML, 
+        ContentType.APPLICATION_XML,
+        xmlAcceptTypes(ContentType.APPLICATION_XML), false);
 
   /**
    * Constant value representing the media content associated with a GData

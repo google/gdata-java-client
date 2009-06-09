@@ -32,7 +32,7 @@ import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.atompub.Edited;
-import com.google.gdata.model.atompub.PubControl;
+import com.google.gdata.model.atompub.Control;
 import com.google.gdata.model.batch.BatchId;
 import com.google.gdata.model.batch.BatchInterrupted;
 import com.google.gdata.model.batch.BatchOperation;
@@ -145,7 +145,7 @@ public class Entry extends Element implements IEntry {
     builder.addElement(PUBLISHED);
     builder.addElement(UPDATED);
     builder.addElement(Edited.KEY);
-    builder.addElement(PubControl.KEY);
+    builder.addElement(Control.KEY);
     builder.addElement(Category.KEY);
     builder.addElement(TITLE);
     builder.addElement(SUMMARY);
@@ -459,12 +459,12 @@ public class Entry extends Element implements IEntry {
    * @param v   Draft status, or null to clear.
    */
   public void setDraft(Boolean v) {
-    PubControl control = null;
+    Control control = null;
     if (Boolean.TRUE.equals(v)) {
-      control = new PubControl();
+      control = new Control();
       control.setDraft(true);
     }
-    setElement(PubControl.KEY, control);
+    setElement(Control.KEY, control);
   }
 
   /**
@@ -473,7 +473,7 @@ public class Entry extends Element implements IEntry {
    * @return True if draft status is set and equals true.
    */
   public boolean isDraft() {
-    PubControl control = getPubControl();
+    Control control = getControl();
     return (control != null && control.isDraft());
   }
 
@@ -482,17 +482,17 @@ public class Entry extends Element implements IEntry {
    *
    * @return pub control tag or null if unset
    */
-  public PubControl getPubControl() {
-    return getElement(PubControl.KEY);
+  public Control getControl() {
+    return getElement(Control.KEY);
   }
 
   /**
    * Sets the app:control tag, which usually contains app:draft.
    *
-   * @param value PubControl the new object or null
+   * @param value Control the new object or null
    */
-  public void setPubControl(PubControl value) {
-    setElement(PubControl.KEY, value);
+  public void setControl(Control value) {
+    setElement(Control.KEY, value);
   }
 
   public void setService(Service s) {

@@ -26,8 +26,6 @@ import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.ElementVisitor;
-import com.google.gdata.model.MetadataContext;
-import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.wireformats.output.OutputProperties;
 
@@ -56,14 +54,9 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       new XmlNamespace("__USE_ROOT_ELEMENT_NAMESPACE__");
 
   /**
-   * Metadata registry holding metadata information.
+   * Metadata for the root element
    */
-  protected final MetadataRegistry registry;
-
-  /**
-   * The context the xml generator is operating within.
-   */
-  protected final MetadataContext context;
+  protected final ElementMetadata<?, ?> rootMetadata;
 
   /**
    * XML writer used by this generator.
@@ -104,8 +97,7 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       throw new RuntimeException("Unable to create XML generator", ioe);
     }
 
-    this.registry = props.getMetadataRegistry();
-    this.context = props.getMetadataContext();
+    this.rootMetadata = props.getRootMetadata();
     this.defaultNamespace = defaultNamespace;
   }
 
@@ -240,9 +232,18 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
 
   public void generate(Element element) throws IOException {
 
-    ElementMetadata<?, ?> metadata = registry.bind(
-        element.getElementKey(), context);
+    generate(element, rootMetadata);
+  }
 
+  public void generate(Element element, ElementMetadata<?, ?> metadata) 
+      throws IOException {
+
+    if (metadata != null && 
+        !metadata.getKey().equals(element.getElementKey())) {
+      throw new IllegalStateException(
+          "Element key (" + element.getElementKey() + 
+          ") does not match metadata key (" + metadata.getKey() + ")");
+    }
     try {
       element.visit(this, metadata);
     } catch (StoppedException se) {
@@ -253,7 +254,7 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       throw se;  // unexpected
     }
   }
-
+  
   /**
    * Returns the {@link ElementGenerator} that should be used to generator
    * the specified element.   The method will return the custom generator
@@ -283,7 +284,7 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
       if (parent == null) {
         setRootNamespace(metadata, e);
       }
-      if (metadata == null || metadata.isVisible()) {
+      if (metadata == null || metadata.isSelected(e)) {
         ElementGenerator gen = getElementGenerator(metadata);
         return gen.startElement(xw, parent, e, metadata);
       }
@@ -317,7 +318,7 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
   public void visitComplete(Element parent, Element e,
       ElementMetadata<?, ?> metadata) throws StoppedException {
     try {
-      if (metadata == null || metadata.isVisible()) {
+      if (metadata == null || metadata.isSelected(e)) {
         ElementGenerator elementGenerator = getElementGenerator(metadata);
         elementGenerator.textContent(xw, e, metadata);
         elementGenerator.endElement(xw, e, metadata);

@@ -22,7 +22,6 @@ import com.google.gdata.model.ElementCreatorImpl.Action;
 import com.google.gdata.model.ElementCreatorImpl.AttributeInfo;
 import com.google.gdata.model.ElementCreatorImpl.ElementInfo;
 import com.google.gdata.model.ElementMetadata.Cardinality;
-import com.google.gdata.model.ElementMetadata.VirtualElement;
 
 import java.util.Map;
 
@@ -75,7 +74,7 @@ final class ElementTransform extends Transform {
         && transform.contentRequired == null
         && transform.validator == null
         && transform.properties == null
-        && transform.virtualElement == null
+        && transform.virtualElementHolder == null
         && transform.attributes.isEmpty()
         && transform.elements.isEmpty()
         && transform.adaptations.isEmpty();
@@ -86,7 +85,7 @@ final class ElementTransform extends Transform {
   final Boolean contentRequired;
   final ElementValidator validator;
   final Object properties;
-  final VirtualElement virtualElement;
+  final VirtualElementHolder virtualElementHolder;
 
   // The maps will be immutable empty maps, and not null, if they contain
   // no values.  All immutable maps use the same instance so this doesn't waste
@@ -106,7 +105,7 @@ final class ElementTransform extends Transform {
     this.contentRequired = null;
     this.validator = null;
     this.properties = null;
-    this.virtualElement = null;
+    this.virtualElementHolder = null;
 
     this.attributes = ImmutableMap.of();
     this.elements = ImmutableMap.of();
@@ -124,7 +123,7 @@ final class ElementTransform extends Transform {
     this.contentRequired = builder.getContentRequired();
     this.validator = builder.getValidator();
     this.properties = builder.getProperties();
-    this.virtualElement = builder.getVirtualElement();
+    this.virtualElementHolder = builder.getVirtualElementHolder();
     this.attributes = ImmutableMap.copyOf(builder.getAttributes());
     this.elements = ImmutableMap.copyOf(builder.getElements());
     this.adaptations = ImmutableMap.copyOf(builder.getAdaptations());
@@ -141,7 +140,7 @@ final class ElementTransform extends Transform {
     Boolean compositeContentRequired = null;
     ElementValidator compositeValidator = null;
     Object compositeProperties = null;
-    VirtualElement compositeVirtualElement = null;
+    VirtualElementHolder compositeVirtualElementHolder = null;
 
     Map<QName, AttributeInfo> compositeAttributes = Maps.newLinkedHashMap();
     Map<QName, ElementInfo> compositeElements = Maps.newLinkedHashMap();
@@ -160,8 +159,8 @@ final class ElementTransform extends Transform {
       if (part.properties != null) {
         compositeProperties = part.properties;
       }
-      if (part.virtualElement != null) {
-        compositeVirtualElement = part.virtualElement;
+      if (part.virtualElementHolder != null) {
+        compositeVirtualElementHolder = part.virtualElementHolder;
       }
       for (Map.Entry<QName, AttributeInfo> entry
           : part.attributes.entrySet()) {
@@ -195,7 +194,7 @@ final class ElementTransform extends Transform {
     this.contentRequired = compositeContentRequired;
     this.validator = compositeValidator;
     this.properties = compositeProperties;
-    this.virtualElement = compositeVirtualElement;
+    this.virtualElementHolder = compositeVirtualElementHolder;
     this.attributes = ImmutableMap.copyOf(compositeAttributes);
     this.elements = ImmutableMap.copyOf(compositeElements);
     this.adaptations = ImmutableMap.copyOf(compositeAdaptors);

@@ -15,8 +15,11 @@
 
 package com.google.api.gbase.client;
 
+import com.google.gdata.util.common.base.StringUtil;
+import com.google.common.collect.Multimap;
 import com.google.gdata.data.DateTime;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -25,53 +28,51 @@ import java.util.Collection;
  */
 class ConversionUtil {
 
-  /**
-   * Name of the element inside an attribute of type shipping
-   * that contains destination country information.
-   */
-  private static final String SHIPPING_COUNTRY_ELEMENT_NAME = "country";
+  private enum TaxField {
+    Country("country"),
+    Region("region"),
+    Rate("rate"),
+    TaxShip("tax_ship");
+    
+    private final String elemName;
+    private final String attrName;
+    
+    TaxField(String elemName) {
+      this.elemName = elemName;
+      this.attrName = elemName.replace('_', ' ');
+    }
+    
+    public String getElemName() {
+      return elemName;
+    }
+    
+    public String getAttrName() {
+      return attrName;
+    }
+  }
   
-  /**
-   * Name of the element inside an attribute of type shipping
-   * that contains region information.
-   */
-  private static final String SHIPPING_REGION_ELEMENT_NAME = "region";
-
-  /**
-   * Name of the element inside an attribute of type shipping
-   * that contains the price.
-   */
-  private static final String SHIPPING_PRICE_ELEMENT_NAME = "price";
-
-  /**
-   * Name of the element inside an attribute of type shipping
-   * that contains the shipping service name (shipping method).
-   */
-  private static final String SHIPPING_SERVICE_ELEMENT_NAME = "service";
-  
-  /**
-   * Name of the element inside an attribute of type tax
-   * that contains destination country information.
-   */
-  private static final String TAX_COUNTRY_ELEMENT_NAME = "country";
-
-  /**
-   * Name of the element inside an attribute of type tax
-   * that contains region information.
-   */
-  private static final String TAX_REGION_ELEMENT_NAME = "region";
-  
-  /**
-   * Name of the element inside an attribute of type tax
-   * that contains the tax rate information.
-   */
-  private static final String TAX_RATE_ELEMENT_NAME = "rate";
-  
-  /**
-   * Name of the element inside an attribute of type tax
-   * that contains the taxShip information.
-   */
-  private static final String TAX_TAX_SHIP_ELEMENT_NAME = "tax_ship";
+  private enum ShippingField {
+    Country("country"),
+    Region("region"),
+    Price("price"),
+    Service("service");
+    
+    private final String elemName;
+    private final String attrName;
+    
+    ShippingField(String elemName) {
+      this.elemName = elemName;
+      this.attrName = elemName.replace('_', ' ');
+    }
+    
+    public String getElemName() {
+      return elemName;
+    }
+    
+    public String getAttrName() {
+      return attrName;
+    }
+  }
   
   /**
    * Name of the element inside an attribute of type location
@@ -215,6 +216,40 @@ class ConversionUtil {
   }
 
   /**
+   * Extracts a {@link Group} object from the value of a
+   * {@link com.google.api.gbase.client.GoogleBaseAttribute}.
+   *
+   * @param attribute
+   */
+  public static Group extractGroup(GoogleBaseAttribute attribute) {
+    return new Group(attribute.getSubAttributes());
+  }
+  
+  /**
+   * Creates a {@link GoogleBaseAttribute} of type
+   * {@link GoogleBaseAttributeType#GROUP} and initializes it using the
+   * current state of the object. Sub-attributes of group with type
+   * GROUP or GROUP's derived types are ignored.
+   * 
+   * @param name attribute name
+   * @param group attribute value
+   * @return a new {@link com.google.api.gbase.client.GoogleBaseAttribute}
+   */
+  public static GoogleBaseAttribute createAttribute(String name, Group group) {
+    GoogleBaseAttribute attribute = new GoogleBaseAttribute(name, GoogleBaseAttributeType.GROUP);
+    Multimap<String, GoogleBaseAttribute> subAttributes = group.getAllSubAttributes();
+    for (GoogleBaseAttribute attr : subAttributes.values()) {
+      GoogleBaseAttributeType type = attr.getType();
+      if (!GoogleBaseAttributeType.GROUP.equals(type)
+          && !GoogleBaseAttributeType.GROUP.equals(type.getSupertype())
+          && (attr.hasValue() || attr.hasSubElements())) {
+        attribute.addSubAttribute(attr);
+      }
+    }
+    return attribute;
+  }
+  
+  /**
    * Extracts a {@link Shipping} object from the value of a
    * {@link com.google.api.gbase.client.GoogleBaseAttribute}.
    *
@@ -223,10 +258,51 @@ class ConversionUtil {
    *    because the price is missing or not a number.
    */
   public static Shipping extractShipping(GoogleBaseAttribute attribute) {
-    String country = attribute.getSubElementValue(SHIPPING_COUNTRY_ELEMENT_NAME);
-    Collection<String> regions = attribute.getSubElementValues(SHIPPING_REGION_ELEMENT_NAME);
-    String price = attribute.getSubElementValue(SHIPPING_PRICE_ELEMENT_NAME);
-    String service = attribute.getSubElementValue(SHIPPING_SERVICE_ELEMENT_NAME);
+    if (attribute.hasSubAttributes()) {
+      return extractShippingFromAttributes(attribute);
+    } else {
+      return extractShippingFromElements(attribute);
+    }
+  }
+  
+  private static Shipping extractShippingFromAttributes(GoogleBaseAttribute attribute) {
+    NumberUnit<Float> priceUnit = null;
+    String country = null;
+    Collection<String> regions = new ArrayList<String>();;
+    String service = null;
+    for (GoogleBaseAttribute attr : attribute.getSubAttributes()) {
+      String name = attr.getName();
+      if (ShippingField.Country.getAttrName().equals(name)) {
+        country = attr.getValueAsString();
+      } else if (ShippingField.Region.getAttrName().equals(name)) {
+        regions.add(attr.getValueAsString());
+      } else if (ShippingField.Price.getAttrName().equals(name)) {
+        String price = attr.getValueAsString();
+        try {
+          priceUnit = toFloatUnit(price);
+        } catch (NumberFormatException e) {
+          priceUnit = new NumberUnit<Float>(Float.parseFloat(price), null);
+        }
+      } else if (ShippingField.Service.getAttrName().equals(name)) {
+        service = attr.getValueAsString();
+      } else {
+        throw new IllegalArgumentException("Sub-attribute " + name 
+            + " is not supported in Shipping.");
+      } 
+    }
+    if (priceUnit == null) {
+      throw new NumberFormatException(
+          "missing 'price' element in shipping attribute: " + attribute);
+    }
+    return new Shipping(country, regions, service, priceUnit.getValue(),
+        priceUnit.getUnit());
+  }
+  
+  private static Shipping extractShippingFromElements(GoogleBaseAttribute attribute) {
+    String country = attribute.getSubElementValue(ShippingField.Country.getElemName());
+    Collection<String> regions = attribute.getSubElementValues(ShippingField.Region.getElemName());
+    String price = attribute.getSubElementValue(ShippingField.Price.getElemName());
+    String service = attribute.getSubElementValue(ShippingField.Service.getElemName());
     if (price == null) {
       throw new NumberFormatException(
           "missing 'price' element in shipping attribute: " + attribute);
@@ -255,20 +331,28 @@ class ConversionUtil {
         new GoogleBaseAttribute(name, GoogleBaseAttributeType.SHIPPING);
 
     if(shipping.getCountry() != null) {
-      attribute.setSubElement(SHIPPING_COUNTRY_ELEMENT_NAME,shipping.getCountry());
+      GoogleBaseAttribute countryAttr = new GoogleBaseAttribute(
+          ShippingField.Country.getAttrName(), null, shipping.getCountry());
+      attribute.addSubAttribute(countryAttr);
     }
     for (String region : shipping.getRegions()) {
-      attribute.appendSubElement(SHIPPING_REGION_ELEMENT_NAME, region);
+      GoogleBaseAttribute regionAttr = new GoogleBaseAttribute(
+          ShippingField.Region.getAttrName(), null, region);
+      attribute.addSubAttribute(regionAttr);
     }
     if (shipping.getService() != null) {
-      attribute.setSubElement(SHIPPING_SERVICE_ELEMENT_NAME,shipping.getService());
+      GoogleBaseAttribute serviceAttr = new GoogleBaseAttribute(
+          ShippingField.Service.getAttrName(), null, shipping.getService());
+      attribute.addSubAttribute(serviceAttr);
     }
 
     String priceWithUnit = Float.toString(shipping.getPrice());
     if (shipping.getCurrency() != null) {
       priceWithUnit += " " + shipping.getCurrency();
     }
-    attribute.setSubElement(SHIPPING_PRICE_ELEMENT_NAME, priceWithUnit);
+    GoogleBaseAttribute priceAttr = new GoogleBaseAttribute(ShippingField.Price.getAttrName(),
+        null, priceWithUnit);
+    attribute.addSubAttribute(priceAttr);
     return attribute;
   }
   
@@ -281,15 +365,53 @@ class ConversionUtil {
    *   because the rate is missing or not a number.
    */
   public static Tax extractTax(GoogleBaseAttribute attribute) {
-    String country = attribute.getSubElementValue(TAX_COUNTRY_ELEMENT_NAME);
-    Collection<String> regions = attribute.getSubElementValues(TAX_REGION_ELEMENT_NAME);
-    String rateString = attribute.getSubElementValue(TAX_RATE_ELEMENT_NAME);
+    if (attribute.hasSubAttributes()) {
+      return extractTaxFromAttributes(attribute);
+    } else {
+      return extractTaxFromElements(attribute);
+    }
+  }
+  
+  private static Tax extractTaxFromAttributes(GoogleBaseAttribute attribute) {
+    String rateString = null;
+    String country = null;
+    Collection<String> regions = new ArrayList<String>();
+    Boolean taxShip = null;
+    for (GoogleBaseAttribute attr : attribute.getSubAttributes()) {
+      String name = attr.getName();
+      if (TaxField.Country.getAttrName().equals(name)) {
+        country = attr.getValueAsString();
+      } else if (TaxField.Region.getAttrName().equals(name)) {
+        regions.add(attr.getValueAsString());
+      } else if (TaxField.Rate.getAttrName().equals(name)) {
+        rateString = attr.getValueAsString();
+      } else if (TaxField.TaxShip.getAttrName().equals(name)) {
+        String taxShipString = attr.getValueAsString();
+        if (taxShipString != null) {
+          taxShip = Boolean.valueOf(taxShipString);
+        }
+      } else {
+        throw new IllegalArgumentException("Sub-attribute " + name + " is not supported in Tax.");
+      }
+    }
+    if (StringUtil.isEmpty(rateString)) {
+      throw new NumberFormatException(
+          "missing 'rate' element in tax attribute: " + attribute);
+    }
+    float rate = Float.valueOf(rateString.trim()).floatValue();
+    return new Tax(country, regions, rate, taxShip);
+  }
+  
+  private static Tax extractTaxFromElements(GoogleBaseAttribute attribute) {
+    String country = attribute.getSubElementValue(TaxField.Country.getElemName());
+    Collection<String> regions = attribute.getSubElementValues(TaxField.Region.getElemName());
+    String rateString = attribute.getSubElementValue(TaxField.Rate.getElemName());
     if (rateString == null) {
       throw new NumberFormatException(
           "missing 'rate' element in tax attribute: " + attribute);
     }
     float rate = Float.valueOf(rateString.trim()).floatValue();
-    String taxShipString = attribute.getSubElementValue(TAX_TAX_SHIP_ELEMENT_NAME);
+    String taxShipString = attribute.getSubElementValue(TaxField.TaxShip.getElemName());
     Boolean taxShip = null;
     if (taxShipString != null) {
       taxShip = Boolean.valueOf(taxShipString);
@@ -307,16 +429,22 @@ class ConversionUtil {
    */
   public static GoogleBaseAttribute createAttribute(String name, Tax tax) {
     GoogleBaseAttribute attribute = new GoogleBaseAttribute(name, GoogleBaseAttributeType.TAX);
+    GoogleBaseAttribute attr = null;
     if (tax.getCountry() != null) {
-      attribute.setSubElement(TAX_COUNTRY_ELEMENT_NAME, tax.getCountry());
+      attr = new GoogleBaseAttribute(TaxField.Country.getAttrName(), null, tax.getCountry());
+      attribute.addSubAttribute(attr);
     }
     for (String region : tax.getRegions()) {
-      attribute.appendSubElement(TAX_REGION_ELEMENT_NAME, region);
+      attr = new GoogleBaseAttribute(TaxField.Region.getAttrName(), null, region);
+      attribute.addSubAttribute(attr);
     }
-    attribute.setSubElement(TAX_RATE_ELEMENT_NAME, Float.toString(tax.getRate()));
-    Boolean debug = tax.getTaxShip();
+    attr = new GoogleBaseAttribute(TaxField.Rate.getAttrName(), null, 
+        Float.toString(tax.getRate()));
+    attribute.addSubAttribute(attr);
     if (tax.getTaxShip() != null) {
-      attribute.setSubElement(TAX_TAX_SHIP_ELEMENT_NAME, tax.getTaxShip() ? "true":"false");
+      attr = new GoogleBaseAttribute(TaxField.TaxShip.getAttrName(), null, 
+          tax.getTaxShip() ? "true":"false");
+      attribute.addSubAttribute(attr);
     }
     return attribute;
   }

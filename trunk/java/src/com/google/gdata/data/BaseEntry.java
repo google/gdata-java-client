@@ -1106,10 +1106,19 @@ public abstract class BaseEntry<E extends BaseEntry>
           return link.new AtomHandler(extProfile);
 
         } else if (localName.equals("author")) {
-
-          Person author = new Person();
+          // check for an author extension
+          Person author;
+          ExtensionDescription extDescription = getExtensionDescription(
+              extProfile, extendedClass, namespace, localName);
+          if (extDescription != null
+              && extDescription.getExtensionClass() != null) {
+            author = (Person) createExtensionInstance(
+                extDescription.getExtensionClass());
+          } else {
+            author = new Person();
+          }
           state.authors.add(author);
-          return author.new AtomHandler(extProfile);
+          return author.getHandler(extProfile, namespace, localName, attrs);
 
         } else if (localName.equals("contributor")) {
 

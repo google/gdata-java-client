@@ -22,6 +22,7 @@ import com.google.gdata.client.Service;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.contacts.ContactFeed;
 import com.google.gdata.data.contacts.ContactGroupFeed;
+import com.google.gdata.data.contacts.ProfileFeed;
 import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
 
@@ -62,13 +63,18 @@ public class ContactsService extends GoogleService {
     public static final Version V3 = new Version(ContactsService.class, "3.0",
         Service.Versions.V2);
 
+    /** Version 3 of the Contacts Data API. */
+    public static final Version V3_1 = new Version(ContactsService.class, "3.1",
+        Service.Versions.V2);
+
+    private Versions() {}
   }
 
   /**
    * Default GData version used by the Google Contacts service.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(ContactsService.class, Versions.V2);
+      Service.initServiceVersion(ContactsService.class, Versions.V3);
 
   /**
    * Constructs an instance connecting to the Google Contacts service for an
@@ -143,6 +149,7 @@ public class ContactsService extends GoogleService {
   private void declareExtensions() {
     new ContactFeed().declareExtensions(extProfile);
     new ContactGroupFeed().declareExtensions(extProfile);
+    new ProfileFeed().declareExtensions(extProfile);
     BatchUtils.declareExtensions(extProfile);
   }
 

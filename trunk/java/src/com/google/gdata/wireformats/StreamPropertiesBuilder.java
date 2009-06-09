@@ -18,8 +18,7 @@ package com.google.gdata.wireformats;
 
 import com.google.common.collect.Maps;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.model.MetadataContext;
-import com.google.gdata.model.MetadataRegistry;
+import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.util.ContentType;
 
 import java.util.Collection;
@@ -40,8 +39,7 @@ public abstract class StreamPropertiesBuilder
   protected AltRegistry altRegistry;
   protected ContentType contentType;
   protected ExtensionProfile extensionProfile;
-  protected MetadataRegistry metadataRegistry;
-  protected MetadataContext metadataContext;
+  protected ElementMetadata<?, ?> rootMetadata;
   protected final Map<String, String> queryMap;
 
   /**
@@ -61,7 +59,7 @@ public abstract class StreamPropertiesBuilder
     altRegistry = source.getAltRegistry();
     contentType = source.getContentType();
     extensionProfile = source.getExtensionProfile();
-    metadataContext = source.getMetadataContext();
+    rootMetadata = source.getRootMetadata();
     queryMap = Maps.newHashMap();
     for (String name : source.getQueryParameterNames()) {
       queryMap.put(name, source.getQueryParameter(name));
@@ -110,31 +108,6 @@ public abstract class StreamPropertiesBuilder
   }
 
   /**
-   * Sets the {@link MetadataRegistry} property that should be used for
-   * instances created by the builder.
-   *
-   * @param metadataRegistry to set in built instances.
-   * @return this builder (to enable initialization chaining).
-   */
-  public T setMetadataRegistry(MetadataRegistry metadataRegistry) {
-    this.metadataRegistry = metadataRegistry;
-    return thisInstance();
-  }
-
-  /**
-   * Sets the {@link MetadataContext} property that should be used for instances
-   * created by the builder.
-   *
-   * @param metadataContext to set in built instances.
-   * @return this builder (to enable initialization chaining).
-   */
-  public T setMetadataContext(
-      MetadataContext metadataContext) {
-    this.metadataContext = metadataContext;
-    return thisInstance();
-  }
-
-  /**
    * Sets the value of a query parameter in the query {@link Map} that should be
    * used for instances created by the builder.   Any existing value with the
    * same name will be overwritten.
@@ -161,19 +134,31 @@ public abstract class StreamPropertiesBuilder
     this.queryMap.putAll(queryMap);
     return thisInstance();
   }
+  
+  /**
+   * Sets the {@link ElementMetadata} that should be used for instances created
+   * by the builder.
+   * 
+   * @param elementMetadata element metadata to set in built instances.
+   * @return this builder (to enable initialization chaining).
+   */
+  public T setElementMetadata(ElementMetadata<?, ?> elementMetadata) {
+    this.rootMetadata = elementMetadata;
+    return thisInstance();
+  }
 
   /**
    * The StreamPropertiesImpl class is a simple immutable value object that
    * implements the {@link StreamProperties} interface.
    */
-  protected static class StreamPropertiesImpl implements StreamProperties {
+  protected static class StreamPropertiesImpl 
+      implements StreamProperties {
 
     private final AltRegistry altRegistry;
     private final ContentType contentType;
     private final ExtensionProfile extensionProfile;
-    private final MetadataRegistry metadataRegistry;
-    private final MetadataContext metadataContext;
     private final Map<String, String> queryMap;
+    private final ElementMetadata<?, ?> elementMetadata;
 
     /**
      * Constructs a new StreamPropertiesImpl instance from the values contained
@@ -185,9 +170,8 @@ public abstract class StreamPropertiesBuilder
       this.altRegistry = builder.altRegistry;
       this.contentType = builder.contentType;
       this.extensionProfile = builder.extensionProfile;
-      this.metadataRegistry = builder.metadataRegistry;
-      this.metadataContext = builder.metadataContext;
       this.queryMap = builder.queryMap;
+      this.elementMetadata = builder.rootMetadata;
     }
 
     public AltRegistry getAltRegistry() {
@@ -202,20 +186,16 @@ public abstract class StreamPropertiesBuilder
       return extensionProfile;
     }
 
-    public MetadataRegistry getMetadataRegistry() {
-      return metadataRegistry;
-    }
-
-    public MetadataContext getMetadataContext() {
-      return metadataContext;
-    }
-
     public Collection<String> getQueryParameterNames() {
       return queryMap.keySet();
     }
 
     public String getQueryParameter(String name) {
       return queryMap.get(name);
+    }
+
+    public ElementMetadata<?, ?> getRootMetadata() {
+      return elementMetadata;
     }
   }
 }

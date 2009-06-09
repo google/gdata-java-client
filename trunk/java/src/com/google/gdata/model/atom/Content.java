@@ -146,7 +146,7 @@ public class Content extends Element implements IContent {
       return this;
     }
 
-    URI src = getAttributeValue(SRC);
+    URI src = getSrc();
     if (src == null) {
       String type = getAttributeValue(TYPE);
       if (type == null || type.equals("text") || type.equals("html") ||

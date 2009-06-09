@@ -23,6 +23,7 @@ import com.google.gdata.util.ParseException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -212,6 +213,38 @@ public abstract class ObjectConverter<T> {
             CoreErrorDomain.ERR.invalidBooleanAttribute.withInternalReason(
                 "Invalid boolean value: '" + value + "'"));
       }
+    }
+  }
+
+  /**
+   * Object converter for pseudo-enum types backed by a map.
+   */
+  public static class MappedEnumConverter<T> extends ObjectConverter<T> {
+    private final Map<String, T> map;
+
+    /**
+     * Creates a converter and links it with a map.
+     *
+     * @param map a map that converts string values into values of
+     *        the correct type. The caller must make sure the map can
+     *        be accessed concurrently before adding the resulting
+     *        converter using {@link #addConverter}.
+     */
+    public MappedEnumConverter(Map<String, T> map) {
+      this.map = map;
+    }
+
+    @Override
+    public T convertValue(String value, Class<? extends T> datatype) 
+        throws ParseException {
+      T converted = map.get(value);
+      if (converted == null) {
+        throw new ParseException(
+            CoreErrorDomain.ERR.invalidEnumValue.withInternalReason(
+                "No such pseudo enum value of type " + datatype + " named "
+                + value));
+      }
+      return converted;
     }
   }
 }

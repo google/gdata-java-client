@@ -138,6 +138,19 @@ public final class MetadataRegistry {
   }
 
   /**
+   * Provides direct access to the transform for other classes in this package,
+   * to avoid circular dependencies causing infinite loops.  This allows
+   * interested classes to access the metadata information for a key without
+   * fully binding it.
+   */
+  ElementTransform getTransform(ElementKey<?, ?> parent,
+      ElementKey<?, ?> child, MetadataContext context) {
+    ElementMetadataRegistry childRegistry = getElement(child);
+    return (childRegistry == null) ? null
+        : childRegistry.getTransform(parent, child, context);
+  }
+  
+  /**
    * Gets an element from the element map by first finding the appropriate
    * root key and then indexing into the elements based on that key.
    */

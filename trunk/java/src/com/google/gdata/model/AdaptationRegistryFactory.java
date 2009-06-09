@@ -70,14 +70,15 @@ class AdaptationRegistryFactory {
 
     for (ElementKey<?, ?> adaptorKey : transform.adaptations.values()) {
 
-      // We bind the adaptor so we can get access to its attribute keys.
-      ElementMetadata<?, ?> bound = registry.bind(adaptorKey);
+      // We get the adaptor transform so we can access its attributes.
+      ElementTransform adaptor = registry.getTransform(null, adaptorKey, null);
 
-      if (bound == null) {
+      if (adaptor == null) {
         throw new IllegalStateException("Invalid adaptor key " + adaptorKey);
       }
 
-      for (AttributeKey<?> key : bound.getAttributes()) {
+      for (AttributeInfo info : adaptor.attributes.values()) {
+        AttributeKey<?> key = info.key;
         QName id = key.getId();
 
         // Skip attributes contained in the base transform.
@@ -141,11 +142,11 @@ class AdaptationRegistryFactory {
 
     for (ElementKey<?, ?> adaptorKey : transform.adaptations.values()) {
 
-      // We fully bind the adaptor so we can do the correct checks for
-      // compatibility and so we can access its child keys.
-      ElementMetadata<?, ?> bound = registry.bind(adaptorKey);
+      // We get the transform for the adaptor so we can check its element keys.
+      ElementTransform adaptor = registry.getTransform(null, adaptorKey, null);
 
-      for (ElementKey<?, ?> key : bound.getElements()) {
+      for (ElementInfo info : adaptor.elements.values()) {
+        ElementKey<?, ?> key = info.key;
         QName id = key.getId();
 
         // Skip child elements contained in the base transform.

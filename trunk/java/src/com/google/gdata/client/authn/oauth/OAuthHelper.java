@@ -261,6 +261,16 @@ public class OAuthHelper {
       oauthParameters.assertOAuthConsumerSecretExists();
     }
 
+    // If the callback is present in this step, assume the user is using
+    // OAuth v1.0a, and include the url in the base parameters.
+    boolean oauthCallbackExists = false;
+    if (oauthParameters.checkOAuthCallbackExists()) {
+      String callback = oauthParameters.getOAuthCallback();
+      oauthParameters.addCustomBaseParameter(OAuthParameters.OAUTH_CALLBACK_KEY,
+          callback);
+      oauthCallbackExists = true;
+    }
+
     // Generate a signed URL that allows the consumer to retrieve the
     // unauthorized request token.
     URL url = getOAuthUrl(requestTokenUrl, "GET", oauthParameters);
@@ -273,6 +283,14 @@ public class OAuthHelper {
         queryString.get(OAuthParameters.OAUTH_TOKEN_KEY));
     oauthParameters.setOAuthTokenSecret(
         queryString.get(OAuthParameters.OAUTH_TOKEN_SECRET_KEY));
+
+    if (oauthCallbackExists) {
+      // OAuth callback can be completely removed from parameters here,
+      // but leave it in for now in order to be compatible with both the
+      // old and new OAuth protocol.
+      oauthParameters.removeCustomBaseParameter(
+          OAuthParameters.OAUTH_CALLBACK_KEY);
+    }
 
     // clear the request-specific parameters set in getOAuthUrl(), such as
     // nonce, timestamp and signature, which are only needed for a single
@@ -385,6 +403,10 @@ public class OAuthHelper {
     if (params.get(OAuthParameters.OAUTH_TOKEN_SECRET_KEY) != null) {
       oauthParameters.setOAuthTokenSecret(
           params.get(OAuthParameters.OAUTH_TOKEN_SECRET_KEY));
+    }
+    if (params.get(OAuthParameters.OAUTH_VERIFIER_KEY) != null) {
+      oauthParameters.setOAuthVerifier(
+          params.get(OAuthParameters.OAUTH_VERIFIER_KEY));
     }
   }
 

@@ -147,7 +147,7 @@ public class GoogleBaseAttributesExtension implements Extension {
    * @see #setPriceUnits(String)
    */
   public static final String PRICE_UNITS_ATTRIBUTE = "price units";
-
+  
   /**
    * Attribute {@code <g:shipping>}.
    *
@@ -414,7 +414,7 @@ public class GoogleBaseAttributesExtension implements Extension {
   public String getPriceUnits() {
     return getTextAttribute(PRICE_UNITS_ATTRIBUTE);
   }
-
+  
   /** Adds shipping attribute. */
   public void addShipping(Shipping shipping) {
     addShippingAttribute(SHIPPING_ATTRIBUTE, shipping);
@@ -583,8 +583,9 @@ public class GoogleBaseAttributesExtension implements Extension {
 
   private boolean hasNameAndType(GoogleBaseAttribute attr, String name,
                                  GoogleBaseAttributeType type) {
+    GoogleBaseAttributeType subtype = attr.getAttributeId().getType();
     return name.equals(attr.getAttributeId().getName()) &&
-        (type == null || type.isSupertypeOf(attr.getAttributeId().getType()));
+        (type == null || subtype != null && type.isSupertypeOf(subtype));
   }
 
   /**
@@ -1256,6 +1257,52 @@ public class GoogleBaseAttributesExtension implements Extension {
         GoogleBaseAttributeType.BOOLEAN, Boolean.toString(value)));
   }
 
+  /** Adds group attribute. */
+  public void addGroupAttribute(String groupName, Group group) {
+    addAttribute(ConversionUtil.createAttribute(groupName, group));
+  }
+  
+  /**
+   * Gets the first value of a specific attribute, as a
+   * {@link com.google.api.gbase.client.Group}.
+   * 
+   * This method does not check the type of the attribute
+   * that's being queried, it just gets the value and try
+   * and convert it.
+   *
+   * @param name attribute name
+   * @return value of the attribute or null if no attribute
+   *   with this name was found on the list
+   */
+  public Group getGroupAttribute(String name) {
+    GoogleBaseAttribute value = getAttribute(name);
+    if (value == null) {
+      return null;
+    }
+    return ConversionUtil.extractGroup(value);
+  }
+
+  /**
+   * Gets all the values of a specific attribute, as a collection of
+   * {@link com.google.api.gbase.client.Group}s.
+   *
+   * This method does not check the type of the attribute
+   * that's being queried, it just gets the values and try
+   * and convert them.
+   *
+   * @param groupName the group name
+   * @return a list of Group, which might be empty but not null
+   */
+  public Collection<? extends Group> getGroupAttributes(String groupName) {
+    List<Group> retval = new ArrayList<Group>();
+    for (GoogleBaseAttribute attr: attributes) {
+      if (hasNameAndType(attr, groupName, GoogleBaseAttributeType.GROUP)) {
+        retval.add(ConversionUtil.extractGroup(attr));
+      }
+    }
+    return retval;
+  }
+  
   /**
    * Gets the first value of a specific attribute, as a
    * {@link com.google.api.gbase.client.Shipping}.
@@ -1568,19 +1615,23 @@ public class GoogleBaseAttributesExtension implements Extension {
   public void generate(XmlWriter xmlWriter, ExtensionProfile extensionProfile)
       throws IOException {
     for (GoogleBaseAttribute attribute : attributes) {
-      String elementName =
-          convertToElementName(attribute.getAttributeId().getName());
-      xmlWriter.startElement(GoogleBaseNamespaces.G,
-                             elementName,
-                             getXmlAttributes(attribute),
-                             null);
-      
-      generateValue(attribute, xmlWriter);
-      generateSubElements(attribute, xmlWriter);
-      generateAdjustments(attribute, xmlWriter);
-      
-      xmlWriter.endElement();
+      generateAttribute(attribute, xmlWriter);
     }
+  }
+  
+  private void generateAttribute(GoogleBaseAttribute attribute, XmlWriter xmlWriter) 
+      throws IOException {
+    String elementName = convertToElementName(attribute.getAttributeId().getName());
+    xmlWriter.startElement(GoogleBaseNamespaces.G,
+                           elementName,
+                           getXmlAttributes(attribute),
+                           null);
+    
+    generateValue(attribute, xmlWriter);
+    generateSubElements(attribute, xmlWriter);
+    generateAdjustments(attribute, xmlWriter);
+    generateSubAttributes(attribute, xmlWriter);
+    xmlWriter.endElement();
   }
 
   /**
@@ -1611,6 +1662,22 @@ public class GoogleBaseAttributesExtension implements Extension {
         for (String element : attribute.getSubElementValues(name)) {
           writeXmlNameValue(xmlWriter, GoogleBaseNamespaces.G, name, element);
         }
+      }
+    }
+  }
+  
+  /**
+   * Generates XML code for all sub-attributes of the {@code attribute}.
+   * 
+   * @param attribute
+   * @param xmlWriter
+   * @throws IOException
+   */
+  private void generateSubAttributes(GoogleBaseAttribute attribute, 
+      XmlWriter xmlWriter) throws IOException {
+    if (attribute.hasSubAttributes()) {
+      for (GoogleBaseAttribute element : attribute.getSubAttributes()) {
+        generateAttribute(element, xmlWriter);
       }
     }
   }
@@ -1818,6 +1885,10 @@ public class GoogleBaseAttributesExtension implements Extension {
     public XmlParser.ElementHandler getChildHandler(final String uri, 
                                                     final String localName, 
                                                     Attributes attrs) {
+      GoogleBaseAttributeType type = this.attribute.getType();
+      if (type != null && GoogleBaseAttributeType.GROUP.isSupertypeOf(type)) {
+        return new GroupSubAttrHandler(localName, attrs);
+      }
       return new XmlParser.ElementHandler() {
         private int width = -1;
         private int height = -1;
@@ -1865,4 +1936,49 @@ public class GoogleBaseAttributesExtension implements Extension {
       };        
     }
   }
+  
+  /**
+   * Private handler for one XML tag of type "group" and creates and adds
+   * an {@link com.google.api.gbase.client.GoogleBaseAttribute} into the list.
+   */
+  private class GroupSubAttrHandler extends XmlParser.ElementHandler {
+    
+    private final GoogleBaseAttribute attribute;
+    
+    GroupSubAttrHandler(String localName, Attributes xmlAttributes) {
+      String attributeName = convertToAttributeName(localName);
+      this.attribute = createExtensionAttribute(attributeName, xmlAttributes);
+      attributes.get(attributes.size() - 1).addSubAttribute(attribute);
+    }
+    
+    @Override
+    public void processEndElement() {
+      if (super.value != null) {
+        attribute.setValue(super.value);
+      }
+    }
+
+    @Override
+    public XmlParser.ElementHandler getChildHandler(final String uri, 
+                                                    final String localName, 
+                                                    Attributes attrs) {
+      return new XmlParser.ElementHandler() {
+       
+        @Override
+        public void processEndElement() {
+          if (GoogleBaseNamespaces.GM_URI.equals(uri)) {
+            if (GM_ADJUSTED_VALUE_ATTRIBUTE.equals(localName)) {
+              attribute.getAdjustments().setValue(super.value);
+            } else if (GM_ADJUSTED_NAME_ATTRIBUTE.equals(localName)) {
+              attribute.getAdjustments().setName(super.value);              
+            }
+            // if the uri is gm but the name is not recognized, we ignore it
+          } else {
+            // only non-gm uris are considered sub-elements
+            attribute.appendSubElement(localName, super.value);
+          }
+        }
+      };        
+    }
+  }  
 }

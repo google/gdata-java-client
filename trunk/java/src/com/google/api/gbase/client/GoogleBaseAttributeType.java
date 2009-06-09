@@ -103,6 +103,11 @@ public class GoogleBaseAttributeType {
   /** Either true or false. */
   public static final GoogleBaseAttributeType BOOLEAN =
       createAndRegister("boolean");
+  
+  /**
+   * Group of related attributes.
+   */
+  public static final GoogleBaseAttributeType GROUP = createAndRegister("group");
 
   /**
    * Shipping information.
@@ -114,7 +119,7 @@ public class GoogleBaseAttributeType {
    * &lt;service&gt;Deutsche Post&lt;/service&gt;
    * </pre>
    */
-  public static final GoogleBaseAttributeType SHIPPING = createAndRegister("shipping");
+  public static final GoogleBaseAttributeType SHIPPING = createAndRegister(GROUP, "shipping");
 
   /**
    * Tax information.
@@ -126,7 +131,7 @@ public class GoogleBaseAttributeType {
    * &lt;tax_ship&gt;true&lt;/tax_ship&gt;
    * </pre>
    */
-  public static final GoogleBaseAttributeType TAX = createAndRegister("tax");
+  public static final GoogleBaseAttributeType TAX = createAndRegister(GROUP, "tax");
 
   /**
    * A location, a string describing the address.

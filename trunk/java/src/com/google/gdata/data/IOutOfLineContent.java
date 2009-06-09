@@ -30,4 +30,10 @@ public interface IOutOfLineContent extends IContent {
 
   /** Returns the external URI. */
   public String getUri();
+
+  /**
+   * Returns the HTTP etag for the referenced content or {@code null} if
+   * none.
+   */
+  public String getEtag();
 }

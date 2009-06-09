@@ -113,7 +113,6 @@ public class XmlBlob extends Element {
     // context and registry should come from the other content too.
     MetadataRegistry registry = DefaultRegistry.get();
     OutputProperties outProps = new OutputPropertiesBuilder()
-        .setMetadataRegistry(registry)
         .build();
     WireFormatGenerator generator = WireFormat.XML.createGenerator(
         outProps, sw, Charsets.UTF_8, false);
@@ -137,7 +136,6 @@ public class XmlBlob extends Element {
 
     MetadataRegistry registry = DefaultRegistry.get();
     InputProperties inProps = new InputPropertiesBuilder()
-        .setMetadataRegistry(registry)
         .build();
 
     WireFormatParser parser = WireFormat.XML.createParser(

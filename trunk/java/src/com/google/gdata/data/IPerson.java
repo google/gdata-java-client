@@ -26,6 +26,12 @@ public interface IPerson {
   /** Human-readable name. */
   public String getName();
 
+  /** Language of name */
+  public String getNameLang();
+
   /** Email address. */
   public String getEmail();
+
+  /** Uri associated with the person */
+  public String getUri();
 }

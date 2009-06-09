@@ -12,11 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.google.gdata.wireformats;
 
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.MetadataContext;
-import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.util.ContentType;
 
 import java.util.Collection;
@@ -55,23 +57,16 @@ public interface StreamProperties {
   public ExtensionProfile getExtensionProfile();
 
   /**
-   * Returns the {@link MetadataRegistry} associated with the stream.
-   *
-   * @return the metadata registry.
-   */
-  public MetadataRegistry getMetadataRegistry();
-
-  /**
-   * Returns the metadata context associated with the stream.
-   *
-   * @return metadata context or {@code null} for requests that use the data
-   * model classes in com.google.gdata.model.
-   */
-  public MetadataContext getMetadataContext();
-
-  /**
    * Returns the {@link AltRegistry} that contains the set of supported
    * representations and the parser/generator configuration for them.
    */
   public AltRegistry getAltRegistry();
+  
+  /**
+   * Returns the {@link ElementMetadata} for the root object that is being
+   * read from or written to the stream.  This metadata will already be
+   * bound to the appropriate {@link MetadataContext} for the currently
+   * executing request.
+   */
+  public ElementMetadata<?, ?> getRootMetadata();
 }

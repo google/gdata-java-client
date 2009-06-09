@@ -110,9 +110,8 @@ public class XmlHandler extends XmlParser.ElementHandler {
       List<XmlNamespace> namespaces)
       throws ParseException, IOException {
 
-    Element childElement = createChildElement(qName);
-    ElementMetadata<?, ?> childMeta = (metadata == null) ? null
-        : metadata.bindElement(childElement.getElementKey());
+    ElementMetadata<?, ?> childMeta = findMetadata(qName);
+    Element childElement = createChildElement(qName, childMeta);
 
     // "SET" cardinality elements cannot be added to the parent element until
     // fully initialized, otherwise we'll have duplicates.  So we track the
@@ -136,25 +135,40 @@ public class XmlHandler extends XmlParser.ElementHandler {
   }
 
   /**
-   * Create a child element for the given qualified name.
+   * Returns the appropriate metadata to use for the given qualified name.
    */
-  protected Element createChildElement(QName qName) throws ParseException {
-    Element childElement;
+  protected ElementMetadata<?, ?> findMetadata(QName qName) {
 
-    ElementKey<?, ?> childKey = (metadata == null) ? null
-        : metadata.findElement(qName);
-    if (childKey == null) {
-      // qualified name has not been declared (foreign xml)
-      childElement = new Element(qName);
-    } else {
-      try {
-        childElement = Element.createElement(childKey);
-      } catch (ContentCreationException e) {
-        // to ElementHandler interface?
-        throw new ParseException(e);
-      }
+    if (metadata == null) {
+      return null;
     }
-    return childElement;
+
+    ElementKey<?, ?> childKey = metadata.findElement(qName);
+    if (childKey == null) {
+      return null;
+    }
+
+    ElementMetadata<?, ?> childMeta = metadata.bindElement(childKey);
+
+    return childMeta;
+  }
+
+  /**
+   * Create a child element for the given name and metadata.
+   */
+  protected Element createChildElement(QName qName,
+      ElementMetadata<?, ?> metadata) throws ParseException {
+
+    if (metadata == null) {
+      return new Element(qName);
+    }
+
+    try {
+      return metadata.createElement();
+    } catch (ContentCreationException e) {
+      // to ElementHandler interface?
+      throw new ParseException(e);
+    }
   }
 
   @Override

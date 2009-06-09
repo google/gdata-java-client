@@ -48,6 +48,6 @@ public class XmlWireFormat extends WireFormat {
   @Override
   public WireFormatParser createParser(InputProperties inProps,
       XmlEventSource source) {
-    return new EventSourceParser(inProps, source);
+    return new XmlParser(inProps, source);
   }
 }

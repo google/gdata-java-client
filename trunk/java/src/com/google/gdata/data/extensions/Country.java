@@ -37,8 +37,8 @@ public class Country extends AbstractExtension {
   /** XML element name */
   static final String XML_NAME = "country";
 
-  /** XML "gd:code" attribute name */
-  private static final String CODE = "gd:code";
+  /** XML "code" attribute name */
+  private static final String CODE = "code";
 
   /** The 3166-1 alpha-2 country code */
   private String code = null;
@@ -152,7 +152,7 @@ public class Country extends AbstractExtension {
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException
       {
-    code = helper.consume("code", false);
+    code = helper.consume(CODE, false);
     value = helper.consume(null, false);
   }
 

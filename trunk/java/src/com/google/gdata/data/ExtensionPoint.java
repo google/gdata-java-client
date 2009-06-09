@@ -527,6 +527,51 @@ public class ExtensionPoint extends AbstractExtension {
     }
   }
 
+  /**
+   * Returns the extension description for the namespace URI and local name for
+   * the XML element based on the extension point in the extension profile.
+   *
+   * @param extProfile   extension profile
+   * @param extPoint     extension point to use from the extension profile
+   * @param namespaceUri namespace URI of the XML element
+   * @param localName    name of the XML element
+   */
+  protected ExtensionDescription getExtensionDescription(
+      ExtensionProfile extProfile, Class<? extends ExtensionPoint> extPoint,
+      String namespaceUri, String localName) {
+    // find the extension manifest
+    ExtensionManifest profManifest = getManifest(extProfile, extPoint);
+    if (profManifest == null) {
+      return null;
+    }
+    // look for an explicit match of the namespace URI and local name
+    ExtensionDescription extDescription =
+        profManifest.supportedExtensions.get(Pair.of(namespaceUri, localName));
+    // look for a match of the namespace URI with a wildcard local name 
+    if (extDescription == null) {
+      extDescription =
+          profManifest.supportedExtensions.get(Pair.of(namespaceUri, "*"));
+    }
+    return extDescription;
+  }
+
+  /**
+   * Creates an instance of the given extension class.
+   *
+   * @throws ParseException if unable to create an instance of the extension
+   */
+  protected static <T extends Extension> T createExtensionInstance(
+      Class<T> extClass) throws ParseException {
+    try {
+      return extClass.newInstance();
+    } catch (InstantiationException e) {
+      throw new ParseException(
+          CoreErrorDomain.ERR.cantCreateExtension, e);
+    } catch (IllegalAccessException e) {
+      throw new ParseException(
+          CoreErrorDomain.ERR.cantCreateExtension, e);
+    }
+  }
 
   /**
    * XML parser callback for extended properties. Implementations in extended
@@ -559,27 +604,11 @@ public class ExtensionPoint extends AbstractExtension {
       Class<? extends ExtensionPoint> extPoint, String namespaceUri,
       String localName, Attributes attrs) throws ParseException, IOException {
 
-    ExtensionManifest profManifest = getManifest(extProfile, extPoint);
-    if (profManifest == null) {
+    ExtensionDescription extDescription = getExtensionDescription(extProfile,
+        extPoint, namespaceUri, localName);
+    if (extDescription == null) {
       return null;
     }
-
-    // Look for an explicit match, followed by a wildcarded namespace match.
-    ExtensionDescription extDescription =
-        profManifest.supportedExtensions.get(
-            new Pair<String, String>(namespaceUri, localName));
-
-    if (extDescription == null) {
-
-      extDescription =
-          profManifest.supportedExtensions.get(new Pair<String, String>(
-              namespaceUri, "*"));
-
-      if (extDescription == null) {
-        return null;
-      }
-    }
-
     Class<? extends Extension> extClass = extDescription.getExtensionClass();
     if (extClass == null) {
       return null;
@@ -594,16 +623,7 @@ public class ExtensionPoint extends AbstractExtension {
 
     boolean needsAdd = true;
     if (extension == null) {
-      // Create an extension instance.
-      try {
-        extension = extClass.newInstance();
-      } catch (InstantiationException e) {
-        throw new ParseException(
-            CoreErrorDomain.ERR.cantCreateExtension, e);
-      } catch (IllegalAccessException e) {
-        throw new ParseException(
-            CoreErrorDomain.ERR.cantCreateExtension, e);
-      }
+      extension = createExtensionInstance(extClass);
     } else {
       needsAdd = false;
     }

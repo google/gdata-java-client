@@ -17,7 +17,8 @@
 package com.google.gdata.model;
 
 import com.google.gdata.model.ElementMetadata.Cardinality;
-import com.google.gdata.model.ElementMetadata.VirtualElement;
+import com.google.gdata.model.ElementMetadata.SingleVirtualElement;
+import com.google.gdata.model.ElementMetadata.MultipleVirtualElement;
 import com.google.gdata.model.Metadata.VirtualValue;
 
 /**
@@ -153,11 +154,19 @@ public interface ElementCreator {
   ElementCreator setVirtualValue(VirtualValue virtualValue);
 
   /**
-   * Sets this metadata as representing a virtual element.  A virtual element
-   * is an element that only exists in the metadata, and is used during parsing
-   * and generation to map to the base DOM.
+   * Sets this metadata as representing a virtual element with single
+   * cardinality.  A virtual element is an element that only exists in the
+   * metadata, and is used during parsing and generation to map to the base DOM.
    */
-  ElementCreator setVirtualElement(VirtualElement virtualElement);
+  ElementCreator setSingleVirtualElement(SingleVirtualElement virtualElement);
+
+  /**
+   * Sets this metadata as representing a virtual element with multiple
+   * cardinality.  A virtual element is an element that only exists in the
+   * metadata, and is used during parsing and generation to map to the base DOM.
+   */
+  ElementCreator setMultipleVirtualElement(
+      MultipleVirtualElement virtualElement);
 
   /**
    * Sets the location of the undeclared attributes. By default, undeclared

@@ -1,5 +1,15 @@
 Google Data API - Release Notes
 
+Notes for v1.33.0
+-----------------
+Jun 8, 2009
+o  Update Google Contacts Data API to support version 3 of Contacts API.
+   Version 3.0 brings greatly expanded data schema, including support for
+   structured name and postal address.
+o  Added support for generic group attributes in Google Base Data API.
+o  Updated OAuth implementation to support changes related to OAuth 1.0a
+   specification.
+
 Notes for v1.32.1
 -----------------
 May 27, 2009

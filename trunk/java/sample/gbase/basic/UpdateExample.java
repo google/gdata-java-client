@@ -1,16 +1,16 @@
-/* Copyright (c) 2006 Google Inc.                                                                                                                                                                                
- *                                                                                                                                                                                                               
- * Licensed under the Apache License, Version 2.0 (the "License");                                                                                                                                               
- * you may not use this file except in compliance with the License.                                                                                                                                              
- * You may obtain a copy of the License at                                                                                                                                                                       
- *                                                                                                                                                                                                               
- *     http://www.apache.org/licenses/LICENSE-2.0                                                                                                                                                                
- *                                                                                                                                                                                                               
- * Unless required by applicable law or agreed to in writing, software                                                                                                                                           
- * distributed under the License is distributed on an "AS IS" BASIS,                                                                                                                                             
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                                                                                                                                      
- * See the License for the specific language governing permissions and                                                                                                                                           
- * limitations under the License.                                                                                                                                                                                
+/* Copyright (c) 2006 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package sample.gbase.basic;
@@ -39,12 +39,12 @@ public class UpdateExample {
    * The data item we are going to insert, in XML/Atom format.
    */
   private static final String DATA_ITEM = 
-        "<?xml version=\'1.0\'?>\n" + 
-        "<entry xmlns=\'http://www.w3.org/2005/Atom\' xmlns:g=\'http://base.google.com/ns/1.0\'>\n" + 
-        "  <category scheme=\'http://base.google.com/categories/itemtypes\' term=\'Products\'/>\n" + 
-        "  <g:item_type type=\'text\'>Products</g:item_type>\n" + 
-        "  <title type=\'text\'>My cool car is for sale</title>\n" +
-        "  <content type=\'xhtml\'>Light pink, yellow seats.</content>\n" +
+        "<?xml version='1.0'?>\n" +
+        "<entry xmlns='http://www.w3.org/2005/Atom'\n" +
+        "    xmlns:g='http://base.google.com/ns/1.0'>\n" +
+        "  <g:item_type type='text'>testrecipes</g:item_type>\n" +
+        "  <title type='text'>Fabulous cheese cake</title>\n" +
+        "  <content type='xhtml'>All that you need is lots of patience.</content>\n" +
         "</entry>";
 
   /**
@@ -52,13 +52,13 @@ public class UpdateExample {
    * <code>DATA_ITEM</code>.
    */
   private static final String NEW_DATA_ITEM = 
-        "<?xml version='1.0'?>\n" + 
-        "<entry xmlns='http://www.w3.org/2005/Atom' xmlns:g='http://base.google.com/ns/1.0'>\n" + 
-        "  <category scheme='http://base.google.com/categories/itemtypes' term='Products'/>\n" + 
-        "  <g:item_type type='text'>Products</g:item_type>\n" + 
-        "  <title type='text'>My cool car is for sale</title>\n" +
-        "  <content type='xhtml'>Light pink, yellow seats.</content>\n" +
-        "  <label type='text'>car</label>\n" +
+        "<?xml version='1.0'?>\n" +
+        "<entry xmlns='http://www.w3.org/2005/Atom'\n" +
+        "    xmlns:g='http://base.google.com/ns/1.0'>\n" +
+        "  <g:item_type type='text'>testrecipes</g:item_type>\n" +
+        "  <title type='text'>Yummy cheese cake</title>\n" +
+        "  <content type='xhtml'>All that you need is lots of patience.</content>\n" +
+        "  <g:main_ingredient type='text'>cheese</g:main_ingredient>\n" +
         "</entry>";
 
   /**
@@ -295,7 +295,7 @@ public class UpdateExample {
     StringBuilder outputBuilder = new StringBuilder();
     if (inputStream != null) {
       BufferedReader reader =
-        new BufferedReader(new InputStreamReader(inputStream));
+        new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
       while (null != (lineToRead = reader.readLine())) {
         outputBuilder.append(lineToRead).append('\n');
       }

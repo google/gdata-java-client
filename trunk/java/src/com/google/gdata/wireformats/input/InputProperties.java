@@ -25,9 +25,9 @@ import com.google.gdata.wireformats.StreamProperties;
 public interface InputProperties extends StreamProperties {
   
   /**
-   * Returns the expected base type that will be produced as a result of parsing
+   * Returns the expected root type that will be produced as a result of parsing
    * the content.   The parse result will be of this type or a subtype that
-   * extends or implements the expected type.
+   * extends or implements the root type.
    */
-  public Class<?> getExpectType();
+  public Class<?> getRootType();
 }

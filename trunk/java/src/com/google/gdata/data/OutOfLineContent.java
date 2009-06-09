@@ -48,9 +48,16 @@ public class OutOfLineContent extends Content implements IOutOfLineContent {
   /** Specifies the MIME Content type. */
   public void setMimeType(ContentType v) { mimeType = v; }
 
-  /** @return  always null, since language is undefined for external content. */
+  /**
+   * Language derived from the current state of {@code xml:lang}.
+   */
+  protected String lang;
+
   @Override
-  public String getLang() { return null; }
+  public String getLang() { return lang; }
+
+  /** Specifies the human language that this content is written in. */
+  public void setLang(String v) { lang = v; }
 
   /**
    * External URI.
@@ -104,6 +111,10 @@ public class OutOfLineContent extends Content implements IOutOfLineContent {
     if (etag != null && 
         !Service.getVersion().isCompatible(Service.Versions.V1)) {
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", etag));
+    }
+
+    if (lang != null) {
+      attrs.add(new XmlWriter.Attribute("xml:lang", lang));
     }
 
 
@@ -181,6 +192,8 @@ public class OutOfLineContent extends Content implements IOutOfLineContent {
         throw new ParseException(
             CoreErrorDomain.ERR.missingSrcAttribute);
       }
+
+      lang = xmlLang;
 
       // Validate that external content element is empty.
       super.processEndElement();

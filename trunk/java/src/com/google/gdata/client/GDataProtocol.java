@@ -146,6 +146,12 @@ public class GDataProtocol {
      * unspecified) is "gdata.io.handleScriptLoaded".
      */
     public static final String CALLBACK = "callback";
+    
+    /**
+     * The FIELDS parameters is used to specify a field selection that will be
+     * used to provide a partial response containing only the selected fields.
+     */
+    public static final String FIELDS = "fields";
   }
 
   /**

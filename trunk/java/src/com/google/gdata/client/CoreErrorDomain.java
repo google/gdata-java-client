@@ -400,6 +400,11 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("invalidExtension")
       .withInternalReason("Invalid extension element");
   
+  public final ErrorCode invalidFieldSelection =
+      new ErrorCode("invalidFieldSelection")      
+      .withInternalReason("Invalid field selection");
+
+  
   public final ErrorCode invalidFixedAttribute =
       new ErrorCode("invalidFixedAttribute")
       .withInternalReason("Invalid value for fixed attribute");
@@ -862,6 +867,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode unsupportedEncoding =
       new ErrorCode("unsupportedEncoding")
       .withInternalReason("Unsupported encoding");
+  
+  public final ErrorCode unsupportedFieldsParam =
+    new ErrorCode("unsupportedFieldsParam")
+    .withInternalReason("Fields query parameter is not supported");
 
   public final ErrorCode unsupportedHeader =
       new ErrorCode("unsupportedHeader")

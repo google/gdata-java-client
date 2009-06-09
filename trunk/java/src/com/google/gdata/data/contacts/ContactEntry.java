@@ -22,14 +22,7 @@ import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.Link;
 import com.google.gdata.data.extensions.Deleted;
-import com.google.gdata.data.extensions.Email;
-import com.google.gdata.data.extensions.ExtendedProperty;
-import com.google.gdata.data.extensions.Im;
-import com.google.gdata.data.extensions.Organization;
-import com.google.gdata.data.extensions.PhoneNumber;
-import com.google.gdata.data.extensions.PostalAddress;
 import com.google.gdata.util.Namespaces;
 
 import java.util.List;
@@ -40,7 +33,7 @@ import java.util.List;
  * 
  */
 @Kind.Term(ContactEntry.KIND)
-public class ContactEntry extends BaseEntry<ContactEntry> {
+public class ContactEntry extends BasePersonEntry<ContactEntry> {
 
   /**
    * Contact kind term value.
@@ -80,28 +73,8 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
     extProfile.declare(ContactEntry.class,
         new ExtensionDescription(Deleted.class, new XmlNamespace("gd",
         "http://schemas.google.com/g/2005"), "deleted", false, false, false));
-    extProfile.declare(ContactEntry.class, new ExtensionDescription(Email.class,
-        new XmlNamespace("gd", "http://schemas.google.com/g/2005"), "email",
-        false, true, false));
-    extProfile.declare(ContactEntry.class,
-        new ExtensionDescription(ExtendedProperty.class, new XmlNamespace("gd",
-        "http://schemas.google.com/g/2005"), "extendedProperty", false, true,
-        false));
     extProfile.declare(ContactEntry.class,
         GroupMembershipInfo.getDefaultDescription(false, true));
-    extProfile.declare(ContactEntry.class, Im.getDefaultDescription(false,
-        true));
-    extProfile.declare(ContactEntry.class,
-        Organization.getDefaultDescription(false, true));
-    new Organization().declareExtensions(extProfile);
-    extProfile.declare(ContactEntry.class,
-        new ExtensionDescription(PhoneNumber.class, new XmlNamespace("gd",
-        "http://schemas.google.com/g/2005"), "phoneNumber", false, true,
-        false));
-    extProfile.declare(ContactEntry.class,
-        new ExtensionDescription(PostalAddress.class, new XmlNamespace("gd",
-        "http://schemas.google.com/g/2005"), "postalAddress", false, true,
-        false));
   }
 
   /**
@@ -136,60 +109,6 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
   }
 
   /**
-   * Returns the email addresses.
-   *
-   * @return email addresses
-   */
-  public List<Email> getEmailAddresses() {
-    return getRepeatingExtension(Email.class);
-  }
-
-  /**
-   * Adds a new email address.
-   *
-   * @param emailAddress email address
-   */
-  public void addEmailAddress(Email emailAddress) {
-    getEmailAddresses().add(emailAddress);
-  }
-
-  /**
-   * Returns whether it has the email addresses.
-   *
-   * @return whether it has the email addresses
-   */
-  public boolean hasEmailAddresses() {
-    return hasRepeatingExtension(Email.class);
-  }
-
-  /**
-   * Returns the extended properties.
-   *
-   * @return extended properties
-   */
-  public List<ExtendedProperty> getExtendedProperties() {
-    return getRepeatingExtension(ExtendedProperty.class);
-  }
-
-  /**
-   * Adds a new extended property.
-   *
-   * @param extendedProperty extended property
-   */
-  public void addExtendedProperty(ExtendedProperty extendedProperty) {
-    getExtendedProperties().add(extendedProperty);
-  }
-
-  /**
-   * Returns whether it has the extended properties.
-   *
-   * @return whether it has the extended properties
-   */
-  public boolean hasExtendedProperties() {
-    return hasRepeatingExtension(ExtendedProperty.class);
-  }
-
-  /**
    * Returns the group membership infos.
    *
    * @return group membership infos
@@ -214,132 +133,6 @@ public class ContactEntry extends BaseEntry<ContactEntry> {
    */
   public boolean hasGroupMembershipInfos() {
     return hasRepeatingExtension(GroupMembershipInfo.class);
-  }
-
-  /**
-   * Returns the instant messaging addresses.
-   *
-   * @return instant messaging addresses
-   */
-  public List<Im> getImAddresses() {
-    return getRepeatingExtension(Im.class);
-  }
-
-  /**
-   * Adds a new instant messaging address.
-   *
-   * @param imAddress instant messaging address
-   */
-  public void addImAddress(Im imAddress) {
-    getImAddresses().add(imAddress);
-  }
-
-  /**
-   * Returns whether it has the instant messaging addresses.
-   *
-   * @return whether it has the instant messaging addresses
-   */
-  public boolean hasImAddresses() {
-    return hasRepeatingExtension(Im.class);
-  }
-
-  /**
-   * Returns the organizations.
-   *
-   * @return organizations
-   */
-  public List<Organization> getOrganizations() {
-    return getRepeatingExtension(Organization.class);
-  }
-
-  /**
-   * Adds a new organization.
-   *
-   * @param organization organization
-   */
-  public void addOrganization(Organization organization) {
-    getOrganizations().add(organization);
-  }
-
-  /**
-   * Returns whether it has the organizations.
-   *
-   * @return whether it has the organizations
-   */
-  public boolean hasOrganizations() {
-    return hasRepeatingExtension(Organization.class);
-  }
-
-  /**
-   * Returns the phone numbers.
-   *
-   * @return phone numbers
-   */
-  public List<PhoneNumber> getPhoneNumbers() {
-    return getRepeatingExtension(PhoneNumber.class);
-  }
-
-  /**
-   * Adds a new phone number.
-   *
-   * @param phoneNumber phone number
-   */
-  public void addPhoneNumber(PhoneNumber phoneNumber) {
-    getPhoneNumbers().add(phoneNumber);
-  }
-
-  /**
-   * Returns whether it has the phone numbers.
-   *
-   * @return whether it has the phone numbers
-   */
-  public boolean hasPhoneNumbers() {
-    return hasRepeatingExtension(PhoneNumber.class);
-  }
-
-  /**
-   * Returns the postal addresses.
-   *
-   * @return postal addresses
-   */
-  public List<PostalAddress> getPostalAddresses() {
-    return getRepeatingExtension(PostalAddress.class);
-  }
-
-  /**
-   * Adds a new postal address.
-   *
-   * @param postalAddress postal address
-   */
-  public void addPostalAddress(PostalAddress postalAddress) {
-    getPostalAddresses().add(postalAddress);
-  }
-
-  /**
-   * Returns whether it has the postal addresses.
-   *
-   * @return whether it has the postal addresses
-   */
-  public boolean hasPostalAddresses() {
-    return hasRepeatingExtension(PostalAddress.class);
-  }
-
-  /**
-   * Returns the link to edit contact photo.
-   *
-   * @return Link to edit contact photo or {@code null} for none.
-   */
-  public Link getContactEditPhotoLink() {
-    return getLink(ContactLink.Rel.EDIT_CONTACT_PHOTO, ContactLink.Type.IMAGE);
-  }
-
-  /**
-   * Returns the link that provides the contact photo.
-   *
-   * @return Link that provides the contact photo or {@code null} for none.
-   */
-  public Link getContactPhotoLink() {
-    return getLink(ContactLink.Rel.CONTACT_PHOTO, ContactLink.Type.IMAGE);
   }
 
   @Override

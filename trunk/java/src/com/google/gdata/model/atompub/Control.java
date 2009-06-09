@@ -28,14 +28,14 @@ import com.google.gdata.util.Namespaces;
  *
  * 
  */
-public class PubControl extends Element {
+public class Control extends Element {
 
   /**
    * The key for this element.
    */
   public static final ElementKey<Void,
-      PubControl> KEY = ElementKey.of(new QName(Namespaces.atomPubStandardNs,
-      "control"), Void.class, PubControl.class);
+      Control> KEY = ElementKey.of(new QName(Namespaces.atomPubStandardNs,
+      "control"), Void.class, Control.class);
 
   /*
    * Generate the default metadata for this element.
@@ -48,14 +48,14 @@ public class PubControl extends Element {
   /**
    * Default mutable constructor.
    */
-  public PubControl() {
+  public Control() {
     this(KEY);
   }
 
   /**
    * Create an instance using a different key.
    */
-  public PubControl(ElementKey<Void, ? extends PubControl> key) {
+  public Control(ElementKey<Void, ? extends Control> key) {
     super(key);
   }
 
@@ -67,14 +67,13 @@ public class PubControl extends Element {
    * @param key The key to use for this element.
    * @param source source element
    */
-  public PubControl(ElementKey<Void, ? extends PubControl> key,
-      Element source) {
+  public Control(ElementKey<Void, ? extends Control> key, Element source) {
     super(key, source);
   }
 
    @Override
-   public PubControl lock() {
-     return (PubControl) super.lock();
+   public Control lock() {
+     return (Control) super.lock();
    }
 
   /**
@@ -91,7 +90,7 @@ public class PubControl extends Element {
    *
    * @param draft draft tag or <code>null</code> to reset
    */
-  public PubControl setDraft(Draft draft) {
+  public Control setDraft(Draft draft) {
     super.setElement(Draft.KEY, draft);
     return this;
   }
@@ -107,7 +106,7 @@ public class PubControl extends Element {
 
   @Override
   public String toString() {
-    return "{PubControl}";
+    return "{Control}";
   }
 
 

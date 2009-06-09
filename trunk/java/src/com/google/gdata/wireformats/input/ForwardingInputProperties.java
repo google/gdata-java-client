@@ -36,7 +36,7 @@ public class ForwardingInputProperties extends ForwardingStreamProperties
     this.delegate = delegate;
   }
   
-  public Class<?> getExpectType() {
-    return delegate.getExpectType();
+  public Class<?> getRootType() {
+    return delegate.getRootType();
   }
 }

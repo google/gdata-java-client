@@ -43,7 +43,7 @@ public class FeedURLFactory {
   private static final String CELLS_PATH = "feeds/cells/";
   private static final String TABLE_PATH = "/tables/";
   private static final String RECORD_PATH = "/records/";
-  private static final String BASE_PATH = "feeds";
+  private static final String BASE_PATH = "feeds/";
       
 
   /** The url used as a base when creating urls. */
@@ -103,6 +103,10 @@ public class FeedURLFactory {
   }
   
   private void init(String url) throws MalformedURLException {
+    if (!url.endsWith("/")) {
+      url += "/";
+    }
+
     baseUrl = new URL(url);
     feedSpreadsheets = new URL(baseUrl, SPREADSHEETS_PATH);
     feedWorksheets = new URL(baseUrl, WORKSHEETS_PATH);
@@ -167,7 +171,7 @@ public class FeedURLFactory {
     if (spreadsheetKey == null) {
       throw new NullPointerException("spreadsheetKey is null");
     }
-    return new URL(baseUrl, encode(spreadsheetKey) + TABLE_PATH);
+    return new URL(baseUrl, BASE_PATH + encode(spreadsheetKey) + TABLE_PATH);
   }
   
   /**
@@ -181,7 +185,8 @@ public class FeedURLFactory {
     if (spreadsheetKey == null) {
       throw new NullPointerException("spreadsheetKey is null");
     }
-    return new URL(baseUrl, encode(spreadsheetKey) + RECORD_PATH + tableId);
+    return new URL(baseUrl, BASE_PATH + encode(spreadsheetKey) + RECORD_PATH
+        + tableId);
   }
   
   /**
@@ -320,4 +325,3 @@ public class FeedURLFactory {
 
 
 }
-

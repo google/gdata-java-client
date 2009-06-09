@@ -45,7 +45,7 @@ public class InputPropertiesBuilder
    */
   public InputPropertiesBuilder(InputProperties source) {
     super(source);
-    this.expectType = source.getExpectType();
+    this.expectType = source.getRootType();
   }
 
   /**
@@ -87,7 +87,7 @@ public class InputPropertiesBuilder
       this.expectType = builder.expectType;
     }
 
-    public Class<?> getExpectType() {
+    public Class<?> getRootType() {
       return expectType;
     }
   }

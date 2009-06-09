@@ -36,6 +36,9 @@ public class GoogleBaseAttribute {
 
   /** Tag sub-elements (element name, element value) if there are any. */
   private Multimap<String, String> subElements;
+  
+  /** Sub-attributes if there are any. */
+  private List<GoogleBaseAttribute> subAttributes;
 
   /** Corresponds to the XML attribute {@code access="private"}. */
   private boolean privateAccess;
@@ -144,6 +147,9 @@ public class GoogleBaseAttribute {
     }
     if (hasSubElements()) {
       buf.append(subElements.toString());
+    }
+    if (hasSubAttributes()) {
+      buf.append(subAttributes.toString());
     }
     buf.append("]");
     return buf.toString();
@@ -260,7 +266,7 @@ public class GoogleBaseAttribute {
    * Gets all values correspond to the sub-tag.  
    * 
    * @param name name
-   * @return A colletion of text content corresponds to the sub-tag (can be empty)
+   * @return A collection of text content corresponds to the sub-tag (can be empty)
    */
   public Collection<String> getSubElementValues(String name) {
     if (subElements == null) {
@@ -304,6 +310,30 @@ public class GoogleBaseAttribute {
       return Collections.emptyList();
     }
     return subElements.keySet();
+  }
+  
+  /** Returns true if the attribute has sub-attributes. */
+  public boolean hasSubAttributes() {
+    return subAttributes != null && !subAttributes.isEmpty();
+  }
+
+  /**
+   * Gets all sub-attributes.  
+   * 
+   * @return A list of all sub-attributes (can be empty but not null).
+   */
+  public List<GoogleBaseAttribute> getSubAttributes() {
+    if (subAttributes == null) {
+      subAttributes = new ArrayList<GoogleBaseAttribute>();
+    }
+    return subAttributes;
+  }
+  
+  /**
+   * Appends the value to the subAttribute list.
+   */
+  public void addSubAttribute(GoogleBaseAttribute value) {
+    getSubAttributes().add(value);
   }
 
   public boolean hasAdjustments() {

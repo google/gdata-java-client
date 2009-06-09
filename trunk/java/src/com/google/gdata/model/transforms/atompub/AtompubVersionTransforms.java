@@ -27,7 +27,7 @@ import com.google.gdata.model.atompub.Categories;
 import com.google.gdata.model.atompub.Collection;
 import com.google.gdata.model.atompub.Draft;
 import com.google.gdata.model.atompub.Edited;
-import com.google.gdata.model.atompub.PubControl;
+import com.google.gdata.model.atompub.Control;
 import com.google.gdata.model.atompub.ServiceDocument;
 import com.google.gdata.model.atompub.Workspace;
 import com.google.gdata.util.Namespaces;
@@ -49,7 +49,7 @@ public class AtompubVersionTransforms {
         Collection.KEY,
         Draft.KEY,
         Edited.KEY,
-        PubControl.KEY,
+        Control.KEY,
         ServiceDocument.KEY,
         Workspace.KEY);
 

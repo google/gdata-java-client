@@ -31,18 +31,10 @@ import java.io.IOException;
  */
 public abstract class Content implements IContent {
 
-  /** Defines the possible content types. */
-  public static class Type {
-    public static final int TEXT = 1;
-    public static final int HTML = 2;
-    public static final int XHTML = 3;
-    public static final int OTHER_TEXT = 4;     // inlined text
-    public static final int OTHER_XML = 5;      // inlined xml
-    public static final int OTHER_BINARY = 6;   // inlined base64 binary
-    public static final int MEDIA = 7;          // external media
-  }
-
-  /** Returns this content's type. */
+  /** 
+   * Returns this content's type.   See {@link IContent.Type} for the set of
+   * expected values.
+   */
   public abstract int getType();
 
   /** Returns the human language that this content is written in. */
