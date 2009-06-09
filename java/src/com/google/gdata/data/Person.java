@@ -187,12 +187,18 @@ public class Person extends ExtensionPoint implements IPerson {
     w.simpleElement(Namespaces.rssNs, elementName, null, text);
   }
 
+  @Override
+  public XmlParser.ElementHandler getHandler(ExtensionProfile extProfile,
+      String namespace, String localName, Attributes attrs) {
+    return new AtomHandler(extProfile);
+  }
+
   /** Parses XML in the Atom format. */
   public class AtomHandler extends ExtensionPoint.ExtensionHandler {
 
 
     public AtomHandler(ExtensionProfile extProfile) {
-      super(extProfile, Person.class);
+      super(extProfile, Person.this.getClass());
     }
 
     @Override

@@ -21,12 +21,10 @@ import com.google.gdata.util.common.base.StringUtil;
 import com.google.common.collect.Maps;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
-
 import com.google.gdata.client.CoreErrorDomain;
+import com.google.gdata.data.XmlEventSource;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementMetadata;
-import com.google.gdata.model.MetadataContext;
-import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.util.LogUtils;
@@ -34,11 +32,9 @@ import com.google.gdata.util.ParseException;
 import com.google.gdata.util.XmlBlob;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.ParserAdapter;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -55,9 +51,6 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 /**
  * XML parser, branched from {@link com.google.gdata.util.XmlParser}.
@@ -92,18 +85,6 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
   private static final Logger logger =
     Logger.getLogger(XmlParser.class.getName());
 
-
-  // The SAXParserFactory used to create underlying SAXParser instances.
-  private static SAXParserFactory parserFactory;
-
-  // Always return secure SAX parser, which is secured against XXE attacks
-  private static SAXParserFactory getSAXParserFactory()
-      throws ParserConfigurationException, SAXException {
-
-    SAXParserFactory factory =  SAXParserFactory.newInstance();
-    factory.setNamespaceAware(true);
-    return factory;
-  }
 
   /**
    * Base class for custom element handlers.
@@ -408,11 +389,8 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
   /** Input properties for parsing */
   protected final StreamProperties props;
 
-  /** Reader used by this parser. */
-  protected final Reader r;
-
-  /** Character set used to encode input. */
-  protected final Charset cs;
+  /** XML event source, usually a SAX parser. */
+  private final XmlEventSource eventSource;
 
   /** Root element handler. */
   protected ElementHandler rootHandler;
@@ -471,18 +449,30 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
    * @param cs character set used to encode input
    */
   public XmlParser(StreamProperties props, Reader r, Charset cs) {
+    this(props, new SaxEventSource(r));
+
+    // Fix XML charset handling.
+    Preconditions.checkNotNull(cs, "cs");
+  }
+
+  /**
+   * Construct XML parser for a given event source.
+   *
+   * @param props stream properties for parsing
+   * @param eventSource event source
+   */
+  public XmlParser(StreamProperties props, XmlEventSource eventSource) {
     Preconditions.checkNotNull(props, "stream properties");
-    Preconditions.checkNotNull(r, "reader");
+    Preconditions.checkNotNull(eventSource, "eventSource");
     this.props = props;
-    this.r = r;
-    this.cs = cs;
+    this.eventSource = eventSource;
   }
 
   public Element parse(Element element)
       throws IOException, ParseException, ContentValidationException {
 
     ValidationContext vc = new ValidationContext();
-    ElementMetadata<?, ?> metadata = getMetadata(element);
+    ElementMetadata<?, ?> metadata = props.getRootMetadata();
 
     this.rootHandler = createRootHandler(vc, element, metadata);
     QName elementName = (metadata == null) ? element.getElementId()
@@ -490,15 +480,23 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
     XmlNamespace elementNs = elementName.getNs();
     this.rootNamespace = elementNs == null ? null : elementNs.getUri();
     this.rootElementName = elementName.getLocalName();
-    InputSource is = new InputSource(r);
-    parse(is);
-    return element.resolve(metadata);
-  }
 
-  protected ElementMetadata<?, ?> getMetadata(Element element) {
-    MetadataRegistry registry = props.getMetadataRegistry();
-    MetadataContext context = props.getMetadataContext();
-    return registry.bind(element.getElementKey(), context);
+    try {
+      eventSource.parse(this);
+    } catch (SAXException e) {
+      Exception rootException = e.getException();
+      if (rootException instanceof ParseException) {
+        throwParseException((ParseException) rootException);
+      } else if (rootException instanceof IOException) {
+        LogUtils.logException(logger, Level.WARNING, null, e);
+        throw (IOException) rootException;
+      } else {
+        LogUtils.logException(logger, Level.FINE, null, e);
+        throw new ParseException(e);
+      }
+    }
+
+    return element.resolve(metadata);
   }
 
   /**
@@ -509,67 +507,6 @@ public class XmlParser extends DefaultHandler implements WireFormatParser {
       Element element, ElementMetadata<?, ?> metadata) {
     return new XmlHandler(vc, null, element, metadata);
   }
-
-  /**
-   * Parses XML.
-   *
-   * @param   is
-   *            Supplies the XML to parse.
-   *
-   * @throws  IOException
-   *            Thrown by {@code is}.
-   *
-   * @throws  ParseException
-   *            XML failed to validate against the schema implemented by
-   *            {@code rootHandler}.
-   *
-   */
-  protected void parse(InputSource is)
-      throws IOException,
-             ParseException {
-
-    try {
-
-      // Lazy initialization of the parser factory.  There is a minor
-      // init-time race condition here if two parsers are created
-      // simultaneously, but the getSAXParserFactory() impl is thread-safe
-      // and worse case scenario is that multiple parser factories are
-      // initially created during the race.  Double-checked locking bug
-      // makes it harder to do better w/out significant overhead.
-      if (parserFactory == null) {
-        parserFactory = getSAXParserFactory();
-      }
-
-      SAXParser sp = parserFactory.newSAXParser();
-      ParserAdapter pa = new ParserAdapter(sp.getParser());
-      pa.setContentHandler(this);
-      pa.parse(is);
-
-    } catch (SAXException e) {
-
-      Exception rootException = e.getException();
-
-      if (rootException instanceof ParseException) {
-
-        throwParseException((ParseException) rootException);
-
-      } else if (rootException instanceof IOException) {
-
-        LogUtils.logException(logger, Level.WARNING, null, e);
-        throw (IOException) rootException;
-
-      } else {
-
-        LogUtils.logException(logger, Level.FINE, null, e);
-        throw new ParseException(e);
-      }
-    } catch (ParserConfigurationException e) {
-
-        LogUtils.logException(logger, Level.WARNING, null, e);
-        throw new ParseException(e);
-    }
-  }
-
 
   /** Throws a parse exception with line/column information. */
   protected void throwParseException(ParseException e) throws ParseException {

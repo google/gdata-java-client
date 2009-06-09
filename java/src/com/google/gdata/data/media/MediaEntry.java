@@ -148,7 +148,7 @@ public abstract class MediaEntry<E extends BaseEntry<E>> extends BaseEntry<E>
     }
     Link mediaLink = getMediaEditLink();
     if (mediaLink == null) {
-      throw new UnsupportedOperationException("Mdia cannot be updated");
+      throw new UnsupportedOperationException("Media cannot be updated");
     }
     URL mediaUrl = new URL(mediaLink.getHref());
 

@@ -20,7 +20,9 @@ import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.util.ParseException;
 
 /**
- * Immutable base implementation of {@link Metadata}.
+ * Immutable base implementation of {@link Metadata}.  Each metadata instance
+ * is bound to a specific registry, parent key, metadata key, and
+ * metadata context.
  *
  * 
  */
@@ -104,5 +106,11 @@ abstract class MetadataImpl<D> implements Metadata<D> {
     if (virtualValue != null) {
       virtualValue.parse(element, metadata, value);
     }
+  }
+  
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "{" + getKey() + "}@" +
+        Integer.toHexString(hashCode());
   }
 }

@@ -106,6 +106,7 @@ public class Attribute {
 
   @Override
   public String toString() {
-    return "{" + key.getId() + "=" + getValue() + "}";
+    return getClass().getSimpleName() + "{" + key.getId() + "}@" +
+        Integer.toHexString(hashCode());
   }
 }

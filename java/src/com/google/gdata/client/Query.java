@@ -64,9 +64,11 @@ public class Query {
     ATOM("atom"),
     RSS("rss"),
     JSON("json"),
+    JSONC("jsonc"),
     ATOM_IN_SCRIPT("atom-in-script"),
     RSS_IN_SCRIPT("rss-in-script"),
     JSON_IN_SCRIPT("json-in-script"),
+    JSONC_IN_SCRIPT("jsonc-in-script"),
     JSON_XD("json-xd"),
     ATOM_SERVICE("atom-service");
     
@@ -105,6 +107,8 @@ public class Query {
   private List<CategoryFilter> categoryFilters =
                                 new LinkedList<CategoryFilter>();
 
+  /** Fields partial selection query parameter */
+  private String fields;
 
   /** Full-text search query string. */
   private String queryString;
@@ -187,6 +191,22 @@ public class Query {
    */
   public URL getFeedUrl() {
     return feedUrl;
+  }
+
+  /**
+   * Sets the "fields" partial selection query parameter.
+   *
+   * @param fields query value
+   */
+  public void setFields(String fields) {
+    this.fields = fields;
+  }
+
+  /**
+   * Returns the fields query string that will be used for the query.
+   */
+  public String getFields() {
+    return fields;
   }
   
   
@@ -754,6 +774,11 @@ public class Query {
       if (maxResults != UNDEFINED) {
         appendQueryParameter(queryBuf, GDataProtocol.Query.MAX_RESULTS,
             Integer.toString(maxResults));
+      }
+
+      if (fields != null) {
+        appendQueryParameter(queryBuf, GDataProtocol.Query.FIELDS,
+            CharEscapers.uriEscaper().escape(fields));
       }
       
       if (strict) {

@@ -30,6 +30,7 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * GData schema extension describing an object's rating.
@@ -181,8 +182,8 @@ public class Rating extends ExtensionPoint {
     }
 
     if (average != null) {
-      attrs.add(
-          new XmlWriter.Attribute("average", String.format("%2.2f", average)));
+      attrs.add(new XmlWriter.Attribute(
+          "average", String.format(Locale.US, "%2.2f", average)));
     }
 
     generateStartElement(w, Namespaces.gNs, "rating", attrs, null);

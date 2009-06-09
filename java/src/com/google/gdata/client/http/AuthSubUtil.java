@@ -19,7 +19,7 @@ package com.google.gdata.client.http;
 import com.google.gdata.util.common.base.CharEscapers;
 import com.google.gdata.util.common.base.Charsets;
 import com.google.gdata.util.common.base.StringUtil;
-import com.google.gdata.util.common.io.Characters;
+import com.google.gdata.util.common.io.CharStreams;
 import com.google.gdata.util.common.util.Base64;
 import com.google.gdata.util.AuthenticationException;
 
@@ -312,7 +312,7 @@ public class AuthSubUtil {
 
     // Parse the response
     String body =
-        Characters.toString(
+        CharStreams.toString(
             new InputStreamReader(
                 httpConn.getInputStream(), Charsets.ISO_8859_1));
     Map<String, String> parsedTokens =
@@ -379,7 +379,7 @@ public class AuthSubUtil {
     }
 
     String body =
-      Characters.toString(
+      CharStreams.toString(
           new InputStreamReader(
               httpConn.getInputStream(), Charsets.ISO_8859_1));
     return StringUtil.string2Map(body.trim(), "\n", "=", true);

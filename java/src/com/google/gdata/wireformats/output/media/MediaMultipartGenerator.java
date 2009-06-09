@@ -14,6 +14,7 @@
  */
 package com.google.gdata.wireformats.output.media;
 
+import com.google.gdata.data.media.GDataContentHandler;
 import com.google.gdata.data.media.MediaMultipart;
 import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.wireformats.AltFormat;
@@ -50,7 +51,10 @@ public class MediaMultipartGenerator
   public void generate(OutputStream contentStream, OutputProperties request, 
         MediaMultipart source) throws IOException {
 
+    OutputProperties prevProperties = null;
     try {
+      prevProperties =
+          GDataContentHandler.setThreadOutputProperties(request);
       source.writeTo(contentStream);
     } catch (MessagingException me) {
       
@@ -64,6 +68,8 @@ public class MediaMultipartGenerator
       IOException ioe = new IOException("Invalid multipart content");
       ioe.initCause(new InvalidEntryException("Invalid media entry", me));
       throw ioe;
+    } finally {
+      GDataContentHandler.setThreadOutputProperties(prevProperties);
     }
   }
 }

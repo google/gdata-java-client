@@ -196,8 +196,7 @@ public class ParseUtil {
       throws ParseException, IOException {
     WireFormat format = WireFormat.XML;
     InputProperties inProps = new InputPropertiesBuilder()
-        .setMetadataRegistry(DefaultRegistry.get())
-        .setMetadataContext(null)
+        .setElementMetadata(DefaultRegistry.get(element.getElementKey()))
         .build();
     WireFormatParser parser;
     if (source.getReader() != null) {

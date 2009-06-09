@@ -17,9 +17,9 @@
 package com.google.gdata.client.authn.oauth;
 
 /**
- * Extends the {@link OAuthHelper} class with details specific to making 
+ * Extends the {@link OAuthHelper} class with details specific to making
  * OAuth requests with Google.
- * 
+ *
  * 
  */
 public class GoogleOAuthHelper extends OAuthHelper {
@@ -35,9 +35,9 @@ public class GoogleOAuthHelper extends OAuthHelper {
       "https://www.google.com/accounts/OAuthGetAccessToken";
 
   /**
-   * Creates a new GoogleOAuthHelper, which is an {@link OAuthHelper} with 
+   * Creates a new GoogleOAuthHelper, which is an {@link OAuthHelper} with
    * specific urls.
-   * 
+   *
    * @param signer the {@link OAuthSigner} to use when signing the request
    */
   public GoogleOAuthHelper(OAuthSigner signer) {
@@ -45,15 +45,15 @@ public class GoogleOAuthHelper extends OAuthHelper {
   }
 
   /**
-   * Creates a new GoogleOAuthHelper, which is an {@link OAuthHelper} with 
+   * Creates a new GoogleOAuthHelper, which is an {@link OAuthHelper} with
    * specific urls.
-   * 
+   *
    * @param signer the {@link OAuthSigner} to use when signing the request
-   * @param httpClient the {@link OAuthHttpClient} to use when making http 
+   * @param httpClient the {@link OAuthHttpClient} to use when making http
    *        requests
    */
   GoogleOAuthHelper(OAuthSigner signer, OAuthHttpClient httpClient) {
-    super(requestTokenUrl, userAuthorizationUrl, accessTokenUrl, signer, 
+    super(requestTokenUrl, userAuthorizationUrl, accessTokenUrl, signer,
         httpClient);
   }
 }

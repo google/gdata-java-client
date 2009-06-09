@@ -40,13 +40,38 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
   public enum Cardinality { SINGLE, MULTIPLE, SET }
 
   /**
-   * A virtual element is one which exists only as metadata, and handles both
-   * parsing and generation between the real element and the virtual element.
+   * Defines a virtual element with multiple cardinality.  This can be used to
+   * represent a collection of elements in the output that do not map directly
+   * to a collection of elements in the physical DOM.
    */
-  public interface VirtualElement {
+  public interface MultipleVirtualElement {
 
     /**
-     * Creates a virtual element from the parent element.
+     * Creates a collection of virtual elements from the parent element.
+     *
+     * @return collection generated virtual elements or {@code null}
+     */
+    Collection<Element> generate(Element parent,
+        ElementMetadata<?, ?> metadata);
+
+    /**
+     * Parses the elements, possibly creating additional elements or attributes.
+     */
+    void parse(Element parent, Collection<Element> elements,
+        ElementMetadata<?, ?> metadata);
+  }
+
+  /**
+   * Defines a virtual element with single cardinality.  This can be used to
+   * represent a single element that does not map directly to another element
+   * in the physical DOM.
+   */
+  public interface SingleVirtualElement {
+
+    /**
+     * Creates a single virtual element from the parent element.
+     *
+     * @return generated virtual element or {@code null}
      */
     Element generate(Element parent, ElementMetadata<?, ?> metadata);
 
@@ -84,6 +109,12 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
   * may be visible or is required to evaluate a selection condition.
   */
   boolean isReferenced();
+  
+  /**
+   * Returns true if the element instance is selected for use in the current
+   * operation.
+   */
+  boolean isSelected(Element e);
 
   /**
    * Returns true if the text content of this element is required.
@@ -146,7 +177,7 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
       ElementKey<K, L> key);
 
   /**
-   * Returns true if this metadata declareds the given child element.
+   * Returns true if this metadata declares the given child element.
    */
   boolean isDeclared(ElementKey<?, ?> element);
 
@@ -158,12 +189,20 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
   ElementKey<?, ?> findElement(QName id);
 
   /**
-   * Returns the virtual element associated with this metadata.  A virtual
-   * element represents a completely virtual DOM element that can have its own
-   * attributes and child elements, all of which are pulled from elsewhere in
-   * the DOM.
+   * Returns the virtual element associated with this metadata with single
+   * cardinality.  A virtual element represents a completely virtual DOM element
+   * that can have its own attributes and child elements, all of which are
+   * pulled from elsewhere in the DOM.
    */
-  VirtualElement getVirtualElement();
+  SingleVirtualElement getSingleVirtualElement();
+
+  /**
+   * Returns the virtual element associated with this metadata with repeated
+   * cardinality.  A virtual element represents a completely virtual DOM element
+   * that can have its own attributes and child elements, all of which are
+   * pulled from elsewhere in the DOM.
+   */
+  MultipleVirtualElement getMultipleVirtualElement();
 
   /**
    * Create an element with this metadata as the metadata for the element.

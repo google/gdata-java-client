@@ -16,6 +16,7 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -23,7 +24,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.gdata.model.ElementMetadata.Cardinality;
-import com.google.gdata.model.ElementMetadata.VirtualElement;
+import com.google.gdata.model.ElementMetadata.SingleVirtualElement;
+import com.google.gdata.model.ElementMetadata.MultipleVirtualElement;
 import com.google.gdata.model.Metadata.VirtualValue;
 
 import java.util.Collection;
@@ -68,7 +70,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   private Boolean contentRequired;
   private ElementValidator validator;
   private Object properties;
-  private VirtualElement virtualElement;
+  private VirtualElementHolder virtualElementHolder;
 
   private final Map<QName, AttributeInfo> attributes = Maps.newLinkedHashMap();
   private final Map<QName, ElementInfo> elements = Maps.newLinkedHashMap();
@@ -103,7 +105,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
     this.contentRequired = source.contentRequired;
     this.validator = source.validator;
     this.properties = source.properties;
-    this.virtualElement = source.virtualElement;
+    this.virtualElementHolder = source.virtualElementHolder;
 
     // We copy the attributes and elements over by re-adding them, as they need
     // to get the actual metadata builders from the registry.
@@ -201,10 +203,31 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   /**
    * Sets the virtual element for the element.  This is used to create a
    * fully virtual element that doesn't map directly to the DOM.
+   *
+   * <p>This is used for single cardinality elements. Use 
+   * {@link MultipleVirtualElement} for multiple cardinality elements.
    */
-  public ElementCreator setVirtualElement(VirtualElement virtualElement) {
+  public ElementCreator setSingleVirtualElement(
+      SingleVirtualElement singleVirtualElement) {
     synchronized (registry) {
-      this.virtualElement = virtualElement;
+      this.virtualElementHolder = VirtualElementHolder.of(singleVirtualElement);
+      registry.dirty();
+    }
+    return this;
+  }
+
+  /**
+   * Sets the virtual element for the element.  This is used to create a
+   * fully virtual element that doesn't map directly to the DOM.
+   *
+   * <p>This is used for single cardinality elements. Use 
+   * {@link MultipleVirtualElement} for multiple cardinality elements.
+   */
+  public ElementCreator setMultipleVirtualElement(
+      MultipleVirtualElement multipleVirtualElement) {
+    synchronized (registry) {
+      this.virtualElementHolder = 
+          VirtualElementHolder.of(multipleVirtualElement);
       registry.dirty();
     }
     return this;
@@ -375,6 +398,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
       ElementKey<?, ?> elementKey, Action action) {
     synchronized (registry) {
       QName id = elementKey.getId();
+      Preconditions.checkNotNull(id);
       if (action == Action.ADD) {
         elements.remove(id);
       }
@@ -421,8 +445,8 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
     return properties;
   }
 
-  VirtualElement getVirtualElement() {
-    return virtualElement;
+  VirtualElementHolder getVirtualElementHolder() {
+    return virtualElementHolder;
   }
 
   /**
@@ -490,7 +514,32 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * Create a transform from this element metadata builder.
    */
   ElementTransform toTransform() {
+    check();
     return ElementTransform.create(this);
+  }
+
+  /**
+   * Makes sure the state is consistent, throws {@link IllegalStateException} if
+   * it notices something wrong.
+   */
+  private void check() {
+    if (virtualElementHolder != null) {
+      if (cardinality == Cardinality.SINGLE) {
+        if (virtualElementHolder.getMultipleVirtualElement() != null) {
+          throw new IllegalStateException(
+              "Invalid element transform. "
+              + "MultipleVirtualElement set on an element "
+              + "with single cardinality for key " + key);
+        }
+      } else {
+        if (virtualElementHolder.getSingleVirtualElement() != null) {
+          throw new IllegalStateException(
+              "Invalid element transform. "
+              + "SingleVirtualElement set on an element "
+              + "with multiple cardinality for key " + key);
+        }
+      }
+    }
   }
 
   /**

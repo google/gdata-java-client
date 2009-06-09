@@ -23,7 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * A simple client for making http requests and returning the response body. 
+ * A simple client for making http requests and returning the response body.
  * Uses {@link java.net.HttpURLConnection} to make http requests.
  *
  * 
@@ -33,7 +33,7 @@ public class OAuthHttpClient {
   /**
    * Makes an http request to the input URL, and returns the response body as a
    * string.
-   * 
+   *
    * @param url the url to make the request to
    * @return the response body of the request
    * @throws OAuthException if there was an error making the request

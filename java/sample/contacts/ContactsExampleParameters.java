@@ -23,7 +23,8 @@ import java.util.TreeMap;
 
 /**
  * Keeps structured command line parameters for ContactsExample program.
- *
+ * 
+ * 
  * 
  */
 
@@ -52,8 +53,17 @@ public class ContactsExampleParameters {
     new TreeMap<String,String>();
 
   /**
-   * Stores names of parameters and whether they are
-   * multiple parameters.
+   * List of command line parameters likely to be the description of an
+   * element.
+   * Those parameters are added to the list, what are not recognized as a valid 
+   * command line argument (nor an action or option).
+   * These parameters are later parsed by {@link ElementParser} and processed by 
+   * {@link ElementHelper}. 
+   */
+  private List<String> elementDesc = new LinkedList<String>();
+
+  /**
+   * Stores names of parameters.
    */
   public enum ParameterNames {
     SCRIPT("script"),
@@ -64,47 +74,31 @@ public class ContactsExampleParameters {
     CONTACTFEED("contactfeed"),
     GROUPFEED("groupfeed"),
     SHOWDELETED("showdeleted"),
+    REQUIRE_ALL_DELETED("require-all-deleted"),
     UPDATED_MIN("updated-min"),
     OREDERBY("orderby"),
     SORTORDER("sortorder"),
     MAX_RESULTS("max-results"),
     START_INDEX("start-index"),
     HELP("help"),
-    NAME("name"),
-    NOTES("notes"),
+    PROJECTION("projection"),
+    VERBOSE("verbose"),
     ID("id"),
     GROUP("querygroupid"),
-    PROJECTION("projection"),
-    EMAIL("email", true),
-    PHONE("phone", true),
-    IM("im", true),
-    VERBOSE("verbose"),
-    ORGANIZATION("organization", true),
-    POSTAL("postal", true),
-    GROUPS("groupid", true),
-    EXTENDEDPROPERTY("extendedProperty", true),
     ;
 
     private final String parameterName;
-    private boolean multipleParametersAllowed;
-
-    ParameterNames(String parameterName, boolean multipleParametersAllowed){
-      this.parameterName = parameterName;
-      this.multipleParametersAllowed = multipleParametersAllowed;
-    }
 
     ParameterNames(String parameterName) {
-      this(parameterName, false);
+      this.parameterName = parameterName;
     }
 
     public String getParameterName() {
       return parameterName;
     }
 
-    public boolean isMultipleParametersAllowed() {
-      return multipleParametersAllowed;
-    }
   }
+
   /**
    * Constructor used in case script parameter is used.
    *
@@ -114,7 +108,8 @@ public class ContactsExampleParameters {
   public ContactsExampleParameters(ContactsExampleParameters commandLineParams,
       String scriptLine) {
     parameterValueMap.putAll(commandLineParams.parameterValueMap);
-    fillMapFromArguments(scriptLine.split(" "));
+    elementDesc.addAll(commandLineParams.elementDesc);
+    fillFromArguments(scriptLine.split(" "));
   }
 
   /**
@@ -124,19 +119,36 @@ public class ContactsExampleParameters {
    * @param arguments arguments in form of array
    */
   public ContactsExampleParameters(String arguments[]) {
-    fillMapFromArguments(arguments);
+    fillFromArguments(arguments);
   }
 
-  private void fillMapFromArguments(String[] arguments) {
+  /**
+   * Parse arguments.
+   * 
+   * @param arguments arguments in form of array
+   */
+  private void fillFromArguments(String[] arguments) {
     for (String string : arguments) {
-      if (string.startsWith("--")) {
-        String param = string.substring(2);
-        String params[] = param.split("=");
-        if (params.length > 1) {
-          parameterValueMap.put(params[0], params[1]);
-        } else if (params.length == 1) {
-          parameterValueMap.put(params[0], "");
+      if (!string.startsWith("--")) {
+        throw new IllegalArgumentException("illegal parameter: " + string);
+      }
+      String param = string.substring(2);
+      String params[] = param.split("=", 2);
+      boolean found = false;
+      for (ParameterNames parameterName : ParameterNames.values()) {
+        String name = parameterName.getParameterName().toLowerCase();
+        if (name.equals(params[0])) {
+          if (params.length == 1) {
+            parameterValueMap.put(params[0], "");
+          } else {
+            parameterValueMap.put(params[0], params[1]);
+          }
+          found = true;
+          break;
         }
+      }
+      if (!found) {
+        elementDesc.add(string);
       }
     }
     verifyAllParameters();    
@@ -145,7 +157,7 @@ public class ContactsExampleParameters {
   /**
    * Verify if we understand all parameters.
    *
-   * @throws RuntimeException in case there
+   * @throws IllegalArgumentException in case there
    * is a parameter which is not expected.
    */
   private void verifyAllParameters() {
@@ -156,16 +168,12 @@ public class ContactsExampleParameters {
 
   private void verifyParameter(String name) {
     for (ParameterNames parameter : ParameterNames.values()) {
-      if (!parameter.isMultipleParametersAllowed()
-          && name.equals(parameter.getParameterName())) {
-        return;
-      } else if (parameter.isMultipleParametersAllowed()
-          && name.startsWith(parameter.getParameterName())
-          && name.length() > parameter.getParameterName().length()) {
+      if (name.equals(parameter.getParameterName())) {
         return;
       }
     }
-    throw new RuntimeException("Parameter " + name + " is not correct.");
+    throw new IllegalArgumentException(
+        "Parameter " + name + " is not correct.");
   }
   
   String getParameter(ParameterNames parameters) {
@@ -210,6 +218,10 @@ public class ContactsExampleParameters {
   
   boolean isShowDeleted() {
     return getParameter(ParameterNames.SHOWDELETED) != null;
+  }
+
+  String getRequireAllDeleted() {
+    return getParameter(ParameterNames.REQUIRE_ALL_DELETED);
   }
 
   String getUpdatedMin() {
@@ -258,14 +270,6 @@ public class ContactsExampleParameters {
     return (getParameter(ParameterNames.VERBOSE) != null);
   }
 
-  String getName() {
-    return getParameter(ParameterNames.NAME);
-  }
-
-  String getNotes() {
-    return getParameter(ParameterNames.NOTES);
-  }
-
   String getId() {
     return getParameter(ParameterNames.ID);
   }
@@ -286,43 +290,8 @@ public class ContactsExampleParameters {
     return getParameter(ParameterNames.GROUP);
   }
 
-  List<String> getParameterList(ParameterNames parameterName){
-    LinkedList<String> parameterList = new LinkedList<String>();
-    for (String key : parameterValueMap.keySet()) {
-      if (key.startsWith(parameterName.getParameterName())
-          && key.length() > parameterName.getParameterName().length()) {
-        parameterList.add(parameterValueMap.get(key));
-      }
-    }
-    return parameterList;
-  }
-  
-  List<String> getEmails() {
-    return getParameterList(ParameterNames.EMAIL);
-  }
-
-  List<String> getPhones() {
-    return getParameterList(ParameterNames.PHONE);
-  }
-
-  List<String> getIms() {
-    return getParameterList(ParameterNames.IM);
-  }
-
-  List<String> getOrganizations() {
-    return getParameterList(ParameterNames.ORGANIZATION);
-  }
-
-  List<String> getPostal() {
-    return getParameterList(ParameterNames.POSTAL);
-  }
-  
-  List<String> getGroups() {
-    return getParameterList(ParameterNames.GROUPS);
-  }
-  
-  List<String> getExtendedProperties() {
-    return getParameterList(ParameterNames.EXTENDEDPROPERTY);
+  List<String> getElementDesc() {
+    return elementDesc;
   }
   
   int numberOfParameters() {

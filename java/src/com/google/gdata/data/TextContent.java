@@ -25,8 +25,9 @@ import java.io.IOException;
  *
  * 
  */
-public class TextContent extends Content {
+public class TextContent extends Content implements ITextContent {
 
+  
   /** Class constructor. */
   public TextContent() {}
 

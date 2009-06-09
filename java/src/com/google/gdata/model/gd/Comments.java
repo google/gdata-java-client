@@ -1,0 +1,112 @@
+/* Copyright (c) 2008 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package com.google.gdata.model.gd;
+
+import com.google.gdata.model.DefaultRegistry;
+import com.google.gdata.model.Element;
+import com.google.gdata.model.ElementCreator;
+import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.QName;
+import com.google.gdata.util.Namespaces;
+
+/**
+ * Describes a container of a feed link for comment entries.
+ *
+ * 
+ */
+public class Comments extends Element {
+
+  /**
+   * The key for this element.
+   */
+  public static final ElementKey<Void,
+      Comments> KEY = ElementKey.of(new QName(Namespaces.gNs, "comments"),
+      Void.class, Comments.class);
+
+  /*
+   * Generate the default metadata for this element.
+   */
+  static {
+    ElementCreator builder = DefaultRegistry.build(KEY);
+    builder.addElement(FeedLink.KEY).setRequired(true);
+  }
+
+  /**
+   * Default mutable constructor.
+   */
+  public Comments() {
+    this(KEY);
+  }
+
+  /**
+   * Create an instance using a different key.
+   */
+  public Comments(ElementKey<Void, ? extends Comments> key) {
+    super(key);
+  }
+
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element.
+   *
+   * @param key The key to use for this element.
+   * @param source source element
+   */
+  public Comments(ElementKey<Void, ? extends Comments> key, Element source) {
+    super(key, source);
+  }
+
+   @Override
+   public Comments lock() {
+     return (Comments) super.lock();
+   }
+
+  /**
+   * Returns the nested feed link.
+   *
+   * @return nested feed link
+   */
+  public FeedLink getFeedLink() {
+    return super.getElement(FeedLink.KEY);
+  }
+
+  /**
+   * Sets the nested feed link.
+   *
+   * @param feedLink nested feed link or <code>null</code> to reset
+   */
+  public Comments setFeedLink(FeedLink feedLink) {
+    super.setElement(FeedLink.KEY, feedLink);
+    return this;
+  }
+
+  /**
+   * Returns whether it has the nested feed link.
+   *
+   * @return whether it has the nested feed link
+   */
+  public boolean hasFeedLink() {
+    return super.hasElement(FeedLink.KEY);
+  }
+
+  @Override
+  public String toString() {
+    return "{Comments}";
+  }
+
+}

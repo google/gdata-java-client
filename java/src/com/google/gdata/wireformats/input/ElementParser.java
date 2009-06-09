@@ -68,7 +68,7 @@ public class ElementParser<T> extends CharacterParser<T> {
    * @throws IllegalArgumentException if the representation does not have an
    *         associated wire format that can be used to parse the content.
    */
-  private ElementParser(AltFormat altFormat, Class<T> resultType) {
+  protected ElementParser(AltFormat altFormat, Class<T> resultType) {
     super(altFormat, resultType);
   }
 
@@ -76,8 +76,8 @@ public class ElementParser<T> extends CharacterParser<T> {
   public <R extends T> R parse(Reader inputReader, InputProperties inProps,
       Class<R> resultClass) throws IOException, ServiceException {
 
-    Preconditions.checkNotNull(inProps.getMetadataContext(),
-        "No metadata context");
+    Preconditions.checkNotNull(inProps.getRootMetadata(),
+        "No element metadata");
 
     R result = createResult(resultClass);
     if (result instanceof Element) {

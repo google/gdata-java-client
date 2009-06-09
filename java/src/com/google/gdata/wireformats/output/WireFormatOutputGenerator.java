@@ -30,6 +30,8 @@ import java.nio.charset.Charset;
  * An {@link OutputGenerator} using a {@link WireFormat} to serialize to the
  * output stream.
  *
+ * @param <T> the expected object type handled by the generator
+ *
  * 
  */
 public abstract class WireFormatOutputGenerator<T>
@@ -47,22 +49,39 @@ public abstract class WireFormatOutputGenerator<T>
   public void generate(Writer w, OutputProperties outProps, T source)
       throws IOException {
 
-    WireFormat wireFormat = getWireFormat();
-    String encoding = getCharsetEncoding(outProps);
-    Charset cs = Charset.forName(encoding);
-    WireFormatGenerator gen = wireFormat.createGenerator(
-        outProps, w, cs, usePrettyPrint(outProps));
-
     // Only types that extends Element are supported by the wire format code
     if (source instanceof Element) {
       Element elem = (Element) source;
       try {
-
-        ElementMetadata<?, ?> meta = outProps.getMetadataRegistry().bind(
-            elem.getElementKey(), outProps.getMetadataContext());
-
-        Element resolved = elem.resolve(meta);
-        gen.generate(resolved);
+        ElementMetadata<?, ?> outputMetadata = outProps.getRootMetadata();
+        elem = elem.resolve(outputMetadata);
+        
+        // The outputMetadata in the properties could be for a base type that
+        // is broader than the element passed in.  In this case, we want to
+        // re-bind to the more specific metadata and use that in the output
+        // properties passed to generate.
+        if (!elem.getElementKey().equals(outputMetadata.getKey())) {
+          outputMetadata = 
+            outputMetadata.getRegistry().bind(elem.getElementKey(),
+                outputMetadata.getContext());
+          if (outputMetadata == null) {
+            throw new IllegalStateException("Unable to rebind from " +
+                outProps.getRootMetadata().getKey() + " to " +
+                elem.getElementKey());
+          }
+          outProps = 
+            new OutputPropertiesBuilder(outProps)
+                .setElementMetadata(outputMetadata)
+                .build();            
+        }
+        
+        WireFormat wireFormat = getWireFormat();
+        String encoding = getCharsetEncoding(outProps);
+        Charset cs = Charset.forName(encoding);
+        WireFormatGenerator gen = wireFormat.createGenerator(
+            outProps, w, cs, usePrettyPrint(outProps));
+        
+        gen.generate(elem);
       } catch (ContentValidationException e) {
         throw new IOException("Invalid content: " + e.getMessage());
       }

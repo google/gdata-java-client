@@ -37,12 +37,12 @@ public class OAuthUtil {
   }
 
   /**
-   * Get a nonce for an OAuth request.  OAuth defines the nonce as "a random 
-   * string, uniquely generated for each request. The nonce allows the Service 
-   * Provider to verify that a request has never been made before and helps 
-   * prevent replay attacks when requests are made over a non-secure channel 
+   * Get a nonce for an OAuth request.  OAuth defines the nonce as "a random
+   * string, uniquely generated for each request. The nonce allows the Service
+   * Provider to verify that a request has never been made before and helps
+   * prevent replay attacks when requests are made over a non-secure channel
    * (such as HTTP)."
-   * 
+   *
    * @return the nonce string to use in an OAuth request
    */
   public static String getNonce() {
@@ -50,11 +50,11 @@ public class OAuthUtil {
   }
 
   /**
-   * Get a timestamp for an OAuth request.  OAuth defines the timestamp as 
-   * "the number of seconds since January 1, 1970 00:00:00 GMT. The timestamp 
-   * value MUST be a positive integer and MUST be equal or greater than the 
+   * Get a timestamp for an OAuth request.  OAuth defines the timestamp as
+   * "the number of seconds since January 1, 1970 00:00:00 GMT. The timestamp
+   * value MUST be a positive integer and MUST be equal or greater than the
    * timestamp used in previous requests."
-   * 
+   *
    * @return the timestamp string to use in an OAuth request.
    */
   public static String getTimestamp() {
@@ -62,11 +62,11 @@ public class OAuthUtil {
   }
 
   /**
-   * Calculates the signature base url as per section 9.1 of the OAuth Spec. 
-   * This is a concatenation of http method, request url, and other request 
+   * Calculates the signature base url as per section 9.1 of the OAuth Spec.
+   * This is a concatenation of http method, request url, and other request
    * parameters.
-   * 
-   * @see <a href="http://oauth.net/core/1.0/#anchor14">9.1 Signature Base 
+   *
+   * @see <a href="http://oauth.net/core/1.0/#anchor14">9.1 Signature Base
    *      String</a>
    *
    * @param requestUrl the url of the request
@@ -75,8 +75,8 @@ public class OAuthUtil {
    * @return the base string to be used in the OAuth signature
    * @throws OAuthException if the input url is not formatted properly
    */
-  public static String getSignatureBaseString(String requestUrl, 
-      String httpMethod, Map<String, String> baseParameters) 
+  public static String getSignatureBaseString(String requestUrl,
+      String httpMethod, Map<String, String> baseParameters)
       throws OAuthException {
     return encode(httpMethod.toUpperCase()) + '&'
         + encode(normalizeUrl(requestUrl)) + '&'
@@ -84,18 +84,18 @@ public class OAuthUtil {
   }
 
   /**
-   * Calculates the normalized request url, as per section 9.1.2 of the OAuth 
-   * Spec.  This removes the querystring from the url and the port (if it is 
+   * Calculates the normalized request url, as per section 9.1.2 of the OAuth
+   * Spec.  This removes the querystring from the url and the port (if it is
    * the standard http or https port).
-   * 
-   * @see <a href="http://oauth.net/core/1.0/#rfc.section.9.1.2">9.1.2 
+   *
+   * @see <a href="http://oauth.net/core/1.0/#rfc.section.9.1.2">9.1.2
    *      Construct Request URL</a>
    *
    * @param requestUrl the request url to normalize (not <code>null</code>)
    * @return the normalized request url, as per the rules in the link above
    * @throws OAuthException if the input url is not formatted properly
    */
-  public static String normalizeUrl(String requestUrl) 
+  public static String normalizeUrl(String requestUrl)
       throws OAuthException {
 
     // validate the request url
@@ -128,12 +128,12 @@ public class OAuthUtil {
   }
 
   /**
-   * Calculates the normalized request parameters string to use in the base 
+   * Calculates the normalized request parameters string to use in the base
    * string, as per section 9.1.1 of the OAuth Spec.
-   * 
-   * @see <a href="http://oauth.net/core/1.0/#rfc.section.9.1.1">9.1.1 
+   *
+   * @see <a href="http://oauth.net/core/1.0/#rfc.section.9.1.1">9.1.1
    *      Normalize Request Parameters</a>
-   * 
+   *
    * @param requestUrl the request url to normalize (not <code>null</code>)
    * @param requestParameters key/value pairs of parameters in the request
    * @return the parameters normalized to a string
@@ -142,12 +142,12 @@ public class OAuthUtil {
       String requestUrl, Map<String, String> requestParameters) {
 
     // use a TreeMap to alphabetize the parameters by key
-    TreeMap<String, String> alphaParams = 
+    TreeMap<String, String> alphaParams =
         new TreeMap<String, String>(requestParameters);
 
     // add the querystring to the base string (if one exists)
     if (requestUrl.indexOf('?') > 0) {
-      Map<String, String> queryParameters = 
+      Map<String, String> queryParameters =
           parseQuerystring(requestUrl.substring(requestUrl.indexOf('?')+1));
       alphaParams.putAll(queryParameters);
     }
@@ -169,7 +169,7 @@ public class OAuthUtil {
 
   /**
    * Parse a querystring into a map of key/value pairs.
-   * 
+   *
    * @param queryString the string to parse (without the '?')
    * @return key/value pairs mapping to the items in the querystring
    */
@@ -187,7 +187,7 @@ public class OAuthUtil {
         if (name == "") {
           continue;
         }
-        String value = keyValuePair.length > 1 ? 
+        String value = keyValuePair.length > 1 ?
             URLDecoder.decode(keyValuePair[1], "UTF-8") : "";
         map.put(name, value);
       } catch (UnsupportedEncodingException e) {
@@ -198,10 +198,10 @@ public class OAuthUtil {
   }
 
   /**
-   * Formats the input string for inclusion in a url.  Account for the 
-   * differences in how OAuth encodes certain characters (such as the 
+   * Formats the input string for inclusion in a url.  Account for the
+   * differences in how OAuth encodes certain characters (such as the
    * space character).
-   * 
+   *
    * @param stringToEncode the string to encode
    * @return the url-encoded string
    */

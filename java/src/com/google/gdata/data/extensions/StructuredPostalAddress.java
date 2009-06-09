@@ -71,14 +71,17 @@ public class StructuredPostalAddress extends ExtensionPoint {
   /** The mail class. */
   public static final class MailClass {
 
+    /** Both structured postal address. */
+    public static final String BOTH = Namespaces.gPrefix + "both";
+
     /** Letters structured postal address. */
     public static final String LETTERS = Namespaces.gPrefix + "letters";
 
     /** Neither structured postal address. */
     public static final String NEITHER = Namespaces.gPrefix + "neither";
 
-    /** Packages structured postal address. */
-    public static final String PACKAGES = Namespaces.gPrefix + "packages";
+    /** Parcels structured postal address. */
+    public static final String PARCELS = Namespaces.gPrefix + "parcels";
 
   }
 

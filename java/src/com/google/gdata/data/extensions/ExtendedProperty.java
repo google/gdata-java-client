@@ -37,7 +37,14 @@ import java.util.List;
  *
  * 
  */
+@ExtensionDescription.Default(
+    nsAlias = Namespaces.gAlias,
+    nsUri = Namespaces.g,
+    localName = ExtendedProperty.EXTENDED_PROPERTY)
 public class ExtendedProperty extends ExtensionPoint {
+
+  /** XML "extendedProperty" element name */
+  static final String EXTENDED_PROPERTY = "extendedProperty";
 
   /** Limits on where the extended property applies. */
   public static final class Realm {
@@ -107,7 +114,7 @@ public class ExtendedProperty extends ExtensionPoint {
     ExtensionDescription desc = new ExtensionDescription();
     desc.setExtensionClass(ExtendedProperty.class);
     desc.setNamespace(Namespaces.gNs);
-    desc.setLocalName("extendedProperty");
+    desc.setLocalName(EXTENDED_PROPERTY);
     desc.setRepeatable(true);
     return desc;
   }
@@ -130,12 +137,12 @@ public class ExtendedProperty extends ExtensionPoint {
       attrs.add(new XmlWriter.Attribute("realm", realm));
     }
 
-    generateStartElement(w, Namespaces.gNs, "extendedProperty", attrs, null);
+    generateStartElement(w, Namespaces.gNs, EXTENDED_PROPERTY, attrs, null);
 
     // Invoke ExtensionPoint.
     generateExtensions(w, extProfile);
 
-    w.endElement(Namespaces.gNs, "extendedProperty");
+    w.endElement(Namespaces.gNs, EXTENDED_PROPERTY);
   }
 
   @Override

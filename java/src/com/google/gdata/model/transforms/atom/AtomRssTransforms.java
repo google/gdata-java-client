@@ -23,6 +23,7 @@ import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
 import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.data.DateTime;
+import com.google.gdata.data.ILink.Rel;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.MetadataRegistryBuilder;
@@ -40,7 +41,6 @@ import com.google.gdata.model.atom.OutOfLineContent;
 import com.google.gdata.model.atom.Person;
 import com.google.gdata.model.atom.Source;
 import com.google.gdata.model.atom.TextContent;
-import com.google.gdata.model.atom.Link.Rel;
 import com.google.gdata.model.atom.Source.Generator;
 import com.google.gdata.model.atompub.Edited;
 import com.google.gdata.util.ContentType;
@@ -64,6 +64,26 @@ import java.util.List;
  */
 public class AtomRssTransforms {
 
+  // Constants for our rss names.
+  private static final QName DOMAIN = new QName("domain");
+  private static final QName CATEGORY = new QName(Namespaces.rssNs, "category");
+  private static final QName ITEM = new QName(Namespaces.rssNs, "item");
+  private static final QName GUID = new QName(Namespaces.rssNs, "guid");
+  private static final QName TITLE = new QName(Namespaces.rssNs, "title");
+  private static final QName PUB_DATE = new QName(Namespaces.rssNs, "pubDate");
+  private static final QName AUTHOR = new QName(Namespaces.rssNs, "author");
+  private static final QName RSS_NAME = new QName(Namespaces.rssNs, "rss");
+  private static final QName DESCRIPTION =
+    new QName(Namespaces.rssNs, "description");
+  private static final QName LAST_BUILD_DATE =
+      new QName(Namespaces.rssNs, "lastBuildDate");
+  private static final QName COPYRIGHT =
+      new QName(Namespaces.rssNs, "copyright");
+  private static final QName MANAGING_EDITOR =
+      new QName(Namespaces.rssNs, "managingEditor");
+  private static final QName GENERATOR =
+      new QName(Namespaces.rssNs, "generator");
+
   /**
    * Add the RSS transforms to the default metadata trees.
    */
@@ -82,12 +102,12 @@ public class AtomRssTransforms {
 
   private static void addCategoryTransforms(MetadataRegistryBuilder registry) {
     registry.build(Category.KEY, RSS)
-        .setName(new QName(Namespaces.rssNs, "category"))
+        .setName(CATEGORY)
         .setVirtualValue(
             new MetadataValueTransform(Category.TERM, Category.LABEL));
 
     registry.build(Category.KEY, Category.SCHEME, RSS)
-        .setName(new QName("domain"));
+        .setName(DOMAIN);
 
     registry.build(Category.KEY, Category.LABEL, RSS)
         .setVisible(false);
@@ -98,15 +118,14 @@ public class AtomRssTransforms {
 
   private static void addContentTransforms(MetadataRegistryBuilder registry) {
     registry.build(TextContent.KEY, RSS)
-        .setName(new QName(Namespaces.rssNs, "description"))
+        .setName(DESCRIPTION)
         .whitelistAttributes();
     registry.build(TextContent.CONSTRUCT, RSS)
         .whitelistAttributes();
   }
 
   private static void addEntryTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Entry.KEY, RSS)
-        .setName(new QName(Namespaces.rssNs, "item"));
+    registry.build(Entry.KEY, RSS).setName(ITEM);
 
     registry.build(Entry.KEY, Entry.ETAG, RSS)
         .setVisible(false);
@@ -125,14 +144,14 @@ public class AtomRssTransforms {
       }
     });
     registry.build(Entry.KEY, Entry.ID, RSS)
-        .setName(new QName(Namespaces.rssNs, "guid"))
+        .setName(GUID)
         .setProperties(properties);
 
     registry.build(Entry.KEY, Entry.TITLE, RSS)
-        .setName(new QName(Namespaces.rssNs, "title"));
+        .setName(TITLE);
 
     registry.build(Entry.KEY, Entry.PUBLISHED, RSS)
-        .setName(new QName(Namespaces.rssNs, "pubDate"))
+        .setName(PUB_DATE)
         .setVirtualValue(new VirtualValue() {
           public Object generate(Element element,
               ElementMetadata<?, ?> metadata) {
@@ -194,11 +213,11 @@ public class AtomRssTransforms {
     });
 
     registry.build(Entry.KEY, Author.KEY, RSS)
-        .setName(new QName(Namespaces.rssNs, "author"))
+        .setName(AUTHOR)
         .setProperties(personProperties);
 
     registry.build(Entry.KEY, Contributor.KEY, RSS)
-        .setName(new QName(Namespaces.rssNs, "author"))
+        .setName(AUTHOR)
         .setProperties(personProperties);
 
     registry.build(Entry.KEY, Entry.RIGHTS, RSS).setVisible(false);
@@ -276,11 +295,11 @@ public class AtomRssTransforms {
       }
     });
     registry.build(Feed.KEY, RSS)
-        .setName(new QName(Namespaces.rssNs, "rss"))
+        .setName(RSS_NAME)
         .setProperties(properties);
 
     registry.build(Feed.KEY, Feed.UPDATED, RSS)
-        .setName(new QName(Namespaces.rssNs, "lastBuildDate"))
+        .setName(LAST_BUILD_DATE)
         .setVirtualValue(new VirtualValue() {
           public Object generate(Element element,
               ElementMetadata<?, ?> metadata) {
@@ -343,11 +362,9 @@ public class AtomRssTransforms {
   }
 
   private static void addSourceTransforms(MetadataRegistryBuilder registry) {
-    registry.build(Source.CONSTRUCT, Source.TITLE, RSS)
-        .setName(new QName(Namespaces.rssNs, "title"));
+    registry.build(Source.CONSTRUCT, Source.TITLE, RSS).setName(TITLE);
 
-    registry.build(Source.CONSTRUCT, Source.SUBTITLE, RSS)
-        .setName(new QName(Namespaces.rssNs, "description"));
+    registry.build(Source.CONSTRUCT, Source.SUBTITLE, RSS).setName(DESCRIPTION);
 
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
     properties.setElementGenerator(new XmlGenerator.XmlElementGenerator() {
@@ -401,10 +418,10 @@ public class AtomRssTransforms {
 
     registry.build(Source.CONSTRUCT, Source.RIGHTS, RSS)
         .setVisible(true)
-        .setName(new QName(Namespaces.rssNs, "copyright"));
+        .setName(COPYRIGHT);
 
     registry.build(Source.CONSTRUCT, Author.KEY, RSS)
-        .setName(new QName(Namespaces.rssNs, "managingEditor"))
+        .setName(MANAGING_EDITOR)
         .setVirtualValue(new MetadataValueTransform(Person.NAME));
   }
 
@@ -419,7 +436,7 @@ public class AtomRssTransforms {
 
   private static void addGeneratorTransforms(MetadataRegistryBuilder registry) {
     registry.build(Generator.KEY, RSS)
-        .setName(new QName(Namespaces.rssNs, "generator"));
+        .setName(GENERATOR);
 
     registry.build(Generator.KEY, Generator.URI, RSS)
         .setVisible(false);

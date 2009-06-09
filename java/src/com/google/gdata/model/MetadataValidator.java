@@ -52,7 +52,7 @@ public class MetadataValidator implements ElementValidator {
       if (attMeta.isRequired() &&  e.getAttributeValue(attributeKey) == null) {
         vc.addError(e, CoreErrorDomain.ERR.missingAttribute.withInternalReason(
             "Element must contain value for attribute "
-            + attributeKey));
+            + attributeKey.getId()));
       }
     }
 
@@ -62,7 +62,7 @@ public class MetadataValidator implements ElementValidator {
       if (childMeta.isRequired() && !e.hasElement(childKey)) {
         vc.addError(e,
             CoreErrorDomain.ERR.missingExtensionElement.withInternalReason(
-                "Element must contain a child named " + childKey));
+                "Element must contain a child named " + childKey.getId()));
       }
     }
   }

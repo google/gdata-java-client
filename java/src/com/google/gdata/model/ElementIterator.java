@@ -16,7 +16,8 @@
 
 package com.google.gdata.model;
 
-import com.google.gdata.model.ElementMetadata.VirtualElement;
+import com.google.gdata.model.ElementMetadata.SingleVirtualElement;
+import com.google.gdata.model.ElementMetadata.MultipleVirtualElement;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -129,9 +130,24 @@ class ElementIterator implements Iterator<Element> {
           continue;
         }
 
-        VirtualElement virtual = childMeta.getVirtualElement();
-        if (virtual != null) {
-          return virtual.generate(element, childMeta);
+        SingleVirtualElement singleVirtual = 
+            childMeta.getSingleVirtualElement();
+        if (singleVirtual != null) {
+          Element generated = singleVirtual.generate(element, childMeta);
+          if (generated != null) {
+            return generated;
+          }
+        }
+
+        MultipleVirtualElement multipleVirtual = 
+            childMeta.getMultipleVirtualElement();
+        if (multipleVirtual != null) {
+          Collection<Element> virtualElements =
+              multipleVirtual.generate(element, childMeta);
+          if (virtualElements != null && !virtualElements.isEmpty()) {
+            sublistIterator = virtualElements.iterator();
+            return sublistIterator.next();
+          }
         }
 
         Object obj = getElementObject(nextKey.getId());

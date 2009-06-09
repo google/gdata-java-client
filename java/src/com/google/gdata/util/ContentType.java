@@ -188,6 +188,13 @@ public class ContentType implements Serializable {
       new ContentType("multipart/related").lock();
   
   /**
+   * A ContentType constant that describes the application/xml content
+   * type.
+   */
+  public static final ContentType APPLICATION_XML =
+      new ContentType("application/xml").lock();
+  
+  /**
    * Wildcard content type that will match any MIME type
    */
   public static final ContentType ANY = new ContentType("*/*").lock();

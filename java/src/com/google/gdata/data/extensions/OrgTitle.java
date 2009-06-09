@@ -48,6 +48,7 @@ public class OrgTitle extends ValueConstruct {
    */
   public OrgTitle(String value) {
     super(Namespaces.gNs, XML_NAME, null, value);
+    setRequired(false);
   }
 
   /**

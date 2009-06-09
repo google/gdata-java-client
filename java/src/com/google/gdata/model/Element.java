@@ -30,6 +30,7 @@ import com.google.gdata.wireformats.ContentValidationException;
 import com.google.gdata.wireformats.ObjectConverter;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -68,6 +69,40 @@ public class Element {
   // Logger for logging warnings and errors.
   private static final Logger LOGGER =
       Logger.getLogger(Element.class.getName());
+  
+  
+  /**
+   * Returns the default {@link ElementKey} for an {@link Element} type.
+   * 
+   * @param type element type
+   * @return default element key for type
+   */
+  public static ElementKey<?, ?> getDefaultKey(Class<? extends Element> type) {
+    
+    Preconditions.checkNotNull(type, "type");
+    
+    // The current approach used reflection based upon the implementation
+    // pattern that every Element type will expose a static ElementKey field
+    // named "KEY".
+    ElementKey<?, ?> key = null;
+    try {
+      Field keyField = type.getField("KEY");
+      key = ElementKey.class.cast(keyField.get(null));
+    } catch (NoSuchFieldException nsfe) {
+      throw new IllegalArgumentException("Unable to acess KEY field:" + type, 
+          nsfe);
+    } catch (IllegalArgumentException iae) {
+      throw new IllegalArgumentException("Unable to access KEY field:" + type,
+          iae);
+    } catch (IllegalAccessException iae) {
+      throw new IllegalArgumentException("Unable to access KEY field:" + type, 
+          iae);
+    } catch (NullPointerException npe) {
+      throw new IllegalArgumentException("Unable to access KEY field:" + type, 
+          npe);
+    }
+    return key;
+  }
 
   /**
    * This class contains the element state, which is the attributes, elements,
@@ -971,7 +1006,7 @@ public class Element {
   Object checkValue(ElementKey<?, ?> elementKey, Object newValue) {
     if (newValue != null) {
       Class<?> datatype = elementKey.getDatatype();
-      Preconditions.checkArgument(datatype != null,
+      Preconditions.checkArgument(datatype != Void.class,
           "Element must not contain a text node");
       Preconditions.checkArgument(datatype.isInstance(newValue),
           "Invalid class: %s", newValue.getClass().getCanonicalName());
@@ -1195,22 +1230,6 @@ public class Element {
   }
 
   /**
-   * Returns {@code true} if the element contains a simple value.
-   *
-   * @return true if element contains a simple value, meaning it has
-   *     a text node but no attributes or child elements, or it has one
-   *     attribute but no text node or child elements.
-   */
-  public static boolean containsSimpleValue(ElementMetadata<?, ?> metadata) {
-    Class<?> datatype = metadata.getKey().getDatatype();
-    return metadata.getElements().isEmpty() &&
-        ((datatype != Void.class &&
-            metadata.getAttributes().isEmpty()) ||
-         (datatype == Void.class &&
-            metadata.getAttributes().size() == 1));
-  }
-
-  /**
    * @param o given object
    * @return true if the given object is not null and is the same concrete class
    *         as this one
@@ -1351,7 +1370,7 @@ public class Element {
 
   @Override
   public String toString() {
-    return "Element{" + getElementId() + "}@" +
+    return getClass().getSimpleName() + "{" + getElementId() + "}@" +
         Integer.toHexString(hashCode());
   }
 }

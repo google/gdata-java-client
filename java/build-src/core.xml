@@ -271,6 +271,7 @@
       <include name="com/google/gdata/model/atom/*.java"/>
       <include name="com/google/gdata/model/atompub/*.java"/>
       <include name="com/google/gdata/model/batch/*.java"/>
+      <include name="com/google/gdata/model/gd/*.java"/>
       <include name="com/google/gdata/model/transforms/atom/*.java"/>
       <include name="com/google/gdata/model/transforms/atompub/*.java"/>
       <include name="com/google/gdata/util/**/*.java"/>

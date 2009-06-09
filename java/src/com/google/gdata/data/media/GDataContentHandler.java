@@ -192,15 +192,12 @@ public class GDataContentHandler implements DataContentHandler {
     AltFormat altFormat = altRegistry.lookupType(contentType);
     InputParser<?> parser = altRegistry.getParser(altFormat);
     if (parser == null) {
-      IOException ioe = new IOException("Invalid multipart content");
-      ioe.initCause(
-          new ParseException(
-              "No parser for multipart content type:" + contentType));
+      throw new IOException("Invalid multipart content: " + contentType);
     }
     
     try {
       return parseAtom(parser, ds.getInputStream(), contentType, 
-          inputProperties, inputProperties.getExpectType());
+          inputProperties, inputProperties.getRootType());
     } catch (ServiceException se) {
       IOException ioe = new IOException("Error parsing content");
       ioe.initCause(se);

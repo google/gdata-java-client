@@ -109,6 +109,27 @@ public abstract class TextConstruct implements ITextConstruct {
 
 
   /**
+   * Construct a new plain text content with the given text.
+   */
+  public static TextConstruct plainText(String text) {
+    return new PlainTextConstruct(text);
+  }
+
+  /**
+   * Construct a new html text content with the given html.
+   */
+  public static TextConstruct html(String html) {
+    return new HtmlTextConstruct(html);
+  }
+
+  /**
+   * Construct a new Xhtml text content from the given div.
+   */
+  public static TextConstruct xhtml(XmlBlob div) {
+    return new XhtmlTextConstruct(div);
+  }
+
+  /**
    * Generates XML in the Atom format.
    *
    * @param   w
