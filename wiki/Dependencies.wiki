@@ -8,7 +8,7 @@ GData Java Client package depends on several third party libraries.  This page l
 = Dependency Packages =
 == Required ==
   * Java Development Kit version 5.0 or greater.  Latest version of JDK is available for download from http://java.sun.com.
-  * [http://code.google.com/p/google-collections/ Google Collections] version 1.0 or higher.  This is included in the release package under "java/deps/google-collect-1.0-rc1.jar".
+  * [http://code.google.com/p/google-collections/ Google Collections] version 1.0 or higher.  This is included in the release package under "java/deps/google-collect-1.0-rc2.jar".
   * [http://ant.apache.org Apache ANT] version 1.7.0 or higher.  This is required only if you are rebuilding the Core API libraries.
 
 == Optional ==
