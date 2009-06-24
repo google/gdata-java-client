@@ -45,12 +45,12 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
 
 
   public UserProfileEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_PROFILE);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_USER_PROFILE);
   }
 
   public UserProfileEntry(BaseEntry<?> base) {
     super(base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_PROFILE);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_USER_PROFILE);
   }
 
   public void setBooks(String books) {
@@ -465,9 +465,14 @@ public class UserProfileEntry extends BaseEntry<UserProfileEntry> {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.NEW_SUBSCRIPTION_VIDEOS_REL);
   }  
   
-  /** Returns a link to the user's new subscription videos feed. */
+  /** Returns a link to the user's friends activity feed. */
   public FeedLink<?> getFriendsActivityFeedLink() {
     return EntryUtils.getFeedLink(this, YouTubeNamespace.FRIENDSACTIVITY_REL);
+  }  
+  
+  /** Returns a link to the user's recent activity feed. */
+  public FeedLink<?> getRecentActivityFeedLink() {
+    return EntryUtils.getFeedLink(this, YouTubeNamespace.RECENTACTIVITY_REL);
   }  
 
   /** Returns a link to the playlist defined by the user as video log. */

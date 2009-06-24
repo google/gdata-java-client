@@ -16,25 +16,24 @@
 
 package com.google.gdata.data.youtube;
 
-import com.google.gdata.data.BaseFeed;
-import com.google.gdata.data.Kind;
+import com.google.gdata.data.AbstractExtension;
+import com.google.gdata.data.ExtensionDescription;
 
 /**
- * A feed that contains a list of {@link ComplaintEntry}.
+ * Object representation for the yt:spam tag.
  *
+ * If this tag is present it indicates that the containing entry contains most
+ * likely spam.
+ * 
  * 
  */
-@Kind.Term(YouTubeNamespace.KIND_COMPLAINT)
-public class ComplaintFeed
-    extends BaseFeed<ComplaintFeed, ComplaintEntry> {
+@ExtensionDescription.Default(
+    nsAlias = YouTubeNamespace.PREFIX,
+    nsUri = YouTubeNamespace.URI,
+    localName = "spam")
+public class YtSpam extends AbstractExtension {
 
-  public ComplaintFeed() {
-    super(ComplaintEntry.class);
-    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMPLAINT);
-  }
-
-  public ComplaintFeed(BaseFeed<?, ?> base) {
-    super(ComplaintEntry.class, base);
-    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMPLAINT);
+  /** Creates spam hint tag. */
+  public YtSpam() {
   }
 }

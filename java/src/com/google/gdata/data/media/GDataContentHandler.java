@@ -31,6 +31,7 @@ import com.google.gdata.wireformats.input.ForwardingInputProperties;
 import com.google.gdata.wireformats.input.InputProperties;
 import com.google.gdata.wireformats.input.InputParser;
 import com.google.gdata.wireformats.input.InputPropertiesBuilder;
+import com.google.gdata.wireformats.output.ForwardingOutputProperties;
 import com.google.gdata.wireformats.output.OutputGenerator;
 import com.google.gdata.wireformats.output.OutputProperties;
 import com.google.gdata.wireformats.output.OutputPropertiesBuilder;
@@ -220,23 +221,29 @@ public class GDataContentHandler implements DataContentHandler {
     OutputGenerator<IAtom> atomGenerator = (OutputGenerator<IAtom>) generator;
     atomGenerator.generate(outputStream, outputProperties, atomSource);
   }
-  
+
   public void writeTo(Object obj, String mimeType, OutputStream os)
       throws IOException {
 
     Preconditions.checkNotNull(obj, "obj");
-    
+
     // Get the output properties to use when generating content
     OutputProperties outputProperties = getThreadOutputProperties();
   
     AltRegistry altRegistry = outputProperties.getAltRegistry();
     ContentType contentType = new ContentType(mimeType);
-    AltFormat altFormat = altRegistry.lookupType(contentType);
+    final AltFormat altFormat = altRegistry.lookupType(contentType);
     OutputGenerator<?> generator = altRegistry.getGenerator(altFormat);
     if (generator == null) {
       throw new IllegalStateException("Unable to generate media: " +
           contentType);
     }
-    generateAtom(generator, os, outputProperties, obj);
+    generateAtom(generator, os,
+        new ForwardingOutputProperties(outputProperties) {
+          @Override
+          public ContentType getContentType() {
+            return altFormat.getContentType();
+          }
+        }, obj);
   }
 }

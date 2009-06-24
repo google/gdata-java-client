@@ -40,12 +40,12 @@ public class ComplaintEntry extends BaseEntry<ComplaintEntry> {
 
 
   public ComplaintEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_COMPLAINT);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMPLAINT);
   }
 
-  public ComplaintEntry(BaseEntry base) {
+  public ComplaintEntry(BaseEntry<?> base) {
     super(base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_COMPLAINT);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMPLAINT);
   }
   
  /**

@@ -36,12 +36,12 @@ public class PlaylistLinkFeed
 
   public PlaylistLinkFeed() {
     super(PlaylistLinkEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
   }
 
   public PlaylistLinkFeed(BaseFeed<?, ?> base) {
     super(PlaylistLinkEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
   }
 
   @Override

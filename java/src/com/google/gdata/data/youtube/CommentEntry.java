@@ -29,12 +29,12 @@ import com.google.gdata.data.Kind;
 public class CommentEntry extends BaseEntry<CommentEntry> {
 
   public CommentEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_COMMENT);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMMENT);
   }
 
-  public CommentEntry(BaseEntry base) {
+  public CommentEntry(BaseEntry<?> base) {
     super(base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_COMMENT);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMMENT);
   }
   
   /**
@@ -68,7 +68,7 @@ public class CommentEntry extends BaseEntry<CommentEntry> {
    * @return true if the comment is marked as spam
    */
   public boolean hasSpamHint() {
-    return getExtension(YtSpamHint.class) != null ? true : false;
+    return getExtension(YtSpam.class) != null ? true : false;
   }
   
   /**
@@ -79,9 +79,9 @@ public class CommentEntry extends BaseEntry<CommentEntry> {
    */
   public void setSpamHint(boolean spam) {
     if (spam) {
-      setExtension(new YtSpamHint());
+      setExtension(new YtSpam());
     } else { 
-      removeExtension(YtSpamHint.class);
+      removeExtension(YtSpam.class);
     }
   }
   
@@ -90,7 +90,7 @@ public class CommentEntry extends BaseEntry<CommentEntry> {
     super.declareExtensions(extProfile);
 
     extProfile.declareAdditionalNamespace(YouTubeNamespace.NS);
-    extProfile.declare(CommentEntry.class, YtSpamHint.class);
+    extProfile.declare(CommentEntry.class, YtSpam.class);
     extProfile.declare(CommentEntry.class, YtCommentRating.class);
     
     extProfile.declareArbitraryXmlExtension(CommentEntry.class);

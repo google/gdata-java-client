@@ -41,7 +41,7 @@ public class ChannelEntry extends BaseEntry<ChannelEntry>{
   };
   
   public ChannelEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_CHANNEL);    
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_CHANNEL);    
   }
   
   /**

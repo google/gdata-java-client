@@ -14,26 +14,22 @@
  */
 
 
-package com.google.gdata.data.youtube;
+package com.google.gdata.wireformats.output;
 
-import com.google.gdata.data.AbstractExtension;
-import com.google.gdata.data.ExtensionDescription;
+import com.google.gdata.wireformats.ForwardingStreamProperties;
 
 /**
- * Object representation for the yt:spamHint tag.
+ * A {@link OutputProperties} implementation that forwards all
+ * calls to another {@link OutputProperties}.
  *
- * If this tag is present it indicates that the containing entry is eventually 
- * spam.
- * 
+ * <p>Subclass this and override the methods you want modified
+ * to create a wrapper for {@link OutputProperties}.
+ *
  * 
  */
-@ExtensionDescription.Default(
-    nsAlias = YouTubeNamespace.PREFIX,
-    nsUri = YouTubeNamespace.URI,
-    localName = "spamHint")
-public class YtSpamHint extends AbstractExtension {
-
-  /** Creates spam hint tag. */
-  public YtSpamHint() {
+public class ForwardingOutputProperties extends ForwardingStreamProperties
+    implements OutputProperties {
+  public ForwardingOutputProperties(OutputProperties delegate) {
+    super(delegate);
   }
 }

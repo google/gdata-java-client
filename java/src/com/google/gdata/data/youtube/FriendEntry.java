@@ -42,12 +42,12 @@ public class FriendEntry extends BaseEntry<FriendEntry> {
 
 
   public FriendEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_FRIEND);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_FRIEND);
   }
 
-  public FriendEntry(BaseEntry base) {
+  public FriendEntry(BaseEntry<?> base) {
     super(base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_FRIEND);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_FRIEND);
   }
   
   /** Gets the youtube username of the contact (for youtube user contacts). */

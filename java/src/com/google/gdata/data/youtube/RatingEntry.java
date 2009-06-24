@@ -30,12 +30,12 @@ import com.google.gdata.data.extensions.Rating;
 public class RatingEntry extends BaseEntry<RatingEntry> {
 
   public RatingEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_RATING);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_RATING);
   }
 
-  public RatingEntry(BaseEntry base) {
+  public RatingEntry(BaseEntry<?> base) {
     super(base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_RATING);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_RATING);
   }
 
   /** Gets the gd:rating tag. */

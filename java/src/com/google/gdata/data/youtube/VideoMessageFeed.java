@@ -30,12 +30,12 @@ public class VideoMessageFeed extends BaseFeed<VideoMessageFeed, VideoMessageEnt
 
   public VideoMessageFeed() {
     super(VideoMessageEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
   }
 
   public VideoMessageFeed(BaseFeed<?,?> base) {
     super(VideoMessageEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
   }
 
   @Override

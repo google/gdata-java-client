@@ -37,12 +37,12 @@ public class SubscriptionFeed
 
   public SubscriptionFeed() {
     super(SubscriptionEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_SUBSCRIPTION);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_SUBSCRIPTION);
   }
 
-  public SubscriptionFeed(BaseFeed base) {
+  public SubscriptionFeed(BaseFeed<?, ?> base) {
     super(SubscriptionEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_SUBSCRIPTION);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_SUBSCRIPTION);
   }
 
   @Override

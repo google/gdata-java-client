@@ -41,6 +41,11 @@ public class YouTubeNamespace {
   public static final String KIND_VIDEO = URI + "#video";
 
   /**
+   * Kind linked to {@link CaptionTrackEntry}.
+   */
+  public static final String KIND_CAPTION_TRACK = URI + "#captionTrack";
+
+  /**
    * Kind linked to {@link ComplaintEntry}.
    */
   public static final String KIND_COMPLAINT = URI + "#complaint";
@@ -183,6 +188,10 @@ public class YouTubeNamespace {
    * Link Rel value for user's friends activity.
    */
   public static final String FRIENDSACTIVITY_REL = URI + "#user.friendsactivity";
+  
+  /**
+   * Link Rel value for user's recent activity.   */
+  public static final String RECENTACTIVITY_REL = URI + "#user.recentactivity";
 
   /**
    * Link Rel value for user favorites links.
@@ -218,6 +227,11 @@ public class YouTubeNamespace {
    * Link Rel value for video comments links.
    */
   public static final String COMMENTS_REL = URI + "#comments";
+
+  /**
+   * Link Rel value for video caption track links.
+   */
+  public static final String CAPTION_TRACKS_REL = URI + "#video.captionTracks";
 
   /**
    * Link Rel value for video complaints links.

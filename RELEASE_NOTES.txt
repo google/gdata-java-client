@@ -1,5 +1,11 @@
 Google Data API - Release Notes
 
+Notes for v1.34.0
+-----------------
+Jun 24, 2009
+o  Updated YouTube API data model classes.
+o  Fixed encoding issue with atom content in a multipart/related body.
+
 Notes for v1.33.0
 -----------------
 Jun 8, 2009

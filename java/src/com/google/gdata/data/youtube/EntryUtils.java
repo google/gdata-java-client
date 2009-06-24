@@ -32,46 +32,32 @@ import java.util.Set;
  */
 class EntryUtils {
 
-  /** This is a utility class. */
-  private EntryUtils() {
-  }
-
-  /**
-   * Adds a kind category to the entry.
-   *
-   * @param entry
-   * @param kind
-   */
-  static void addKindCategory(BaseEntry entry, String kind) {
-    addKindCategory(entry.getCategories(), kind);
-  }
-
-  /**
-   * Adds a kind category to the feed.
-   *
-   * @param entry
-   * @param kind
-   */
-  static void addKindCategory(BaseFeed entry, String kind) {
-    addKindCategory(entry.getCategories(), kind);
-  }
-  
   /**
    * Replaces the existing kind category with the new given value.
    * 
    * @param entry entry to change.
    * @param newKind the new kind to set.
    */
-  static void changeKindCategory(BaseEntry<?> entry, String newKind) {
-    for (Iterator<Category> iterator = entry.getCategories().iterator();
-        iterator.hasNext();) {
-      Category category = iterator.next();
+  static void setKind(BaseEntry<?> entry, String newKind) {
+    removeKindCategory(entry.getCategories().iterator());
+    addKindCategory(entry.getCategories(), newKind);
+  }
+
+  /**
+   * Replaces the existing kind category with the new given value.
+   */
+  static void setKind(BaseFeed<?, ?> feed, String newKind) {
+    removeKindCategory(feed.getCategories().iterator());
+    addKindCategory(feed.getCategories(), newKind);
+  }
+
+  private static void removeKindCategory(Iterator<Category> iter) {
+    while (iter.hasNext()) {
+      Category category = iter.next();
       if (Namespaces.gKind.equals(category.getScheme())) {
-        iterator.remove();
+        iter.remove();
       }
     }
-    
-    addKindCategory(entry, newKind);
   }
 
   private static void addKindCategory(Set<Category> categories, String kind) {
@@ -83,12 +69,17 @@ class EntryUtils {
    *
    * @param rel value of the {@code rel} attribute
    */
-  static FeedLink getFeedLink(BaseEntry entry, String rel) {
-    for (FeedLink feedLink : entry.getRepeatingExtension(FeedLink.class)) {
+  static FeedLink<?> getFeedLink(BaseEntry<?> entry, String rel) {
+    for (FeedLink<?> feedLink : entry.getRepeatingExtension(FeedLink.class)) {
       if (rel.equals(feedLink.getRel())) {
         return feedLink;
       }
     }
     return null;
+  }
+
+  /** This is a utility class. */
+  private EntryUtils() {
+    throw new IllegalStateException("");
   }
 }

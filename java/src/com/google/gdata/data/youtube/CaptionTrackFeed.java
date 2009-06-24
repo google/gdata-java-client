@@ -22,22 +22,22 @@ import com.google.gdata.data.Kind;
 import com.google.gdata.data.batch.BatchUtils;
 
 /**
- * Object representation for the comment feed.
+ * A feed of {@link CaptionTrackEntry}
  *
  * 
  */
-@Kind.Term(YouTubeNamespace.KIND_COMMENT)
-public class CommentFeed
-    extends BaseFeed<CommentFeed, CommentEntry>{
+@Kind.Term(YouTubeNamespace.KIND_CAPTION_TRACK)
+public class CaptionTrackFeed
+    extends BaseFeed<CaptionTrackFeed, CaptionTrackEntry>{
 
-  public CommentFeed() {
-    super(CommentEntry.class);
-    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMMENT);
+  public CaptionTrackFeed() {
+    super(CaptionTrackEntry.class);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_CAPTION_TRACK);
   }
 
-  public CommentFeed(BaseFeed<?, ?> base) {
-    super(CommentEntry.class, base);
-    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMMENT);
+  public CaptionTrackFeed(BaseFeed<?, ?> base) {
+    super(CaptionTrackEntry.class, base);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_CAPTION_TRACK);
   }
 
   @Override

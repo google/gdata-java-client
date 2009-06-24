@@ -31,12 +31,12 @@ public class ChannelFeed  extends BaseFeed<ChannelFeed, ChannelEntry>{
   
   public ChannelFeed() {
     super(ChannelEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_CHANNEL);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_CHANNEL);
   }
 
-  public ChannelFeed(BaseFeed base) {
+  public ChannelFeed(BaseFeed<?, ?> base) {
     super(ChannelEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_CHANNEL);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_CHANNEL);
   }
 
   @Override
