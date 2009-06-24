@@ -30,11 +30,11 @@ public class UserProfileFeed
 
   public UserProfileFeed() {
     super(UserProfileEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_PROFILE);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_USER_PROFILE);
   }
 
-  public UserProfileFeed(BaseFeed base) {
+  public UserProfileFeed(BaseFeed<?, ?> base) {
     super(UserProfileEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_PROFILE);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_USER_PROFILE);
   }
 }

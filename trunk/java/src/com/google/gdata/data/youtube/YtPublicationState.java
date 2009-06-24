@@ -24,7 +24,7 @@ import com.google.gdata.util.ParseException;
 
 /**
  * Object representation of <code>app:control/yt:state</code>, which
- * describes the publication state of a {@link VideoEntry}.
+ * describes the publication state of an entry.
  *
  * 
  */
@@ -36,29 +36,32 @@ public class YtPublicationState extends AbstractExtension {
   /**
    * Current state.
    *
-   * This tag never appears on published (live) videos, so there
+   * This tag never appears on published (live) entries, so there
    * is no state {@code PUBLISHED}.
    */
   public static enum State {
 
     /**
-     * The video has not been completely defined yet, but it's been stored
+     * The entry has not been completely defined yet, but it's been stored
      * already.
-     * Either the video data or the description is missing.
+     * Either the entry data or the description is missing.
      */
     INCOMPLETE,
 
-    /** The video has just been uploaded and is not yet publicly available. */
+    /** The entry has just been uploaded and is not yet publicly available. */
     PROCESSING,
 
-    /** The video has been rejected. */
+    /** The entry has been rejected. */
     REJECTED,
 
-    /** The video was not successfully processed. */
+    /** The entry was not successfully processed. */
     FAILED,
     
-    /** Video was removed by the owner. */
+    /** Entry was removed by the owner. */
     DELETED,
+    
+    /** Entry is restricted for the current user, see reasonCode for details. */
+    RESTRICTED,
     ;
   }
 
@@ -68,6 +71,13 @@ public class YtPublicationState extends AbstractExtension {
   private String description;
 
   public YtPublicationState() {
+  }
+
+  public YtPublicationState(State state, String reasonCode, String helpUrl, String description) {
+    this.state = state;
+    this.reasonCode = reasonCode;
+    this.helpUrl = helpUrl;
+    this.description = description;
   }
 
   public YtPublicationState(State state) {
@@ -93,8 +103,8 @@ public class YtPublicationState extends AbstractExtension {
   }
 
   /**
-   * Gets a code describing the reason why the video was
-   * rejected or why processing the video failed.
+   * Gets a code describing the reason why the entry was
+   * rejected or why processing the entry failed.
    *
    * @return a code or {@code null}
    */
@@ -104,7 +114,7 @@ public class YtPublicationState extends AbstractExtension {
 
   /**
    * Sets the code describing the reason why the
-   * video was rejected or why processing the video failed.
+   * entry was rejected or why processing the entry failed.
    *
    * @param code a code or {@code null}
    */
@@ -114,7 +124,7 @@ public class YtPublicationState extends AbstractExtension {
 
   /**
    * Returns, in a human-readable form, the reason why
-   * the video was rejected or why processing the video failed.
+   * the entry was rejected or why processing the entry failed.
    *
    * This error message is only meant to help debugging and
    * should not be parsed automatically. The exact message

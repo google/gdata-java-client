@@ -30,13 +30,13 @@ public class PlaylistEntry extends VideoEntry {
   /** Creates an empty playlist entry. */
   public PlaylistEntry() {
     super();
-    EntryUtils.changeKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_PLAYLIST);
   }
 
   /** Creates a copy of another entry. */
   public PlaylistEntry(BaseEntry<?> original) {
     super(original);
-    EntryUtils.changeKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_PLAYLIST);
   }
 
   /**

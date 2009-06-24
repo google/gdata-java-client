@@ -76,12 +76,12 @@ public class SubscriptionEntry extends FeedLinkEntry<SubscriptionEntry>{
   }
 
   public SubscriptionEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_SUBSCRIPTION);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_SUBSCRIPTION);
   }
 
-  public SubscriptionEntry(BaseEntry base) {
+  public SubscriptionEntry(BaseEntry<?> base) {
     super(base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_SUBSCRIPTION);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_SUBSCRIPTION);
   }
 
   /**

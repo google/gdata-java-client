@@ -40,12 +40,12 @@ public class PlaylistLinkEntry extends FeedLinkEntry<PlaylistLinkEntry>{
   };
 
   public PlaylistLinkEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
   }
 
   public PlaylistLinkEntry(BaseEntry<?> base) {
     super(base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_PLAYLIST_LINK);
   }
 
   /** Sets the private flag. */

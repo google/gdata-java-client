@@ -33,12 +33,12 @@ public class FriendFeed
 
   public FriendFeed() {
     super(FriendEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_FRIEND);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_FRIEND);
   }
 
-  public FriendFeed(BaseFeed base) {
+  public FriendFeed(BaseFeed<?, ?> base) {
     super(FriendEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_FRIEND);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_FRIEND);
   }
 
   /** Returns a link to the profile of this user. */

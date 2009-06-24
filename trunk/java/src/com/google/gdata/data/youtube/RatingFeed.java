@@ -30,11 +30,11 @@ public class RatingFeed
 
   public RatingFeed() {
     super(RatingEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_RATING);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_RATING);
   }
 
   public RatingFeed(BaseFeed base) {
     super(RatingEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_RATING);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_RATING);
   }
 }

@@ -31,13 +31,13 @@ public class VideoMessageEntry extends VideoEntry {
   /** Creates an empty inbox entry. */
   public VideoMessageEntry() {
     super();
-    EntryUtils.changeKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
   }
 
   /** Creates a copy of another entry. */
   public VideoMessageEntry(BaseEntry<?> original) {
     super(original);
-    EntryUtils.changeKindCategory(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_VIDEO_MESSAGE);
   }
 
   /**

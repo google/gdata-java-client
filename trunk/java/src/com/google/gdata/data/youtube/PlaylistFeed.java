@@ -38,12 +38,12 @@ public class PlaylistFeed extends BaseFeed<PlaylistFeed, PlaylistEntry> {
 
   public PlaylistFeed() {
     super(PlaylistEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_PLAYLIST);
   }
 
   public PlaylistFeed(BaseFeed<?, ?> base) {
     super(PlaylistEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_PLAYLIST);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_PLAYLIST);
   }
   
   @Override

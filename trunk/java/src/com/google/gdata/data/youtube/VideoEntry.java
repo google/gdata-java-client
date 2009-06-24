@@ -61,13 +61,13 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
    * Creates an empty video entry.
    */
   public VideoEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_VIDEO);
   }
 
   /** Creates a copy of another entry. */
   public VideoEntry(BaseEntry<?> original) {
     super(original);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_VIDEO);
   }
 
   /**

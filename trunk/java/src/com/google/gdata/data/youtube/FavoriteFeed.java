@@ -19,30 +19,34 @@ package com.google.gdata.data.youtube;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.batch.BatchUtils;
 
 /**
- * Object representation for the comment feed.
+ * A YouTube favorite feed.
  *
  * 
  */
-@Kind.Term(YouTubeNamespace.KIND_COMMENT)
-public class CommentFeed
-    extends BaseFeed<CommentFeed, CommentEntry>{
-
-  public CommentFeed() {
-    super(CommentEntry.class);
-    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMMENT);
+@Kind.Term(YouTubeNamespace.KIND_FAVORITE)
+public class FavoriteFeed extends BaseFeed<FavoriteFeed, FavoriteEntry> {
+  /**
+   * Creates an empty favorite feed.
+   */
+  public FavoriteFeed() {
+    super(FavoriteEntry.class);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_FAVORITE);
   }
-
-  public CommentFeed(BaseFeed<?, ?> base) {
-    super(CommentEntry.class, base);
-    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMMENT);
+  
+  /**
+   * Creates a copy of the given feed.
+   * 
+   * @param base feed to copy.
+   */
+  public FavoriteFeed(BaseFeed<?, ?> base) {
+    super(FavoriteEntry.class, base);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_FAVORITE);
   }
-
+  
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
-    BatchUtils.declareExtensions(extProfile);
   }
 }

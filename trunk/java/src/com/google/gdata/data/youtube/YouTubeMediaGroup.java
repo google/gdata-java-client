@@ -225,10 +225,12 @@ public class YouTubeMediaGroup extends MediaGroup {
     final List<YouTubeMediaContent> contents = getYouTubeContents();
     return new AbstractList<MediaContent>() {
 
+      @Override
       public MediaContent get(int index) {
         return contents.get(index);
       }
 
+      @Override
       public int size() {
         return contents.size();
       }
@@ -300,10 +302,12 @@ public class YouTubeMediaGroup extends MediaGroup {
     final List<YouTubeMediaRating> ratings = getYouTubeRatings();
     return new AbstractList<MediaRating>() {
 
+      @Override
       public MediaRating get(int index) {
         return ratings.get(index);
       }
 
+      @Override
       public int size() {
         return ratings.size();
       }
@@ -375,10 +379,12 @@ public class YouTubeMediaGroup extends MediaGroup {
     final List<YouTubeMediaCredit> credits = getYouTubeCredits();
     return new AbstractList<MediaCredit>() {
 
+      @Override
       public MediaCredit get(int index) {
         return credits.get(index);
       }
 
+      @Override
       public int size() {
         return credits.size();
       }
@@ -400,6 +406,18 @@ public class YouTubeMediaGroup extends MediaGroup {
    */
   public void addCredit(YouTubeMediaCredit credit) {
     addRepeatingExtension(credit);
+  }
+  
+  public void setAspectRatio(YtAspectRatio aspectRatio) {
+    if (aspectRatio == null) {
+      removeExtension(YtAspectRatio.class);
+    } else {
+      setExtension(aspectRatio);
+    }
+  }
+  
+  public YtAspectRatio getAspectRatio() {
+    return getExtension(YtAspectRatio.class);
   }
 
   /** Checks the yt:private flag. */
@@ -469,6 +487,7 @@ public class YouTubeMediaGroup extends MediaGroup {
    */
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    extProfile.declare(YouTubeMediaGroup.class, YtAspectRatio.class);
     extProfile.declare(YouTubeMediaGroup.class, YtVideoId.class);
     extProfile.declare(YouTubeMediaGroup.class, YtDuration.class);
     extProfile.declare(YouTubeMediaGroup.class, YtPrivate.class);

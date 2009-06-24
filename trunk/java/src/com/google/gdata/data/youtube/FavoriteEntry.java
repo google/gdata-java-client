@@ -16,33 +16,33 @@
 
 package com.google.gdata.data.youtube;
 
-import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.batch.BatchUtils;
 
 /**
- * Object representation for the comment feed.
+ * A YouTube video favorite entry.
  *
  * 
  */
-@Kind.Term(YouTubeNamespace.KIND_COMMENT)
-public class CommentFeed
-    extends BaseFeed<CommentFeed, CommentEntry>{
-
-  public CommentFeed() {
-    super(CommentEntry.class);
-    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMMENT);
+@Kind.Term(YouTubeNamespace.KIND_FAVORITE)
+public class FavoriteEntry extends VideoEntry {
+  /** Create an empty favorite entry. */
+  public FavoriteEntry() {
+    super();
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_FAVORITE);
   }
-
-  public CommentFeed(BaseFeed<?, ?> base) {
-    super(CommentEntry.class, base);
-    EntryUtils.setKind(this, YouTubeNamespace.KIND_COMMENT);
+  
+  /** Creates a copy of another entry. */
+  public FavoriteEntry(BaseEntry<?> original) {
+    super(original);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_FAVORITE);
   }
-
+  
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
-    BatchUtils.declareExtensions(extProfile);
+    
+    extProfile.declareArbitraryXmlExtension(FavoriteEntry.class);
   }
 }

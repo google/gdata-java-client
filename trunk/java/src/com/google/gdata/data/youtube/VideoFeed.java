@@ -33,12 +33,12 @@ public class VideoFeed extends MediaFeed<VideoFeed, VideoEntry> {
 
   public VideoFeed() {
     super(VideoEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_VIDEO);
   }
 
-  public VideoFeed(BaseFeed base) {
+  public VideoFeed(BaseFeed<?, ?> base) {
     super(VideoEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_VIDEO);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_VIDEO);
   }
 
   @Override

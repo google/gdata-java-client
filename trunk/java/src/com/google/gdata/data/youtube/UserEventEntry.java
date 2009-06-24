@@ -73,7 +73,7 @@ public class UserEventEntry extends BaseEntry<UserEventEntry> {
   }
   
   public UserEventEntry() {
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_EVENT);    
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_USER_EVENT);    
   }
   
   /**

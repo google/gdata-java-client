@@ -30,12 +30,12 @@ public class UserEventFeed extends BaseFeed<UserEventFeed, UserEventEntry> {
   
   public UserEventFeed() {
     super(UserEventEntry.class);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_EVENT);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_USER_EVENT);
   }
 
-  public UserEventFeed(BaseFeed base) {
+  public UserEventFeed(BaseFeed<?, ?> base) {
     super(UserEventEntry.class, base);
-    EntryUtils.addKindCategory(this, YouTubeNamespace.KIND_USER_EVENT);
+    EntryUtils.setKind(this, YouTubeNamespace.KIND_USER_EVENT);
   }
 
   @Override

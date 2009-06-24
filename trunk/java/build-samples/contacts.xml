@@ -64,7 +64,7 @@
           description="Runs the contacts sample">
 
     <java fork="true" classname="${sample.contacts.main}">
-      <arg line="--username=${sample.credentials.username} --password=${sample.credentials.password} --script=sample/contacts/test.txt"/>
+      <arg line="--username=${sample.credentials.username} --password=${sample.credentials.password} --projection=${sample.contacts.projection} --script=sample/contacts/test.txt"/>
       <classpath>
         <path refid="sample.contacts.compile.classpath"/>
         <path location="${sample.contacts.jar}"/>
