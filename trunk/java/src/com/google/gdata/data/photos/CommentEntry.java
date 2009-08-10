@@ -17,73 +17,174 @@
 package com.google.gdata.data.photos;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.photos.impl.CommentDataImpl;
 
 /**
- * Entry for data of the comment kind.  This is used to create comment entries
- * in the Picasaweb GData api.
+ * Entry for comment kinds, contains comment metadata.
  *
  * 
  */
-@Kind.Term(CommentData.COMMENT_KIND)
-public class CommentEntry extends GphotoEntry<CommentEntry>
-    implements CommentData, AtomData {
-
-  private final CommentData delegate;
+@Kind.Term(CommentEntry.KIND)
+public class CommentEntry extends GphotoEntry<CommentEntry> implements AtomData,
+    CommentData {
 
   /**
-   * Construct a new empty comment entry.
+   * Comment kind term value.
+   */
+  public static final String KIND = Namespaces.PHOTOS_PREFIX + "comment";
+
+  /**
+   * Comment kind category.
+   */
+  public static final Category CATEGORY = new
+      Category(com.google.gdata.util.Namespaces.gKind, KIND);
+
+  /**
+   * Default mutable constructor.
    */
   public CommentEntry() {
     super();
-    getCategories().add(CommentData.COMMENT_CATEGORY);
-    this.delegate = new CommentDataImpl(this);
+    getCategories().add(CATEGORY);
   }
 
   /**
-   * Construct a new comment entry doing a shallow copy of the data in the
-   * passed in source entry.
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link BaseEntry} instance.
+   *
+   * @param sourceEntry source entry
    */
   public CommentEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
-    getCategories().add(CommentData.COMMENT_CATEGORY);
-    this.delegate = new CommentDataImpl(this);
   }
 
-  /*
-   * Declare the extensions the comment entry uses.
-   */
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
-    delegate.declareExtensions(extProfile);
+    if (extProfile.isDeclared(CommentEntry.class)) {
+      return;
+    }
     super.declareExtensions(extProfile);
+    extProfile.declare(CommentEntry.class, GphotoAlbumId.class);
+    extProfile.declare(CommentEntry.class,
+        CommentAuthor.getDefaultDescription(false, true));
+    new CommentAuthor().declareExtensions(extProfile);
+    extProfile.declare(CommentEntry.class, GphotoPhotoId.class);
   }
 
-  // Delegating methods.
+  /**
+   * Returns the album ID of the album this comment is on.
+   *
+   * @return album ID of the album this comment is on
+   */
+  public GphotoAlbumId getAlbumIdExt() {
+    return getExtension(GphotoAlbumId.class);
+  }
+
+  /**
+   * Sets the album ID of the album this comment is on.
+   *
+   * @param albumIdExt album ID of the album this comment is on or
+   *     <code>null</code> to reset
+   */
+  public void setAlbumIdExt(GphotoAlbumId albumIdExt) {
+    if (albumIdExt == null) {
+      removeExtension(GphotoAlbumId.class);
+    } else {
+      setExtension(albumIdExt);
+    }
+  }
+
+  /**
+   * Returns whether it has the album ID of the album this comment is on.
+   *
+   * @return whether it has the album ID of the album this comment is on
+   */
+  public boolean hasAlbumIdExt() {
+    return hasExtension(GphotoAlbumId.class);
+  }
+
+  /**
+   * Returns the photo ID of the album this comment is on.
+   *
+   * @return photo ID of the album this comment is on
+   */
+  public GphotoPhotoId getPhotoIdExt() {
+    return getExtension(GphotoPhotoId.class);
+  }
+
+  /**
+   * Sets the photo ID of the album this comment is on.
+   *
+   * @param photoIdExt photo ID of the album this comment is on or
+   *     <code>null</code> to reset
+   */
+  public void setPhotoIdExt(GphotoPhotoId photoIdExt) {
+    if (photoIdExt == null) {
+      removeExtension(GphotoPhotoId.class);
+    } else {
+      setExtension(photoIdExt);
+    }
+  }
+
+  /**
+   * Returns whether it has the photo ID of the album this comment is on.
+   *
+   * @return whether it has the photo ID of the album this comment is on
+   */
+  public boolean hasPhotoIdExt() {
+    return hasExtension(GphotoPhotoId.class);
+  }
+
+  @Override
+  protected void validate() {
+  }
+
+  @Override
+  public String toString() {
+    return "{CommentEntry " + super.toString() + "}";
+  }
+
 
   public String getAlbumId() {
-    return delegate.getAlbumId();
+    GphotoAlbumId ext = getAlbumIdExt();
+    return ext == null ? null : ext.getValue();
   }
 
   public String getPhotoId() {
-    return delegate.getPhotoId();
+    GphotoPhotoId ext = getPhotoIdExt();
+    return ext == null ? null : ext.getValue();
   }
 
   public void setAlbumId(Long albumId) {
-    delegate.setAlbumId(albumId);
+    GphotoAlbumId ext = null;
+    if (albumId != null) {
+      ext = GphotoAlbumId.from(albumId);
+    }
+    setAlbumIdExt(ext);
   }
 
   public void setAlbumId(String albumId) {
-    delegate.setAlbumId(albumId);
+    GphotoAlbumId ext = null;
+    if (albumId != null) {
+      ext = new GphotoAlbumId(albumId);
+    }
+    setAlbumIdExt(ext);
   }
 
   public void setPhotoId(Long photoId) {
-    delegate.setPhotoId(photoId);
+    GphotoPhotoId ext = null;
+    if (photoId != null) {
+      ext = GphotoPhotoId.from(photoId);
+    }
+    setPhotoIdExt(ext);
   }
 
   public void setPhotoId(String photoId) {
-    delegate.setPhotoId(photoId);
+    GphotoPhotoId ext = null;
+    if (photoId != null) {
+      ext = new GphotoPhotoId(photoId);
+    }
+    setPhotoIdExt(ext);
   }
 }

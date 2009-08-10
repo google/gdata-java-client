@@ -18,11 +18,11 @@ package com.google.gdata.model.atompub;
 
 import com.google.common.collect.Maps;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.atom.Category;
 import com.google.gdata.util.Namespaces;
@@ -101,11 +101,18 @@ public class Categories extends Element {
   public static final AttributeKey<String> SCHEME = AttributeKey.of(new
       QName(null, "scheme"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(FIXED);
     builder.addAttribute(HREF);
     builder.addAttribute(SCHEME);
@@ -160,7 +167,7 @@ public class Categories extends Element {
    * @param category category
    */
   public Categories addCategory(Category category) {
-    super.addElement(Category.KEY, category);
+    super.addElement(category);
     return this;
   }
 
@@ -171,7 +178,14 @@ public class Categories extends Element {
    * @return true if the category was removed
    */
   public boolean removeCategory(Category category) {
-    return super.removeElement(Category.KEY, category);
+    return super.removeElement(category);
+  }
+
+  /**
+   * Removes all existing category instances.
+   */
+  public void clearCategories() {
+    super.removeElement(Category.KEY);
   }
 
   /**
@@ -198,7 +212,8 @@ public class Categories extends Element {
    * set.
    *
    * @param fixed indicates whether the list of categories is a fixed or an open
-   *     set or <code>null</code> to reset
+   *     set or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Categories setFixed(Fixed fixed) {
     super.setAttributeValue(FIXED, fixed);
@@ -228,8 +243,9 @@ public class Categories extends Element {
   /**
    * Sets the an IRI reference to a Category Document.
    *
-   * @param href an IRI reference to a Category Document or <code>null</code> to
+   * @param href an IRI reference to a Category Document or {@code null} to
    *     reset
+   * @return this to enable chaining setters
    */
   public Categories setHref(String href) {
     super.setAttributeValue(HREF, href);
@@ -257,8 +273,9 @@ public class Categories extends Element {
   /**
    * Sets the default scheme of the contained category elements.
    *
-   * @param scheme default scheme of the contained category elements or
-   *     <code>null</code> to reset
+   * @param scheme default scheme of the contained category elements or {@code
+   *     null} to reset
+   * @return this to enable chaining setters
    */
   public Categories setScheme(String scheme) {
     super.setAttributeValue(SCHEME, scheme);
@@ -276,10 +293,6 @@ public class Categories extends Element {
     return getScheme() != null;
   }
 
-  @Override
-  public String toString() {
-    return "{Categories fixed=" + getAttributeValue(FIXED) + " href=" +
-        getAttributeValue(HREF) + " scheme=" + getAttributeValue(SCHEME) + "}";
-  }
 
 }
+

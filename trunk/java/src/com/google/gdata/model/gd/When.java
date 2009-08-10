@@ -18,11 +18,11 @@ package com.google.gdata.model.gd;
 
 import com.google.gdata.data.DateTime;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -60,11 +60,18 @@ public class When extends Element {
   public static final AttributeKey<String> VALUE_STRING = AttributeKey.of(new
       QName(null, "valueString"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(END_TIME);
     builder.addAttribute(START_TIME).setRequired(true);
     builder.addAttribute(VALUE_STRING);
@@ -115,7 +122,8 @@ public class When extends Element {
   /**
    * Sets the event end time.
    *
-   * @param endTime event end time or <code>null</code> to reset
+   * @param endTime event end time or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public When setEndTime(DateTime endTime) {
     super.setAttributeValue(END_TIME, endTime);
@@ -146,7 +154,7 @@ public class When extends Element {
    * @param reminder event reminder
    */
   public When addReminder(Reminder reminder) {
-    super.addElement(Reminder.KEY, reminder);
+    super.addElement(reminder);
     return this;
   }
 
@@ -157,7 +165,14 @@ public class When extends Element {
    * @return true if the reminder was removed
    */
   public boolean removeReminder(Reminder reminder) {
-    return super.removeElement(Reminder.KEY, reminder);
+    return super.removeElement(reminder);
+  }
+
+  /**
+   * Removes all existing event reminder instances.
+   */
+  public void clearReminder() {
+    super.removeElement(Reminder.KEY);
   }
 
   /**
@@ -181,7 +196,8 @@ public class When extends Element {
   /**
    * Sets the event start time.
    *
-   * @param startTime event start time or <code>null</code> to reset
+   * @param startTime event start time or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public When setStartTime(DateTime startTime) {
     super.setAttributeValue(START_TIME, startTime);
@@ -209,8 +225,9 @@ public class When extends Element {
   /**
    * Sets the string description of the event times.
    *
-   * @param valueString string description of the event times or
-   *     <code>null</code> to reset
+   * @param valueString string description of the event times or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public When setValueString(String valueString) {
     super.setAttributeValue(VALUE_STRING, valueString);
@@ -226,11 +243,6 @@ public class When extends Element {
     return getValueString() != null;
   }
 
-  @Override
-  public String toString() {
-    return "{When endTime=" + getAttributeValue(END_TIME) + " startTime=" +
-        getAttributeValue(START_TIME) + " valueString=" +
-        getAttributeValue(VALUE_STRING) + "}";
-  }
 
 }
+

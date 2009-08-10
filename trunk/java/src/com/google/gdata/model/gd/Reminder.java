@@ -18,10 +18,10 @@ package com.google.gdata.model.gd;
 
 import com.google.gdata.data.DateTime;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -104,11 +104,18 @@ public class Reminder extends Element {
   public static final AttributeKey<Integer> MINUTES = AttributeKey.of(new
       QName(null, "minutes"), Integer.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(ABSOLUTE_TIME);
     builder.addAttribute(DAYS);
     builder.addAttribute(HOURS);
@@ -159,8 +166,8 @@ public class Reminder extends Element {
   /**
    * Sets the absolute time of the reminder.
    *
-   * @param absoluteTime absolute time of the reminder or <code>null</code> to
-   *     reset
+   * @param absoluteTime absolute time of the reminder or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Reminder setAbsoluteTime(DateTime absoluteTime) {
     super.setAttributeValue(ABSOLUTE_TIME, absoluteTime);
@@ -188,8 +195,8 @@ public class Reminder extends Element {
   /**
    * Sets the number of days before the start time.
    *
-   * @param days number of days before the start time or <code>null</code> to
-   *     reset
+   * @param days number of days before the start time or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Reminder setDays(Integer days) {
     super.setAttributeValue(DAYS, days);
@@ -217,8 +224,8 @@ public class Reminder extends Element {
   /**
    * Sets the number of hours before the start time.
    *
-   * @param hours number of hours before the start time or <code>null</code> to
-   *     reset
+   * @param hours number of hours before the start time or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Reminder setHours(Integer hours) {
     super.setAttributeValue(HOURS, hours);
@@ -246,7 +253,8 @@ public class Reminder extends Element {
   /**
    * Sets the method.
    *
-   * @param method method or <code>null</code> to reset
+   * @param method method or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Reminder setMethod(String method) {
     super.setAttributeValue(METHOD, method);
@@ -274,8 +282,9 @@ public class Reminder extends Element {
   /**
    * Sets the number of minute before the start times.
    *
-   * @param minutes number of minute before the start times or <code>null</code>
-   *     to reset
+   * @param minutes number of minute before the start times or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public Reminder setMinutes(Integer minutes) {
     super.setAttributeValue(MINUTES, minutes);
@@ -328,12 +337,5 @@ public class Reminder extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{Reminder absoluteTime=" + getAttributeValue(ABSOLUTE_TIME) +
-        " days=" + getAttributeValue(DAYS) + " hours=" +
-        getAttributeValue(HOURS) + " method=" + getAttributeValue(METHOD) +
-        " minutes=" + getAttributeValue(MINUTES) + "}";
-  }
-
 }
+

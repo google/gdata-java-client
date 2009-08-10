@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -146,11 +146,18 @@ public class StructuredPostalAddress extends Element {
   public static final AttributeKey<String> USAGE = AttributeKey.of(new
       QName(null, "usage"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(LABEL);
     builder.addAttribute(MAIL_CLASS);
     builder.addAttribute(PRIMARY);
@@ -215,7 +222,8 @@ public class StructuredPostalAddress extends Element {
    * Sets the Used in work addresses.  Also for 'in care of' or 'c/o'.
    *
    * @param agent Used in work addresses.  Also for 'in care of' or 'c/o' or
-   *     <code>null</code> to reset
+   *     {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setAgent(Agent agent) {
     super.setElement(Agent.KEY, agent);
@@ -245,8 +253,9 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the Can be city, village, town, borough, etc.
    *
-   * @param city Can be city, village, town, borough, etc or <code>null</code>
-   *     to reset
+   * @param city Can be city, village, town, borough, etc or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setCity(City city) {
     super.setElement(City.KEY, city);
@@ -274,7 +283,8 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the The country name.
    *
-   * @param country The country name or <code>null</code> to reset
+   * @param country The country name or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setCountry(Country country) {
     super.setElement(Country.KEY, country);
@@ -302,8 +312,9 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the The full, unstructured address.
    *
-   * @param formattedAddress The full, unstructured address or <code>null</code>
-   *     to reset
+   * @param formattedAddress The full, unstructured address or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setFormattedAddress(FormattedAddress
       formattedAddress) {
@@ -333,7 +344,8 @@ public class StructuredPostalAddress extends Element {
    * Sets the Used in places where houses or buildings have names.
    *
    * @param housename Used in places where houses or buildings have names or
-   *     <code>null</code> to reset
+   *     {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setHousename(HouseName housename) {
     super.setElement(HouseName.KEY, housename);
@@ -363,8 +375,9 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the Simple string value used to name this address.
    *
-   * @param label Simple string value used to name this address or
-   *     <code>null</code> to reset
+   * @param label Simple string value used to name this address or {@code null}
+   *     to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setLabel(String label) {
     super.setAttributeValue(LABEL, label);
@@ -392,7 +405,8 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the The mail class.
    *
-   * @param mailClass The mail class or <code>null</code> to reset
+   * @param mailClass The mail class or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setMailClass(String mailClass) {
     super.setAttributeValue(MAIL_CLASS, mailClass);
@@ -420,8 +434,9 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the Neighborhood. Used to disambiguate a street.
    *
-   * @param neighborhood Neighborhood. Used to disambiguate a street or
-   *     <code>null</code> to reset
+   * @param neighborhood Neighborhood. Used to disambiguate a street or {@code
+   *     null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setNeighborhood(Neighborhood neighborhood) {
     super.setElement(Neighborhood.KEY, neighborhood);
@@ -449,7 +464,8 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the P.O. box.
    *
-   * @param pobox P.O. box or <code>null</code> to reset
+   * @param pobox P.O. box or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setPobox(PoBox pobox) {
     super.setElement(PoBox.KEY, pobox);
@@ -477,7 +493,8 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the Postal code.
    *
-   * @param postcode Postal code or <code>null</code> to reset
+   * @param postcode Postal code or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setPostcode(PostCode postcode) {
     super.setElement(PostCode.KEY, postcode);
@@ -505,8 +522,9 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the whether this is the primary postal address.
    *
-   * @param primary whether this is the primary postal address or
-   *     <code>null</code> to reset
+   * @param primary whether this is the primary postal address or {@code null}
+   *     to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setPrimary(Boolean primary) {
     super.setAttributeValue(PRIMARY, primary);
@@ -538,7 +556,8 @@ public class StructuredPostalAddress extends Element {
    * departement (in France), etc.
    *
    * @param region Region is state, province, county (in Ireland), Land (in
-   *     Germany), departement (in France), etc or <code>null</code> to reset
+   *     Germany), departement (in France), etc or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setRegion(Region region) {
     super.setElement(Region.KEY, region);
@@ -568,7 +587,8 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the the postal address type.
    *
-   * @param rel the postal address type or <code>null</code> to reset
+   * @param rel the postal address type or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setRel(String rel) {
     super.setAttributeValue(REL, rel);
@@ -600,8 +620,9 @@ public class StructuredPostalAddress extends Element {
    * house number and room/apartment/flat/floor number.
    *
    * @param street Can be street, avenue, road, etc.  This element also includes
-   *     the house number and room/apartment/flat/floor number or
-   *     <code>null</code> to reset
+   *     the house number and room/apartment/flat/floor number or {@code null}
+   *     to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setStreet(Street street) {
     super.setElement(Street.KEY, street);
@@ -632,7 +653,8 @@ public class StructuredPostalAddress extends Element {
    * Sets the Subregion is county (US), province (in Italy), etc.
    *
    * @param subregion Subregion is county (US), province (in Italy), etc or
-   *     <code>null</code> to reset
+   *     {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setSubregion(Subregion subregion) {
     super.setElement(Subregion.KEY, subregion);
@@ -662,7 +684,8 @@ public class StructuredPostalAddress extends Element {
   /**
    * Sets the The context for the address use.
    *
-   * @param usage The context for the address use or <code>null</code> to reset
+   * @param usage The context for the address use or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public StructuredPostalAddress setUsage(String usage) {
     super.setAttributeValue(USAGE, usage);
@@ -678,12 +701,6 @@ public class StructuredPostalAddress extends Element {
     return getUsage() != null;
   }
 
-  @Override
-  public String toString() {
-    return "{StructuredPostalAddress label=" + getAttributeValue(LABEL) +
-        " mailClass=" + getAttributeValue(MAIL_CLASS) + " primary=" +
-        getAttributeValue(PRIMARY) + " rel=" + getAttributeValue(REL) +
-        " usage=" + getAttributeValue(USAGE) + "}";
-  }
 
 }
+

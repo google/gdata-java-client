@@ -16,9 +16,9 @@
 
 package com.google.gdata.model.gd;
 
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.atom.Category;
 import com.google.gdata.model.atom.Feed;
 import com.google.gdata.util.Namespaces;
@@ -51,16 +51,29 @@ public class EventFeed extends Feed {
       EventFeed> KEY = ElementKey.of(Feed.KEY.getId(), Void.class,
       EventFeed.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register superclass metadata.
+    Feed.registerMetadata(registry);
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Overridden elements
     builder.replaceElement(Category.KEY).setRequired(true);
-    builder.replaceElement(EventEntry.KEY);
+
+    // Local properties
     builder.addUndeclaredElementMarker();
     builder.addElement(EventEntry.KEY);
-    DefaultRegistry.adapt(Feed.KEY, KIND, KEY);
+
+    // Adaptations from the super type
+    registry.adapt(Feed.KEY, KIND, KEY);
   }
 
   /**
@@ -110,9 +123,6 @@ public class EventFeed extends Feed {
     return getEntries(EventEntry.KEY);
   }
 
-  @Override
-  public String toString() {
-    return "{EventFeed " + super.toString() + "}";
-  }
 
 }
+

@@ -90,8 +90,24 @@ public class ExtensionProfile {
     // base adaptable type.  This ensures that extensions will be parseable
     // on a more generic base type.   As an example, this would map extensions
     // that are normally associated with EventEntry "up" to BaseEntry.
+    boolean wasRequirednessRemoved = false;
     while (isAutoExtending &&
         Kind.Adaptable.class.isAssignableFrom(extendedType.getSuperclass())) {
+      /* it is unsafe to pass require-ness to a the super class, so here we are
+         removing the required-ness from the extension description. See for
+         example bug 191364. */
+      if (!wasRequirednessRemoved && extDescription.isRequired()) {
+        wasRequirednessRemoved = true;
+        extDescription = new ExtensionDescription(
+            extDescription.getExtensionClass(),
+            extDescription.getNamespace(),
+            extDescription.getLocalName(),
+            false,
+            extDescription.isRepeatable(),
+            extDescription.isAggregate(),
+            extDescription.allowsArbitraryXml(),
+            extDescription.allowsMixedContent());
+      }
         extendedType = extensionPointClass(extendedType.getSuperclass());
     }
 

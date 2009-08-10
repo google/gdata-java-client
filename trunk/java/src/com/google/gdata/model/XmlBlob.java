@@ -47,6 +47,17 @@ public class XmlBlob extends Element {
       null, XmlBlob.class);
 
   /**
+   * Registers the metadata for this element.
+   */
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    ElementCreator builder = registry.build(KEY);
+  }
+
+  /**
    * Constructs a new instance using the specified element key.
    *
    * @param key the element key for this element.
@@ -111,7 +122,6 @@ public class XmlBlob extends Element {
     StringWriter sw = new StringWriter();
     // formatting model should be aligned with the broader context, and its
     // context and registry should come from the other content too.
-    MetadataRegistry registry = DefaultRegistry.get();
     OutputProperties outProps = new OutputPropertiesBuilder()
         .build();
     WireFormatGenerator generator = WireFormat.XML.createGenerator(
@@ -134,7 +144,6 @@ public class XmlBlob extends Element {
   public void setBlob(String v) {
     clear();
 
-    MetadataRegistry registry = DefaultRegistry.get();
     InputProperties inProps = new InputPropertiesBuilder()
         .build();
 

@@ -84,9 +84,9 @@ public interface MediaData extends Extensible {
   /**
    * Retrieve the list of media:keywords elements inside the media:group on
    * this element.  If either the media:group or media:keywords elements are
-   * missing then an empty list will be returned.
+   * missing then {@code null} will be returned.
    *
-   * @return the media:keywords elements found on the element.
+   * @return the media:keywords elements found on the element, or {@code null}.
    */
   public MediaKeywords getMediaKeywords();
 

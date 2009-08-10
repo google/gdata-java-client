@@ -36,21 +36,21 @@ final class AttributeMetadataImpl<D> extends MetadataImpl<D>
    * Construct a new immutable attribute metadata for the given declared
    * data.
    */
-  AttributeMetadataImpl(MetadataRegistry registry,
+  AttributeMetadataImpl(Schema schema,
       AttributeTransform transform, ElementKey<?, ?> parent,
       AttributeKey<D> key, MetadataContext context) {
-    super(registry, transform, parent, key, context);
+    super(schema, transform, parent, key, context);
 
     this.attKey = key;
   }
 
   /**
    * Binds this attribute metadata to a different context.  Reuses the current
-   * parent and attribute keys and just has the registry bind to a different
+   * parent and attribute keys and just has the schema bind to a different
    * context.
    */
   public AttributeMetadata<D> bind(MetadataContext context) {
-    return registry.bind(parent, attKey, context);
+    return schema.bind(parent, attKey, context);
   }
 
   @Override
@@ -73,7 +73,8 @@ final class AttributeMetadataImpl<D> extends MetadataImpl<D>
     if (virtualValue != null) {
       super.parseValue(element, metadata, value);
     } else {
-      element.setAttributeValue(attKey, ObjectConverter.getValue(value, attKey.getDatatype()));
+      element.setAttributeValue(attKey,
+          ObjectConverter.getValue(value, attKey.getDatatype()));
     }
   }
 }

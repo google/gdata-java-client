@@ -31,6 +31,7 @@ import com.google.gdata.data.extensions.Deleted;
 import com.google.gdata.data.extensions.PostalAddress;
 import com.google.gdata.data.extensions.ResourceId;
 import com.google.gdata.data.extensions.StructuredPostalAddress;
+import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.XmlBlob;
 
@@ -267,10 +268,23 @@ public class FeatureEntry extends BaseEntry<FeatureEntry> {
   }
 
 
+
+  /** True if this feature has an interesting read-only view, for example as driving directions. */
+  private boolean hasView;
   private boolean isKmlDefault = true;
+  public static final ContentType KML_CONTENT =
+      new ContentType("application/vnd.google-earth.kml+xml");
 
   public void setKmlDefault(boolean isDefault) {
     isKmlDefault = isDefault;
+  }
+
+  public boolean hasView() {
+    return hasView;
+  }
+
+  public void setHasView(boolean hasView) {
+    this.hasView = hasView;
   }
 
   /**
@@ -307,6 +321,7 @@ public class FeatureEntry extends BaseEntry<FeatureEntry> {
   public void setKml(XmlBlob kml) {
     OtherContent content = new OtherContent();
     content.setXml(kml);
+    content.setMimeType(KML_CONTENT);
     setContent(content);
   }
 }

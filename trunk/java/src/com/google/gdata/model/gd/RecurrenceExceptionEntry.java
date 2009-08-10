@@ -16,10 +16,10 @@
 
 package com.google.gdata.model.gd;
 
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.atom.Entry;
 
 import java.util.List;
@@ -39,11 +39,21 @@ public class RecurrenceExceptionEntry extends Entry {
       RecurrenceExceptionEntry> KEY = ElementKey.of(Entry.KEY.getId(),
       Void.class, RecurrenceExceptionEntry.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register superclass metadata.
+    Entry.registerMetadata(registry);
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addElement(Comments.KEY);
     builder.addElement(EventStatus.KEY);
     builder.addElement(OriginalEvent.KEY);
@@ -112,7 +122,8 @@ public class RecurrenceExceptionEntry extends Entry {
   /**
    * Sets the Comments class.
    *
-   * @param comments Comments class or <code>null</code> to reset
+   * @param comments Comments class or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public RecurrenceExceptionEntry setComments(Comments comments) {
     super.setElement(Comments.KEY, comments);
@@ -140,7 +151,8 @@ public class RecurrenceExceptionEntry extends Entry {
   /**
    * Sets the event status.
    *
-   * @param eventStatus event status or <code>null</code> to reset
+   * @param eventStatus event status or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public RecurrenceExceptionEntry setEventStatus(EventStatus eventStatus) {
     super.setElement(EventStatus.KEY, eventStatus);
@@ -168,7 +180,8 @@ public class RecurrenceExceptionEntry extends Entry {
   /**
    * Sets the original event.
    *
-   * @param originalEvent original event or <code>null</code> to reset
+   * @param originalEvent original event or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public RecurrenceExceptionEntry setOriginalEvent(OriginalEvent originalEvent)
       {
@@ -197,7 +210,8 @@ public class RecurrenceExceptionEntry extends Entry {
   /**
    * Sets the event transparency.
    *
-   * @param transparency event transparency or <code>null</code> to reset
+   * @param transparency event transparency or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public RecurrenceExceptionEntry setTransparency(Transparency transparency) {
     super.setElement(Transparency.KEY, transparency);
@@ -225,7 +239,8 @@ public class RecurrenceExceptionEntry extends Entry {
   /**
    * Sets the event visibility.
    *
-   * @param visibility event visibility or <code>null</code> to reset
+   * @param visibility event visibility or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public RecurrenceExceptionEntry setVisibility(Visibility visibility) {
     super.setElement(Visibility.KEY, visibility);
@@ -256,7 +271,7 @@ public class RecurrenceExceptionEntry extends Entry {
    * @param when time period description
    */
   public RecurrenceExceptionEntry addWhen(When when) {
-    super.addElement(When.KEY, when);
+    super.addElement(when);
     return this;
   }
 
@@ -267,7 +282,14 @@ public class RecurrenceExceptionEntry extends Entry {
    * @return true if the when was removed
    */
   public boolean removeWhen(When when) {
-    return super.removeElement(When.KEY, when);
+    return super.removeElement(when);
+  }
+
+  /**
+   * Removes all existing time period description instances.
+   */
+  public void clearWhen() {
+    super.removeElement(When.KEY);
   }
 
   /**
@@ -294,7 +316,7 @@ public class RecurrenceExceptionEntry extends Entry {
    * @param where place description
    */
   public RecurrenceExceptionEntry addWhere(Where where) {
-    super.addElement(Where.KEY, where);
+    super.addElement(where);
     return this;
   }
 
@@ -305,7 +327,14 @@ public class RecurrenceExceptionEntry extends Entry {
    * @return true if the where was removed
    */
   public boolean removeWhere(Where where) {
-    return super.removeElement(Where.KEY, where);
+    return super.removeElement(where);
+  }
+
+  /**
+   * Removes all existing place description instances.
+   */
+  public void clearWhere() {
+    super.removeElement(Where.KEY);
   }
 
   /**
@@ -332,7 +361,7 @@ public class RecurrenceExceptionEntry extends Entry {
    * @param who person description
    */
   public RecurrenceExceptionEntry addWho(Who who) {
-    super.addElement(Who.KEY, who);
+    super.addElement(who);
     return this;
   }
 
@@ -343,7 +372,14 @@ public class RecurrenceExceptionEntry extends Entry {
    * @return true if the who was removed
    */
   public boolean removeWho(Who who) {
-    return super.removeElement(Who.KEY, who);
+    return super.removeElement(who);
+  }
+
+  /**
+   * Removes all existing person description instances.
+   */
+  public void clearWho() {
+    super.removeElement(Who.KEY);
   }
 
   /**
@@ -355,9 +391,6 @@ public class RecurrenceExceptionEntry extends Entry {
     return super.hasElement(Who.KEY);
   }
 
-  @Override
-  public String toString() {
-    return "{RecurrenceExceptionEntry " + super.toString() + "}";
-  }
 
 }
+

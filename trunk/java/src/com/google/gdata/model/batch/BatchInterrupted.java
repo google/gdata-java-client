@@ -18,10 +18,10 @@ package com.google.gdata.model.batch;
 
 import com.google.gdata.data.batch.IBatchInterrupted;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
@@ -77,12 +77,15 @@ public class BatchInterrupted extends Element implements IBatchInterrupted {
   public static final AttributeKey<Integer> TOTAL_COUNT = AttributeKey.of(
       new QName("parsed"), Integer.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY)
-        .setContentRequired(false);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    ElementCreator builder = registry.build(KEY).setContentRequired(false);
     builder.addAttribute(CONTENT_TYPE);
     builder.addAttribute(ERROR_COUNT).setRequired(true);
     builder.addAttribute(TOTAL_COUNT).setRequired(true);

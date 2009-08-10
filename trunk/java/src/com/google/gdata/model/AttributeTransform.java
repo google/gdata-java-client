@@ -31,7 +31,7 @@ final class AttributeTransform extends Transform {
   static final AttributeTransform EMPTY = new AttributeTransform();
 
   /**
-   * Creates an attribute transform for the given builder.
+   * Creates an attribute transform for the given creator.
    */
   static AttributeTransform create(AttributeCreatorImpl creator) {
     AttributeTransform transform = new AttributeTransform(creator);
@@ -77,8 +77,8 @@ final class AttributeTransform extends Transform {
   /**
    * Creates a new attribute metadata instance based on this transform.
    */
-  <D> AttributeMetadata<D> toMetadata(MetadataRegistry registry,
+  <D> AttributeMetadata<D> toMetadata(Schema schema,
       ElementKey<?, ?> parent, AttributeKey<D> key, MetadataContext context) {
-    return new AttributeMetadataImpl<D>(registry, this, parent, key, context);
+    return new AttributeMetadataImpl<D>(schema, this, parent, key, context);
   }
 }

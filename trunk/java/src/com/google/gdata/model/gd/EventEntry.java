@@ -16,10 +16,10 @@
 
 package com.google.gdata.model.gd;
 
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.atom.Author;
 import com.google.gdata.model.atom.Category;
 import com.google.gdata.model.atom.Entry;
@@ -53,13 +53,25 @@ public class EventEntry extends Entry {
       EventEntry> KEY = ElementKey.of(Entry.KEY.getId(), Void.class,
       EventEntry.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register superclass metadata.
+    Entry.registerMetadata(registry);
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Overridden elements
     builder.replaceElement(Author.KEY).setRequired(true);
     builder.replaceElement(Category.KEY).setRequired(true);
+
+    // Local properties
     builder.addElement(Comments.KEY);
     builder.addElement(EventStatus.KEY);
     builder.addElement(Where.KEY).setCardinality(
@@ -76,7 +88,9 @@ public class EventEntry extends Entry {
         ElementMetadata.Cardinality.MULTIPLE);
     builder.addElement(Transparency.KEY);
     builder.addElement(Visibility.KEY);
-    DefaultRegistry.adapt(Entry.KEY, KIND, KEY);
+
+    // Adaptations from the super type
+    registry.adapt(Entry.KEY, KIND, KEY);
   }
 
   /**
@@ -133,7 +147,8 @@ public class EventEntry extends Entry {
   /**
    * Sets the nested comments feed.
    *
-   * @param comments nested comments feed or <code>null</code> to reset
+   * @param comments nested comments feed or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public EventEntry setComments(Comments comments) {
     super.setElement(Comments.KEY, comments);
@@ -161,7 +176,8 @@ public class EventEntry extends Entry {
   /**
    * Sets the event status.
    *
-   * @param eventStatus event status or <code>null</code> to reset
+   * @param eventStatus event status or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public EventEntry setEventStatus(EventStatus eventStatus) {
     super.setElement(EventStatus.KEY, eventStatus);
@@ -192,7 +208,7 @@ public class EventEntry extends Entry {
    * @param location event location
    */
   public EventEntry addLocation(Where location) {
-    super.addElement(Where.KEY, location);
+    super.addElement(location);
     return this;
   }
 
@@ -203,7 +219,14 @@ public class EventEntry extends Entry {
    * @return true if the location was removed
    */
   public boolean removeLocation(Where location) {
-    return super.removeElement(Where.KEY, location);
+    return super.removeElement(location);
+  }
+
+  /**
+   * Removes all existing event location instances.
+   */
+  public void clearLocations() {
+    super.removeElement(Where.KEY);
   }
 
   /**
@@ -227,8 +250,8 @@ public class EventEntry extends Entry {
   /**
    * Sets the event original start time.
    *
-   * @param originalEvent event original start time or <code>null</code> to
-   *     reset
+   * @param originalEvent event original start time or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public EventEntry setOriginalEvent(OriginalEvent originalEvent) {
     super.setElement(OriginalEvent.KEY, originalEvent);
@@ -259,7 +282,7 @@ public class EventEntry extends Entry {
    * @param participant event participant
    */
   public EventEntry addParticipant(Who participant) {
-    super.addElement(Who.KEY, participant);
+    super.addElement(participant);
     return this;
   }
 
@@ -270,7 +293,14 @@ public class EventEntry extends Entry {
    * @return true if the participant was removed
    */
   public boolean removeParticipant(Who participant) {
-    return super.removeElement(Who.KEY, participant);
+    return super.removeElement(participant);
+  }
+
+  /**
+   * Removes all existing event participant instances.
+   */
+  public void clearParticipants() {
+    super.removeElement(Who.KEY);
   }
 
   /**
@@ -294,7 +324,8 @@ public class EventEntry extends Entry {
   /**
    * Sets the event recurrence.
    *
-   * @param recurrence event recurrence or <code>null</code> to reset
+   * @param recurrence event recurrence or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public EventEntry setRecurrence(Recurrence recurrence) {
     super.setElement(Recurrence.KEY, recurrence);
@@ -326,7 +357,7 @@ public class EventEntry extends Entry {
    */
   public EventEntry addRecurrenceException(RecurrenceException
       recurrenceException) {
-    super.addElement(RecurrenceException.KEY, recurrenceException);
+    super.addElement(recurrenceException);
     return this;
   }
 
@@ -338,7 +369,14 @@ public class EventEntry extends Entry {
    */
   public boolean removeRecurrenceException(RecurrenceException
       recurrenceException) {
-    return super.removeElement(RecurrenceException.KEY, recurrenceException);
+    return super.removeElement(recurrenceException);
+  }
+
+  /**
+   * Removes all existing recurrence exception instances.
+   */
+  public void clearRecurrenceException() {
+    super.removeElement(RecurrenceException.KEY);
   }
 
   /**
@@ -365,7 +403,7 @@ public class EventEntry extends Entry {
    * @param reminder event reminder
    */
   public EventEntry addReminder(Reminder reminder) {
-    super.addElement(Reminder.KEY, reminder);
+    super.addElement(reminder);
     return this;
   }
 
@@ -376,7 +414,14 @@ public class EventEntry extends Entry {
    * @return true if the reminder was removed
    */
   public boolean removeReminder(Reminder reminder) {
-    return super.removeElement(Reminder.KEY, reminder);
+    return super.removeElement(reminder);
+  }
+
+  /**
+   * Removes all existing event reminder instances.
+   */
+  public void clearReminders() {
+    super.removeElement(Reminder.KEY);
   }
 
   /**
@@ -403,7 +448,7 @@ public class EventEntry extends Entry {
    * @param time event time
    */
   public EventEntry addTime(When time) {
-    super.addElement(When.KEY, time);
+    super.addElement(time);
     return this;
   }
 
@@ -414,7 +459,14 @@ public class EventEntry extends Entry {
    * @return true if the time was removed
    */
   public boolean removeTime(When time) {
-    return super.removeElement(When.KEY, time);
+    return super.removeElement(time);
+  }
+
+  /**
+   * Removes all existing event time instances.
+   */
+  public void clearTimes() {
+    super.removeElement(When.KEY);
   }
 
   /**
@@ -438,7 +490,8 @@ public class EventEntry extends Entry {
   /**
    * Sets the event transparency.
    *
-   * @param transparency event transparency or <code>null</code> to reset
+   * @param transparency event transparency or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public EventEntry setTransparency(Transparency transparency) {
     super.setElement(Transparency.KEY, transparency);
@@ -466,7 +519,8 @@ public class EventEntry extends Entry {
   /**
    * Sets the event visibility.
    *
-   * @param visibility event visibility or <code>null</code> to reset
+   * @param visibility event visibility or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public EventEntry setVisibility(Visibility visibility) {
     super.setElement(Visibility.KEY, visibility);
@@ -482,9 +536,6 @@ public class EventEntry extends Entry {
     return super.hasElement(Visibility.KEY);
   }
 
-  @Override
-  public String toString() {
-    return "{EventEntry " + super.toString() + "}";
-  }
 
 }
+

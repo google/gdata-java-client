@@ -17,12 +17,11 @@
 package com.google.gdata.model.atom;
 
 import com.google.gdata.data.IPerson;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
-import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.ElementMetadata.Cardinality;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -58,12 +57,24 @@ public class Person extends Element implements IPerson {
   public static final ElementKey<URI, Element> URI = ElementKey.of(
       new QName(Namespaces.atomNs, "uri"), URI.class, Element.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY)
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register the elements that are included directly
+    registry.build(NAME);
+    registry.build(URI);
+    registry.build(EMAIL);
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY)
         .setCardinality(Cardinality.MULTIPLE);
+
+    // Local properties.
     builder.addElement(NAME).setRequired(true);
     builder.addElement(URI);
     builder.addElement(EMAIL);
@@ -88,8 +99,8 @@ public class Person extends Element implements IPerson {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Author} instance. Will use the given {@link ElementMetadata} as the
-   * metadata for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the
+   * key for the element.
    *
    * @param key the key to use for this element.
    * @param source source element

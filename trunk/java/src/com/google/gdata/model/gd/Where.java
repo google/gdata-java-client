@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -85,11 +85,18 @@ public class Where extends Element {
   public static final AttributeKey<String> VALUE_STRING = AttributeKey.of(new
       QName(null, "valueString"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(LABEL);
     builder.addAttribute(REL);
     builder.addAttribute(VALUE_STRING);
@@ -139,8 +146,9 @@ public class Where extends Element {
   /**
    * Sets the nested person or venue (Contact) entry.
    *
-   * @param entryLink nested person or venue (Contact) entry or
-   *     <code>null</code> to reset
+   * @param entryLink nested person or venue (Contact) entry or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public Where setEntryLink(EntryLink entryLink) {
     super.setElement(EntryLink.KEY, entryLink);
@@ -172,7 +180,8 @@ public class Where extends Element {
    * locations may be present.
    *
    * @param label user-readable label that identifies this location in case
-   *     multiple locations may be present or <code>null</code> to reset
+   *     multiple locations may be present or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Where setLabel(String label) {
     super.setAttributeValue(LABEL, label);
@@ -202,7 +211,8 @@ public class Where extends Element {
   /**
    * Sets the meaning of this location.
    *
-   * @param rel meaning of this location or <code>null</code> to reset
+   * @param rel meaning of this location or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Where setRel(String rel) {
     super.setAttributeValue(REL, rel);
@@ -230,8 +240,8 @@ public class Where extends Element {
   /**
    * Sets the text description of the place.
    *
-   * @param valueString text description of the place or <code>null</code> to
-   *     reset
+   * @param valueString text description of the place or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Where setValueString(String valueString) {
     super.setAttributeValue(VALUE_STRING, valueString);
@@ -247,11 +257,6 @@ public class Where extends Element {
     return getValueString() != null;
   }
 
-  @Override
-  public String toString() {
-    return "{Where label=" + getAttributeValue(LABEL) + " rel=" +
-        getAttributeValue(REL) + " valueString=" +
-        getAttributeValue(VALUE_STRING) + "}";
-  }
 
 }
+

@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -75,11 +75,18 @@ public class ExtendedProperty extends Element {
   public static final AttributeKey<String> VALUE = AttributeKey.of(new
       QName(null, "value"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(NAME).setRequired(true);
     builder.addAttribute(REALM);
     builder.addAttribute(VALUE);
@@ -129,8 +136,9 @@ public class ExtendedProperty extends Element {
   /**
    * Sets the name of the property expressed as a URI.
    *
-   * @param name name of the property expressed as a URI or <code>null</code> to
+   * @param name name of the property expressed as a URI or {@code null} to
    *     reset
+   * @return this to enable chaining setters
    */
   public ExtendedProperty setName(String name) {
     super.setAttributeValue(NAME, name);
@@ -159,7 +167,8 @@ public class ExtendedProperty extends Element {
    * Sets the limit on who may see and modify this extended property.
    *
    * @param realm limit on who may see and modify this extended property or
-   *     <code>null</code> to reset
+   *     {@code null} to reset
+   * @return this to enable chaining setters
    */
   public ExtendedProperty setRealm(String realm) {
     super.setAttributeValue(REALM, realm);
@@ -189,7 +198,8 @@ public class ExtendedProperty extends Element {
   /**
    * Sets the property value.
    *
-   * @param value property value or <code>null</code> to reset
+   * @param value property value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public ExtendedProperty setValue(String value) {
     super.setAttributeValue(VALUE, value);
@@ -234,10 +244,5 @@ public class ExtendedProperty extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{ExtendedProperty name=" + getAttributeValue(NAME) + " realm=" +
-        getAttributeValue(REALM) + " value=" + getAttributeValue(VALUE) + "}";
-  }
-
 }
+

@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -56,11 +56,18 @@ public class CustomProperty extends Element {
   public static final AttributeKey<String> UNIT = AttributeKey.of(new
       QName(null, "unit"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(NAME).setRequired(true);
     builder.addAttribute(TYPE);
     builder.addAttribute(UNIT);
@@ -120,8 +127,9 @@ public class CustomProperty extends Element {
   /**
    * Sets the can be a URI to indicate a specific ontology.
    *
-   * @param name can be a URI to indicate a specific ontology or
-   *     <code>null</code> to reset
+   * @param name can be a URI to indicate a specific ontology or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public CustomProperty setName(String name) {
     super.setAttributeValue(NAME, name);
@@ -153,7 +161,8 @@ public class CustomProperty extends Element {
    * ontology-specific URI.
    *
    * @param type datatype such as string, integer, and date, or an
-   *     ontology-specific URI or <code>null</code> to reset
+   *     ontology-specific URI or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public CustomProperty setType(String type) {
     super.setAttributeValue(TYPE, type);
@@ -185,7 +194,8 @@ public class CustomProperty extends Element {
    * Sets the units of data - can also be a URI to indicate a specific ontology.
    *
    * @param unit units of data - can also be a URI to indicate a specific
-   *     ontology or <code>null</code> to reset
+   *     ontology or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public CustomProperty setUnit(String unit) {
     super.setAttributeValue(UNIT, unit);
@@ -215,7 +225,8 @@ public class CustomProperty extends Element {
   /**
    * Sets the value.
    *
-   * @param value value or <code>null</code> to reset
+   * @param value value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public CustomProperty setValue(String value) {
     super.setTextValue(value);
@@ -264,11 +275,5 @@ public class CustomProperty extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{CustomProperty name=" + getAttributeValue(NAME) + " type=" +
-        getAttributeValue(TYPE) + " unit=" + getAttributeValue(UNIT) + " value="
-        + getTextValue() + "}";
-  }
-
 }
+

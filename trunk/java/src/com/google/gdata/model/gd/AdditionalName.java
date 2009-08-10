@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -44,11 +44,18 @@ public class AdditionalName extends Element {
   public static final AttributeKey<String> YOMI = AttributeKey.of(new
       QName(null, "yomi"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(YOMI);
   }
 
@@ -106,7 +113,8 @@ public class AdditionalName extends Element {
   /**
    * Sets the value.
    *
-   * @param value value or <code>null</code> to reset
+   * @param value value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public AdditionalName setValue(String value) {
     super.setTextValue(value);
@@ -134,7 +142,8 @@ public class AdditionalName extends Element {
   /**
    * Sets the pronunciation help.
    *
-   * @param yomi pronunciation help or <code>null</code> to reset
+   * @param yomi pronunciation help or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public AdditionalName setYomi(String yomi) {
     super.setAttributeValue(YOMI, yomi);
@@ -175,10 +184,5 @@ public class AdditionalName extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{AdditionalName value=" + getTextValue() + " yomi=" +
-        getAttributeValue(YOMI) + "}";
-  }
-
 }
+

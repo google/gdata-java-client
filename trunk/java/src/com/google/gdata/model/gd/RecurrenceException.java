@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -44,11 +44,18 @@ public class RecurrenceException extends Element {
   public static final AttributeKey<Boolean> SPECIALIZED = AttributeKey.of(new
       QName(null, "specialized"), Boolean.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(SPECIALIZED).setRequired(true);
     builder.addElement(RecurrenceExceptionEntryLink.KEY).setRequired(true);
   }
@@ -99,7 +106,8 @@ public class RecurrenceException extends Element {
    * Sets the nested entry providing the details about the exception.
    *
    * @param entryLink nested entry providing the details about the exception or
-   *     <code>null</code> to reset
+   *     {@code null} to reset
+   * @return this to enable chaining setters
    */
   public RecurrenceException setEntryLink(RecurrenceExceptionEntryLink
       entryLink) {
@@ -130,8 +138,9 @@ public class RecurrenceException extends Element {
   /**
    * Sets the whether the exception is specialized.
    *
-   * @param specialized whether the exception is specialized or
-   *     <code>null</code> to reset
+   * @param specialized whether the exception is specialized or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public RecurrenceException setSpecialized(Boolean specialized) {
     super.setAttributeValue(SPECIALIZED, specialized);
@@ -147,10 +156,6 @@ public class RecurrenceException extends Element {
     return getSpecialized() != null;
   }
 
-  @Override
-  public String toString() {
-    return "{RecurrenceException specialized=" + getAttributeValue(SPECIALIZED)
-        + "}";
-  }
 
 }
+

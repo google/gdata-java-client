@@ -20,10 +20,10 @@ import com.google.common.collect.Lists;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.IGenerator;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -118,36 +118,42 @@ public class Source extends Element {
   public static final ElementKey<URI, Element> LOGO = ElementKey.of(
       new QName(Namespaces.atomNs, "logo"), URI.class, Element.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    // Build the default metadata for all of our directly included elements.
-    DefaultRegistry.build(ID);
-    DefaultRegistry.build(UPDATED);
-    DefaultRegistry.build(TITLE);
-    DefaultRegistry.build(SUBTITLE);
-    DefaultRegistry.build(RIGHTS);
-    DefaultRegistry.build(ICON);
-    DefaultRegistry.build(LOGO);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(CONSTRUCT)) {
+      return;
+    }
 
-    // Build the source construct.
-    ElementCreator constructBuilder = DefaultRegistry.build(CONSTRUCT);
-    constructBuilder.addElement(ID);
-    constructBuilder.addElement(UPDATED);
-    constructBuilder.addElement(Category.KEY);
-    constructBuilder.addElement(TITLE);
-    constructBuilder.addElement(SUBTITLE);
-    constructBuilder.addElement(RIGHTS);
-    constructBuilder.addElement(ICON);
-    constructBuilder.addElement(LOGO);
-    constructBuilder.addElement(Link.KEY);
-    constructBuilder.addElement(Author.KEY);
-    constructBuilder.addElement(Contributor.KEY);
-    constructBuilder.addElement(Generator.KEY);
+    // Build the default metadata for all of our directly included elements.
+    registry.build(ID);
+    registry.build(UPDATED);
+    registry.build(TITLE);
+    registry.build(SUBTITLE);
+    registry.build(RIGHTS);
+    registry.build(ICON);
+    registry.build(LOGO);
+
+    // The builder for this element
+    ElementCreator builder = registry.build(CONSTRUCT);
+
+    // Local properties
+    builder.addElement(ID);
+    builder.addElement(UPDATED);
+    builder.addElement(Category.KEY);
+    builder.addElement(TITLE);
+    builder.addElement(SUBTITLE);
+    builder.addElement(RIGHTS);
+    builder.addElement(ICON);
+    builder.addElement(LOGO);
+    builder.addElement(Link.KEY);
+    builder.addElement(Author.KEY);
+    builder.addElement(Contributor.KEY);
+    builder.addElement(Generator.KEY);
 
     // Build atom:source based on the source construct.
-    DefaultRegistry.build(KEY);
+    registry.build(KEY);
   }
 
   /**
@@ -174,12 +180,15 @@ public class Source extends Element {
     public static final AttributeKey<URI> URI = AttributeKey.of(
         new QName("uri"), URI.class);
 
-
-    /*
-     * Generate the default metadata for this element.
+    /**
+     * Registers the metadata for this element.
      */
-    static {
-      ElementCreator builder = DefaultRegistry.build(KEY);
+    public static void registerMetadata(MetadataRegistry registry) {
+      if (registry.isRegistered(KEY)) {
+        return;
+      }
+
+      ElementCreator builder = registry.build(KEY);
       builder.addAttribute(VERSION);
       builder.addAttribute(URI);
     }
@@ -296,13 +305,13 @@ public class Source extends Element {
 
   /**
    * Copy constructor that initializes a new Source instance to have identical
-   * contents to another instance, using a shared reference to the same child
-   * element instances. Metadata is given by caller.
+   * contents to another element, using a shared state. The element key is given
+   * by the caller.
    *
    * @param key element key to associate with copy
    * @param source source to copy data from
    */
-  protected Source(ElementKey<?, ? extends Source> key, Source source) {
+  protected Source(ElementKey<?, ? extends Source> key, Element source) {
     super(key, source);
   }
 

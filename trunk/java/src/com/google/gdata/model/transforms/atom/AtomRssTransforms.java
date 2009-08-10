@@ -26,7 +26,7 @@ import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ILink.Rel;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementMetadata;
-import com.google.gdata.model.MetadataRegistryBuilder;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.MetadataValueTransform;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.Metadata.VirtualValue;
@@ -87,7 +87,7 @@ public class AtomRssTransforms {
   /**
    * Add the RSS transforms to the default metadata trees.
    */
-  public static void addTransforms(MetadataRegistryBuilder registry) {
+  public static void addTransforms(MetadataRegistry registry) {
     addCategoryTransforms(registry);
     addContentTransforms(registry);
     addEntryTransforms(registry);
@@ -100,7 +100,7 @@ public class AtomRssTransforms {
     addAppEditedTransforms(registry);
   }
 
-  private static void addCategoryTransforms(MetadataRegistryBuilder registry) {
+  private static void addCategoryTransforms(MetadataRegistry registry) {
     registry.build(Category.KEY, RSS)
         .setName(CATEGORY)
         .setVirtualValue(
@@ -116,7 +116,7 @@ public class AtomRssTransforms {
         .setVisible(false);
   }
 
-  private static void addContentTransforms(MetadataRegistryBuilder registry) {
+  private static void addContentTransforms(MetadataRegistry registry) {
     registry.build(TextContent.KEY, RSS)
         .setName(DESCRIPTION)
         .whitelistAttributes();
@@ -124,7 +124,7 @@ public class AtomRssTransforms {
         .whitelistAttributes();
   }
 
-  private static void addEntryTransforms(MetadataRegistryBuilder registry) {
+  private static void addEntryTransforms(MetadataRegistry registry) {
     registry.build(Entry.KEY, RSS).setName(ITEM);
 
     registry.build(Entry.KEY, Entry.ETAG, RSS)
@@ -224,7 +224,7 @@ public class AtomRssTransforms {
   }
 
   private static void addEntryOutOfLineContentTransforms(
-      MetadataRegistryBuilder registry) {
+      MetadataRegistry registry) {
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
     properties.setElementGenerator(new XmlGenerator.XmlElementGenerator() {
       @Override
@@ -257,7 +257,7 @@ public class AtomRssTransforms {
         .setProperties(properties);
   }
 
-  private static void addFeedTransforms(final MetadataRegistryBuilder registry) {
+  private static void addFeedTransforms(final MetadataRegistry registry) {
     registry.build(Feed.KEY, Entry.ETAG, RSS)
         .setVisible(false);
 
@@ -315,7 +315,7 @@ public class AtomRssTransforms {
         });
   }
 
-  private static void addLinkTransforms(MetadataRegistryBuilder registry) {
+  private static void addLinkTransforms(MetadataRegistry registry) {
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
     properties.setElementGenerator(new XmlGenerator.XmlElementGenerator() {
       @Override
@@ -361,7 +361,7 @@ public class AtomRssTransforms {
         .setProperties(properties);
   }
 
-  private static void addSourceTransforms(MetadataRegistryBuilder registry) {
+  private static void addSourceTransforms(MetadataRegistry registry) {
     registry.build(Source.CONSTRUCT, Source.TITLE, RSS).setName(TITLE);
 
     registry.build(Source.CONSTRUCT, Source.SUBTITLE, RSS).setName(DESCRIPTION);
@@ -425,7 +425,7 @@ public class AtomRssTransforms {
         .setVirtualValue(new MetadataValueTransform(Person.NAME));
   }
 
-  private static void addPersonTransforms(MetadataRegistryBuilder registry) {
+  private static void addPersonTransforms(MetadataRegistry registry) {
     registry.build(Person.KEY, Person.EMAIL, RSS)
         .setVisible(false);
     registry.build(Person.KEY, Person.NAME, RSS)
@@ -434,7 +434,7 @@ public class AtomRssTransforms {
         .setVisible(false);
   }
 
-  private static void addGeneratorTransforms(MetadataRegistryBuilder registry) {
+  private static void addGeneratorTransforms(MetadataRegistry registry) {
     registry.build(Generator.KEY, RSS)
         .setName(GENERATOR);
 
@@ -444,7 +444,7 @@ public class AtomRssTransforms {
         .setVisible(false);
   }
 
-  private static void addAppEditedTransforms(MetadataRegistryBuilder registry) {
+  private static void addAppEditedTransforms(MetadataRegistry registry) {
     registry.build(Edited.KEY, RSS).setVisible(false);
   }
 

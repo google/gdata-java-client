@@ -31,16 +31,8 @@ final class AttributeCreatorImpl extends MetadataCreatorImpl
   /**
    * Construct a new empty attribute metadata creator.
    */
-  AttributeCreatorImpl(MetadataRegistryBuilder root) {
+  AttributeCreatorImpl(MetadataRegistry root) {
     super(root);
-  }
-
-  /**
-   * Copy constructor.
-   */
-  AttributeCreatorImpl(MetadataRegistryBuilder root,
-      AttributeCreatorImpl source) {
-    super(root, source);
   }
 
   /**

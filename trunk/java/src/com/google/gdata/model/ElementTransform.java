@@ -96,7 +96,8 @@ final class ElementTransform extends Transform {
 
   /**
    * A default element transform, used when an element is registered but
-   * contains no metadata.
+   * contains no metadata.  As element transforms are immutable this is
+   * accessible through {@link #EMPTY}.
    */
   private ElementTransform() {
     super();
@@ -218,8 +219,8 @@ final class ElementTransform extends Transform {
    * Creates a new element metadata instance based on this transform.
    */
   <D, E extends Element> ElementMetadata<D, E> toMetadata(
-      MetadataRegistry registry, ElementKey<?, ?> parent, ElementKey<D, E> key,
+      Schema schema, ElementKey<?, ?> parent, ElementKey<D, E> key,
       MetadataContext context) {
-    return new ElementMetadataImpl<D, E>(registry, this, parent, key, context);
+    return new ElementMetadataImpl<D, E>(schema, this, parent, key, context);
   }
 }

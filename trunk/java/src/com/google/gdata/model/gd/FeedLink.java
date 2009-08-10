@@ -18,10 +18,10 @@ package com.google.gdata.model.gd;
 
 import com.google.gdata.data.ILink;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.atom.Feed;
 import com.google.gdata.util.ContentType;
@@ -64,11 +64,15 @@ public class FeedLink extends Element implements ILink {
   public static final AttributeKey<String> REL = AttributeKey.of(
       new QName("rel"));
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    ElementCreator builder = registry.build(KEY);
     builder.addAttribute(REL);
     builder.addAttribute(HREF);
     builder.addAttribute(READ_ONLY);
@@ -92,14 +96,13 @@ public class FeedLink extends Element implements ILink {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link FeedLink} instance. Will use the given {@link ElementKey} as
+   * {@link Element} instance. Will use the given {@link ElementKey} as
    * the key for the element.
    *
    * @param key element key to use for this element.
    * @param source source element
    */
-  public FeedLink(ElementKey<Void, ? extends FeedLink> key,
-      FeedLink source) {
+  public FeedLink(ElementKey<Void, ? extends FeedLink> key, Element source) {
     super(key, source);
   }
 

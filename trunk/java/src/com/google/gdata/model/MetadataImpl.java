@@ -28,7 +28,7 @@ import com.google.gdata.util.ParseException;
  */
 abstract class MetadataImpl<D> implements Metadata<D> {
 
-  final MetadataRegistry registry;
+  final Schema schema;
   final MetadataKey<D> key;
   final ElementKey<?, ?> parent;
   final MetadataContext context;
@@ -39,11 +39,11 @@ abstract class MetadataImpl<D> implements Metadata<D> {
 
   /**
    * Constructs a new immutable metadata instance with the given declared data.
-   * Any information not contained in the builder will use the default values.
+   * Any information not contained in the transform will use the default values.
    */
-  MetadataImpl(MetadataRegistry registry, Transform transform,
+  MetadataImpl(Schema schema, Transform transform,
       ElementKey<?, ?> parent, MetadataKey<D> key, MetadataContext context) {
-    this.registry = Preconditions.checkNotNull(registry, "registry");
+    this.schema = Preconditions.checkNotNull(schema, "schema");
     this.key = Preconditions.checkNotNull(key, "key");
     this.parent = parent;
     this.context = context;
@@ -62,8 +62,8 @@ abstract class MetadataImpl<D> implements Metadata<D> {
     return (value != null) ? value : defaultValue;
   }
 
-  public MetadataRegistry getRegistry() {
-    return registry;
+  public Schema getSchema() {
+    return schema;
   }
 
   public MetadataKey<D> getKey() {
@@ -107,7 +107,7 @@ abstract class MetadataImpl<D> implements Metadata<D> {
       virtualValue.parse(element, metadata, value);
     }
   }
-  
+
   @Override
   public String toString() {
     return getClass().getSimpleName() + "{" + getKey() + "}@" +

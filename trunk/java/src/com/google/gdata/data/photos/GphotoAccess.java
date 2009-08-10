@@ -16,11 +16,8 @@
 
 package com.google.gdata.data.photos;
 
-import com.google.gdata.data.AbstractExtension;
-import com.google.gdata.data.AttributeGenerator;
-import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionDescription;
-import com.google.gdata.util.ParseException;
+import com.google.gdata.data.ValueConstruct;
 
 /**
  * Access level for an album, either public or unlisted.
@@ -31,29 +28,22 @@ import com.google.gdata.util.ParseException;
     nsAlias = Namespaces.PHOTOS_ALIAS,
     nsUri = Namespaces.PHOTOS,
     localName = GphotoAccess.XML_NAME)
-public class GphotoAccess extends AbstractExtension {
+public class GphotoAccess extends ValueConstruct {
 
   /** XML element name */
   static final String XML_NAME = "access";
 
-  private static final AttributeHelper.EnumToAttributeValue<Value>
-      VALUE_ENUM_TO_ATTRIBUTE_VALUE = new
-      AttributeHelper.LowerCaseEnumToAttributeValue<Value>();
-
-  /** Access level */
-  private Value value = null;
-
   /** Access level. */
-  public enum Value {
+  public static final class Value {
 
     /** Unlisted album access. */
-    PRIVATE,
+    public static final String PRIVATE = "private";
 
     /** Protected album access. */
-    PROTECTED,
+    public static final String PROTECTED = "protected";
 
     /** Public album access. */
-    PUBLIC
+    public static final String PUBLIC = "public";
 
   }
 
@@ -61,50 +51,18 @@ public class GphotoAccess extends AbstractExtension {
    * Default mutable constructor.
    */
   public GphotoAccess() {
-    super();
+    this(null);
   }
 
   /**
-   * Immutable constructor.
+   * Constructor (mutable or immutable).
    *
-   * @param value access level.
+   * @param value immutable access level or <code>null</code> for a mutable
+   *     access level
    */
-  public GphotoAccess(Value value) {
-    super();
-    setValue(value);
-    setImmutable(true);
-  }
-
-  /**
-   * Returns the access level.
-   *
-   * @return access level
-   */
-  public Value getValue() {
-    return value;
-  }
-
-  /**
-   * Sets the access level.
-   *
-   * @param value access level or <code>null</code> to reset
-   */
-  public void setValue(Value value) {
-    throwExceptionIfImmutable();
-    this.value = value;
-  }
-
-  /**
-   * Returns whether it has the access level.
-   *
-   * @return whether it has the access level
-   */
-  public boolean hasValue() {
-    return getValue() != null;
-  }
-
-  @Override
-  protected void validate() {
+  public GphotoAccess(String value) {
+    super(Namespaces.PHOTOS_NAMESPACE, XML_NAME, null, value);
+    setRequired(false);
   }
 
   /**
@@ -125,59 +83,8 @@ public class GphotoAccess extends AbstractExtension {
   }
 
   @Override
-  protected void putAttributes(AttributeGenerator generator) {
-    generator.setContent(VALUE_ENUM_TO_ATTRIBUTE_VALUE.getAttributeValue(
-        value));
-  }
-
-  @Override
-  protected void consumeAttributes(AttributeHelper helper) throws ParseException
-      {
-    value = helper.consumeEnum(null, false, Value.class, null,
-        VALUE_ENUM_TO_ATTRIBUTE_VALUE);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (!sameClassAs(obj)) {
-      return false;
-    }
-    GphotoAccess other = (GphotoAccess) obj;
-    return eq(value, other.value);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = getClass().hashCode();
-    if (value != null) {
-      result = 37 * result + value.hashCode();
-    }
-    return result;
-  }
-
-  @Override
   public String toString() {
-    return "{GphotoAccess value=" + value + "}";
+    return "{GphotoAccess value=" + getValue() + "}";
   }
 
-
-  /**
-   * Constructs an access from a string, for backwards compatibility.
-   */
-  public GphotoAccess(String access) {
-    super();
-    Value value = access == null ? null : Value.valueOf(access.toUpperCase());
-    setValue(value);
-    setImmutable(true);
-  }
-
-  /**
-   * Returns the access as a string, for backwards compatibility.
-   */
-  public String asString() {
-    return value == null ? null : value.name().toLowerCase();
-  }
 }

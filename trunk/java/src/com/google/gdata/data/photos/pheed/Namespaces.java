@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.photos.pheed;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
  * Namespaces for Pheed.  http://pheed.com/pheed
@@ -29,6 +29,6 @@ import com.google.gdata.util.common.xml.XmlWriter;
 public class Namespaces {
 
   /** Pheed <a href="http://www.pheed.com/pheed/">pheed</a> namespace. */
-  public static final XmlWriter.Namespace PHEED_NAMESPACE
-      = new XmlWriter.Namespace("photo", "http://www.pheed.com/pheed/");
+  public static final XmlNamespace PHEED_NAMESPACE
+      = new XmlNamespace("photo", "http://www.pheed.com/pheed/");
 }

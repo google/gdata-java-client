@@ -40,8 +40,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 final class AttributeMetadataRegistry {
 
-  // The root registry this attribute registry is part of.
-  private final MetadataRegistry root;
+  // The root Schema this attribute registry is part of.
+  private final Schema root;
 
   // A map of transforms by context for this attribute.
   private final Map<TransformKey, AttributeTransform> transforms;
@@ -53,7 +53,7 @@ final class AttributeMetadataRegistry {
   /**
    * Creates a new attribute registry from the given builder.
    */
-  AttributeMetadataRegistry(MetadataRegistry root,
+  AttributeMetadataRegistry(Schema root,
       AttributeMetadataRegistryBuilder builder) {
     this.root = root;
     this.transforms = getTransforms(builder.getCreators());

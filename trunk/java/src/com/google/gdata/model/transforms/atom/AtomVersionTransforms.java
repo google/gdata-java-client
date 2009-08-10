@@ -19,7 +19,7 @@ package com.google.gdata.model.transforms.atom;
 import com.google.gdata.client.Service;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.MetadataContext;
-import com.google.gdata.model.MetadataRegistryBuilder;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.atom.Feed;
 import com.google.gdata.util.Namespaces;
@@ -34,14 +34,14 @@ public class AtomVersionTransforms {
   private static final MetadataContext V1_CONTEXT =
       MetadataContext.forVersion(Service.Versions.V1);
 
-  public static void addTransforms(MetadataRegistryBuilder registry) {
+  public static void addTransforms(MetadataRegistry registry) {
     addOssTransform(registry, Feed.TOTAL_RESULTS);
     addOssTransform(registry, Feed.START_INDEX);
     addOssTransform(registry, Feed.ITEMS_PER_PAGE);
   }
   
   @SuppressWarnings("deprecation")
-  private static void addOssTransform(MetadataRegistryBuilder registry,
+  private static void addOssTransform(MetadataRegistry registry,
       ElementKey<?, ?> key) {
     registry.build(key, V1_CONTEXT).setName(
         new QName(Namespaces.openSearchNs, key.getId().getLocalName()));

@@ -81,9 +81,9 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   private Set<ElementKey<?, ?>> elementWhitelist;
 
   /**
-   * Constructs an empty element metadata builder.
+   * Constructs an empty element creator.
    */
-  ElementCreatorImpl(MetadataRegistryBuilder registry,
+  ElementCreatorImpl(MetadataRegistry registry,
       ElementKey<?, ?> key, MetadataContext context) {
     super(registry);
 
@@ -92,42 +92,56 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   }
 
   /**
-   * Copy constructor.  Creates a copy of the given element metadata.
+   * Merges the values from an existing element creator.
    */
-  ElementCreatorImpl(MetadataRegistryBuilder registry,
-      ElementCreatorImpl source) {
-    super(registry, source);
+  void merge(ElementCreatorImpl other) {
+    super.merge(other);
 
-    this.key = source.key;
-    this.context = source.context;
-
-    this.cardinality = source.cardinality;
-    this.contentRequired = source.contentRequired;
-    this.validator = source.validator;
-    this.properties = source.properties;
-    this.virtualElementHolder = source.virtualElementHolder;
+    if (other.cardinality != null) {
+      this.cardinality = other.cardinality;
+    }
+    if (other.contentRequired != null) {
+      this.contentRequired = other.contentRequired;
+    }
+    if (other.validator != null) {
+      this.validator = other.validator;
+    }
+    if (other.properties != null) {
+      this.properties = other.properties;
+    }
+    if (other.virtualElementHolder != null) {
+      this.virtualElementHolder = other.virtualElementHolder;
+    }
 
     // We copy the attributes and elements over by re-adding them, as they need
     // to get the actual metadata builders from the registry.
-    for (AttributeInfo info : source.attributes.values()) {
+    for (AttributeInfo info : other.attributes.values()) {
       addAttribute(info.key, info.action);
     }
-    for (ElementInfo info : source.elements.values()) {
+    for (ElementInfo info : other.elements.values()) {
       addElement(info.key, info.action);
     }
 
     // Adaptations map contains only immutable objects, copy away!
-    adaptations.putAll(source.adaptations);
+    adaptations.putAll(other.adaptations);
+
+    // Merge the local whitelists with the other whitelists.
+    if (other.attributeWhitelist != null) {
+      whitelistAttributes(other.attributeWhitelist);
+    }
+    if (other.elementWhitelist != null) {
+      whitelistElements(other.elementWhitelist);
+    }
   }
 
   /**
-   * Adds an adaptation to the given kind.  We only add adaptations when the
-   * adaptation is a subtype of the current type.
+   * Adds an adaptation to the given kind.
    */
-  public ElementCreatorImpl addAdaptation(String kind,
+  public ElementCreatorImpl adapt(String kind,
       ElementKey<?, ?> adaptation) {
     synchronized (registry) {
       adaptations.put(kind, adaptation);
+      registry.register(adaptation);
       registry.dirty();
     }
     return this;
@@ -204,7 +218,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * Sets the virtual element for the element.  This is used to create a
    * fully virtual element that doesn't map directly to the DOM.
    *
-   * <p>This is used for single cardinality elements. Use 
+   * <p>This is used for single cardinality elements. Use
    * {@link MultipleVirtualElement} for multiple cardinality elements.
    */
   public ElementCreator setSingleVirtualElement(
@@ -220,13 +234,13 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * Sets the virtual element for the element.  This is used to create a
    * fully virtual element that doesn't map directly to the DOM.
    *
-   * <p>This is used for single cardinality elements. Use 
+   * <p>This is used for single cardinality elements. Use
    * {@link MultipleVirtualElement} for multiple cardinality elements.
    */
   public ElementCreator setMultipleVirtualElement(
       MultipleVirtualElement multipleVirtualElement) {
     synchronized (registry) {
-      this.virtualElementHolder = 
+      this.virtualElementHolder =
           VirtualElementHolder.of(multipleVirtualElement);
       registry.dirty();
     }
@@ -287,11 +301,21 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    */
   public ElementCreatorImpl whitelistAttributes(
       AttributeKey<?>... attributeKeys) {
+    return whitelistAttributes(Lists.newArrayList(attributeKeys));
+  }
+
+  /**
+   * Whitelists a set of attributes for this element metadata.  This will hide
+   * all declared attributes on the metadata instance that will be created from
+   * this builder.
+   */
+  private ElementCreatorImpl whitelistAttributes(
+      Collection<AttributeKey<?>> attributeKeys) {
     synchronized (registry) {
       if (attributeWhitelist == null) {
         attributeWhitelist = Sets.newHashSet();
       }
-      attributeWhitelist.addAll(Lists.newArrayList(attributeKeys));
+      attributeWhitelist.addAll(attributeKeys);
       registry.dirty();
     }
     return this;
@@ -369,11 +393,21 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * created from this builder.
    */
   public ElementCreatorImpl whitelistElements(ElementKey<?, ?>... elementKeys) {
+    return whitelistElements(Lists.newArrayList(elementKeys));
+  }
+
+  /**
+   * Whitelists a set of child elements for this element metadata.  This will
+   * hide all declared child elements on the metadata instance that will be
+   * created from this builder.
+   */
+  private ElementCreatorImpl whitelistElements(
+      Collection<ElementKey<?, ?>> elementKeys) {
     synchronized (registry) {
       if (elementWhitelist == null) {
         elementWhitelist = Sets.newHashSet();
       }
-      elementWhitelist.addAll(Lists.newArrayList(elementKeys));
+      elementWhitelist.addAll(elementKeys);
       registry.dirty();
     }
     return this;

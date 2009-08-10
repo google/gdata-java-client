@@ -19,8 +19,8 @@ package com.google.gdata.data.photos.impl;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.photos.CommentData;
-import com.google.gdata.data.photos.impl.Extensions.GphotoAlbumId;
-import com.google.gdata.data.photos.impl.Extensions.GphotoPhotoId;
+import com.google.gdata.data.photos.GphotoAlbumId;
+import com.google.gdata.data.photos.GphotoPhotoId;
 
 /**
  * Implementation class for album data objects.  This class takes an
@@ -45,8 +45,8 @@ public class CommentDataImpl extends GphotoDataImpl implements CommentData {
    */
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
-    declare(extProfile, GphotoAlbumId.getDefaultDescription());
-    declare(extProfile, GphotoPhotoId.getDefaultDescription());
+    declare(extProfile, GphotoAlbumId.getDefaultDescription(false, false));
+    declare(extProfile, GphotoPhotoId.getDefaultDescription(false, false));
   }
 
   /**
@@ -63,7 +63,7 @@ public class CommentDataImpl extends GphotoDataImpl implements CommentData {
    */
   public void setAlbumId(Long albumId) {
     if (albumId != null) {
-      setExtension(new GphotoAlbumId(albumId));
+      setExtension(new GphotoAlbumId(albumId.toString()));
     } else {
       removeExtension(GphotoAlbumId.class);
     }
@@ -96,7 +96,7 @@ public class CommentDataImpl extends GphotoDataImpl implements CommentData {
    */
   public void setPhotoId(Long photoId) {
     if (photoId != null) {
-      setExtension(new GphotoPhotoId(photoId));
+      setExtension(new GphotoPhotoId(photoId.toString()));
     } else {
       removeExtension(GphotoPhotoId.class);
     }

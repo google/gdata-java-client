@@ -16,13 +16,10 @@
 
 package com.google.gdata.data.photos.impl;
 
-import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.photos.Namespaces;
+import com.google.gdata.data.photos.GphotoWeight;
 import com.google.gdata.data.photos.TagData;
-import com.google.gdata.data.photos.impl.Extensions.GphotoConstruct;
-import com.google.gdata.util.ParseException;
 
 /**
  * Implementation class for tag data objects.  This class takes an
@@ -47,15 +44,16 @@ public class TagDataImpl extends GphotoDataImpl implements TagData {
    */
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
-    declare(extProfile, GphotoWeight.getDefaultDescription());
+    declare(extProfile, GphotoWeight.getDefaultDescription(false, false));
   }
 
   /*
    * Get the weight of the tag.  May be null if the weight was not set or
    * is the default.
    */
-  public Integer getWeight() throws ParseException {
-    return getIntegerValue(GphotoWeight.class);
+  public Integer getWeight() {
+    GphotoWeight ext = getExtension(GphotoWeight.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /*
@@ -67,24 +65,6 @@ public class TagDataImpl extends GphotoDataImpl implements TagData {
       setExtension(new GphotoWeight(weight));
     } else {
       removeExtension(GphotoWeight.class);
-    }
-  }
-
-  /**
-   * The gphoto:weight field.
-   */
-  public static class GphotoWeight extends GphotoConstruct {
-    public GphotoWeight() {
-      this(null);
-    }
-
-    public GphotoWeight(Integer weight) {
-      super("weight", weight == null ? null : weight.toString());
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoWeight.class,
-          Namespaces.PHOTOS_NAMESPACE, "weight");
     }
   }
 }

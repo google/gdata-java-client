@@ -19,12 +19,12 @@ package com.google.gdata.model.atompub;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.data.introspection.IWorkspace;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.ElementMetadata.Cardinality;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.atom.Source;
@@ -53,11 +53,15 @@ public class Workspace extends Element implements IWorkspace {
   public static final AttributeKey<String> TITLE = AttributeKey.of(
       new QName("title"));
 
-  /*
-   * Generate the metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    ElementCreator builder = registry.build(KEY);
     builder.addAttribute(TITLE).setVisible(false);
     builder.addElement(Collection.KEY).setCardinality(Cardinality.MULTIPLE);
     builder.addElement(Source.TITLE).setRequired(true);

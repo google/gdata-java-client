@@ -16,10 +16,10 @@
 
 package com.google.gdata.model.atompub;
 
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -37,11 +37,18 @@ public class Control extends Element {
       Control> KEY = ElementKey.of(new QName(Namespaces.atomPubStandardNs,
       "control"), Void.class, Control.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addElement(Draft.KEY);
   }
 
@@ -89,6 +96,7 @@ public class Control extends Element {
    * Sets the draft tag.
    *
    * @param draft draft tag or <code>null</code> to reset
+   * @return this to enable chaining setters
    */
   public Control setDraft(Draft draft) {
     super.setElement(Draft.KEY, draft);

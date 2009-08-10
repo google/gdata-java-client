@@ -306,6 +306,11 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("idValueRequired")
       .withInternalReason("ID must have a value");
 
+  public final ErrorCode illegalInputFormat =
+      new ErrorCode("illegalInputFormat")
+      .withInternalReason(
+      "Input format is not compatible with selected alt output format");
+  
   public final ErrorCode imsNotSupported =
       new ErrorCode("imsNotSupported")
       .withInternalReason(

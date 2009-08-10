@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -71,6 +71,12 @@ public class Email extends Element {
       QName(null, "address"), String.class);
 
   /**
+   * DisplayName.
+   */
+  public static final AttributeKey<String> DISPLAY_NAME = AttributeKey.of(new
+      QName(null, "displayName"), String.class);
+
+  /**
    * Label.
    */
   public static final AttributeKey<String> LABEL = AttributeKey.of(new
@@ -88,12 +94,20 @@ public class Email extends Element {
   public static final AttributeKey<String> REL = AttributeKey.of(new QName(null,
       "rel"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(ADDRESS).setRequired(true);
+    builder.addAttribute(DISPLAY_NAME);
     builder.addAttribute(LABEL);
     builder.addAttribute(PRIMARY);
     builder.addAttribute(REL);
@@ -142,7 +156,8 @@ public class Email extends Element {
   /**
    * Sets the email address.
    *
-   * @param address email address or <code>null</code> to reset
+   * @param address email address or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Email setAddress(String address) {
     super.setAttributeValue(ADDRESS, address);
@@ -159,6 +174,35 @@ public class Email extends Element {
   }
 
   /**
+   * Returns the displayName.
+   *
+   * @return displayName
+   */
+  public String getDisplayName() {
+    return super.getAttributeValue(DISPLAY_NAME);
+  }
+
+  /**
+   * Sets the displayName.
+   *
+   * @param displayName displayName or {@code null} to reset
+   * @return this to enable chaining setters
+   */
+  public Email setDisplayName(String displayName) {
+    super.setAttributeValue(DISPLAY_NAME, displayName);
+    return this;
+  }
+
+  /**
+   * Returns whether it has the displayName.
+   *
+   * @return whether it has the displayName
+   */
+  public boolean hasDisplayName() {
+    return getDisplayName() != null;
+  }
+
+  /**
    * Returns the label.
    *
    * @return label
@@ -170,7 +214,8 @@ public class Email extends Element {
   /**
    * Sets the label.
    *
-   * @param label label or <code>null</code> to reset
+   * @param label label or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Email setLabel(String label) {
     super.setAttributeValue(LABEL, label);
@@ -198,8 +243,9 @@ public class Email extends Element {
   /**
    * Sets the whether this is the primary email address.
    *
-   * @param primary whether this is the primary email address or
-   *     <code>null</code> to reset
+   * @param primary whether this is the primary email address or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public Email setPrimary(Boolean primary) {
     super.setAttributeValue(PRIMARY, primary);
@@ -227,7 +273,8 @@ public class Email extends Element {
   /**
    * Sets the email type.
    *
-   * @param rel email type or <code>null</code> to reset
+   * @param rel email type or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Email setRel(String rel) {
     super.setAttributeValue(REL, rel);
@@ -253,6 +300,7 @@ public class Email extends Element {
     }
     Email other = (Email) obj;
     return eq(getAddress(), other.getAddress())
+        && eq(getDisplayName(), other.getDisplayName())
         && eq(getLabel(), other.getLabel())
         && eq(getPrimary(), other.getPrimary())
         && eq(getRel(), other.getRel());
@@ -263,6 +311,9 @@ public class Email extends Element {
     int result = getClass().hashCode();
     if (getAddress() != null) {
       result = 37 * result + getAddress().hashCode();
+    }
+    if (getDisplayName() != null) {
+      result = 37 * result + getDisplayName().hashCode();
     }
     if (getLabel() != null) {
       result = 37 * result + getLabel().hashCode();
@@ -276,11 +327,5 @@ public class Email extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{Email address=" + getAttributeValue(ADDRESS) + " label=" +
-        getAttributeValue(LABEL) + " primary=" + getAttributeValue(PRIMARY) +
-        " rel=" + getAttributeValue(REL) + "}";
-  }
-
 }
+

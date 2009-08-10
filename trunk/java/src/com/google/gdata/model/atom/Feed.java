@@ -21,11 +21,11 @@ import com.google.gdata.client.Query;
 import com.google.gdata.client.Service;
 import com.google.gdata.data.IFeed;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.batch.BatchOperation;
@@ -120,11 +120,21 @@ public class Feed extends Source implements IFeed {
       ElementKey.of(new QName(Namespaces.openSearch1_1Ns, "totalResults"),
           Integer.class, Element.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register superclass metadata.
+    Source.registerMetadata(registry);
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(ETAG);
     builder.addElement(TOTAL_RESULTS);
     builder.addElement(START_INDEX);
@@ -472,7 +482,7 @@ public class Feed extends Source implements IFeed {
     // return (F) this;
     // }
   }
-  
+
   /**
    * Removes all links.
    */

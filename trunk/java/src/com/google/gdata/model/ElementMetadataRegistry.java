@@ -34,8 +34,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 final class ElementMetadataRegistry {
 
-  // The root registry this element registry is part of.
-  private final MetadataRegistry registry;
+  // The root Schema this element registry is part of.
+  private final Schema schema;
 
   // A map of transform key to the transformed builder at that key.
   private final Map<TransformKey, ElementTransform> transforms;
@@ -47,9 +47,9 @@ final class ElementMetadataRegistry {
   /**
    * Constructs an element registry for the given builder.
    */
-  ElementMetadataRegistry(MetadataRegistry registry,
+  ElementMetadataRegistry(Schema schema,
       ElementMetadataRegistryBuilder elementBuilder) {
-    this.registry = registry;
+    this.schema = schema;
     this.transforms = getTransforms(elementBuilder);
   }
 
@@ -82,7 +82,7 @@ final class ElementMetadataRegistry {
 
     if (transformed == null) {
       ElementTransform transform = getTransform(transformKey, key);
-      transformed = transform.toMetadata(registry, parent, key, context);
+      transformed = transform.toMetadata(schema, parent, key, context);
       @SuppressWarnings("unchecked")
       ElementMetadata<D, E> previous =
           (ElementMetadata<D, E>) cache.putIfAbsent(transformKey, transformed);
@@ -105,7 +105,7 @@ final class ElementMetadataRegistry {
     TransformKey transformKey = TransformKey.forTransform(parent, key, context);
     return getTransform(transformKey, key);
   }
-  
+
   /**
    * Gets a composite transform from all transforms that match the given key.
    */

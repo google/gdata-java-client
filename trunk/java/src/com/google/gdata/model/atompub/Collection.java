@@ -23,12 +23,12 @@ import com.google.gdata.client.Service.Versions;
 import com.google.gdata.data.Reference;
 import com.google.gdata.data.introspection.ICollection;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.ElementMetadata.Cardinality;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.atom.Source;
@@ -75,11 +75,15 @@ public class Collection extends Element implements Reference, ICollection {
   public static final AttributeKey<String> TITLE = AttributeKey.of(
       new QName("title"));
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    ElementCreator builder = registry.build(KEY);
     builder.addAttribute(TITLE).setVisible(false);
     builder.addAttribute(HREF);
     builder.addElement(Accept.KEY).setCardinality(Cardinality.MULTIPLE);

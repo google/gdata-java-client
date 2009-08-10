@@ -39,9 +39,6 @@ public abstract class WireFormat {
   public static final XmlWireFormat XML = new XmlWireFormat();
 
   /**
-
-
-  /**
    * List of all supported wire formats.
    */
   public static final List<WireFormat> ALL =
@@ -104,4 +101,3 @@ public abstract class WireFormat {
         "Wire format does not support xml event sources.");
   }
 }
-

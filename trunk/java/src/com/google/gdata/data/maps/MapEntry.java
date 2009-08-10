@@ -23,10 +23,13 @@ import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.extensions.CustomProperty;
 import com.google.gdata.data.extensions.Deleted;
 import com.google.gdata.data.extensions.FeedLink;
 import com.google.gdata.data.extensions.ResourceId;
 import com.google.gdata.util.Namespaces;
+
+import java.util.List;
 
 /**
  * Describes a map entry.
@@ -70,6 +73,8 @@ public class MapEntry extends BaseEntry<MapEntry> {
       return;
     }
     super.declareExtensions(extProfile);
+    extProfile.declare(MapEntry.class,
+        CustomProperty.getDefaultDescription(false, true));
     extProfile.declare(MapEntry.class, new ExtensionDescription(Deleted.class,
         new XmlNamespace("gd", "http://schemas.google.com/g/2005"), "deleted",
         false, false, false));
@@ -78,6 +83,33 @@ public class MapEntry extends BaseEntry<MapEntry> {
         false, false, false));
     new FeedLink().declareExtensions(extProfile);
     extProfile.declare(MapEntry.class, ResourceId.class);
+  }
+
+  /**
+   * Returns the custom properties.
+   *
+   * @return custom properties
+   */
+  public List<CustomProperty> getCustomProperties() {
+    return getRepeatingExtension(CustomProperty.class);
+  }
+
+  /**
+   * Adds a new custom property.
+   *
+   * @param customProperty custom property
+   */
+  public void addCustomProperty(CustomProperty customProperty) {
+    getCustomProperties().add(customProperty);
+  }
+
+  /**
+   * Returns whether it has the custom properties.
+   *
+   * @return whether it has the custom properties
+   */
+  public boolean hasCustomProperties() {
+    return hasRepeatingExtension(CustomProperty.class);
   }
 
   /**

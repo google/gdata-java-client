@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -50,11 +50,18 @@ public class OriginalEvent extends Element {
   public static final AttributeKey<String> ORIGINAL_ID = AttributeKey.of(new
       QName(null, "id"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(HREF).setRequired(true);
     builder.addAttribute(ORIGINAL_ID).setRequired(true);
     builder.addElement(When.KEY).setRequired(true);
@@ -104,8 +111,9 @@ public class OriginalEvent extends Element {
   /**
    * Sets the URL of the original recurring event entry.
    *
-   * @param href URL of the original recurring event entry or <code>null</code>
-   *     to reset
+   * @param href URL of the original recurring event entry or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public OriginalEvent setHref(String href) {
     super.setAttributeValue(HREF, href);
@@ -133,8 +141,9 @@ public class OriginalEvent extends Element {
   /**
    * Sets the event ID of the original recurring event entry.
    *
-   * @param originalId event ID of the original recurring event entry or
-   *     <code>null</code> to reset
+   * @param originalId event ID of the original recurring event entry or {@code
+   *     null} to reset
+   * @return this to enable chaining setters
    */
   public OriginalEvent setOriginalId(String originalId) {
     super.setAttributeValue(ORIGINAL_ID, originalId);
@@ -162,7 +171,8 @@ public class OriginalEvent extends Element {
   /**
    * Sets the original start time.
    *
-   * @param originalStartTime original start time or <code>null</code> to reset
+   * @param originalStartTime original start time or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public OriginalEvent setOriginalStartTime(When originalStartTime) {
     super.setElement(When.KEY, originalStartTime);
@@ -178,10 +188,6 @@ public class OriginalEvent extends Element {
     return super.hasElement(When.KEY);
   }
 
-  @Override
-  public String toString() {
-    return "{OriginalEvent href=" + getAttributeValue(HREF) + " originalId=" +
-        getAttributeValue(ORIGINAL_ID) + "}";
-  }
 
 }
+

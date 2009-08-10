@@ -16,10 +16,10 @@
 
 package com.google.gdata.model.gd;
 
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -37,11 +37,18 @@ public class Name extends Element {
       Name> KEY = ElementKey.of(new QName(Namespaces.gNs, "name"), Void.class,
       Name.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addElement(AdditionalName.KEY);
     builder.addElement(FamilyName.KEY);
     builder.addElement(FullName.KEY);
@@ -93,7 +100,8 @@ public class Name extends Element {
   /**
    * Sets the additional name.
    *
-   * @param additionalName additional name or <code>null</code> to reset
+   * @param additionalName additional name or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Name setAdditionalName(AdditionalName additionalName) {
     super.setElement(AdditionalName.KEY, additionalName);
@@ -121,7 +129,8 @@ public class Name extends Element {
   /**
    * Sets the family name.
    *
-   * @param familyName family name or <code>null</code> to reset
+   * @param familyName family name or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Name setFamilyName(FamilyName familyName) {
     super.setElement(FamilyName.KEY, familyName);
@@ -149,7 +158,8 @@ public class Name extends Element {
   /**
    * Sets the full name.
    *
-   * @param fullName full name or <code>null</code> to reset
+   * @param fullName full name or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Name setFullName(FullName fullName) {
     super.setElement(FullName.KEY, fullName);
@@ -177,7 +187,8 @@ public class Name extends Element {
   /**
    * Sets the given name.
    *
-   * @param givenName given name or <code>null</code> to reset
+   * @param givenName given name or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Name setGivenName(GivenName givenName) {
     super.setElement(GivenName.KEY, givenName);
@@ -205,7 +216,8 @@ public class Name extends Element {
   /**
    * Sets the name prefix.
    *
-   * @param namePrefix name prefix or <code>null</code> to reset
+   * @param namePrefix name prefix or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Name setNamePrefix(NamePrefix namePrefix) {
     super.setElement(NamePrefix.KEY, namePrefix);
@@ -233,7 +245,8 @@ public class Name extends Element {
   /**
    * Sets the name suffix.
    *
-   * @param nameSuffix name suffix or <code>null</code> to reset
+   * @param nameSuffix name suffix or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Name setNameSuffix(NameSuffix nameSuffix) {
     super.setElement(NameSuffix.KEY, nameSuffix);
@@ -249,9 +262,6 @@ public class Name extends Element {
     return super.hasElement(NameSuffix.KEY);
   }
 
-  @Override
-  public String toString() {
-    return "{Name}";
-  }
 
 }
+

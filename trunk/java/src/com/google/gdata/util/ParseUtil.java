@@ -26,8 +26,8 @@ import com.google.gdata.data.Feed;
 import com.google.gdata.data.IEntry;
 import com.google.gdata.data.IFeed;
 import com.google.gdata.data.ParseSource;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
+import com.google.gdata.model.Schema;
 import com.google.gdata.wireformats.ContentCreationException;
 import com.google.gdata.wireformats.ContentValidationException;
 import com.google.gdata.wireformats.WireFormat;
@@ -52,7 +52,7 @@ public class ParseUtil {
    */
   public static IEntry readEntry(ParseSource source)
       throws IOException, ParseException, ServiceException {
-    return readEntry(source, null, null);
+    return readEntry(source, null, null, null);
   }
 
   /**
@@ -65,7 +65,7 @@ public class ParseUtil {
    */
   @SuppressWarnings("unchecked")
   public static <T extends IEntry> T readEntry(ParseSource source,
-      Class<T> requestedClass, ExtensionProfile extProfile)
+      Class<T> requestedClass, ExtensionProfile extProfile, Schema schema)
       throws IOException, ParseException, ServiceException {
 
     if (source == null) {
@@ -96,7 +96,7 @@ public class ParseUtil {
     }
 
     if (entry instanceof Element) {
-      entry = entryClass.cast(parseElement(source, (Element) entry));
+      entry = entryClass.cast(parseElement(source, (Element) entry, schema));
     } else {
       BaseEntry<?> baseEntry = (BaseEntry<?>) entry;
 
@@ -126,7 +126,7 @@ public class ParseUtil {
    */
   public static IFeed readFeed(ParseSource source)
       throws IOException, ParseException, ServiceException {
-    return readFeed(source, null, null);
+    return readFeed(source, null, null, null);
   }
 
   /**
@@ -138,7 +138,7 @@ public class ParseUtil {
    */
   @SuppressWarnings("unchecked")
   public static <F extends IFeed> F readFeed(ParseSource source,
-      Class <F> requestedClass, ExtensionProfile extProfile)
+      Class <F> requestedClass, ExtensionProfile extProfile, Schema schema)
       throws IOException, ParseException, ServiceException {
 
     if (source == null) {
@@ -169,7 +169,7 @@ public class ParseUtil {
 
     // Parse the content
     if (feed instanceof Element) {
-      feed = feedClass.cast(parseElement(source, (Element) feed));
+      feed = feedClass.cast(parseElement(source, (Element) feed, schema));
     } else {
       BaseFeed<?, ?> baseFeed = (BaseFeed<?, ?>) feed;
 
@@ -192,11 +192,11 @@ public class ParseUtil {
     return (F) responseClass.cast(feed);
   }
 
-  private static Element parseElement(ParseSource source, Element element)
-      throws ParseException, IOException {
+  private static Element parseElement(ParseSource source, Element element,
+      Schema schema) throws ParseException, IOException {
     WireFormat format = WireFormat.XML;
     InputProperties inProps = new InputPropertiesBuilder()
-        .setElementMetadata(DefaultRegistry.get(element.getElementKey()))
+        .setElementMetadata(schema.bind(element.getElementKey()))
         .build();
     WireFormatParser parser;
     if (source.getReader() != null) {

@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -118,11 +118,18 @@ public class Who extends Element {
   public static final AttributeKey<String> VALUE_STRING = AttributeKey.of(new
       QName(null, "valueString"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(EMAIL);
     builder.addAttribute(REL);
     builder.addAttribute(VALUE_STRING);
@@ -174,7 +181,8 @@ public class Who extends Element {
   /**
    * Sets the event attendee status.
    *
-   * @param attendeeStatus event attendee status or <code>null</code> to reset
+   * @param attendeeStatus event attendee status or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Who setAttendeeStatus(AttendeeStatus attendeeStatus) {
     super.setElement(AttendeeStatus.KEY, attendeeStatus);
@@ -202,7 +210,8 @@ public class Who extends Element {
   /**
    * Sets the event attendee type.
    *
-   * @param attendeeType event attendee type or <code>null</code> to reset
+   * @param attendeeType event attendee type or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Who setAttendeeType(AttendeeType attendeeType) {
     super.setElement(AttendeeType.KEY, attendeeType);
@@ -230,7 +239,8 @@ public class Who extends Element {
   /**
    * Sets the email address.
    *
-   * @param email email address or <code>null</code> to reset
+   * @param email email address or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Who setEmail(String email) {
     super.setAttributeValue(EMAIL, email);
@@ -258,7 +268,8 @@ public class Who extends Element {
   /**
    * Sets the nested person entry.
    *
-   * @param entryLink nested person entry or <code>null</code> to reset
+   * @param entryLink nested person entry or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Who setEntryLink(EntryLink entryLink) {
     super.setElement(EntryLink.KEY, entryLink);
@@ -289,7 +300,8 @@ public class Who extends Element {
    * person.
    *
    * @param rel relationship between the containing entity and the contained
-   *     person or <code>null</code> to reset
+   *     person or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Who setRel(String rel) {
     super.setAttributeValue(REL, rel);
@@ -323,7 +335,8 @@ public class Who extends Element {
    * person.
    *
    * @param valueString simple string value that can be used as a representation
-   *     of this person or <code>null</code> to reset
+   *     of this person or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Who setValueString(String valueString) {
     super.setAttributeValue(VALUE_STRING, valueString);
@@ -341,11 +354,6 @@ public class Who extends Element {
     return getValueString() != null;
   }
 
-  @Override
-  public String toString() {
-    return "{Who email=" + getAttributeValue(EMAIL) + " rel=" +
-        getAttributeValue(REL) + " valueString=" +
-        getAttributeValue(VALUE_STRING) + "}";
-  }
 
 }
+

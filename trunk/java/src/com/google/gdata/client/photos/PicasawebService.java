@@ -27,23 +27,49 @@ import com.google.gdata.data.photos.PhotoFeed;
 import com.google.gdata.data.photos.TagEntry;
 import com.google.gdata.data.photos.UserEntry;
 import com.google.gdata.data.photos.UserFeed;
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 /**
  * Extends the basic {@link MediaService} abstraction to define a service that
- * is preconfigured for access to the Google Photos data API.
+ * is preconfigured for access to the Picasa Web Albums Data API.
  *
  * 
  */
 public class PicasawebService extends MediaService {
 
   /**
-   * The abbreviated name of Google Photos recognized by Google.  The service
-   * name is used when requesting an authentication token.
+   * The abbreviated name of Picasa Web Albums Data API recognized by Google.
+   * The service name is used when requesting an authentication token.
    */
   public static final String PWA_SERVICE = "lh2";
 
+  /** GData versions supported by the Picasa Web Albums Data API. */
+  public static final class Versions {
+
+    /** Version 1. */
+    public static final Version V1 = new Version(PicasawebService.class, "1.0",
+        Service.Versions.V1);
+
+    /** Version 2. */
+    public static final Version V2 = new Version(PicasawebService.class, "2.0",
+        Service.Versions.V2);
+
+    /** Version 3.  Under development. */
+    public static final Version V3 = new Version(PicasawebService.class, "3.0",
+        Service.Versions.V2);
+
+    private Versions() {}
+  }
+
   /**
-   * Constructs an instance connecting to the Google Photos service for an
+   * Default GData version used by the Picasa Web Albums Data API.
+   */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(PicasawebService.class, Versions.V2);
+
+  /**
+   * Constructs an instance connecting to the Picasa Web Albums Data API for an
    * application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
@@ -57,7 +83,7 @@ public class PicasawebService extends MediaService {
   }
 
   /**
-   * Constructs an instance connecting to the Google Photos service for an
+   * Constructs an instance connecting to the Picasa Web Albums Data API for an
    * application with the name {@code applicationName} and the given {@code
    * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
    * override the default factories.
@@ -78,8 +104,8 @@ public class PicasawebService extends MediaService {
   }
 
   /**
-   * Constructs an instance connecting to the Google Photos service with name
-   * {@code serviceName} for an application with the name {@code
+   * Constructs an instance connecting to the Picasa Web Albums Data API with
+   * name {@code serviceName} for an application with the name {@code
    * applicationName}.  The service will authenticate at the provided {@code
    * domainName}.
    *
@@ -103,7 +129,14 @@ public class PicasawebService extends MediaService {
   }
 
   /**
-   * Declare the extensions of the feeds for the Google Photos service.
+   * Returns the current GData version used by the Picasa Web Albums Data API.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(PicasawebService.class);
+  }
+
+  /**
+   * Declare the extensions of the feeds for the Picasa Web Albums Data API.
    */
   private void declareExtensions() {
     extProfile.setAutoExtending(true);

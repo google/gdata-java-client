@@ -17,7 +17,7 @@
 package com.google.gdata.model.gd;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gdata.model.DefaultRegistry;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
@@ -34,35 +34,34 @@ import java.util.Collection;
  * the element can wrap a wide variety of different data types.   This class
  * provides the dynamic construction and runtime child metadata lookup that
  * enables partial wrapping.
- * 
+ *
  * 
  */
-public class PartialMetadata 
+public class PartialMetadata
     extends ForwardingElementMetadata<Void, Partial> {
 
   /** Metadata for the resource representation inside the partial element */
   private final ElementMetadata<?, ?> childMetadata;
-  
+
   /** Metadata for the partial element itself */
   private final ElementMetadata<Void, Partial> partialMetadata;
 
   /**
    * Constructs a new PartialMetadata instance that wraps the provided data
    * model.
-   * 
+   *
    * @param childMetadata metadata for the element type inside of the partial
    *        wrapper element
    */
   public PartialMetadata(ElementMetadata<?, ?> childMetadata) {
     this.childMetadata = childMetadata;
-    
+
     // For the base metadata, use the gd:partial metadata bound to the same
     // metadata context as the provided child metadata
-    this.partialMetadata = 
-        DefaultRegistry.get().bind(Partial.KEY, 
+    this.partialMetadata =  childMetadata.getSchema().bind(Partial.KEY,
             childMetadata.getContext());
   }
-  
+
   @Override
   protected ElementMetadata<Void, Partial> delegate() {
     return partialMetadata;
@@ -83,7 +82,7 @@ public class PartialMetadata
 
   @Override
   public ElementKey<?, ?> findElement(QName id) {
-    
+
     // Use the provided partial key for any child with a matching id
     if (childMetadata.getKey().getId().equals(id)) {
       return childMetadata.getKey();
@@ -102,5 +101,11 @@ public class PartialMetadata
       return true;
     }
     return super.isDeclared(key);
+  }
+
+  @Override
+  public XmlNamespace getDefaultNamespace() {
+    // Use the default namespace of the type contained in the partial document
+    return childMetadata.getDefaultNamespace();
   }
 }
