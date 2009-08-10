@@ -16,6 +16,7 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.wireformats.ContentCreationException;
 
 import java.util.Collection;
@@ -25,7 +26,7 @@ import java.util.Collection;
  * which extends the {@link Metadata} interface with an element type, element
  * cardinality, validator, content requiredness, and attributes and child
  * elements.  To create new instances of {@link ElementMetadata} you should use
- * {@link DefaultRegistry#build(ElementKey)}.
+ * {@link MetadataRegistry#build(ElementKey)}.
  *
  * @param <D> the datatype of the text node of the element.  If the element has
  *     no text node this will be {@link Void}.  See {@link #getKey()}.
@@ -109,7 +110,7 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
   * may be visible or is required to evaluate a selection condition.
   */
   boolean isReferenced();
-  
+
   /**
    * Returns true if the element instance is selected for use in the current
    * operation.
@@ -210,4 +211,16 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
    * @throws ContentCreationException if the element could not be created.
    */
   E createElement() throws ContentCreationException;
+  
+  /**
+   * Returns the best namespace to use as the default in documents if this
+   * element is the root type.
+   */
+  public XmlNamespace getDefaultNamespace();
+  
+  /**
+   * Returns an immutable collection of the namespaces that are referenced by
+   * this element, its attributes, and recursively within any declared children.
+   */
+  public Collection<XmlNamespace> getReferencedNamespaces();
 }

@@ -16,23 +16,24 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.ParseException;
 import com.google.gdata.wireformats.ContentCreationException;
 
 import java.util.Collection;
 
 /**
- * The ForwardingElementMetadata abstract class provides a simple delegating 
+ * The ForwardingElementMetadata abstract class provides a simple delegating
  * ElementMetadata implementation.  It can be subclassed to create transient
  * element metadata instances that override or modify selected behaviors without
  * requiring the creation of a new registered metadata type.
- * 
+ *
  * 
  */
-public abstract class ForwardingElementMetadata<D, E extends Element> 
+public abstract class ForwardingElementMetadata<D, E extends Element>
     implements ElementMetadata<D, E> {
- 
-  
+
+
   /**
    * Returns the delegate element metadata instance that is the delegation
    * target for this forwarding instance.
@@ -107,7 +108,7 @@ public abstract class ForwardingElementMetadata<D, E extends Element>
   public boolean isReferenced() {
     return delegate().isReferenced();
   }
-  
+
   public boolean isSelected(Element e) {
     return delegate().isSelected(e);
   }
@@ -132,8 +133,8 @@ public abstract class ForwardingElementMetadata<D, E extends Element>
     return delegate().getParent();
   }
 
-  public MetadataRegistry getRegistry() {
-    return delegate().getRegistry();
+  public Schema getSchema() {
+    return delegate().getSchema();
   }
 
   public VirtualValue getVirtualValue() {
@@ -148,7 +149,7 @@ public abstract class ForwardingElementMetadata<D, E extends Element>
     return delegate().isVisible();
   }
 
-  public void parseValue(Element element, ElementMetadata<?, ?> metadata, 
+  public void parseValue(Element element, ElementMetadata<?, ?> metadata,
       Object value) throws ParseException {
     delegate().parseValue(element, metadata, value);
   }
@@ -160,4 +161,12 @@ public abstract class ForwardingElementMetadata<D, E extends Element>
   public SingleVirtualElement getSingleVirtualElement() {
     return delegate().getSingleVirtualElement();
   }
+
+  public XmlNamespace getDefaultNamespace() {
+    return delegate().getDefaultNamespace();
+  }
+
+  public Collection<XmlNamespace> getReferencedNamespaces() {
+    return delegate().getReferencedNamespaces();
+  } 
 }

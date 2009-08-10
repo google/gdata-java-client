@@ -25,12 +25,12 @@ import com.google.gdata.data.IContent;
 import com.google.gdata.data.ITextConstruct;
 import com.google.gdata.data.ITextContent;
 import com.google.gdata.data.TextConstruct;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.ElementValidator;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.XmlBlob;
@@ -39,7 +39,7 @@ import com.google.gdata.util.Namespaces;
 /**
  * Variant of {@link Content} for entries containing text.
  */
-public class TextContent extends Content 
+public class TextContent extends Content
     implements ITextContent, ITextConstruct {
 
   /** The kind name for adaptation. */
@@ -66,17 +66,22 @@ public class TextContent extends Content
   public static final ElementKey<String, XmlBlob> DIV = ElementKey.of(
       new QName(Namespaces.xhtmlNs, "div"), String.class, XmlBlob.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator constructBuilder =
-        DefaultRegistry.build(CONSTRUCT)
-            .setValidator(new TextContentValidator());
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(CONSTRUCT)) {
+      return;
+    }
+
+    Content.registerMetadata(registry);
+
+    ElementCreator constructBuilder = registry.build(CONSTRUCT)
+        .setValidator(new TextContentValidator());
     constructBuilder.addElement(DIV);
 
-    ElementCreator builder = DefaultRegistry.build(KEY);
-    DefaultRegistry.adapt(Content.KEY, KIND, KEY);
+    ElementCreator builder = registry.build(KEY);
+    registry.adapt(Content.KEY, KIND, KEY);
   }
 
   // Unknown type attributes will map to this value.

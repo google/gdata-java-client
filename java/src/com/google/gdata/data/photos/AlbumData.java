@@ -97,8 +97,8 @@ public interface AlbumData extends GphotoData, PointData, BoxData, MediaData {
   public void setDate(Date date);
 
   /**
-   * The access level of the album, either private or public.  This may be null
-   * when the access level of the album is not known.
+   * The access level of the album, either private, protected, or public.
+   * This may be null when the access level of the album is not known.
    * 
    * @return the access of the album.
    */

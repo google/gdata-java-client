@@ -19,7 +19,7 @@ package com.google.gdata.model.transforms.atompub;
 import com.google.gdata.client.Service;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.MetadataContext;
-import com.google.gdata.model.MetadataRegistryBuilder;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.atom.Source;
 import com.google.gdata.model.atompub.Accept;
@@ -42,7 +42,7 @@ public class AtompubVersionTransforms {
   private static final MetadataContext V1_CONTEXT =
       MetadataContext.forVersion(Service.Versions.V1);
   
-  public static void addTransforms(MetadataRegistryBuilder registry) {
+  public static void addTransforms(MetadataRegistry registry) {
     addAtompubTransforms(registry,
         Accept.KEY,
         Categories.KEY,
@@ -65,14 +65,14 @@ public class AtompubVersionTransforms {
         .setVisible(false);
   }
 
-  private static void addAtompubTransforms(MetadataRegistryBuilder registry,
+  private static void addAtompubTransforms(MetadataRegistry registry,
       ElementKey<?, ?>... keys) {
     for (ElementKey<?, ?> key : keys) {
       addAtompubTransform(registry, key);
     }
   }
   
-  private static void addAtompubTransform(MetadataRegistryBuilder registry,
+  private static void addAtompubTransform(MetadataRegistry registry,
       ElementKey<?, ?> key) {
     registry.build(key, V1_CONTEXT).setName(
         new QName(Namespaces.atomPubDraftNs, key.getId().getLocalName()));

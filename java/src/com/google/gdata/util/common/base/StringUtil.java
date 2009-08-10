@@ -1530,6 +1530,15 @@ public class StringUtil {
         case '>':
           sb.append("&gt;");
           break;
+        case '\n':
+          sb.append("&#xA;");
+          break;
+        case '\r':
+          sb.append("&#xD;");
+          break;
+        case '\t':
+          sb.append("&#x9;");
+          break;
         case '\0':
           // \0 is not a valid XML char - skip it
           break;

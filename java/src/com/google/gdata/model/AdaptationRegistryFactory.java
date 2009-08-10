@@ -43,11 +43,11 @@ class AdaptationRegistryFactory {
   /**
    * Constructs a new adaptation registry from the given transform.
    */
-  static AdaptationRegistry create(MetadataRegistry registry,
+  static AdaptationRegistry create(Schema schema,
       ElementTransform transform) {
     return new AdaptationRegistry(transform.adaptations,
-        unionAttributes(registry, transform),
-        unionElements(registry, transform));
+        unionAttributes(schema, transform),
+        unionElements(schema, transform));
   }
 
   /**
@@ -63,7 +63,7 @@ class AdaptationRegistryFactory {
    * undeclared, and later adapted to the correct datatype during resolution.
    */
   private static Map<QName, AttributeKey<?>> unionAttributes(
-      MetadataRegistry registry, ElementTransform transform) {
+      Schema schema, ElementTransform transform) {
     Map<QName, AttributeKey<?>> union = Maps.newLinkedHashMap();
     Set<QName> base = getAttributeNames(transform);
     Set<QName> invalid = Sets.newHashSet();
@@ -71,7 +71,7 @@ class AdaptationRegistryFactory {
     for (ElementKey<?, ?> adaptorKey : transform.adaptations.values()) {
 
       // We get the adaptor transform so we can access its attributes.
-      ElementTransform adaptor = registry.getTransform(null, adaptorKey, null);
+      ElementTransform adaptor = schema.getTransform(null, adaptorKey, null);
 
       if (adaptor == null) {
         throw new IllegalStateException("Invalid adaptor key " + adaptorKey);
@@ -135,7 +135,7 @@ class AdaptationRegistryFactory {
    * undeclared, and later adapted to the correct type during resolution.
    */
   private static Map<QName, ElementKey<?, ?>> unionElements(
-      MetadataRegistry registry, ElementTransform transform) {
+      Schema schema, ElementTransform transform) {
     Map<QName, ElementKey<?, ?>> union = Maps.newLinkedHashMap();
     Set<QName> invalid = Sets.newHashSet();
     Set<QName> base = getElementNames(transform);
@@ -143,7 +143,7 @@ class AdaptationRegistryFactory {
     for (ElementKey<?, ?> adaptorKey : transform.adaptations.values()) {
 
       // We get the transform for the adaptor so we can check its element keys.
-      ElementTransform adaptor = registry.getTransform(null, adaptorKey, null);
+      ElementTransform adaptor = schema.getTransform(null, adaptorKey, null);
 
       for (ElementInfo info : adaptor.elements.values()) {
         ElementKey<?, ?> key = info.key;

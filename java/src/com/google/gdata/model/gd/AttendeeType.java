@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -66,11 +66,18 @@ public class AttendeeType extends Element {
   public static final AttributeKey<String> VALUE = AttributeKey.of(new
       QName(null, "value"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(VALUE).setRequired(true);
   }
 
@@ -118,7 +125,8 @@ public class AttendeeType extends Element {
   /**
    * Sets the value.
    *
-   * @param value value or <code>null</code> to reset
+   * @param value value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public AttendeeType setValue(String value) {
     super.setAttributeValue(VALUE, value);
@@ -155,9 +163,5 @@ public class AttendeeType extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{AttendeeType value=" + getAttributeValue(VALUE) + "}";
-  }
-
 }
+

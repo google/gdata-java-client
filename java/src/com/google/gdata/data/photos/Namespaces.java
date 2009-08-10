@@ -16,10 +16,10 @@
 
 package com.google.gdata.data.photos;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
- * GData namespace definitions related to Google Photos.
+ * Namespace definitions related to Picasa Web Albums Data API.
  *
  * 
  */
@@ -34,6 +34,13 @@ public class Namespaces {
   /** Exif namespace (EXIF) namespace prefix */
   public static final String EXIF_PREFIX = EXIF + "#";
 
+  /** Exif namespace (EXIF) namespace alias */
+  public static final String EXIF_ALIAS = "exif";
+
+  /** XML writer namespace for Exif namespace (EXIF) */
+  public static final XmlNamespace EXIF_NAMESPACE = new XmlNamespace(EXIF_ALIAS,
+      EXIF);
+
   /** Google Photos namespace (GPHOTO) namespace */
   public static final String PHOTOS = "http://schemas.google.com/photos/2007";
 
@@ -44,17 +51,35 @@ public class Namespaces {
   public static final String PHOTOS_ALIAS = "gphoto";
 
   /** XML writer namespace for Google Photos namespace (GPHOTO) */
-  public static final XmlWriter.Namespace PHOTOS_NAMESPACE = new
-      XmlWriter.Namespace(PHOTOS_ALIAS, PHOTOS);
+  public static final XmlNamespace PHOTOS_NAMESPACE = new
+      XmlNamespace(PHOTOS_ALIAS, PHOTOS);
+
+  /** Pheed namespace (PHEED) namespace */
+  public static final String PHEED = "http://www.pheed.com/pheed/";
+
+  /** Pheed namespace (PHEED) namespace prefix */
+  public static final String PHEED_PREFIX = PHEED + "#";
+
+  /** Pheed namespace (PHEED) namespace alias */
+  public static final String PHEED_ALIAS = "pheed";
+
+  /** XML writer namespace for Pheed namespace (PHEED) */
+  public static final XmlNamespace PHEED_NS = new XmlNamespace(PHEED_ALIAS,
+      PHEED);
 
 
+  /** KML namespace (KML) namespace */
+  public static final String KML = "http://earth.google.com/kml/2.1";
 
-  /** Exif namespace (EXIF) namespace alias */
-  public static final String EXIF_ALIAS = "exif";
+  /** KML namespace (KML) namespace prefix */
+  public static final String KML_PREFIX = KML + "#";
 
-  /** XML writer namespace for Exif namespace (EXIF) */
-  public static final XmlWriter.Namespace EXIF_NAMESPACE = new
-      XmlWriter.Namespace(EXIF_ALIAS, EXIF);
+  /** KML namespace (KML) namespace alias */
+  public static final String KML_ALIAS = "kml";
+
+  /** XML writer namespace for KML namespace (KML) */
+  public static final XmlNamespace KML_NS = new XmlNamespace(KML_ALIAS, KML);
+
 
   public static final String SLIDESHOW_REL = PHOTOS_PREFIX + "slideshow";
 

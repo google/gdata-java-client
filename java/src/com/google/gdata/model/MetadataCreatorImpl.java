@@ -29,9 +29,9 @@ import com.google.gdata.model.Metadata.VirtualValue;
  */
 abstract class MetadataCreatorImpl {
 
-  // Root registry builder, used to set the dirty bit and enforce locking
-  // across all metadata creators.
-  final MetadataRegistryBuilder registry;
+  // Root metadata registry, used to set the dirty bit and enforce locking
+  // across all of the metadata creators.
+  final MetadataRegistry registry;
 
   // Modifiable fields, can be changed via the set* methods.
   private QName name;
@@ -42,20 +42,27 @@ abstract class MetadataCreatorImpl {
   /**
    * Construct a new empty metadata creator, with all fields defaulted to null.
    */
-  MetadataCreatorImpl(MetadataRegistryBuilder root) {
+  MetadataCreatorImpl(MetadataRegistry root) {
     this.registry = root;
   }
 
   /**
-   * Copy another metadata creator into this metadata creator.
+   * Merges the values from an existing metadata creator.
    */
-  MetadataCreatorImpl(MetadataRegistryBuilder root,
-      MetadataCreatorImpl source) {
-    this(root);
-    Preconditions.checkNotNull(source, "source");
-    this.name = source.name;
-    this.required = source.required;
-    this.visible = source.visible;
+  void merge(MetadataCreatorImpl other) {
+    Preconditions.checkNotNull(other, "other");
+    if (other.name != null) {
+      this.name = other.name;
+    }
+    if (other.required != null) {
+      this.required = other.required;
+    }
+    if (other.visible != null) {
+      this.visible = other.visible;
+    }
+    if (other.virtualValue != null) {
+      this.virtualValue = other.virtualValue;
+    }
   }
 
   /**

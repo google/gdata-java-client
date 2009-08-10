@@ -87,10 +87,6 @@ public class GphotoPhotosLeft extends AbstractExtension {
 
   @Override
   protected void validate() {
-    if (value != null && value < 0) {
-      throw new IllegalStateException("Text content must be non-negative: " +
-          value);
-    }
   }
 
   /**

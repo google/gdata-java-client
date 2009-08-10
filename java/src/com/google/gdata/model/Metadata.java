@@ -23,7 +23,7 @@ import com.google.gdata.util.ParseException;
  * model properties (elements or attributes).  This interface describes the id,
  * name and datatype of a property, as well as including flags for whether the
  * property is required, undeclared, or visible.  Creating new instances of
- * {@link Metadata} should be done using {@link MetadataRegistry}.
+ * {@link Metadata} should be done using {@link Schema}.
  *
  * @param <D> data type of the metadata.  This defines the type of value that
  * the property can contain, which is available through {@link #getKey()}.
@@ -56,9 +56,9 @@ public interface Metadata<D> {
   }
 
   /**
-   * Returns the metadata registry that this metadata is a part of.
+   * Returns the {@link Schema} that this metadata is a part of.
    */
-  MetadataRegistry getRegistry();
+  Schema getSchema();
 
   /**
    * Returns the attribute key for this metadata.

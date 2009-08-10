@@ -18,8 +18,11 @@ package com.google.gdata.model;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Maps;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.model.ElementCreatorImpl.AttributeInfo;
 import com.google.gdata.model.ElementCreatorImpl.ElementInfo;
 import com.google.gdata.util.ParseException;
@@ -29,13 +32,14 @@ import com.google.gdata.wireformats.ObjectConverter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Immutable implementation of the element metadata.  This class delegates to
- * the registry for binding to other contexts and for retrieving children, and
+ * the schema for binding to other contexts and for retrieving children, and
  * uses an {@link AdaptationRegistry} for dealing with adaptations.
- * 
- * <p>Each instance of this class is bound to a specific registry, parent key,
+ *
+ * <p>Each instance of this class is bound to a specific schema, parent key,
  * element key, and metadata context, see {@link MetadataImpl}.
  *
  * 
@@ -67,9 +71,9 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    * Constructs a new immutable element metadata instance from the given
    * declared metadata.
    */
-  ElementMetadataImpl(MetadataRegistry registry, ElementTransform transform,
+  ElementMetadataImpl(Schema schema, ElementTransform transform,
       ElementKey<?, ?> parent, ElementKey<D, E> key, MetadataContext context) {
-    super(registry, transform, parent, key, context);
+    super(schema, transform, parent, key, context);
 
     this.elemKey = key;
     this.cardinality = nullToDefault(transform.cardinality, Cardinality.SINGLE);
@@ -86,7 +90,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     if (transform.adaptations.isEmpty()) {
       this.adaptations = null;
     } else {
-      this.adaptations = AdaptationRegistryFactory.create(registry, transform);
+      this.adaptations = AdaptationRegistryFactory.create(schema, transform);
     }
   }
 
@@ -147,13 +151,13 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    * to the appropriate key, for use during parsing.
    */
   private ImmutableMap<QName, ElementKey<?, ?>> getRenamedElements() {
-    
+
     Map<QName, ElementKey<?, ?>> renamed = Maps.newLinkedHashMap();
-    
+
     for (ElementKey<?, ?> key : elements.values()) {
-      ElementTransform transform = registry.getTransform(elemKey, key, context);
+      ElementTransform transform = schema.getTransform(elemKey, key, context);
       if (transform.name != null && !transform.name.equals(key.getId())) {
-        
+
         // We only use the first renamed element if multiple elements are named
         // the same.
         if (!renamed.containsKey(transform.name)) {
@@ -254,7 +258,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
       if (childKey != null) {
         return childKey;
       }
-      
+
       // See if there is a foo:* match for the given id.
       if (!isStarId(id)) {
         childKey = elements.get(toStarId(id));
@@ -282,7 +286,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
    */
   public ElementMetadata<D, E> bind(
       MetadataContext context) {
-    return registry.bind(parent, elemKey, context);
+    return schema.bind(parent, elemKey, context);
   }
 
   @Override
@@ -301,7 +305,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   public boolean isReferenced() {
     return isVisible();
   }
-  
+
   public boolean isSelected(Element e) {
     return isVisible();
   }
@@ -329,7 +333,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   public <K> AttributeMetadata<K> bindAttribute(AttributeKey<K> key) {
-    return registry.bind(elemKey, key, context);
+    return schema.bind(elemKey, key, context);
   }
 
   public Iterator<Element> getElementIterator(Element element) {
@@ -343,7 +347,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   @SuppressWarnings("unchecked")
   public <K, L extends Element> ElementMetadata<K, L> bindElement(
       ElementKey<K, L> key) {
-    return registry.bind(elemKey, key, context);
+    return schema.bind(elemKey, key, context);
   }
 
   @Override
@@ -367,17 +371,73 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   public SingleVirtualElement getSingleVirtualElement() {
-    return virtualElementHolder == null 
+    return virtualElementHolder == null
         ? null : virtualElementHolder.getSingleVirtualElement();
   }
 
   public MultipleVirtualElement getMultipleVirtualElement() {
-    return virtualElementHolder == null 
+    return virtualElementHolder == null
         ? null : virtualElementHolder.getMultipleVirtualElement();
   }
 
   public E createElement() throws ContentCreationException {
     return Element.createElement(elemKey);
+  }
+  
+  public XmlNamespace getDefaultNamespace() {
+    // The default implementation uses the default namespace for the in-use name
+    return getName().getNs();
+  }
+  
+  /**
+   * Set of namespaces referenced by this element's metadata and all child
+   * attributes and elements.   This field is lazily initialized by the first
+   * call to getReferencedNamespaces().
+   */
+  private Collection<XmlNamespace> referencedNamespaces = null;
+
+  public Collection<XmlNamespace> getReferencedNamespaces() {
+    // The referencedNamespaces field is lazily initialized because it is
+    // only required for top-level types.   A race condition is
+    // harmless and will just result in multiple computations.
+    if (referencedNamespaces == null) {
+      ImmutableSet.Builder<XmlNamespace> builder = ImmutableSet.builder();
+      Set<ElementKey<?, ?>> added = Sets.newHashSet();
+      addReferencedNamespaces(this, builder, added);
+      referencedNamespaces = builder.build();
+    }
+    return referencedNamespaces;
+  }
+  
+  private static void addReferencedNamespaces(ElementMetadata<?, ?> metadata, 
+      ImmutableSet.Builder<XmlNamespace> builder, Set<ElementKey<?, ?>> added) {
+    
+    // Avoid recursive looping
+    if (added.contains(metadata.getKey())) {
+      return;
+    }
+    added.add(metadata.getKey());
+    
+    // Add namespace for this element (if any)
+    XmlNamespace elemNs = metadata.getName().getNs();
+    if (elemNs != null) {
+      builder.add(elemNs);
+    }
+
+    // Add namespace for all attributes (if any)
+    for (AttributeKey<?> attrKey : metadata.getAttributes()) {
+      AttributeMetadata<?> attrMetadata = metadata.bindAttribute(attrKey);
+      XmlNamespace attrNs = attrMetadata.getName().getNs();
+      if (attrNs != null) {
+        builder.add(attrNs);
+      }
+    }
+    
+    // Add namespace for all child elements (recursively)
+    for (ElementKey<?, ?> elemKey : metadata.getElements()) {
+      ElementMetadata<?, ?> childMetadata = metadata.bindElement(elemKey);
+      addReferencedNamespaces(childMetadata, builder, added);
+    }
   }
 
   /**

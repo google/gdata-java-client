@@ -17,11 +17,11 @@
 package com.google.gdata.model.atompub;
 
 import com.google.gdata.data.introspection.IServiceDocument;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.atom.TextContent;
 import com.google.gdata.util.Namespaces;
@@ -43,11 +43,18 @@ public class ServiceDocument extends Element implements IServiceDocument {
       QName(Namespaces.atomPubStandardNs, "service"), Void.class,
       ServiceDocument.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addElement(Workspace.KEY).setCardinality(
         ElementMetadata.Cardinality.MULTIPLE).setRequired(true);
   }

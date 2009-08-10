@@ -16,10 +16,10 @@
 
 package com.google.gdata.model.gd;
 
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -37,12 +37,16 @@ public class QuotaBytesUsed extends Element {
       QuotaBytesUsed> KEY = ElementKey.of(new QName(Namespaces.gNs,
       "quotaBytesUsed"), Long.class, QuotaBytesUsed.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder =
-        DefaultRegistry.build(KEY).setContentRequired(false);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY).setContentRequired(false);
   }
 
   /**
@@ -99,7 +103,8 @@ public class QuotaBytesUsed extends Element {
   /**
    * Sets the value.
    *
-   * @param value value or <code>null</code> to reset
+   * @param value value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public QuotaBytesUsed setValue(Long value) {
     super.setTextValue(value);
@@ -136,9 +141,5 @@ public class QuotaBytesUsed extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{QuotaBytesUsed value=" + getTextValue() + "}";
-  }
-
 }
+

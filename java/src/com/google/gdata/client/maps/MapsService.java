@@ -27,15 +27,15 @@ import com.google.gdata.util.VersionRegistry;
 
 /**
  * Extends the basic {@link GoogleService} abstraction to define a service that
- * is preconfigured for access to the Maps data API.
+ * is preconfigured for access to the Google Maps Data API.
  *
  * 
  */
 public class MapsService extends GoogleService {
 
   /**
-   * The abbreviated name of Maps recognized by Google.  The service name is
-   * used when requesting an authentication token.
+   * The abbreviated name of Google Maps Data API recognized by Google.  The
+   * service name is used when requesting an authentication token.
    */
   public static final String MAPS_SERVICE = "local";
 
@@ -45,16 +45,14 @@ public class MapsService extends GoogleService {
   public static final String MAPS_SERVICE_VERSION = "GMaps-Java/" +
       MapsService.class.getPackage().getImplementationVersion();
 
-  /**
-   * GData versions supported by Maps Service.
-   */
+  /** GData versions supported by the Google Maps Data API. */
   public static final class Versions {
 
-    /** The first version of the Maps service. */
+    /** Version 1. */
     public static final Version V1 = new Version(MapsService.class, "1.0",
         Service.Versions.V1);
 
-    /** The second version of the Maps service. */
+    /** Version 2. */
     public static final Version V2 = new Version(MapsService.class, "2.0",
         Service.Versions.V2);
 
@@ -62,14 +60,14 @@ public class MapsService extends GoogleService {
   }
 
   /**
-   * Default GData version used by the Maps service.
+   * Default GData version used by the Google Maps Data API.
    */
   public static final Version DEFAULT_VERSION =
       Service.initServiceVersion(MapsService.class, Versions.V2);
 
   /**
-   * Constructs an instance connecting to the Maps service for an application
-   * with the name {@code applicationName}.
+   * Constructs an instance connecting to the Google Maps Data API for an
+   * application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -82,8 +80,8 @@ public class MapsService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Maps service for an application
-   * with the name {@code applicationName} and the given {@code
+   * Constructs an instance connecting to the Google Maps Data API for an
+   * application with the name {@code applicationName} and the given {@code
    * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
    * override the default factories.
    *
@@ -103,9 +101,10 @@ public class MapsService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Maps service with name {@code
-   * serviceName} for an application with the name {@code applicationName}.  The
-   * service will authenticate at the provided {@code domainName}.
+   * Constructs an instance connecting to the Google Maps Data API with name
+   * {@code serviceName} for an application with the name {@code
+   * applicationName}.  The service will authenticate at the provided {@code
+   * domainName}.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -127,14 +126,14 @@ public class MapsService extends GoogleService {
   }
 
   /**
-   * Returns the current GData version used by the Maps service.
+   * Returns the current GData version used by the Google Maps Data API.
    */
   public static Version getVersion() {
     return VersionRegistry.get().getVersion(MapsService.class);
   }
 
   /**
-   * Declare the extensions of the feeds for the Maps service.
+   * Declare the extensions of the feeds for the Google Maps Data API.
    */
   private void declareExtensions() {
     new FeatureFeed().declareExtensions(extProfile);

@@ -23,16 +23,16 @@ import com.google.gdata.client.Service;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.IEntry;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.ElementMetadata.Cardinality;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
-import com.google.gdata.model.atompub.Edited;
 import com.google.gdata.model.atompub.Control;
+import com.google.gdata.model.atompub.Edited;
 import com.google.gdata.model.batch.BatchId;
 import com.google.gdata.model.batch.BatchInterrupted;
 import com.google.gdata.model.batch.BatchOperation;
@@ -129,16 +129,20 @@ public class Entry extends Element implements IEntry {
   public static final AttributeKey<String> ETAG = AttributeKey.of(
       new QName(Namespaces.gNs, "etag"));
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
     // Build the default metadata for our directly included elements.
-    DefaultRegistry.build(PUBLISHED);
-    DefaultRegistry.build(SUMMARY);
+    registry.build(PUBLISHED);
+    registry.build(SUMMARY);
 
     // Build atom:entry.
-    ElementCreator builder = DefaultRegistry.build(KEY)
+    ElementCreator builder = registry.build(KEY)
         .setCardinality(Cardinality.MULTIPLE);
     builder.addAttribute(ETAG);
     builder.addElement(ID);
@@ -150,7 +154,9 @@ public class Entry extends Element implements IEntry {
     builder.addElement(TITLE);
     builder.addElement(SUMMARY);
     builder.addElement(RIGHTS);
-    builder.addElement(Content.KEY);
+    builder.addElement(Content.KEY).adapt(TextContent.KIND,
+        TextContent.KEY).adapt(OtherContent.KIND, OtherContent.KEY).adapt(
+        OutOfLineContent.KIND, OutOfLineContent.KEY);
     builder.addElement(Link.KEY);
     builder.addElement(Author.KEY);
     builder.addElement(Contributor.KEY);
@@ -159,6 +165,11 @@ public class Entry extends Element implements IEntry {
     builder.addElement(BatchInterrupted.KEY);
     builder.addElement(BatchOperation.KEY);
     builder.addElement(BatchStatus.KEY);
+
+    // Register adaptations.
+    TextContent.registerMetadata(registry);
+    OtherContent.registerMetadata(registry);
+    OutOfLineContent.registerMetadata(registry);
   }
 
   /**
@@ -731,11 +742,12 @@ public class Entry extends Element implements IEntry {
    * that could be found.
    */
   @Override
-  protected Element narrow(ElementMetadata<?,?> meta, ValidationContext vc) {
-    Element narrowed = super.narrow(meta, vc);
+  protected Element narrow(ElementMetadata<?, ?> metadata,
+      ValidationContext vc) {
+    Element narrowed = super.narrow(metadata, vc);
     for (Category category : getCategories()) {
       if (Namespaces.gKind.equals(category.getScheme())) {
-        narrowed = adapt(narrowed, meta, category.getTerm());
+        narrowed = adapt(narrowed, metadata, category.getTerm());
       }
     }
 

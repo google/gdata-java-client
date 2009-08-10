@@ -103,7 +103,7 @@ public interface ElementCreator {
    * {@link Element#adapt(Element, ElementMetadata, String)} with the
    * appropriate key.
    */
-  ElementCreator addAdaptation(String kind, ElementKey<?, ?> adaptation);
+  ElementCreator adapt(String kind, ElementKey<?, ?> adaptation);
 
   /**
    * Sets the cardinality of the element.  The cardinality can be either
@@ -148,8 +148,8 @@ public interface ElementCreator {
   /**
    * Sets the virtual text content of this element. This can change how the
    * text content of the element is rendered, but cannot be used for structural
-   * changes to the element. For that use
-   * {@link #setVirtualElement(VirtualElement)}.
+   * changes to the element. For that use {@link #setSingleVirtualElement}
+   * or {@link #setMultipleVirtualElement}.
    */
   ElementCreator setVirtualValue(VirtualValue virtualValue);
 

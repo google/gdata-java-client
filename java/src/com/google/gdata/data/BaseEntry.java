@@ -157,7 +157,7 @@ public abstract class BaseEntry<E extends BaseEntry>
 
     /** Last updated timestamp. */
     public DateTime updated;
-    
+
     /** Last edit timestamp */
     public DateTime edited;
 
@@ -225,7 +225,7 @@ public abstract class BaseEntry<E extends BaseEntry>
     }
     return atomPubNs;
   }
-  
+
   /**
    * Copy constructor that initializes a new BaseEntry instance to have
    * identical contents to another instance, using a shared reference to
@@ -275,8 +275,8 @@ public abstract class BaseEntry<E extends BaseEntry>
     }
     state.updated = v;
   }
-  
-  
+
+
   public DateTime getEdited() { return state.edited; }
   public void setEdited(DateTime v) {
     if (v != null && v.getTzShift() == null) {
@@ -284,7 +284,7 @@ public abstract class BaseEntry<E extends BaseEntry>
     }
     state.edited = v;
   }
-  
+
   public Set<Category> getCategories() { return state.categories; }
 
   public TextConstruct getTitle() { return state.title; }
@@ -343,13 +343,13 @@ public abstract class BaseEntry<E extends BaseEntry>
   public void addLink(Link link) {
     state.links.add(link);
   }
-  
+
   public Link addLink(String rel, String type, String href) {
     Link link = new Link(rel, type, href);
     addLink(link);
     return link;
   }
-  
+
   public List<Person> getAuthors() { return state.authors; }
 
   public List<Person> getContributors() { return state.contributors; }
@@ -471,7 +471,7 @@ public abstract class BaseEntry<E extends BaseEntry>
       }
     }
   }
-  
+
   /**
    * Remove all links.
    */
@@ -565,7 +565,7 @@ public abstract class BaseEntry<E extends BaseEntry>
       // If an etag is available, use it to conditionalize the retrieval,
       // otherwise, use time of last edit or update.
       if (state.etag != null) {
-        return (E) state.service.getEntry(entryUrl, this.getClass(), 
+        return (E) state.service.getEntry(entryUrl, this.getClass(),
             state.etag);
       } else {
         return (E) state.service.getEntry(entryUrl, this.getClass(),
@@ -602,8 +602,8 @@ public abstract class BaseEntry<E extends BaseEntry>
     Link editLink = getEditLink();
     if (editLink == null) {
       throw new UnsupportedOperationException("Entry cannot be updated");
-    } 
-    
+    }
+
     URL editUrl = new URL(editLink.getHref());
     return (E) state.service.update(editUrl, this);
   }
@@ -632,10 +632,10 @@ public abstract class BaseEntry<E extends BaseEntry>
     if (editLink == null) {
       throw new UnsupportedOperationException("Entry cannot be deleted");
     }
-    
+
     // Delete the entry, using strong etag (if available) as a precondition.
     URL editUrl = new URL(editLink.getHref());
-    state.service.delete(editUrl, 
+    state.service.delete(editUrl,
         GDataProtocol.isWeakEtag(state.etag) ? null : state.etag);
   }
 
@@ -645,15 +645,15 @@ public abstract class BaseEntry<E extends BaseEntry>
    * will be post-processed.
    */
   private class OutOfLineReference implements Reference, Extension {
-    
+
     // This ugliness is necessary because there's no unifying base abstraction
     // for all data elements and the current visitor model only acts upon
-    // Extension types (which Content is not). This is fixed in the new data 
-    // model, at which time we can just have OolContent be visited and wrap it 
-    // in something that implement the Reference interface inside of 
+    // Extension types (which Content is not). This is fixed in the new data
+    // model, at which time we can just have OolContent be visited and wrap it
+    // in something that implement the Reference interface inside of
     // ReferenceVisitor.visit().
     private OutOfLineContent oolContent;
-    
+
     private OutOfLineReference(OutOfLineContent oolContent) {
       this.oolContent = oolContent;
     }
@@ -673,20 +673,20 @@ public abstract class BaseEntry<E extends BaseEntry>
     public ElementHandler getHandler(ExtensionProfile extProfile,
         String namespace, String localName, Attributes attrs) {
       throw new IllegalStateException("Should not be parsed");
-    } 
+    }
   }
-  
+
   @Override
   protected void visitChildren(ExtensionVisitor ev)
       throws ExtensionVisitor.StoppedException {
-    
+
     // Add out of line content to the visitor pattern by wrapping in an
     // adaptor.  This is necessary so the src reference can be processed.
     if (state.content instanceof OutOfLineContent) {
-      this.visitChild(ev, 
+      this.visitChild(ev,
           new OutOfLineReference((OutOfLineContent) state.content));
     }
-    
+
     // Add nested links to the visitor pattern
     for (Link link : getLinks()) {
       this.visitChild(ev, link);
@@ -698,7 +698,7 @@ public abstract class BaseEntry<E extends BaseEntry>
   public void generate(XmlWriter w, ExtensionProfile p) throws IOException {
     generateAtom(w, p);
   }
-  
+
   /**
    * Generates XML in the Atom format.
    *
@@ -725,12 +725,12 @@ public abstract class BaseEntry<E extends BaseEntry>
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", state.etag));
     }
-    
+
     // Add any attribute extensions.
     AttributeGenerator generator = new AttributeGenerator();
     putAttributes(generator);
     generateAttributes(attrs, generator);
-    
+
     generateStartElement(w, Namespaces.atomNs, "entry", attrs, nsDecls);
 
     if (state.id != null) {
@@ -746,7 +746,7 @@ public abstract class BaseEntry<E extends BaseEntry>
       w.simpleElement(Namespaces.atomNs, "updated", null,
           state.updated.toString());
     }
-    
+
     if (state.edited != null) {
       w.simpleElement(getAtomPubNs(), "edited", null,
           state.edited.toString());
@@ -932,7 +932,7 @@ public abstract class BaseEntry<E extends BaseEntry>
   public static <T extends BaseEntry> T readEntry(ParseSource source,
       Class <T> entryClass, ExtensionProfile extProfile)
       throws IOException, ParseException, ServiceException {
-    return ParseUtil.readEntry(source, entryClass, extProfile);
+    return ParseUtil.readEntry(source, entryClass, extProfile, null);
   }
 
   /**
@@ -1000,7 +1000,7 @@ public abstract class BaseEntry<E extends BaseEntry>
       String localName, Attributes attrs) {
     return new AtomHandler(p);
   }
-  
+
   /** {@code <atom:entry>} parser. */
   public class AtomHandler extends ExtensionPoint.ExtensionHandler {
 
@@ -1143,7 +1143,7 @@ public abstract class BaseEntry<E extends BaseEntry>
         } else if (localName.equals("edited")) {
 
           return new EditedHandler();
-          
+
         }
 
       } else {
@@ -1157,7 +1157,7 @@ public abstract class BaseEntry<E extends BaseEntry>
 
     @Override
     public void processEndElement() throws ParseException {
-      
+
       // Skip extension point validation for batch response entries
       if (getExtension(BatchStatus.class) == null &&
           getExtension(BatchInterrupted.class) == null) {
@@ -1223,7 +1223,7 @@ public abstract class BaseEntry<E extends BaseEntry>
    * Locates and returns the most specific {@link Kind.Adaptor} BaseEntry
    * subtype for this entry.  If none can be found for the current class,
    * {@code null} will be returned.
-   * 
+   *
    * @throws Kind.AdaptorException for subclasses to throw.
    */
   public BaseEntry<?> getAdaptedEntry() throws Kind.AdaptorException {

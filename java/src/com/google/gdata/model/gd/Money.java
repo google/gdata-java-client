@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -50,11 +50,18 @@ public class Money extends Element {
   public static final AttributeKey<String> CURRENCY_CODE = AttributeKey.of(new
       QName(null, "currencyCode"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(AMOUNT).setRequired(true);
     builder.addAttribute(CURRENCY_CODE).setRequired(true);
   }
@@ -102,7 +109,8 @@ public class Money extends Element {
   /**
    * Sets the amount.
    *
-   * @param amount amount or <code>null</code> to reset
+   * @param amount amount or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Money setAmount(Double amount) {
     super.setAttributeValue(AMOUNT, amount);
@@ -130,7 +138,8 @@ public class Money extends Element {
   /**
    * Sets the ISO4217 currency code.
    *
-   * @param currencyCode ISO4217 currency code or <code>null</code> to reset
+   * @param currencyCode ISO4217 currency code or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Money setCurrencyCode(String currencyCode) {
     super.setAttributeValue(CURRENCY_CODE, currencyCode);
@@ -171,10 +180,5 @@ public class Money extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{Money amount=" + getAttributeValue(AMOUNT) + " currencyCode=" +
-        getAttributeValue(CURRENCY_CODE) + "}";
-  }
-
 }
+

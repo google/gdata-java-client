@@ -18,14 +18,14 @@ package com.google.gdata.model.atom;
 
 import com.google.gdata.data.ILink;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
+import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.ElementMetadata.Cardinality;
-import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
 import java.net.URI;
@@ -90,11 +90,15 @@ public class Link extends Element implements ILink {
   public static final AttributeKey<String> ETAG = AttributeKey.of(
       new QName(Namespaces.gNs, "etag"));
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY)
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    ElementCreator builder = registry.build(KEY)
         .setCardinality(Cardinality.MULTIPLE);
     builder.addAttribute(REL);
     builder.addAttribute(TYPE);
@@ -277,7 +281,7 @@ public class Link extends Element implements ILink {
     return (relToMatch == null || relToMatch.equals(getRel()))
         && (typeToMatch == null || typeToMatch.equals(getType()));
   }
-  
+
   @Override
   protected Element narrow(ElementMetadata<?, ?> meta, ValidationContext vc) {
     return adapt(this, meta, getRel());

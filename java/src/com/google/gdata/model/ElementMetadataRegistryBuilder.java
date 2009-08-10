@@ -34,7 +34,7 @@ import java.util.Map;
 final class ElementMetadataRegistryBuilder {
 
   // The root registry that created this element registry.
-  private final MetadataRegistryBuilder root;
+  private final MetadataRegistry root;
 
   // A map of creators for this element.
   private final Map<TransformKey, ElementCreatorImpl> creators
@@ -44,28 +44,43 @@ final class ElementMetadataRegistryBuilder {
    * Creates a new element metadata registry builder as part of the given
    * metadata registry.
    */
-  ElementMetadataRegistryBuilder(MetadataRegistryBuilder root) {
+  ElementMetadataRegistryBuilder(MetadataRegistry root) {
     this.root = root;
   }
 
   /**
-   * Copies an existing element metadata registry builder.
+   * Merges the values from an existing element registry builder.
    */
-  ElementMetadataRegistryBuilder(MetadataRegistryBuilder root,
-      ElementMetadataRegistryBuilder source) {
-    this.root = root;
+  void merge(ElementMetadataRegistryBuilder other) {
     for (Map.Entry<TransformKey, ElementCreatorImpl> entry
-        : source.creators.entrySet()) {
-      creators.put(entry.getKey(),
-          new ElementCreatorImpl(root, entry.getValue()));
+        : other.creators.entrySet()) {
+      TransformKey key = entry.getKey();
+      ElementCreatorImpl creator = creators.get(key);
+      if (creator == null) {
+        ElementKey<?, ?> elementKey = (ElementKey<?, ?>) key.getKey();
+        creator = new ElementCreatorImpl(root, elementKey, key.getContext());
+        creators.put(key, creator);
+      }
+      creator.merge(entry.getValue());
     }
   }
 
   /**
    * Create an immutable element metadata registry from this builder.
    */
-  ElementMetadataRegistry create(MetadataRegistry registry) {
-    return new ElementMetadataRegistry(registry, this);
+  ElementMetadataRegistry create(Schema schema) {
+    return new ElementMetadataRegistry(schema, this);
+  }
+
+  /**
+   * Returns {@code true} if a metadata creator exists for the given combination
+   * of parent, key, and context.
+   */
+  boolean isRegistered(ElementKey<?, ?> parent, ElementKey<?, ?> key,
+      MetadataContext context) {
+    Preconditions.checkNotNull(key, "key");
+    TransformKey transformKey = TransformKey.forTransform(parent, key, context);
+    return creators.containsKey(transformKey);
   }
 
   /**

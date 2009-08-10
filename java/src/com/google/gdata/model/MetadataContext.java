@@ -16,9 +16,8 @@
 
 package com.google.gdata.model;
 
-import com.google.gdata.model.transforms.atom.AtomRssTransforms;
-import com.google.gdata.model.transforms.atom.AtomVersionTransforms;
-import com.google.gdata.model.transforms.atompub.AtompubVersionTransforms;
+
+
 import com.google.gdata.util.Version;
 import com.google.gdata.wireformats.AltFormat;
 
@@ -39,20 +38,9 @@ public final class MetadataContext implements Comparable<MetadataContext> {
   public static final MetadataContext ATOM = MetadataContext.forAlt(
       AltFormat.ATOM);
 
-  // Add the default set of atom transforms.
-  static {
-    AtomVersionTransforms.addTransforms(DefaultRegistry.builder());
-    AtompubVersionTransforms.addTransforms(DefaultRegistry.builder());
-  }
-
   /** The RSS metadata context. */
   public static final MetadataContext RSS = MetadataContext.forAlt(
       AltFormat.RSS);
-
-  // Add the default set of RSS transforms.
-  static {
-    AtomRssTransforms.addTransforms(DefaultRegistry.builder());
-  }
 
   /**
    * Creates a new immutable metadata context with just an alt format.  The

@@ -17,7 +17,7 @@
 package com.google.gdata.data.maps;
 
 /**
- * GData namespace definitions related to Maps.
+ * Namespace definitions related to Google Maps Data API.
  *
  * 
  */
@@ -25,10 +25,10 @@ public class MapsNamespace {
 
   private MapsNamespace() {}
 
-  /** Maps (MAPS) namespace */
+  /** Google Maps (MAPS) namespace */
   public static final String MAPS = "http://schemas.google.com/maps/2008";
 
-  /** Maps (MAPS) namespace prefix */
+  /** Google Maps (MAPS) namespace prefix */
   public static final String MAPS_PREFIX = MAPS + "#";
 
 }

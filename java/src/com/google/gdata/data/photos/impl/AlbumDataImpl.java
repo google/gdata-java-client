@@ -31,19 +31,17 @@ import com.google.gdata.data.media.mediarss.MediaThumbnail;
 import com.google.gdata.data.photos.AlbumData;
 import com.google.gdata.data.photos.GphotoAccess;
 import com.google.gdata.data.photos.GphotoBytesUsed;
+import com.google.gdata.data.photos.GphotoCommentCount;
+import com.google.gdata.data.photos.GphotoCommentsEnabled;
 import com.google.gdata.data.photos.GphotoLocation;
 import com.google.gdata.data.photos.GphotoName;
+import com.google.gdata.data.photos.GphotoNickname;
 import com.google.gdata.data.photos.GphotoPhotosLeft;
 import com.google.gdata.data.photos.GphotoPhotosUsed;
-import com.google.gdata.data.photos.impl.Extensions.GphotoCommentCount;
-import com.google.gdata.data.photos.impl.Extensions.GphotoCommentsEnabled;
-import com.google.gdata.data.photos.impl.Extensions.GphotoNickname;
-import com.google.gdata.data.photos.impl.Extensions.GphotoTimestamp;
-import com.google.gdata.data.photos.impl.Extensions.GphotoUsername;
+import com.google.gdata.data.photos.GphotoTimestamp;
+import com.google.gdata.data.photos.GphotoUsername;
 import com.google.gdata.data.photos.pheed.PheedImageUrl;
 import com.google.gdata.data.photos.pheed.PheedThumbnail;
-import com.google.gdata.util.ParseException;
-import com.google.gdata.util.ServiceException;
 
 import java.util.Date;
 import java.util.List;
@@ -86,19 +84,19 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
 
     declare(extProfile, GphotoName.getDefaultDescription(false, false));
     declare(extProfile, GphotoLocation.getDefaultDescription(false, false));
-    declare(extProfile, GphotoTimestamp.getDefaultDescription());
+    declare(extProfile, GphotoTimestamp.getDefaultDescription(false, false));
     declare(extProfile, GphotoAccess.getDefaultDescription(false, false));
     declare(extProfile, GphotoPhotosUsed.getDefaultDescription(false, false));
     declare(extProfile, GphotoPhotosLeft.getDefaultDescription(false, false));
     declare(extProfile, GphotoBytesUsed.getDefaultDescription(false, false));
 
-    declare(extProfile, GphotoUsername.getDefaultDescription());
-    declare(extProfile, GphotoNickname.getDefaultDescription());
+    declare(extProfile, GphotoUsername.getDefaultDescription(false, false));
+    declare(extProfile, GphotoNickname.getDefaultDescription(false, false));
 
     declare(extProfile,
-        GphotoCommentsEnabled.getDefaultDescription());
+        GphotoCommentsEnabled.getDefaultDescription(false, false));
     declare(extProfile,
-        GphotoCommentCount.getDefaultDescription());
+        GphotoCommentCount.getDefaultDescription(false, false));
     
     pointData.declareExtensions(extProfile);
     boundingBoxData.declareExtensions(extProfile);
@@ -199,8 +197,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
   /**
    * Gets the date on the album, this is the date set by the user.
    */
-  public Date getDate() throws ServiceException {
-    return getDateValue(GphotoTimestamp.class);
+  public Date getDate() {
+    GphotoTimestamp ext = getExtension(GphotoTimestamp.class);
+    return ext == null ? null : new Date(ext.getValue());
   }
 
   /**
@@ -219,7 +218,7 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
    */
   public String getAccess() {
     GphotoAccess access = getExtension(GphotoAccess.class);
-    return access == null ? null : access.asString();
+    return access == null ? null : access.getValue().toLowerCase();
   }
 
   /**
@@ -342,7 +341,8 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
    * @return true if comments are enabled in this album the entry represents.
    */
   public Boolean getCommentsEnabled() {
-    return getBooleanValue(GphotoCommentsEnabled.class);
+    GphotoCommentsEnabled left = getExtension(GphotoCommentsEnabled.class);
+    return left == null ? null : left.getValue();
   }
 
   /**
@@ -361,8 +361,9 @@ public class AlbumDataImpl extends GphotoDataImpl implements AlbumData {
   /**
    * @return the comment count on the album this entry represents.
    */
-  public Integer getCommentCount() throws ParseException {
-    return getIntegerValue(GphotoCommentCount.class);
+  public Integer getCommentCount() {
+    GphotoCommentCount left = getExtension(GphotoCommentCount.class);
+    return left == null ? null : left.getValue();
   }
 
   /**

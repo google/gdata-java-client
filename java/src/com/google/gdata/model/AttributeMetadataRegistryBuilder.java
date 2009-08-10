@@ -38,8 +38,8 @@ import java.util.SortedMap;
  */
 final class AttributeMetadataRegistryBuilder {
 
-  // The root metadata registry builder.
-  private final MetadataRegistryBuilder root;
+  // The root metadata registry.
+  private final MetadataRegistry root;
 
   // A map of creators by transformKey for the attribute.
   private final SortedMap<TransformKey, AttributeCreatorImpl> creators
@@ -47,30 +47,33 @@ final class AttributeMetadataRegistryBuilder {
 
   /**
    * Creates new empty attribute metadata registry builder as part of the
-   * given root builder.
+   * given root registry.
    */
-  AttributeMetadataRegistryBuilder(MetadataRegistryBuilder root) {
+  AttributeMetadataRegistryBuilder(MetadataRegistry root) {
     this.root = root;
   }
 
   /**
-   * Creates a copy of an existing attribute metadata registry builder.
+   * Merges the values from an existing attribute registry builder.
    */
-  AttributeMetadataRegistryBuilder(MetadataRegistryBuilder root,
-      AttributeMetadataRegistryBuilder source) {
-    this(root);
+  void merge(AttributeMetadataRegistryBuilder other) {
     for (Map.Entry<TransformKey, AttributeCreatorImpl> entry
-        : source.creators.entrySet()) {
-      creators.put(entry.getKey(),
-          new AttributeCreatorImpl(root, entry.getValue()));
+        : other.creators.entrySet()) {
+      TransformKey key = entry.getKey();
+      AttributeCreatorImpl creator = creators.get(key);
+      if (creator == null) {
+        creator = new AttributeCreatorImpl(root);
+        creators.put(key, creator);
+      }
+      creator.merge(entry.getValue());
     }
   }
 
   /**
    * Create an immutable attribute metadata registry from this builder.
    */
-  AttributeMetadataRegistry create(MetadataRegistry registry) {
-    return new AttributeMetadataRegistry(registry, this);
+  AttributeMetadataRegistry create(Schema schema) {
+    return new AttributeMetadataRegistry(schema, this);
   }
 
   /**

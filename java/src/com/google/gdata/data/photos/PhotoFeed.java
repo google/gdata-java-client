@@ -33,6 +33,7 @@ import com.google.gdata.util.ServiceException;
 import java.util.Date;
 import java.util.List;
 
+
 /**
  * Feed for a Photo in our google data api.  This feed represents a photo
  * as the container for other objects.  A Photo feed contains entries
@@ -96,11 +97,19 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
   public String getAlbumId() {
     return delegate.getAlbumId();
   }
-  
+
+  public String getAlbumAccess() {
+    return delegate.getAlbumAccess();
+  }
+
+  public void setAlbumAccess(String access) {
+    delegate.setAlbumAccess(access);
+  }
+
   public String getVideoStatus() {
     return delegate.getVideoStatus();
   }
-  
+
   public String getChecksum() {
     return delegate.getChecksum();
   }
@@ -121,10 +130,14 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
     return delegate.getExifTags();
   }
 
+  public Date getFeaturedDate() {
+    return delegate.getFeaturedDate();
+  }
+
   public Long getHeight() throws ServiceException {
     return delegate.getHeight();
   }
-
+  
   public Float getPosition() throws ServiceException {
     return delegate.getPosition();
   }
@@ -144,6 +157,10 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
   public Long getVersion() throws ServiceException {
     return delegate.getVersion();
   }
+  
+  public Long getViewCount() {
+    return delegate.getViewCount();
+  }
 
   public Long getWidth() throws ServiceException {
     return delegate.getWidth();
@@ -159,8 +176,8 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
 
   public void setVideoStatus(String videoId) {
     delegate.setVideoStatus(videoId);
-  } 
-  
+  }
+
   public void setChecksum(String checksum) {
     delegate.setChecksum(checksum);
   }
@@ -181,6 +198,10 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
     delegate.setExifTags(tags);
   }
 
+  public void setFeaturedDate(Date featuredDate) {
+    delegate.setFeaturedDate(featuredDate);
+  }
+  
   public void setHeight(Long height) {
     delegate.setHeight(height);
   }
@@ -205,6 +226,10 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
     delegate.setVersion(version);
   }
 
+  public void setViewCount(Long viewCount) {
+    delegate.setViewCount(viewCount);
+  }
+  
   public void setWidth(Long width) {
     delegate.setWidth(width);
   }
@@ -232,17 +257,16 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
 
   public void setGeoBoundingBox(Point lowerLeft, Point upperRight) {
     delegate.setGeoBoundingBox(lowerLeft, upperRight);
-    
   }
 
   public void setGeoBoundingBox(Box boundingBox) {
     delegate.setGeoBoundingBox(boundingBox);
   }
-  
+
   public void clearGeoBoundingBox() {
     delegate.clearGeoBoundingBox();
   }
-  
+
   public void addStreamId(String streamId) {
     delegate.addStreamId(streamId);
   }
@@ -250,7 +274,7 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
   public List<String> getStreamIds() {
     return delegate.getStreamIds();
   }
-  
+
   public MediaGroup getMediaGroup() {
     return delegate.getMediaGroup();
   }
@@ -262,11 +286,11 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
   public List<MediaCategory> getMediaCategories() {
     return delegate.getMediaCategories();
   }
-  
+
   public List<MediaCredit> getMediaCredits() {
     return delegate.getMediaCredits();
   }
-  
+
   public List<MediaThumbnail> getMediaThumbnails() {
     return delegate.getMediaThumbnails();
   }
@@ -278,4 +302,21 @@ public class PhotoFeed extends GphotoFeed<PhotoFeed> implements PhotoData,
   public void setKeywords(MediaKeywords keywords) {
     delegate.setKeywords(keywords);
   }
+  
+  public Boolean isStarred() {
+    return delegate.isStarred(); 
+  }
+
+  public void setStarred(Boolean starred) {
+    delegate.setStarred(starred);
+  }
+
+  public Integer getTotalStars() {
+    return delegate.getTotalStars();
+  }
+
+  public void setTotalStars(Integer totalStars) {
+    delegate.setTotalStars(totalStars);
+  }
+
 }

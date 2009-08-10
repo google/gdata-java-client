@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -102,11 +102,18 @@ public class Rating extends Element {
   public static final AttributeKey<Integer> VALUE = AttributeKey.of(new
       QName(null, "value"), Integer.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(AVERAGE);
     builder.addAttribute(MAX);
     builder.addAttribute(MIN);
@@ -158,7 +165,8 @@ public class Rating extends Element {
   /**
    * Sets the average rating.
    *
-   * @param average average rating or <code>null</code> to reset
+   * @param average average rating or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Rating setAverage(Float average) {
     super.setAttributeValue(AVERAGE, average);
@@ -186,7 +194,8 @@ public class Rating extends Element {
   /**
    * Sets the rating scale's maximum value.
    *
-   * @param max rating scale's maximum value or <code>null</code> to reset
+   * @param max rating scale's maximum value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Rating setMax(Integer max) {
     super.setAttributeValue(MAX, max);
@@ -214,7 +223,8 @@ public class Rating extends Element {
   /**
    * Sets the rating scale's minimum value.
    *
-   * @param min rating scale's minimum value or <code>null</code> to reset
+   * @param min rating scale's minimum value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Rating setMin(Integer min) {
     super.setAttributeValue(MIN, min);
@@ -246,7 +256,8 @@ public class Rating extends Element {
    * value.
    *
    * @param numRaters number of ratings taken into account when computing the
-   *     average value or <code>null</code> to reset
+   *     average value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Rating setNumRaters(Integer numRaters) {
     super.setAttributeValue(NUM_RATERS, numRaters);
@@ -280,8 +291,9 @@ public class Rating extends Element {
    * if not specified, the rating is an overall rating.
    *
    * @param rel programmatic value that describes the aspect that's being rated,
-   *     if not specified, the rating is an overall rating or <code>null</code>
-   *     to reset
+   *     if not specified, the rating is an overall rating or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
   public Rating setRel(String rel) {
     super.setAttributeValue(REL, rel);
@@ -311,7 +323,8 @@ public class Rating extends Element {
   /**
    * Sets the rating value.
    *
-   * @param value rating value or <code>null</code> to reset
+   * @param value rating value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Rating setValue(Integer value) {
     super.setAttributeValue(VALUE, value);
@@ -368,12 +381,5 @@ public class Rating extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{Rating average=" + getAttributeValue(AVERAGE) + " max=" +
-        getAttributeValue(MAX) + " min=" + getAttributeValue(MIN) +
-        " numRaters=" + getAttributeValue(NUM_RATERS) + " rel=" +
-        getAttributeValue(REL) + " value=" + getAttributeValue(VALUE) + "}";
-  }
-
 }
+

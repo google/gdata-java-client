@@ -98,6 +98,8 @@ public class ExifTags extends ExtensionPoint implements Extensible, Extension {
   public void setExifTagValue(String name, Number value) {
     if (value != null && value.floatValue() != 0.0F) {
       setExifTagValue(name, value.toString());
+    } else {
+      setExifTagValue(name, (String) null);
     }
   }
   

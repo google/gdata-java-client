@@ -17,10 +17,10 @@
 package com.google.gdata.model.atompub;
 
 import com.google.common.collect.Maps;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -79,11 +79,16 @@ public class Draft extends Element {
       Draft> KEY = ElementKey.of(new QName(Namespaces.atomPubStandardNs,
       "draft"), Draft.Value.class, Draft.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
   }
 
   /**
@@ -139,7 +144,8 @@ public class Draft extends Element {
   /**
    * Sets the value.
    *
-   * @param value value or <code>null</code> to reset
+   * @param value value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Draft setValue(Value value) {
     super.setTextValue(value);
@@ -176,9 +182,5 @@ public class Draft extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{Draft value=" + getTextValue() + "}";
-  }
-
 }
+

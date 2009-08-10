@@ -16,15 +16,15 @@
 
 package com.google.gdata.data.photos.impl;
 
-import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
-import com.google.gdata.data.photos.Namespaces;
+import com.google.gdata.data.photos.GphotoMaxPhotos;
+import com.google.gdata.data.photos.GphotoNickname;
+import com.google.gdata.data.photos.GphotoQuotaLimit;
+import com.google.gdata.data.photos.GphotoQuotaUsed;
+import com.google.gdata.data.photos.GphotoThumbnail;
+import com.google.gdata.data.photos.GphotoUsername;
 import com.google.gdata.data.photos.UserData;
-import com.google.gdata.data.photos.impl.Extensions.GphotoConstruct;
-import com.google.gdata.data.photos.impl.Extensions.GphotoNickname;
-import com.google.gdata.data.photos.impl.Extensions.GphotoThumbnail;
-import com.google.gdata.data.photos.impl.Extensions.GphotoUsername;
 
 /**
  * Implementation class for user data objects.  This class takes an
@@ -51,12 +51,12 @@ public class UserDataImpl extends GphotoDataImpl implements UserData {
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
 
-    declare(extProfile, GphotoUsername.getDefaultDescription());
-    declare(extProfile, GphotoNickname.getDefaultDescription());
-    declare(extProfile, GphotoThumbnail.getDefaultDescription());
-    declare(extProfile, GphotoQuotaUsed.getDefaultDescription());
-    declare(extProfile, GphotoQuotaLimit.getDefaultDescription());
-    declare(extProfile, GphotoMaxPhotos.getDefaultDescription());
+    declare(extProfile, GphotoUsername.getDefaultDescription(false, false));
+    declare(extProfile, GphotoNickname.getDefaultDescription(false, false));
+    declare(extProfile, GphotoThumbnail.getDefaultDescription(false, false));
+    declare(extProfile, GphotoQuotaUsed.getDefaultDescription(false, false));
+    declare(extProfile, GphotoQuotaLimit.getDefaultDescription(false, false));
+    declare(extProfile, GphotoMaxPhotos.getDefaultDescription(false, false));
   }
 
   /**
@@ -123,8 +123,8 @@ public class UserDataImpl extends GphotoDataImpl implements UserData {
    * @return the quota used up for this user.
    */
   public Long getQuotaUsed() {
-    String value = getSimpleValue(GphotoQuotaUsed.class);
-    return value == null ? null : Long.valueOf(value);
+    GphotoQuotaUsed ext = getExtension(GphotoQuotaUsed.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -144,8 +144,8 @@ public class UserDataImpl extends GphotoDataImpl implements UserData {
    * @return the quota limit for the user in bytes.
    */
   public Long getQuotaLimit() {
-    String quota = getSimpleValue(GphotoQuotaLimit.class);
-    return quota == null ? null : Long.valueOf(quota);
+    GphotoQuotaLimit ext = getExtension(GphotoQuotaLimit.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -165,8 +165,8 @@ public class UserDataImpl extends GphotoDataImpl implements UserData {
    * @return the maximum number of photos the user can have in an album.
    */
   public Integer getMaxPhotos() {
-    String max = getSimpleValue(GphotoMaxPhotos.class);
-    return max == null ? null : Integer.valueOf(max);
+    GphotoMaxPhotos ext = getExtension(GphotoMaxPhotos.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -179,60 +179,6 @@ public class UserDataImpl extends GphotoDataImpl implements UserData {
       setExtension(new GphotoMaxPhotos(max));
     } else {
       removeExtension(GphotoMaxPhotos.class);
-    }
-  }
-
-  /**
-   * The gphoto:quotacurrent field.
-   */
-  public static class GphotoQuotaUsed extends GphotoConstruct {
-    public GphotoQuotaUsed() {
-      this(null);
-    }
-
-    public GphotoQuotaUsed(Long quota) {
-      super("quotacurrent", quota == null ? null : Long.toString(quota));
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoQuotaUsed.class,
-          Namespaces.PHOTOS_NAMESPACE, "quotacurrent");
-    }
-  }
-
-  /**
-   * The gphoto:quotalimit field.
-   */
-  public static class GphotoQuotaLimit extends GphotoConstruct {
-    public GphotoQuotaLimit() {
-      this(null);
-    }
-
-    public GphotoQuotaLimit(Long quota) {
-      super("quotalimit", quota == null ? null : Long.toString(quota));
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoQuotaLimit.class,
-          Namespaces.PHOTOS_NAMESPACE, "quotalimit");
-    }
-  }
-
-  /**
-   * The gphoto:maxPhotos field.
-   */
-  public static class GphotoMaxPhotos extends GphotoConstruct {
-    public GphotoMaxPhotos() {
-      this(null);
-    }
-
-    public GphotoMaxPhotos(Integer max) {
-      super("maxPhotosPerAlbum", max == null ? null : Long.toString(max));
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoMaxPhotos.class,
-          Namespaces.PHOTOS_NAMESPACE, "maxPhotosPerAlbum");
     }
   }
 }

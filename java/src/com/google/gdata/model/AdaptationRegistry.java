@@ -28,7 +28,7 @@ import java.util.Map;
  * elements can be adapted to particular Content variants based on the mime
  * type of the Content.  This is also used for adapting Entry elements to a
  * particular Entry subtype.  See
- * {@link ElementCreator#addAdaptation(String, ElementKey)} for more on
+ * {@link ElementCreator#adapt(String, ElementKey)} for more on
  * adaptations and their uses.
  *
  * <p>This registry is provided primarily to handle lookup of element and

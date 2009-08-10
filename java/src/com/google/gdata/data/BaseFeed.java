@@ -158,7 +158,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     /** Adaptable helper */
     public Kind.Adaptable adaptable = new Kind.AdaptableHelper();
 
-    /** Etag.  
+    /** Etag.
      * Etag.  See RFC 2616, Section 3.11.
      * If there is no entity tag, this variable is null.
      */
@@ -266,7 +266,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   public void setVersionId(String v) { feedState.versionId = v; }
 
   /**
-   * Returns the entity version for this feed. 
+   * Returns the entity version for this feed.
    */
   public String getVersionId() { return feedState.versionId; }
 
@@ -378,7 +378,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     return postLink;
   }
 
-  
+
   /**
    * Returns the link that provides the URI of next page in a paged feed.
    *
@@ -476,11 +476,11 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     URL postUrl = new URL(postLink.getHref());
     return feedState.service.insert(postUrl, newEntry);
   }
-  
+
   @Override
   protected void visitChildren(ExtensionVisitor ev)
       throws ExtensionVisitor.StoppedException {
-    
+
     // Add nested entries and links to the visitor pattern
     for (BaseEntry<E> entry : entries) {
       this.visitChild(ev, entry);
@@ -495,7 +495,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   public void generate(XmlWriter w, ExtensionProfile p) throws IOException {
     generateAtom(w, p);
   }
-  
+
   /**
    * Generates XML in the Atom format.
    *
@@ -571,12 +571,12 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", feedState.etag));
     }
-    
+
     // Add any attribute extensions.
     AttributeGenerator generator = new AttributeGenerator();
     putAttributes(generator);
     generateAttributes(attrs, generator);
-    
+
     generateStartElement(w, Namespaces.atomNs, "feed", attrs, nsDecls);
 
     // Generate base feed elements
@@ -753,7 +753,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   public static <F extends BaseFeed> F readFeed(ParseSource source,
       Class <F> feedClass, ExtensionProfile extProfile)
       throws IOException, ParseException, ServiceException {
-    return ParseUtil.readFeed(source, feedClass, extProfile);
+    return ParseUtil.readFeed(source, feedClass, extProfile, null);
   }
 
   /**
@@ -798,7 +798,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    *
    * @param   extProfile
    *            Extension profile.
-   *            
+   *
    * @param   source
    *            XML source.
    */
@@ -814,7 +814,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       String localName, Attributes attrs) throws ParseException {
     return new FeedHandler(p);
   }
-  
+
   /** {@code <atom:feed>} parser. */
   public class FeedHandler extends SourceHandler {
 

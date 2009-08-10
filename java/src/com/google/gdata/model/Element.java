@@ -69,18 +69,17 @@ public class Element {
   // Logger for logging warnings and errors.
   private static final Logger LOGGER =
       Logger.getLogger(Element.class.getName());
-  
-  
+
   /**
    * Returns the default {@link ElementKey} for an {@link Element} type.
-   * 
+   *
    * @param type element type
    * @return default element key for type
    */
   public static ElementKey<?, ?> getDefaultKey(Class<? extends Element> type) {
-    
+
     Preconditions.checkNotNull(type, "type");
-    
+
     // The current approach used reflection based upon the implementation
     // pattern that every Element type will expose a static ElementKey field
     // named "KEY".
@@ -89,16 +88,16 @@ public class Element {
       Field keyField = type.getField("KEY");
       key = ElementKey.class.cast(keyField.get(null));
     } catch (NoSuchFieldException nsfe) {
-      throw new IllegalArgumentException("Unable to acess KEY field:" + type, 
+      throw new IllegalArgumentException("Unable to acess KEY field:" + type,
           nsfe);
     } catch (IllegalArgumentException iae) {
       throw new IllegalArgumentException("Unable to access KEY field:" + type,
           iae);
     } catch (IllegalAccessException iae) {
-      throw new IllegalArgumentException("Unable to access KEY field:" + type, 
+      throw new IllegalArgumentException("Unable to access KEY field:" + type,
           iae);
     } catch (NullPointerException npe) {
-      throw new IllegalArgumentException("Unable to access KEY field:" + type, 
+      throw new IllegalArgumentException("Unable to access KEY field:" + type,
           npe);
     }
     return key;
@@ -570,26 +569,22 @@ public class Element {
     ImmutableList.Builder<T> builder = ImmutableList.builder();
     Object obj = getElementObject(key);
     if (obj != null) {
+      Class<? extends T> childType = key.getElementType();
+      if (obj instanceof Element) {
+        if (childType.isInstance(obj)) {
+          builder.add(childType.cast(obj));
+        }
+      } else {
 
-      try {
-        if (obj instanceof Element) {
-          T adapted = adapt(key, (Element) obj);
-          builder.add(adapted);
-        } else {
-
-          // Adapt the list elements on the way out if necessary.  We return a
-          // new list currently, if we change to return mutable lists we'll need
-          // to adapt in-place.  To enforce clients not adding to the list we
-          // return an immutable list.
-
-          for (Object o : (Collection<?>) obj) {
-            Element e = (Element) o;
-            builder.add(adapt(key, (Element) o));
+        // Returns a list of all children that matched the given key.
+        // If we change to returning mutable lists this will need to be a
+        // view of the underlying data instead.
+        for (Object o : (Collection<?>) obj) {
+          Element e = (Element) o;
+          if (childType.isInstance(e)) {
+            builder.add(childType.cast(e));
           }
         }
-      } catch (ContentCreationException e) {
-        throw new IllegalArgumentException("Unable to adapt to "
-            + key.getElementType(), e);
       }
     }
     return builder.build();
@@ -633,25 +628,22 @@ public class Element {
     ImmutableSet.Builder<T> builder = ImmutableSet.builder();
     Object obj = getElementObject(key);
     if (obj != null) {
-      try {
-        if (obj instanceof Element) {
-          T adapted = adapt(key, (Element) obj);
-          builder.add(adapted);
-        } else {
+      Class<? extends T> childType = key.getElementType();
+      if (obj instanceof Element) {
+        if (childType.isInstance(obj)) {
+          builder.add(childType.cast(obj));
+        }
+      } else {
 
-          // Adapt the list elements on the way out if necessary.  We return a
-          // new list currently, if we change to return mutable lists we'll need
-          // to adapt in-place.  To enforce clients not adding to the list we
-          // return an immutable list.
-
-          for (Object o : (Collection<?>) obj) {
-            Element e = (Element) o;
-            builder.add(adapt(key, (Element) o));
+        // Returns a set of all children that matched the given key.
+        // If we change to returning mutable lists this will need to be a
+        // view of the underlying data instead.
+        for (Object o : (Collection<?>) obj) {
+          Element e = (Element) o;
+          if (childType.isInstance(e)) {
+            builder.add(childType.cast(e));
           }
         }
-      } catch (ContentCreationException e) {
-        throw new IllegalArgumentException("Unable to adapt to "
-            + key.getElementType(), e);
       }
     }
     return builder.build();
@@ -938,7 +930,7 @@ public class Element {
     // is part of resolve?
     Class<?> elementType = key.getElementType();
     if (Category.class.isAssignableFrom(elementType)) {
-      return Sets.newHashSet();
+      return Sets.newLinkedHashSet();
     } else {
       return Lists.newArrayList();
     }

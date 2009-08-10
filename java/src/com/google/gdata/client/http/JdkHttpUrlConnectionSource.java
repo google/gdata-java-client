@@ -21,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Opens HTTP connection using {@link URL.openConnection()}.
+ * Opens HTTP connection using {@link URL#openConnection()}.
  */
 public class JdkHttpUrlConnectionSource implements HttpUrlConnectionSource { 
 

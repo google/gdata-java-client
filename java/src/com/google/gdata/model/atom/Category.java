@@ -19,13 +19,14 @@ package com.google.gdata.model.atom;
 import com.google.gdata.util.common.base.Preconditions;
 import com.google.gdata.data.ICategory;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
-import com.google.gdata.model.ElementMetadata.Cardinality;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
+import com.google.gdata.model.ValidationContext;
+import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.util.Namespaces;
 
 import java.util.regex.Matcher;
@@ -66,11 +67,15 @@ public class Category extends Element implements ICategory {
   public static final AttributeKey<String> XML_LANG = AttributeKey.of(
       new QName(Namespaces.xmlNs, "lang"));
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY)
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    ElementCreator builder = registry.build(KEY)
         .setCardinality(Cardinality.SET);
     builder.addAttribute(XML_LANG);
     builder.addAttribute(SCHEME);
@@ -86,7 +91,7 @@ public class Category extends Element implements ICategory {
   }
 
   /**
-   * Constructs a new category instance using the specified element metadata.
+   * Constructs a new category instance using the specified element key.
    *
    * @param key the element key for the category.
    */
@@ -96,13 +101,13 @@ public class Category extends Element implements ICategory {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Category} instance. Will use the given {@link ElementMetadata} as
-   * the metadata for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as
+   * the key for the element.
    *
    * @param key the element key to use for the category
    * @param source source element
    */
-  public Category(ElementKey<?, ? extends Category> key, Category source) {
+  public Category(ElementKey<?, ? extends Category> key, Element source) {
     super(key, source);
   }
 
@@ -224,6 +229,11 @@ public class Category extends Element implements ICategory {
    */
   public void setLabelLang(String lang) {
     setAttributeValue(XML_LANG, lang);
+  }
+
+  @Override
+  protected Element narrow(ElementMetadata<?, ?> meta, ValidationContext vc) {
+    return adapt(this, meta, getScheme());
   }
 
   @Override

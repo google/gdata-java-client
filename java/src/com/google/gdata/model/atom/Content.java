@@ -18,11 +18,11 @@ package com.google.gdata.model.atom;
 
 import com.google.gdata.data.IContent;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.util.ContentType;
@@ -66,21 +66,25 @@ public class Content extends Element implements IContent {
   public static final AttributeKey<URI> SRC = AttributeKey.of(
       new QName("src"), URI.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the default metadata for this element.
    */
-  static {
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(CONSTRUCT)) {
+      return;
+    }
+
     // We put the default metadata into the construct (Content with no QName),
     // because we need these attributes as part of TextContent when it is used
     // as something other than atom:content.
     ElementCreator constructBuilder =
-        DefaultRegistry.build(CONSTRUCT).setContentRequired(false);
+        registry.build(CONSTRUCT).setContentRequired(false);
     constructBuilder.addAttribute(TYPE);
     constructBuilder.addAttribute(SRC);
     constructBuilder.addAttribute(XML_LANG);
 
     // The basic atom:content just uses the same fields as the construct.
-    DefaultRegistry.build(KEY);
+    registry.build(KEY);
   }
 
   /**
@@ -93,21 +97,20 @@ public class Content extends Element implements IContent {
   }
 
   /**
-   * Constructs a new instance using the specified element metadata and
-   * copying all attributes, elements, and text content from the source
-   * Content instance.
+   * Constructs a new instance using the specified element key and the source
+   * {@link Element} instance's data (attributes, child elements, text content).
    *
    * @param key the element key for the content element.
    * @param source source content.
    */
-  public Content(ElementKey<?, ?> key, Content source) {
+  public Content(ElementKey<?, ?> key, Element source) {
     super(key, source);
   }
 
-  /** 
+  /**
    * Returns this content's type.   The list of valid value is defined in
    * {@link IContent.Type}.
-   * 
+   *
    * @see IContent.Type
    */
   public int getType() {

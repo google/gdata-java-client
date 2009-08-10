@@ -25,14 +25,11 @@ import com.google.gdata.data.Person;
 import com.google.gdata.data.ValueConstruct;
 import com.google.gdata.data.photos.GphotoData;
 import com.google.gdata.data.photos.GphotoId;
-import com.google.gdata.data.photos.Namespaces;
-import com.google.gdata.data.photos.impl.Extensions.GphotoConstruct;
-import com.google.gdata.data.photos.impl.Extensions.GphotoNickname;
-import com.google.gdata.data.photos.impl.Extensions.GphotoThumbnail;
-import com.google.gdata.data.photos.impl.Extensions.GphotoUsername;
-import com.google.gdata.util.ParseException;
+import com.google.gdata.data.photos.GphotoNickname;
+import com.google.gdata.data.photos.GphotoThumbnail;
+import com.google.gdata.data.photos.GphotoType;
+import com.google.gdata.data.photos.GphotoUsername;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,14 +62,16 @@ public class GphotoDataImpl implements GphotoData {
   @SuppressWarnings("deprecation")
   public void declareExtensions(ExtensionProfile extProfile) {
     declare(extProfile, GphotoId.getDefaultDescription(false, false));
-    declare(extProfile, GphotoType.getDefaultDescription());
-    declare(extProfile, GphotoRssLink.getDefaultDescription());
+    declare(extProfile, GphotoType.getDefaultDescription(false, false));
     extProfile.declareArbitraryXmlExtension(extClass);
 
     // Declare that the person extension point can have user, nick, or thumb.
-    extProfile.declare(Person.class, GphotoUsername.getDefaultDescription());
-    extProfile.declare(Person.class, GphotoNickname.getDefaultDescription());
-    extProfile.declare(Person.class, GphotoThumbnail.getDefaultDescription());
+    extProfile.declare(Person.class,
+        GphotoUsername.getDefaultDescription(false, false));
+    extProfile.declare(Person.class,
+        GphotoNickname.getDefaultDescription(false, false));
+    extProfile.declare(Person.class,
+        GphotoThumbnail.getDefaultDescription(false, false));
   }
 
   /**
@@ -125,81 +124,6 @@ public class GphotoDataImpl implements GphotoData {
   protected String getSimpleValue(Class<? extends ValueConstruct> extClass) {
     ValueConstruct construct = getExtension(extClass);
     return construct == null ? null : construct.getValue();
-  }
-
-  /**
-   * Protected helper to get a date value from a construct.
-   */
-  protected Date getDateValue(Class<? extends ValueConstruct> extClass)
-      throws ParseException {
-    String strVal = getSimpleValue(extClass);
-
-    if (strVal == null) return null;
-
-    try {
-      return new Date(Long.parseLong(strVal));
-    } catch (NumberFormatException nfe) {
-      throw new ParseException("Invalid timestamp: " + strVal);
-    }
-  }
-
-  /**
-   * Protected helper to get an integer value from a simple construct.
-   */
-  protected Integer getIntegerValue(Class<? extends ValueConstruct> extClass)
-      throws ParseException {
-    String strVal = getSimpleValue(extClass);
-
-    if (strVal == null) return null;
-
-    try {
-      return new Integer(strVal);
-    } catch (NumberFormatException nfe) {
-      throw new ParseException("Invalid int: " + strVal);
-    }
-  }
-
-  /**
-   * Protected helper to get a long value from a simple construct.
-   */
-  protected Long getLongValue(Class<? extends ValueConstruct> extClass)
-      throws ParseException {
-    String strVal = getSimpleValue(extClass);
-
-    if (strVal == null) return null;
-
-    try {
-      return new Long(strVal);
-    } catch (NumberFormatException nfe) {
-      throw new ParseException("Invalid long: " + strVal);
-    }
-  }
-
-  /**
-   * Protected helper to get a float value from a simple construct.
-   */
-  protected Float getFloatValue(Class<? extends ValueConstruct> extClass)
-      throws ParseException {
-    String strVal = getSimpleValue(extClass);
-
-    if (strVal == null) return null;
-
-    try {
-      return new Float(strVal);
-    } catch (NumberFormatException nfe) {
-      throw new ParseException("Invalid float: " + strVal);
-    }
-  }
-
-  /**
-   * Protected helper to get a boolean value from a simple construct.
-   */
-  protected Boolean getBooleanValue(Class<? extends ValueConstruct> extClass) {
-    String strVal = getSimpleValue(extClass);
-
-    if (strVal == null) return null;
-
-    return new Boolean(strVal);
   }
 
   /**
@@ -264,52 +188,5 @@ public class GphotoDataImpl implements GphotoData {
    */
   public void removeRepeatingExtension(Extension ext) {
     extPoint.removeRepeatingExtension(ext);
-  }
-
-  /**
-   * Gphoto rss link class, used for gphoto:rsslink elements. This item is
-   * provided for backwards compatibility with existing clients, and should not
-   * be used for new code.
-   *
-   * @deprecated Clients should modify the alt-type themselves to request RSS.
-   */
-  @Deprecated
-  public static class GphotoRssLink extends GphotoConstruct {
-    public GphotoRssLink() {
-      this(null);
-    }
-
-    public GphotoRssLink(String linkHref) {
-      super("rsslink", linkHref);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoRssLink.class,
-          Namespaces.PHOTOS_NAMESPACE, "rsslink");
-    }
-  }
-
-  /**
-   * Gphoto type class, used for gphoto:type elements. This class is provided
-   * for backwards compatibility with existing clients, and should not be used
-   * for new code.
-   *
-   * @deprecated Clients should use the atom:category to discover the kind of an
-   *             item.
-   */
-  @Deprecated
-  public static class GphotoType extends GphotoConstruct {
-    public GphotoType() {
-      this(null);
-    }
-
-    public GphotoType(String type) {
-      super("type", type);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoType.class,
-          Namespaces.PHOTOS_NAMESPACE, "type");
-    }
   }
 }

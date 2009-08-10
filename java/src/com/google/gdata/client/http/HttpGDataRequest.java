@@ -49,13 +49,13 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
-
 
 /**
  * The HttpGDataRequest class provides a basic implementation of the
@@ -87,6 +87,7 @@ public class HttpGDataRequest implements GDataRequest {
    *
    * @deprecated Use {@link GDataProtocol.Header#METHOD_OVERRIDE} instead
    */
+  @Deprecated
   public static final String METHOD_OVERRIDE_HEADER =
       GDataProtocol.Header.METHOD_OVERRIDE;
 

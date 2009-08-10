@@ -18,10 +18,10 @@ package com.google.gdata.model.batch;
 
 import com.google.gdata.data.batch.IBatchStatus;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
-import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementCreator;
+import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
@@ -62,12 +62,15 @@ public class BatchStatus extends Element implements IBatchStatus {
   public static final AttributeKey<String> REASON = AttributeKey.of(
       new QName("reason"));
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY)
-        .setContentRequired(false);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    ElementCreator builder = registry.build(KEY).setContentRequired(false);
     builder.addAttribute(CODE).setRequired(true);
     builder.addAttribute(CONTENT_TYPE);
     builder.addAttribute(REASON).setRequired(true);

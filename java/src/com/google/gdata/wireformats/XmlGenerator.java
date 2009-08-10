@@ -305,7 +305,7 @@ public class XmlGenerator implements WireFormatGenerator, ElementVisitor {
     // the default namespace.
     if (rootNs == USE_ROOT_ELEMENT_NAMESPACE) {
       if (meta != null) {
-        rootNs = meta.getName().getNs();
+        rootNs = meta.getDefaultNamespace();
       } else {
         rootNs = e.getElementId().getNs();
       }

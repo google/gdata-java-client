@@ -16,9 +16,10 @@
 
 package com.google.gdata.model.gd;
 
-import com.google.gdata.model.DefaultRegistry;
+import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 
 /**
  * Describes an entry link used by a recurrence exception.
@@ -35,11 +36,21 @@ public class RecurrenceExceptionEntryLink extends EntryLink {
       RecurrenceExceptionEntryLink> KEY = ElementKey.of(EntryLink.KEY.getId(),
       Void.class, RecurrenceExceptionEntryLink.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register superclass metadata.
+    EntryLink.registerMetadata(registry);
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Overridden elements
     builder.replaceElement(RecurrenceExceptionEntry.KEY);
   }
 
@@ -60,14 +71,14 @@ public class RecurrenceExceptionEntryLink extends EntryLink {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link EntryLink} instance. Will use the given {@link ElementKey} as the
-   * key for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element.
    *
    * @param key The key to use for this element.
    * @param source source element
    */
   public RecurrenceExceptionEntryLink(ElementKey<Void,
-      ? extends RecurrenceExceptionEntryLink> key, EntryLink source) {
+      ? extends RecurrenceExceptionEntryLink> key, Element source) {
     super(key, source);
   }
 
@@ -76,9 +87,6 @@ public class RecurrenceExceptionEntryLink extends EntryLink {
      return (RecurrenceExceptionEntryLink) super.lock();
    }
 
-  @Override
-  public String toString() {
-    return "{RecurrenceExceptionEntryLink " + super.toString() + "}";
-  }
 
 }
+

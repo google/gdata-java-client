@@ -474,8 +474,10 @@ public class Maps {
         if (id.length() > 0) {
           entry.setExtension(new ResourceId(id));
         }
-        addProperties(props, entry);
-        pp(maps, entry, pw);
+        setProperties(props, entry);
+        if (preview) {
+          pp(maps, entry, pw);
+        }
         pp(maps, client.createEntry(entry, uid, mid), pw);
         break;
 
@@ -489,7 +491,10 @@ public class Maps {
         entry = title == null
           ? parseEntry(client, is, maps, preview, pw)
           : client.buildEntry(title, content, summary);
-        addProperties(props, entry);
+        setProperties(props, entry);
+        if (preview) {
+          pp(maps, entry, pw);
+        }
         pp(maps, client.updateEntry(entry, uid, mid, fid), pw);
         break;
 
@@ -516,8 +521,7 @@ public class Maps {
         BaseFeed batch = client.newFeed();
         count = 0;
         for (Object o : bf.getEntries()) {
-          String entryId = ((BaseEntry) o).getSelfLink().
-              getHref().replaceAll("\\.", sep);
+          String entryId = ((BaseEntry) o).getSelfLink().getHref();
           if (count == 0 && fudge) {
             entryId += "-xx";
           }
@@ -555,7 +559,7 @@ public class Maps {
                 ? parseEntry(client, new ByteArrayInputStream(xml.getBytes()),
                     maps, preview, pw)
                 : client.buildEntry(title, content, summary);
-            addProperties(props, entry);
+            setProperties(props, entry);
             entry.setId(entryId);
             BatchUtils.setBatchId(entry, entryId);
             BatchUtils.setBatchOperationType(entry, BatchOperationType.INSERT);
@@ -606,7 +610,7 @@ public class Maps {
                     maps, preview, pw)
                 : client.buildEntry(title, content, summary);
             update.setId(replaceUserId(uid, entryId));
-            addProperties(props, update);
+            setProperties(props, update);
             BatchUtils.setBatchOperationType(update, BatchOperationType.UPDATE);
             BatchUtils.setBatchId(update, Integer.toString(++dex));
             batch.getEntries().add(update);
@@ -659,11 +663,14 @@ public class Maps {
     return StringUtil.join(parts, "/");
   }
 
-  private static void addProperties(Map<String, String> props,
+  private static void setProperties(Map<String, String> props,
       BaseEntry entry) {
+    List<CustomProperty> cust = (entry instanceof MapEntry)
+        ? ((MapEntry) entry).getCustomProperties()
+        : ((FeatureEntry) entry).getCustomProperties();
+    cust.clear();
     for (String key : props.keySet()) {
-      ((FeatureEntry) entry).addCustomProperty(
-          new CustomProperty(key, null, null, props.get(key)));
+      cust.add(new CustomProperty(key, null, null, props.get(key)));
     }
   }
 }

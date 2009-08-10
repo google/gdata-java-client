@@ -20,9 +20,9 @@ import com.google.gdata.data.IContent;
 import com.google.gdata.data.IOutOfLineContent;
 import com.google.gdata.data.Reference;
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
@@ -51,7 +51,7 @@ public class OutOfLineContent extends Content
    */
   public static final AttributeKey<Long> LENGTH = AttributeKey.of(
       new QName("length"), Long.class);
-  
+
   /**
    * The gd:etag attribute.
    *
@@ -60,15 +60,24 @@ public class OutOfLineContent extends Content
   public static final AttributeKey<String> ETAG = AttributeKey.of(
       new QName(Namespaces.gNs, "etag"));
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register supertype
+    Content.registerMetadata(registry);
+
+    ElementCreator builder = registry.build(KEY);
     builder.replaceAttribute(Content.SRC).setRequired(true);
     builder.addAttribute(LENGTH).setVisible(false);
     builder.addAttribute(ETAG);
-    DefaultRegistry.adapt(Content.KEY, KIND, KEY);
+
+    // Add adaptations
+    registry.adapt(Content.KEY, KIND, KEY);
   }
 
   /**
@@ -183,19 +192,19 @@ public class OutOfLineContent extends Content
     Long length = getAttributeValue(LENGTH);
     return length == null ? -1 : length;
   }
-  
+
   /**
    * Returns the HTTP etag for the referenced content or {@code null} if
    * unknown.
    */
-  public String getEtag() {  
+  public String getEtag() {
     return getAttributeValue(ETAG);
   }
-  
+
   /**
    * Sets the HTTP etag for the referenced content. A value of {@code null}
    * indicates it is unknown.
-   * 
+   *
    * @param etag HTTP etag value
    */
   public void setEtag(String etag) {

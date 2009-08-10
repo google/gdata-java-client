@@ -16,7 +16,6 @@
 
 package com.google.gdata.data.photos.impl;
 
-import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.geo.Box;
@@ -30,18 +29,27 @@ import com.google.gdata.data.media.mediarss.MediaGroup;
 import com.google.gdata.data.media.mediarss.MediaKeywords;
 import com.google.gdata.data.media.mediarss.MediaThumbnail;
 import com.google.gdata.data.photos.ExifTags;
-import com.google.gdata.data.photos.Namespaces;
+import com.google.gdata.data.photos.GphotoAccess;
+import com.google.gdata.data.photos.GphotoAlbumId;
+import com.google.gdata.data.photos.GphotoChecksum;
+import com.google.gdata.data.photos.GphotoClient;
+import com.google.gdata.data.photos.GphotoCommentCount;
+import com.google.gdata.data.photos.GphotoCommentsEnabled;
+import com.google.gdata.data.photos.GphotoFeaturedDate;
+import com.google.gdata.data.photos.GphotoHeight;
+import com.google.gdata.data.photos.GphotoPosition;
+import com.google.gdata.data.photos.GphotoRotation;
+import com.google.gdata.data.photos.GphotoSize;
+import com.google.gdata.data.photos.GphotoStarred;
+import com.google.gdata.data.photos.GphotoStreamId;
+import com.google.gdata.data.photos.GphotoTimestamp;
+import com.google.gdata.data.photos.GphotoVersion;
+import com.google.gdata.data.photos.GphotoVideoStatus;
+import com.google.gdata.data.photos.GphotoViewCount;
+import com.google.gdata.data.photos.GphotoWidth;
 import com.google.gdata.data.photos.PhotoData;
-import com.google.gdata.data.photos.impl.Extensions.GphotoAlbumId;
-import com.google.gdata.data.photos.impl.Extensions.GphotoCommentCount;
-import com.google.gdata.data.photos.impl.Extensions.GphotoCommentsEnabled;
-import com.google.gdata.data.photos.impl.Extensions.GphotoConstruct;
-import com.google.gdata.data.photos.impl.Extensions.GphotoTimestamp;
-import com.google.gdata.data.photos.impl.Extensions.GphotoVersion;
 import com.google.gdata.data.photos.pheed.PheedImageUrl;
 import com.google.gdata.data.photos.pheed.PheedThumbnail;
-import com.google.gdata.data.photos.pheed.PheedVideoUrl;
-import com.google.gdata.util.ParseException;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,31 +87,32 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   @SuppressWarnings("deprecation")
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
-    
+
     declare(extProfile, PheedThumbnail.getDefaultDescription());
     declare(extProfile, PheedImageUrl.getDefaultDescription());
 
-    declare(extProfile, GphotoVersion.getDefaultDescription());
-    declare(extProfile, GphotoPosition.getDefaultDescription());
-    declare(extProfile, GphotoWidth.getDefaultDescription());
-    declare(extProfile, GphotoHeight.getDefaultDescription());
-    declare(extProfile, GphotoRotation.getDefaultDescription());
-    declare(extProfile, GphotoSize.getDefaultDescription());
+    declare(extProfile, GphotoVersion.getDefaultDescription(false, false));
+    declare(extProfile, GphotoPosition.getDefaultDescription(false, false));
+    declare(extProfile, GphotoWidth.getDefaultDescription(false, false));
+    declare(extProfile, GphotoHeight.getDefaultDescription(false, false));
+    declare(extProfile, GphotoRotation.getDefaultDescription(false, false));
+    declare(extProfile, GphotoSize.getDefaultDescription(false, false));
 
-    declare(extProfile, GphotoAlbumId.getDefaultDescription());
-    declare(extProfile, GphotoClient.getDefaultDescription());
-    declare(extProfile, GphotoChecksum.getDefaultDescription());
-    declare(extProfile, GphotoTimestamp.getDefaultDescription());
-    declare(extProfile, GphotoExifTime.getDefaultDescription());
-    declare(extProfile, GphotoStreamId.getDefaultDescription());
+    declare(extProfile, GphotoAlbumId.getDefaultDescription(false, false));
+    declare(extProfile, GphotoAccess.getDefaultDescription(false, false));
+    declare(extProfile, GphotoClient.getDefaultDescription(false, false));
+    declare(extProfile, GphotoChecksum.getDefaultDescription(false, false));
+    declare(extProfile, GphotoTimestamp.getDefaultDescription(false, false));
+    declare(extProfile, GphotoStreamId.getDefaultDescription(false, false));
 
-    declare(extProfile, GphotoVideoStatus.getDefaultDescription());
-    
+    declare(extProfile, GphotoVideoStatus.getDefaultDescription(false, false));
+
     declare(extProfile, ExifTags.getDefaultDescription());
     new ExifTags().declareExtensions(extProfile);
 
-    declare(extProfile, GphotoCommentsEnabled.getDefaultDescription());
-    declare(extProfile, GphotoCommentCount.getDefaultDescription());
+    declare(extProfile,
+        GphotoCommentsEnabled.getDefaultDescription(false, false));
+    declare(extProfile, GphotoCommentCount.getDefaultDescription(false, false));
 
     pointData.declareExtensions(extProfile);
     boundingBoxData.declareExtensions(extProfile);
@@ -111,33 +120,11 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   }
 
   /**
-   * Get the video url for the video that is being pointed at.
-   */
-  public String getVideoUrl() {
-    return getSimpleValue(GphotoVideoUrl.class);
-  }
-
-  /**
-   * Set the video url that points to the url of the actual video.
-   * PheedVideoUrl is deprecated but included for backwards compatibility with
-   * older clients.
-   */
-  @SuppressWarnings("deprecation")
-  public void setVideoUrl(String videoUrl) {
-    if (videoUrl != null) {
-      setExtension(new GphotoVideoUrl(videoUrl));
-      setExtension(new PheedVideoUrl(videoUrl));
-    } else {
-      removeExtension(GphotoVideoUrl.class);
-      removeExtension(PheedVideoUrl.class);
-    }
-  }
-
-  /**
    * @return the gphoto:version on the item.
    */
-  public Long getVersion() throws ParseException {
-    return getLongValue(GphotoVersion.class);
+  public Long getVersion() {
+    GphotoVersion ext = getExtension(GphotoVersion.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -156,8 +143,9 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   /**
    * @return the gphoto:position of the photo.
    */
-  public Float getPosition() throws ParseException {
-    return getFloatValue(GphotoPosition.class);
+  public Float getPosition() {
+    GphotoPosition ext = getExtension(GphotoPosition.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -197,9 +185,30 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
    */
   public void setAlbumId(Long albumId) {
     if (albumId != null) {
-      setExtension(new GphotoAlbumId(albumId));
+      setExtension(new GphotoAlbumId(albumId.toString()));
     } else {
       removeExtension(GphotoAlbumId.class);
+    }
+  }
+
+  /**
+   * @return the access of the album that contains this photo.
+   */
+  public String getAlbumAccess() {
+    GphotoAccess access = getExtension(GphotoAccess.class);
+    return access == null ? null : access.getValue().toLowerCase();
+  }
+
+  /**
+   * Set the access for the album that contains this photo.
+   *
+   * @param access the access of the album.
+   */
+  public void setAlbumAccess(String access) {
+    if (access != null) {
+      setExtension(new GphotoAccess(access));
+    } else {
+      removeExtension(GphotoAccess.class);
     }
   }
 
@@ -219,13 +228,14 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
     } else {
       removeExtension(GphotoVideoStatus.class);
     }
-  } 
-  
+  }
+
   /**
    * @return the gphoto:width of the photo.
    */
-  public Long getWidth() throws ParseException {
-    return getLongValue(GphotoWidth.class);
+  public Long getWidth() {
+    GphotoWidth ext = getExtension(GphotoWidth.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -244,8 +254,9 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   /**
    * @return the gphoto:height of the photo.
    */
-  public Long getHeight() throws ParseException {
-    return getLongValue(GphotoHeight.class);
+  public Long getHeight() {
+    GphotoHeight ext = getExtension(GphotoHeight.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -264,8 +275,9 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   /**
    * @return the gphoto:rotation of the photo.
    */
-  public Integer getRotation() throws ParseException {
-    return getIntegerValue(GphotoRotation.class);
+  public Integer getRotation() {
+    GphotoRotation ext = getExtension(GphotoRotation.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -284,8 +296,9 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   /**
    * @return the gphoto:size of the photo.
    */
-  public Long getSize() throws ParseException {
-    return getLongValue(GphotoSize.class);
+  public Long getSize() {
+    GphotoSize ext = getExtension(GphotoSize.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -344,8 +357,9 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   /**
    * @return the gphoto:timestamp of the photo.
    */
-  public Date getTimestamp() throws ParseException {
-    return getDateValue(GphotoTimestamp.class);
+  public Date getTimestamp() {
+    GphotoTimestamp ext = getExtension(GphotoTimestamp.class);
+    return ext == null ? null : new Date(ext.getValue());
   }
 
   /**
@@ -385,7 +399,8 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
    * @return true if comments are enabled in the photo the item represents.
    */
   public Boolean getCommentsEnabled() {
-    return getBooleanValue(GphotoCommentsEnabled.class);
+    GphotoCommentsEnabled ext = getExtension(GphotoCommentsEnabled.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -404,8 +419,9 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   /**
    * @return the comment count on the photo this item represents.
    */
-  public Integer getCommentCount() throws ParseException {
-    return getIntegerValue(GphotoCommentCount.class);
+  public Integer getCommentCount() {
+    GphotoCommentCount ext = getExtension(GphotoCommentCount.class);
+    return ext == null ? null : ext.getValue();
   }
 
   /**
@@ -439,7 +455,47 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   public void addStreamId(String streamId) {
     addRepeatingExtension(new GphotoStreamId(streamId));
   }
+  
+  /**
+   * @return the number of views for this photo.
+   */
+  public Long getViewCount() {
+    GphotoViewCount ext = getExtension(GphotoViewCount.class);
+    return ext == null ? null : ext.getValue();
+  }
+  
+  /**
+   * Sets the view count for this photo.
+   * @param viewCount the number of views for this photo.
+   */
+  public void setViewCount(Long viewCount) {
+    if (viewCount != null) {
+      setExtension(new GphotoViewCount(viewCount));
+    } else {
+      removeExtension(GphotoViewCount.class);
+    }
+  }
+  
+  /**
+   * @return date that the photo was featured.
+   */
+  public Date getFeaturedDate() {
+    GphotoFeaturedDate ext = getExtension(GphotoFeaturedDate.class);
+    return ext == null ? null : new Date(ext.getValue());
+  }
 
+  /**
+   * Sets the date that the photo was featured.
+   * @param featuredDate the date that the photo was featured.
+   */
+  public void setFeaturedDate(Date featuredDate) {
+    if (featuredDate != null) {
+      setExtension(new GphotoFeaturedDate(featuredDate));
+    } else {
+      removeExtension(GphotoFeaturedDate.class);
+    }
+  }
+  
   /*
    * These delegate to the backing geo data.
    */
@@ -454,7 +510,7 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   public Point getGeoLocation() {
     return pointData.getGeoLocation();
   }
-  
+
   public Box getGeoBoundingBox() {
     return boundingBoxData.getGeoBoundingBox();
   }
@@ -474,14 +530,14 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   public void clearGeoBoundingBox() {
     boundingBoxData.clearGeoBoundingBox();
   }
-  
+
   /*
    * These delegate to the backing media data.
    */
   public MediaGroup getMediaGroup() {
     return mediaData.getMediaGroup();
   }
-  
+
   public List<MediaContent> getMediaContents() {
     return mediaData.getMediaContents();
   }
@@ -489,11 +545,11 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   public List<MediaCategory> getMediaCategories() {
     return mediaData.getMediaCategories();
   }
-  
+
   public List<MediaCredit> getMediaCredits() {
     return mediaData.getMediaCredits();
   }
-  
+
   public List<MediaThumbnail> getMediaThumbnails() {
     return mediaData.getMediaThumbnails();
   }
@@ -501,207 +557,37 @@ public class PhotoDataImpl extends GphotoDataImpl implements PhotoData {
   public MediaKeywords getMediaKeywords() {
     return mediaData.getMediaKeywords();
   }
-  
+
   public void setKeywords(MediaKeywords keywords) {
     mediaData.setKeywords(keywords);
   }
-  
-  /**
-   * Simple position element, has a single float for the position.
-   */
-  public static class GphotoPosition extends GphotoConstruct {
-    public GphotoPosition() {
-      this(null);
-    }
 
-    public GphotoPosition(Float position) {
-      super("position", position == null ? null : position.toString());
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoPosition.class,
-          Namespaces.PHOTOS_NAMESPACE, "position");
-    }
+  public Boolean isStarred() {
+    GphotoStarred ext = getExtension(GphotoStarred.class);
+    return ext == null ? null : ext.getValue();
   }
 
-  /**
-   * Simple width element, has a single long for the width.
-   */
-  public static class GphotoWidth extends GphotoConstruct {
-    public GphotoWidth() {
-      this(null);
+  public void setStarred(Boolean starred) {
+    GphotoStarred ext = getExtension(GphotoStarred.class);
+    if (ext == null) {
+      ext = new GphotoStarred();
+      setExtension(ext);
     }
-
-    public GphotoWidth(Long width) {
-      super("width", width == null ? null : width.toString());
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoWidth.class,
-          Namespaces.PHOTOS_NAMESPACE, "width");
-    }
+    ext.setValue(starred);
   }
 
-  /**
-   * Simple height element, has a single long for the height.
-   */
-  public static class GphotoHeight extends GphotoConstruct {
-    public GphotoHeight() {
-      this(null);
-    }
-
-    public GphotoHeight(Long height) {
-      super("height", height == null ? null : height.toString());
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoHeight.class,
-          Namespaces.PHOTOS_NAMESPACE, "height");
-    }
+  public Integer getTotalStars() {
+    GphotoStarred ext = getExtension(GphotoStarred.class);
+    return ext == null ? null : ext.getTotal();
   }
 
-  /**
-   * Simple rotation element, has a single int for the rotation.
-   */
-  public static class GphotoRotation extends GphotoConstruct {
-    public GphotoRotation() {
-      this(null);
+  public void setTotalStars(Integer totalStars) {
+    GphotoStarred ext = getExtension(GphotoStarred.class);
+    if (ext == null) {
+      ext = new GphotoStarred();
+      setExtension(ext);
     }
-
-    public GphotoRotation(Integer rotation) {
-      super("rotation", rotation == null ? null : rotation.toString());
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoRotation.class,
-          Namespaces.PHOTOS_NAMESPACE, "rotation");
-    }
+    ext.setTotal(totalStars);
   }
 
-  /**
-   * Simple size element, has a single long for the size.
-   */
-  public static class GphotoSize extends GphotoConstruct {
-    public GphotoSize() {
-      this(null);
-    }
-
-    public GphotoSize(Long size) {
-      super("size", size == null ? null : size.toString());
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoSize.class,
-          Namespaces.PHOTOS_NAMESPACE, "size");
-    }
-  }
-
-  /**
-   * Simple client element, has a single string for the client.
-   */
-  public static class GphotoClient extends GphotoConstruct {
-    public GphotoClient() {
-      this(null);
-    }
-
-    public GphotoClient(String client) {
-      super("client", client);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoClient.class,
-          Namespaces.PHOTOS_NAMESPACE, "client");
-    }
-  }
-
-  /**
-   * Simple checksum element, has a single string for the checksum.
-   * Checksums are provided by clients of the system.
-   */
-  public static class GphotoChecksum extends GphotoConstruct {
-    public GphotoChecksum() {
-      this(null);
-    }
-
-    public GphotoChecksum(String checksum) {
-      super("checksum", checksum);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoChecksum.class,
-          Namespaces.PHOTOS_NAMESPACE, "checksum");
-    }
-  }
-
-  /**
-   * Simple exif_time element, has the date of the photo from its exif data.
-   * @deprecated use {@link ExifTags} instead.
-   */
-  @Deprecated
-  public static class GphotoExifTime extends GphotoConstruct {
-    public GphotoExifTime() {
-      this(null);
-    }
-
-    public GphotoExifTime(Date exifDate) {
-      super("exiftime",
-          exifDate == null ? null : Long.toString(exifDate.getTime()));
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoExifTime.class,
-          Namespaces.PHOTOS_NAMESPACE, "exiftime");
-    }
-  }
-
-  /**
-   * Simple videosrc element, has the url to the video source of the item.
-   */
-  public static class GphotoVideoUrl extends GphotoConstruct {
-    public GphotoVideoUrl() {
-      this(null);
-    }
-
-    public GphotoVideoUrl(String videoUrl) {
-      super("videosrc", videoUrl);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoVideoUrl.class,
-          Namespaces.PHOTOS_NAMESPACE, "videosrc");
-    }
-  }
-  
-  /**
-   * The gphoto:videostatus field.
-   */
-  public static class GphotoVideoStatus extends GphotoConstruct {
-    public GphotoVideoStatus() {
-      this((String) null);
-    }
-
-    public GphotoVideoStatus(String videoStatus) {
-      super("videostatus", videoStatus);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoVideoStatus.class,
-          Namespaces.PHOTOS_NAMESPACE, "videostatus");
-    }
-  }
-  
-  public static class GphotoStreamId extends GphotoConstruct {
-    public GphotoStreamId() {
-      this(null);
-    }
-
-    public GphotoStreamId(String streamId) {
-      super("streamId", streamId);
-    }
-
-    public static ExtensionDescription getDefaultDescription() {
-      return new ExtensionDescription(GphotoStreamId.class,
-          Namespaces.PHOTOS_NAMESPACE, "streamId", false, true, false);
-    }
-  }
 }

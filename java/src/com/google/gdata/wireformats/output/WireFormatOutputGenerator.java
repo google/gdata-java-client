@@ -54,6 +54,10 @@ public abstract class WireFormatOutputGenerator<T>
       Element elem = (Element) source;
       try {
         ElementMetadata<?, ?> outputMetadata = outProps.getRootMetadata();
+        if (outputMetadata == null) {
+          throw new IllegalStateException("No metadata for " + 
+              elem.getElementKey());
+        }
         elem = elem.resolve(outputMetadata);
         
         // The outputMetadata in the properties could be for a base type that
@@ -62,7 +66,7 @@ public abstract class WireFormatOutputGenerator<T>
         // properties passed to generate.
         if (!elem.getElementKey().equals(outputMetadata.getKey())) {
           outputMetadata = 
-            outputMetadata.getRegistry().bind(elem.getElementKey(),
+            outputMetadata.getSchema().bind(elem.getElementKey(),
                 outputMetadata.getContext());
           if (outputMetadata == null) {
             throw new IllegalStateException("Unable to rebind from " +

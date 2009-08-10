@@ -17,10 +17,10 @@
 package com.google.gdata.model.gd;
 
 import com.google.gdata.model.AttributeKey;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -94,11 +94,18 @@ public class Ordering extends Element {
   public static final AttributeKey<String> NEXT = AttributeKey.of(new
       QName(null, "next"), String.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(ORDER_ID);
     builder.addAttribute(REL);
     builder.addAttribute(REF);
@@ -149,7 +156,8 @@ public class Ordering extends Element {
   /**
    * Sets the next element.
    *
-   * @param next next element or <code>null</code> to reset
+   * @param next next element or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Ordering setNext(String next) {
     super.setAttributeValue(NEXT, next);
@@ -177,7 +185,8 @@ public class Ordering extends Element {
   /**
    * Sets the ordered feed id.
    *
-   * @param orderId ordered feed id or <code>null</code> to reset
+   * @param orderId ordered feed id or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Ordering setOrderId(String orderId) {
     super.setAttributeValue(ORDER_ID, orderId);
@@ -205,7 +214,8 @@ public class Ordering extends Element {
   /**
    * Sets the previous element.
    *
-   * @param prev previous element or <code>null</code> to reset
+   * @param prev previous element or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Ordering setPrev(String prev) {
     super.setAttributeValue(PREV, prev);
@@ -233,7 +243,8 @@ public class Ordering extends Element {
   /**
    * Sets the other entry id.
    *
-   * @param ref other entry id or <code>null</code> to reset
+   * @param ref other entry id or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Ordering setRef(String ref) {
     super.setAttributeValue(REF, ref);
@@ -261,7 +272,8 @@ public class Ordering extends Element {
   /**
    * Sets the order type.
    *
-   * @param rel order type or <code>null</code> to reset
+   * @param rel order type or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Ordering setRel(String rel) {
     super.setAttributeValue(REL, rel);
@@ -314,12 +326,5 @@ public class Ordering extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{Ordering next=" + getAttributeValue(NEXT) + " orderId=" +
-        getAttributeValue(ORDER_ID) + " prev=" + getAttributeValue(PREV) +
-        " ref=" + getAttributeValue(REF) + " rel=" + getAttributeValue(REL) +
-        "}";
-  }
-
 }
+

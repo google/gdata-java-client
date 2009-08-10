@@ -16,8 +16,9 @@
 
 package com.google.gdata.model.atom;
 
-import com.google.gdata.model.DefaultRegistry;
+import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -37,11 +38,18 @@ public class Author extends Person {
   public static final ElementKey<Void, Author> KEY = ElementKey.of(
       new QName(Namespaces.atomNs, "author"), Author.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register superclass metadata.
+    Person.registerMetadata(registry);
+
+    registry.build(KEY);
   }
 
   /**
@@ -61,13 +69,13 @@ public class Author extends Person {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Person} instance. Will use the given {@link ElementKey} as the
+   * {@link Element} instance. Will use the given {@link ElementKey} as the
    * key for the element.
    *
    * @param key the element key to use for this element.
    * @param source source element
    */
-  public Author(ElementKey<Void, ? extends Author> key, Person source) {
+  public Author(ElementKey<Void, ? extends Author> key, Element source) {
     super(key, source);
   }
 

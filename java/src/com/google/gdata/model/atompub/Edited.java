@@ -17,10 +17,10 @@
 package com.google.gdata.model.atompub;
 
 import com.google.gdata.data.DateTime;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -38,11 +38,16 @@ public class Edited extends Element {
       Edited> KEY = ElementKey.of(new QName(Namespaces.atomPubStandardNs,
       "edited"), DateTime.class, Edited.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
   }
 
   /**
@@ -98,7 +103,8 @@ public class Edited extends Element {
   /**
    * Sets the value.
    *
-   * @param value value or <code>null</code> to reset
+   * @param value value or {@code null} to reset
+   * @return this to enable chaining setters
    */
   public Edited setValue(DateTime value) {
     super.setTextValue(value);
@@ -135,9 +141,5 @@ public class Edited extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{Edited value=" + getTextValue() + "}";
-  }
-
 }
+

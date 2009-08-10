@@ -16,10 +16,10 @@
 
 package com.google.gdata.model.gd;
 
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.util.Namespaces;
 
@@ -37,11 +37,16 @@ public class Deleted extends Element {
       Deleted> KEY = ElementKey.of(new QName(Namespaces.gNs, "deleted"),
       Void.class, Deleted.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
   }
 
   /**
@@ -75,9 +80,6 @@ public class Deleted extends Element {
      return (Deleted) super.lock();
    }
 
-  @Override
-  public String toString() {
-    return "{Deleted}";
-  }
 
 }
+

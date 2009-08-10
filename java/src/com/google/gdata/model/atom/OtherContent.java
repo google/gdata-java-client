@@ -19,11 +19,11 @@ package com.google.gdata.model.atom;
 import com.google.gdata.util.common.util.Base64;
 import com.google.gdata.util.common.util.Base64DecoderException;
 import com.google.gdata.data.IContent;
-import com.google.gdata.model.DefaultRegistry;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.XmlBlob;
@@ -46,14 +46,21 @@ public class OtherContent extends Content {
   public static final ElementKey<String, OtherContent> KEY = ElementKey.of(
       Content.KEY.getId(), String.class, OtherContent.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    Content.registerMetadata(registry);
+
+    ElementCreator builder = registry.build(KEY);
     builder.addElement(Feed.KEY);
     builder.addElement(Entry.KEY);
-    DefaultRegistry.adapt(Content.KEY, KIND, KEY);
+
+    registry.adapt(Content.KEY, KIND, KEY);
   }
 
   /**

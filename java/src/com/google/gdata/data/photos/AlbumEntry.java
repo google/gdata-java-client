@@ -16,7 +16,7 @@
 
 package com.google.gdata.data.photos;
 
-import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionDescription;
@@ -94,42 +94,36 @@ public class AlbumEntry extends GphotoEntry<AlbumEntry> implements AtomData,
     extProfile.declare(AlbumEntry.class, GphotoCommentCount.class);
     extProfile.declare(AlbumEntry.class,
         new ExtensionDescription(GphotoCommentsEnabled.class,
-        new XmlWriter.Namespace("gphoto",
-        "http://schemas.google.com/photos/2007"), "commentingEnabled", false,
-        false, false));
+        new XmlNamespace("gphoto", "http://schemas.google.com/photos/2007"),
+        "commentingEnabled", false, false, false));
     extProfile.declare(AlbumEntry.class, GphotoTimestamp.class);
     extProfile.declare(AlbumEntry.class,
-        new ExtensionDescription(W3CPoint.class, new XmlWriter.Namespace("geo",
+        new ExtensionDescription(W3CPoint.class, new XmlNamespace("geo",
         "http://www.w3.org/2003/01/geo/wgs84_pos#"), "Point", false, false,
         false));
     new W3CPoint().declareExtensions(extProfile);
     extProfile.declare(AlbumEntry.class,
-        new ExtensionDescription(GeoRssBox.class,
-        new XmlWriter.Namespace("georss", "http://www.georss.org/georss"),
-        "box", false, false, false));
+        new ExtensionDescription(GeoRssBox.class, new XmlNamespace("georss",
+        "http://www.georss.org/georss"), "box", false, false, false));
     extProfile.declare(AlbumEntry.class,
-        new ExtensionDescription(GeoRssPoint.class,
-        new XmlWriter.Namespace("georss", "http://www.georss.org/georss"),
-        "point", false, false, false));
+        new ExtensionDescription(GeoRssPoint.class, new XmlNamespace("georss",
+        "http://www.georss.org/georss"), "point", false, false, false));
     extProfile.declare(AlbumEntry.class,
-        new ExtensionDescription(GeoRssWhere.class,
-        new XmlWriter.Namespace("georss", "http://www.georss.org/georss"),
-        "where", false, false, false));
+        new ExtensionDescription(GeoRssWhere.class, new XmlNamespace("georss",
+        "http://www.georss.org/georss"), "where", false, false, false));
     new GeoRssWhere().declareExtensions(extProfile);
     extProfile.declare(AlbumEntry.class,
-        new ExtensionDescription(GmlEnvelope.class,
-        new XmlWriter.Namespace("gml", "http://www.opengis.net/gml"),
-        "Envelope", false, false, false));
+        new ExtensionDescription(GmlEnvelope.class, new XmlNamespace("gml",
+        "http://www.opengis.net/gml"), "Envelope", false, false, false));
     new GmlEnvelope().declareExtensions(extProfile);
     extProfile.declare(AlbumEntry.class,
-        new ExtensionDescription(GmlPoint.class, new XmlWriter.Namespace("gml",
+        new ExtensionDescription(GmlPoint.class, new XmlNamespace("gml",
         "http://www.opengis.net/gml"), "Point", false, false, false));
     new GmlPoint().declareExtensions(extProfile);
     extProfile.declare(AlbumEntry.class, GphotoLocation.class);
     extProfile.declare(AlbumEntry.class,
-        new ExtensionDescription(MediaGroup.class,
-        new XmlWriter.Namespace("media", "http://search.yahoo.com/mrss/"),
-        "group", false, false, false));
+        new ExtensionDescription(MediaGroup.class, new XmlNamespace("media",
+        "http://search.yahoo.com/mrss/"), "group", false, false, false));
     new MediaGroup().declareExtensions(extProfile);
     extProfile.declare(AlbumEntry.class, GphotoName.class);
     extProfile.declare(AlbumEntry.class, GphotoNickname.class);
@@ -747,7 +741,7 @@ public class AlbumEntry extends GphotoEntry<AlbumEntry> implements AtomData,
 
   public String getAccess() {
     GphotoAccess access = getAccessExt();
-    return access == null ? null : access.getValue().name().toLowerCase();
+    return access == null ? null : access.getValue().toLowerCase();
   }
 
   public Long getBytesUsed() {
@@ -895,8 +889,7 @@ public class AlbumEntry extends GphotoEntry<AlbumEntry> implements AtomData,
     return PointDataImpl.getPoint(this);
   }
 
-  public void setGeoLocation(Double lat, Double lon)
-      throws IllegalArgumentException {
+  public void setGeoLocation(Double lat, Double lon) {
     setGeoLocation(new GeoRssWhere(lat, lon));
   }
 
@@ -911,7 +904,6 @@ public class AlbumEntry extends GphotoEntry<AlbumEntry> implements AtomData,
   public void setGeoBoundingBox(Box boundingBox) {
     BoxDataImpl.setBox(this, boundingBox);
   }
-
 
   public Box getGeoBoundingBox() {
     return BoxDataImpl.getBox(this);

@@ -16,9 +16,10 @@
 
 package com.google.gdata.model.gd;
 
-import com.google.gdata.model.DefaultRegistry;
+import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
+import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.atom.Person;
 import com.google.gdata.util.Namespaces;
@@ -38,11 +39,19 @@ public class LastModifiedBy extends Person {
       LastModifiedBy> KEY = ElementKey.of(new QName(Namespaces.gNs,
       "lastModifiedBy"), Void.class, LastModifiedBy.class);
 
-  /*
-   * Generate the default metadata for this element.
+  /**
+   * Registers the metadata for this element.
    */
-  static {
-    ElementCreator builder = DefaultRegistry.build(KEY);
+  public static void registerMetadata(MetadataRegistry registry) {
+    if (registry.isRegistered(KEY)) {
+      return;
+    }
+
+    // Register superclass metadata.
+    Person.registerMetadata(registry);
+
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
   }
 
   /**
@@ -61,14 +70,14 @@ public class LastModifiedBy extends Person {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Person} instance. Will use the given {@link ElementKey} as the key
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
    * for the element.
    *
    * @param key The key to use for this element.
    * @param source source element
    */
   public LastModifiedBy(ElementKey<Void, ? extends LastModifiedBy> key,
-      Person source) {
+      Element source) {
     super(key, source);
   }
 
@@ -77,9 +86,6 @@ public class LastModifiedBy extends Person {
      return (LastModifiedBy) super.lock();
    }
 
-  @Override
-  public String toString() {
-    return "{LastModifiedBy " + super.toString() + "}";
-  }
 
 }
+
