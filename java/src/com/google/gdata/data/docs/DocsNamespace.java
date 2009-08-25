@@ -19,7 +19,7 @@ package com.google.gdata.data.docs;
 import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
- * GData namespace definitions related to Google Documents List.
+ * Namespace definitions related to Google Documents List Data API.
  *
  * 
  */
@@ -27,16 +27,16 @@ public class DocsNamespace {
 
   private DocsNamespace() {}
 
-  /** Docs (DOCS) namespace */
+  /** Google Documents List (DOCS) namespace */
   public static final String DOCS = "http://schemas.google.com/docs/2007";
 
-  /** Docs (DOCS) namespace prefix */
+  /** Google Documents List (DOCS) namespace prefix */
   public static final String DOCS_PREFIX = DOCS + "#";
 
-  /** Docs (DOCS) namespace alias */
+  /** Google Documents List (DOCS) namespace alias */
   public static final String DOCS_ALIAS = "docs";
 
-  /** XML writer namespace for Docs (DOCS) */
+  /** XML writer namespace for Google Documents List (DOCS) */
   public static final XmlNamespace DOCS_NS = new XmlNamespace(DOCS_ALIAS, DOCS);
 
 }

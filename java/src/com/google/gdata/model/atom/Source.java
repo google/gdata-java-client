@@ -290,7 +290,7 @@ public class Source extends Element {
    *
    * @param key element key for this element.
    */
-  public Source(ElementKey<?, ? extends Source> key) {
+  protected Source(ElementKey<?, ? extends Source> key) {
     super(key);
   }
 

@@ -33,7 +33,6 @@ import java.util.Collection;
 public abstract class ForwardingElementMetadata<D, E extends Element>
     implements ElementMetadata<D, E> {
 
-
   /**
    * Returns the delegate element metadata instance that is the delegation
    * target for this forwarding instance.
@@ -112,6 +111,10 @@ public abstract class ForwardingElementMetadata<D, E extends Element>
   public boolean isSelected(Element e) {
     return delegate().isSelected(e);
   }
+  
+  public boolean isFlattened() {
+    return delegate().isFlattened();
+  }
 
   public void validate(ValidationContext vc, Element e) {
     delegate().validate(vc, e);
@@ -132,13 +135,9 @@ public abstract class ForwardingElementMetadata<D, E extends Element>
   public ElementKey<?, ?> getParent() {
     return delegate().getParent();
   }
-
+  
   public Schema getSchema() {
     return delegate().getSchema();
-  }
-
-  public VirtualValue getVirtualValue() {
-    return delegate().getVirtualValue();
   }
 
   public boolean isRequired() {

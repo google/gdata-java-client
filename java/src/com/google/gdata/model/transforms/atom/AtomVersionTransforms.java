@@ -21,12 +21,13 @@ import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.MetadataContext;
 import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
+import com.google.gdata.model.atom.Entry;
 import com.google.gdata.model.atom.Feed;
 import com.google.gdata.util.Namespaces;
 
 /**
  * Transforms for atom elements based on version information.
- * 
+ *
  * 
  */
 public class AtomVersionTransforms {
@@ -38,8 +39,11 @@ public class AtomVersionTransforms {
     addOssTransform(registry, Feed.TOTAL_RESULTS);
     addOssTransform(registry, Feed.START_INDEX);
     addOssTransform(registry, Feed.ITEMS_PER_PAGE);
+
+    registry.build(Entry.KEY, Entry.GD_KIND, V1_CONTEXT).setVisible(false);
+    registry.build(Feed.KEY, Feed.GD_KIND, V1_CONTEXT).setVisible(false);
   }
-  
+
   @SuppressWarnings("deprecation")
   private static void addOssTransform(MetadataRegistry registry,
       ElementKey<?, ?> key) {

@@ -107,7 +107,7 @@ public class Category extends Element implements ICategory {
    * @param key the element key to use for the category
    * @param source source element
    */
-  public Category(ElementKey<?, ? extends Category> key, Element source) {
+  protected Category(ElementKey<?, ? extends Category> key, Element source) {
     super(key, source);
   }
 

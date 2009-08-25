@@ -16,12 +16,15 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.common.base.Objects;
+import com.google.gdata.util.common.base.Objects.ToStringHelper;
 import com.google.gdata.util.common.base.Pair;
 import com.google.gdata.util.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.model.ElementMetadata.Cardinality;
 import com.google.gdata.model.atom.Category;
 import com.google.gdata.util.ParseException;
@@ -41,6 +44,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
+
 /**
  * Data element in an instance document. Contains attributes,
  * child elements, and a text node.
@@ -50,10 +55,10 @@ import java.util.logging.Logger;
  *
  * <p><pre>
  * Element who = new Element(KEY)
- *     .addAttribute(ATTR_KEY, "value")
+ *     .setAttributeValue(ATTR_KEY, "value")
  *     .addElement(
  *         new Element(EXT_KEY_NOEXT)
- *             .setValue("yolk"));
+ *             .setTextValue("yolk"));
  * </pre>
  *
  * <p>Subclasses are expected to follow the same model for any setter
@@ -88,7 +93,7 @@ public class Element {
       Field keyField = type.getField("KEY");
       key = ElementKey.class.cast(keyField.get(null));
     } catch (NoSuchFieldException nsfe) {
-      throw new IllegalArgumentException("Unable to acess KEY field:" + type,
+      throw new IllegalArgumentException("Unable to access KEY field:" + type,
           nsfe);
     } catch (IllegalArgumentException iae) {
       throw new IllegalArgumentException("Unable to access KEY field:" + type,
@@ -133,6 +138,22 @@ public class Element {
      * Indicates that the element has been locked.
      */
     private volatile boolean locked;
+
+    @Override
+    public String toString() {
+      ToStringHelper helper = Objects.toStringHelper(this);
+      if (attributes != null) {
+        helper.add("attributes", attributes.values());
+      }
+      if (elements != null) {
+        helper.add("elements", elements.values());
+      }
+      if (value != null) {
+        helper.add("value", value);
+      }
+      
+      return helper.toString();
+    }
   }
 
   /**
@@ -268,8 +289,8 @@ public class Element {
    * metadata declares virtual attributes, those attributes will be included in
    * the iterator, likewise any attributes which are hidden will be excluded.
    *
-   * @param metadata the element metadata to use for iteration.
-   * @return an iterator over the attributes of this element.
+   * @param metadata the element metadata to use for iteration
+   * @return an iterator over the attributes of this element
    */
   public Iterator<Attribute> getAttributeIterator(
       ElementMetadata<?, ?> metadata) {
@@ -315,11 +336,11 @@ public class Element {
    * Returns the attribute value cast to the appropriate type, based on the
    * given key.
    *
-   * @param <T> return type.
+   * @param <T> return type
    * @param key the attribute key to use to cast the attribute value
    * @return typed attribute value
    * @throws IllegalArgumentException if the value cannot be converted to the
-   *     key type.
+   *     key type
    */
   public <T> T getAttributeValue(AttributeKey<T> key) {
     Attribute attribute = (state.attributes == null) ? null
@@ -348,12 +369,12 @@ public class Element {
    * Add attribute by value. If the value is {@code null} the value will be
    * removed.
    *
-   * @param key attribute key that is being added.
-   * @param attrValue attribute value or {@code null} to remove.
+   * @param key attribute key that is being added
+   * @param attrValue attribute value or {@code null} to remove
    */
   public Element setAttributeValue(AttributeKey<?> key, Object attrValue) {
     if (attrValue == null) {
-      removeAttribute(key);
+      removeAttributeValue(key);
     } else {
       setAttribute(key, new Attribute(key, attrValue));
     }
@@ -372,12 +393,21 @@ public class Element {
   }
 
   /**
+   * 
+   * @deprecated use removeAttributeValue instead.
+   */
+  @Deprecated
+  public Object removeAttribute(QName id) {
+    return removeAttributeValue(id);
+  }
+  
+  /**
    * Remove attribute (if present).
    *
    * @param id the qualified name of the attribute.
    * @return this element
    */
-  public Object removeAttribute(QName id) {
+  public Object removeAttributeValue(QName id) {
     throwExceptionIfLocked();
     Attribute removed = (state.attributes == null) ? null
         : state.attributes.remove(id);
@@ -385,13 +415,22 @@ public class Element {
   }
 
   /**
+   * 
+   * @deprecated use removeAttributeValue instead.
+   */
+  @Deprecated
+  public Object removeAttribute(AttributeKey<?> key) {
+    return removeAttributeValue(key);
+  }
+  
+  /**
    * Remove attribute (if present).
    *
    * @param key the key of the attribute.
    * @return this element
    */
-  public Object removeAttribute(AttributeKey<?> key) {
-    return removeAttribute(key.getId());
+  public Object removeAttributeValue(AttributeKey<?> key) {
+    return removeAttributeValue(key.getId());
   }
 
   /**
@@ -409,8 +448,8 @@ public class Element {
    * elements, those elements will be included in the iterator, likewise any
    * elements which are hidden will be excluded.
    *
-   * @param metadata the metadata to use for iteration.
-   * @return iterator over the child elements of the element.
+   * @param metadata the metadata to use for iteration
+   * @return iterator over the child elements of the element
    */
   public Iterator<Element> getElementIterator(ElementMetadata<?, ?> metadata) {
     return new ElementIterator(this, metadata, state.elements);
@@ -438,9 +477,9 @@ public class Element {
   /**
    * Get a child element matching the specified qualified name.
    *
-   * @param id the qualified name of the child to retrieve.
-   * @return the matching child element, or {@code null} if none was found.
-   * @throws IllegalArgumentException if the id referenced a repeating element.
+   * @param id the qualified name of the child to retrieve
+   * @return the matching child element, or {@code null} if none was found
+   * @throws IllegalArgumentException if the id referenced a repeating element
    */
   public Element getElement(QName id) {
     Object mapValue = getElementObject(id);
@@ -458,10 +497,10 @@ public class Element {
    * element to the given key if it is not already an instance of the requested
    * class.  This will fail with an exception if the adaptation was not valid.
    *
-   * @param <T> the type of element to return.
-   * @param childKey the metadata key for the child element to retrieve.
-   * @return child element, or {@code null} if none was found.
-   * @throws IllegalArgumentException if the key referenced a repeating element.
+   * @param <T> the type of element to return
+   * @param childKey the metadata key for the child element to retrieve
+   * @return child element, or {@code null} if none was found
+   * @throws IllegalArgumentException if the key referenced a repeating element
    */
   public <D, T extends Element> T getElement(ElementKey<D, T> childKey) {
     Element child = getElement(childKey.getId());
@@ -481,7 +520,30 @@ public class Element {
    * either the map didn't contain the object or the map is null.
    */
   private Object getElementObject(QName id) {
-    return (state.elements != null) ? state.elements.get(id) : null;
+    if (state.elements == null) {
+      return null;
+    }
+    if ("*".equals(id.getLocalName())) {
+      XmlNamespace ns = id.getNs();
+      if (ns != null) {
+        String uri = ns.getUri();
+        ImmutableList.Builder<Element> builder = ImmutableList.builder();
+        for (Map.Entry<QName, Object> entry : state.elements.entrySet()) {
+          QName key = entry.getKey();
+          XmlNamespace keyNs = key.getNs();
+          if (keyNs != null && uri.equals(keyNs.getUri())) {
+            Object value = entry.getValue();
+            if (value instanceof Element) {
+              builder.add((Element) value);
+            } else {
+              builder.addAll(castElementCollection(value));
+            }
+          }
+        }
+        return builder.build();
+      }
+    }
+    return state.elements.get(id);
   }
 
   /**
@@ -489,8 +551,7 @@ public class Element {
    * either the map didn't contain the object or the map is null.
    */
   private Object getElementObject(ElementKey<?, ?> childKey) {
-    return (state.elements != null)
-        ? state.elements.get(childKey.getId()) : null;
+    return getElementObject(childKey.getId());
   }
 
   /**
@@ -545,8 +606,8 @@ public class Element {
       if (obj instanceof Element) {
         builder.add((Element) obj);
       } else {
-        for (Object o : (Collection<?>) obj) {
-          builder.add((Element) o);
+        for (Element e : castElementCollection(obj)) {
+          builder.add(e);
         }
       }
     }
@@ -579,8 +640,7 @@ public class Element {
         // Returns a list of all children that matched the given key.
         // If we change to returning mutable lists this will need to be a
         // view of the underlying data instead.
-        for (Object o : (Collection<?>) obj) {
-          Element e = (Element) o;
+        for (Element e : castElementCollection(obj)) {
           if (childType.isInstance(e)) {
             builder.add(childType.cast(e));
           }
@@ -604,8 +664,8 @@ public class Element {
       if (obj instanceof Element) {
         builder.add((Element) obj);
       } else {
-        for (Object o : (Collection<?>) obj) {
-          builder.add((Element) o);
+        for (Element e : castElementCollection(obj)) {
+          builder.add(e);
         }
       }
     }
@@ -638,8 +698,7 @@ public class Element {
         // Returns a set of all children that matched the given key.
         // If we change to returning mutable lists this will need to be a
         // view of the underlying data instead.
-        for (Object o : (Collection<?>) obj) {
-          Element e = (Element) o;
+        for (Element e : castElementCollection(obj)) {
           if (childType.isInstance(e)) {
             builder.add(childType.cast(e));
           }
@@ -663,8 +722,21 @@ public class Element {
   }
 
   /**
-   * Sets the value of the child element(s) with the given key.  The given
-   * element will replace all existing elements at the given key.  If the given
+   * Sets a child element to the given value.  Uses the element key of the
+   * element as the key.  This is equivalent to calling
+   * {@code setElement(element.getElementKey(), element);}.
+   * 
+   * @throws NullPointerException if element is null.
+   */
+  public Element setElement(Element element) {
+    Preconditions.checkNotNull(element);
+    setElement(element.getElementKey(), element);
+    return this;
+  }
+
+  /**
+   * Sets the value of the child element(s) with the {@code key}.  The
+   * {@code element} will replace all existing elements with the same key.  If
    * element is null, this is equivalent to {@link #removeElement(ElementKey)}.
    *
    * @param key the key for the child element
@@ -683,11 +755,14 @@ public class Element {
    * Add a child element, using the key of the child element as the key into
    * this element's children.
    *
-   * @param childElement child element
+   * @param element child element
    * @return this element for chaining
+   * @throws NullPointerException if element is null.
    */
-  public Element addElement(Element childElement) {
-    return addElement(childElement.getElementKey(), childElement);
+  public Element addElement(Element element) {
+    Preconditions.checkNotNull(element);
+    addElement(element.getElementKey(), element);
+    return this;
   }
 
   /**
@@ -699,12 +774,13 @@ public class Element {
    * @param id the qualified name to use for the child
    * @param element child element
    * @return this element for chaining
+   * @throws NullPointerException if element is null.
    */
   public Element addElement(QName id, Element element) {
-    return addElement(
-        ElementKey.of(id, element.getElementKey().getDatatype(),
-            element.getClass()),
-        element);
+    Preconditions.checkNotNull(element);
+    addElement(ElementKey.of(id, element.getElementKey().getDatatype(),
+        element.getClass()), element);
+    return this;
   }
 
   /**
@@ -937,8 +1013,7 @@ public class Element {
   }
 
   /**
-   * Clears internal state of all attributes, child elements, declared
-   * namespaces and any element value.
+   * Clears internal state of all attributes, child elements, and text content.
    */
   public void clear() {
     throwExceptionIfLocked();
@@ -1268,6 +1343,13 @@ public class Element {
   public static <E extends Element> E createElement(
       ElementKey<?, E> key, Element source)
       throws ContentCreationException {
+    
+    if (source != null
+        && key.equals(source.getElementKey())
+        && key.getElementType().isInstance(source)) {
+      return key.getElementType().cast(source);
+    }
+    
     Class<?>[] argTypes;
     Object[] args;
     Class<? extends E> elementClass = key.getElementType();
@@ -1311,7 +1393,7 @@ public class Element {
 
   /**
    * Attempt to construct an instance of the given class with the given args
-   * and arg types.  Will set the constructot to accessible, allowing access
+   * and arg types.  Will set the constructor to accessible, allowing access
    * to non-public constructors, so use with caution.
    */
   private static <T> T construct(Class<? extends T> clazz, Class<?>[] argTypes,
@@ -1362,7 +1444,16 @@ public class Element {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "{" + getElementId() + "}@" +
-        Integer.toHexString(hashCode());
+    ToStringHelper helper = Objects.toStringHelper(this);
+    helper.addValue(getElementId() + "@" + Integer.toHexString(hashCode()));
+    Iterator<Attribute> aIter = getAttributeIterator();
+    while (aIter.hasNext()) {
+      Attribute att = aIter.next();
+      helper.add(att.getAttributeKey().getId().toString(), att.getValue());
+    }
+    if (hasTextValue()) {
+      helper.addValue(getTextValue());
+    }
+    return helper.toString();
   }
 }

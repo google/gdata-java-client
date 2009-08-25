@@ -53,28 +53,30 @@ public class Control extends Element {
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public Control() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
-   * Create an instance using a different key.
+   * Subclass constructor, allows subclasses to supply their own element key.
    */
-  public Control(ElementKey<Void, ? extends Control> key) {
+  protected Control(ElementKey<?, ? extends Control> key) {
     super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
    * {@link Element} instance. Will use the given {@link ElementKey} as the key
-   * for the element.
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
    *
    * @param key The key to use for this element.
    * @param source source element
    */
-  public Control(ElementKey<Void, ? extends Control> key, Element source) {
+  protected Control(ElementKey<?, ? extends Control> key, Element source) {
     super(key, source);
   }
 
@@ -95,7 +97,7 @@ public class Control extends Element {
   /**
    * Sets the draft tag.
    *
-   * @param draft draft tag or <code>null</code> to reset
+   * @param draft draft tag or {@code null} to reset
    * @return this to enable chaining setters
    */
   public Control setDraft(Draft draft) {
@@ -112,10 +114,6 @@ public class Control extends Element {
     return super.hasElement(Draft.KEY);
   }
 
-  @Override
-  public String toString() {
-    return "{Control}";
-  }
 
 
   /**

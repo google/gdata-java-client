@@ -32,6 +32,10 @@ public class DocumentListLink {
     /** Link for the parent folder entry. */
     public static final String PARENT = DocsNamespace.DOCS_PREFIX + "parent";
 
+    /** Link for the feed of a spreadsheet's tables. */
+    public static final String TABLES_FEED =
+        "http://schemas.google.com/spreadsheets/2006#tablesfeed";
+
     /** Link for the feed of a spreadsheet's worksheets. */
     public static final String WORKSHEETS_FEED =
         "http://schemas.google.com/spreadsheets/2006#worksheetsfeed";

@@ -23,7 +23,17 @@ import com.google.gdata.util.common.xml.XmlNamespace;
  * Qualified name of a data model element or attribute.  A qname instance is
  * immutable.
  */
-public class QName implements Comparable<QName> {
+public final class QName implements Comparable<QName> {
+  
+  /**
+   * Special value for the QName namespace that will match any namespace.
+   */
+  public static final XmlNamespace ANY_NAMESPACE = new XmlNamespace("*", "*");
+  
+  /**
+   * Special value for the QName local name that will match any local name.
+   */
+  public static final String ANY_LOCALNAME = "*";
 
   private final XmlNamespace namespace;
   private final String localName;
@@ -40,31 +50,55 @@ public class QName implements Comparable<QName> {
 
   public XmlNamespace getNs() { return namespace; }
   public String getLocalName() { return localName; }
+  
+  /**
+   * Returns {@code true} if this qname has a namespace value that will match
+   * any namespace.
+   *
+   * @see ANY_NAMESPACE
+   */
+  public boolean matchesAnyNamespace() {
+    return ANY_NAMESPACE.equals(namespace);
+  }
+
+  /**
+   * Returns {@code true} if this qname has a local name that will
+   * match any local name.
+   *
+   * @see ANY_LOCALNAME
+   */
+  public boolean matchesAnyLocalName() {
+    return ANY_LOCALNAME.equals(localName);
+  }
 
   /**
    * Checks if this QName is a match for the other QName.  A QName is a match
-   * if it is null, or if it is in the same namespace as the other QName and
-   * the localNames are either a match or the this localName is "*".
+   * if it is null and if 1) the local namespace is {@link ANY_NAMESPACE} or
+   * the two namespaces are both null or have a matching uri and 2) the local
+   * name is {@link ANY_LOCALNAME} or the two local names are equal.
    */
   public boolean matches(QName o) {
     if (o == null) {
       return false;
     }
-    XmlNamespace otherNs = o.getNs();
-    String idUri = (namespace == null) ? null : namespace.getUri();
-    String otherUri = (otherNs == null) ? null : otherNs.getUri();
 
-    // Check namespace uris.
-    if (idUri == null) {
-      if (otherUri != null) {
+    if (!matchesAnyNamespace()) {
+      XmlNamespace otherNs = o.getNs();
+      String idUri = (namespace == null) ? null : namespace.getUri();
+      String otherUri = (otherNs == null) ? null : otherNs.getUri();
+
+      // Check namespace uris.
+      if (idUri == null) {
+        if (otherUri != null) {
+          return false;
+        }
+      } else if (!idUri.equals(otherUri)) {
         return false;
       }
-    } else if (!idUri.equals(otherUri)) {
-      return false;
     }
 
     // Check the local names.
-    if ("*".equals(localName)) {
+    if (matchesAnyLocalName()) {
       return true;
     }
     return localName.equals(o.getLocalName());
@@ -114,12 +148,15 @@ public class QName implements Comparable<QName> {
       }
       int result = getNs().getUri().compareTo(o.getNs().getUri());
       if (result != 0) {
+        if (ANY_NAMESPACE.equals(o.getNs())) {
+          return -1;
+        }
         return result;
       }
     }
     String localName = getLocalName();
     int compare = localName.compareTo(o.getLocalName());
-    if (compare != 0 && "*".equals(localName)) {
+    if (compare != 0 && ANY_LOCALNAME.equals(localName)) {
       return -1;
     }
     return compare;

@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
  *
  * 
  * 
+ * 
  */
 @Kind.Term(DocumentListEntry.UNKNOWN_KIND)
 public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
@@ -70,15 +71,20 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     ODT("application/vnd.oasis.opendocument.text"),
     SXW("application/vnd.sun.xml.writer"),
     DOC("application/msword"),
+    DOCX("application/vnd.openxmlformats-officedocument." +
+         "wordprocessingml.document"),
     RTF("application/rtf"),
     PDF("application/pdf"),
     PPS("application/vnd.ms-powerpoint"),
     PPT("application/vnd.ms-powerpoint"),
     XLS("application/vnd.ms-excel"),
+    XLSX("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
     ODS("application/x-vnd.oasis.opendocument.spreadsheet"),
     CSV("text/csv"),
     TAB("text/tab-separated-value"),
     TSV("text/tab-separated-value"),
+    SWF("application/x-shockwave-flash"),
+    ZIP("application/zip")
     ;
 
     private String mimeType;
@@ -92,7 +98,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     }
 
     public static MediaType fromFileName(String fileName) {
-      int index = fileName.indexOf('.');
+      int index = fileName.lastIndexOf('.');
       if (index > 0) {
         return valueOf(fileName.substring(index + 1).toUpperCase());
       } else {
@@ -180,16 +186,17 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   }
 
   /**
-   * Gets the non-user-friendly key that is used to access the
-   * document feed.  This is the key that can be used to construct the
-   * Atom id for this document, and to access the document-specific
-   * feed.
+   * Gets the resource id that is used to access the document entry or export
+   * the document.
    *
    * <code>http://docs.google.com/getdoc?id={id}</code>
    * <code>http://spreadsheets.google.com/ccc?key={id}</code>
    *
    * @return the Google Docs &amp; Spreadsheets id
+   * 
+   * @deprecated use getResourceId() instead.
    */
+  @Deprecated
   public String getKey() {
     String result = state.id;
     if (result != null) {
@@ -202,12 +209,52 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
     return result;
   }
+  
+  /**
+   * Gets the docId or spreadsheet key from the resource id. This is the id that
+   * can be used to construct the export url or link to google docs.
+   *
+   * <code>http://docs.google.com/present/edit?id={id}</code>
+   * <code>http://spreadsheets.google.com/ccc?key={id}</code>
+   *
+   * @return the Google Docs doc id
+   * .
+   */
+  public String getDocId() {
+    String result = getResourceId();
+    if (result != null) {
+      int position = result.lastIndexOf(":");
+      if (position > 0) {
+        result = result.substring(position + 1);
+      }
+    }
+
+    return result;
+  }
+  
+  /**
+   * Returns the type document entry from the resource id. If the resource id
+   * id "document:12345", then "document" is returned.
+   *
+   * @return the document type
+   * .
+   */
+  public String getType() {
+    String result = getResourceId();
+    if (result != null) {
+      int position = result.lastIndexOf(":");
+      if (position > 0) {
+        return result.substring(0, position);
+      }
+    }
+    return result;
+  }
 
   /**
    * Associate a File with this entry, implicitly determining the mime type
    * from the file's extension.
    *
-   * @deprecated Prefer setFile(File, String)
+   * @deprecated use setFile(File, String) instead.
    */
   @Deprecated
   public void setFile(File file) {
@@ -272,7 +319,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   /**
    * Sets the viewed status of this document for the user this feed request
    * has been authenticated under.
-   * 
+   *
    * @param viewed true if the document has been viewed
    */
   public void setViewed(boolean viewed) {
@@ -282,7 +329,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
       this.getCategories().remove(Labels.VIEWED);
     }
   }
-  
+
   /**
    * @return true if the document represented by this entry has been viewed by
    * the user this feed request has been authenticated under.
@@ -290,7 +337,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   public boolean isViewed() {
     return this.getCategories().contains(Labels.VIEWED);
   }
-  
+
   /**
    * Sets the trashed status of this document for the user this feed request
    * has been authenticated under.
@@ -321,7 +368,10 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    *
    * @param owner the owner of the folder
    * @param folderName the name of the folder
+   * @deprecated use {@link #addLink(Link)} with link relation PARENT_NAMESPACE
+   *    instead.
    */
+  @Deprecated
   public void addFolder(Person owner, String folderName) {
     String scheme = FOLDERS_NAMESPACE + "/" + owner.getEmail();
     Category folderCategory = new Category(scheme, folderName, folderName);
@@ -331,6 +381,10 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   private static final Pattern FOLDER_PATTERN =
       Pattern.compile("^" + Pattern.quote(FOLDERS_NAMESPACE) + "(:?/[^/]+)?$");
 
+  /**
+   * @deprecated use {@link #getParentLinks()} instead.
+   */
+  @Deprecated
   public Set<String> getFolders() {
     Set<String> folders = new HashSet<String>();
     for (Category category : this.getCategories()) {
@@ -412,7 +466,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     }
   }
 
-  /** 
+  /**
    * Returns a flag for whether writers can invite other collaborators
    *
    * @return whether writers can invite
@@ -423,7 +477,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   }
 
   /**
-   * Sets whether users classed as writers can invite other collaborators 
+   * Sets whether users classed as writers can invite other collaborators
    *
    * @param writersCanInvite true if writers can invite
    */

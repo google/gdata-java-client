@@ -16,6 +16,7 @@
 
 package com.google.gdata.model.gd;
 
+import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
@@ -68,31 +69,10 @@ public class RecurrenceExceptionEntry extends Entry {
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public RecurrenceExceptionEntry() {
-    this(KEY);
-  }
-
-  /**
-   * Create an instance using a different key.
-   */
-  public RecurrenceExceptionEntry(ElementKey<Void,
-      ? extends RecurrenceExceptionEntry> key) {
-    super(key);
-  }
-
-  /**
-   * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Entry} instance. Will use the given {@link ElementKey} as the key
-   * for the element.
-   *
-   * @param key The key to use for this element.
-   * @param source source element
-   */
-  public RecurrenceExceptionEntry(ElementKey<Void,
-      ? extends RecurrenceExceptionEntry> key, Entry source) {
-    super(key, source);
+    super(KEY);
   }
 
   /**
@@ -103,6 +83,29 @@ public class RecurrenceExceptionEntry extends Entry {
    */
   public RecurrenceExceptionEntry(Entry sourceEntry) {
     super(KEY, sourceEntry);
+  }
+
+  /**
+   * Subclass constructor, allows subclasses to supply their own element key.
+   */
+  protected RecurrenceExceptionEntry(ElementKey<?,
+      ? extends RecurrenceExceptionEntry> key) {
+    super(key);
+  }
+
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link Entry} instance. Will use the given {@link ElementKey} as the key
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
+   *
+   * @param key The key to use for this element.
+   * @param source source element
+   */
+  protected RecurrenceExceptionEntry(ElementKey<?,
+      ? extends RecurrenceExceptionEntry> key, Entry source) {
+    super(key, source);
   }
 
    @Override

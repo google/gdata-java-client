@@ -84,13 +84,13 @@ public class FeedLink extends Element implements ILink {
    * Default mutable constructor.
    */
   public FeedLink() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
    * Lets subclasses create an instance using a custom key.
    */
-  protected FeedLink(ElementKey<Void, ? extends FeedLink> key) {
+  protected FeedLink(ElementKey<?, ? extends FeedLink> key) {
     super(key);
   }
 
@@ -102,7 +102,7 @@ public class FeedLink extends Element implements ILink {
    * @param key element key to use for this element.
    * @param source source element
    */
-  public FeedLink(ElementKey<Void, ? extends FeedLink> key, Element source) {
+  protected FeedLink(ElementKey<?, ? extends FeedLink> key, Element source) {
     super(key, source);
   }
 

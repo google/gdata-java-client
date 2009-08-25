@@ -77,7 +77,7 @@ public class Workspace extends Element implements IWorkspace {
   /**
    * Lets subclasses create an instance using custom key.
    */
-  protected Workspace(ElementKey<Void, ? extends Workspace> key) {
+  protected Workspace(ElementKey<?, ? extends Workspace> key) {
     super(key);
   }
 
@@ -89,7 +89,7 @@ public class Workspace extends Element implements IWorkspace {
    * @param key the element key to use for this element.
    * @param source source element
    */
-  public Workspace(ElementKey<Void, ? extends Workspace> key, Element source) {
+  protected Workspace(ElementKey<?, ? extends Workspace> key, Element source) {
     super(key, source);
   }
 

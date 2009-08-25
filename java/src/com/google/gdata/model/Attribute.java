@@ -16,18 +16,19 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.common.base.Objects;
 import com.google.gdata.util.common.base.Preconditions;
 
 /**
  * A data attribute in an instance document.  Contains the key that identifies
  * the attribute (name + type) and the value of the attribute.
  */
-public class Attribute {
+public final class Attribute {
 
   /**
    * Key to this attribute.
    */
-  protected final AttributeKey<?> key;
+  private final AttributeKey<?> key;
 
   /**
    * Untyped attribute value.
@@ -46,7 +47,7 @@ public class Attribute {
    * @param value the attribute value
    * @throws IllegalArgumentException if the key is invalid for the
    *         value (incompatible datatype).
-   * @throws NullPointerException if the key or value is null.
+   * @throws NullPointerException if the key or value is null
    */
   Attribute(AttributeKey<?> key, Object value) {
     this.key = Preconditions.checkNotNull(key, "key");
@@ -57,7 +58,7 @@ public class Attribute {
    * Returns true if this attribute has been locked using {@link #lock}. Once an
    * attribute has been locked it cannot be unlocked.
    */
-  public final boolean isLocked() {
+  public boolean isLocked() {
     return locked;
   }
 
@@ -65,7 +66,7 @@ public class Attribute {
    * Locks this attribute.  Once an attribute has been locked its value cannot
    * be modified.
    */
-  public final Attribute lock() {
+  public Attribute lock() {
     locked = true;
     return this;
   }
@@ -106,7 +107,8 @@ public class Attribute {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "{" + key.getId() + "}@" +
-        Integer.toHexString(hashCode());
+    return Objects.toStringHelper(this)
+      .add(key.getId() + "@" + Integer.toHexString(hashCode()), value)
+      .toString();
   }
 }

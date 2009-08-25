@@ -97,9 +97,14 @@ public class Feed extends Source implements IFeed {
       new QName(Namespaces.gNs, "etag"));
 
   /**
+   * The gd:kind attribute.
+   */
+  public static final AttributeKey<String> GD_KIND = AttributeKey.of(
+      new QName(Namespaces.gNs, "kind"));
+
+  /**
    * The opensearch:itemsPerPage element.
    */
-  @SuppressWarnings("deprecation")
   public static final ElementKey<Integer, Element> ITEMS_PER_PAGE =
       ElementKey.of(new QName(Namespaces.openSearch1_1Ns, "itemsPerPage"),
           Integer.class, Element.class);
@@ -107,7 +112,6 @@ public class Feed extends Source implements IFeed {
   /**
    * The opensearch:startIndex element.
    */
-  @SuppressWarnings("deprecation")
     public static final ElementKey<Integer, Element> START_INDEX =
       ElementKey.of(new QName(Namespaces.openSearch1_1Ns, "startIndex"),
           Integer.class, Element.class);
@@ -115,7 +119,6 @@ public class Feed extends Source implements IFeed {
   /**
    * The opensearch:totalResults element.
    */
-  @SuppressWarnings("deprecation")
     public static final ElementKey<Integer, Element> TOTAL_RESULTS =
       ElementKey.of(new QName(Namespaces.openSearch1_1Ns, "totalResults"),
           Integer.class, Element.class);
@@ -136,6 +139,7 @@ public class Feed extends Source implements IFeed {
 
     // Local properties
     builder.addAttribute(ETAG);
+    builder.addAttribute(GD_KIND);
     builder.addElement(TOTAL_RESULTS);
     builder.addElement(START_INDEX);
     builder.addElement(ITEMS_PER_PAGE);
@@ -198,7 +202,7 @@ public class Feed extends Source implements IFeed {
    *
    * @param key the feed key.
    */
-  public Feed(ElementKey<?, ? extends Feed> key) {
+  protected Feed(ElementKey<?, ? extends Feed> key) {
     super(key);
     feedState = new FeedState();
   }
@@ -282,6 +286,22 @@ public class Feed extends Source implements IFeed {
    */
   public void setEtag(String v) {
     setAttributeValue(ETAG, v);
+  }
+
+  /**
+   * Returns the current gd:kind attribute for this feed.  The kind attribute
+   * may be null if this feed does not have a kind.
+   */
+  public String getKind() {
+    return getAttributeValue(GD_KIND);
+  }
+
+  /**
+   * Sets current gd:kind attribute for this feed.  The kind may be set to null
+   * to remove the attribute value.
+   */
+  public void setKind(String v) {
+    setAttributeValue(GD_KIND, v);
   }
 
   /**

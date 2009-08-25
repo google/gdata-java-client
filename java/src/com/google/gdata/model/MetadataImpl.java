@@ -32,10 +32,11 @@ abstract class MetadataImpl<D> implements Metadata<D> {
   final MetadataKey<D> key;
   final ElementKey<?, ?> parent;
   final MetadataContext context;
-  final QName name;
-  final boolean isRequired;
-  final boolean isVisible;
-  final VirtualValue virtualValue;
+
+  private final QName name;
+  private final boolean isRequired;
+  private final boolean isVisible;
+  private final VirtualValue virtualValue;
 
   /**
    * Constructs a new immutable metadata instance with the given declared data.
@@ -47,19 +48,64 @@ abstract class MetadataImpl<D> implements Metadata<D> {
     this.key = Preconditions.checkNotNull(key, "key");
     this.parent = parent;
     this.context = context;
-    this.name = nullToDefault(transform.name, key.getId());
-    this.isRequired = nullToDefault(transform.required, false);
-    this.isVisible = nullToDefault(transform.visible, true);
-    this.virtualValue = transform.virtualValue;
+    
+    transform = AttributeTransform.mergeSource(schema, transform, context);
+    
+    this.name = firstNonNull(
+        transform.getName(), key.getId());
+    this.isRequired = firstNonNull(
+        transform.getRequired(), false);
+    
+    Path path = transform.getPath();
+    if (transform.isMoved()) {
+      
+      // Metadata that has been moved is always hidden.
+      this.isVisible = false;
+    } else if (path != null) {
+        
+      // Metadata on a path may be hidden.
+      this.isVisible = isVisible(path, schema, parent, context);
+    } else {
+      
+      // Normal metadata uses the visibility of the transform directly.
+      this.isVisible = firstNonNull(transform.getVisible(), true);
+    }
+    this.virtualValue = transform.getVirtualValue();
   }
 
   /**
-   * Provides a default value if the given value is null, allowing us to set
-   * the boolean fields to their defaults if the transform does not contain a
-   * value.
+   * Returns {@code true} if this path is visible starting at the given parent,
+   * under the given context.  Returns {@code false} if any parts of the path
+   * have been hidden, which means that the path itself should be hidden as
+   * well.
    */
-  static <T> T nullToDefault(T value, T defaultValue) {
-    return (value != null) ? value : defaultValue;
+  static boolean isVisible(Path path, Schema schema, ElementKey<?, ?> parent,
+      MetadataContext context) {
+    for (MetadataKey<?> part : path.getSteps()) {
+      Transform transform = schema.getTransform(parent, part, context);
+      Boolean visible = transform.getVisible();
+      if (visible != null && !visible.booleanValue()) {
+        return false;
+      }
+      if (part instanceof ElementKey<?, ?>) {
+        parent = (ElementKey<?, ?>) part;
+      }
+    }
+    return true;
+  }
+  
+  /**
+   * Provides the first non-null value out of a varargs of values.  Will always
+   * return a non-null value or throw an IAE.
+   */
+  static <T> T firstNonNull(T... values) {
+    for (T value : values) {
+      if (value != null) {
+        return value;
+      }
+    }
+    throw new IllegalArgumentException(
+        "Values must contain at least a single non-null value.");
   }
 
   public Schema getSchema() {
@@ -90,10 +136,6 @@ abstract class MetadataImpl<D> implements Metadata<D> {
     return isVisible;
   }
 
-  public VirtualValue getVirtualValue() {
-    return virtualValue;
-  }
-
   public Object generateValue(Element element, ElementMetadata<?, ?> metadata) {
     if (virtualValue != null) {
       return virtualValue.generate(element, metadata);
@@ -103,9 +145,16 @@ abstract class MetadataImpl<D> implements Metadata<D> {
 
   public void parseValue(Element element, ElementMetadata<?, ?> metadata,
       Object value) throws ParseException {
+    parse(element, metadata, value);
+  }
+  
+  boolean parse(Element element, ElementMetadata<?, ?> metadata, Object value)
+      throws ParseException {
     if (virtualValue != null) {
       virtualValue.parse(element, metadata, value);
+      return true;
     }
+    return false;
   }
 
   @Override

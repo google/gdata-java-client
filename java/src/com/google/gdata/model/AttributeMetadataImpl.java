@@ -30,7 +30,7 @@ final class AttributeMetadataImpl<D> extends MetadataImpl<D>
     implements AttributeMetadata<D> {
 
   // The key for the attribute this metadata represents.
-  final AttributeKey<D> attKey;
+  private final AttributeKey<D> attKey;
 
   /**
    * Construct a new immutable attribute metadata for the given declared
@@ -70,9 +70,7 @@ final class AttributeMetadataImpl<D> extends MetadataImpl<D>
   @Override
   public void parseValue(Element element, ElementMetadata<?, ?> metadata,
       Object value) throws ParseException {
-    if (virtualValue != null) {
-      super.parseValue(element, metadata, value);
-    } else {
+    if (!super.parse(element, metadata, value)) {
       element.setAttributeValue(attKey,
           ObjectConverter.getValue(value, attKey.getDatatype()));
     }

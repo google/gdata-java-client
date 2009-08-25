@@ -18,9 +18,9 @@ package com.google.gdata.model;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Maps;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.model.ElementCreatorImpl.AttributeInfo;
@@ -52,11 +52,13 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
 
   // Element metadata properties.
   private final ElementKey<D, E> elemKey;
+  private final ElementKey<D, E> sourceKey;
   private final Cardinality cardinality;
   private final boolean isContentRequired;
   private final ElementValidator validator;
   private final Object properties;
   private final VirtualElementHolder virtualElementHolder;
+  private final boolean isFlattened;
 
   /** Metadata for element's attributes and child elements. */
   private final ImmutableMap<QName, AttributeKey<?>> attributes;
@@ -76,18 +78,38 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     super(schema, transform, parent, key, context);
 
     this.elemKey = key;
-    this.cardinality = nullToDefault(transform.cardinality, Cardinality.SINGLE);
-    this.isContentRequired = nullToDefault(transform.contentRequired, true);
-    this.validator = nullToDefault(transform.validator, DEFAULT_VALIDATOR);
-    this.properties = transform.properties;
-    this.virtualElementHolder = transform.virtualElementHolder;
+    TransformKey transformSource = transform.getSource();
+    if (transformSource != null) {
+      // Use the ID of the transform source for the source key.
+      ElementKey<D, E> transformSourceKey = ElementKey.of(
+          transformSource.getKey().getId(), key.getDatatype(),
+          key.getElementType());
 
-    this.attributes = getAttributes(transform.attributes.values());
+      if (transformSourceKey.equals(elemKey)) {
+        this.sourceKey = elemKey;
+      } else {
+        this.sourceKey = transformSourceKey;
+      }
+    } else {
+      this.sourceKey = elemKey;
+    }
+    
+    transform = ElementTransform.mergeSource(schema, key, transform, context);
+    
+    this.cardinality = firstNonNull(
+        transform.getCardinality(), Cardinality.SINGLE);
+    this.isContentRequired = firstNonNull(transform.getContentRequired(), true);
+    this.validator = firstNonNull(transform.getValidator(), DEFAULT_VALIDATOR);
+    this.properties = transform.getProperties();
+    this.virtualElementHolder = transform.getVirtualElementHolder();
+    this.isFlattened = transform.isFlattened();
+
+    this.attributes = getAttributes(transform.getAttributes().values());
     this.renamedAttributes = getRenamedAttributes();
-    this.elements = getElements(transform.elements.values());
+    this.elements = getElements(transform.getElements().values());
     this.renamedElements = getRenamedElements();
 
-    if (transform.adaptations.isEmpty()) {
+    if (transform.getAdaptations().isEmpty()) {
       this.adaptations = null;
     } else {
       this.adaptations = AdaptationRegistryFactory.create(schema, transform);
@@ -155,13 +177,14 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     Map<QName, ElementKey<?, ?>> renamed = Maps.newLinkedHashMap();
 
     for (ElementKey<?, ?> key : elements.values()) {
-      ElementTransform transform = schema.getTransform(elemKey, key, context);
-      if (transform.name != null && !transform.name.equals(key.getId())) {
+      ElementTransform transform = schema.getTransform(sourceKey, key, context);
+      QName childName = transform.getName();
+      if (childName != null && !childName.equals(key.getId())) {
 
         // We only use the first renamed element if multiple elements are named
         // the same.
-        if (!renamed.containsKey(transform.name)) {
-          renamed.put(transform.name, key);
+        if (!renamed.containsKey(childName)) {
+          renamed.put(childName, key);
         }
       }
     }
@@ -209,10 +232,17 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
         return attKey;
       }
 
-      // See if there is a foo:* match for the given id.
-      if (!isStarId(id)) {
-        attKey = attributes.get(toStarId(id));
-
+      // For wildcarded ids, iterate and return the first matching attribute
+      if (id.matchesAnyNamespace()) {
+        for (Map.Entry<QName, AttributeKey<?>> attrEntry : 
+             attributes.entrySet()) {
+          if (id.matches(attrEntry.getKey())) {
+            return attrEntry.getValue();
+          }  
+        }
+      } else if (!id.matchesAnyLocalName()) {
+        // See if there is a foo:* match for the given id.
+        attKey = attributes.get(toWildcardLocalName(id));
         if (attKey != null) {
           return AttributeKey.of(id, attKey.getDatatype());
         }
@@ -258,11 +288,18 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
       if (childKey != null) {
         return childKey;
       }
-
-      // See if there is a foo:* match for the given id.
-      if (!isStarId(id)) {
-        childKey = elements.get(toStarId(id));
-
+      
+      // For wildcarded ids, iterate and return the first matching element
+      if (id.matchesAnyNamespace()) {
+        for (Map.Entry<QName, ElementKey<?, ?>> elemEntry : 
+             elements.entrySet()) {
+          if (id.matches(elemEntry.getKey())) {
+            return elemEntry.getValue();
+          }  
+        }
+      } else if (!id.matchesAnyLocalName()) {
+        // See if there is a foo:* match for the provided namespace.
+        childKey = elements.get(toWildcardLocalName(id));
         if (childKey != null) {
           return ElementKey.of(
               id, childKey.getDatatype(), childKey.getElementType());
@@ -309,6 +346,10 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   public boolean isSelected(Element e) {
     return isVisible();
   }
+  
+  public boolean isFlattened() {
+    return isFlattened;
+  }
 
   public Object getProperties() {
     return properties;
@@ -333,7 +374,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   public <K> AttributeMetadata<K> bindAttribute(AttributeKey<K> key) {
-    return schema.bind(elemKey, key, context);
+    return schema.bind(sourceKey, key, context);
   }
 
   public Iterator<Element> getElementIterator(Element element) {
@@ -347,7 +388,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   @SuppressWarnings("unchecked")
   public <K, L extends Element> ElementMetadata<K, L> bindElement(
       ElementKey<K, L> key) {
-    return schema.bind(elemKey, key, context);
+    return schema.bind(sourceKey, key, context);
   }
 
   @Override
@@ -362,33 +403,41 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   @Override
   public void parseValue(Element element, ElementMetadata<?, ?> metadata,
       Object value) throws ParseException {
-    if (virtualValue != null) {
-      super.parseValue(element, metadata, value);
-    } else {
+    if (!super.parse(element, metadata, value)) {
       element.setTextValue(
           ObjectConverter.getValue(value, elemKey.getDatatype()));
     }
   }
 
   public SingleVirtualElement getSingleVirtualElement() {
-    return virtualElementHolder == null
-        ? null : virtualElementHolder.getSingleVirtualElement();
+    if (cardinality != Cardinality.SINGLE) {
+      return null;
+    }
+    if (virtualElementHolder != null) {
+      return virtualElementHolder.getSingleVirtualElement();
+    }
+    return null;
   }
 
   public MultipleVirtualElement getMultipleVirtualElement() {
-    return virtualElementHolder == null
-        ? null : virtualElementHolder.getMultipleVirtualElement();
+    if (cardinality == Cardinality.SINGLE) {
+      return null;
+    }
+    if (virtualElementHolder != null) {
+      return virtualElementHolder.getMultipleVirtualElement();
+    }
+    return null;
   }
 
   public E createElement() throws ContentCreationException {
     return Element.createElement(elemKey);
   }
-  
+
   public XmlNamespace getDefaultNamespace() {
     // The default implementation uses the default namespace for the in-use name
     return getName().getNs();
   }
-  
+
   /**
    * Set of namespaces referenced by this element's metadata and all child
    * attributes and elements.   This field is lazily initialized by the first
@@ -408,16 +457,16 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
     }
     return referencedNamespaces;
   }
-  
-  private static void addReferencedNamespaces(ElementMetadata<?, ?> metadata, 
+
+  private static void addReferencedNamespaces(ElementMetadata<?, ?> metadata,
       ImmutableSet.Builder<XmlNamespace> builder, Set<ElementKey<?, ?>> added) {
-    
+
     // Avoid recursive looping
     if (added.contains(metadata.getKey())) {
       return;
     }
     added.add(metadata.getKey());
-    
+
     // Add namespace for this element (if any)
     XmlNamespace elemNs = metadata.getName().getNs();
     if (elemNs != null) {
@@ -432,7 +481,7 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
         builder.add(attrNs);
       }
     }
-    
+
     // Add namespace for all child elements (recursively)
     for (ElementKey<?, ?> elemKey : metadata.getElements()) {
       ElementMetadata<?, ?> childMetadata = metadata.bindElement(elemKey);
@@ -441,18 +490,10 @@ final class ElementMetadataImpl<D, E extends Element> extends MetadataImpl<D>
   }
 
   /**
-   * Returns true if this ID is a star ID, which represents any name in the
-   * namespace.
-   */
-  private boolean isStarId(QName id) {
-    return "*".equals(id.getLocalName());
-  }
-
-  /**
    * Returns an id of the form ns:*, if the given id does not already represent
    * the * localname.
    */
-  private QName toStarId(QName id) {
-    return new QName(id.getNs(), "*");
+  private QName toWildcardLocalName(QName id) {
+    return new QName(id.getNs(), QName.ANY_LOCALNAME);
   }
 }

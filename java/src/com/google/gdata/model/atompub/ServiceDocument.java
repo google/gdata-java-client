@@ -60,28 +60,30 @@ public class ServiceDocument extends Element implements IServiceDocument {
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public ServiceDocument() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
-   * Create an instance using a different key.
+   * Subclass constructor, allows subclasses to supply their own element key.
    */
-  public ServiceDocument(ElementKey<Void, ? extends ServiceDocument> key) {
+  protected ServiceDocument(ElementKey<?, ? extends ServiceDocument> key) {
     super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
    * {@link Element} instance. Will use the given {@link ElementKey} as the key
-   * for the element.
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
    *
    * @param key The key to use for this element.
    * @param source source element
    */
-  public ServiceDocument(ElementKey<Void, ? extends ServiceDocument> key,
+  protected ServiceDocument(ElementKey<?, ? extends ServiceDocument> key,
       Element source) {
     super(key, source);
   }
@@ -106,7 +108,7 @@ public class ServiceDocument extends Element implements IServiceDocument {
    * @param workspace workspace
    */
   public ServiceDocument addWorkspace(Workspace workspace) {
-    super.addElement(Workspace.KEY, workspace);
+    super.addElement(workspace);
     return this;
   }
 
@@ -117,7 +119,14 @@ public class ServiceDocument extends Element implements IServiceDocument {
    * @return true if the workspace was removed
    */
   public boolean removeWorkspace(Workspace workspace) {
-    return super.removeElement(Workspace.KEY, workspace);
+    return super.removeElement(workspace);
+  }
+
+  /**
+   * Removes all existing workspace instances.
+   */
+  public void clearWorkspaces() {
+    super.removeElement(Workspace.KEY);
   }
 
   /**
@@ -129,10 +138,6 @@ public class ServiceDocument extends Element implements IServiceDocument {
     return super.hasElement(Workspace.KEY);
   }
 
-  @Override
-  public String toString() {
-    return "{ServiceDocument}";
-  }
 
 
   public Workspace addWorkspace(String title) {

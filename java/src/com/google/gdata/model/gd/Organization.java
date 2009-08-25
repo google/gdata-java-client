@@ -102,13 +102,13 @@ public class Organization extends Element {
    * Default mutable constructor.
    */
   public Organization() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
    * Lets subclasses create an instance using a custom key.
    */
-  public Organization(ElementKey<Void, ? extends Organization> key) {
+  protected Organization(ElementKey<?, ? extends Organization> key) {
     super(key);
   }
 
@@ -120,7 +120,7 @@ public class Organization extends Element {
    * @param key key to use for this element.
    * @param source source element
    */
-  public Organization(ElementKey<Void, ? extends Organization> key,
+  protected Organization(ElementKey<?, ? extends Organization> key,
       Element source) {
     super(key, source);
   }

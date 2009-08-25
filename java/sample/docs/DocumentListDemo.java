@@ -17,13 +17,16 @@
 package sample.docs;
 
 import sample.util.SimpleCommandLineParser;
-import sample.util.SimpleCommandLineParser;
+import com.google.gdata.data.Link;
+import com.google.gdata.data.MediaContent;
 import com.google.gdata.data.acl.AclEntry;
 import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
 import com.google.gdata.data.docs.DocumentListEntry;
 import com.google.gdata.data.docs.DocumentListFeed;
+import com.google.gdata.data.docs.RevisionEntry;
+import com.google.gdata.data.docs.RevisionFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -32,9 +35,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,120 +52,118 @@ import java.util.logging.Logger;
  * 
  */
 public class DocumentListDemo {
-  private static DocumentList documentList;
+  private DocumentList documentList;
   private PrintStream out;
 
-  private static final String APPLICATION_NAME = "Java GData Client";
+  private static final String APPLICATION_NAME = "JavaGDataClientSampleAppV3.0";
 
   /**
    * The message for displaying the usage parameters.
    */
   private static final String[] USAGE_MESSAGE = {
-    "Usage: java DocumentListDemo.jar --username <user> --password <pass>",
-    "Usage: java DocumentListDemo.jar --authSub <token>",
-    "    [--auth_protocol <protocol>]  The protocol to use with authentication.",
-    "    [--auth_host <host:port>]     The host of the auth server to use.",
-    "    [--protocol <protocol>]       The protocol to use with the HTTP requests.",
-    "    [--host <host:port>]          Where is the feed (default = docs.google.com)",
-    "    [--log]                       Enable logging of requests",
-    ""};
+      "Usage: java DocumentListDemo.jar --username <user> --password <pass>",
+      "Usage: java DocumentListDemo.jar --authSub <token>",
+      "    [--auth_protocol <protocol>]  The protocol to use with authentication.",
+      "    [--auth_host <host:port>]     The host of the auth server to use.",
+      "    [--protocol <protocol>]       The protocol to use with the HTTP requests.",
+      "    [--host <host:port>]          Where is the feed (default = docs.google.com)",
+      "    [--log]                       Enable logging of requests",
+      ""};
 
   /**
    * Welcome message, introducing the program.
    */
-  private static final String[] WELCOME_MESSAGE = {
+  private final String[] WELCOME_MESSAGE = {
       "", "This is a demo of the document list feed!",
       "Using this interface, you can read and upload your documents.",
-      "Type 'help' for a list of commands.",
-      ""};
+      "Type 'help' for a list of commands.", ""};
 
   /**
    * Help on all available commands.
    */
-  private static final String[] COMMAND_HELP_MESSAGE = {
+  private final String[] COMMAND_HELP_MESSAGE = {
       "Commands:",
       "    create <object_type> <name>               [[create an object]]",
-      "    trash <object_id>                         [[puts the object into the trash]]",
-      "    download <object_id> <file_path>          [[downloads the object to the folder" +
-      " specified by file_path]]",
+      "    trash <resource_id> [delete]              [[puts the object into the trash]]",
+      "    download <resource_id> <file_path>        [[downloads the object to the folder"
+          + " specified by file_path]]",
       "    list [object_type] [...]                  [[lists objects]]",
-      "    move <object_id> <folder_id>              [[moves an object into a folder]]",
+      "    move <resource_id> <folder_id>            [[moves an object into a folder]]",
       "    perms <operation> [...]                   [[lists or modifies file permissions]]",
-      "    remove <object_id> <folder_id>            [[removes an object from a folder]]",
+      "    remove <resource_id> <folder_resource_id> [[removes an object from a folder]]",
       "    search <search_text>                      [[search documents for text strings]]",
       "    asearch <search_option>                   [[advanced search]]",
       "    upload <file_path>                        [[uploads a object]]",
+      "    revisions <resource_id>                   [[lists revisions of a document]]",
       "",
-      "    help [command]                            [[display this message, or info about" +
-      " the specified command]]",
+      "    help [command]                            [[display this message, or info about"
+          + " the specified command]]",
       "    exit                                      [[exit the program]]"};
 
-  private static final String[] COMMAND_HELP_CREATE = {
-    "create <object_type> <name>",
-    "    object_type: document, spreadsheet, folder.",
-    "    name: the name for the new object"};
-  private static final String[] COMMAND_HELP_TRASH = {
-    "trash <object_id>",
-    "    object_id: the id of the object to be deleted"};
-  private static final String[] COMMAND_HELP_DOWNLOAD = {
-    "download <object_id> <file_path>",
-    "    object_id: the id of the file you wish to download",
-    "    file_path: the path to the directory to save the file in"};
-  private static final String[] COMMAND_HELP_LIST = {
-    "list [object_type]",
-    "    object_type: all, starred, documents, spreadsheets, pdfs, presentations, folders.\n" +
-    "        (defaults to 'all')",
-    "list folder <folder_id>",
-    "    folder_id: The id of the folder you want the contents list for."};
-  private static final String[] COMMAND_HELP_MOVE = {
-    "move <object_id> <folder_id>",
-    "    object_id: the id of the object to be moved",
-    "    folder_id: the folder to move the document into"};
-  private static final String[] COMMAND_HELP_PERMS = {
-    "perms list <object_id>",
-    "    object_id: id of the object you wish to add/list permissions for",
-    "perms add <role> <scope> <email> <object_id>",
-    "    role: \"reader\", \"writer\", \"owner\"",
-    "    scope: \"user\", \"domain\"",
-    "    email: The user's email address or domain name (\"user@gmail.com\", \"domain.com\")",
-    "    object_id: The id of the object to change permissions for.",
-    "perms change <role> <scope> <email> <object_id>",
-    "    role: \"reader\", \"writer\", \"owner\"",
-    "    scope: \"user\", \"domain\"",
-    "    email: The user's email address or domain name (\"user@gmail.com\", \"domain.com\")",
-    "    object_id: The id of the object to change permissions for.",
-    "perms remove <scope> <email> <object_id>",
-    "    role: \"reader\", \"writer\", \"owner\"",
-    "    scope: \"user\", \"domain\"",
-    "    email: The user's email address or domain name (\"user@gmail.com\", \"domain.com\")",
-    "    object_id: The id of the object to change permissions for."};
+  private final String[] COMMAND_HELP_CREATE = {
+      "create <object_type> <name>",
+      "    object_type: document, spreadsheet, folder.",
+      "    name: the name for the new object"};
+  private final String[] COMMAND_HELP_TRASH = {
+      "trash <resource_id> [delete]",
+      "    resource_id: the resource id of the object to be deleted",
+      "    \"delete\": Specify to permanently delete the document instead of just trashing it."};
+  private final String[] COMMAND_HELP_DOWNLOAD = {
+      "download <resource_id> <file_path>",
+      "    resource_id: the resource id of the file you wish to download",
+      "    file_path: the path to the directory to save the file in"};
+  private final String[] COMMAND_HELP_LIST = {
+      "list [object_type]",
+      "    object_type: all, starred, documents, spreadsheets, pdfs, presentations, folders.\n"
+          + "        (defaults to 'all')", "list folder <folder_id>",
+      "    folder_id: The id of the folder you want the contents list for."};
+  private final String[] COMMAND_HELP_MOVE = {
+      "move <resource_id> <folder_id>",
+      "   resource_id: the resource id of the object to be moved",
+      "    folder_id: the folder to move the document into"};
+  private final String[] COMMAND_HELP_PERMS = {
+      "perms list <resource_id>",
+      "    resource_id: the resource id of the object you wish to add/list permissions for",
+      "perms add <role> <scope> <email> <object_id>",
+      "    role: \"reader\", \"writer\", \"owner\"",
+      "    scope: \"user\", \"domain\"",
+      "    email: The user's email address or domain name (\"user@gmail.com\", \"domain.com\")",
+      "    resource_id: The resource id of the object to change permissions for.",
+      "perms change <role> <scope> <email> <object_id>",
+      "    role: \"reader\", \"writer\", \"owner\"",
+      "    scope: \"user\", \"domain\"",
+      "    email: The user's email address or domain name (\"user@gmail.com\", \"domain.com\")",
+      "    object_id: The id of the object to change permissions for.",
+      "perms remove <scope> <email> <object_id>",
+      "    role: \"reader\", \"writer\", \"owner\"",
+      "    scope: \"user\", \"domain\"",
+      "    email: The user's email address or domain name (\"user@gmail.com\", \"domain.com\")",
+      "    object_id: The id of the object to change permissions for."};
 
-  private static final String[] COMMAND_HELP_REMOVE = {
-    "remove <object_id> <folder_id>",
-    "    object_id: the id of the object to remove from the folder",
-    "    folder_id: the id of the folder to remove the object from"};
-  private static final String[] COMMAND_HELP_SEARCH = {
-    "search <search_text>",
-    "    search_text: A string to be used for a full text query"};
-  private static final String[] COMMAND_HELP_ASEARCH = {
-    "asearch [<query_param>=<value>] [<query_param2>=<value2>] ...",
-    "    query_param: title, title-exact, opened-min, opened-max, owner, writer, reader, " +
-    "showfolders, etc.",
-    "    value: The value of the parameter"};
-  private static final String[] COMMAND_HELP_UPLOAD = {
-    "upload <file_path> <title>",
-    "    file_path: file to upload",
-    "    title: A title to call the document"};
-  private static final String[] COMMAND_HELP_HELP = {
-    "help [command]",
-    "    Weeeeeeeeeeeeee..."};
-  private static final String[] COMMAND_HELP_EXIT = {
-    "exit",
-    "    Exit the program."};
-  private static final String[] COMMAND_HELP_ERROR = {"unknown command"};
+  private final String[] COMMAND_HELP_REMOVE = {
+      "remove <object_id> <folder_id>",
+      "    object_id: the id of the object to remove from the folder",
+      "    folder_id: the id of the folder to remove the object from"};
+  private final String[] COMMAND_HELP_SEARCH = {
+      "search <search_text>",
+      "    search_text: A string to be used for a full text query"};
+  private final String[] COMMAND_HELP_ASEARCH = {
+      "asearch [<query_param>=<value>] [<query_param2>=<value2>] ...",
+      "    query_param: title, title-exact, opened-min, opened-max, owner, writer, reader, "
+          + "showfolders, etc.", "    value: The value of the parameter"};
+  private final String[] COMMAND_HELP_UPLOAD = {
+      "upload <file_path> <title>", "    file_path: file to upload",
+      "    title: A title to call the document"};
+  private final String[] COMMAND_HELP_REVISIONS = {
+      "revisions <resource_id>", "    resource_id: document resource id"};
+  private final String[] COMMAND_HELP_HELP = {
+      "help [command]", "    Weeeeeeeeeeeeee..."};
+  private final String[] COMMAND_HELP_EXIT = {
+      "exit", "    Exit the program."};
+  private final String[] COMMAND_HELP_ERROR = {"unknown command"};
 
-  private static final Map<String, String[]> HELP_MESSAGES;
-  static {
+  private final Map<String, String[]> HELP_MESSAGES;
+  {
     HELP_MESSAGES = new HashMap<String, String[]>();
     HELP_MESSAGES.put("create", COMMAND_HELP_CREATE);
     HELP_MESSAGES.put("trash", COMMAND_HELP_TRASH);
@@ -174,6 +175,7 @@ public class DocumentListDemo {
     HELP_MESSAGES.put("search", COMMAND_HELP_SEARCH);
     HELP_MESSAGES.put("asearch", COMMAND_HELP_ASEARCH);
     HELP_MESSAGES.put("upload", COMMAND_HELP_UPLOAD);
+    HELP_MESSAGES.put("revisions", COMMAND_HELP_REVISIONS);
     HELP_MESSAGES.put("help", COMMAND_HELP_HELP);
     HELP_MESSAGES.put("exit", COMMAND_HELP_EXIT);
     HELP_MESSAGES.put("error", COMMAND_HELP_ERROR);
@@ -183,9 +185,36 @@ public class DocumentListDemo {
    * Constructor
    *
    * @param outputStream Stream to print output to.
+   * @throws DocumentListException
    */
-  public DocumentListDemo(PrintStream outputStream) {
+  public DocumentListDemo(PrintStream outputStream, String appName, String authProtocol,
+      String authHost, String protocol, String host) throws DocumentListException {
     out = outputStream;
+    documentList = new DocumentList(appName, authProtocol, authHost, protocol, host);
+  }
+
+  /**
+   * Authenticates the client using ClientLogin
+   *
+   * @param username User's email address
+   * @param username User's password
+   * @throws DocumentListException
+   * @throws AuthenticationException
+   */
+  public void login(String username, String password) throws AuthenticationException,
+      DocumentListException {
+    documentList.login(username, password);
+  }
+
+  /**
+   * Authenticates the client using AuthSub
+   *
+   * @param username User's AuthSub token
+   * @throws DocumentListException
+   * @throws AuthenticationException
+   */
+  public void login(String authSubToken) throws AuthenticationException, DocumentListException {
+    documentList.loginWithAuthSubToken(authSubToken);
   }
 
   /**
@@ -195,16 +224,31 @@ public class DocumentListDemo {
    */
   public void printDocumentEntry(DocumentListEntry doc) {
     StringBuffer output = new StringBuffer();
-    String shortId = doc.getId().substring(doc.getId().lastIndexOf('/') + 1);
-    Set<String> folders = doc.getFolders();
 
     output.append(" -- " + doc.getTitle().getPlainText() + " ");
-    if (folders.size() > 0) {
-      for (String folder : folders) {
-        output.append("[" + folder + "] ");
+    if (!doc.getParentLinks().isEmpty()) {
+      for (Link link : doc.getParentLinks()) {
+        output.append("[" + link.getTitle() + "] ");
       }
     }
-    output.append(shortId);
+    output.append(doc.getResourceId());
+
+    out.println(output);
+  }
+
+  /**
+   * Prints out the specified revision entry.
+   *
+   * @param doc the revision entry to print.
+   */
+  public void printRevisionEntry(RevisionEntry entry) {
+    StringBuffer output = new StringBuffer();
+
+    output.append(" -- " + entry.getTitle().getPlainText());
+    output.append(", created on " + entry.getUpdated().toUiString() + " ");
+    output.append(" by " + entry.getModifyingUser().getName() + " - "
+        + entry.getModifyingUser().getEmail() + "\n");
+    output.append("    " + entry.getHtmlLink().getHref());
 
     out.println(output);
   }
@@ -222,8 +266,7 @@ public class DocumentListDemo {
    * Executes the "create" command.
    *
    * @param args arguments for the "create" command.
-   *     args[0] = "create"
-   *     args[1] = object_type ("folder", "document", "spreadsheet")
+   *     args[0] = "create" args[1] = object_type ("folder", "document", "spreadsheet")
    *     args[2] = title (what to name the document/folder)
    *
    * @throws IOException when an error occurs in communication with the Doclist
@@ -233,18 +276,10 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeCreate(String[] args) throws IOException, MalformedURLException,
-      ServiceException, DocumentListException {
+  private void executeCreate(String[] args) throws IOException,
+      MalformedURLException, ServiceException, DocumentListException {
     if (args.length == 3) {
-      if (args[1].equals("folder")) {
-        printDocumentEntry(documentList.createFolder(args[2]));
-      } else if (args[1].equals("document")) {
-        printDocumentEntry(documentList.createDocument(args[2]));
-      } else if (args[1].equals("spreadsheet")) {
-        printDocumentEntry(documentList.createSpreadsheet(args[2]));
-      } else {
-        printMessage(COMMAND_HELP_CREATE);
-      }
+      printDocumentEntry(documentList.createNew(args[2], args[1]));
     } else {
       printMessage(COMMAND_HELP_CREATE);
     }
@@ -255,7 +290,8 @@ public class DocumentListDemo {
    *
    * @param args arguments for the "trash" command.
    *     args[0] = "trash"
-   *     args[1] = objectId (the id of the object to be trashed)
+   *     args[1] = resourceid (the resource id of the object to be trashed)
+   *     args[2] = delete (where to delete permanently or not)
    *
    * @throws IOException when an error occurs in communication with the Doclist
    *         service.
@@ -266,8 +302,10 @@ public class DocumentListDemo {
    */
   private void executeTrash(String[] args) throws IOException, MalformedURLException,
       ServiceException, DocumentListException {
-    if (args.length == 2) {
-      documentList.trashObject(args[1]);
+    if (args.length == 3) {
+      documentList.trashObject(args[1], true);
+    } else if (args.length == 2) {
+      documentList.trashObject(args[1], false);
     } else {
       printMessage(COMMAND_HELP_TRASH);
     }
@@ -278,7 +316,7 @@ public class DocumentListDemo {
    *
    * @param args arguments for the "download" command.
    *     args[0] = "download"
-   *     args[1] = objectId (the id of the object to be downloaded)
+   *     args[1] = resourceId (the resource id of the object to be downloaded)
    *     args[2] = filepath (the path and filename to save the object as)
    *
    * @throws IOException when an error occurs in communication with the Doclist
@@ -291,8 +329,37 @@ public class DocumentListDemo {
   private void executeDownload(String[] args) throws IOException, MalformedURLException,
       ServiceException, DocumentListException {
     if (args.length == 3) {
-      documentList.downloadFile(args[1], args[2], DocumentList
-          .getDownloadFormat(args[1], getTypeFromFilename(args[2])));
+      String docType = documentList.getResourceIdPrefix(args[1]);
+      if (docType.equals("spreadsheet")) {
+        String format = documentList.getDownloadFormat(args[1],
+            getTypeFromFilename(args[2]));
+        documentList.downloadSpreadsheet(args[1], args[2], format);
+      } else if (docType.equals("presentation")) {
+        String format = documentList.getDownloadFormat(args[1],
+            getTypeFromFilename(args[2]));
+        documentList.downloadPresentation(args[1], args[2], format);
+      } else if (docType.equals("document")) {
+        String format = documentList.getDownloadFormat(args[1],
+            getTypeFromFilename(args[2]));
+        documentList.downloadDocument(args[1], args[2], format);
+      } else {
+        MediaContent mc = (MediaContent) documentList.getDocsListEntry(args[1]).getContent();
+        String fileExtension = mc.getMimeType().getSubType();
+        URL exportUrl = new URL(mc.getUri());
+
+        // PDF file cannot be exported in different formats.
+        String requestedFormat = args[2]
+            .substring(args[2].lastIndexOf(".") + 1);
+        if (!requestedFormat.equals(fileExtension)) {
+
+          String[] formatWarning = {"Warning: "
+              + mc.getMimeType().getMediaType() + " cannot be downloaded as a "
+              + requestedFormat + ". Using ." + fileExtension + " instead."};
+          printMessage(formatWarning);
+        }
+        String newFilePath = args[2].substring(0, args[2].lastIndexOf(".") + 1) + fileExtension;
+        documentList.downloadFile(exportUrl, newFilePath);
+      }
     } else {
       printMessage(COMMAND_HELP_DOWNLOAD);
     }
@@ -304,7 +371,7 @@ public class DocumentListDemo {
    * @param args arguments for the "list" command.
    *     args[0] = "list"
    *     args[1] = category ("all", "folders", "documents", "spreadsheets", "pdfs",
-   *         "presentations", "starred", "trashed")
+   *        "presentations", "starred", "trashed")
    *     args[2] = folderId (required if args[1] is "folder")
    *
    * @throws IOException when an error occurs in communication with the Doclist
@@ -319,7 +386,7 @@ public class DocumentListDemo {
     DocumentListFeed feed = null;
     String msg = "";
 
-    switch(args.length) {
+    switch (args.length) {
     case 1:
       msg = "List of docs: ";
       feed = documentList.getDocsListFeed("all");
@@ -350,9 +417,8 @@ public class DocumentListDemo {
    * Execute the "move" command.
    *
    * @param args arguments for the "move" command.
-   *     args[0] = "move"
-   *     args[1] = objectId (the id of the object to move)
-   *     args[2] = folderid (the id of the folder to move the object to)
+   *     args[0] = "move" args[1] = resourceid (the resourceid of the object to move)
+   *     args[2] = folderResourceId (the resource id of the folder to move the object to)
    *
    * @throws IOException when an error occurs in communication with the Doclist
    *         service.
@@ -376,16 +442,16 @@ public class DocumentListDemo {
    * @param args arguments for the "perms" command.
    *     args[0] = "perms"
    *     args[1] = "list"
-   *         args[2] = objectId
+   *         args[2] = resourceId
    *     args[1] = "add", "change"
    *         args[2] = role
    *         args[3] = scope
    *         args[4] = email
-   *         args[5] = objectId
+   *         args[5] = resourceId
    *     args[1] = "remove"
    *         args[2] = scope
    *         args[3] = email
-   *         args[4] = objectId
+   *         args[4] = resourceId
    *
    * @throws IOException when an error occurs in communication with the Doclist
    *         service.
@@ -444,8 +510,8 @@ public class DocumentListDemo {
    *
    * @param args arguments for the "remove" command.
    *     args[0] = "remove"
-   *     args[1] = objectId
-   *     args[2] = folderid
+   *     args[1] = resourceId
+   *     args[2] = folderReourceId
    *
    * @throws IOException when an error occurs in communication with the Doclist
    *         service.
@@ -515,8 +581,8 @@ public class DocumentListDemo {
 
     HashMap<String, String> searchParameters = new HashMap<String, String>();
     for (int i = 1; i < args.length; ++i) {
-      searchParameters.put(args[i].substring(0, args[i].indexOf("=")),
-          args[i].substring(args[i].indexOf("=") + 1));
+      searchParameters.put(args[i].substring(0, args[i].indexOf("=")), args[i]
+          .substring(args[i].indexOf("=") + 1));
     }
 
     DocumentListFeed feed = documentList.search(searchParameters);
@@ -548,6 +614,37 @@ public class DocumentListDemo {
       printDocumentEntry(entry);
     } else {
       printMessage(COMMAND_HELP_UPLOAD);
+    }
+  }
+
+  /**
+   * Execute the "revisions" command.
+   *
+   * @param args arguments for the "upload" command.
+   *     args[0] = "revisions"
+   *     args[1] = resourceId (the resource id of the object to fetch revisions for)
+   *
+   * @throws IOException when an error occurs in communication with the Doclist
+   *         service.
+   * @throws MalformedURLException when an malformed URL is used.
+   * @throws ServiceException when the request causes an error in the Doclist
+   *         service.
+   * @throws DocumentListException
+   */
+  private void executeRevisions(String[] args) throws IOException, MalformedURLException,
+      ServiceException, DocumentListException {
+    if (args.length == 2) {
+      RevisionFeed feed = documentList.getRevisionsFeed(args[1]);
+      if (feed != null) {
+        out.println("List of revisions...");
+        for (RevisionEntry entry : feed.getEntries()) {
+          printRevisionEntry(entry);
+        }
+      } else {
+        printMessage(COMMAND_HELP_REVISIONS);
+      }
+    } else {
+      printMessage(COMMAND_HELP_REVISIONS);
     }
   }
 
@@ -585,7 +682,8 @@ public class DocumentListDemo {
   /**
    * Parses the command entered by the user into individual arguments.
    *
-   * @param command the entire command entered by the user to be broken up into arguments.
+   * @param command the entire command entered by the user to be broken up into
+   *        arguments.
    */
   private String[] parseCommand(String command) {
     // Special cases:
@@ -596,7 +694,7 @@ public class DocumentListDemo {
       // if create command, break into three args (command, file_type, title)
       return command.trim().split(" ", 3);
     } else if (command.startsWith("upload")) {
-      // if uplaod command, break into three args (command, file_path, title)
+      // if upload command, break into three args (command, file_path, title)
       return command.trim().split(" ", 3);
     }
 
@@ -610,8 +708,10 @@ public class DocumentListDemo {
    *
    * @param reader to read input from the keyboard
    * @return false if the user quits, true on exception
+   * @throws IOException
+   * @throws ServiceException
    */
-  private boolean executeCommand(BufferedReader reader) {
+  private boolean executeCommand(BufferedReader reader) throws IOException, ServiceException {
     System.err.print("Command: ");
 
     try {
@@ -643,6 +743,8 @@ public class DocumentListDemo {
         executeAdvancedSearch(args);
       } else if (name.equals("upload")) {
         executeUpload(args);
+      } else if (name.equals("revisions")) {
+        executeRevisions(args);
       } else if (name.equals("help")) {
         executeHelp(args);
       } else if (name.startsWith("q") || name.startsWith("exit")) {
@@ -650,7 +752,7 @@ public class DocumentListDemo {
       } else {
         out.println("Unknown command. Type 'help' for a list of commands.");
       }
-    } catch (Exception e) {
+    } catch (DocumentListException e) {
       // Show *exactly* what went wrong.
       e.printStackTrace();
     }
@@ -663,12 +765,13 @@ public class DocumentListDemo {
    * @param username name of user to authenticate (e.g. yourname@gmail.com)
    * @param password password to use for authentication
    * @param feedUrl URL of the feed to connect to
+   * @throws ServiceException
+   * @throws IOException
    */
-  public void run() {
+  public void run() throws IOException, ServiceException {
     printMessage(WELCOME_MESSAGE);
 
-    BufferedReader reader =
-        new BufferedReader(new InputStreamReader(System.in));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     while (executeCommand(reader)) {
     }
@@ -688,7 +791,7 @@ public class DocumentListDemo {
   private static void turnOnLogging() {
     // Configure the logging mechanisms
     Logger httpLogger =
-      Logger.getLogger("com.google.gdata.client.http.HttpGDataRequest");
+        Logger.getLogger("com.google.gdata.client.http.HttpGDataRequest");
     httpLogger.setLevel(Level.ALL);
     Logger xmlLogger = Logger.getLogger("com.google.gdata.util.XmlParser");
     xmlLogger.setLevel(Level.ALL);
@@ -705,13 +808,12 @@ public class DocumentListDemo {
    *
    * @param args the command-line arguments
    *
-   * @throws AuthenticationException if the service is unable to validate the
-   *         username and password.
-   * @throws MalformedURLException if the URL for the docs feed is invalid.
    * @throws DocumentListException
+   * @throws ServiceException
+   * @throws IOException
    */
   public static void main(String[] args)
-      throws AuthenticationException, MalformedURLException, DocumentListException {
+      throws DocumentListException, IOException, ServiceException {
     SimpleCommandLineParser parser = new SimpleCommandLineParser(args);
     String authProtocol = parser.getValue("auth_protocol");
     String authHost = parser.getValue("auth_host");
@@ -747,15 +849,16 @@ public class DocumentListDemo {
       turnOnLogging();
     }
 
-    DocumentListDemo demo = new DocumentListDemo(System.out);
-    documentList = new DocumentList(APPLICATION_NAME, authProtocol, authHost, protocol, host);
+    DocumentListDemo demo = new DocumentListDemo(System.out, APPLICATION_NAME,
+        authProtocol, authHost, protocol, host);
 
     if (password != null) {
-      documentList.login(user, password);
+      demo.login(user, password);
     } else {
-      documentList.loginWithAuthSubToken(authSub);
+      demo.login(authSub);
     }
 
     demo.run();
   }
 }
+

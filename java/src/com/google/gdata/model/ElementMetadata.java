@@ -17,6 +17,7 @@
 package com.google.gdata.model;
 
 import com.google.gdata.util.common.xml.XmlNamespace;
+import com.google.gdata.util.ParseException;
 import com.google.gdata.wireformats.ContentCreationException;
 
 import java.util.Collection;
@@ -52,14 +53,15 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
      *
      * @return collection generated virtual elements or {@code null}
      */
-    Collection<Element> generate(Element parent,
-        ElementMetadata<?, ?> metadata);
+    Collection<? extends Element> generateMultiple(Element parent,
+        ElementMetadata<?, ?> parentMetadata, ElementMetadata<?, ?> metadata);
 
     /**
      * Parses the elements, possibly creating additional elements or attributes.
      */
-    void parse(Element parent, Collection<Element> elements,
-        ElementMetadata<?, ?> metadata);
+    void parse(Element parent, ElementMetadata<?, ?> parentMetadata,
+        Collection<Element> elements, ElementMetadata<?, ?> metadata)
+        throws ParseException;
   }
 
   /**
@@ -74,12 +76,14 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
      *
      * @return generated virtual element or {@code null}
      */
-    Element generate(Element parent, ElementMetadata<?, ?> metadata);
+    Element generateSingle(Element parent, ElementMetadata<?, ?> parentMetadata,
+        ElementMetadata<?, ?> metadata);
 
     /**
      * Parses the element, possibly creating additional elements or attributes.
      */
-    void parse(Element parent, Element element, ElementMetadata<?, ?> metadata);
+    void parse(Element parent, ElementMetadata<?, ?> parentMetadata,
+        Element element, ElementMetadata<?, ?> metadata) throws ParseException;
   }
 
   /**
@@ -122,6 +126,12 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
    */
   boolean isContentRequired();
 
+  /**
+   * Returns {@code true} if the element has been flattened, which means its
+   * value should be output directly in its parent.
+   */
+  boolean isFlattened();
+  
   /**
    * Returns an element validator that can be used to validate this content.
    */
@@ -204,7 +214,7 @@ public interface ElementMetadata<D, E extends Element> extends Metadata<D> {
    * pulled from elsewhere in the DOM.
    */
   MultipleVirtualElement getMultipleVirtualElement();
-
+  
   /**
    * Create an element with this metadata as the metadata for the element.
    *

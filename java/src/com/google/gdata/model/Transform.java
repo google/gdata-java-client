@@ -26,21 +26,14 @@ import com.google.gdata.model.Metadata.VirtualValue;
  */
 abstract class Transform {
 
-  /**
-   * Returns {@code true} if the given transform is empty.
-   */
-  static boolean isEmptyTransform(Transform transform) {
-    return transform.name == null
-        && transform.required == null
-        && transform.visible == null
-        && transform.virtualValue == null;
-  }
-
   // Our final, nullable fields.
-  final QName name;
-  final Boolean required;
-  final Boolean visible;
-  final VirtualValue virtualValue;
+  private final QName name;
+  private final Boolean required;
+  private final Boolean visible;
+  private final VirtualValue virtualValue;
+  private final TransformKey source;
+  private final Path path;
+  private final boolean isMoved;
 
   /**
    * Constructs an empty transform with all null values.  This should only be
@@ -52,6 +45,9 @@ abstract class Transform {
     this.required = null;
     this.visible = null;
     this.virtualValue = null;
+    this.source = null;
+    this.path = null;
+    this.isMoved = false;
   }
 
   /**
@@ -66,16 +62,24 @@ abstract class Transform {
     this.required = creator.getRequired();
     this.visible = creator.getVisible();
     this.virtualValue = creator.getVirtualValue();
+    this.source = creator.getSource();
+    this.path = creator.getPath();
+    this.isMoved = creator.isMoved();
   }
 
   /**
-   * Construct a composite transform out of the given parts.
+   * Construct a composite transform out of the given parts. Transforms are
+   * combined by allowing transforms later in the parts to override values
+   * provided earlier in the iterable.
    */
   Transform(Iterable<? extends Transform> parts) {
     QName compositeName = null;
     Boolean compositeRequired = null;
     Boolean compositeVisible = null;
     VirtualValue compositeVirtualValue = null;
+    TransformKey compositeSource = null;
+    Path compositePath = null;
+    boolean compositeMoved = false;
 
     for (Transform part : parts) {
       if (part.name != null) {
@@ -90,11 +94,99 @@ abstract class Transform {
       if (part.virtualValue != null) {
         compositeVirtualValue = part.virtualValue;
       }
+      if (part.source != null) {
+        compositeSource = part.source;
+      }
+      if (part.path != null) {
+        compositePath = part.path;
+      }
+      if (part.isMoved) {
+        compositeMoved = true;
+      }
     }
 
     this.name = compositeName;
     this.required = compositeRequired;
     this.visible = compositeVisible;
     this.virtualValue = compositeVirtualValue;
+    this.source = compositeSource;
+    this.path = compositePath;
+    this.isMoved = compositeMoved;
+  }
+
+  /**
+   * Constructs a transform out of a base transform and a source transform.
+   * This differs from the {@link #Transform(Iterable)} constructor by only
+   * using certain values from the source.  The differences are: 
+   * <ul>
+   * <li>Requiredness is based only on the transform, not on the source.</li>
+   * <li>The path is pulled only from the transform, not from the source.  If
+   * the source also has a path it will be resolved during parsing/generation as
+   * appropriate.<li>
+   * <li>Ignores if the source is marked as being moved.</li>
+   * <li>Explicitly nulls the {@code source} field, as the source has already
+   * been taken into account.</li>
+   */
+  Transform(Transform transform, Transform source) {
+    this.name = first(transform.name, source.name);
+    this.required = transform.required;
+    this.visible = first(transform.visible, source.visible);
+    this.virtualValue = first(transform.virtualValue, source.virtualValue);
+    this.path = transform.path;
+    this.isMoved = transform.isMoved;
+    
+    // In this special case we've included source information, so we get rid
+    // of the source variable so we don't try to include it again.
+    this.source = null;
+  }
+
+  /**
+   * Returns the first non-null value, or null if all were null.
+   */
+  static <T> T first(T... ts) {
+    for (T t : ts) {
+      if (t != null) {
+        return t;
+      }
+    }
+    return null;
+  }
+  
+  QName getName() {
+    return name;
+  }
+
+  Boolean getRequired() {
+    return required;
+  }
+
+  Boolean getVisible() {
+    return visible;
+  }
+
+  VirtualValue getVirtualValue() {
+    return virtualValue;
+  }
+
+  TransformKey getSource() {
+    return source;
+  }
+  
+  Path getPath() {
+    return path;
+  }
+
+  boolean isMoved() {
+    return isMoved;
+  }
+  
+  boolean isEmpty() {
+    return name == null
+    && required == null
+    && visible == null
+    && virtualValue == null
+    && source == null
+    && path == null
+    && !isMoved;
   }
 }

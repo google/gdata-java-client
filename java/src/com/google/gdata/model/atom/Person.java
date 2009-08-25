@@ -105,7 +105,7 @@ public class Person extends Element implements IPerson {
    * @param key the key to use for this element.
    * @param source source element
    */
-  public Person(ElementKey<?, ? extends Person> key, Element source) {
+  protected Person(ElementKey<?, ? extends Person> key, Element source) {
     super(key, source);
   }
 

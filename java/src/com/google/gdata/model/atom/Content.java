@@ -103,7 +103,7 @@ public class Content extends Element implements IContent {
    * @param key the element key for the content element.
    * @param source source content.
    */
-  public Content(ElementKey<?, ?> key, Element source) {
+  protected Content(ElementKey<?, ?> key, Element source) {
     super(key, source);
   }
 

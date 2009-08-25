@@ -30,6 +30,7 @@ import com.google.gdata.data.docs.FolderEntry;
 import com.google.gdata.data.docs.PdfEntry;
 import com.google.gdata.data.docs.PhotoEntry;
 import com.google.gdata.data.docs.PresentationEntry;
+import com.google.gdata.data.docs.QueryParameter;
 import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.Version;
@@ -39,18 +40,19 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Extends the basic {@link MediaService} abstraction to define a service that
- * is preconfigured for access to the Google Documents List data API.
+ * is preconfigured for access to the Google Documents List Data API.
  *
  * 
  */
 public class DocsService extends MediaService {
 
   /**
-   * The abbreviated name of Google Documents List recognized by Google.  The
-   * service name is used when requesting an authentication token.
+   * The abbreviated name of Google Documents List Data API recognized by
+   * Google.  The service name is used when requesting an authentication token.
    */
   public static final String DOCS_SERVICE = "writely";
 
@@ -60,32 +62,36 @@ public class DocsService extends MediaService {
   public static final String DOCS_SERVICE_VERSION = "GDocs-Java/" +
       DocsService.class.getPackage().getImplementationVersion();
 
-  /**
-   * GData versions supported by Google Documents List Service.
-   */
+  /** GData versions supported by the Google Documents List Data API. */
   public static final class Versions {
 
-    /** Version 1 of the Doclist Google Data API.  This is the initial version
-     * of the API and is based on Version 1 of the GData protocol. */
+    /** Version 1.  This is the initial version of the API and is based on
+     * Version 1 of the GData protocol. */
     public static final Version V1 = new Version(DocsService.class, "1.0",
         Service.Versions.V1);
 
-    /** Version 2 of the Doclist Google Data API.  This version of the API adds
-     * full compliance with the Atom Publishing Protocol and is based on Version
-     * 2 of the GData protocol. */
+    /** Version 2.  This version of the API adds full compliance with the Atom
+     * Publishing Protocol and is based on Version 2 of the GData protocol. */
     public static final Version V2 = new Version(DocsService.class, "2.0",
         Service.Versions.V2);
 
+    /** Version 3.  This version of the API adds a revision feed, PDF support,
+     * folder and group sharing,
+     * and introduces backwards in compatible changes from Version 2. */
+    public static final Version V3 = new Version(DocsService.class, "3.0",
+        Service.Versions.V2);
+
+    private Versions() {}
   }
 
   /**
-   * Default GData version used by the Google Documents List service.
+   * Default GData version used by the Google Documents List Data API.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(DocsService.class, Versions.V2);
+      Service.initServiceVersion(DocsService.class, Versions.V3);
 
   /**
-   * Constructs an instance connecting to the Google Documents List service for
+   * Constructs an instance connecting to the Google Documents List Data API for
    * an application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
@@ -99,7 +105,7 @@ public class DocsService extends MediaService {
   }
 
   /**
-   * Constructs an instance connecting to the Google Documents List service for
+   * Constructs an instance connecting to the Google Documents List Data API for
    * an application with the name {@code applicationName} and the given {@code
    * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
    * override the default factories.
@@ -120,8 +126,8 @@ public class DocsService extends MediaService {
   }
 
   /**
-   * Constructs an instance connecting to the Google Documents List service with
-   * name {@code serviceName} for an application with the name {@code
+   * Constructs an instance connecting to the Google Documents List Data API
+   * with name {@code serviceName} for an application with the name {@code
    * applicationName}.  The service will authenticate at the provided {@code
    * domainName}.
    *
@@ -145,15 +151,15 @@ public class DocsService extends MediaService {
   }
 
   /**
-   * Returns the current GData version used by the Google Documents List
-   * service.
+   * Returns the current GData version used by the Google Documents List Data
+   * API.
    */
   public static Version getVersion() {
     return VersionRegistry.get().getVersion(DocsService.class);
   }
 
   /**
-   * Declare the extensions of the feeds for the Google Documents List service.
+   * Declare the extensions of the feeds for the Google Documents List Data API.
    */
   private void declareExtensions() {
     new AclFeed().declareExtensions(extProfile);
@@ -267,4 +273,7 @@ public class DocsService extends MediaService {
     }
   }
 
+
+
 }
+

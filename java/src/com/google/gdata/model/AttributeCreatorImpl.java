@@ -31,8 +31,8 @@ final class AttributeCreatorImpl extends MetadataCreatorImpl
   /**
    * Construct a new empty attribute metadata creator.
    */
-  AttributeCreatorImpl(MetadataRegistry root) {
-    super(root);
+  AttributeCreatorImpl(MetadataRegistry root, TransformKey transformKey) {
+    super(root, transformKey);
   }
 
   /**
@@ -60,5 +60,15 @@ final class AttributeCreatorImpl extends MetadataCreatorImpl
   @Override
   public AttributeCreatorImpl setVirtualValue(VirtualValue virtualValue) {
     return (AttributeCreatorImpl) super.setVirtualValue(virtualValue);
+  }
+
+  /**
+   * When setting the source of an attribute, the virtual value of the attribute
+   * is based on the path.
+   */
+  @Override
+  void setSource(Path path, TransformKey key) {
+    super.setSource(path, key);
+    setVirtualValue(PathAdapter.valueAdapter(path));
   }
 }

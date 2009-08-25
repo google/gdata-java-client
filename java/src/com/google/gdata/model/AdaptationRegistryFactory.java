@@ -45,7 +45,7 @@ class AdaptationRegistryFactory {
    */
   static AdaptationRegistry create(Schema schema,
       ElementTransform transform) {
-    return new AdaptationRegistry(transform.adaptations,
+    return new AdaptationRegistry(transform.getAdaptations(),
         unionAttributes(schema, transform),
         unionElements(schema, transform));
   }
@@ -68,7 +68,7 @@ class AdaptationRegistryFactory {
     Set<QName> base = getAttributeNames(transform);
     Set<QName> invalid = Sets.newHashSet();
 
-    for (ElementKey<?, ?> adaptorKey : transform.adaptations.values()) {
+    for (ElementKey<?, ?> adaptorKey : transform.getAdaptations().values()) {
 
       // We get the adaptor transform so we can access its attributes.
       ElementTransform adaptor = schema.getTransform(null, adaptorKey, null);
@@ -77,7 +77,7 @@ class AdaptationRegistryFactory {
         throw new IllegalStateException("Invalid adaptor key " + adaptorKey);
       }
 
-      for (AttributeInfo info : adaptor.attributes.values()) {
+      for (AttributeInfo info : adaptor.getAttributes().values()) {
         AttributeKey<?> key = info.key;
         QName id = key.getId();
 
@@ -115,7 +115,7 @@ class AdaptationRegistryFactory {
    */
   private static Set<QName> getAttributeNames(ElementTransform transform) {
     Set<QName> result = Sets.newHashSet();
-    for (AttributeInfo info : transform.attributes.values()) {
+    for (AttributeInfo info : transform.getAttributes().values()) {
       result.add(info.key.getId());
     }
     return result;
@@ -140,12 +140,12 @@ class AdaptationRegistryFactory {
     Set<QName> invalid = Sets.newHashSet();
     Set<QName> base = getElementNames(transform);
 
-    for (ElementKey<?, ?> adaptorKey : transform.adaptations.values()) {
+    for (ElementKey<?, ?> adaptorKey : transform.getAdaptations().values()) {
 
       // We get the transform for the adaptor so we can check its element keys.
       ElementTransform adaptor = schema.getTransform(null, adaptorKey, null);
 
-      for (ElementInfo info : adaptor.elements.values()) {
+      for (ElementInfo info : adaptor.getElements().values()) {
         ElementKey<?, ?> key = info.key;
         QName id = key.getId();
 
@@ -186,7 +186,7 @@ class AdaptationRegistryFactory {
    */
   private static Set<QName> getElementNames(ElementTransform transform) {
     Set<QName> result = Sets.newHashSet();
-    for (ElementInfo info : transform.elements.values()) {
+    for (ElementInfo info : transform.getElements().values()) {
       result.add(info.key.getId());
     }
     return result;

@@ -114,28 +114,30 @@ public class Ordering extends Element {
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public Ordering() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
-   * Create an instance using a different key.
+   * Subclass constructor, allows subclasses to supply their own element key.
    */
-  public Ordering(ElementKey<Void, ? extends Ordering> key) {
+  protected Ordering(ElementKey<?, ? extends Ordering> key) {
     super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
    * {@link Element} instance. Will use the given {@link ElementKey} as the key
-   * for the element.
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
    *
    * @param key The key to use for this element.
    * @param source source element
    */
-  public Ordering(ElementKey<Void, ? extends Ordering> key, Element source) {
+  protected Ordering(ElementKey<?, ? extends Ordering> key, Element source) {
     super(key, source);
   }
 
