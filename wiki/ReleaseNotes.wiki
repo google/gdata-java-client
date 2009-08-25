@@ -8,6 +8,21 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.36.0 ==
+   * Added support for version 3 of Documents List Data API.  This update includes support for PDF uploads, folder sharing, domain and group level !ACLs, and document revision history.
+
+== 1.35.1 ==
+   * Expanded Google Maps Data API sample code and minor bug fixes.
+
+== 1.35.0 ==
+   * Updated Photos Data API to use Version 2 of Google Data Protocol.
+   * Removed com.google.gdata.util.common.annotations package in favor of com.google.common.annotations available in google-collections library.
+   * Fixed bug java.lang.UnsupportedClassVersionError in version 1.34.
+
+== 1.34.0 ==
+   * Updated YouTube API data model classes.
+   * Fixed encoding issue with atom content in a multipart/related body.
+
 == 1.33.0 ==
    * Update Google Contacts Data API to support version 3 of Contacts API. Version 3.0 brings greatly expanded data schema, including support for structured name and postal address.
    * Added support for generic group attributes in Google Base Data API.
