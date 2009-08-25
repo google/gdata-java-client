@@ -77,13 +77,13 @@ public class EntryLink extends Element implements ILink {
    * Default mutable constructor.
    */
   public EntryLink() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
    * Create an instance using a different key.
    */
-  public EntryLink(ElementKey<Void, ? extends EntryLink> key) {
+  protected EntryLink(ElementKey<?, ? extends EntryLink> key) {
     super(key);
   }
 
@@ -95,7 +95,7 @@ public class EntryLink extends Element implements ILink {
    * @param key The key to use for this element.
    * @param source source element
    */
-  public EntryLink(ElementKey<Void, ? extends EntryLink> key, Element source) {
+  protected EntryLink(ElementKey<?, ? extends EntryLink> key, Element source) {
     super(key, source);
   }
 

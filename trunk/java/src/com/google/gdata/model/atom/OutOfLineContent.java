@@ -88,21 +88,21 @@ public class OutOfLineContent extends Content
   }
 
   /**
-   * Constructs a new instance using the specified element metadata.
-   *
-   * @param key the element key for this element.
-   */
-  public OutOfLineContent(ElementKey<?, ?> key) {
-    super(key);
-  }
-
-  /**
    * Constructs a new instance from a more generic {@link Content} type.
    *
    * @param content generic content
    */
   public OutOfLineContent(Content content) {
     super(KEY, content);
+  }
+
+  /**
+   * Constructs a new instance using the specified element metadata.
+   *
+   * @param key the element key for this element.
+   */
+  protected OutOfLineContent(ElementKey<?, ?> key) {
+    super(key);
   }
 
   /** @return the type of this content */

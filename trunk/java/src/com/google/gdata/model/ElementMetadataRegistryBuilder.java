@@ -16,9 +16,9 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.gdata.util.common.base.Preconditions;
 
 import java.util.Map;
 
@@ -57,8 +57,7 @@ final class ElementMetadataRegistryBuilder {
       TransformKey key = entry.getKey();
       ElementCreatorImpl creator = creators.get(key);
       if (creator == null) {
-        ElementKey<?, ?> elementKey = (ElementKey<?, ?>) key.getKey();
-        creator = new ElementCreatorImpl(root, elementKey, key.getContext());
+        creator = new ElementCreatorImpl(root, key);
         creators.put(key, creator);
       }
       creator.merge(entry.getValue());
@@ -95,7 +94,7 @@ final class ElementMetadataRegistryBuilder {
     synchronized (root) {
       ElementCreatorImpl creator = creators.get(transformKey);
       if (creator == null) {
-        creator = new ElementCreatorImpl(root, key, context);
+        creator = new ElementCreatorImpl(root, transformKey);
         creators.put(transformKey, creator);
         root.dirty();
       }

@@ -1,5 +1,12 @@
 Google Data API - Release Notes
 
+Notes for v1.36.0
+-----------------
+Aug 25, 2009
+o  Added support for version 3 of Documents List Data API.  This update
+   includes support for PDF uploads, folder sharing, domain and group
+   level ACLs, and document revision history.
+
 Notes for v1.35.1
 -----------------
 Aug 8, 2009

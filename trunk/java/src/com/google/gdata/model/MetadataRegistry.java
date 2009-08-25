@@ -16,11 +16,11 @@
 
 package com.google.gdata.model;
 
+import com.google.gdata.util.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gdata.model.Schema.RootKey;
-import com.google.gdata.util.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -138,7 +138,7 @@ public final class MetadataRegistry {
     try {
       Method registerMethod = clazz.getDeclaredMethod(
           "registerMetadata", MetadataRegistry.class);
-      
+
       if (!Modifier.isStatic(registerMethod.getModifiers())) {
         throw new IllegalArgumentException("Class " + clazz
             + " had a non-static registerMetadata(MetadataRegistry) method.");
@@ -173,7 +173,7 @@ public final class MetadataRegistry {
   }
 
   /**
-   * Synchronized to ensure memory visiblity into the attribute and element
+   * Synchronized to ensure memory visibility into the attribute and element
    * maps and also to guarantee that no changes to the registry can occur while
    * the immutable schema is being built.
    */

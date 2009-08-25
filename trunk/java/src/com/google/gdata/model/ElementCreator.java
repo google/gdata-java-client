@@ -60,7 +60,7 @@ import com.google.gdata.model.Metadata.VirtualValue;
  *
  * 
  */
-public interface ElementCreator {
+public interface ElementCreator extends MetadataCreator {
 
   /**
    * Sets the name of the element.  This can be used after copying some other
@@ -167,6 +167,50 @@ public interface ElementCreator {
    */
   ElementCreator setMultipleVirtualElement(
       MultipleVirtualElement virtualElement);
+
+  /**
+   * Flattens this element.  If the element has text content, this method will
+   * cause its text content to be output as part of any parent element, rather
+   * than as a separate nested element.  Any attributes or child elements of
+   * this element will not be generated on output, if you wish to output those
+   * elements use the {@link #moveAttribute} and {@link #moveElement} methods to
+   * place them somewhere else.
+   */
+  ElementCreator flatten();
+
+  /**
+   * Adds a new virtual attribute based on a path. The path is relative to this
+   * element and must end in an attribute key.  For example, if you want to add
+   * the atom:title@type attribute to entry, you could do:
+   *
+   * <p>{@code
+   * registry.build(Entry.KEY).addVirtual(
+   *     TextContent.TYPE, Path.of(Entry.TITLE, TextContent.TYPE));
+   * }
+   * <p>Adding a virtual attribute will hide the source attribute in the output,
+   * but any changes made to the source will also be applied to the virtual
+   * location.
+   *
+   * @throws IllegalArgumentException if the path does not end in an attribute.
+   */
+  AttributeCreator moveAttribute(AttributeKey<?> key, Path path);
+
+  /**
+   * Adds a new virtual element based on a path. The path is relative to this
+   * element and must end in an element key. For example, if you want to add the
+   * media:keywords element to media:group, you could do:
+   *
+   * <p>{@code
+   * registry.build(Entry.KEY).addVirtual(
+   *     MediaKeyword.KEY, Path.of(MediaGroup.KEY, MediaKeyword.KEY));
+   * }
+   * <p>Adding a virtual element will hide the source element in the output, but
+   * any changes made to the source will also be applied to the virtual
+   * location.
+   *
+   * @throws IllegalArgumentException if the path does not end in an element.
+   */
+  ElementCreator moveElement(ElementKey<?, ?> key, Path path);
 
   /**
    * Sets the location of the undeclared attributes. By default, undeclared

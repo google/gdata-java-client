@@ -75,7 +75,7 @@ public class Author extends Person {
    * @param key the element key to use for this element.
    * @param source source element
    */
-  public Author(ElementKey<Void, ? extends Author> key, Element source) {
+  protected Author(ElementKey<?, ? extends Author> key, Element source) {
     super(key, source);
   }
 

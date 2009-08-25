@@ -62,7 +62,7 @@ final class AttributeMetadataRegistryBuilder {
       TransformKey key = entry.getKey();
       AttributeCreatorImpl creator = creators.get(key);
       if (creator == null) {
-        creator = new AttributeCreatorImpl(root);
+        creator = new AttributeCreatorImpl(root, key);
         creators.put(key, creator);
       }
       creator.merge(entry.getValue());
@@ -90,7 +90,7 @@ final class AttributeMetadataRegistryBuilder {
     synchronized (root) {
       AttributeCreatorImpl creator = creators.get(transformKey);
       if (creator == null) {
-        creator = new AttributeCreatorImpl(root);
+        creator = new AttributeCreatorImpl(root, transformKey);
         creators.put(transformKey, creator);
         root.dirty();
       }

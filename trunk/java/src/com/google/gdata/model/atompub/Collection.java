@@ -113,7 +113,8 @@ public class Collection extends Element implements Reference, ICollection {
    * @param key the element key to use for this element
    * @param source source element
    */
-  public Collection(ElementKey<?, ? extends Collection> key, Element source) {
+  protected Collection(ElementKey<?, ? extends Collection> key,
+      Element source) {
     super(key, source);
   }
 

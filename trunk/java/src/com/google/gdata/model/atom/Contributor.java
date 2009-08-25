@@ -63,7 +63,7 @@ public class Contributor extends Person {
   /**
    * Constructs a new Contributor instance with the given metadata.
    */
-  public Contributor(ElementKey<?, ?> key) {
+  protected Contributor(ElementKey<?, ?> key) {
     super(key);
   }
 
@@ -75,7 +75,7 @@ public class Contributor extends Person {
    * @param key the element key to use for this element.
    * @param source source element
    */
-  public Contributor(ElementKey<Void, ? extends Contributor> key,
+  protected Contributor(ElementKey<?, ? extends Contributor> key,
       Element source) {
     super(key, source);
   }

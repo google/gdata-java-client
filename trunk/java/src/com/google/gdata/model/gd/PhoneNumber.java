@@ -169,13 +169,13 @@ public class PhoneNumber extends Element {
    * Default mutable constructor.
    */
   public PhoneNumber() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
    * Lets subclasses create an instance using a custom key.
    */
-  public PhoneNumber(ElementKey<String, ? extends PhoneNumber> key) {
+  protected PhoneNumber(ElementKey<String, ? extends PhoneNumber> key) {
     super(key);
   }
 
@@ -187,7 +187,7 @@ public class PhoneNumber extends Element {
    * @param key key to use for this element.
    * @param source source element
    */
-  public PhoneNumber(ElementKey<String, ? extends PhoneNumber> key,
+  protected PhoneNumber(ElementKey<String, ? extends PhoneNumber> key,
       Element source) {
     super(key, source);
   }

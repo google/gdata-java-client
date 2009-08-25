@@ -48,7 +48,7 @@ public abstract class MetadataKey<D> implements Comparable<MetadataKey<?>> {
   /**
    * Returns the id of the property.  This is the canonical name of the
    * property, and will stay the same across transforms and contexts.  It is
-   * based on the xml schema for the atom representation.
+   * based on the XML schema for the atom representation.
    *
    * @return the unique identifier of the property.
    */
@@ -60,7 +60,7 @@ public abstract class MetadataKey<D> implements Comparable<MetadataKey<?>> {
    * Returns the datatype of the property.  This the type of the attribute value
    * or the text content of an element.
    *
-   * @return the datatype of the property.
+   * @return the datatype of the property
    */
   public Class<? extends D> getDatatype() {
     return datatype;

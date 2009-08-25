@@ -16,11 +16,12 @@
 
 package sample.docs;
 
+import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.data.MediaContent;
 import com.google.gdata.data.PlainTextConstruct;
-import com.google.gdata.data.Link;
 import com.google.gdata.data.acl.AclEntry;
 import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclRole;
@@ -29,7 +30,10 @@ import com.google.gdata.data.docs.DocumentEntry;
 import com.google.gdata.data.docs.DocumentListEntry;
 import com.google.gdata.data.docs.DocumentListFeed;
 import com.google.gdata.data.docs.FolderEntry;
+import com.google.gdata.data.docs.PresentationEntry;
+import com.google.gdata.data.docs.RevisionFeed;
 import com.google.gdata.data.docs.SpreadsheetEntry;
+import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -45,8 +49,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * An application that serves as a sample to show how the Documents List
- * Service can be used to search your documents and upload files.
+ * An application that serves as a sample to show how the Documents List Service
+ * can be used to search your documents, upload and download files, change
+ * sharing permission, file documents in folders, and view revisions history.
  *
  * 
  * 
@@ -64,38 +69,37 @@ public class DocumentList {
   public static final String SPREADSHEETS_SERVICE_NAME = "wise";
   public static final String SPREADSHEETS_HOST = "spreadsheets.google.com";
 
-  private static final String URL_FEED = "/feeds";
-  private static final String URL_DOWNLOAD = "/download";
+  private final String URL_FEED = "/feeds";
+  private final String URL_DOWNLOAD = "/download";
+  private final String URL_DOCLIST_FEED = "/private/full";
 
-  private static final String URL_GROUP_DOCUMENTS = "/documents";
-  private static final String URL_GROUP_FOLDERS = "/folders";
-  private static final String URL_GROUP_MEDIA = "/media";
-  private static final String URL_GROUP_ACL = "/acl";
+  private final String URL_DEFAULT = "/default";
+  private final String URL_FOLDERS = "/contents";
+  private final String URL_ACL = "/acl";
+  private final String URL_REVISIONS = "/revisions";
 
-  private static final String URL_PATH = "/private/full";
+  private final String URL_CATEGORY_DOCUMENT = "/-/document";
+  private final String URL_CATEGORY_SPREADSHEET = "/-/spreadsheet";
+  private final String URL_CATEGORY_PDF = "/-/pdf";
+  private final String URL_CATEGORY_PRESENTATION = "/-/presentation";
+  private final String URL_CATEGORY_STARRED = "/-/starred";
+  private final String URL_CATEGORY_TRASHED = "/-/trashed";
+  private final String URL_CATEGORY_FOLDER = "/-/folder";
+  private final String URL_CATEGORY_EXPORT = "/Export";
 
-  private static final String URL_CATEGORY_DOCUMENT = "/-/document";
-  private static final String URL_CATEGORY_SPREADSHEET = "/-/spreadsheet";
-  private static final String URL_CATEGORY_PDF = "/-/pdf";
-  private static final String URL_CATEGORY_PRESENTATION = "/-/presentation";
-  private static final String URL_CATEGORY_STARRED = "/-/starred";
-  private static final String URL_CATEGORY_TRASHED = "/-/trashed";
-  private static final String URL_CATEGORY_FOLDER = "/-/folder";
-  private static final String URL_CATEGORY_EXPORT = "/Export";
+  private final String PARAMETER_SHOW_FOLDERS = "showfolders=true";
 
-  private static final String PARAMETER_SHOW_FOLDERS = "showfolders=true";
+  private String applicationName;
+  private String authProtocol;
+  private String authHost;
+  private String protocol;
+  private String host;
+  private String username;
+  private String password;
+  private String authSubToken;
 
-  private static String applicationName;
-  private static String authProtocol;
-  private static String authHost;
-  private static String protocol;
-  private static String host;
-  private static String username;
-  private static String password;
-  private static String authSubToken;
-
-  private static final Map<String, String> DOWNLOAD_DOCUMENT_FORMATS;
-  static {
+  private final Map<String, String> DOWNLOAD_DOCUMENT_FORMATS;
+  {
     DOWNLOAD_DOCUMENT_FORMATS = new HashMap<String, String>();
     DOWNLOAD_DOCUMENT_FORMATS.put("doc", "doc");
     DOWNLOAD_DOCUMENT_FORMATS.put("txt", "txt");
@@ -107,24 +111,25 @@ public class DocumentList {
     DOWNLOAD_DOCUMENT_FORMATS.put("zip", "zip");
   }
 
-  private static final Map<String, String> DOWNLOAD_PRESENTATION_FORMATS;
-  static {
+  private final Map<String, String> DOWNLOAD_PRESENTATION_FORMATS;
+  {
     DOWNLOAD_PRESENTATION_FORMATS = new HashMap<String, String>();
     DOWNLOAD_PRESENTATION_FORMATS.put("pdf", "pdf");
     DOWNLOAD_PRESENTATION_FORMATS.put("png", "png");
     DOWNLOAD_PRESENTATION_FORMATS.put("ppt", "ppt");
     DOWNLOAD_PRESENTATION_FORMATS.put("swf", "swf");
+    DOWNLOAD_PRESENTATION_FORMATS.put("txt", "txt");
   }
 
-  private static final Map<String, String> DOWNLOAD_SPREADSHEET_FORMATS;
-  static {
+  private final Map<String, String> DOWNLOAD_SPREADSHEET_FORMATS;
+  {
     DOWNLOAD_SPREADSHEET_FORMATS = new HashMap<String, String>();
-    DOWNLOAD_SPREADSHEET_FORMATS.put("xls", "4");
-    DOWNLOAD_SPREADSHEET_FORMATS.put("ods", "13");
-    DOWNLOAD_SPREADSHEET_FORMATS.put("pdf", "12");
-    DOWNLOAD_SPREADSHEET_FORMATS.put("csv", "5");
-    DOWNLOAD_SPREADSHEET_FORMATS.put("tsv", "23");
-    DOWNLOAD_SPREADSHEET_FORMATS.put("html", "102");
+    DOWNLOAD_SPREADSHEET_FORMATS.put("xls", "xls");
+    DOWNLOAD_SPREADSHEET_FORMATS.put("ods", "ods");
+    DOWNLOAD_SPREADSHEET_FORMATS.put("pdf", "pdf");
+    DOWNLOAD_SPREADSHEET_FORMATS.put("csv", "csv");
+    DOWNLOAD_SPREADSHEET_FORMATS.put("tsv", "tsv");
+    DOWNLOAD_SPREADSHEET_FORMATS.put("html", "html");
   }
 
   /**
@@ -170,23 +175,23 @@ public class DocumentList {
   /**
    * Set user credentials based on a username and password.
    *
-   * @param username to log in with.
-   * @param password password for the user logging in.
+   * @param user username to log in with.
+   * @param pass password for the user logging in.
    *
    * @throws AuthenticationException
    * @throws DocumentListException
    */
-  public void login(String username, String password) throws AuthenticationException,
+  public void login(String user, String pass) throws AuthenticationException,
       DocumentListException {
-    if (username == null || password == null) {
+    if (user == null || pass == null) {
       throw new DocumentListException("null login credentials");
     }
 
-    this.username = username;
-    this.password = password;
+    this.username = user;
+    this.password = pass;
     this.authSubToken = "";
-    service.setUserCredentials(username, password);
-    spreadsheetsService.setUserCredentials(username, password);
+    service.setUserCredentials(user, pass);
+    spreadsheetsService.setUserCredentials(user, pass);
   }
 
   /**
@@ -212,72 +217,37 @@ public class DocumentList {
   }
 
   /**
-   * Create a document.
+   * Create a new item in the DocList.
    *
    * @param title the title of the document to be created.
+   * @param type the type of the document to be created. One of "spreadsheet",
+   *        "presentation", or "document".
    *
+   * @throws DocumentListException
+   * @throws ServiceException
    * @throws IOException
    * @throws MalformedURLException
-   * @throws ServiceException
-   * @throws DocumentListException
    */
-  public DocumentEntry createDocument(String title) throws IOException, MalformedURLException,
-      ServiceException, DocumentListException {
-    if (title == null) {
-      throw new DocumentListException("null title");
+  public DocumentListEntry createNew(String title, String type) throws MalformedURLException,
+      IOException, ServiceException,
+      DocumentListException {
+    if (title == null || type == null) {
+      throw new DocumentListException("null title or type");
     }
 
-    URL url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH);
-    DocumentEntry entry = new DocumentEntry();
-    entry.setTitle(new PlainTextConstruct(title));
-
-    return service.insert(url, entry);
-  }
-
-  /**
-   * Create a spreadsheet.
-   *
-   * @param title the title of the spreadsheet to be created.
-   *
-   * @throws IOException
-   * @throws MalformedURLException
-   * @throws ServiceException
-   * @throws DocumentListException
-   */
-  public SpreadsheetEntry createSpreadsheet(String title) throws IOException, MalformedURLException,
-      ServiceException, DocumentListException {
-    if (title == null) {
-      throw new DocumentListException("null title");
+    DocumentListEntry newEntry = null;
+    if (type.equals("document")) {
+      newEntry = new DocumentEntry();
+    } else if (type.equals("presentation")) {
+      newEntry = new PresentationEntry();
+    } else if (type.equals("spreadsheet")) {
+      newEntry = new SpreadsheetEntry();
+    } else if (type.equals("folder")) {
+      newEntry = new FolderEntry();
     }
 
-    URL url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH);
-    SpreadsheetEntry entry = new SpreadsheetEntry();
-    entry.setTitle(new PlainTextConstruct(title));
-
-    return service.insert(url, entry);
-  }
-
-  /**
-   * Create a folder.
-   *
-   * @param title the title of the folder to be created.
-   *
-   * @throws IOException
-   * @throws MalformedURLException
-   * @throws ServiceException
-   * @throws DocumentListException
-   */
-  public FolderEntry createFolder(String title) throws IOException, MalformedURLException,
-      ServiceException, DocumentListException {
-    if (title == null) {
-      throw new DocumentListException("null title");
-    }
-
-    URL url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH);
-    FolderEntry entry = new FolderEntry();
-    entry.setTitle(new PlainTextConstruct(title));
-
-    return service.insert(url, entry);
+    newEntry.setTitle(new PlainTextConstruct(title));
+    return service.insert(buildUrl(URL_DEFAULT + URL_DOCLIST_FEED), newEntry);
   }
 
   /**
@@ -307,22 +277,22 @@ public class DocumentList {
     URL url;
 
     if (category.equals("all")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED);
     } else if (category.equals("folders")) {
       String[] parameters = {PARAMETER_SHOW_FOLDERS};
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_FOLDER, parameters);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_FOLDER, parameters);
     } else if (category.equals("documents")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_DOCUMENT);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_DOCUMENT);
     } else if (category.equals("spreadsheets")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_SPREADSHEET);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_SPREADSHEET);
     } else if (category.equals("pdfs")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_PDF);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_PDF);
     } else if (category.equals("presentations")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_PRESENTATION);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_PRESENTATION);
     } else if (category.equals("starred")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_STARRED);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_STARRED);
     } else if (category.equals("trashed")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_TRASHED);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_TRASHED);
     } else {
       return null;
     }
@@ -333,20 +303,19 @@ public class DocumentList {
   /**
    * Gets the entry for the provided object id.
    *
-   * @param objectId the id of the object to return the entry for.
+   * @param resourceId the resource id of the object to fetch an entry for.
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public DocumentListEntry getDocsListEntry(String objectId) throws IOException,
+  public DocumentListEntry getDocsListEntry(String resourceId) throws IOException,
       MalformedURLException, ServiceException, DocumentListException {
-    if (objectId == null) {
-      throw new DocumentListException("null objectId");
+    if (resourceId == null) {
+      throw new DocumentListException("null resourceId");
     }
-
-    URL url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + "/" + objectId);
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + resourceId);
 
     return service.getEntry(url, DocumentListEntry.class);
   }
@@ -354,20 +323,44 @@ public class DocumentList {
   /**
    * Gets the feed for all the objects contained in a folder.
    *
-   * @param folderId the id of the folder to return the feed for the contents.
+   * @param folderResourceId the resource id of the folder to return the feed
+   *        for the contents.
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public DocumentListFeed getFolderDocsListFeed(String folderId) throws IOException,
+  public DocumentListFeed getFolderDocsListFeed(String folderResourceId) throws IOException,
       MalformedURLException, ServiceException, DocumentListException {
-    if (folderId == null) {
-      throw new DocumentListException("null folderId");
+    if (folderResourceId == null) {
+      throw new DocumentListException("null folderResourceId");
     }
-    URL url = buildUrl(URL_GROUP_FOLDERS + URL_PATH + "/" + folderId);
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + folderResourceId
+        + URL_FOLDERS);
     return service.getFeed(url, DocumentListFeed.class);
+  }
+
+  /**
+   * Gets a feed containing the documents.
+   *
+   * @param resourceId the resource id of the object to fetch revisions for.
+   *
+   * @throws IOException
+   * @throws MalformedURLException
+   * @throws ServiceException
+   * @throws DocumentListException
+   */
+  public RevisionFeed getRevisionsFeed(String resourceId) throws IOException,
+      MalformedURLException, ServiceException, DocumentListException {
+    if (resourceId == null) {
+      throw new DocumentListException("null resourceId");
+    }
+
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + resourceId
+        + URL_REVISIONS);
+
+    return service.getFeed(url, RevisionFeed.class);
   }
 
   /**
@@ -393,10 +386,14 @@ public class DocumentList {
    *    "q": Typical search query
    *    "alt":
    *    "author":
-   *    "start-index":
-   *    "max-results":
-   *    "updated-min":
-   *    "updated-max":
+   *    "updated-min": Lower bound on the last time a document' content was changed.
+   *    "updated-max": Upper bound on the last time a document' content was changed.
+   *    "edited-min": Lower bound on the last time a document was edited by the
+   *        current user. This value corresponds to the app:edited value in the
+   *        Atom entry, which represents changes to the document's content or metadata.
+   *    "edited-max": Upper bound on the last time a document was edited by the
+   *        current user. This value corresponds to the app:edited value in the
+   *        Atom entry, which represents changes to the document's content or metadata.
    *    "title": Specifies the search terms for the title of a document.
    *        This parameter used without title-exact will only submit partial queries, not exact
    *        queries.
@@ -431,19 +428,19 @@ public class DocumentList {
     URL url;
 
     if (category == null || category.equals("")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED);
     } else if (category.equals("documents")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_DOCUMENT);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_DOCUMENT);
     } else if (category.equals("spreadsheets")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_SPREADSHEET);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_SPREADSHEET);
     } else if (category.equals("presentations")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_PRESENTATION);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_PRESENTATION);
     } else if (category.equals("starred")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_STARRED);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_STARRED);
     } else if (category.equals("trashed")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_TRASHED);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_TRASHED);
     } else if (category.equals("folders")) {
-      url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + URL_CATEGORY_FOLDER);
+      url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + URL_CATEGORY_FOLDER);
     } else {
       throw new DocumentListException("invaild category");
     }
@@ -475,114 +472,95 @@ public class DocumentList {
       throw new DocumentListException("null passed in for required parameters");
     }
 
-    URL url = buildUrl(URL_GROUP_DOCUMENTS + URL_PATH);
+    File file = new File(filepath);
+    String mimeType = DocumentListEntry.MediaType.fromFileName(file.getName())
+        .getMimeType();
+
     DocumentEntry newDocument = new DocumentEntry();
-    File documentFile = new File(filepath);
-    newDocument.setFile(documentFile);
+    newDocument.setFile(file, mimeType);
     newDocument.setTitle(new PlainTextConstruct(title));
 
-    return service.insert(url, newDocument);
+    return service
+        .insert(buildUrl(URL_DEFAULT + URL_DOCLIST_FEED), newDocument);
   }
 
   /**
    * Trash an object.
    *
-   * @param objectId id of object to be trashed.
+   * @param resourceId the resource id of object to be trashed.
+   * @param delete true to delete the permanently, false to move it to the
+   *        trash.
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public void trashObject(String objectId) throws IOException, MalformedURLException,
-      ServiceException, DocumentListException {
-    if (objectId == null) {
-      throw new DocumentListException("null objectId");
+  public void trashObject(String resourceId, boolean delete) throws IOException,
+      MalformedURLException, ServiceException, DocumentListException {
+    if (resourceId == null) {
+      throw new DocumentListException("null resourceId");
     }
 
-    URL url = buildUrl(URL_GROUP_MEDIA + URL_PATH + "/" + objectId);
-    service.delete(url, getObjectEtag(objectId));
+    String feedUrl = URL_DEFAULT + URL_DOCLIST_FEED + "/" + resourceId;
+    if (delete) {
+      feedUrl += "?delete=true";
+    }
+
+    service.delete(buildUrl(feedUrl), getDocsListEntry(resourceId).getEtag());
   }
 
   /**
    * Remove an object from a folder.
    *
-   * @param objectId id of an object to be removed from the folder.
-   * @param folderId id of the folder to remove the object from.
+   * @param resourceId the resource id of an object to be removed from the
+   *        folder.
+   * @param folderResourceId the resource id of the folder to remove the object
+   *        from.
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public void removeFromFolder(String objectId, String folderId)
-      throws IOException, MalformedURLException, ServiceException, DocumentListException {
-    if (objectId == null || folderId == null) {
+  public void removeFromFolder(String resourceId, String folderResourceId)
+      throws IOException, MalformedURLException, ServiceException,
+      DocumentListException {
+    if (resourceId == null || folderResourceId == null) {
       throw new DocumentListException("null passed in for required parameters");
     }
 
-    URL url = buildUrl(URL_GROUP_FOLDERS + URL_PATH + "/" + folderId + "/" + objectId);
-    service.delete(url, getObjectEtag(objectId));
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + folderResourceId
+        + URL_FOLDERS + "/" + resourceId);
+    service.delete(url, getDocsListEntry(resourceId).getEtag());
   }
 
   /**
-   * Download a file.
+   * Downloads a file.
    *
+   * @param exportUrl the full url of the export link to download the file from.
    * @param filepath path and name of the object to be saved as.
-   * @param objectId id of the object to be downloaded.
-   * @param format format to download the file to.
-   *     The following file types are supported:
-   *     documents: "doc", "txt", "odt", "png", "pdf", "rtf", "html"
-   *     spreadsheets: "4", "13", "12", "5", "23", "102"
-   *     presentations: "pdf", "ppt", "swf"
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public void downloadFile(String objectId, String filepath, String format) throws IOException,
+  public void downloadFile(URL exportUrl, String filepath) throws IOException,
       MalformedURLException, ServiceException, DocumentListException {
-    if (objectId == null || filepath == null || format == null) {
+    if (exportUrl == null || filepath == null) {
       throw new DocumentListException("null passed in for required parameters");
     }
 
-    URL url;
-    GoogleService service;
-    String id = getObjectIdSuffix(objectId);
-    String docType = getObjectIdPrefix(objectId);
-
-    if (docType.equals("spreadsheet")) {
-      service = spreadsheetsService;
-
-      HashMap<String, String> parameters = new HashMap<String, String>();
-      parameters.put("key", id);
-      parameters.put("fmcmd", format);
-      if (format.equals(DOWNLOAD_SPREADSHEET_FORMATS.get("csv")) ||
-          format.equals(DOWNLOAD_SPREADSHEET_FORMATS.get("tsv"))) {
-        parameters.put("gid", "0");  // download only the first sheet
-      }
-
-      //String[] parameters = {"key=" + id, "fmcmd=" + format};
-      url = buildUrl(SPREADSHEETS_HOST, URL_DOWNLOAD + "/" + docType + "s" +
-                     URL_CATEGORY_EXPORT, parameters);
-
-    } else {
-      service = this.service;
-
-      String[] parameters = {"docID=" + id, "exportFormat=" + format};
-      url = buildUrl(URL_DOWNLOAD + "/" + docType + "s" +
-                     URL_CATEGORY_EXPORT, parameters);
-    }
+    MediaContent mc = new MediaContent();
+    mc.setUri(exportUrl.toString());
+    MediaSource ms = service.getMedia(mc);
 
     InputStream inStream = null;
     FileOutputStream outStream = null;
 
     try {
-      Link link = new Link();
-      link.setHref(url.toString());
-
-      inStream = service.getStreamFromLink(link);
+      inStream = ms.getInputStream();
       outStream = new FileOutputStream(filepath);
 
       int c;
@@ -593,7 +571,6 @@ public class DocumentList {
       if (inStream != null) {
         inStream.close();
       }
-
       if (outStream != null) {
         outStream.flush();
         outStream.close();
@@ -602,46 +579,149 @@ public class DocumentList {
   }
 
   /**
-   * Moves a object to a folder.
+   * Downloads a spreadsheet file.
    *
-   * @param objectId id of the object to be moved to the folder.
-   * @param folderId id of the folder to move the object to.
+   * @param filepath path and name of the object to be saved as.
+   * @param resourceId the resource id of the object to be downloaded.
+   * @param format format to download the file to. The following file types are
+   *        supported: spreadsheets: "ods", "pdf", "xls", "csv", "html", "tsv"
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public DocumentListEntry moveObjectToFolder(String objectId, String folderId) throws IOException,
-      MalformedURLException, ServiceException, DocumentListException {
-    if (objectId == null || folderId == null) {
+  public void downloadSpreadsheet(String resourceId, String filepath,
+      String format) throws IOException, MalformedURLException,
+      ServiceException, DocumentListException {
+    if (resourceId == null || filepath == null || format == null) {
       throw new DocumentListException("null passed in for required parameters");
     }
 
-    URL url = buildUrl(URL_GROUP_FOLDERS + URL_PATH + "/" + folderId);
-    DocumentListEntry doc = new DocumentListEntry();
-    doc.setId(buildUrl(URL_GROUP_DOCUMENTS + URL_PATH + "/" + objectId).toString());
+    UserToken docsToken = (UserToken) service.getAuthTokenFactory()
+        .getAuthToken();
+    UserToken spreadsheetsToken = (UserToken) spreadsheetsService
+        .getAuthTokenFactory().getAuthToken();
+    service.setUserToken(spreadsheetsToken.getValue());
 
-    return  service.insert(url, doc);
+    HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters
+        .put("key", resourceId.substring(resourceId.lastIndexOf(':') + 1));
+    parameters.put("exportFormat", format);
+
+    // If exporting to .csv or .tsv, add the gid parameter to specify which
+    // sheet to export
+    if (format.equals(DOWNLOAD_SPREADSHEET_FORMATS.get("csv"))
+        || format.equals(DOWNLOAD_SPREADSHEET_FORMATS.get("tsv"))) {
+      parameters.put("gid", "0"); // download only the first sheet
+    }
+
+    URL url = buildUrl(SPREADSHEETS_HOST, URL_DOWNLOAD + "/spreadsheets"
+        + URL_CATEGORY_EXPORT, parameters);
+
+    downloadFile(url, filepath);
+
+    // Restore docs token for our DocList client
+    service.setUserToken(docsToken.getValue());
+  }
+
+  /**
+   * Downloads a document.
+   *
+   * @param filepath path and name of the object to be saved as.
+   * @param resourceId the resource id of the object to be downloaded.
+   * @param format format to download the file to. The following file types are
+   *        supported: documents: "doc", "txt", "odt", "png", "pdf", "rtf",
+   *        "html"
+   *
+   * @throws IOException
+   * @throws MalformedURLException
+   * @throws ServiceException
+   * @throws DocumentListException
+   */
+  public void downloadDocument(String resourceId, String filepath, String format)
+      throws IOException, MalformedURLException, ServiceException,
+      DocumentListException {
+    if (resourceId == null || filepath == null || format == null) {
+      throw new DocumentListException("null passed in for required parameters");
+    }
+    String[] parameters = {"docID=" + resourceId, "exportFormat=" + format};
+    URL url = buildUrl(URL_DOWNLOAD + "/documents" + URL_CATEGORY_EXPORT,
+        parameters);
+
+    downloadFile(url, filepath);
+  }
+
+  /**
+   * Downloads a presentation.
+   *
+   * @param filepath path and name of the object to be saved as.
+   * @param resourceId the resource id of the object to be downloaded.
+   * @param format format to download the file to. The following file types are
+   *        supported: presentations: "pdf", "ppt", "png", "swf", "txt"
+   *
+   * @throws IOException
+   * @throws MalformedURLException
+   * @throws ServiceException
+   * @throws DocumentListException
+   */
+  public void downloadPresentation(String resourceId, String filepath,
+      String format) throws IOException, MalformedURLException,
+      ServiceException, DocumentListException {
+    if (resourceId == null || filepath == null || format == null) {
+      throw new DocumentListException("null passed in for required parameters");
+    }
+
+    String[] parameters = {"docID=" + resourceId, "exportFormat=" + format};
+    URL url = buildUrl(URL_DOWNLOAD + "/presentations" + URL_CATEGORY_EXPORT,
+        parameters);
+
+    downloadFile(url, filepath);
+  }
+
+
+  /**
+   * Moves a object to a folder.
+   *
+   * @param resourceId the resource id of the object to be moved to the folder.
+   * @param folderId the id of the folder to move the object to.
+   *
+   * @throws IOException
+   * @throws MalformedURLException
+   * @throws ServiceException
+   * @throws DocumentListException
+   */
+  public DocumentListEntry moveObjectToFolder(String resourceId, String folderId)
+      throws IOException, MalformedURLException, ServiceException, DocumentListException {
+    if (resourceId == null || folderId == null) {
+      throw new DocumentListException("null passed in for required parameters");
+    }
+
+    DocumentListEntry doc = new DocumentListEntry();
+    doc.setId(buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + resourceId).toString());
+
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + folderId + URL_FOLDERS);
+    return service.insert(url, doc);
   }
 
   /**
    * Gets the access control list for a object.
    *
-   * @param objectId id of the object to retrieve the ACL for.
+   * @param resourceId the resource id of the object to retrieve the ACL for.
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public AclFeed getAclFeed(String objectId) throws IOException, MalformedURLException,
-      ServiceException, DocumentListException {
-    if (objectId == null) {
-      throw new DocumentListException("null objectId");
+  public AclFeed getAclFeed(String resourceId) throws IOException,
+      MalformedURLException, ServiceException, DocumentListException {
+    if (resourceId == null) {
+      throw new DocumentListException("null resourceId");
     }
 
-    URL url = buildUrl(URL_GROUP_ACL + URL_PATH + "/" + objectId);
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + resourceId
+        + URL_ACL);
 
     return service.getFeed(url, AclFeed.class);
   }
@@ -651,23 +731,24 @@ public class DocumentList {
    *
    * @param role the role of the ACL to be added to the object.
    * @param scope the scope for the ACL.
-   * @param objectId id of the object to set the ACL for.
+   * @param resourceId the resource id of the object to set the ACL for.
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public AclEntry addAclRole(AclRole role, AclScope scope, String objectId) throws IOException,
-      MalformedURLException, ServiceException, DocumentListException {
-    if (role == null || scope == null || objectId == null) {
+  public AclEntry addAclRole(AclRole role, AclScope scope, String resourceId)
+      throws IOException, MalformedURLException, ServiceException,
+      DocumentListException {
+    if (role == null || scope == null || resourceId == null) {
       throw new DocumentListException("null passed in for required parameters");
     }
 
-    URL url = buildUrl(URL_GROUP_ACL + URL_PATH + "/" + objectId);
     AclEntry entry = new AclEntry();
     entry.setRole(role);
     entry.setScope(scope);
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + resourceId + URL_ACL);
 
     return service.insert(url, entry);
   }
@@ -677,20 +758,21 @@ public class DocumentList {
    *
    * @param role the new role of the ACL to be updated.
    * @param scope the new scope for the ACL.
-   * @param objectId id of the object to be updated.
+   * @param resourceId the resource id of the object to be updated.
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public AclEntry changeAclRole(AclRole role, AclScope scope, String objectId)
-      throws IOException, MalformedURLException, ServiceException, DocumentListException {
-    if (role == null || scope == null || objectId == null) {
+  public AclEntry changeAclRole(AclRole role, AclScope scope, String resourceId) throws IOException,
+      MalformedURLException, ServiceException, DocumentListException {
+    if (role == null || scope == null || resourceId == null) {
       throw new DocumentListException("null passed in for required parameters");
     }
 
-    URL url = buildUrl(URL_GROUP_ACL + URL_PATH + "/" + objectId);
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + resourceId
+        + URL_ACL);
 
     return service.update(url, scope, role);
   }
@@ -700,20 +782,21 @@ public class DocumentList {
    *
    * @param scope scope of the ACL to be removed.
    * @param email email address to remove the role of.
-   * @param objectId id of the object to remove the role from.
+   * @param resourceId the resource id of the object to remove the role from.
    *
    * @throws IOException
    * @throws MalformedURLException
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public void removeAclRole(String scope, String email, String objectId) throws IOException,
+  public void removeAclRole(String scope, String email, String resourceId) throws IOException,
       MalformedURLException, ServiceException, DocumentListException {
-    if (scope == null || email == null || objectId == null) {
+    if (scope == null || email == null || resourceId == null) {
       throw new DocumentListException("null passed in for required parameters");
     }
 
-    URL url = buildUrl(URL_GROUP_ACL + URL_PATH + "/" + objectId + "/" + scope + "%3A" + email);
+    URL url = buildUrl(URL_DEFAULT + URL_DOCLIST_FEED + "/" + resourceId
+        + URL_ACL + "/" + scope + "%3A" + email);
 
     service.delete(url);
   }
@@ -721,25 +804,25 @@ public class DocumentList {
   /**
    * Returns the format code based on a file extension, and object id.
    *
-   * @param objectId id of the object you want the format for.
+   * @param resourceId the resource id of the object you want the format for.
    * @param ext extension of the file you want the format for.
    *
    * @throws DocumentListException
    */
-  public static String getDownloadFormat(String objectId, String ext) throws DocumentListException {
-    if (objectId == null || ext == null) {
+  public String getDownloadFormat(String resourceId, String ext) throws DocumentListException {
+    if (resourceId == null || ext == null) {
       throw new DocumentListException("null passed in for required parameters");
     }
 
-    if (objectId.indexOf("document") == 0) {
+    if (resourceId.indexOf("document") == 0) {
       if (DOWNLOAD_DOCUMENT_FORMATS.containsKey(ext)) {
         return DOWNLOAD_DOCUMENT_FORMATS.get(ext);
       }
-    } else if (objectId.indexOf("presentation") == 0) {
+    } else if (resourceId.indexOf("presentation") == 0) {
       if (DOWNLOAD_PRESENTATION_FORMATS.containsKey(ext)) {
         return DOWNLOAD_PRESENTATION_FORMATS.get(ext);
       }
-    } else if (objectId.indexOf("spreadsheet") == 0) {
+    } else if (resourceId.indexOf("spreadsheet") == 0) {
       if (DOWNLOAD_SPREADSHEET_FORMATS.containsKey(ext)) {
         return DOWNLOAD_SPREADSHEET_FORMATS.get(ext);
       }
@@ -748,59 +831,50 @@ public class DocumentList {
   }
 
   /**
-   * Gets the suffix of the objectId.  If the objectId is "document%3Adh3bw3j_0f7xmjhd8",
-   *     "dh3bw3j_0f7xmjhd8" will be returned.
+   * Gets the suffix of the resourceId. If the resourceId is
+   * "document:dh3bw3j_0f7xmjhd8", "dh3bw3j_0f7xmjhd8" will be returned.
    *
-   * @param objectId id to extract the suffix from.
-   *
-   * @throws DocumentListException
-   */
-  private String getObjectIdSuffix(String objectId) throws DocumentListException {
-    if (objectId == null || objectId.indexOf("%3A") == 0) {
-      throw new DocumentListException("null objectId");
-    }
-
-    return objectId.substring(objectId.lastIndexOf("%3A") + 3);
-  }
-
-  /**
-   * Gets the prefix of the objectId.  If the objectId is "document%3Adh3bw3j_0f7xmjhd8",
-   *     "document" will be returned.
-   *
-   * @param objectId id to extract the suffix from.
+   * @param resourceId the resource id to extract the suffix from.
    *
    * @throws DocumentListException
    */
-  private String getObjectIdPrefix(String objectId) throws DocumentListException {
-    if (objectId == null || objectId.indexOf("%3A") == 0) {
-      throw new DocumentListException("null objectId");
+  public String getResourceIdSuffix(String resourceId) throws DocumentListException {
+    if (resourceId == null) {
+      throw new DocumentListException("null resourceId");
     }
 
-    return objectId.substring(0, objectId.indexOf("%3A"));
+    if (resourceId.indexOf("%3A") != -1) {
+      return resourceId.substring(resourceId.lastIndexOf("%3A") + 3);
+    } else if (resourceId.indexOf(":") != -1) {
+      return resourceId.substring(resourceId.lastIndexOf(":") + 1);
+    }
+    throw new DocumentListException("Bad resourceId");
   }
 
   /**
-   * Gets the Etag for the given object id.
+   * Gets the prefix of the resourceId. If the resourceId is
+   * "document:dh3bw3j_0f7xmjhd8", "document" will be returned.
    *
-   * @param objectId id of the object to get the etag for.
+   * @param resourceId the resource id to extract the suffix from.
    *
-   * @throws IOException
-   * @throws MalformedURLException
-   * @throws ServiceException
    * @throws DocumentListException
    */
-  private String getObjectEtag(String objectId) throws IOException, MalformedURLException,
-      ServiceException, DocumentListException {
-    if (objectId == null) {
-      throw new DocumentListException("null objectId");
+  public String getResourceIdPrefix(String resourceId) throws DocumentListException {
+    if (resourceId == null) {
+      throw new DocumentListException("null resourceId");
     }
 
-    DocumentListEntry doc = getDocsListEntry(objectId);
-
-    return doc.getEtag();
+    if (resourceId.indexOf("%3A") != -1) {
+      return resourceId.substring(0, resourceId.indexOf("%3A"));
+    } else if (resourceId.indexOf(":") != -1) {
+      return resourceId.substring(0, resourceId.indexOf(":"));
+    } else {
+      throw new DocumentListException("Bad resourceId");
+    }
   }
 
   /**
+   * Builds a URL from a patch.
    *
    * @param path the path to add to the protocol/host
    *
@@ -830,27 +904,27 @@ public class DocumentList {
       throw new DocumentListException("null path");
     }
 
-    return buildUrl(DEFAULT_HOST, path, parameters);
+    return buildUrl(host, path, parameters);
   }
 
   /**
    * Builds a URL with parameters.
    *
-   * @param host the domain of the server
+   * @param domain the domain of the server
    * @param path the path to add to the protocol/host
    * @param parameters parameters to be added to the URL.
    *
    * @throws MalformedURLException
    * @throws DocumentListException
    */
-  private URL buildUrl(String host, String path,  String[] parameters)
+  private URL buildUrl(String domain, String path, String[] parameters)
       throws MalformedURLException, DocumentListException {
     if (path == null) {
       throw new DocumentListException("null path");
     }
 
     StringBuffer url = new StringBuffer();
-    url.append(protocol + "://" + host + URL_FEED + path);
+    url.append(protocol + "://" + domain + URL_FEED + path);
 
     if (parameters != null && parameters.length > 0) {
       url.append("?");
@@ -868,21 +942,21 @@ public class DocumentList {
   /**
    * Builds a URL with parameters.
    *
-   * @param host the domain of the server
+   * @param domain the domain of the server
    * @param path the path to add to the protocol/host
    * @param parameters parameters to be added to the URL as key value pairs.
    *
    * @throws MalformedURLException
    * @throws DocumentListException
    */
-  private URL buildUrl(String host, String path, Map<String, String> parameters)
-  throws MalformedURLException, DocumentListException {
+  private URL buildUrl(String domain, String path, Map<String, String> parameters)
+      throws MalformedURLException, DocumentListException {
     if (path == null) {
       throw new DocumentListException("null path");
     }
 
     StringBuffer url = new StringBuffer();
-    url.append(protocol + "://" + host + URL_FEED + path);
+    url.append(protocol + "://" + domain + URL_FEED + path);
 
     if (parameters != null && parameters.size() > 0) {
       Set<Map.Entry<String, String>> params = parameters.entrySet();

@@ -18,13 +18,19 @@ package com.google.gdata.model;
 
 import com.google.gdata.model.ElementMetadata.MultipleVirtualElement;
 import com.google.gdata.model.ElementMetadata.SingleVirtualElement;
+import com.google.gdata.model.PathAdapter.ElementAdapter;
 
 /**
  * An element that contains either a {@link SingleVirtualElement} or a {@link
  * MultipleVirtualElement}.
  *
- * <p>This class useful when the two different virtual element interfaces need
- * to be treated as one field, since they're mutually exclusive.
+ * <p>This class is useful when the two different virtual element interfaces
+ * need to be treated as one field, since they're mutually exclusive.
+ * 
+ * <p>This class is also used to hold a path-based adapter, which sets both
+ * the single and multiple elements to the same adapter, since we don't know
+ * when building it if the path represents a single or multiple cardinality
+ * element.
  *
  * 
  */
@@ -52,6 +58,20 @@ class VirtualElementHolder {
       return null;
     }
     return new VirtualElementHolder(null, multiple);
+  }
+  
+  /**
+   * Creates a holder for a virtual element based on a path.  Because we don't
+   * know if the path is to a single or multiple cardinality element until
+   * runtime, we create a single adapter that can be either and rely on the
+   * runtime checks in the metadata to make sure we use it correctly.
+   */
+  static VirtualElementHolder of(Path path) {
+    if (path == null) {
+      return null;
+    }
+    ElementAdapter adapter = PathAdapter.elementAdapter(path);
+    return new VirtualElementHolder(adapter, adapter);
   }
 
   private VirtualElementHolder(SingleVirtualElement single, 

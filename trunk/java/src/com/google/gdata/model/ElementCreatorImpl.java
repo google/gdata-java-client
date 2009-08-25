@@ -58,19 +58,15 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
 
   // The element key for this builder, so we know have the parent key for
   // child elements and attributes.
-  private final ElementKey<?, ?> key;
+  private final ElementKey<?, ?> elementKey;
 
-  // The metadata context that is being built for.  Used when adding attributes
-  // or child elements so we can add them only in particular contexts.
-  private final MetadataContext context;
-
-  // These fields are modifiable, and must only be changed via the set* methods.
-  // They are package-private to allow ElementTransform access to the fields.
+  // These fields are modifiable, and may only be changed via the set* methods.
   private Cardinality cardinality;
   private Boolean contentRequired;
   private ElementValidator validator;
   private Object properties;
   private VirtualElementHolder virtualElementHolder;
+  private boolean flattened;
 
   private final Map<QName, AttributeInfo> attributes = Maps.newLinkedHashMap();
   private final Map<QName, ElementInfo> elements = Maps.newLinkedHashMap();
@@ -83,12 +79,13 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   /**
    * Constructs an empty element creator.
    */
-  ElementCreatorImpl(MetadataRegistry registry,
-      ElementKey<?, ?> key, MetadataContext context) {
-    super(registry);
+  ElementCreatorImpl(MetadataRegistry registry, TransformKey transformKey) {
+    super(registry, transformKey);
 
-    this.key = key;
-    this.context = context;
+    MetadataKey<?> key = transformKey.getKey();
+    Preconditions.checkArgument(key instanceof ElementKey<?, ?>,
+        "Key must be to an element.");
+    this.elementKey = (ElementKey<?, ?>) key;
   }
 
   /**
@@ -111,6 +108,9 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
     }
     if (other.virtualElementHolder != null) {
       this.virtualElementHolder = other.virtualElementHolder;
+    }
+    if (other.flattened) {
+      this.flattened = true;
     }
 
     // We copy the attributes and elements over by re-adding them, as they need
@@ -221,7 +221,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * <p>This is used for single cardinality elements. Use
    * {@link MultipleVirtualElement} for multiple cardinality elements.
    */
-  public ElementCreator setSingleVirtualElement(
+  public ElementCreatorImpl setSingleVirtualElement(
       SingleVirtualElement singleVirtualElement) {
     synchronized (registry) {
       this.virtualElementHolder = VirtualElementHolder.of(singleVirtualElement);
@@ -237,7 +237,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * <p>This is used for single cardinality elements. Use
    * {@link MultipleVirtualElement} for multiple cardinality elements.
    */
-  public ElementCreator setMultipleVirtualElement(
+  public ElementCreatorImpl setMultipleVirtualElement(
       MultipleVirtualElement multipleVirtualElement) {
     synchronized (registry) {
       this.virtualElementHolder =
@@ -246,6 +246,98 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
     }
     return this;
   }
+
+  /**
+   * Sets the source path of an element.  An element that has a source will
+   * use a virtual element based on the path.
+   */
+  @Override
+  void setSource(Path path, TransformKey key) {
+    super.setSource(path, key);
+    setElementPath(path);
+  }
+  
+  /**
+   * Sets the virtual element for this creator based on the path.
+   */
+  private void setElementPath(Path path) {
+    synchronized (registry) {
+      this.virtualElementHolder = VirtualElementHolder.of(path);
+      registry.dirty();
+    }
+  }
+  
+  /**
+   * Flattens this element, which just marks the builder as flattened.
+   */
+  public ElementCreatorImpl flatten() {
+    synchronized (registry) {
+      this.flattened = true;
+      registry.dirty();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a virtual attribute, which marks the source attribute as moved and
+   * creates a new virtual attribute in this element with the source path.
+   */
+  public AttributeCreator moveAttribute(AttributeKey<?> attKey, Path path) {
+    Preconditions.checkArgument(path.selectsAttribute(),
+        "Path must refer to an attribute.");
+    AttributeCreatorImpl dest = replaceAttribute(attKey);
+    AttributeCreatorImpl source = getAttributeCreator(path);
+    dest.setSource(path, source.getTransformKey());
+    source.moved();
+    return dest;
+  }
+
+  /**
+   * Returns the attribute creator at the end of the path by looking it up
+   * directly in the registry.
+   */
+  private AttributeCreatorImpl getAttributeCreator(Path path) {
+    Preconditions.checkArgument(path.selectsAttribute(),
+        "Must be an attribute path");
+    ElementKey<?, ?> parent = path.getParentKey();
+    if (parent == null) {
+      parent = elementKey;
+    }
+    AttributeKey<?> selected = path.getSelectedAttributeKey();
+    return (AttributeCreatorImpl) registry.build(
+        parent, selected, transformKey.getContext());
+  }
+  
+  /**
+   * Adds a virtual element, which marks the source element as moved and creates
+   * a new virtual child element with the source path.
+   */
+  public ElementCreator moveElement(ElementKey<?, ?> childKey, Path path) {
+    Preconditions.checkArgument(path.selectsElement(),
+        "Path must refer to an element.");
+    ElementCreatorImpl dest = replaceElement(childKey);
+    ElementCreatorImpl source = getElementCreator(path);
+    dest.setSource(path, source.getTransformKey());
+    source.moved();
+    return dest;
+  }
+  
+  /**
+   * Returns the element creator at the end of the path by looking it up
+   * directly in the registry (not traversing).
+   */
+  private ElementCreatorImpl getElementCreator(Path path) {
+    Preconditions.checkArgument(path.selectsElement(),
+        "Must be an element path");
+    ElementKey<?, ?> parent = path.getParentKey();
+    if (parent == null) {
+      parent = elementKey;
+    }
+    ElementKey<?, ?> selected = path.getSelectedElementKey();
+    return (ElementCreatorImpl) registry.build(
+        parent, selected, transformKey.getContext());
+  }
+
 
   /**
    * Sets the location of the undeclared attributes. By default, undeclared
@@ -266,7 +358,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * @param attributeKey the key to the attribute that is being added.
    * @return an attribute builder that can be used to set the attribute fields.
    */
-  public AttributeCreator addAttribute(AttributeKey<?> attributeKey) {
+  public AttributeCreatorImpl addAttribute(AttributeKey<?> attributeKey) {
     return addAttribute(attributeKey, Action.ADD);
   }
 
@@ -276,7 +368,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * @param attributeKey the key to the attribute that is being replaced.
    * @return an attribute builder that can be used to modify the attribute.
    */
-  public AttributeCreator replaceAttribute(AttributeKey<?> attributeKey) {
+  public AttributeCreatorImpl replaceAttribute(AttributeKey<?> attributeKey) {
     return addAttribute(attributeKey, Action.REPLACE);
   }
 
@@ -327,7 +419,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * any existing attributes with the same key.  If this is not an add, it is
    * a replace, which will fail if the existing element does not exist.
    */
-  private AttributeCreator addAttribute(
+  private AttributeCreatorImpl addAttribute(
       AttributeKey<?> attributeKey, Action action) {
     synchronized (registry) {
       QName id = attributeKey.getId();
@@ -335,7 +427,8 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
         attributes.remove(id);
       }
       attributes.put(id, new AttributeInfo(attributeKey, action));
-      return registry.build(key, attributeKey, context);
+      return (AttributeCreatorImpl) registry.build(
+          elementKey, attributeKey, transformKey.getContext());
     }
   }
 
@@ -358,7 +451,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * @param elementKey the key we are adding or pushing to the end.
    * @return the builder for the child element.
    */
-  public  ElementCreator addElement(ElementKey<?, ?> elementKey) {
+  public  ElementCreatorImpl addElement(ElementKey<?, ?> elementKey) {
     return addElement(elementKey, Action.ADD);
   }
 
@@ -369,7 +462,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * @return this element metadata builder for chaining.
    * @throws IllegalArgumentException if the child metadata doesn't exist.
    */
-  public ElementCreator replaceElement(ElementKey<?, ?> elementKey) {
+  public ElementCreatorImpl replaceElement(ElementKey<?, ?> elementKey) {
     return addElement(elementKey, Action.REPLACE);
   }
 
@@ -428,16 +521,17 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   /**
    * Adds an element to the map of elements we are modifying with this builder.
    */
-  private ElementCreator addElement(
-      ElementKey<?, ?> elementKey, Action action) {
+  private ElementCreatorImpl addElement(
+      ElementKey<?, ?> childKey, Action action) {
     synchronized (registry) {
-      QName id = elementKey.getId();
+      QName id = childKey.getId();
       Preconditions.checkNotNull(id);
       if (action == Action.ADD) {
         elements.remove(id);
       }
-      elements.put(id, new ElementInfo(elementKey, action));
-      return registry.build(key, elementKey, context);
+      elements.put(id, new ElementInfo(childKey, action));
+      return (ElementCreatorImpl) registry.build(
+          elementKey, childKey, transformKey.getContext());
     }
   }
 
@@ -481,6 +575,10 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
 
   VirtualElementHolder getVirtualElementHolder() {
     return virtualElementHolder;
+  }
+
+  boolean isFlattened() {
+    return flattened;
   }
 
   /**
@@ -557,27 +655,27 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
    * it notices something wrong.
    */
   private void check() {
-    if (virtualElementHolder != null) {
+    if (virtualElementHolder != null && cardinality != null) {
       if (cardinality == Cardinality.SINGLE) {
-        if (virtualElementHolder.getMultipleVirtualElement() != null) {
+        if (virtualElementHolder.getSingleVirtualElement() == null) {
           throw new IllegalStateException(
               "Invalid element transform. "
               + "MultipleVirtualElement set on an element "
-              + "with single cardinality for key " + key);
+              + "with single cardinality for key " + elementKey);
         }
       } else {
-        if (virtualElementHolder.getSingleVirtualElement() != null) {
+        if (virtualElementHolder.getMultipleVirtualElement() == null) {
           throw new IllegalStateException(
               "Invalid element transform. "
               + "SingleVirtualElement set on an element "
-              + "with multiple cardinality for key " + key);
+              + "with multiple cardinality for key " + elementKey);
         }
       }
     }
   }
 
   /**
-   * Holder for attribute information.  Stores the builder + any additional
+   * Holder for attribute information.  Stores the key + any additional
    * information we want to keep track of.  Currently this is just whether this
    * was an add or a replace.
    */
@@ -596,7 +694,7 @@ final class ElementCreatorImpl extends MetadataCreatorImpl
   }
 
   /**
-   * Holder for element information.  Stores the builder + any additional
+   * Holder for element information.  Stores the key + any additional
    * information we want to keep track of.  Currently this is just whether this
    * was an add or a replace.
    */

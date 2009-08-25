@@ -139,9 +139,31 @@ public final class Schema {
 
   /**
    * Provides direct access to the transform for other classes in this package,
-   * to avoid circular dependencies causing infinite loops.  This allows
-   * interested classes to access the metadata information for a key without
-   * fully binding it.
+   * to avoid circular dependencies causing infinite loops.  This method will
+   * first check for the actual type of metadata key in use and delegate to
+   * the appropriate metadata registry.
+   */
+  Transform getTransform(ElementKey<?, ?> parent,
+      MetadataKey<?> key, MetadataContext context) {
+    if (key instanceof AttributeKey<?>) {
+      return getTransform(parent, (AttributeKey<?>) key, context);
+    } else {
+      return getTransform(parent, (ElementKey<?, ?>) key, context);
+    }
+  }
+
+  /**
+   * Provides direct access to attribute transforms.
+   */
+  AttributeTransform getTransform(ElementKey<?, ?> parent,
+      AttributeKey<?> attribute, MetadataContext context) {
+    AttributeMetadataRegistry attributeRegistry = getAttribute(attribute);
+    return (attributeRegistry == null) ? null
+        : attributeRegistry.getTransform(parent, attribute, context);
+  }
+
+  /**
+   * Provides direct access to element transforms.
    */
   ElementTransform getTransform(ElementKey<?, ?> parent,
       ElementKey<?, ?> child, MetadataContext context) {

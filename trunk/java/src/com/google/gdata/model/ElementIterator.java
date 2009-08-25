@@ -41,7 +41,7 @@ class ElementIterator implements Iterator<Element> {
   private final Map<QName, Object> elements;
 
   private Iterator<ElementKey<?, ?>> metadataIterator;
-  private Iterator<Element> sublistIterator;
+  private Iterator<? extends Element> sublistIterator;
   private Iterator<Object> elementIterator;
   private Element nextElement;
   private Mode mode = Mode.DECLARED;
@@ -133,7 +133,8 @@ class ElementIterator implements Iterator<Element> {
         SingleVirtualElement singleVirtual = 
             childMeta.getSingleVirtualElement();
         if (singleVirtual != null) {
-          Element generated = singleVirtual.generate(element, childMeta);
+          Element generated =
+              singleVirtual.generateSingle(element, metadata, childMeta);
           if (generated != null) {
             return generated;
           }
@@ -142,8 +143,8 @@ class ElementIterator implements Iterator<Element> {
         MultipleVirtualElement multipleVirtual = 
             childMeta.getMultipleVirtualElement();
         if (multipleVirtual != null) {
-          Collection<Element> virtualElements =
-              multipleVirtual.generate(element, childMeta);
+          Collection<? extends Element> virtualElements =
+              multipleVirtual.generateMultiple(element, metadata, childMeta);
           if (virtualElements != null && !virtualElements.isEmpty()) {
             sublistIterator = virtualElements.iterator();
             return sublistIterator.next();

@@ -71,21 +71,21 @@ public class OtherContent extends Content {
   }
 
   /**
-   * Constructs a new instance using the specified element key.
-   *
-   * @param key the element key for this element.
-   */
-  public OtherContent(ElementKey<?, ?> key) {
-    super(key);
-  }
-
-  /**
    * Constructs a new instance from a more generic {@link Content} type.
    *
    * @param content generic content
    */
   public OtherContent(Content content) {
     super(KEY, content);
+  }
+
+  /**
+   * Constructs a new instance using the specified element key.
+   *
+   * @param key the element key for this element.
+   */
+  protected OtherContent(ElementKey<?, ?> key) {
+    super(key);
   }
 
   /** @return the type of this content */

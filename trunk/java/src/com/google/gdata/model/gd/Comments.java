@@ -53,28 +53,30 @@ public class Comments extends Element {
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public Comments() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
-   * Create an instance using a different key.
+   * Subclass constructor, allows subclasses to supply their own element key.
    */
-  public Comments(ElementKey<Void, ? extends Comments> key) {
+  protected Comments(ElementKey<?, ? extends Comments> key) {
     super(key);
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
    * {@link Element} instance. Will use the given {@link ElementKey} as the key
-   * for the element.
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
    *
    * @param key The key to use for this element.
    * @param source source element
    */
-  public Comments(ElementKey<Void, ? extends Comments> key, Element source) {
+  protected Comments(ElementKey<?, ? extends Comments> key, Element source) {
     super(key, source);
   }
 

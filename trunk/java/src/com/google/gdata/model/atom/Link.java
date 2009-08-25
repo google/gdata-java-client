@@ -123,7 +123,7 @@ public class Link extends Element implements ILink {
    *
    * @param key the element key for this link.
    */
-  public Link(ElementKey<?, ? extends Link> key) {
+  protected Link(ElementKey<?, ? extends Link> key) {
     super(key);
   }
 
@@ -135,7 +135,7 @@ public class Link extends Element implements ILink {
    * @param key the element key to use for this element.
    * @param source source element
    */
-  public Link(ElementKey<Void, ? extends Link> key, Element source) {
+  protected Link(ElementKey<?, ? extends Link> key, Element source) {
     super(key, source);
   }
 

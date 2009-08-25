@@ -16,11 +16,11 @@
 
 package com.google.gdata.model.gd;
 
+import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.MetadataRegistry;
-import com.google.gdata.model.atom.Author;
 import com.google.gdata.model.atom.Category;
 import com.google.gdata.model.atom.Entry;
 import com.google.gdata.util.Namespaces;
@@ -67,10 +67,6 @@ public class EventEntry extends Entry {
     // The builder for this element
     ElementCreator builder = registry.build(KEY);
 
-    // Overridden elements
-    builder.replaceElement(Author.KEY).setRequired(true);
-    builder.replaceElement(Category.KEY).setRequired(true);
-
     // Local properties
     builder.addElement(Comments.KEY);
     builder.addElement(EventStatus.KEY);
@@ -94,30 +90,11 @@ public class EventEntry extends Entry {
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public EventEntry() {
-    this(KEY);
-  }
-
-  /**
-   * Create an instance using a different key.
-   */
-  public EventEntry(ElementKey<Void, ? extends EventEntry> key) {
-    super(key);
+    super(KEY);
     addCategory(CATEGORY);
-  }
-
-  /**
-   * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Entry} instance. Will use the given {@link ElementKey} as the key
-   * for the element.
-   *
-   * @param key The key to use for this element.
-   * @param source source element
-   */
-  public EventEntry(ElementKey<Void, ? extends EventEntry> key, Entry source) {
-    super(key, source);
   }
 
   /**
@@ -128,6 +105,27 @@ public class EventEntry extends Entry {
    */
   public EventEntry(Entry sourceEntry) {
     super(KEY, sourceEntry);
+  }
+
+  /**
+   * Subclass constructor, allows subclasses to supply their own element key.
+   */
+  protected EventEntry(ElementKey<?, ? extends EventEntry> key) {
+    super(key);
+  }
+
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link Entry} instance. Will use the given {@link ElementKey} as the key
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
+   *
+   * @param key The key to use for this element.
+   * @param source source element
+   */
+  protected EventEntry(ElementKey<?, ? extends EventEntry> key, Entry source) {
+    super(key, source);
   }
 
    @Override

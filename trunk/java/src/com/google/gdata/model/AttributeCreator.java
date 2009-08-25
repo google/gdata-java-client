@@ -33,7 +33,7 @@ import com.google.gdata.model.Metadata.VirtualValue;
  *
  * 
  */
-public interface AttributeCreator {
+public interface AttributeCreator extends MetadataCreator {
 
   /**
    * Sets the name of the attribute.  This is used on parsing to decide which

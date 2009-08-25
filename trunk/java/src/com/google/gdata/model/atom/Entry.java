@@ -130,6 +130,12 @@ public class Entry extends Element implements IEntry {
       new QName(Namespaces.gNs, "etag"));
 
   /**
+   * The gd:kind attribute.
+   */
+  public static final AttributeKey<String> GD_KIND = AttributeKey.of(
+      new QName(Namespaces.gNs, "kind"));
+
+  /**
    * Registers the metadata for this element.
    */
   public static void registerMetadata(MetadataRegistry registry) {
@@ -145,6 +151,7 @@ public class Entry extends Element implements IEntry {
     ElementCreator builder = registry.build(KEY)
         .setCardinality(Cardinality.MULTIPLE);
     builder.addAttribute(ETAG);
+    builder.addAttribute(GD_KIND);
     builder.addElement(ID);
     builder.addElement(PUBLISHED);
     builder.addElement(UPDATED);
@@ -217,7 +224,7 @@ public class Entry extends Element implements IEntry {
   /**
    * Constructs a new Entry instance, using the given key.
    */
-  public Entry(ElementKey<?, ? extends Entry> key) {
+  protected Entry(ElementKey<?, ? extends Entry> key) {
     super(key);
     state = new EntryState();
   }
@@ -232,7 +239,7 @@ public class Entry extends Element implements IEntry {
    * @param key the element key to use for this entry.
    * @param source to copy data from
    */
-  public Entry(ElementKey<?, ? extends Entry> key, Entry source) {
+  protected Entry(ElementKey<?, ? extends Entry> key, Entry source) {
     super(key, source);
     state = source.state;
   }
@@ -269,6 +276,14 @@ public class Entry extends Element implements IEntry {
 
   public void setEtag(String v) {
     setAttributeValue(ETAG, v);
+  }
+
+  public String getKind() {
+    return getAttributeValue(GD_KIND);
+  }
+
+  public void setKind(String v) {
+    setAttributeValue(GD_KIND, v);
   }
 
   public DateTime getPublished() {

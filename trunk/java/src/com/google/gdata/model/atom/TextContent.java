@@ -239,7 +239,7 @@ public class TextContent extends Content
    *
    * @param key the element key for this element
    */
-  public TextContent(ElementKey<?, ?> key) {
+  protected TextContent(ElementKey<?, ?> key) {
     super(key);
   }
 
@@ -249,7 +249,7 @@ public class TextContent extends Content
    * @param key the element key to use for this instance
    * @param content generic content
    */
-  public TextContent(ElementKey<?, ?> key, Content content) {
+  protected TextContent(ElementKey<?, ?> key, Content content) {
     super(key, content);
   }
 

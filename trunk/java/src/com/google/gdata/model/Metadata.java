@@ -104,12 +104,6 @@ public interface Metadata<D> {
   boolean isVisible();
 
   /**
-   * Returns the virtual value for this property, or {@code null} if no
-   * virtual value exists.
-   */
-  VirtualValue getVirtualValue();
-
-  /**
    * Generate the value of this property on the given element.  If the property
    * is virtual, it will be used to generate the value, otherwise the regular
    * property value will be used.

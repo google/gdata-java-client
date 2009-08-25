@@ -60,13 +60,13 @@ public class OrgName extends Element {
    * Default mutable constructor.
    */
   public OrgName() {
-    this(KEY);
+    super(KEY);
   }
 
   /**
    * Lets subclasses create an instance using custom key.
    */
-  public OrgName(ElementKey<String, ? extends OrgName> key) {
+  protected OrgName(ElementKey<String, ? extends OrgName> key) {
     super(key);
   }
 
@@ -78,7 +78,7 @@ public class OrgName extends Element {
    * @param key element key to use for this element.
    * @param source source element
    */
-  public OrgName(ElementKey<String, ? extends OrgName> key, Element source) {
+  protected OrgName(ElementKey<String, ? extends OrgName> key, Element source) {
     super(key, source);
   }
 

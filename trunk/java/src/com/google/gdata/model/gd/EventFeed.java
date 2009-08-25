@@ -16,6 +16,7 @@
 
 package com.google.gdata.model.gd;
 
+import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.MetadataRegistry;
@@ -65,9 +66,6 @@ public class EventFeed extends Feed {
     // The builder for this element
     ElementCreator builder = registry.build(KEY);
 
-    // Overridden elements
-    builder.replaceElement(Category.KEY).setRequired(true);
-
     // Local properties
     builder.addUndeclaredElementMarker();
     builder.addElement(EventEntry.KEY);
@@ -77,30 +75,11 @@ public class EventFeed extends Feed {
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public EventFeed() {
-    this(KEY);
-  }
-
-  /**
-   * Create an instance using a different key.
-   */
-  public EventFeed(ElementKey<Void, ? extends EventFeed> key) {
-    super(key);
+    super(KEY);
     addCategory(CATEGORY);
-  }
-
-  /**
-   * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Feed} instance. Will use the given {@link ElementKey} as the key for
-   * the element.
-   *
-   * @param key The key to use for this element.
-   * @param source source element
-   */
-  public EventFeed(ElementKey<Void, ? extends EventFeed> key, Feed source) {
-    super(key, source);
   }
 
   /**
@@ -111,6 +90,27 @@ public class EventFeed extends Feed {
    */
   public EventFeed(Feed sourceFeed) {
     super(KEY, sourceFeed);
+  }
+
+  /**
+   * Subclass constructor, allows subclasses to supply their own element key.
+   */
+  protected EventFeed(ElementKey<?, ? extends EventFeed> key) {
+    super(key);
+  }
+
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link Feed} instance. Will use the given {@link ElementKey} as the key for
+   * the element. This constructor is used when adapting from one element key to
+   * another. You cannot call this constructor directly, instead use {@link
+   * Element#createElement(ElementKey, Element)}.
+   *
+   * @param key The key to use for this element.
+   * @param source source element
+   */
+  protected EventFeed(ElementKey<?, ? extends EventFeed> key, Feed source) {
+    super(key, source);
   }
 
    @Override

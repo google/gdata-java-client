@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentMap;
 final class AttributeMetadataRegistry {
 
   // The root Schema this attribute registry is part of.
-  private final Schema root;
+  private final Schema schema;
 
   // A map of transforms by context for this attribute.
   private final Map<TransformKey, AttributeTransform> transforms;
@@ -53,9 +53,9 @@ final class AttributeMetadataRegistry {
   /**
    * Creates a new attribute registry from the given builder.
    */
-  AttributeMetadataRegistry(Schema root,
+  AttributeMetadataRegistry(Schema schema,
       AttributeMetadataRegistryBuilder builder) {
-    this.root = root;
+    this.schema = schema;
     this.transforms = getTransforms(builder.getCreators());
   }
 
@@ -93,7 +93,7 @@ final class AttributeMetadataRegistry {
 
     if (transformed == null) {
       AttributeTransform transform = getTransform(transformKey, key);
-      transformed = transform.toMetadata(root, parent, key, context);
+      transformed = transform.toMetadata(schema, parent, key, context);
       @SuppressWarnings("unchecked")
       AttributeMetadata<D> previous =
           (AttributeMetadata<D>) cache.putIfAbsent(transformKey, transformed);
@@ -106,9 +106,19 @@ final class AttributeMetadataRegistry {
   }
 
   /**
-   * Gets a composite builder for the given transform key. Will return null if
-   * no transform matched the given key, which means that the attribute is
-   * undeclared.
+   * Provides direct access to the transform for other classes in this package,
+   * to avoid circular dependencies causing infinite loops.  This allows
+   * interested classes to access the metadata information for a key without
+   * fully binding it.
+   */
+  AttributeTransform getTransform(ElementKey<?, ?> parent,
+      AttributeKey<?> key, MetadataContext context) {
+    return getTransform(TransformKey.forTransform(parent, key, context), key);
+  }
+
+  /**
+   * Gets a composite transform for the given transform key. Will return an
+   * empty transform if no transform matched the given key.
    */
   private AttributeTransform getTransform(TransformKey transformKey,
       AttributeKey<?> key) {
