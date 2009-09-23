@@ -16,30 +16,31 @@
 
 package sample.appsforyourdomain.gmailsettings.gui;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
- * Stores some common information for the tabs. 
+ * Stores some common information for the tabs.
  */
 public class Tab extends JPanel {
 
   protected String name;
   protected String tooltip;
- 
+
   /**
    * @param name The name to assign to the tab.
    * @param tooltip The tooltip to be used for the tab.
-   */ 
+   */
   public Tab(String name, String tooltip) {
     setName(name);
     setTooltip(tooltip);
   }
- 
+
   /**
    * @Return the name of the tab
-   */ 
+   */
+  @Override
   public String getName() {
-    return this.name;  
+    return this.name;
   }
 
   /**
@@ -47,13 +48,14 @@ public class Tab extends JPanel {
    *
    * @param name The name to assign to the tab.
    */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
- 
+
   /**
    * @return The current value for tooltip.
-   */ 
+   */
   public String getTooltip() {
     return this.tooltip;
   }
@@ -61,7 +63,7 @@ public class Tab extends JPanel {
   /**
    * Sets the tooltop for the tab.
    *
-   * @param tooltip The tooltip to be used for the tab. 
+   * @param tooltip The tooltip to be used for the tab.
    */
   public void setTooltip(String tooltip) {
     this.tooltip = tooltip;

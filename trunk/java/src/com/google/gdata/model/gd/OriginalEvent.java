@@ -62,7 +62,7 @@ public class OriginalEvent extends Element {
     ElementCreator builder = registry.build(KEY);
 
     // Local properties
-    builder.addAttribute(HREF).setRequired(true);
+    builder.addAttribute(HREF);
     builder.addAttribute(ORIGINAL_ID).setRequired(true);
     builder.addElement(When.KEY).setRequired(true);
   }

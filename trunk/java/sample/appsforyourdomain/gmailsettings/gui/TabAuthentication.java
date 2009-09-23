@@ -16,26 +16,31 @@
 
 package sample.appsforyourdomain.gmailsettings.gui;
 
-import sample.appsforyourdomain.gmailsettings.GmailSettings;
 import sample.appsforyourdomain.gmailsettings.Constants;
+import sample.appsforyourdomain.gmailsettings.GmailSettingsService;
 import com.google.gdata.util.ServiceException;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.net.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 /**
- * Tab containing all the authentication information. 
+ * Tab containing all the authentication information.
  */
 public class TabAuthentication extends Tab {
-  protected SpringLayout layout; 
-  protected JLabel domainLabel; 
+  protected SpringLayout layout;
+  protected JLabel domainLabel;
   protected JTextField domain;
-  protected JLabel usernameLabel; 
+  protected JLabel usernameLabel;
   protected JTextField username;
   protected JLabel passwordLabel;
-  protected JPasswordField password;  
+  protected JPasswordField password;
   protected JButton submit;
 
   /**
@@ -50,11 +55,11 @@ public class TabAuthentication extends Tab {
     domain = new JTextField(12);
     domain.setText(Constants.DEFAULT_DOMAIN);
 
-    usernameLabel = new JLabel("Admin username: ");  
+    usernameLabel = new JLabel("Admin username: ");
     username = new JTextField(12);
     username.setText(Constants.DEFAULT_USERNAME);
-   
-    passwordLabel = new JLabel("Admin password: "); 
+
+    passwordLabel = new JLabel("Admin password: ");
     password = new JPasswordField(12);
     password.setText(Constants.DEFAULT_PASSWORD);
 
@@ -62,14 +67,14 @@ public class TabAuthentication extends Tab {
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           try {
-            GmailSettingsClient.settings = new GmailSettings(GmailSettingsClient.APP_TITLE, 
+            GmailSettingsClient.settings = new GmailSettingsService(GmailSettingsClient.APP_TITLE,
                 domain.getText(), username.getText(), new String (password.getPassword()));
             GmailSettingsClient.users.refresh(domain.getText(), username.getText(),
                 new String (password.getPassword()));
           } catch (ServiceException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE, 
-                 JOptionPane.ERROR_MESSAGE);
-          } 
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
+          }
         }
       });
 
@@ -77,7 +82,7 @@ public class TabAuthentication extends Tab {
     layout.putConstraint(SpringLayout.NORTH, domainLabel, 5, SpringLayout.NORTH, this);
     layout.putConstraint(SpringLayout.WEST, domain, 5, SpringLayout.EAST, domainLabel);
     layout.putConstraint(SpringLayout.NORTH, domain, 5, SpringLayout.NORTH, this);
- 
+
     layout.putConstraint(SpringLayout.WEST, usernameLabel, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, usernameLabel, 5, SpringLayout.SOUTH, domain);
     layout.putConstraint(SpringLayout.WEST, username, 5, SpringLayout.EAST, usernameLabel);

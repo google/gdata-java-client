@@ -17,7 +17,7 @@
 package sample.appsforyourdomain.gmailsettings;
 
 /**
- * Contains default values for the GMail Settings API sample clients. 
+ * Contains default values for the GMail Settings API sample clients.
  */
 public final class Defaults {
 
@@ -40,33 +40,35 @@ public final class Defaults {
   public static final String SEND_AS_ADDRESS = "johndoe@example.com";
   public static final String SEND_AS_REPLY_TO = "reply-to@someplace.com";
   public static final boolean SEND_AS_MAKE_DEFAULT = false;
-  
+
   public static final String LABEL = "label";
 
   public static final boolean FORWARDING_ENABLE = true;
   public static final String FORWARDING_FORWARD_TO = "test@admin-api.com";
   public static final String FORWARDING_ACTION = "ARCHIVE";
   public static final boolean FORWARDING_MAKE_DEFAULT = false;
-  
+
   public static final boolean POP_ENABLE = true;
   public static final String POP_ENABLE_FOR = "MAIL_FROM_NOW_ON";
   public static final String POP_ACTION = "ARCHIVE";
-  
+
   public static final boolean IMAP_ENABLE = true;
-  
+
   public static final boolean VACATION_ENABLE = true;
   public static final String VACATION_SUBJECT = "I'm on vacation";
   public static final String VACATION_MESSAGE = "Actually I'm just testing the vacation " +
       "responder";
   public static final boolean VACATION_CONTACTS_ONLY = true;
-  
+
   public static final String SIGNATURE = "<Insert witty signature here>";
-  
+
   public static final String GENERAL_PAGE_SIZE = "50";
   public static final boolean GENERAL_ENABLE_SHORTCUTS = true;
   public static final boolean GENERAL_ENABLE_ARROWS = true;
   public static final boolean GENERAL_ENABLE_SNIPPETS = true;
   public static final boolean GENERAL_ENABLE_UNICODE = true;
-  
+
   public static final String LANGUAGE = "en-US";
+
+  public static final boolean WEBCLIP_ENABLE = true;
 }

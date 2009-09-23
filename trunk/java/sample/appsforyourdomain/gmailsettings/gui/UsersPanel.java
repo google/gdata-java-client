@@ -18,29 +18,37 @@ package sample.appsforyourdomain.gmailsettings.gui;
 
 import com.google.gdata.client.appsforyourdomain.AppsForYourDomainQuery;
 import com.google.gdata.client.appsforyourdomain.UserService;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.appsforyourdomain.provisioning.UserEntry;
 import com.google.gdata.data.appsforyourdomain.provisioning.UserFeed;
-import com.google.gdata.data.Link;
 import com.google.gdata.util.ServiceException;
 
-import java.awt.*;
-import java.net.*;
-import java.io.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.GridLayout;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
- * Panel that uses the provisioning API to display all the users from a domain. 
+ * Panel that uses the provisioning API to display all the users from a domain.
  */
 public class UsersPanel extends JPanel {
 
   protected JList users;
   protected DefaultListModel usersListModel;
   protected JScrollPane usersPane;
- 
+
   /**
    * Sets up the panel.
-   */ 
+   */
   public UsersPanel() {
     usersListModel = new DefaultListModel();
     users = new JList();
@@ -51,16 +59,16 @@ public class UsersPanel extends JPanel {
   }
 
   /**
-   * @return Returns an array of all the users that were selected in the panel.
+   * @return Returns a list of all the users that were selected in the panel.
    */
-  public String[] getSelectedUsers() {
+  public List<String> getSelectedUsers() {
     Object[] tmp = users.getSelectedValues();
-    String[] susers = new String[tmp.length];
+    List<String> susers = new ArrayList<String>();
 
     for (int i = 0; i < tmp.length; i++) {
-      susers[i] = tmp[i].toString();
+      susers.add(tmp[i].toString());
     }
-        
+
     return susers;
   }
 
@@ -81,13 +89,13 @@ public class UsersPanel extends JPanel {
       }
     } catch (MalformedURLException e) {
       JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                  JOptionPane.ERROR_MESSAGE);
+          JOptionPane.ERROR_MESSAGE);
     } catch (IOException e) {
       JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                  JOptionPane.ERROR_MESSAGE);
+          JOptionPane.ERROR_MESSAGE);
     } catch (ServiceException e) {
       JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                  JOptionPane.ERROR_MESSAGE);
+          JOptionPane.ERROR_MESSAGE);
     }
   }
 
@@ -103,7 +111,7 @@ public class UsersPanel extends JPanel {
    *       service.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  protected UserFeed getUsers(String domain, String username, String password) 
+  protected UserFeed getUsers(String domain, String username, String password)
       throws MalformedURLException, IOException, ServiceException {
     String domainUrlBase = null;
     UserFeed allUsers = null;

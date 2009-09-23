@@ -151,6 +151,12 @@ public abstract class BaseEntry<E extends BaseEntry>
      * a gd:etag attribute).
      */
     public String etag;
+    
+    /**
+     * gd:kind.  This is the kind attribute for this entry.  If there is no kind
+     * attribute for this entry, this variable is null.
+     */
+    public String kind;
 
     /** Creation timestamp. Ignored on updates. */
     public DateTime published;
@@ -259,6 +265,9 @@ public abstract class BaseEntry<E extends BaseEntry>
   public String getEtag() { return state.etag; }
   public void setEtag(String v) { state.etag = v; }
 
+  public String getKind() { return state.kind; }
+  public void setKind(String v) { state.kind = v; }
+  
   public DateTime getPublished() { return state.published; }
   public void setPublished(DateTime v) {
     if (v != null && v.getTzShift() == null) {
@@ -720,6 +729,12 @@ public abstract class BaseEntry<E extends BaseEntry>
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(3);
 
+    if (state.kind != null
+        && Service.getVersion().isAfter(Service.Versions.V1)) {
+      nsDecls.add(Namespaces.gNs);
+      attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "kind", state.kind));
+    }
+    
     if (state.etag != null &&
         !Service.getVersion().isCompatible(Service.Versions.V1)) {
       nsDecls.add(Namespaces.gNs);
@@ -1014,6 +1029,10 @@ public abstract class BaseEntry<E extends BaseEntry>
       if (namespace.equals(Namespaces.g)) {
         if (localName.equals("etag")) {
           setEtag(value);
+          return;
+        }
+        if (localName.equals("kind")) {
+          setKind(value);
           return;
         }
       }

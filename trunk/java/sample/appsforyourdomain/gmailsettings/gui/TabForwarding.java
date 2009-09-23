@@ -18,17 +18,23 @@ package sample.appsforyourdomain.gmailsettings.gui;
 
 import sample.appsforyourdomain.gmailsettings.Constants;
 import sample.appsforyourdomain.gmailsettings.Defaults;
-import sample.appsforyourdomain.gmailsettings.InvalidUserException;
 import com.google.gdata.util.ServiceException;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 /**
- * Tab containing the forwarding information. 
+ * Tab containing the forwarding information.
  */
 public class TabForwarding extends Tab  {
   protected SpringLayout layout;
@@ -36,7 +42,7 @@ public class TabForwarding extends Tab  {
   protected JLabel forwardToLabel;
   protected JTextField forwardTo;
   protected JLabel actionLabel;
-  protected JComboBox action; 
+  protected JComboBox action;
   protected JButton submit;
 
   /**
@@ -54,37 +60,37 @@ public class TabForwarding extends Tab  {
 
     actionLabel = new JLabel("Action: ");
     action = new JComboBox(Constants.FORWARDING_ACTION);
-    action.setSelectedItem(Defaults.FORWARDING_ACTION); 
+    action.setSelectedItem(Defaults.FORWARDING_ACTION);
 
     submit = new JButton("Submit");
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           if (GmailSettingsClient.settings == null) {
-            JOptionPane.showMessageDialog(null, GmailSettingsClient.ERROR_AUTHENTICATION_REQUIRED,  
+            JOptionPane.showMessageDialog(null, GmailSettingsClient.ERROR_AUTHENTICATION_REQUIRED,
                 GmailSettingsClient.APP_TITLE, JOptionPane.ERROR_MESSAGE);
             return;
           }
 
           try {
             GmailSettingsClient.settings.changeForwarding(GmailSettingsClient.users.
-                getSelectedUsers(), enable.isSelected(), forwardTo.getText(), 
+                getSelectedUsers(), enable.isSelected(), forwardTo.getText(),
                 action.getSelectedItem().toString());
-          } catch (InvalidUserException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+          } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (ServiceException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (MalformedURLException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (IOException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
-          } 
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
+          }
         }
       });
-   
+
     layout.putConstraint(SpringLayout.WEST, enable, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, enable, 5, SpringLayout.NORTH, this);
 

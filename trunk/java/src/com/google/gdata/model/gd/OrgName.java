@@ -39,10 +39,10 @@ public class OrgName extends Element {
       String.class, OrgName.class);
 
   /**
-   * Yomi name of the organization.
+   * Yomi name of organization.
    */
-  public static final AttributeKey<String> YOMI = AttributeKey.of(
-      new QName("yomi"));
+  public static final AttributeKey<String> YOMI = AttributeKey.of(new
+      QName(null, "yomi"), String.class);
 
   /**
    * Registers the metadata for this element.
@@ -52,19 +52,22 @@ public class OrgName extends Element {
       return;
     }
 
-    ElementCreator builder = registry.build(KEY).setContentRequired(true);
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY).setContentRequired(false);
+
+    // Local properties
     builder.addAttribute(YOMI);
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public OrgName() {
     super(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using custom key.
+   * Subclass constructor, allows subclasses to supply their own element key.
    */
   protected OrgName(ElementKey<String, ? extends OrgName> key) {
     super(key);
@@ -72,10 +75,12 @@ public class OrgName extends Element {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Element} instance. Will use the given {@link ElementKey} as the
-   * key for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
    *
-   * @param key element key to use for this element.
+   * @param key The key to use for this element.
    * @param source source element
    */
   protected OrgName(ElementKey<String, ? extends OrgName> key, Element source) {
@@ -92,10 +97,10 @@ public class OrgName extends Element {
     setValue(value);
   }
 
-  @Override
-  public OrgName lock() {
-    return (OrgName) super.lock();
-  }
+   @Override
+   public OrgName lock() {
+     return (OrgName) super.lock();
+   }
 
   /**
    * Returns the value.
@@ -103,16 +108,18 @@ public class OrgName extends Element {
    * @return value
    */
   public String getValue() {
-    return (String) super.getTextValue();
+    return super.getTextValue(KEY);
   }
 
   /**
    * Sets the value.
    *
-   * @param value value or <code>null</code> to reset
+   * @param value value or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setValue(String value) {
+  public OrgName setValue(String value) {
     super.setTextValue(value);
+    return this;
   }
 
   /**
@@ -130,16 +137,18 @@ public class OrgName extends Element {
    * @return yomi name of organization
    */
   public String getYomi() {
-    return getAttributeValue(YOMI);
+    return super.getAttributeValue(YOMI);
   }
 
   /**
    * Sets the yomi name of organization.
    *
-   * @param yomi yomi name of organization or <code>null</code> to reset
+   * @param yomi yomi name of organization or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setYomi(String yomi) {
-    setAttributeValue(YOMI, yomi);
+  public OrgName setYomi(String yomi) {
+    super.setAttributeValue(YOMI, yomi);
+    return this;
   }
 
   /**
@@ -160,7 +169,8 @@ public class OrgName extends Element {
       return false;
     }
     OrgName other = (OrgName) obj;
-    return eq(getValue(), other.getValue());
+    return eq(getValue(), other.getValue())
+        && eq(getYomi(), other.getYomi());
   }
 
   @Override
@@ -169,11 +179,11 @@ public class OrgName extends Element {
     if (getValue() != null) {
       result = 37 * result + getValue().hashCode();
     }
+    if (getYomi() != null) {
+      result = 37 * result + getYomi().hashCode();
+    }
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{OrgName value=" + getTextValue() + "}";
-  }
 }
+

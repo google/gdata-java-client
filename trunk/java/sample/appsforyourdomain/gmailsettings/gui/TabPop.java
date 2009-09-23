@@ -18,17 +18,22 @@ package sample.appsforyourdomain.gmailsettings.gui;
 
 import sample.appsforyourdomain.gmailsettings.Constants;
 import sample.appsforyourdomain.gmailsettings.Defaults;
-import sample.appsforyourdomain.gmailsettings.InvalidUserException;
 import com.google.gdata.util.ServiceException;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SpringLayout;
 
 /**
- * Tab containing all the POP information. 
+ * Tab containing all the POP information.
  */
 public class TabPop extends Tab  {
   protected SpringLayout layout;
@@ -68,27 +73,27 @@ public class TabPop extends Tab  {
 
           try {
             GmailSettingsClient.settings.changePop(GmailSettingsClient.users.
-                getSelectedUsers(), enable.isSelected(), enableFor.getSelectedItem().toString(), 
+                getSelectedUsers(), enable.isSelected(), enableFor.getSelectedItem().toString(),
                 action.getSelectedItem().toString());
-          } catch (InvalidUserException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+          } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (ServiceException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (MalformedURLException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (IOException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
-          } 
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
+          }
         }
       });
 
     layout.putConstraint(SpringLayout.WEST, enable, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, enable, 5, SpringLayout.NORTH, this);
- 
+
     layout.putConstraint(SpringLayout.WEST, enableForLabel, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, enableForLabel, 5, SpringLayout.SOUTH, enable);
     layout.putConstraint(SpringLayout.WEST, enableFor, 5, SpringLayout.EAST, enableForLabel);
@@ -98,7 +103,7 @@ public class TabPop extends Tab  {
     layout.putConstraint(SpringLayout.NORTH, actionLabel, 5, SpringLayout.SOUTH, enableFor);
     layout.putConstraint(SpringLayout.WEST, action, 5, SpringLayout.EAST, actionLabel);
     layout.putConstraint(SpringLayout.NORTH, action, 5, SpringLayout.SOUTH, enableFor);
-    
+
     layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, action);
 

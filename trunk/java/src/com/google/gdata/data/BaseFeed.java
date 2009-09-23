@@ -111,17 +111,16 @@ import java.util.Vector;
  * an extension profile when kind Category tags are found during parsing of
  * content.</li>
  * <li>Expose convenience APIs to retrieve and set extension attributes, with
- * an implementions that delegates to {@link ExtensionPoint} methods to
+ * an implementation that delegates to {@link ExtensionPoint} methods to
  * store/retrieve the extension data.
  * </ul>
  *
- * @param   <F> feed type associated with bound subtype.
- * @param   <E> entry type associated with bound subtype.
+ * @param   <F> feed type associated with bound subtype
+ * @param   <E> entry type associated with bound subtype
  */
 public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     extends Source
     implements Kind.Adaptable, Kind.Adaptor, IFeed {
-
 
   /**
    * The FeedState class provides a simple structure that encapsulates
@@ -163,6 +162,9 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
      * If there is no entity tag, this variable is null.
      */
     public String etag;
+    
+    /** gd:kind.  This is the kind attribute for this entry. */
+    public String kind;
 
     /** Resource version id to use when generating etag. */
     public String versionId;
@@ -178,7 +180,6 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * Class used to construct new entry instance, initialized at construction.
    */
   protected Class<? extends E> entryClass;
-
 
   /** Feed entries. */
   protected List<E> entries = new LinkedList<E>();
@@ -213,7 +214,6 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
 
   }
 
-
   /**
    * {@inheritDoc}
    * <p>
@@ -230,7 +230,7 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   }
 
   /**
-   * Returns that GData {@link Service} instance tassociated with this feed.
+   * Returns that GData {@link Service} instance associated with this feed.
    */
   public Service getService() { return feedState.service; }
 
@@ -250,80 +250,122 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    * Gets the property that indicates if it is possible to post new entries
    * to the feed.
    */
-  public boolean getCanPost() { return feedState.canPost; }
+  public boolean getCanPost() { 
+    return feedState.canPost;
+  }
 
   /**
    * Sets the property that indicates if it is possible to post new entries
    * to the feed.
    */
-  public void setCanPost(boolean v) { feedState.canPost = v; }
+  public void setCanPost(boolean v) {
+    feedState.canPost = v;
+  }
 
   /**
    * Sets the entity version for this feed. This value will
    * be used to compute a weak etag for the feed. If {@code null}
    * the last modified date is used to generate the etag.
    */
-  public void setVersionId(String v) { feedState.versionId = v; }
+  public void setVersionId(String v) {
+    feedState.versionId = v;
+  }
 
   /**
    * Returns the entity version for this feed.
    */
-  public String getVersionId() { return feedState.versionId; }
+  public String getVersionId() {
+    return feedState.versionId;
+  }
 
   /**
    * Returns the current entity tag value for this feed.  A value of
    * {@code null} indicates the value is unknown.
    */
-  public String getEtag() { return feedState.etag; }
+  public String getEtag() {
+    return feedState.etag;
+  }
 
   /**
-   * Sets the current entity tag value (for this feed.  A value of
+   * Sets the current entity tag value for this feed.  A value of
    * {@code null} indicates the value is unknown.
    */
-  public void setEtag(String v) { feedState.etag = v; }
+  public void setEtag(String v) {
+    feedState.etag = v;
+  }
+
+  /**
+   * Returns the current gd:kind attribute value for this feed.  A value of
+   * {@code null} indicates the value is unknown.
+   */
+  public String getKind() {
+    return feedState.kind;
+  }
+
+  /**
+   * Sets the current gd:kind attribute value for this feed.  A value of
+   * {@code null} indicates the value is unknown.
+   */
+  public void setKind(String v) {
+    feedState.kind = v;
+  }
 
   /**
    * Gets the total number of results associated with this feed.  The value
    * may be larger than the number of contained entries for paged feeds.
    * A value of {@link Query#UNDEFINED} indicates the total size is undefined.
    */
-  public int getTotalResults() { return feedState.totalResults; }
+  public int getTotalResults() {
+    return feedState.totalResults;
+  }
 
   /**
    * Sets the total number of results associated with this feed.  The value
    * may be larger than the number of contained entries for paged feeds.
    * A value of {@link Query#UNDEFINED} indicates the total size is undefined.
    */
-  public void setTotalResults(int v) { feedState.totalResults = v; }
+  public void setTotalResults(int v) {
+    feedState.totalResults = v;
+  }
 
   /**
    * Gets the starting index of the contained entries for paged feeds.
    * A value of {@link Query#UNDEFINED} indicates the start index is undefined.
    */
-  public int getStartIndex() { return feedState.startIndex; }
+  public int getStartIndex() {
+    return feedState.startIndex;
+  }
 
   /**
    * Sets the starting index of the contained entries for paged feeds.
    * A value of {@link Query#UNDEFINED} indicates the start index is undefined.
    */
-  public void setStartIndex(int v) { feedState.startIndex = v; }
+  public void setStartIndex(int v) {
+    feedState.startIndex = v;
+  }
 
   /**
    * Gets the number of items that will be returned per page for paged feeds.
    * A value of {@link Query#UNDEFINED} indicates the page item count is
    * undefined.
    */
-  public int getItemsPerPage() { return feedState.itemsPerPage; }
+  public int getItemsPerPage() {
+    return feedState.itemsPerPage;
+  }
 
   /**
    * Sets the number of items that will be returned per page for paged feeds.
    * A value of {@link Query#UNDEFINED} indicates the page item count is
    * undefined.
    */
-  public void setItemsPerPage(int v) { feedState.itemsPerPage = v; }
+  public void setItemsPerPage(int v) {
+    feedState.itemsPerPage = v;
+  }
 
   /** Returns the list of entries in this feed */
-  public List<E> getEntries() { return entries; }
+  public List<E> getEntries() {
+    return entries;
+  }
 
   /** Sets the list to use for storing the entry list */
   public void setEntries(List<E> entryList) { this.entries = entryList; }
@@ -371,13 +413,11 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     return postLink;
   }
 
-
   /** Returns the self link for the feed. */
   public Link getSelfLink() {
     Link postLink = getLink(Link.Rel.SELF, Link.Type.ATOM);
     return postLink;
   }
-
 
   /**
    * Returns the link that provides the URI of next page in a paged feed.
@@ -389,7 +429,6 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     return getLink(Link.Rel.NEXT, Link.Type.ATOM);
   }
 
-
   /**
    * Returns the link that provides the URI of previous page in a paged feed.
    *
@@ -399,7 +438,6 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   public Link getPreviousLink() {
     return getLink(Link.Rel.PREVIOUS, Link.Type.ATOM);
   }
-
 
   /**
    * Returns the link that provides the URI that can be used to batch operations
@@ -412,7 +450,6 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   public Link getFeedBatchLink() {
     return getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
   }
-
 
   /**
    * Returns the current representation of the feed by requesting it from
@@ -445,7 +482,6 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       return (F) this;
     }
   }
-
 
   /**
    * Inserts a new Entry into the feed, if the feed is currently
@@ -540,9 +576,10 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
   }
 
   /**
-   * Generates everything that's in the feed up and not including to the
-   * entries.  The idea is to use generateStart(), write the entries end then
-   * call {@link #generateFeedEnd(com.google.gdata.util.common.xml.XmlWriter)}
+   * Generates everything that's in the feed up to and not including the
+   * entries.  The idea is to use {@code generateFeedStart()}, write the 
+   * entries, and  then call 
+   * {@link #generateFeedEnd(com.google.gdata.util.common.xml.XmlWriter)}
    * to avoid having to add entries to a list and keep them in memory.
    *
    * @param extProfile
@@ -566,12 +603,20 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
     ArrayList<XmlWriter.Attribute> attrs =
       new ArrayList<XmlWriter.Attribute>(3);
 
-    if (feedState.etag != null &&
-        !Service.getVersion().isCompatible(Service.Versions.V1)) {
+    if (feedState.kind != null
+        && Service.getVersion().isAfter(Service.Versions.V1)) {
       nsDecls.add(Namespaces.gNs);
-      attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", feedState.etag));
+      attrs.add(new XmlWriter.Attribute(
+          Namespaces.gAlias, "kind", feedState.kind));
     }
 
+    if (feedState.etag != null
+        && Service.getVersion().isAfter(Service.Versions.V1)) {
+      nsDecls.add(Namespaces.gNs);
+      attrs.add(new XmlWriter.Attribute(
+          Namespaces.gAlias, "etag", feedState.etag));
+    }
+    
     // Add any attribute extensions.
     AttributeGenerator generator = new AttributeGenerator();
     putAttributes(generator);
@@ -832,6 +877,10 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
           setEtag(value);
           return;
         }
+        if (localName.equals("kind")) {
+          setKind(value);
+          return;
+        }
       }
       super.processAttribute(namespace, localName, value);
     }
@@ -907,7 +956,6 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       }
     }
 
-
     /** {@code <opensearch:startIndex>} parser. */
     private class StartIndexHandler extends ElementHandler {
 
@@ -932,7 +980,6 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
         }
       }
     }
-
 
     /** {@code <opensearch:itemsPerPage>} parser. */
     private class ItemsPerPageHandler extends ElementHandler {

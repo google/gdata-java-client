@@ -24,6 +24,7 @@
   <import file="build-src/health.xml"/>
   <import file="build-src/maps.xml"/>
   <import file="build-src/photos.xml"/>
+  <import file="build-src/sidewiki.xml"/>
   <import file="build-src/spreadsheet.xml"/>
   <import file="build-src/youtube.xml"/>
   <import file="build-src/webmastertools.xml"/>
@@ -48,6 +49,7 @@
                                 build.health,
                                 build.maps,
                                 build.photos,
+                                build.sidewiki,
                                 build.spreadsheet,
                                 build.youtube,
                                 build.webmastertools"/>
@@ -65,6 +67,7 @@
                                 clean.health,
                                 clean.maps,
                                 clean.photos,
+                                clean.sidewiki,
                                 clean.spreadsheet,
                                 clean.youtube,
                                 clean.webmastertools"/>

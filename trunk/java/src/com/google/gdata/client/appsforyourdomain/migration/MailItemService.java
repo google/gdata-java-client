@@ -19,6 +19,7 @@ package com.google.gdata.client.appsforyourdomain.migration;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.appsforyourdomain.AppsForYourDomainService;
 import com.google.gdata.client.batch.BatchInterruptedException;
+import com.google.gdata.client.media.MediaService;
 import com.google.gdata.data.appsforyourdomain.migration.MailItemFeed;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.util.ServiceException;
@@ -29,11 +30,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * The MailItemService class extends the basic {@link AppsForYourDomainService}
- * abstraction to define a service that is preconfigured for access to the
- * MailItem Feed in the Google Apps Migration GData API.
+ * The MailItemService class is a {@link MediaService} that can upload mail to
+ * the Google Apps Email Migration API.
+ * 
+ * <p>
+ * The recommended way to perform mail migration is to issue multipart POST
+ * requests, where the first part contains an Atom entry specifying the message
+ * properties and labels, and the second part contains the complete RFC822
+ * message as UTF-8 text.
  */
-public class MailItemService extends AppsForYourDomainService {
+public class MailItemService extends MediaService {
   
   public static class Versions {
     
@@ -84,7 +90,8 @@ public class MailItemService extends AppsForYourDomainService {
    *        Google servers to monitor the source of authentication.
    */
   public MailItemService(String applicationName) {
-    this(applicationName, HTTPS_PROTOCOL, DOMAIN_NAME);
+    this(applicationName, AppsForYourDomainService.HTTPS_PROTOCOL,
+        AppsForYourDomainService.DOMAIN_NAME);
   }
   
   /**
@@ -101,7 +108,7 @@ public class MailItemService extends AppsForYourDomainService {
    * @param domainName the name of the domain hosting the login handler
    */
   public MailItemService(String applicationName, String protocol, String domainName) {
-    super(applicationName, protocol, domainName);
+    super(AppsForYourDomainService.APPS_SERVICE, applicationName, protocol, domainName);
     
     BatchUtils.declareExtensions(getExtensionProfile());
     new MailItemFeed().declareExtensions(getExtensionProfile());
@@ -136,7 +143,7 @@ public class MailItemService extends AppsForYourDomainService {
   public MailItemFeed batch(String domain, String userName, MailItemFeed feed)
       throws BatchInterruptedException, IOException, MalformedURLException,
       ServiceException {
-    URL batchUrl = new URL(HTTPS_PROTOCOL + "://" + APPS_APIS_DOMAIN
+    URL batchUrl = new URL(AppsForYourDomainService.HTTPS_PROTOCOL + "://" + APPS_APIS_DOMAIN
         + URL_PREFIX + "/" + domain + "/" + userName + URL_SUFFIX);
     return batch(batchUrl, feed);
   }

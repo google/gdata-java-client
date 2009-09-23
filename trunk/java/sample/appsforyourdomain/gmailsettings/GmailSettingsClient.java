@@ -20,8 +20,10 @@ import sample.util.SimpleCommandLineParser;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the command line client for the Google Apps Gmail Settings API. 
@@ -56,7 +58,7 @@ public class GmailSettingsClient {
     System.out.println();
     System.out.println("Select which setting to change with the setting flag."
         + " For example, to change the POP3 settings, use --setting pop"
-        + " (allowable values are forwarding, pop, imap, vacation, or signature)");
+        + " (allowable values are forwarding, pop, imap, vacation, signature, or webclip)");
     System.out.println();
     System.out.println("By default the selected setting will be enabled, "
         + "but with the --disable flag it will be disabled.");
@@ -85,6 +87,7 @@ public class GmailSettingsClient {
    *   <li>signature</li>
    *   <li>general</li>
    *   <li>language</li>
+   *   <li>webclip</li>
    * </ul>
    */
   public static void main(String[] arg) {
@@ -109,54 +112,55 @@ public class GmailSettingsClient {
     setting = setting.trim().toLowerCase();
 
     try {
-      GmailSettings settings = new GmailSettings("exampleCo-exampleApp-1", domain,
+      GmailSettingsService settings = new GmailSettingsService("exampleCo-exampleApp-1", domain,
           username, password);
 
+      List<String> users = new ArrayList<String>();
+      users.add(destinationUser);
+      
       if (setting.startsWith("filter")) {
-        settings.createFilter(new String[] {destinationUser}, 
-            Defaults.FILTER_FROM, Defaults.FILTER_TO, Defaults.FILTER_SUBJECT, 
-            Defaults.FILTER_HAS_THE_WORD, Defaults.FILTER_DOES_NOT_HAVE_THE_WORD, 
+        settings.createFilter(users, Defaults.FILTER_FROM, Defaults.FILTER_TO, 
+            Defaults.FILTER_SUBJECT, Defaults.FILTER_HAS_THE_WORD, 
+            Defaults.FILTER_DOES_NOT_HAVE_THE_WORD,  
             Defaults.FILTER_HAS_ATTACHMENT, Defaults.FILTER_SHOULD_MARK_AS_READ, 
             Defaults.FILTER_SHOULD_ARCHIVE, Defaults.FILTER_LABEL);
       } else if (setting.startsWith("sendas")) {
-        settings.createSendAs(new String[] {destinationUser}, 
-            Defaults.SEND_AS_NAME, Defaults.SEND_AS_ADDRESS, Defaults.SEND_AS_REPLY_TO,
+        settings.createSendAs(users, Defaults.SEND_AS_NAME, 
+            Defaults.SEND_AS_ADDRESS, Defaults.SEND_AS_REPLY_TO,
             Defaults.SEND_AS_MAKE_DEFAULT);
       } else if (setting.startsWith("label")) {
-        settings.createLabel(new String[] {destinationUser}, Defaults.LABEL);
+        settings.createLabel(users, Defaults.LABEL);
       } else if (setting.startsWith("forwarding")) {
-        settings.changeForwarding(new String[] {destinationUser}, 
-            Defaults.FORWARDING_ENABLE, Defaults.FORWARDING_FORWARD_TO,
-            Defaults.FORWARDING_ACTION);
+        settings.changeForwarding(users, Defaults.FORWARDING_ENABLE, 
+            Defaults.FORWARDING_FORWARD_TO, Defaults.FORWARDING_ACTION);
       } else if (setting.startsWith("pop")) {
-        settings.changePop(new String[] {destinationUser}, 
-            Defaults.POP_ENABLE, Defaults.POP_ENABLE_FOR, Defaults.POP_ACTION);
+        settings.changePop(users, Defaults.POP_ENABLE, Defaults.POP_ENABLE_FOR, 
+            Defaults.POP_ACTION);
       } else if (setting.startsWith("imap")) {
-        settings.changeImap(new String[] {destinationUser},
-            Defaults.IMAP_ENABLE);
+        settings.changeImap(users, Defaults.IMAP_ENABLE);
       } else if (setting.startsWith("vacation")) {
-        settings.changeVacation(new String[] {destinationUser}, 
-            Defaults.VACATION_ENABLE, Defaults.VACATION_SUBJECT, 
-            Defaults.VACATION_MESSAGE, Defaults.VACATION_CONTACTS_ONLY);
+        settings.changeVacation(users, Defaults.VACATION_ENABLE, 
+            Defaults.VACATION_SUBJECT, Defaults.VACATION_MESSAGE, 
+            Defaults.VACATION_CONTACTS_ONLY);
       } else if (setting.startsWith("signature")) {
-        settings.changeSignature(new String[] {destinationUser}, 
-            Defaults.SIGNATURE);
+        settings.changeSignature(users, Defaults.SIGNATURE);
       } else if (setting.startsWith("general")) {
-        settings.changeGeneral(new String[] {destinationUser}, 
+        settings.changeGeneral(users,  
             Defaults.GENERAL_PAGE_SIZE, 
             Defaults.GENERAL_ENABLE_SHORTCUTS, 
             Defaults.GENERAL_ENABLE_ARROWS, 
             Defaults.GENERAL_ENABLE_SNIPPETS, 
             Defaults.GENERAL_ENABLE_UNICODE);
       } else if (setting.startsWith("language")) {
-        settings.changeLanguage(new String[] {destinationUser}, 
-            Defaults.LANGUAGE);
+        settings.changeLanguage(users, Defaults.LANGUAGE);
+      } else if (setting.startsWith("webclip")) {
+        settings.changeWebClip(users, Defaults.WEBCLIP_ENABLE);
       } else {
           printUsageAndExit();
       }
     } catch (AuthenticationException e) {
       System.err.println(e);
-    } catch (InvalidUserException e) {
+    } catch (IllegalArgumentException e) {
       System.err.println(e);
     } catch (ServiceException e) {
       System.err.println(e);

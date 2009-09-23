@@ -34,6 +34,7 @@ import com.google.gdata.util.ServiceException;
 import com.google.gdata.wireformats.ContentCreationException;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,6 +104,12 @@ public class Feed extends Source implements IFeed {
       new QName(Namespaces.gNs, "kind"));
 
   /**
+   * The xml:base attribute.
+   */
+  public static final AttributeKey<URI> XML_BASE = AttributeKey.of(
+      new QName(Namespaces.xmlNs, "base"), URI.class);
+  
+  /**
    * The opensearch:itemsPerPage element.
    */
   public static final ElementKey<Integer, Element> ITEMS_PER_PAGE =
@@ -140,6 +147,7 @@ public class Feed extends Source implements IFeed {
     // Local properties
     builder.addAttribute(ETAG);
     builder.addAttribute(GD_KIND);
+    builder.addAttribute(XML_BASE);
     builder.addElement(TOTAL_RESULTS);
     builder.addElement(START_INDEX);
     builder.addElement(ITEMS_PER_PAGE);
@@ -304,6 +312,22 @@ public class Feed extends Source implements IFeed {
     setAttributeValue(GD_KIND, v);
   }
 
+  /**
+   * Returns the current xml:base attribute for this feed.  The base attribute
+   * may be {@code null} if this feed does not have an xml:base.
+   */
+  public URI getXmlBase() {
+    return getAttributeValue(XML_BASE);
+  }
+  
+  /**
+   * Sets the current xml:base attribute for this feed.  The base may be set to
+   * {@code null} to remove the attribute value.
+   */
+  public void setXmlBase(URI v) {
+    setAttributeValue(XML_BASE, v);
+  }
+  
   /**
    * Gets the total number of results associated with this feed. The value may
    * be larger than the number of contained entries for paged feeds. A value of
