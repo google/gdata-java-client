@@ -8,6 +8,9 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.37.0 ==
+   * Added support for Google Sidewiki Data API.
+
 == 1.36.0 ==
    * Added support for version 3 of Documents List Data API.  This update includes support for PDF uploads, folder sharing, domain and group level !ACLs, and document revision history.
 
