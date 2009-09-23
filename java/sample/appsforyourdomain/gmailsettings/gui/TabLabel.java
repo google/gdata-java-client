@@ -17,20 +17,24 @@
 package sample.appsforyourdomain.gmailsettings.gui;
 
 import sample.appsforyourdomain.gmailsettings.Defaults;
-import sample.appsforyourdomain.gmailsettings.InvalidUserException;
 import com.google.gdata.util.ServiceException;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 /**
 * Tab containing all the label information.
 */
 public class TabLabel extends Tab  {
-  protected SpringLayout layout; 
+  protected SpringLayout layout;
   protected JLabel labelLabel;
   protected JTextField label;
   protected JButton submit;
@@ -42,15 +46,15 @@ public class TabLabel extends Tab  {
     super("Label", "");
     layout = new SpringLayout();
     setLayout(layout);
-   
-    labelLabel = new JLabel("Label: "); 
+
+    labelLabel = new JLabel("Label: ");
     label = new JTextField(Defaults.LABEL, 25);
 
     submit = new JButton("Submit");
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           if (GmailSettingsClient.settings == null) {
-            JOptionPane.showMessageDialog(null, 
+            JOptionPane.showMessageDialog(null,
                 GmailSettingsClient.ERROR_AUTHENTICATION_REQUIRED,
                 GmailSettingsClient.APP_TITLE, JOptionPane.ERROR_MESSAGE);
             return;
@@ -59,19 +63,19 @@ public class TabLabel extends Tab  {
           try {
             GmailSettingsClient.settings.createLabel(GmailSettingsClient.users.
                 getSelectedUsers(), label.getText());
-          } catch (InvalidUserException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+          } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (ServiceException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (MalformedURLException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (IOException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
-          } 
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
+          }
         }
       });
 

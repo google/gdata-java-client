@@ -1,5 +1,11 @@
 Google Data API - Release Notes
 
+Notes for v1.37.0
+-----------------
+Sep 23, 2009
+o  Added support for Google Sidewiki Data API
+   (http://code.google.com/apis/sidewiki).
+
 Notes for v1.36.0
 -----------------
 Aug 25, 2009

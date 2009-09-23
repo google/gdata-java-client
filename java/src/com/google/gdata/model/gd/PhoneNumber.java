@@ -159,21 +159,24 @@ public class PhoneNumber extends Element {
       return;
     }
 
-    ElementCreator builder = registry.build(KEY).setContentRequired(true);
+    // The builder for this element
+    ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(LABEL);
     builder.addAttribute(PRIMARY);
     builder.addAttribute(REL);
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public PhoneNumber() {
     super(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using a custom key.
+   * Subclass constructor, allows subclasses to supply their own element key.
    */
   protected PhoneNumber(ElementKey<String, ? extends PhoneNumber> key) {
     super(key);
@@ -181,10 +184,12 @@ public class PhoneNumber extends Element {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Element} instance. Will use the given {@link ElementKey} as the
-   * key for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
    *
-   * @param key key to use for this element.
+   * @param key The key to use for this element.
    * @param source source element
    */
   protected PhoneNumber(ElementKey<String, ? extends PhoneNumber> key,
@@ -202,10 +207,10 @@ public class PhoneNumber extends Element {
     setValue(value);
   }
 
-  @Override
-  public PhoneNumber lock() {
-    return (PhoneNumber) super.lock();
-  }
+   @Override
+   public PhoneNumber lock() {
+     return (PhoneNumber) super.lock();
+   }
 
   /**
    * Returns the simple string value used to name this phone number.
@@ -213,17 +218,19 @@ public class PhoneNumber extends Element {
    * @return simple string value used to name this phone number
    */
   public String getLabel() {
-    return getAttributeValue(LABEL);
+    return super.getAttributeValue(LABEL);
   }
 
   /**
    * Sets the simple string value used to name this phone number.
    *
-   * @param label simple string value used to name this phone number or
-   *     <code>null</code> to reset
+   * @param label simple string value used to name this phone number or {@code
+   *     null} to reset
+   * @return this to enable chaining setters
    */
-  public void setLabel(String label) {
+  public PhoneNumber setLabel(String label) {
     super.setAttributeValue(LABEL, label);
+    return this;
   }
 
   /**
@@ -243,17 +250,19 @@ public class PhoneNumber extends Element {
    * @return whether this is the primary phone number
    */
   public Boolean getPrimary() {
-    return getAttributeValue(PRIMARY);
+    return super.getAttributeValue(PRIMARY);
   }
 
   /**
    * Sets the whether this is the primary phone number.
    *
-   * @param primary whether this is the primary phone number or
-   *     <code>null</code> to reset
+   * @param primary whether this is the primary phone number or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
-  public void setPrimary(Boolean primary) {
+  public PhoneNumber setPrimary(Boolean primary) {
     super.setAttributeValue(PRIMARY, primary);
+    return this;
   }
 
   /**
@@ -271,17 +280,19 @@ public class PhoneNumber extends Element {
    * @return programmatic value that identifies the type of phone number
    */
   public String getRel() {
-    return getAttributeValue(REL);
+    return super.getAttributeValue(REL);
   }
 
   /**
    * Sets the programmatic value that identifies the type of phone number.
    *
    * @param rel programmatic value that identifies the type of phone number or
-   *     <code>null</code> to reset
+   *     {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setRel(String rel) {
+  public PhoneNumber setRel(String rel) {
     super.setAttributeValue(REL, rel);
+    return this;
   }
 
   /**
@@ -307,10 +318,12 @@ public class PhoneNumber extends Element {
   /**
    * Sets the human-readable phone number.
    *
-   * @param value human-readable phone number or <code>null</code> to reset
+   * @param value human-readable phone number or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setValue(String value) {
+  public PhoneNumber setValue(String value) {
     super.setTextValue(value);
+    return this;
   }
 
   /**
@@ -355,10 +368,5 @@ public class PhoneNumber extends Element {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "{PhoneNumber label=" + getAttributeValue(LABEL) + " primary=" +
-    getAttributeValue(PRIMARY) + " rel=" + getAttributeValue(REL) + " value=" +
-        getTextValue() + "}";
-  }
 }
+

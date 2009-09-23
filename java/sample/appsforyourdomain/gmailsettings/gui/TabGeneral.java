@@ -18,14 +18,19 @@ package sample.appsforyourdomain.gmailsettings.gui;
 
 import sample.appsforyourdomain.gmailsettings.Constants;
 import sample.appsforyourdomain.gmailsettings.Defaults;
-import sample.appsforyourdomain.gmailsettings.InvalidUserException;
 import com.google.gdata.util.ServiceException;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SpringLayout;
 
 /**
  * Tab containing all the general information.
@@ -71,22 +76,22 @@ public class TabGeneral extends Tab  {
 
           try {
             GmailSettingsClient.settings.changeGeneral(GmailSettingsClient.users.
-                getSelectedUsers(), pageSize.getSelectedItem().toString(), 
-                enableShortcuts.isSelected(), enableArrows.isSelected(), 
-                enableSnippets.isSelected(), 
+                getSelectedUsers(), pageSize.getSelectedItem().toString(),
+                enableShortcuts.isSelected(), enableArrows.isSelected(),
+                enableSnippets.isSelected(),
                 enableUnicode.isSelected());
-          } catch (InvalidUserException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+          } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (ServiceException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (MalformedURLException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (IOException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           }
         }
       });

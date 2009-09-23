@@ -16,7 +16,7 @@
 
 package sample.appsforyourdomain.gmailsettings.gui;
 
-import javax.swing.*;
+import javax.swing.JTabbedPane;
 
 /**
  * Handles adding all the tabs needed.
@@ -34,10 +34,11 @@ public class TabbedPane extends JTabbedPane {
   protected Tab vacationTab;
   protected Tab languageTab;
   protected Tab generalTab;
- 
+  protected Tab webClipTab;
+
   /**
    * Create an instance of all tabs required, and add them to the pane.
-   */ 
+   */
   public TabbedPane() {
     super(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 
@@ -52,7 +53,8 @@ public class TabbedPane extends JTabbedPane {
     vacationTab = new TabVacation();
     languageTab = new TabLanguage();
     generalTab = new TabGeneral();
-    
+    webClipTab = new TabWebClip();
+
     addTab(authenticationTab);
     addTab(signatureTab);
     addTab(labelTab);
@@ -64,10 +66,11 @@ public class TabbedPane extends JTabbedPane {
     addTab(vacationTab);
     addTab(languageTab);
     addTab(generalTab);
-    
-    this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);  
+    addTab(webClipTab);
+
+    this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
   }
-  
+
   /**
    * Helper method for adding tabs to the pane.
    *

@@ -17,14 +17,19 @@
 package sample.appsforyourdomain.gmailsettings.gui;
 
 import sample.appsforyourdomain.gmailsettings.Defaults;
-import sample.appsforyourdomain.gmailsettings.InvalidUserException;
 import com.google.gdata.util.ServiceException;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 /**
  * Tab containing all the send as information.
@@ -32,7 +37,7 @@ import javax.swing.*;
 public class TabSendAs extends Tab {
   protected SpringLayout layout;
   protected JLabel nameLabel;
-  protected JTextField name;
+  protected JTextField nameField;
   protected JLabel addressLabel;
   protected JTextField address;
   protected JLabel replyToLabel;
@@ -46,11 +51,11 @@ public class TabSendAs extends Tab {
   public TabSendAs() {
     super("Send As", "");
     layout = new SpringLayout();
-    setLayout(layout); 
+    setLayout(layout);
 
     nameLabel = new JLabel("Name: ");
-    name = new JTextField(Defaults.SEND_AS_NAME, 25);
- 
+    nameField = new JTextField(Defaults.SEND_AS_NAME, 25);
+
     addressLabel = new JLabel("Address: ");
     address = new JTextField(Defaults.SEND_AS_ADDRESS, 25);
 
@@ -70,47 +75,47 @@ public class TabSendAs extends Tab {
 
           try {
             GmailSettingsClient.settings.createSendAs(GmailSettingsClient.users.
-                getSelectedUsers(), name.getText(), address.getText(), replyTo.getText(), 
+                getSelectedUsers(), nameField.getText(), address.getText(), replyTo.getText(),
                 makeDefault.isSelected());
-          } catch (InvalidUserException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+          } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (ServiceException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (MalformedURLException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (IOException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
-          } 
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
+          }
         }
       });
 
     layout.putConstraint(SpringLayout.WEST, nameLabel, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, nameLabel, 5, SpringLayout.NORTH, this);
-    layout.putConstraint(SpringLayout.WEST, name, 5, SpringLayout.EAST, nameLabel);
-    layout.putConstraint(SpringLayout.NORTH, name, 5, SpringLayout.NORTH, this);
+    layout.putConstraint(SpringLayout.WEST, nameField, 5, SpringLayout.EAST, nameLabel);
+    layout.putConstraint(SpringLayout.NORTH, nameField, 5, SpringLayout.NORTH, this);
 
     layout.putConstraint(SpringLayout.WEST, addressLabel, 5, SpringLayout.WEST, this);
-    layout.putConstraint(SpringLayout.NORTH, addressLabel, 5, SpringLayout.SOUTH, name);
+    layout.putConstraint(SpringLayout.NORTH, addressLabel, 5, SpringLayout.SOUTH, nameField);
     layout.putConstraint(SpringLayout.WEST, address, 5, SpringLayout.EAST, addressLabel);
-    layout.putConstraint(SpringLayout.NORTH, address, 5, SpringLayout.SOUTH, name);
+    layout.putConstraint(SpringLayout.NORTH, address, 5, SpringLayout.SOUTH, nameField);
 
     layout.putConstraint(SpringLayout.WEST, replyToLabel, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, replyToLabel, 5, SpringLayout.SOUTH, address);
     layout.putConstraint(SpringLayout.WEST, replyTo, 5, SpringLayout.EAST, replyToLabel);
     layout.putConstraint(SpringLayout.NORTH, replyTo, 5, SpringLayout.SOUTH, address);
- 
+
     layout.putConstraint(SpringLayout.WEST, makeDefault, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, makeDefault, 5, SpringLayout.SOUTH, replyTo);
- 
+
     layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, makeDefault);
 
     add(nameLabel);
-    add(name);
+    add(nameField);
     add(addressLabel);
     add(address);
     add(replyToLabel);

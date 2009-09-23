@@ -21,6 +21,8 @@ import com.google.gdata.client.Service;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 /**
  * Base interface for Atom resource types.  Contains a common set of methods
  * across both entries and feeds and a can also be used as a parameter type in
@@ -115,6 +117,18 @@ public interface IAtom {
    * Sets the value of the gd:etag attribute for this resource.
    */
   public void setEtag(String etag);
+
+  /**
+   * Returns the value of the gd:kind attribute for this resource.  Returns
+   * {@code null} if the kind attribute is missing.
+   */
+  public String getKind();
+  
+  /**
+   * Sets the value of the gd:kind attribute for this resource.  A value of
+   * {@code null} will remove the kind attribute.
+   */
+  public void setKind(String kind);
 
   /**
    * Version ID. This is a unique number representing this particular

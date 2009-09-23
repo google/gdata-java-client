@@ -86,7 +86,10 @@ public class Organization extends Element {
       return;
     }
 
+    // The builder for this element
     ElementCreator builder = registry.build(KEY);
+
+    // Local properties
     builder.addAttribute(LABEL);
     builder.addAttribute(PRIMARY);
     builder.addAttribute(REL);
@@ -99,14 +102,14 @@ public class Organization extends Element {
   }
 
   /**
-   * Default mutable constructor.
+   * Constructs an instance using the default key.
    */
   public Organization() {
     super(KEY);
   }
 
   /**
-   * Lets subclasses create an instance using a custom key.
+   * Subclass constructor, allows subclasses to supply their own element key.
    */
   protected Organization(ElementKey<?, ? extends Organization> key) {
     super(key);
@@ -114,10 +117,12 @@ public class Organization extends Element {
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link Element} instance. Will use the given {@link ElementKey} as the
-   * key for the element.
+   * {@link Element} instance. Will use the given {@link ElementKey} as the key
+   * for the element. This constructor is used when adapting from one element
+   * key to another. You cannot call this constructor directly, instead use
+   * {@link Element#createElement(ElementKey, Element)}.
    *
-   * @param key key to use for this element.
+   * @param key The key to use for this element.
    * @param source source element
    */
   protected Organization(ElementKey<?, ? extends Organization> key,
@@ -125,10 +130,10 @@ public class Organization extends Element {
     super(key, source);
   }
 
-  @Override
-  public Organization lock() {
-    return (Organization) super.lock();
-  }
+   @Override
+   public Organization lock() {
+     return (Organization) super.lock();
+   }
 
   /**
    * Returns the label.
@@ -142,10 +147,12 @@ public class Organization extends Element {
   /**
    * Sets the label.
    *
-   * @param label label or <code>null</code> to reset
+   * @param label label or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setLabel(String label) {
+  public Organization setLabel(String label) {
     super.setAttributeValue(LABEL, label);
+    return this;
   }
 
   /**
@@ -169,11 +176,13 @@ public class Organization extends Element {
   /**
    * Sets the department name in organization.
    *
-   * @param orgDepartment department name in organization or <code>null</code>
-   *     to reset
+   * @param orgDepartment department name in organization or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
-  public void setOrgDepartment(OrgDepartment orgDepartment) {
+  public Organization setOrgDepartment(OrgDepartment orgDepartment) {
     super.setElement(OrgDepartment.KEY, orgDepartment);
+    return this;
   }
 
   /**
@@ -197,10 +206,13 @@ public class Organization extends Element {
   /**
    * Sets the job description.
    *
-   * @param orgJobDescription job description or <code>null</code> to reset
+   * @param orgJobDescription job description or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setOrgJobDescription(OrgJobDescription orgJobDescription) {
+  public Organization setOrgJobDescription(OrgJobDescription orgJobDescription)
+      {
     super.setElement(OrgJobDescription.KEY, orgJobDescription);
+    return this;
   }
 
   /**
@@ -224,10 +236,12 @@ public class Organization extends Element {
   /**
    * Sets the name of organization.
    *
-   * @param orgName name of organization or <code>null</code> to reset
+   * @param orgName name of organization or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setOrgName(OrgName orgName) {
+  public Organization setOrgName(OrgName orgName) {
     super.setElement(OrgName.KEY, orgName);
+    return this;
   }
 
   /**
@@ -251,10 +265,12 @@ public class Organization extends Element {
   /**
    * Sets the organization symbol/ticker.
    *
-   * @param orgSymbol organization symbol/ticker or <code>null</code> to reset
+   * @param orgSymbol organization symbol/ticker or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setOrgSymbol(OrgSymbol orgSymbol) {
+  public Organization setOrgSymbol(OrgSymbol orgSymbol) {
     super.setElement(OrgSymbol.KEY, orgSymbol);
+    return this;
   }
 
   /**
@@ -278,10 +294,12 @@ public class Organization extends Element {
   /**
    * Sets the position in organization.
    *
-   * @param orgTitle position in organization or <code>null</code> to reset
+   * @param orgTitle position in organization or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setOrgTitle(OrgTitle orgTitle) {
+  public Organization setOrgTitle(OrgTitle orgTitle) {
     super.setElement(OrgTitle.KEY, orgTitle);
+    return this;
   }
 
   /**
@@ -305,11 +323,13 @@ public class Organization extends Element {
   /**
    * Sets the whether this is the primary organization.
    *
-   * @param primary whether this is the primary organization or
-   *     <code>null</code> to reset
+   * @param primary whether this is the primary organization or {@code null} to
+   *     reset
+   * @return this to enable chaining setters
    */
-  public void setPrimary(Boolean primary) {
+  public Organization setPrimary(Boolean primary) {
     super.setAttributeValue(PRIMARY, primary);
+    return this;
   }
 
   /**
@@ -327,16 +347,18 @@ public class Organization extends Element {
    * @return organization type
    */
   public String getRel() {
-    return getAttributeValue(REL);
+    return super.getAttributeValue(REL);
   }
 
   /**
    * Sets the organization type.
    *
-   * @param rel organization type or <code>null</code> to reset
+   * @param rel organization type or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setRel(String rel) {
+  public Organization setRel(String rel) {
     super.setAttributeValue(REL, rel);
+    return this;
   }
 
   /**
@@ -360,10 +382,12 @@ public class Organization extends Element {
   /**
    * Sets the office location.
    *
-   * @param where office location or <code>null</code> to reset
+   * @param where office location or {@code null} to reset
+   * @return this to enable chaining setters
    */
-  public void setWhere(Where where) {
+  public Organization setWhere(Where where) {
     super.setElement(Where.KEY, where);
+    return this;
   }
 
   /**
@@ -375,9 +399,6 @@ public class Organization extends Element {
     return super.hasElement(Where.KEY);
   }
 
-  @Override
-  public String toString() {
-    return "{Organization label=" + getAttributeValue(LABEL) + " primary=" +
-        getAttributeValue(PRIMARY) + " rel=" + getAttributeValue(REL) + "}";
-  }
+
 }
+

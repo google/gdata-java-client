@@ -17,14 +17,19 @@
 package sample.appsforyourdomain.gmailsettings.gui;
 
 import sample.appsforyourdomain.gmailsettings.Defaults;
-import sample.appsforyourdomain.gmailsettings.InvalidUserException;
 import com.google.gdata.util.ServiceException;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 /**
  * Tab containing all the vacation information.
@@ -52,10 +57,10 @@ public class TabVacation extends Tab  {
 
     subjectLabel = new JLabel("Subject: ");
     subject = new JTextField(Defaults.VACATION_SUBJECT, 25);
-   
+
     messageLabel = new JLabel("Message: ");
     message = new JTextField(Defaults.VACATION_MESSAGE, 25);
- 
+
     contactsOnly = new JCheckBox("Contacts only:", Defaults.VACATION_CONTACTS_ONLY);
 
     submit = new JButton("Submit");
@@ -71,19 +76,19 @@ public class TabVacation extends Tab  {
             GmailSettingsClient.settings.changeVacation(GmailSettingsClient.users.
                 getSelectedUsers(), enable.isSelected(), subject.getText(), message.getText(),
                 contactsOnly.isSelected());
-          } catch (InvalidUserException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+          } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (ServiceException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (MalformedURLException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
           } catch (IOException e) {
-             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
-                 JOptionPane.ERROR_MESSAGE);
-          } 
+            JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
+                JOptionPane.ERROR_MESSAGE);
+          }
         }
       });
 
@@ -94,7 +99,7 @@ public class TabVacation extends Tab  {
     layout.putConstraint(SpringLayout.NORTH, subjectLabel, 5, SpringLayout.SOUTH, enable);
     layout.putConstraint(SpringLayout.WEST, subject, 5, SpringLayout.EAST, subjectLabel);
     layout.putConstraint(SpringLayout.NORTH, subject, 5, SpringLayout.SOUTH, enable);
- 
+
     layout.putConstraint(SpringLayout.WEST, messageLabel, 5, SpringLayout.WEST, this);
     layout.putConstraint(SpringLayout.NORTH, messageLabel, 5, SpringLayout.SOUTH, subject);
     layout.putConstraint(SpringLayout.WEST, message, 5, SpringLayout.EAST, messageLabel);

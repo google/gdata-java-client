@@ -37,12 +37,12 @@ public abstract class AppsForYourDomainService extends GoogleService {
   /**
    * The domain which hosts the the authentication.
    */
-  protected static final String DOMAIN_NAME = "www.google.com";
+  public static final String DOMAIN_NAME = "www.google.com";
 
   /**
    * The protocol used to obtain authentication tokens.
    */
-  protected static final String HTTPS_PROTOCOL = "https";
+  public static final String HTTPS_PROTOCOL = "https";
 
 
   /**

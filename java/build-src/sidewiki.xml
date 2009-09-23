@@ -1,0 +1,32 @@
+<project name="sidewiki" default="build.sidewiki" basedir=".">
+  <!-- Path containing sidewiki.xml -->
+  <dirname property="build_dir" file="${ant.file.sidewiki}"/>
+  <import file="${build_dir}/core.xml"/>
+
+  <!--  ===================================================================== -->
+  <!--                 Build GData Sidewiki library.                          -->
+  <!--  ===================================================================== -->
+
+  <property name="gdata-sidewiki.jar"
+    value="${build.jars}/gdata-sidewiki-${sidewiki.spec.version}.jar"/>
+
+
+  <target name="build.sidewiki" depends="build.core.client">
+    <antcall target="template.build.service">
+      <param name="template.service.name" value="sidewiki"/>
+      <param name="template.service.version" value="${sidewiki.spec.version}"/>
+      <param name="template.service.includes" value="**/sidewiki/**"/>
+      <param name="template.service.excludes" value="none"/>
+      <param name="template.service.classpath" value="build.service.core.classpath"/>
+      <param name="template.service.name" value="sidewiki"/>
+    </antcall>
+  </target>
+
+  <target name="clean.sidewiki">
+    <antcall target="template.clean.service">
+      <param name="template.service.name" value="sidewiki"/>
+    </antcall>
+  </target>
+
+
+</project>
