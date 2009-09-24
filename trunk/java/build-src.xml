@@ -25,6 +25,7 @@
   <import file="build-src/maps.xml"/>
   <import file="build-src/photos.xml"/>
   <import file="build-src/sidewiki.xml"/>
+  <import file="build-src/sites.xml"/>
   <import file="build-src/spreadsheet.xml"/>
   <import file="build-src/youtube.xml"/>
   <import file="build-src/webmastertools.xml"/>
@@ -50,6 +51,7 @@
                                 build.maps,
                                 build.photos,
                                 build.sidewiki,
+                                build.sites,
                                 build.spreadsheet,
                                 build.youtube,
                                 build.webmastertools"/>
@@ -68,6 +70,7 @@
                                 clean.maps,
                                 clean.photos,
                                 clean.sidewiki,
+                                clean.sites,
                                 clean.spreadsheet,
                                 clean.youtube,
                                 clean.webmastertools"/>

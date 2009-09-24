@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Class-Path: gdata-client-@client.spec.version@.jar gdata-sidewiki-meta-@sidewiki.spec.version@.jar
+Class-Path: gdata-client-@client.spec.version@.jar gdata-media-@media.spec.version@.jar gdata-sidewiki-meta-@sidewiki.spec.version@.jar
 
 Name: com/google/gdata/client/sidewiki/
 Specification-Title: Google Sidewiki Data API
