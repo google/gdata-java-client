@@ -1,5 +1,10 @@
 Google Data API - Release Notes
 
+Notes for v1.38.0
+-----------------
+Sep 24, 2009
+o  Added support for Google Sites Data API.
+
 Notes for v1.37.0
 -----------------
 Sep 23, 2009
