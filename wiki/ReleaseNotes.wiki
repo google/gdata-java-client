@@ -8,6 +8,10 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.38.0 ==
+   * Added support for Google Sites Data API.
+
+
 == 1.37.0 ==
    * Added support for Google Sidewiki Data API.
 
