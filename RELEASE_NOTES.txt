@@ -1,5 +1,9 @@
 Google Data API - Release Notes
 
+Notes for v1.39.0
+-----------------
+o  Added support for Google Project Hosting Data API.
+
 Notes for v1.38.0
 -----------------
 Sep 24, 2009

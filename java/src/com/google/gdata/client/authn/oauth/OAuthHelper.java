@@ -19,6 +19,7 @@ package com.google.gdata.client.authn.oauth;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,7 @@ public class OAuthHelper {
   private String requestTokenUrl;
   private String userAuthorizationUrl;
   private String accessTokenUrl;
+  private String revokeTokenUrl;
 
   private OAuthHttpClient httpClient;
   private OAuthSigner signer;
@@ -174,6 +176,7 @@ public class OAuthHelper {
    *        token for an access token
    * @param signer the {@link OAuthSigner} to use when signing the request
    */
+  @Deprecated
   public OAuthHelper(String requestTokenUrl, String userAuthorizationUrl,
       String accessTokenUrl, OAuthSigner signer) {
     this(requestTokenUrl, userAuthorizationUrl, accessTokenUrl, signer,
@@ -194,11 +197,55 @@ public class OAuthHelper {
    * @param httpClient the {@link OAuthHttpClient} to use when making http
    *        requests
    */
-  OAuthHelper(String requestTokenUrl, String userAuthorizationUrl,
+  @Deprecated
+  public OAuthHelper(String requestTokenUrl, String userAuthorizationUrl,
       String accessTokenUrl, OAuthSigner signer, OAuthHttpClient httpClient) {
     this.requestTokenUrl = requestTokenUrl;
     this.userAuthorizationUrl = userAuthorizationUrl;
     this.accessTokenUrl = accessTokenUrl;
+    this.signer = signer;
+    this.httpClient = httpClient;
+  }
+
+  /**
+   * Create a new {@link OAuthHelper} object.
+   *
+   * @param requestTokenUrl the url used to obtain an unauthorized request token
+   * @param userAuthorizationUrl the url used to obtain user authorization for
+   *        consumer access
+   * @param accessTokenUrl the url used to exchange the user-authorized request
+   *        token for an access token
+   * @param revokeTokenUrl the url used to revoke the OAuth token
+   * @param signer the {@link OAuthSigner} to use when signing the request
+   */
+  public OAuthHelper(String requestTokenUrl, String userAuthorizationUrl,
+      String accessTokenUrl, String revokeTokenUrl, OAuthSigner signer) {
+    this(requestTokenUrl, userAuthorizationUrl, accessTokenUrl, revokeTokenUrl,
+        signer, new OAuthHttpClient());
+  }
+
+  /**
+   * Create a new {@link OAuthHelper} object.  This version of the constructor
+   * is primarily for testing purposes, where a mocked {@link OAuthHttpClient}
+   * and {@link OAuthSigner} can be specified.
+   *
+   * @param requestTokenUrl the url used to obtain an unauthorized request token
+   * @param userAuthorizationUrl the url used to obtain user authorization for
+   *        consumer access
+   * @param accessTokenUrl the url used to exchange the user-authorized request
+   *        token for an access token
+   * @param revokeTokenUrl the url used to revoke the OAuth token
+   * @param signer the {@link OAuthSigner} to use when signing the request
+   * @param httpClient the {@link OAuthHttpClient} to use when making http
+   *        requests
+   */
+  public OAuthHelper(String requestTokenUrl, String userAuthorizationUrl,
+      String accessTokenUrl, String revokeTokenUrl, OAuthSigner signer,
+      OAuthHttpClient httpClient) {
+    this.requestTokenUrl = requestTokenUrl;
+    this.userAuthorizationUrl = userAuthorizationUrl;
+    this.accessTokenUrl = accessTokenUrl;
+    this.revokeTokenUrl = revokeTokenUrl;
     this.signer = signer;
     this.httpClient = httpClient;
   }
@@ -231,6 +278,16 @@ public class OAuthHelper {
   /** Set the user authorization url */
   public void setUserAuthorizationUrl(String url) {
     userAuthorizationUrl = url;
+  }
+
+  /** Get the revoke token url */
+  public String getRevokeTokenUrl() {
+    return revokeTokenUrl;
+  }
+
+  /** Set the revoke token url */
+  public void setRevokeTokenUrl(String url) {
+    revokeTokenUrl = url;
   }
 
   /**
@@ -547,6 +604,12 @@ public class OAuthHelper {
     if (signer instanceof OAuthHmacSha1Signer) {
       oauthParameters.assertOAuthConsumerSecretExists();
     }
+    if (!isTwoLeggedOAuth(requestUrl)) {
+      oauthParameters.assertOAuthTokenExists();
+      if (signer instanceof OAuthHmacSha1Signer) {
+        oauthParameters.assertOAuthTokenSecretExists();
+      }
+    }
 
     // add request-specific parameters
     addCommonRequestParameters(requestUrl, httpMethod, oauthParameters);
@@ -577,6 +640,34 @@ public class OAuthHelper {
   }
 
   /**
+   * Revokes the user's OAuth token. The following parameters are required in
+   * {@link OAuthParameters}:
+   * <ul>
+   * <li>oauth_consumer_key
+   * <li>oauth_token
+   * <li>oauth_token_secret (if signing with HMAC)
+   * </ul>
+   * Only tokens obtained by three-legged OAuth can be revoked (in other words,
+   * this method is not applicable to two-legged OAuth).
+   *
+   * @param oauthParameters OAuth parameters for this request.
+   * @throws OAuthException if there is an error with the OAuth request
+   */
+  public void revokeToken(OAuthParameters oauthParameters)
+      throws OAuthException {
+
+    Map<String, String> headers = new HashMap<String, String>();
+    headers.put("Authorization",
+        getAuthorizationHeader(revokeTokenUrl, "GET", oauthParameters));
+
+    try {
+      httpClient.getResponse(new URL(revokeTokenUrl), headers);
+    } catch (MalformedURLException mue) {
+      throw new OAuthException(mue);
+    }
+  }
+
+  /**
    * Returns a properly formatted and signed OAuth request url, with the
    * appropriate parameters.
    *
@@ -586,7 +677,7 @@ public class OAuthHelper {
    * @return the OAuth request url
    * @throws OAuthException if there is an error with the OAuth request
    */
-  private URL getOAuthUrl(String baseUrl, String httpMethod,
+  public URL getOAuthUrl(String baseUrl, String httpMethod,
       OAuthParameters oauthParameters) throws OAuthException {
     // add request-specific parameters
     addCommonRequestParameters(baseUrl, httpMethod, oauthParameters);
@@ -651,5 +742,10 @@ public class OAuthHelper {
       oauthParameters.setOAuthSignature(
           signer.getSignature(baseString, oauthParameters));
     }
+  }
+
+  /** Returns whether the request is a Two-Legged OAuth request. */
+  private boolean isTwoLeggedOAuth(String requestUrl) {
+    return requestUrl.contains(OAuthParameters.XOAUTH_REQUESTOR_ID_KEY);
   }
 }

@@ -16,6 +16,7 @@
 
 package com.google.gdata.model.select.parser;
 
+import com.google.gdata.model.ElementKey;
 import com.google.gdata.model.Path;
 import com.google.gdata.model.PathException;
 import com.google.gdata.model.QName;
@@ -23,6 +24,7 @@ import com.google.gdata.model.select.ElementCondition;
 import com.google.gdata.model.select.ElementSelector;
 import com.google.gdata.model.select.ExistenceCondition;
 import com.google.gdata.model.select.NotCondition;
+import com.google.gdata.model.select.Selector;
 import com.google.gdata.model.select.ValueMatcher.Operation;
 
 import java.util.ArrayList;
@@ -31,9 +33,9 @@ import java.util.List;
 import static com.google.gdata.model.select.parser.ParserUtil.and;
 import static com.google.gdata.model.select.parser.ParserUtil.buildDateComparisonExpression;
 import static com.google.gdata.model.select.parser.ParserUtil.buildDateTimeComparisonExpression;
-import static com.google.gdata.model.select.parser.ParserUtil.buildElementSelector;
 import static com.google.gdata.model.select.parser.ParserUtil.buildNumberComparisonExpression;
 import static com.google.gdata.model.select.parser.ParserUtil.buildQName;
+import static com.google.gdata.model.select.parser.ParserUtil.buildSelector;
 import static com.google.gdata.model.select.parser.ParserUtil.buildStringComparisonExpression;
 import static com.google.gdata.model.select.parser.ParserUtil.or;
 import static com.google.gdata.model.select.parser.ParserUtil.unquote;
@@ -172,23 +174,23 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "selectionExpr"
-    // java/com/google/gdata/model/select/parser/Selection.g:129:1: selectionExpr returns [List<ElementSelector> value] : ( namespaceDeclarations )? s= elementSelectors[rootPath] EOF ;
-    public final List<ElementSelector> selectionExpr() throws RecognitionException {
-        List<ElementSelector> value = null;
+    // java/com/google/gdata/model/select/parser/Selection.g:131:1: selectionExpr returns [ElementSelector value] : ( namespaceDeclarations )? s= selectors[rootPath] EOF ;
+    public final ElementSelector selectionExpr() throws RecognitionException {
+        ElementSelector value = null;
 
-        List<ElementSelector> s = null;
+        List<Selector> s = null;
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:130:3: ( ( namespaceDeclarations )? s= elementSelectors[rootPath] EOF )
-            // java/com/google/gdata/model/select/parser/Selection.g:130:5: ( namespaceDeclarations )? s= elementSelectors[rootPath] EOF
+            // java/com/google/gdata/model/select/parser/Selection.g:132:3: ( ( namespaceDeclarations )? s= selectors[rootPath] EOF )
+            // java/com/google/gdata/model/select/parser/Selection.g:132:5: ( namespaceDeclarations )? s= selectors[rootPath] EOF
             {
-            // java/com/google/gdata/model/select/parser/Selection.g:130:5: ( namespaceDeclarations )?
+            // java/com/google/gdata/model/select/parser/Selection.g:132:5: ( namespaceDeclarations )?
             int alt1=2;
             alt1 = dfa1.predict(input);
             switch (alt1) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:130:5: namespaceDeclarations
+                    // java/com/google/gdata/model/select/parser/Selection.g:132:5: namespaceDeclarations
                     {
                     pushFollow(FOLLOW_namespaceDeclarations_in_selectionExpr66);
                     namespaceDeclarations();
@@ -201,14 +203,18 @@ public class SelectionParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_elementSelectors_in_selectionExpr71);
-            s=elementSelectors(rootPath);
+            pushFollow(FOLLOW_selectors_in_selectionExpr71);
+            s=selectors(rootPath);
 
             state._fsp--;
 
             match(input,EOF,FOLLOW_EOF_in_selectionExpr74); 
 
-                value = s;
+                if (rootPath == null || rootPath.getSelectedElement() == null) {
+                  value = ElementSelector.from(ElementKey.of(QName.ANY), null, s);
+                } else {
+                  value = ElementSelector.from(rootPath.getSelectedElement().getKey(), null, s);
+                }
               
 
             }
@@ -226,7 +232,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "elementConditionExpr"
-    // java/com/google/gdata/model/select/parser/Selection.g:135:1: elementConditionExpr returns [ElementCondition value] : e= orExpr[rootPath] EOF ;
+    // java/com/google/gdata/model/select/parser/Selection.g:141:1: elementConditionExpr returns [ElementCondition value] : e= orExpr[rootPath] EOF ;
     public final ElementCondition elementConditionExpr() throws RecognitionException {
         ElementCondition value = null;
 
@@ -234,8 +240,8 @@ public class SelectionParser extends Parser {
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:136:3: (e= orExpr[rootPath] EOF )
-            // java/com/google/gdata/model/select/parser/Selection.g:136:5: e= orExpr[rootPath] EOF
+            // java/com/google/gdata/model/select/parser/Selection.g:142:3: (e= orExpr[rootPath] EOF )
+            // java/com/google/gdata/model/select/parser/Selection.g:142:5: e= orExpr[rootPath] EOF
             {
             pushFollow(FOLLOW_orExpr_in_elementConditionExpr95);
             e=orExpr(rootPath);
@@ -262,23 +268,23 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "namespaceDeclarations"
-    // java/com/google/gdata/model/select/parser/Selection.g:142:1: namespaceDeclarations : namespaceDeclaration ( namespaceDeclarations )? ;
+    // java/com/google/gdata/model/select/parser/Selection.g:148:1: namespaceDeclarations : namespaceDeclaration ( namespaceDeclarations )? ;
     public final void namespaceDeclarations() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:143:3: ( namespaceDeclaration ( namespaceDeclarations )? )
-            // java/com/google/gdata/model/select/parser/Selection.g:143:5: namespaceDeclaration ( namespaceDeclarations )?
+            // java/com/google/gdata/model/select/parser/Selection.g:149:3: ( namespaceDeclaration ( namespaceDeclarations )? )
+            // java/com/google/gdata/model/select/parser/Selection.g:149:5: namespaceDeclaration ( namespaceDeclarations )?
             {
             pushFollow(FOLLOW_namespaceDeclaration_in_namespaceDeclarations114);
             namespaceDeclaration();
 
             state._fsp--;
 
-            // java/com/google/gdata/model/select/parser/Selection.g:143:26: ( namespaceDeclarations )?
+            // java/com/google/gdata/model/select/parser/Selection.g:149:26: ( namespaceDeclarations )?
             int alt2=2;
             alt2 = dfa2.predict(input);
             switch (alt2) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:143:27: namespaceDeclarations
+                    // java/com/google/gdata/model/select/parser/Selection.g:149:27: namespaceDeclarations
                     {
                     pushFollow(FOLLOW_namespaceDeclarations_in_namespaceDeclarations117);
                     namespaceDeclarations();
@@ -307,21 +313,21 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "namespaceDeclaration"
-    // java/com/google/gdata/model/select/parser/Selection.g:146:1: namespaceDeclaration : xmlnsToken ( ':' alias= NCNAME )? '=' uri= STRINGLITERAL ;
+    // java/com/google/gdata/model/select/parser/Selection.g:152:1: namespaceDeclaration : xmlnsToken ( ':' alias= NCNAME )? '=' uri= STRINGLITERAL ;
     public final void namespaceDeclaration() throws RecognitionException {
         Token alias=null;
         Token uri=null;
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:147:3: ( xmlnsToken ( ':' alias= NCNAME )? '=' uri= STRINGLITERAL )
-            // java/com/google/gdata/model/select/parser/Selection.g:147:5: xmlnsToken ( ':' alias= NCNAME )? '=' uri= STRINGLITERAL
+            // java/com/google/gdata/model/select/parser/Selection.g:153:3: ( xmlnsToken ( ':' alias= NCNAME )? '=' uri= STRINGLITERAL )
+            // java/com/google/gdata/model/select/parser/Selection.g:153:5: xmlnsToken ( ':' alias= NCNAME )? '=' uri= STRINGLITERAL
             {
             pushFollow(FOLLOW_xmlnsToken_in_namespaceDeclaration132);
             xmlnsToken();
 
             state._fsp--;
 
-            // java/com/google/gdata/model/select/parser/Selection.g:147:16: ( ':' alias= NCNAME )?
+            // java/com/google/gdata/model/select/parser/Selection.g:153:16: ( ':' alias= NCNAME )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -330,7 +336,7 @@ public class SelectionParser extends Parser {
             }
             switch (alt3) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:147:18: ':' alias= NCNAME
+                    // java/com/google/gdata/model/select/parser/Selection.g:153:18: ':' alias= NCNAME
                     {
                     match(input,13,FOLLOW_13_in_namespaceDeclaration136); 
                     alias=(Token)match(input,NCNAME,FOLLOW_NCNAME_in_namespaceDeclaration140); 
@@ -360,29 +366,29 @@ public class SelectionParser extends Parser {
     // $ANTLR end "namespaceDeclaration"
 
 
-    // $ANTLR start "elementSelectors"
-    // java/com/google/gdata/model/select/parser/Selection.g:152:1: elementSelectors[Path path ] returns [List<ElementSelector> value] : (first= elementSelector[path] ) ( ',' more= elementSelector[path] )* ;
-    public final List<ElementSelector> elementSelectors(Path path) throws RecognitionException {
-        List<ElementSelector> value = null;
+    // $ANTLR start "selectors"
+    // java/com/google/gdata/model/select/parser/Selection.g:158:1: selectors[Path path] returns [List<Selector> value] : (first= selector[path] ) ( ',' more= selector[path] )* ;
+    public final List<Selector> selectors(Path path) throws RecognitionException {
+        List<Selector> value = null;
 
-        ElementSelector first = null;
+        Selector first = null;
 
-        ElementSelector more = null;
+        Selector more = null;
 
 
 
-            List<ElementSelector> selectors = new ArrayList<ElementSelector>();
+            List<Selector> selectors = new ArrayList<Selector>();
             value = selectors;
           
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:157:3: ( (first= elementSelector[path] ) ( ',' more= elementSelector[path] )* )
-            // java/com/google/gdata/model/select/parser/Selection.g:157:5: (first= elementSelector[path] ) ( ',' more= elementSelector[path] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:163:3: ( (first= selector[path] ) ( ',' more= selector[path] )* )
+            // java/com/google/gdata/model/select/parser/Selection.g:163:5: (first= selector[path] ) ( ',' more= selector[path] )*
             {
-            // java/com/google/gdata/model/select/parser/Selection.g:157:5: (first= elementSelector[path] )
-            // java/com/google/gdata/model/select/parser/Selection.g:157:6: first= elementSelector[path]
+            // java/com/google/gdata/model/select/parser/Selection.g:163:5: (first= selector[path] )
+            // java/com/google/gdata/model/select/parser/Selection.g:163:6: first= selector[path]
             {
-            pushFollow(FOLLOW_elementSelector_in_elementSelectors181);
-            first=elementSelector(path);
+            pushFollow(FOLLOW_selector_in_selectors181);
+            first=selector(path);
 
             state._fsp--;
 
@@ -390,7 +396,7 @@ public class SelectionParser extends Parser {
 
             }
 
-            // java/com/google/gdata/model/select/parser/Selection.g:158:5: ( ',' more= elementSelector[path] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:164:5: ( ',' more= selector[path] )*
             loop4:
             do {
                 int alt4=2;
@@ -403,11 +409,11 @@ public class SelectionParser extends Parser {
 
                 switch (alt4) {
             	case 1 :
-            	    // java/com/google/gdata/model/select/parser/Selection.g:158:6: ',' more= elementSelector[path]
+            	    // java/com/google/gdata/model/select/parser/Selection.g:164:6: ',' more= selector[path]
             	    {
-            	    match(input,15,FOLLOW_15_in_elementSelectors193); 
-            	    pushFollow(FOLLOW_elementSelector_in_elementSelectors197);
-            	    more=elementSelector(path);
+            	    match(input,15,FOLLOW_15_in_selectors193); 
+            	    pushFollow(FOLLOW_selector_in_selectors197);
+            	    more=selector(path);
 
             	    state._fsp--;
 
@@ -433,31 +439,31 @@ public class SelectionParser extends Parser {
         }
         return value;
     }
-    // $ANTLR end "elementSelectors"
+    // $ANTLR end "selectors"
 
 
-    // $ANTLR start "elementSelector"
-    // java/com/google/gdata/model/select/parser/Selection.g:161:1: elementSelector[Path current] returns [ElementSelector value] : p= selectionPathExpr[current] ( '[' c= orExpr[$p.value] ']' )? ( '(' s= elementSelectors[$p.value] ')' )? ;
-    public final ElementSelector elementSelector(Path current) throws RecognitionException {
-        ElementSelector value = null;
+    // $ANTLR start "selector"
+    // java/com/google/gdata/model/select/parser/Selection.g:167:1: selector[Path current] returns [Selector value] : p= selectionPathExpr[current] ( '[' c= orExpr[$p.value] ']' )? ( '(' s= selectors[$p.value] ')' )? ;
+    public final Selector selector(Path current) throws RecognitionException {
+        Selector value = null;
 
         Path p = null;
 
         ElementCondition c = null;
 
-        List<ElementSelector> s = null;
+        List<Selector> s = null;
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:162:3: (p= selectionPathExpr[current] ( '[' c= orExpr[$p.value] ']' )? ( '(' s= elementSelectors[$p.value] ')' )? )
-            // java/com/google/gdata/model/select/parser/Selection.g:162:5: p= selectionPathExpr[current] ( '[' c= orExpr[$p.value] ']' )? ( '(' s= elementSelectors[$p.value] ')' )?
+            // java/com/google/gdata/model/select/parser/Selection.g:168:3: (p= selectionPathExpr[current] ( '[' c= orExpr[$p.value] ']' )? ( '(' s= selectors[$p.value] ')' )? )
+            // java/com/google/gdata/model/select/parser/Selection.g:168:5: p= selectionPathExpr[current] ( '[' c= orExpr[$p.value] ']' )? ( '(' s= selectors[$p.value] ')' )?
             {
-            pushFollow(FOLLOW_selectionPathExpr_in_elementSelector225);
+            pushFollow(FOLLOW_selectionPathExpr_in_selector225);
             p=selectionPathExpr(current);
 
             state._fsp--;
 
-            // java/com/google/gdata/model/select/parser/Selection.g:163:5: ( '[' c= orExpr[$p.value] ']' )?
+            // java/com/google/gdata/model/select/parser/Selection.g:169:5: ( '[' c= orExpr[$p.value] ']' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -466,22 +472,22 @@ public class SelectionParser extends Parser {
             }
             switch (alt5) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:163:6: '[' c= orExpr[$p.value] ']'
+                    // java/com/google/gdata/model/select/parser/Selection.g:169:6: '[' c= orExpr[$p.value] ']'
                     {
-                    match(input,16,FOLLOW_16_in_elementSelector233); 
-                    pushFollow(FOLLOW_orExpr_in_elementSelector237);
+                    match(input,16,FOLLOW_16_in_selector233); 
+                    pushFollow(FOLLOW_orExpr_in_selector237);
                     c=orExpr(p);
 
                     state._fsp--;
 
-                    match(input,17,FOLLOW_17_in_elementSelector240); 
+                    match(input,17,FOLLOW_17_in_selector240); 
 
                     }
                     break;
 
             }
 
-            // java/com/google/gdata/model/select/parser/Selection.g:164:5: ( '(' s= elementSelectors[$p.value] ')' )?
+            // java/com/google/gdata/model/select/parser/Selection.g:170:5: ( '(' s= selectors[$p.value] ')' )?
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -490,15 +496,15 @@ public class SelectionParser extends Parser {
             }
             switch (alt6) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:164:6: '(' s= elementSelectors[$p.value] ')'
+                    // java/com/google/gdata/model/select/parser/Selection.g:170:6: '(' s= selectors[$p.value] ')'
                     {
-                    match(input,18,FOLLOW_18_in_elementSelector250); 
-                    pushFollow(FOLLOW_elementSelectors_in_elementSelector254);
-                    s=elementSelectors(p);
+                    match(input,18,FOLLOW_18_in_selector250); 
+                    pushFollow(FOLLOW_selectors_in_selector254);
+                    s=selectors(p);
 
                     state._fsp--;
 
-                    match(input,19,FOLLOW_19_in_elementSelector257); 
+                    match(input,19,FOLLOW_19_in_selector257); 
 
                     }
                     break;
@@ -506,7 +512,7 @@ public class SelectionParser extends Parser {
             }
 
 
-                value = buildElementSelector(p, c, s);
+                value = buildSelector(p, c, s, input.LT(1));
               
 
             }
@@ -520,11 +526,11 @@ public class SelectionParser extends Parser {
         }
         return value;
     }
-    // $ANTLR end "elementSelector"
+    // $ANTLR end "selector"
 
 
     // $ANTLR start "orExpr"
-    // java/com/google/gdata/model/select/parser/Selection.g:169:1: orExpr[Path current] returns [ElementCondition value] : left= andExpr[current] ( orToken right= andExpr[current] )* ;
+    // java/com/google/gdata/model/select/parser/Selection.g:175:1: orExpr[Path current] returns [ElementCondition value] : left= andExpr[current] ( orToken right= andExpr[current] )* ;
     public final ElementCondition orExpr(Path current) throws RecognitionException {
         ElementCondition value = null;
 
@@ -534,8 +540,8 @@ public class SelectionParser extends Parser {
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:170:3: (left= andExpr[current] ( orToken right= andExpr[current] )* )
-            // java/com/google/gdata/model/select/parser/Selection.g:170:5: left= andExpr[current] ( orToken right= andExpr[current] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:176:3: (left= andExpr[current] ( orToken right= andExpr[current] )* )
+            // java/com/google/gdata/model/select/parser/Selection.g:176:5: left= andExpr[current] ( orToken right= andExpr[current] )*
             {
             pushFollow(FOLLOW_andExpr_in_orExpr286);
             left=andExpr(current);
@@ -543,7 +549,7 @@ public class SelectionParser extends Parser {
             state._fsp--;
 
              value = left; 
-            // java/com/google/gdata/model/select/parser/Selection.g:171:5: ( orToken right= andExpr[current] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:177:5: ( orToken right= andExpr[current] )*
             loop7:
             do {
                 int alt7=2;
@@ -556,7 +562,7 @@ public class SelectionParser extends Parser {
 
                 switch (alt7) {
             	case 1 :
-            	    // java/com/google/gdata/model/select/parser/Selection.g:171:6: orToken right= andExpr[current]
+            	    // java/com/google/gdata/model/select/parser/Selection.g:177:6: orToken right= andExpr[current]
             	    {
             	    pushFollow(FOLLOW_orToken_in_orExpr297);
             	    orToken();
@@ -594,7 +600,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "andExpr"
-    // java/com/google/gdata/model/select/parser/Selection.g:174:1: andExpr[Path current] returns [ElementCondition value] : left= finalExpr[current] ( andToken right= finalExpr[current] )* ;
+    // java/com/google/gdata/model/select/parser/Selection.g:180:1: andExpr[Path current] returns [ElementCondition value] : left= finalExpr[current] ( andToken right= finalExpr[current] )* ;
     public final ElementCondition andExpr(Path current) throws RecognitionException {
         ElementCondition value = null;
 
@@ -604,8 +610,8 @@ public class SelectionParser extends Parser {
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:175:3: (left= finalExpr[current] ( andToken right= finalExpr[current] )* )
-            // java/com/google/gdata/model/select/parser/Selection.g:175:5: left= finalExpr[current] ( andToken right= finalExpr[current] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:181:3: (left= finalExpr[current] ( andToken right= finalExpr[current] )* )
+            // java/com/google/gdata/model/select/parser/Selection.g:181:5: left= finalExpr[current] ( andToken right= finalExpr[current] )*
             {
             pushFollow(FOLLOW_finalExpr_in_andExpr327);
             left=finalExpr(current);
@@ -613,14 +619,14 @@ public class SelectionParser extends Parser {
             state._fsp--;
 
              value = left; 
-            // java/com/google/gdata/model/select/parser/Selection.g:176:5: ( andToken right= finalExpr[current] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:182:5: ( andToken right= finalExpr[current] )*
             loop8:
             do {
                 int alt8=2;
                 alt8 = dfa8.predict(input);
                 switch (alt8) {
             	case 1 :
-            	    // java/com/google/gdata/model/select/parser/Selection.g:176:6: andToken right= finalExpr[current]
+            	    // java/com/google/gdata/model/select/parser/Selection.g:182:6: andToken right= finalExpr[current]
             	    {
             	    pushFollow(FOLLOW_andToken_in_andExpr337);
             	    andToken();
@@ -658,7 +664,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "finalExpr"
-    // java/com/google/gdata/model/select/parser/Selection.g:179:1: finalExpr[Path current] returns [ElementCondition value] : ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) );
+    // java/com/google/gdata/model/select/parser/Selection.g:185:1: finalExpr[Path current] returns [ElementCondition value] : ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) );
     public final ElementCondition finalExpr(Path current) throws RecognitionException {
         ElementCondition value = null;
 
@@ -670,15 +676,15 @@ public class SelectionParser extends Parser {
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:180:3: ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) )
+            // java/com/google/gdata/model/select/parser/Selection.g:186:3: ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) )
             int alt9=5;
             alt9 = dfa9.predict(input);
             switch (alt9) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:180:5: ( notToken '(' notl= orExpr[current] ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:186:5: ( notToken '(' notl= orExpr[current] ')' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:180:5: ( notToken '(' notl= orExpr[current] ')' )
-                    // java/com/google/gdata/model/select/parser/Selection.g:180:6: notToken '(' notl= orExpr[current] ')'
+                    // java/com/google/gdata/model/select/parser/Selection.g:186:5: ( notToken '(' notl= orExpr[current] ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:186:6: notToken '(' notl= orExpr[current] ')'
                     {
                     pushFollow(FOLLOW_notToken_in_finalExpr366);
                     notToken();
@@ -700,10 +706,10 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:181:5: ( trueToken '(' ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:187:5: ( trueToken '(' ')' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:181:5: ( trueToken '(' ')' )
-                    // java/com/google/gdata/model/select/parser/Selection.g:181:6: trueToken '(' ')'
+                    // java/com/google/gdata/model/select/parser/Selection.g:187:5: ( trueToken '(' ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:187:6: trueToken '(' ')'
                     {
                     pushFollow(FOLLOW_trueToken_in_finalExpr385);
                     trueToken();
@@ -720,10 +726,10 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:182:5: ( falseToken '(' ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:188:5: ( falseToken '(' ')' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:182:5: ( falseToken '(' ')' )
-                    // java/com/google/gdata/model/select/parser/Selection.g:182:6: falseToken '(' ')'
+                    // java/com/google/gdata/model/select/parser/Selection.g:188:5: ( falseToken '(' ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:188:6: falseToken '(' ')'
                     {
                     pushFollow(FOLLOW_falseToken_in_finalExpr399);
                     falseToken();
@@ -740,10 +746,10 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:183:5: ( '(' l= orExpr[current] ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:189:5: ( '(' l= orExpr[current] ')' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:183:5: ( '(' l= orExpr[current] ')' )
-                    // java/com/google/gdata/model/select/parser/Selection.g:183:6: '(' l= orExpr[current] ')'
+                    // java/com/google/gdata/model/select/parser/Selection.g:189:5: ( '(' l= orExpr[current] ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:189:6: '(' l= orExpr[current] ')'
                     {
                     match(input,18,FOLLOW_18_in_finalExpr413); 
                     pushFollow(FOLLOW_orExpr_in_finalExpr417);
@@ -760,10 +766,10 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:184:5: (c= comparisonOrExistenceExpr[current] )
+                    // java/com/google/gdata/model/select/parser/Selection.g:190:5: (c= comparisonOrExistenceExpr[current] )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:184:5: (c= comparisonOrExistenceExpr[current] )
-                    // java/com/google/gdata/model/select/parser/Selection.g:184:6: c= comparisonOrExistenceExpr[current]
+                    // java/com/google/gdata/model/select/parser/Selection.g:190:5: (c= comparisonOrExistenceExpr[current] )
+                    // java/com/google/gdata/model/select/parser/Selection.g:190:6: c= comparisonOrExistenceExpr[current]
                     {
                     pushFollow(FOLLOW_comparisonOrExistenceExpr_in_finalExpr432);
                     c=comparisonOrExistenceExpr(current);
@@ -792,7 +798,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "comparisonOrExistenceExpr"
-    // java/com/google/gdata/model/select/parser/Selection.g:187:1: comparisonOrExistenceExpr[Path current] returns [ElementCondition value] : (d= dateOrDateTimeComparison[current] | o= otherComparison[current] );
+    // java/com/google/gdata/model/select/parser/Selection.g:193:1: comparisonOrExistenceExpr[Path current] returns [ElementCondition value] : (d= dateOrDateTimeComparison[current] | o= otherComparison[current] );
     public final ElementCondition comparisonOrExistenceExpr(Path current) throws RecognitionException {
         ElementCondition value = null;
 
@@ -802,12 +808,12 @@ public class SelectionParser extends Parser {
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:188:5: (d= dateOrDateTimeComparison[current] | o= otherComparison[current] )
+            // java/com/google/gdata/model/select/parser/Selection.g:194:5: (d= dateOrDateTimeComparison[current] | o= otherComparison[current] )
             int alt10=2;
             alt10 = dfa10.predict(input);
             switch (alt10) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:188:7: d= dateOrDateTimeComparison[current]
+                    // java/com/google/gdata/model/select/parser/Selection.g:194:7: d= dateOrDateTimeComparison[current]
                     {
                     pushFollow(FOLLOW_dateOrDateTimeComparison_in_comparisonOrExistenceExpr459);
                     d=dateOrDateTimeComparison(current);
@@ -819,7 +825,7 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:189:7: o= otherComparison[current]
+                    // java/com/google/gdata/model/select/parser/Selection.g:195:7: o= otherComparison[current]
                     {
                     pushFollow(FOLLOW_otherComparison_in_comparisonOrExistenceExpr472);
                     o=otherComparison(current);
@@ -845,7 +851,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "dateOrDateTimeComparison"
-    // java/com/google/gdata/model/select/parser/Selection.g:192:1: dateOrDateTimeComparison[Path current] returns [ElementCondition value] : xsToken ':' ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) ) ;
+    // java/com/google/gdata/model/select/parser/Selection.g:198:1: dateOrDateTimeComparison[Path current] returns [ElementCondition value] : xsToken ':' ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) ) ;
     public final ElementCondition dateOrDateTimeComparison(Path current) throws RecognitionException {
         ElementCondition value = null;
 
@@ -856,8 +862,8 @@ public class SelectionParser extends Parser {
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:193:5: ( xsToken ':' ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) ) )
-            // java/com/google/gdata/model/select/parser/Selection.g:193:7: xsToken ':' ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) )
+            // java/com/google/gdata/model/select/parser/Selection.g:199:5: ( xsToken ':' ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) ) )
+            // java/com/google/gdata/model/select/parser/Selection.g:199:7: xsToken ':' ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) )
             {
             pushFollow(FOLLOW_xsToken_in_dateOrDateTimeComparison499);
             xsToken();
@@ -865,7 +871,7 @@ public class SelectionParser extends Parser {
             state._fsp--;
 
             match(input,13,FOLLOW_13_in_dateOrDateTimeComparison501); 
-            // java/com/google/gdata/model/select/parser/Selection.g:194:9: ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) )
+            // java/com/google/gdata/model/select/parser/Selection.g:200:9: ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -903,10 +909,10 @@ public class SelectionParser extends Parser {
             }
             switch (alt11) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:194:10: ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:200:10: ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:194:10: ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' )
-                    // java/com/google/gdata/model/select/parser/Selection.g:194:11: dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')'
+                    // java/com/google/gdata/model/select/parser/Selection.g:200:10: ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:200:11: dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')'
                     {
                     pushFollow(FOLLOW_dateToken_in_dateOrDateTimeComparison514);
                     dateToken();
@@ -949,10 +955,10 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:198:11: ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:204:11: ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:198:11: ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' )
-                    // java/com/google/gdata/model/select/parser/Selection.g:198:12: dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')'
+                    // java/com/google/gdata/model/select/parser/Selection.g:204:11: ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:204:12: dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')'
                     {
                     pushFollow(FOLLOW_dateTimeToken_in_dateOrDateTimeComparison570);
                     dateTimeToken();
@@ -1014,7 +1020,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "otherComparison"
-    // java/com/google/gdata/model/select/parser/Selection.g:205:1: otherComparison[Path current] returns [ElementCondition value] : p= predicateExpr[current] (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )? ;
+    // java/com/google/gdata/model/select/parser/Selection.g:211:1: otherComparison[Path current] returns [ElementCondition value] : p= predicateExpr[current] (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )? ;
     public final ElementCondition otherComparison(Path current) throws RecognitionException {
         ElementCondition value = null;
 
@@ -1030,49 +1036,49 @@ public class SelectionParser extends Parser {
             boolean inf = false;
           
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:210:3: (p= predicateExpr[current] (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )? )
-            // java/com/google/gdata/model/select/parser/Selection.g:210:5: p= predicateExpr[current] (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?
+            // java/com/google/gdata/model/select/parser/Selection.g:216:3: (p= predicateExpr[current] (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )? )
+            // java/com/google/gdata/model/select/parser/Selection.g:216:5: p= predicateExpr[current] (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?
             {
             pushFollow(FOLLOW_predicateExpr_in_otherComparison648);
             p=predicateExpr(current);
 
             state._fsp--;
 
-            // java/com/google/gdata/model/select/parser/Selection.g:210:30: (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?
+            // java/com/google/gdata/model/select/parser/Selection.g:216:30: (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?
             int alt13=2;
             alt13 = dfa13.predict(input);
             switch (alt13) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:210:31: c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:216:31: c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )
                     {
                     pushFollow(FOLLOW_comparator_in_otherComparison654);
                     c=comparator();
 
                     state._fsp--;
 
-                    // java/com/google/gdata/model/select/parser/Selection.g:210:44: (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:216:44: (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )
                     int alt12=4;
                     alt12 = dfa12.predict(input);
                     switch (alt12) {
                         case 1 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:210:45: str= STRINGLITERAL
+                            // java/com/google/gdata/model/select/parser/Selection.g:216:45: str= STRINGLITERAL
                             {
                             str=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_otherComparison659); 
 
                             }
                             break;
                         case 2 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:211:9: num= NUMBER
+                            // java/com/google/gdata/model/select/parser/Selection.g:217:9: num= NUMBER
                             {
                             num=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_otherComparison672); 
 
                             }
                             break;
                         case 3 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:212:9: ( naNToken )
+                            // java/com/google/gdata/model/select/parser/Selection.g:218:9: ( naNToken )
                             {
-                            // java/com/google/gdata/model/select/parser/Selection.g:212:9: ( naNToken )
-                            // java/com/google/gdata/model/select/parser/Selection.g:212:10: naNToken
+                            // java/com/google/gdata/model/select/parser/Selection.g:218:9: ( naNToken )
+                            // java/com/google/gdata/model/select/parser/Selection.g:218:10: naNToken
                             {
                             pushFollow(FOLLOW_naNToken_in_otherComparison684);
                             naNToken();
@@ -1087,10 +1093,10 @@ public class SelectionParser extends Parser {
                             }
                             break;
                         case 4 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:213:9: ( infToken )
+                            // java/com/google/gdata/model/select/parser/Selection.g:219:9: ( infToken )
                             {
-                            // java/com/google/gdata/model/select/parser/Selection.g:213:9: ( infToken )
-                            // java/com/google/gdata/model/select/parser/Selection.g:213:10: infToken
+                            // java/com/google/gdata/model/select/parser/Selection.g:219:9: ( infToken )
+                            // java/com/google/gdata/model/select/parser/Selection.g:219:10: infToken
                             {
                             pushFollow(FOLLOW_infToken_in_otherComparison699);
                             infToken();
@@ -1143,22 +1149,22 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "comparator"
-    // java/com/google/gdata/model/select/parser/Selection.g:229:1: comparator returns [Operation value] : ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) );
+    // java/com/google/gdata/model/select/parser/Selection.g:235:1: comparator returns [Operation value] : ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) );
     public final Operation comparator() throws RecognitionException {
         Operation value = null;
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:230:3: ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) )
+            // java/com/google/gdata/model/select/parser/Selection.g:236:3: ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) )
             int alt20=6;
             alt20 = dfa20.predict(input);
             switch (alt20) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:230:5: ( ( eqToken | '=' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:236:5: ( ( eqToken | '=' ) )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:230:5: ( ( eqToken | '=' ) )
-                    // java/com/google/gdata/model/select/parser/Selection.g:230:6: ( eqToken | '=' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:236:5: ( ( eqToken | '=' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:236:6: ( eqToken | '=' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:230:6: ( eqToken | '=' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:236:6: ( eqToken | '=' )
                     int alt14=2;
                     int LA14_0 = input.LA(1);
 
@@ -1176,7 +1182,7 @@ public class SelectionParser extends Parser {
                     }
                     switch (alt14) {
                         case 1 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:230:7: eqToken
+                            // java/com/google/gdata/model/select/parser/Selection.g:236:7: eqToken
                             {
                             pushFollow(FOLLOW_eqToken_in_comparator726);
                             eqToken();
@@ -1187,7 +1193,7 @@ public class SelectionParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:230:17: '='
+                            // java/com/google/gdata/model/select/parser/Selection.g:236:17: '='
                             {
                             match(input,14,FOLLOW_14_in_comparator730); 
 
@@ -1204,12 +1210,12 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:231:5: ( ( neToken | '!=' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:237:5: ( ( neToken | '!=' ) )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:231:5: ( ( neToken | '!=' ) )
-                    // java/com/google/gdata/model/select/parser/Selection.g:231:6: ( neToken | '!=' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:237:5: ( ( neToken | '!=' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:237:6: ( neToken | '!=' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:231:6: ( neToken | '!=' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:237:6: ( neToken | '!=' )
                     int alt15=2;
                     int LA15_0 = input.LA(1);
 
@@ -1227,7 +1233,7 @@ public class SelectionParser extends Parser {
                     }
                     switch (alt15) {
                         case 1 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:231:7: neToken
+                            // java/com/google/gdata/model/select/parser/Selection.g:237:7: neToken
                             {
                             pushFollow(FOLLOW_neToken_in_comparator742);
                             neToken();
@@ -1238,7 +1244,7 @@ public class SelectionParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:231:17: '!='
+                            // java/com/google/gdata/model/select/parser/Selection.g:237:17: '!='
                             {
                             match(input,20,FOLLOW_20_in_comparator746); 
 
@@ -1255,12 +1261,12 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:232:5: ( ( gtToken | '>' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:238:5: ( ( gtToken | '>' ) )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:232:5: ( ( gtToken | '>' ) )
-                    // java/com/google/gdata/model/select/parser/Selection.g:232:6: ( gtToken | '>' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:238:5: ( ( gtToken | '>' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:238:6: ( gtToken | '>' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:232:6: ( gtToken | '>' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:238:6: ( gtToken | '>' )
                     int alt16=2;
                     int LA16_0 = input.LA(1);
 
@@ -1278,7 +1284,7 @@ public class SelectionParser extends Parser {
                     }
                     switch (alt16) {
                         case 1 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:232:7: gtToken
+                            // java/com/google/gdata/model/select/parser/Selection.g:238:7: gtToken
                             {
                             pushFollow(FOLLOW_gtToken_in_comparator758);
                             gtToken();
@@ -1289,7 +1295,7 @@ public class SelectionParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:232:17: '>'
+                            // java/com/google/gdata/model/select/parser/Selection.g:238:17: '>'
                             {
                             match(input,21,FOLLOW_21_in_comparator762); 
 
@@ -1306,12 +1312,12 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:233:5: ( ( gteToken | '>=' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:239:5: ( ( gteToken | '>=' ) )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:233:5: ( ( gteToken | '>=' ) )
-                    // java/com/google/gdata/model/select/parser/Selection.g:233:6: ( gteToken | '>=' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:239:5: ( ( gteToken | '>=' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:239:6: ( gteToken | '>=' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:233:6: ( gteToken | '>=' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:239:6: ( gteToken | '>=' )
                     int alt17=2;
                     int LA17_0 = input.LA(1);
 
@@ -1329,7 +1335,7 @@ public class SelectionParser extends Parser {
                     }
                     switch (alt17) {
                         case 1 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:233:7: gteToken
+                            // java/com/google/gdata/model/select/parser/Selection.g:239:7: gteToken
                             {
                             pushFollow(FOLLOW_gteToken_in_comparator774);
                             gteToken();
@@ -1340,7 +1346,7 @@ public class SelectionParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:233:18: '>='
+                            // java/com/google/gdata/model/select/parser/Selection.g:239:18: '>='
                             {
                             match(input,22,FOLLOW_22_in_comparator778); 
 
@@ -1357,12 +1363,12 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:234:5: ( ( ltToken | '<' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:240:5: ( ( ltToken | '<' ) )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:234:5: ( ( ltToken | '<' ) )
-                    // java/com/google/gdata/model/select/parser/Selection.g:234:6: ( ltToken | '<' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:240:5: ( ( ltToken | '<' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:240:6: ( ltToken | '<' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:234:6: ( ltToken | '<' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:240:6: ( ltToken | '<' )
                     int alt18=2;
                     int LA18_0 = input.LA(1);
 
@@ -1380,7 +1386,7 @@ public class SelectionParser extends Parser {
                     }
                     switch (alt18) {
                         case 1 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:234:7: ltToken
+                            // java/com/google/gdata/model/select/parser/Selection.g:240:7: ltToken
                             {
                             pushFollow(FOLLOW_ltToken_in_comparator790);
                             ltToken();
@@ -1391,7 +1397,7 @@ public class SelectionParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:234:17: '<'
+                            // java/com/google/gdata/model/select/parser/Selection.g:240:17: '<'
                             {
                             match(input,23,FOLLOW_23_in_comparator794); 
 
@@ -1408,12 +1414,12 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:235:5: ( ( lteToken | '<=' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:241:5: ( ( lteToken | '<=' ) )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:235:5: ( ( lteToken | '<=' ) )
-                    // java/com/google/gdata/model/select/parser/Selection.g:235:6: ( lteToken | '<=' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:241:5: ( ( lteToken | '<=' ) )
+                    // java/com/google/gdata/model/select/parser/Selection.g:241:6: ( lteToken | '<=' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:235:6: ( lteToken | '<=' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:241:6: ( lteToken | '<=' )
                     int alt19=2;
                     int LA19_0 = input.LA(1);
 
@@ -1431,7 +1437,7 @@ public class SelectionParser extends Parser {
                     }
                     switch (alt19) {
                         case 1 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:235:7: lteToken
+                            // java/com/google/gdata/model/select/parser/Selection.g:241:7: lteToken
                             {
                             pushFollow(FOLLOW_lteToken_in_comparator806);
                             lteToken();
@@ -1442,7 +1448,7 @@ public class SelectionParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // java/com/google/gdata/model/select/parser/Selection.g:235:18: '<='
+                            // java/com/google/gdata/model/select/parser/Selection.g:241:18: '<='
                             {
                             match(input,24,FOLLOW_24_in_comparator810); 
 
@@ -1473,7 +1479,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "predicateExpr"
-    // java/com/google/gdata/model/select/parser/Selection.g:238:1: predicateExpr[Path current] returns [Path value] : ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) );
+    // java/com/google/gdata/model/select/parser/Selection.g:244:1: predicateExpr[Path current] returns [Path value] : ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) );
     public final Path predicateExpr(Path current) throws RecognitionException {
         Path value = null;
 
@@ -1481,15 +1487,15 @@ public class SelectionParser extends Parser {
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:239:3: ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) )
+            // java/com/google/gdata/model/select/parser/Selection.g:245:3: ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) )
             int alt21=2;
             alt21 = dfa21.predict(input);
             switch (alt21) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:239:5: (path= selectionPathExpr[current] )
+                    // java/com/google/gdata/model/select/parser/Selection.g:245:5: (path= selectionPathExpr[current] )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:239:5: (path= selectionPathExpr[current] )
-                    // java/com/google/gdata/model/select/parser/Selection.g:239:6: path= selectionPathExpr[current]
+                    // java/com/google/gdata/model/select/parser/Selection.g:245:5: (path= selectionPathExpr[current] )
+                    // java/com/google/gdata/model/select/parser/Selection.g:245:6: path= selectionPathExpr[current]
                     {
                     pushFollow(FOLLOW_selectionPathExpr_in_predicateExpr836);
                     path=selectionPathExpr(current);
@@ -1504,10 +1510,10 @@ public class SelectionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:240:5: ( textToken '(' ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:246:5: ( textToken '(' ')' )
                     {
-                    // java/com/google/gdata/model/select/parser/Selection.g:240:5: ( textToken '(' ')' )
-                    // java/com/google/gdata/model/select/parser/Selection.g:240:6: textToken '(' ')'
+                    // java/com/google/gdata/model/select/parser/Selection.g:246:5: ( textToken '(' ')' )
+                    // java/com/google/gdata/model/select/parser/Selection.g:246:6: textToken '(' ')'
                     {
                     pushFollow(FOLLOW_textToken_in_predicateExpr847);
                     textToken();
@@ -1538,7 +1544,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "selectionPathExpr"
-    // java/com/google/gdata/model/select/parser/Selection.g:243:1: selectionPathExpr[Path current] returns [Path value] : pathStep[builder] ( '/' pathStep[builder] )* ;
+    // java/com/google/gdata/model/select/parser/Selection.g:249:1: selectionPathExpr[Path current] returns [Path value] : pathStep[builder] ( '/' pathStep[builder] )* ;
     public final Path selectionPathExpr(Path current) throws RecognitionException {
         Path value = null;
 
@@ -1546,22 +1552,22 @@ public class SelectionParser extends Parser {
             Path.Builder builder = current.buildFrom();
           
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:247:3: ( pathStep[builder] ( '/' pathStep[builder] )* )
-            // java/com/google/gdata/model/select/parser/Selection.g:247:5: pathStep[builder] ( '/' pathStep[builder] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:253:3: ( pathStep[builder] ( '/' pathStep[builder] )* )
+            // java/com/google/gdata/model/select/parser/Selection.g:253:5: pathStep[builder] ( '/' pathStep[builder] )*
             {
             pushFollow(FOLLOW_pathStep_in_selectionPathExpr882);
             pathStep(builder);
 
             state._fsp--;
 
-            // java/com/google/gdata/model/select/parser/Selection.g:247:23: ( '/' pathStep[builder] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:253:23: ( '/' pathStep[builder] )*
             loop22:
             do {
                 int alt22=2;
                 alt22 = dfa22.predict(input);
                 switch (alt22) {
             	case 1 :
-            	    // java/com/google/gdata/model/select/parser/Selection.g:247:24: '/' pathStep[builder]
+            	    // java/com/google/gdata/model/select/parser/Selection.g:253:24: '/' pathStep[builder]
             	    {
             	    match(input,25,FOLLOW_25_in_selectionPathExpr886); 
             	    pushFollow(FOLLOW_pathStep_in_selectionPathExpr888);
@@ -1597,17 +1603,17 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "pathStep"
-    // java/com/google/gdata/model/select/parser/Selection.g:252:1: pathStep[Path.Builder value] : (at= '@' )? qname= nameTest[at != null] ;
+    // java/com/google/gdata/model/select/parser/Selection.g:258:1: pathStep[Path.Builder value] : (at= '@' )? qname= nameTest[at != null] ;
     public final void pathStep(Path.Builder value) throws RecognitionException {
         Token at=null;
         QName qname = null;
 
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:253:3: ( (at= '@' )? qname= nameTest[at != null] )
-            // java/com/google/gdata/model/select/parser/Selection.g:253:5: (at= '@' )? qname= nameTest[at != null]
+            // java/com/google/gdata/model/select/parser/Selection.g:259:3: ( (at= '@' )? qname= nameTest[at != null] )
+            // java/com/google/gdata/model/select/parser/Selection.g:259:5: (at= '@' )? qname= nameTest[at != null]
             {
-            // java/com/google/gdata/model/select/parser/Selection.g:253:5: (at= '@' )?
+            // java/com/google/gdata/model/select/parser/Selection.g:259:5: (at= '@' )?
             int alt23=2;
             int LA23_0 = input.LA(1);
 
@@ -1616,7 +1622,7 @@ public class SelectionParser extends Parser {
             }
             switch (alt23) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:253:6: at= '@'
+                    // java/com/google/gdata/model/select/parser/Selection.g:259:6: at= '@'
                     {
                     at=(Token)match(input,26,FOLLOW_26_in_pathStep911); 
 
@@ -1669,7 +1675,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "nameTest"
-    // java/com/google/gdata/model/select/parser/Selection.g:278:1: nameTest[boolean isAttribute] returns [QName value] : left= ( '*' | NCNAME ) ( ':' right= ( '*' | NCNAME ) )? ;
+    // java/com/google/gdata/model/select/parser/Selection.g:284:1: nameTest[boolean isAttribute] returns [QName value] : left= ( '*' | NCNAME ) ( ':' right= ( '*' | NCNAME ) )? ;
     public final QName nameTest(boolean isAttribute) throws RecognitionException {
         QName value = null;
 
@@ -1677,8 +1683,8 @@ public class SelectionParser extends Parser {
         Token right=null;
 
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:279:3: (left= ( '*' | NCNAME ) ( ':' right= ( '*' | NCNAME ) )? )
-            // java/com/google/gdata/model/select/parser/Selection.g:279:5: left= ( '*' | NCNAME ) ( ':' right= ( '*' | NCNAME ) )?
+            // java/com/google/gdata/model/select/parser/Selection.g:285:3: (left= ( '*' | NCNAME ) ( ':' right= ( '*' | NCNAME ) )? )
+            // java/com/google/gdata/model/select/parser/Selection.g:285:5: left= ( '*' | NCNAME ) ( ':' right= ( '*' | NCNAME ) )?
             {
             left=(Token)input.LT(1);
             if ( input.LA(1)==NCNAME||input.LA(1)==27 ) {
@@ -1690,12 +1696,12 @@ public class SelectionParser extends Parser {
                 throw mse;
             }
 
-            // java/com/google/gdata/model/select/parser/Selection.g:279:25: ( ':' right= ( '*' | NCNAME ) )?
+            // java/com/google/gdata/model/select/parser/Selection.g:285:25: ( ':' right= ( '*' | NCNAME ) )?
             int alt24=2;
             alt24 = dfa24.predict(input);
             switch (alt24) {
                 case 1 :
-                    // java/com/google/gdata/model/select/parser/Selection.g:279:26: ':' right= ( '*' | NCNAME )
+                    // java/com/google/gdata/model/select/parser/Selection.g:285:26: ':' right= ( '*' | NCNAME )
                     {
                     match(input,13,FOLLOW_13_in_nameTest950); 
                     right=(Token)input.LT(1);
@@ -1733,11 +1739,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "xmlnsToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:285:1: xmlnsToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:291:1: xmlnsToken : {...}? NCNAME ;
     public final void xmlnsToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:285:12: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:285:14: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:291:12: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:291:14: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("xmlns"))) ) {
                 throw new FailedPredicateException(input, "xmlnsToken", "input.LT(1).getText().equals(\"xmlns\")");
@@ -1759,11 +1765,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "orToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:286:1: orToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:292:1: orToken : {...}? NCNAME ;
     public final void orToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:286:9: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:286:11: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:292:9: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:292:11: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("or"))) ) {
                 throw new FailedPredicateException(input, "orToken", "input.LT(1).getText().equals(\"or\")");
@@ -1785,11 +1791,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "andToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:287:1: andToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:293:1: andToken : {...}? NCNAME ;
     public final void andToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:287:10: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:287:12: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:293:10: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:293:12: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("and"))) ) {
                 throw new FailedPredicateException(input, "andToken", "input.LT(1).getText().equals(\"and\")");
@@ -1811,11 +1817,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "notToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:288:1: notToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:294:1: notToken : {...}? NCNAME ;
     public final void notToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:288:10: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:288:12: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:294:10: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:294:12: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("not"))) ) {
                 throw new FailedPredicateException(input, "notToken", "input.LT(1).getText().equals(\"not\")");
@@ -1837,11 +1843,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "trueToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:289:1: trueToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:295:1: trueToken : {...}? NCNAME ;
     public final void trueToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:289:11: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:289:13: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:295:11: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:295:13: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("true"))) ) {
                 throw new FailedPredicateException(input, "trueToken", "input.LT(1).getText().equals(\"true\")");
@@ -1863,11 +1869,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "falseToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:290:1: falseToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:296:1: falseToken : {...}? NCNAME ;
     public final void falseToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:290:12: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:290:14: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:296:12: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:296:14: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("false"))) ) {
                 throw new FailedPredicateException(input, "falseToken", "input.LT(1).getText().equals(\"false\")");
@@ -1889,11 +1895,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "eqToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:291:1: eqToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:297:1: eqToken : {...}? NCNAME ;
     public final void eqToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:291:9: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:291:11: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:297:9: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:297:11: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("eq"))) ) {
                 throw new FailedPredicateException(input, "eqToken", "input.LT(1).getText().equals(\"eq\")");
@@ -1915,11 +1921,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "neToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:292:1: neToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:298:1: neToken : {...}? NCNAME ;
     public final void neToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:292:9: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:292:11: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:298:9: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:298:11: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("ne"))) ) {
                 throw new FailedPredicateException(input, "neToken", "input.LT(1).getText().equals(\"ne\")");
@@ -1941,11 +1947,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "textToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:293:1: textToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:299:1: textToken : {...}? NCNAME ;
     public final void textToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:293:11: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:293:13: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:299:11: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:299:13: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("text"))) ) {
                 throw new FailedPredicateException(input, "textToken", "input.LT(1).getText().equals(\"text\")");
@@ -1967,11 +1973,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "ltToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:294:1: ltToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:300:1: ltToken : {...}? NCNAME ;
     public final void ltToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:294:9: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:294:11: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:300:9: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:300:11: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("lt"))) ) {
                 throw new FailedPredicateException(input, "ltToken", "input.LT(1).getText().equals(\"lt\")");
@@ -1993,11 +1999,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "lteToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:295:1: lteToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:301:1: lteToken : {...}? NCNAME ;
     public final void lteToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:295:10: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:295:12: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:301:10: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:301:12: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("lte"))) ) {
                 throw new FailedPredicateException(input, "lteToken", "input.LT(1).getText().equals(\"lte\")");
@@ -2019,11 +2025,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "gtToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:296:1: gtToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:302:1: gtToken : {...}? NCNAME ;
     public final void gtToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:296:9: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:296:11: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:302:9: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:302:11: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("gt"))) ) {
                 throw new FailedPredicateException(input, "gtToken", "input.LT(1).getText().equals(\"gt\")");
@@ -2045,11 +2051,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "gteToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:297:1: gteToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:303:1: gteToken : {...}? NCNAME ;
     public final void gteToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:297:10: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:297:12: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:303:10: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:303:12: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("gte"))) ) {
                 throw new FailedPredicateException(input, "gteToken", "input.LT(1).getText().equals(\"gte\")");
@@ -2071,11 +2077,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "naNToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:298:1: naNToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:304:1: naNToken : {...}? NCNAME ;
     public final void naNToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:298:10: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:298:12: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:304:10: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:304:12: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("NaN"))) ) {
                 throw new FailedPredicateException(input, "naNToken", "input.LT(1).getText().equals(\"NaN\")");
@@ -2097,11 +2103,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "infToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:299:1: infToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:305:1: infToken : {...}? NCNAME ;
     public final void infToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:299:10: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:299:12: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:305:10: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:305:12: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("INF"))) ) {
                 throw new FailedPredicateException(input, "infToken", "input.LT(1).getText().equals(\"INF\")");
@@ -2123,11 +2129,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "xsToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:300:1: xsToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:306:1: xsToken : {...}? NCNAME ;
     public final void xsToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:300:9: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:300:11: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:306:9: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:306:11: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("xs"))) ) {
                 throw new FailedPredicateException(input, "xsToken", "input.LT(1).getText().equals(\"xs\")");
@@ -2149,11 +2155,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "dateToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:301:1: dateToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:307:1: dateToken : {...}? NCNAME ;
     public final void dateToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:301:11: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:301:13: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:307:11: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:307:13: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("date"))) ) {
                 throw new FailedPredicateException(input, "dateToken", "input.LT(1).getText().equals(\"date\")");
@@ -2175,11 +2181,11 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "dateTimeToken"
-    // java/com/google/gdata/model/select/parser/Selection.g:302:1: dateTimeToken : {...}? NCNAME ;
+    // java/com/google/gdata/model/select/parser/Selection.g:308:1: dateTimeToken : {...}? NCNAME ;
     public final void dateTimeToken() throws RecognitionException {
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:302:15: ({...}? NCNAME )
-            // java/com/google/gdata/model/select/parser/Selection.g:302:17: {...}? NCNAME
+            // java/com/google/gdata/model/select/parser/Selection.g:308:15: ({...}? NCNAME )
+            // java/com/google/gdata/model/select/parser/Selection.g:308:17: {...}? NCNAME
             {
             if ( !((input.LT(1).getText().equals("dateTime"))) ) {
                 throw new FailedPredicateException(input, "dateTimeToken", "input.LT(1).getText().equals(\"dateTime\")");
@@ -2269,7 +2275,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA1_transition;
         }
         public String getDescription() {
-            return "130:5: ( namespaceDeclarations )?";
+            return "132:5: ( namespaceDeclarations )?";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2353,7 +2359,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA2_transition;
         }
         public String getDescription() {
-            return "143:26: ( namespaceDeclarations )?";
+            return "149:26: ( namespaceDeclarations )?";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2436,7 +2442,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA8_transition;
         }
         public String getDescription() {
-            return "()* loopback of 176:5: ( andToken right= finalExpr[current] )*";
+            return "()* loopback of 182:5: ( andToken right= finalExpr[current] )*";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2575,7 +2581,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA9_transition;
         }
         public String getDescription() {
-            return "179:1: finalExpr[Path current] returns [ElementCondition value] : ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) );";
+            return "185:1: finalExpr[Path current] returns [ElementCondition value] : ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2670,7 +2676,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA10_transition;
         }
         public String getDescription() {
-            return "187:1: comparisonOrExistenceExpr[Path current] returns [ElementCondition value] : (d= dateOrDateTimeComparison[current] | o= otherComparison[current] );";
+            return "193:1: comparisonOrExistenceExpr[Path current] returns [ElementCondition value] : (d= dateOrDateTimeComparison[current] | o= otherComparison[current] );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2760,7 +2766,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA13_transition;
         }
         public String getDescription() {
-            return "210:30: (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?";
+            return "216:30: (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2843,7 +2849,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA12_transition;
         }
         public String getDescription() {
-            return "210:44: (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )";
+            return "216:44: (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2927,7 +2933,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA20_transition;
         }
         public String getDescription() {
-            return "229:1: comparator returns [Operation value] : ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) );";
+            return "235:1: comparator returns [Operation value] : ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -3025,7 +3031,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA21_transition;
         }
         public String getDescription() {
-            return "238:1: predicateExpr[Path current] returns [Path value] : ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) );";
+            return "244:1: predicateExpr[Path current] returns [Path value] : ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) );";
         }
     }
     static final String DFA22_eotS =
@@ -3088,7 +3094,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA22_transition;
         }
         public String getDescription() {
-            return "()* loopback of 247:23: ( '/' pathStep[builder] )*";
+            return "()* loopback of 253:23: ( '/' pathStep[builder] )*";
         }
     }
     static final String DFA24_eotS =
@@ -3152,13 +3158,13 @@ public class SelectionParser extends Parser {
             this.transition = DFA24_transition;
         }
         public String getDescription() {
-            return "279:25: ( ':' right= ( '*' | NCNAME ) )?";
+            return "285:25: ( ':' right= ( '*' | NCNAME ) )?";
         }
     }
  
 
     public static final BitSet FOLLOW_namespaceDeclarations_in_selectionExpr66 = new BitSet(new long[]{0x000000000C000010L});
-    public static final BitSet FOLLOW_elementSelectors_in_selectionExpr71 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_selectors_in_selectionExpr71 = new BitSet(new long[]{0x0000000000000000L});
     public static final BitSet FOLLOW_EOF_in_selectionExpr74 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_orExpr_in_elementConditionExpr95 = new BitSet(new long[]{0x0000000000000000L});
     public static final BitSet FOLLOW_EOF_in_elementConditionExpr98 = new BitSet(new long[]{0x0000000000000002L});
@@ -3169,16 +3175,16 @@ public class SelectionParser extends Parser {
     public static final BitSet FOLLOW_NCNAME_in_namespaceDeclaration140 = new BitSet(new long[]{0x0000000000004000L});
     public static final BitSet FOLLOW_14_in_namespaceDeclaration144 = new BitSet(new long[]{0x0000000000000020L});
     public static final BitSet FOLLOW_STRINGLITERAL_in_namespaceDeclaration148 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_elementSelector_in_elementSelectors181 = new BitSet(new long[]{0x0000000000008002L});
-    public static final BitSet FOLLOW_15_in_elementSelectors193 = new BitSet(new long[]{0x000000000C000010L});
-    public static final BitSet FOLLOW_elementSelector_in_elementSelectors197 = new BitSet(new long[]{0x0000000000008002L});
-    public static final BitSet FOLLOW_selectionPathExpr_in_elementSelector225 = new BitSet(new long[]{0x0000000000050002L});
-    public static final BitSet FOLLOW_16_in_elementSelector233 = new BitSet(new long[]{0x000000000C040010L});
-    public static final BitSet FOLLOW_orExpr_in_elementSelector237 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_17_in_elementSelector240 = new BitSet(new long[]{0x0000000000040002L});
-    public static final BitSet FOLLOW_18_in_elementSelector250 = new BitSet(new long[]{0x000000000C000010L});
-    public static final BitSet FOLLOW_elementSelectors_in_elementSelector254 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_elementSelector257 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_selector_in_selectors181 = new BitSet(new long[]{0x0000000000008002L});
+    public static final BitSet FOLLOW_15_in_selectors193 = new BitSet(new long[]{0x000000000C000010L});
+    public static final BitSet FOLLOW_selector_in_selectors197 = new BitSet(new long[]{0x0000000000008002L});
+    public static final BitSet FOLLOW_selectionPathExpr_in_selector225 = new BitSet(new long[]{0x0000000000050002L});
+    public static final BitSet FOLLOW_16_in_selector233 = new BitSet(new long[]{0x000000000C040010L});
+    public static final BitSet FOLLOW_orExpr_in_selector237 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_17_in_selector240 = new BitSet(new long[]{0x0000000000040002L});
+    public static final BitSet FOLLOW_18_in_selector250 = new BitSet(new long[]{0x000000000C000010L});
+    public static final BitSet FOLLOW_selectors_in_selector254 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_selector257 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_andExpr_in_orExpr286 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_orToken_in_orExpr297 = new BitSet(new long[]{0x000000000C040010L});
     public static final BitSet FOLLOW_andExpr_in_orExpr301 = new BitSet(new long[]{0x0000000000000012L});

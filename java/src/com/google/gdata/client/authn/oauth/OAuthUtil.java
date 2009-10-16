@@ -111,8 +111,13 @@ public class OAuthUtil {
       throw new OAuthException(e);
     }
 
-    String authority = uri.getAuthority().toLowerCase();
-    String scheme = uri.getScheme().toLowerCase();
+    String authority = uri.getAuthority();
+    String scheme = uri.getScheme();
+    if (authority == null || scheme == null) {
+      throw new OAuthException("Invalid Request Url");
+    }
+    authority = authority.toLowerCase();
+    scheme = scheme.toLowerCase();
 
     // if this url contains the standard port, remove it
     if ((scheme.equals("http") && uri.getPort() == 80)

@@ -32,7 +32,9 @@ public class GoogleOAuthHelper extends OAuthHelper {
   private static String userAuthorizationUrl =
       "https://www.google.com/accounts/OAuthAuthorizeToken";
   private static String accessTokenUrl =
-      "https://www.google.com/accounts/OAuthGetAccessToken";
+    "https://www.google.com/accounts/OAuthGetAccessToken";
+  private static String revokeTokenUrl =
+    "https://www.google.com/accounts/AuthSubRevokeToken";
 
   /**
    * Creates a new GoogleOAuthHelper, which is an {@link OAuthHelper} with
@@ -41,7 +43,8 @@ public class GoogleOAuthHelper extends OAuthHelper {
    * @param signer the {@link OAuthSigner} to use when signing the request
    */
   public GoogleOAuthHelper(OAuthSigner signer) {
-    super(requestTokenUrl, userAuthorizationUrl, accessTokenUrl, signer);
+    super(requestTokenUrl, userAuthorizationUrl, accessTokenUrl, revokeTokenUrl,
+        signer);
   }
 
   /**
@@ -53,7 +56,7 @@ public class GoogleOAuthHelper extends OAuthHelper {
    *        requests
    */
   GoogleOAuthHelper(OAuthSigner signer, OAuthHttpClient httpClient) {
-    super(requestTokenUrl, userAuthorizationUrl, accessTokenUrl, signer,
-        httpClient);
+    super(requestTokenUrl, userAuthorizationUrl, accessTokenUrl, revokeTokenUrl,
+        signer, httpClient);
   }
 }

@@ -153,5 +153,15 @@ class OAuthExample {
       }
     }
     System.out.println("=====================================================");
+    System.out.println();
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // STEP 6: Revoke the OAuth token
+    ////////////////////////////////////////////////////////////////////////////
+
+    System.out.println("Revoking OAuth Token...");
+    oauthHelper.revokeToken(oauthParameters);
+    System.out.println("OAuth Token revoked...");
   }
 }
