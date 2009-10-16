@@ -1,0 +1,98 @@
+<project name="projecthosting" default="sample.projecthosting.build" basedir=".">
+  <!-- Path containing core.xml -->
+  <dirname property="build_dir" file="${ant.file.projecthosting}"/>
+  <import file="${build_dir}/core.xml"/>
+
+  <!--  ===================================================================== -->
+  <!--                 Build GData Project Hosting library                           -->
+  <!--  ===================================================================== -->
+
+  <property name="gdata-projecthosting.jar"
+    value="${build.jars}/gdata-projecthosting-${projecthosting.spec.version}.jar"/>
+
+  <property name="sample.projecthosting.basedir"           value="${build}/sample/projecthosting"/>
+  <property name="sample.projecthosting.src.home"          value="${sample.projecthosting.basedir}"/>
+  <property name="sample.projecthosting.build.classes"     value="${sample.projecthosting.basedir}/classes"/>
+  <property name="sample.projecthosting.build.lib"         value="${sample.projecthosting.basedir}/lib"/>
+  <property name="sample.projecthosting.read.jar"          value="${sample.projecthosting.build.lib}/ProjectHostingReadDemo.jar"/>
+  <property name="sample.projecthosting.write.jar"         value="${sample.projecthosting.build.lib}/ProjectHostingWriteDemo.jar"/>
+  <property name="sample.projecthosting.read.main"         value="sample.projecthosting.ProjectHostingReadDemo"/>
+  <property name="sample.projecthosting.write.main"        value="sample.projecthosting.ProjectHostingWriteDemo"/>
+
+  <target name="sample.projecthosting.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.projecthosting.build.classes}"/>
+  </target>
+
+  <target name="sample.projecthosting.dependencies">
+    <antcall target="template.require.service.jar">
+      <param name="template.service.name" value="projecthosting"/>
+      <param name="template.service.version" value="${projecthosting.spec.version}"/>
+    </antcall>
+  </target>
+
+  <path id="sample.projecthosting.compile.classpath">
+    <path refid="build.service.core.classpath"/>
+    <pathelement location="${sample-util.jar}"/>
+    <pathelement location="${gdata-projecthosting.jar}"/>
+  </path>
+
+  <!-- samples build -->
+  <target name="sample.projecthosting.build"
+      depends="sample.projecthosting.dependencies,core.sample.core.util.build"
+      description="Create binary distribution">
+
+    <mkdir   dir="${sample.projecthosting.build.lib}"/>
+    <mkdir    dir="${sample.projecthosting.build.classes}"/>
+
+    <javac srcdir="${sample.projecthosting.src.home}"
+           destdir="${sample.projecthosting.build.classes}"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.projecthosting.compile.classpath"/>
+    </javac>
+
+    <jar jarfile="${sample.projecthosting.read.jar}"
+         basedir="${sample.projecthosting.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.projecthosting.read.main}"/>
+      </manifest>
+    </jar>
+    <jar jarfile="${sample.projecthosting.write.jar}"
+         basedir="${sample.projecthosting.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.projecthosting.write.main}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- samples run -->
+  <target name="sample.projecthosting.read.run"
+          depends="sample.projecthosting.build"
+          description="Runs the projecthosting sample">
+
+    <java fork="true" classname="${sample.projecthosting.read.main}">
+      <arg line="--project ${sample.projecthosting.projectname} --username ${sample.credentials.username} --password ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.projecthosting.compile.classpath"/>
+        <path location="${sample.projecthosting.read.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.projecthosting.write.run"
+          depends="sample.projecthosting.build"
+          description="Runs the projecthosting sample">
+
+    <java fork="true" classname="${sample.projecthosting.write.main}">
+      <arg line="--project ${sample.projecthosting.projectname} --username ${sample.credentials.username} --password ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.projecthosting.compile.classpath"/>
+        <path location="${sample.projecthosting.write.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+</project>

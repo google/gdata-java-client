@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A simple client for making http requests and returning the response body.
@@ -39,8 +41,27 @@ public class OAuthHttpClient {
    * @throws OAuthException if there was an error making the request
    */
   public String getResponse(URL url) throws OAuthException {
+    return getResponse(url, null);
+  }
+
+  /**
+   * Makes an http request to the input URL, and returns the response body as a
+   * string.
+   *
+   * @param url the url to make the request to
+   * @param headers any headers to add to the request
+   * @return the response body of the request
+   * @throws OAuthException if there was an error making the request
+   */
+  public String getResponse(URL url, Map<String, String> headers)
+      throws OAuthException {
       try {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        if (headers != null) {
+          for (Entry<String, String> entry : headers.entrySet()) {
+            connection.addRequestProperty(entry.getKey(), entry.getValue());
+          }
+        }
         connection.connect();
         BufferedReader in = new BufferedReader(new InputStreamReader(
             connection.getInputStream()));

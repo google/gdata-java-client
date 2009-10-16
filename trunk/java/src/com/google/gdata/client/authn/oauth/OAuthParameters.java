@@ -46,6 +46,7 @@ public class OAuthParameters {
   public static final String OAUTH_TOKEN_SECRET_KEY = "oauth_token_secret";
   public static final String OAUTH_VERIFIER_KEY = "oauth_verifier";
   public static final String REALM_KEY = "realm";
+  public static final String XOAUTH_REQUESTOR_ID_KEY = "xoauth_requestor_id";
 
   protected Map<String, String> baseParameters;
   protected Map<String, String> extraParameters;

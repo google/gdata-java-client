@@ -26,6 +26,7 @@
   <import file="build-samples/maps.xml"/>
   <import file="build-samples/oauth.xml"/>
   <import file="build-samples/photos.xml"/>
+  <import file="build-samples/projecthosting.xml"/>
   <import file="build-samples/sidewiki.xml"/>
   <import file="build-samples/sites.xml"/>
   <import file="build-samples/spreadsheet.xml"/>
@@ -53,6 +54,7 @@
               sample.maps.build,
               sample.oauth.build,
               sample.photos.build,
+              sample.projecthosting.build,
               sample.sidewiki.build,
               sample.sites.build,
               sample.spreadsheet.build,
@@ -76,6 +78,7 @@
               sample.maps.clean,
               sample.oauth.clean,
               sample.photos.clean,
+              sample.projecthosting.clean,
               sample.sidewiki.clean,
               sample.sites.clean,
               sample.spreadsheet.clean,

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Class-Path: gdata-client-@client.spec.version@.jar gdata-projecthosting-meta-@projecthosting.spec.version@.jar
+
+Name: com/google/gdata/client/projecthosting/
+Specification-Title: Google Project Hosting Data API
+Specification-Version: @projecthosting.spec.version@
+Specification-Vendor: Google Inc.
+Implementation-Title: Project Hosting GData client extensions for Java
+Implementation-Version: @projecthosting.impl.version@
+Implementation-Vendor: Google Inc.
