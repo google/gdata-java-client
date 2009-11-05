@@ -8,6 +8,9 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.39.1 ==
+   * Added site usefulness element in Google Sidewiki Data API.  For additional details see [http://code.google.com/apis/sidewiki/changelog.html changelog].
+
 == 1.39.0 ==
    * Added support for Google Project Hosting Data API.
 
