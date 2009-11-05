@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// $ANTLR 3.1.1 java/com/google/gdata/model/select/parser/Selection.g 
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 java/com/google/gdata/model/select/parser/Selection.g 2009-11-03 21:37:09
 
 package com.google.gdata.model.select.parser;
 
