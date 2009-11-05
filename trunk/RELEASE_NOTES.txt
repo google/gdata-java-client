@@ -1,5 +1,10 @@
 Google Data API - Release Notes
 
+Notes for v1.40.0
+-----------------
+o  Added site usefulness element in Google Sidewiki Data API.  For additional
+   details see http://code.google.com/apis/sidewiki/changelog.html.
+
 Notes for v1.39.0
 -----------------
 o  Added support for Google Project Hosting Data API.

@@ -63,6 +63,7 @@ public class SidewikiEntry extends BaseEntry<SidewikiEntry> {
         "http://schemas.google.com/g/2005"), "rating", false, false, false));
     extProfile.declare(SidewikiEntry.class,
         ResourceId.getDefaultDescription(true, false));
+    extProfile.declare(SidewikiEntry.class, Usefulness.class);
   }
 
   /**
@@ -161,6 +162,37 @@ public class SidewikiEntry extends BaseEntry<SidewikiEntry> {
    */
   public boolean hasResourceId() {
     return hasExtension(ResourceId.class);
+  }
+
+  /**
+   * Returns the usefulness of entry.
+   *
+   * @return usefulness of entry
+   */
+  public Usefulness getUsefulness() {
+    return getExtension(Usefulness.class);
+  }
+
+  /**
+   * Sets the usefulness of entry.
+   *
+   * @param usefulness usefulness of entry or <code>null</code> to reset
+   */
+  public void setUsefulness(Usefulness usefulness) {
+    if (usefulness == null) {
+      removeExtension(Usefulness.class);
+    } else {
+      setExtension(usefulness);
+    }
+  }
+
+  /**
+   * Returns whether it has the usefulness of entry.
+   *
+   * @return whether it has the usefulness of entry
+   */
+  public boolean hasUsefulness() {
+    return hasExtension(Usefulness.class);
   }
 
   @Override
