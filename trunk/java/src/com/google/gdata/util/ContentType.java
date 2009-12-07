@@ -195,6 +195,13 @@ public class ContentType implements Serializable {
       new ContentType("application/xml").lock();
   
   /**
+   * A ContentType constant that indicates that the body contains an
+   * encapsulated message, with the syntax of an RFC 822 email message.
+   */
+  public static final ContentType MESSAGE_RFC822 =
+      new ContentType("message/rfc822").lock();
+  
+  /**
    * Wildcard content type that will match any MIME type
    */
   public static final ContentType ANY = new ContentType("*/*").lock();

@@ -22,18 +22,20 @@ import com.google.gdata.client.Service;
 import com.google.gdata.data.finance.PortfolioFeed;
 import com.google.gdata.data.finance.PositionFeed;
 import com.google.gdata.data.finance.TransactionFeed;
+import com.google.gdata.util.Version;
+import com.google.gdata.util.VersionRegistry;
 
 /**
  * Extends the basic {@link GoogleService} abstraction to define a service that
- * is preconfigured for access to the Google Finance data API.
+ * is preconfigured for access to the Google Finance Portfolio Data API.
  *
  * 
  */
 public class FinanceService extends GoogleService {
 
   /**
-   * The abbreviated name of Google Finance recognized by Google.  The service
-   * name is used when requesting an authentication token.
+   * The abbreviated name of Google Finance Portfolio Data API recognized by
+   * Google.  The service name is used when requesting an authentication token.
    */
   public static final String FINANCE_SERVICE = "finance";
 
@@ -43,9 +45,29 @@ public class FinanceService extends GoogleService {
   public static final String FINANCE_SERVICE_VERSION = "GFinance-Java/" +
       FinanceService.class.getPackage().getImplementationVersion();
 
+  /** GData versions supported by the Google Finance Portfolio Data API. */
+  public static final class Versions {
+
+    /** Version 1. */
+    public static final Version V1 = new Version(FinanceService.class, "1.0",
+        Service.Versions.V1);
+
+    /** Version 2. */
+    public static final Version V2 = new Version(FinanceService.class, "2.0",
+        Service.Versions.V2);
+
+    private Versions() {}
+  }
+
   /**
-   * Constructs an instance connecting to the Google Finance service for an
-   * application with the name {@code applicationName}.
+   * Default GData version used by the Google Finance Portfolio Data API.
+   */
+  public static final Version DEFAULT_VERSION =
+      Service.initServiceVersion(FinanceService.class, Versions.V2);
+
+  /**
+   * Constructs an instance connecting to the Google Finance Portfolio Data API
+   * for an application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -58,10 +80,10 @@ public class FinanceService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Google Finance service for an
-   * application with the name {@code applicationName} and the given {@code
-   * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
-   * override the default factories.
+   * Constructs an instance connecting to the Google Finance Portfolio Data API
+   * for an application with the name {@code applicationName} and the given
+   * {@code GDataRequestFactory} and {@code AuthTokenFactory}. Use this
+   * constructor to override the default factories.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -79,8 +101,8 @@ public class FinanceService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Google Finance service with name
-   * {@code serviceName} for an application with the name {@code
+   * Constructs an instance connecting to the Google Finance Portfolio Data API
+   * with name {@code serviceName} for an application with the name {@code
    * applicationName}.  The service will authenticate at the provided {@code
    * domainName}.
    *
@@ -104,7 +126,16 @@ public class FinanceService extends GoogleService {
   }
 
   /**
-   * Declare the extensions of the feeds for the Google Finance service.
+   * Returns the current GData version used by the Google Finance Portfolio Data
+   * API.
+   */
+  public static Version getVersion() {
+    return VersionRegistry.get().getVersion(FinanceService.class);
+  }
+
+  /**
+   * Declare the extensions of the feeds for the Google Finance Portfolio Data
+   * API.
    */
   private void declareExtensions() {
     new PortfolioFeed().declareExtensions(extProfile);
@@ -113,3 +144,4 @@ public class FinanceService extends GoogleService {
   }
 
 }
+

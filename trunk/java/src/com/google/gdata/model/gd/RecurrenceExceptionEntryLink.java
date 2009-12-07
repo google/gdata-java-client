@@ -89,6 +89,37 @@ public class RecurrenceExceptionEntryLink extends EntryLink {
      return (RecurrenceExceptionEntryLink) super.lock();
    }
 
+  /**
+   * Returns the nested entry.
+   *
+   * @return nested entry
+   */
+  @Override
+  public RecurrenceExceptionEntry getEntry() {
+    return super.getElement(RecurrenceExceptionEntry.KEY);
+  }
+
+  /**
+   * Sets the nested entry.
+   *
+   * @param entry nested entry or {@code null} to reset
+   * @return this to enable chaining setters
+   */
+  public RecurrenceExceptionEntryLink setEntry(RecurrenceExceptionEntry entry) {
+    super.setElement(RecurrenceExceptionEntry.KEY, entry);
+    return this;
+  }
+
+  /**
+   * Returns whether it has the nested entry.
+   *
+   * @return whether it has the nested entry
+   */
+  @Override
+  public boolean hasEntry() {
+    return super.hasElement(RecurrenceExceptionEntry.KEY);
+  }
+
 
 }
 

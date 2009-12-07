@@ -53,7 +53,7 @@ public class OAuthHelper {
    *
    * 
    */
-  private static abstract class KeyValuePair {
+  static abstract class KeyValuePair {
     private List<String> keys;
     private List<String> values;
     private String keyValueStartDelimiter;
@@ -160,7 +160,7 @@ public class OAuthHelper {
    *
    * 
    */
-  private static class HeaderKeyValuePair extends KeyValuePair {
+  static class HeaderKeyValuePair extends KeyValuePair {
     public HeaderKeyValuePair() {
       super("=\"", "\"", ", ");
     }
@@ -312,11 +312,9 @@ public class OAuthHelper {
    */
   public void getUnauthorizedRequestToken(OAuthParameters oauthParameters)
       throws OAuthException {
-    // Validate the input parameters
-    oauthParameters.assertOAuthConsumerKeyExists();
-    if (signer instanceof OAuthHmacSha1Signer) {
-      oauthParameters.assertOAuthConsumerSecretExists();
-    }
+    TwoLeggedOAuthHelper helper
+        = new TwoLeggedOAuthHelper(signer, oauthParameters);
+    helper.validateInputParameters();
 
     // If the callback is present in this step, assume the user is using
     // OAuth v1.0a, and include the url in the base parameters.
@@ -545,10 +543,11 @@ public class OAuthHelper {
       throws OAuthException {
 
     // // STEP 1: Validate the input parameters
-    oauthParameters.assertOAuthConsumerKeyExists();
+    TwoLeggedOAuthHelper helper
+        = new TwoLeggedOAuthHelper(signer, oauthParameters);
+    helper.validateInputParameters();
     oauthParameters.assertOAuthTokenExists();
     if (signer instanceof OAuthHmacSha1Signer) {
-      oauthParameters.assertOAuthConsumerSecretExists();
       oauthParameters.assertOAuthTokenSecretExists();
     }
 
@@ -599,44 +598,21 @@ public class OAuthHelper {
   public String getAuthorizationHeader(String requestUrl, String httpMethod,
       OAuthParameters oauthParameters) throws OAuthException {
 
-    // validate input parameters
-    oauthParameters.assertOAuthConsumerKeyExists();
-    if (signer instanceof OAuthHmacSha1Signer) {
-      oauthParameters.assertOAuthConsumerSecretExists();
-    }
-    if (!isTwoLeggedOAuth(requestUrl)) {
+    TwoLeggedOAuthHelper helper
+        = new TwoLeggedOAuthHelper(signer, oauthParameters);
+    helper.validateInputParameters();
+
+    // If a user is present in the request, it normally means that it is a
+    // Two-legged OAuth request. Clients should use class
+    // {@link TwoLeggedOAuthHelper} instead.
+    if (!containsUser(requestUrl)) {
       oauthParameters.assertOAuthTokenExists();
       if (signer instanceof OAuthHmacSha1Signer) {
         oauthParameters.assertOAuthTokenSecretExists();
       }
     }
 
-    // add request-specific parameters
-    addCommonRequestParameters(requestUrl, httpMethod, oauthParameters);
-
-    // Add the "realm" item to the header
-    KeyValuePair headerParams = new HeaderKeyValuePair();
-    headerParams.add(OAuthParameters.REALM_KEY, oauthParameters.getRealm());
-
-    // Add the signature to the header
-    headerParams.add(OAuthParameters.OAUTH_SIGNATURE_KEY,
-        oauthParameters.getOAuthSignature());
-
-    // Add all other base parameters to the header
-    for (Map.Entry<String, String> e :
-        oauthParameters.getBaseParameters().entrySet()) {
-      if (e.getValue().length() > 0) {
-        headerParams.add(e.getKey(), e.getValue());
-      }
-    }
-
-    // clear the request-specific parameters set in
-    // addCommonRequestParameters(), such as nonce, timestamp and signature,
-    // which are only needed for a single request.
-    oauthParameters.reset();
-
-    return (new StringBuilder()).append(OAuthParameters.OAUTH_KEY).append(" ")
-        .append(headerParams.toString()).toString();
+    return helper.addParametersAndRetrieveHeader(requestUrl, httpMethod);
   }
 
   /**
@@ -679,8 +655,10 @@ public class OAuthHelper {
    */
   public URL getOAuthUrl(String baseUrl, String httpMethod,
       OAuthParameters oauthParameters) throws OAuthException {
+    TwoLeggedOAuthHelper helper
+        = new TwoLeggedOAuthHelper(signer, oauthParameters);
     // add request-specific parameters
-    addCommonRequestParameters(baseUrl, httpMethod, oauthParameters);
+    helper.addCommonRequestParameters(baseUrl, httpMethod);
 
     // add all query string information
     KeyValuePair queryParams = new QueryKeyValuePair();
@@ -705,47 +683,8 @@ public class OAuthHelper {
     }
   }
 
-  /**
-   * Generate and add request-specific parameters that are common to all OAuth
-   * requests (if the user did not already specify them in the oauthParameters
-   * object). The following parameters are added to the oauthParameter set:
-   * <ul>
-   * <li>oauth_signature
-   * <li>oauth_signature_method
-   * <li>oauth_timestamp
-   * <li>oauth_nonce
-   *
-   * @param baseUrl the url to make the request to
-   * @param httpMethod the http method of this request (for example, "GET")
-   * @param oauthParameters OAuth parameters for this request
-   * @throws OAuthException if there is an error with the OAuth request
-   */
-  private void addCommonRequestParameters(String baseUrl, String httpMethod,
-      OAuthParameters oauthParameters) throws OAuthException {
-    // add the signature method if it doesn't already exist.
-    if (oauthParameters.getOAuthSignatureMethod().length() == 0) {
-      oauthParameters.setOAuthSignatureMethod(signer.getSignatureMethod());
-    }
-    // add the nonce if it doesn't already exist.
-    if (oauthParameters.getOAuthTimestamp().length() == 0) {
-      oauthParameters.setOAuthTimestamp(OAuthUtil.getTimestamp());
-    }
-    // add the timestamp if it doesn't already exist.
-    if (oauthParameters.getOAuthNonce().length() == 0) {
-      oauthParameters.setOAuthNonce(OAuthUtil.getNonce());
-    }
-    // add the signature if it doesn't already exist.
-    // The signature is calculated by the {@link OAuthSigner}.
-    if (oauthParameters.getOAuthSignature().length() == 0) {
-      String baseString = OAuthUtil.getSignatureBaseString(baseUrl, httpMethod,
-          oauthParameters.getBaseParameters());
-      oauthParameters.setOAuthSignature(
-          signer.getSignature(baseString, oauthParameters));
-    }
-  }
-
   /** Returns whether the request is a Two-Legged OAuth request. */
-  private boolean isTwoLeggedOAuth(String requestUrl) {
+  private boolean containsUser(String requestUrl) {
     return requestUrl.contains(OAuthParameters.XOAUTH_REQUESTOR_ID_KEY);
   }
 }

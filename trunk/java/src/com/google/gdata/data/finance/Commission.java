@@ -107,3 +107,4 @@ public class Commission extends ExtensionPoint {
   }
 
 }
+

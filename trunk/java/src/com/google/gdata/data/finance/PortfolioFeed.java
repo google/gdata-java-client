@@ -51,3 +51,4 @@ public class PortfolioFeed extends BaseFeed<PortfolioFeed, PortfolioEntry> {
   }
 
 }
+

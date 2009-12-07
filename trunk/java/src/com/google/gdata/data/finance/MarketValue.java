@@ -107,3 +107,4 @@ public class MarketValue extends ExtensionPoint {
   }
 
 }
+

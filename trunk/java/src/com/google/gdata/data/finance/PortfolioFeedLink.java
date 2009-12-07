@@ -71,3 +71,4 @@ public class PortfolioFeedLink extends FeedLink<PositionFeed> {
   }
 
 }
+

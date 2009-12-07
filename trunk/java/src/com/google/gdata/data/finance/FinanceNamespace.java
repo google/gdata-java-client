@@ -19,7 +19,7 @@ package com.google.gdata.data.finance;
 import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
- * GData namespace definitions related to Google Finance.
+ * Namespace definitions related to Google Finance Portfolio Data API.
  *
  * 
  */
@@ -40,3 +40,4 @@ public class FinanceNamespace {
   public static final XmlNamespace GF_NS = new XmlNamespace(GF_ALIAS, GF);
 
 }
+

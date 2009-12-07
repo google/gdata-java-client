@@ -106,3 +106,4 @@ public class Gain extends ExtensionPoint {
   }
 
 }
+

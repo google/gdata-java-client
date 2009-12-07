@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 java/com/google/gdata/model/select/parser/Selection.g 2009-11-03 21:37:09
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 java/com/google/gdata/model/select/parser/Selection.g 2009-11-18 01:32:27
 
 package com.google.gdata.model.select.parser;
 
@@ -367,7 +367,7 @@ public class SelectionParser extends Parser {
 
 
     // $ANTLR start "selectors"
-    // java/com/google/gdata/model/select/parser/Selection.g:158:1: selectors[Path path] returns [List<Selector> value] : (first= selector[path] ) ( ',' more= selector[path] )* ;
+    // java/com/google/gdata/model/select/parser/Selection.g:158:1: selectors[Path path] returns [List<Selector> value] : (first= selector[path] ( ',' more= selector[path] )* )? ;
     public final List<Selector> selectors(Path path) throws RecognitionException {
         List<Selector> value = null;
 
@@ -381,51 +381,62 @@ public class SelectionParser extends Parser {
             value = selectors;
           
         try {
-            // java/com/google/gdata/model/select/parser/Selection.g:163:3: ( (first= selector[path] ) ( ',' more= selector[path] )* )
-            // java/com/google/gdata/model/select/parser/Selection.g:163:5: (first= selector[path] ) ( ',' more= selector[path] )*
+            // java/com/google/gdata/model/select/parser/Selection.g:163:3: ( (first= selector[path] ( ',' more= selector[path] )* )? )
+            // java/com/google/gdata/model/select/parser/Selection.g:163:5: (first= selector[path] ( ',' more= selector[path] )* )?
             {
-            // java/com/google/gdata/model/select/parser/Selection.g:163:5: (first= selector[path] )
-            // java/com/google/gdata/model/select/parser/Selection.g:163:6: first= selector[path]
-            {
-            pushFollow(FOLLOW_selector_in_selectors181);
-            first=selector(path);
+            // java/com/google/gdata/model/select/parser/Selection.g:163:5: (first= selector[path] ( ',' more= selector[path] )* )?
+            int alt5=2;
+            int LA5_0 = input.LA(1);
 
-            state._fsp--;
+            if ( (LA5_0==NCNAME||(LA5_0>=26 && LA5_0<=27)) ) {
+                alt5=1;
+            }
+            switch (alt5) {
+                case 1 :
+                    // java/com/google/gdata/model/select/parser/Selection.g:163:6: first= selector[path] ( ',' more= selector[path] )*
+                    {
+                    pushFollow(FOLLOW_selector_in_selectors181);
+                    first=selector(path);
 
-             selectors.add(first); 
+                    state._fsp--;
+
+                     selectors.add(first); 
+                    // java/com/google/gdata/model/select/parser/Selection.g:164:7: ( ',' more= selector[path] )*
+                    loop4:
+                    do {
+                        int alt4=2;
+                        int LA4_0 = input.LA(1);
+
+                        if ( (LA4_0==15) ) {
+                            alt4=1;
+                        }
+
+
+                        switch (alt4) {
+                    	case 1 :
+                    	    // java/com/google/gdata/model/select/parser/Selection.g:164:8: ',' more= selector[path]
+                    	    {
+                    	    match(input,15,FOLLOW_15_in_selectors194); 
+                    	    pushFollow(FOLLOW_selector_in_selectors198);
+                    	    more=selector(path);
+
+                    	    state._fsp--;
+
+                    	     selectors.add(more); 
+
+                    	    }
+                    	    break;
+
+                    	default :
+                    	    break loop4;
+                        }
+                    } while (true);
+
+
+                    }
+                    break;
 
             }
-
-            // java/com/google/gdata/model/select/parser/Selection.g:164:5: ( ',' more= selector[path] )*
-            loop4:
-            do {
-                int alt4=2;
-                int LA4_0 = input.LA(1);
-
-                if ( (LA4_0==15) ) {
-                    alt4=1;
-                }
-
-
-                switch (alt4) {
-            	case 1 :
-            	    // java/com/google/gdata/model/select/parser/Selection.g:164:6: ',' more= selector[path]
-            	    {
-            	    match(input,15,FOLLOW_15_in_selectors193); 
-            	    pushFollow(FOLLOW_selector_in_selectors197);
-            	    more=selector(path);
-
-            	    state._fsp--;
-
-            	     selectors.add(more); 
-
-            	    }
-            	    break;
-
-            	default :
-            	    break loop4;
-                }
-            } while (true);
 
 
             }
@@ -458,29 +469,29 @@ public class SelectionParser extends Parser {
             // java/com/google/gdata/model/select/parser/Selection.g:168:3: (p= selectionPathExpr[current] ( '[' c= orExpr[$p.value] ']' )? ( '(' s= selectors[$p.value] ')' )? )
             // java/com/google/gdata/model/select/parser/Selection.g:168:5: p= selectionPathExpr[current] ( '[' c= orExpr[$p.value] ']' )? ( '(' s= selectors[$p.value] ')' )?
             {
-            pushFollow(FOLLOW_selectionPathExpr_in_selector225);
+            pushFollow(FOLLOW_selectionPathExpr_in_selector228);
             p=selectionPathExpr(current);
 
             state._fsp--;
 
             // java/com/google/gdata/model/select/parser/Selection.g:169:5: ( '[' c= orExpr[$p.value] ']' )?
-            int alt5=2;
-            int LA5_0 = input.LA(1);
+            int alt6=2;
+            int LA6_0 = input.LA(1);
 
-            if ( (LA5_0==16) ) {
-                alt5=1;
+            if ( (LA6_0==16) ) {
+                alt6=1;
             }
-            switch (alt5) {
+            switch (alt6) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:169:6: '[' c= orExpr[$p.value] ']'
                     {
-                    match(input,16,FOLLOW_16_in_selector233); 
-                    pushFollow(FOLLOW_orExpr_in_selector237);
+                    match(input,16,FOLLOW_16_in_selector236); 
+                    pushFollow(FOLLOW_orExpr_in_selector240);
                     c=orExpr(p);
 
                     state._fsp--;
 
-                    match(input,17,FOLLOW_17_in_selector240); 
+                    match(input,17,FOLLOW_17_in_selector243); 
 
                     }
                     break;
@@ -488,23 +499,23 @@ public class SelectionParser extends Parser {
             }
 
             // java/com/google/gdata/model/select/parser/Selection.g:170:5: ( '(' s= selectors[$p.value] ')' )?
-            int alt6=2;
-            int LA6_0 = input.LA(1);
+            int alt7=2;
+            int LA7_0 = input.LA(1);
 
-            if ( (LA6_0==18) ) {
-                alt6=1;
+            if ( (LA7_0==18) ) {
+                alt7=1;
             }
-            switch (alt6) {
+            switch (alt7) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:170:6: '(' s= selectors[$p.value] ')'
                     {
-                    match(input,18,FOLLOW_18_in_selector250); 
-                    pushFollow(FOLLOW_selectors_in_selector254);
+                    match(input,18,FOLLOW_18_in_selector253); 
+                    pushFollow(FOLLOW_selectors_in_selector257);
                     s=selectors(p);
 
                     state._fsp--;
 
-                    match(input,19,FOLLOW_19_in_selector257); 
+                    match(input,19,FOLLOW_19_in_selector260); 
 
                     }
                     break;
@@ -543,33 +554,33 @@ public class SelectionParser extends Parser {
             // java/com/google/gdata/model/select/parser/Selection.g:176:3: (left= andExpr[current] ( orToken right= andExpr[current] )* )
             // java/com/google/gdata/model/select/parser/Selection.g:176:5: left= andExpr[current] ( orToken right= andExpr[current] )*
             {
-            pushFollow(FOLLOW_andExpr_in_orExpr286);
+            pushFollow(FOLLOW_andExpr_in_orExpr289);
             left=andExpr(current);
 
             state._fsp--;
 
              value = left; 
             // java/com/google/gdata/model/select/parser/Selection.g:177:5: ( orToken right= andExpr[current] )*
-            loop7:
+            loop8:
             do {
-                int alt7=2;
-                int LA7_0 = input.LA(1);
+                int alt8=2;
+                int LA8_0 = input.LA(1);
 
-                if ( (LA7_0==NCNAME) ) {
-                    alt7=1;
+                if ( (LA8_0==NCNAME) ) {
+                    alt8=1;
                 }
 
 
-                switch (alt7) {
+                switch (alt8) {
             	case 1 :
             	    // java/com/google/gdata/model/select/parser/Selection.g:177:6: orToken right= andExpr[current]
             	    {
-            	    pushFollow(FOLLOW_orToken_in_orExpr297);
+            	    pushFollow(FOLLOW_orToken_in_orExpr300);
             	    orToken();
 
             	    state._fsp--;
 
-            	    pushFollow(FOLLOW_andExpr_in_orExpr301);
+            	    pushFollow(FOLLOW_andExpr_in_orExpr304);
             	    right=andExpr(current);
 
             	    state._fsp--;
@@ -580,7 +591,7 @@ public class SelectionParser extends Parser {
             	    break;
 
             	default :
-            	    break loop7;
+            	    break loop8;
                 }
             } while (true);
 
@@ -613,27 +624,27 @@ public class SelectionParser extends Parser {
             // java/com/google/gdata/model/select/parser/Selection.g:181:3: (left= finalExpr[current] ( andToken right= finalExpr[current] )* )
             // java/com/google/gdata/model/select/parser/Selection.g:181:5: left= finalExpr[current] ( andToken right= finalExpr[current] )*
             {
-            pushFollow(FOLLOW_finalExpr_in_andExpr327);
+            pushFollow(FOLLOW_finalExpr_in_andExpr330);
             left=finalExpr(current);
 
             state._fsp--;
 
              value = left; 
             // java/com/google/gdata/model/select/parser/Selection.g:182:5: ( andToken right= finalExpr[current] )*
-            loop8:
+            loop9:
             do {
-                int alt8=2;
-                alt8 = dfa8.predict(input);
-                switch (alt8) {
+                int alt9=2;
+                alt9 = dfa9.predict(input);
+                switch (alt9) {
             	case 1 :
             	    // java/com/google/gdata/model/select/parser/Selection.g:182:6: andToken right= finalExpr[current]
             	    {
-            	    pushFollow(FOLLOW_andToken_in_andExpr337);
+            	    pushFollow(FOLLOW_andToken_in_andExpr340);
             	    andToken();
 
             	    state._fsp--;
 
-            	    pushFollow(FOLLOW_finalExpr_in_andExpr341);
+            	    pushFollow(FOLLOW_finalExpr_in_andExpr344);
             	    right=finalExpr(current);
 
             	    state._fsp--;
@@ -644,7 +655,7 @@ public class SelectionParser extends Parser {
             	    break;
 
             	default :
-            	    break loop8;
+            	    break loop9;
                 }
             } while (true);
 
@@ -677,27 +688,27 @@ public class SelectionParser extends Parser {
 
         try {
             // java/com/google/gdata/model/select/parser/Selection.g:186:3: ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) )
-            int alt9=5;
-            alt9 = dfa9.predict(input);
-            switch (alt9) {
+            int alt10=5;
+            alt10 = dfa10.predict(input);
+            switch (alt10) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:186:5: ( notToken '(' notl= orExpr[current] ')' )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:186:5: ( notToken '(' notl= orExpr[current] ')' )
                     // java/com/google/gdata/model/select/parser/Selection.g:186:6: notToken '(' notl= orExpr[current] ')'
                     {
-                    pushFollow(FOLLOW_notToken_in_finalExpr366);
+                    pushFollow(FOLLOW_notToken_in_finalExpr369);
                     notToken();
 
                     state._fsp--;
 
-                    match(input,18,FOLLOW_18_in_finalExpr368); 
-                    pushFollow(FOLLOW_orExpr_in_finalExpr372);
+                    match(input,18,FOLLOW_18_in_finalExpr371); 
+                    pushFollow(FOLLOW_orExpr_in_finalExpr375);
                     notl=orExpr(current);
 
                     state._fsp--;
 
-                    match(input,19,FOLLOW_19_in_finalExpr375); 
+                    match(input,19,FOLLOW_19_in_finalExpr378); 
                      value = new NotCondition(notl); 
 
                     }
@@ -711,13 +722,13 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:187:5: ( trueToken '(' ')' )
                     // java/com/google/gdata/model/select/parser/Selection.g:187:6: trueToken '(' ')'
                     {
-                    pushFollow(FOLLOW_trueToken_in_finalExpr385);
+                    pushFollow(FOLLOW_trueToken_in_finalExpr388);
                     trueToken();
 
                     state._fsp--;
 
-                    match(input,18,FOLLOW_18_in_finalExpr387); 
-                    match(input,19,FOLLOW_19_in_finalExpr389); 
+                    match(input,18,FOLLOW_18_in_finalExpr390); 
+                    match(input,19,FOLLOW_19_in_finalExpr392); 
                      value = ElementCondition.ALL; 
 
                     }
@@ -731,13 +742,13 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:188:5: ( falseToken '(' ')' )
                     // java/com/google/gdata/model/select/parser/Selection.g:188:6: falseToken '(' ')'
                     {
-                    pushFollow(FOLLOW_falseToken_in_finalExpr399);
+                    pushFollow(FOLLOW_falseToken_in_finalExpr402);
                     falseToken();
 
                     state._fsp--;
 
-                    match(input,18,FOLLOW_18_in_finalExpr401); 
-                    match(input,19,FOLLOW_19_in_finalExpr403); 
+                    match(input,18,FOLLOW_18_in_finalExpr404); 
+                    match(input,19,FOLLOW_19_in_finalExpr406); 
                      value = ElementCondition.NONE; 
 
                     }
@@ -751,13 +762,13 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:189:5: ( '(' l= orExpr[current] ')' )
                     // java/com/google/gdata/model/select/parser/Selection.g:189:6: '(' l= orExpr[current] ')'
                     {
-                    match(input,18,FOLLOW_18_in_finalExpr413); 
-                    pushFollow(FOLLOW_orExpr_in_finalExpr417);
+                    match(input,18,FOLLOW_18_in_finalExpr416); 
+                    pushFollow(FOLLOW_orExpr_in_finalExpr420);
                     l=orExpr(current);
 
                     state._fsp--;
 
-                    match(input,19,FOLLOW_19_in_finalExpr420); 
+                    match(input,19,FOLLOW_19_in_finalExpr423); 
                      value = l; 
 
                     }
@@ -771,7 +782,7 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:190:5: (c= comparisonOrExistenceExpr[current] )
                     // java/com/google/gdata/model/select/parser/Selection.g:190:6: c= comparisonOrExistenceExpr[current]
                     {
-                    pushFollow(FOLLOW_comparisonOrExistenceExpr_in_finalExpr432);
+                    pushFollow(FOLLOW_comparisonOrExistenceExpr_in_finalExpr435);
                     c=comparisonOrExistenceExpr(current);
 
                     state._fsp--;
@@ -809,13 +820,13 @@ public class SelectionParser extends Parser {
 
         try {
             // java/com/google/gdata/model/select/parser/Selection.g:194:5: (d= dateOrDateTimeComparison[current] | o= otherComparison[current] )
-            int alt10=2;
-            alt10 = dfa10.predict(input);
-            switch (alt10) {
+            int alt11=2;
+            alt11 = dfa11.predict(input);
+            switch (alt11) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:194:7: d= dateOrDateTimeComparison[current]
                     {
-                    pushFollow(FOLLOW_dateOrDateTimeComparison_in_comparisonOrExistenceExpr459);
+                    pushFollow(FOLLOW_dateOrDateTimeComparison_in_comparisonOrExistenceExpr462);
                     d=dateOrDateTimeComparison(current);
 
                     state._fsp--;
@@ -827,7 +838,7 @@ public class SelectionParser extends Parser {
                 case 2 :
                     // java/com/google/gdata/model/select/parser/Selection.g:195:7: o= otherComparison[current]
                     {
-                    pushFollow(FOLLOW_otherComparison_in_comparisonOrExistenceExpr472);
+                    pushFollow(FOLLOW_otherComparison_in_comparisonOrExistenceExpr475);
                     o=otherComparison(current);
 
                     state._fsp--;
@@ -865,86 +876,86 @@ public class SelectionParser extends Parser {
             // java/com/google/gdata/model/select/parser/Selection.g:199:5: ( xsToken ':' ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) ) )
             // java/com/google/gdata/model/select/parser/Selection.g:199:7: xsToken ':' ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) )
             {
-            pushFollow(FOLLOW_xsToken_in_dateOrDateTimeComparison499);
+            pushFollow(FOLLOW_xsToken_in_dateOrDateTimeComparison502);
             xsToken();
 
             state._fsp--;
 
-            match(input,13,FOLLOW_13_in_dateOrDateTimeComparison501); 
+            match(input,13,FOLLOW_13_in_dateOrDateTimeComparison504); 
             // java/com/google/gdata/model/select/parser/Selection.g:200:9: ( ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' ) | ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' ) )
-            int alt11=2;
-            int LA11_0 = input.LA(1);
+            int alt12=2;
+            int LA12_0 = input.LA(1);
 
-            if ( (LA11_0==NCNAME) ) {
-                int LA11_1 = input.LA(2);
+            if ( (LA12_0==NCNAME) ) {
+                int LA12_1 = input.LA(2);
 
-                if ( (LA11_1==18) ) {
-                    int LA11_2 = input.LA(3);
+                if ( (LA12_1==18) ) {
+                    int LA12_2 = input.LA(3);
 
                     if ( ((input.LT(1).getText().equals("date"))) ) {
-                        alt11=1;
+                        alt12=1;
                     }
                     else if ( ((input.LT(1).getText().equals("dateTime"))) ) {
-                        alt11=2;
+                        alt12=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 11, 2, input);
+                            new NoViableAltException("", 12, 2, input);
 
                         throw nvae;
                     }
                 }
                 else {
                     NoViableAltException nvae =
-                        new NoViableAltException("", 11, 1, input);
+                        new NoViableAltException("", 12, 1, input);
 
                     throw nvae;
                 }
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("", 11, 0, input);
+                    new NoViableAltException("", 12, 0, input);
 
                 throw nvae;
             }
-            switch (alt11) {
+            switch (alt12) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:200:10: ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:200:10: ( dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')' )
                     // java/com/google/gdata/model/select/parser/Selection.g:200:11: dateToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateToken '(' str= STRINGLITERAL ')'
                     {
-                    pushFollow(FOLLOW_dateToken_in_dateOrDateTimeComparison514);
+                    pushFollow(FOLLOW_dateToken_in_dateOrDateTimeComparison517);
                     dateToken();
 
                     state._fsp--;
 
-                    match(input,18,FOLLOW_18_in_dateOrDateTimeComparison516); 
-                    pushFollow(FOLLOW_predicateExpr_in_dateOrDateTimeComparison520);
+                    match(input,18,FOLLOW_18_in_dateOrDateTimeComparison519); 
+                    pushFollow(FOLLOW_predicateExpr_in_dateOrDateTimeComparison523);
                     p=predicateExpr(current);
 
                     state._fsp--;
 
-                    match(input,19,FOLLOW_19_in_dateOrDateTimeComparison523); 
-                    pushFollow(FOLLOW_comparator_in_dateOrDateTimeComparison527);
+                    match(input,19,FOLLOW_19_in_dateOrDateTimeComparison526); 
+                    pushFollow(FOLLOW_comparator_in_dateOrDateTimeComparison530);
                     c=comparator();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_xsToken_in_dateOrDateTimeComparison542);
+                    pushFollow(FOLLOW_xsToken_in_dateOrDateTimeComparison545);
                     xsToken();
 
                     state._fsp--;
 
-                    match(input,13,FOLLOW_13_in_dateOrDateTimeComparison544); 
-                    pushFollow(FOLLOW_dateToken_in_dateOrDateTimeComparison546);
+                    match(input,13,FOLLOW_13_in_dateOrDateTimeComparison547); 
+                    pushFollow(FOLLOW_dateToken_in_dateOrDateTimeComparison549);
                     dateToken();
 
                     state._fsp--;
 
-                    match(input,18,FOLLOW_18_in_dateOrDateTimeComparison548); 
-                    str=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_dateOrDateTimeComparison552); 
-                    match(input,19,FOLLOW_19_in_dateOrDateTimeComparison554); 
+                    match(input,18,FOLLOW_18_in_dateOrDateTimeComparison551); 
+                    str=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_dateOrDateTimeComparison555); 
+                    match(input,19,FOLLOW_19_in_dateOrDateTimeComparison557); 
 
                     }
 
@@ -960,37 +971,37 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:204:11: ( dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')' )
                     // java/com/google/gdata/model/select/parser/Selection.g:204:12: dateTimeToken '(' p= predicateExpr[current] ')' c= comparator xsToken ':' dateTimeToken '(' str= STRINGLITERAL ')'
                     {
-                    pushFollow(FOLLOW_dateTimeToken_in_dateOrDateTimeComparison570);
+                    pushFollow(FOLLOW_dateTimeToken_in_dateOrDateTimeComparison573);
                     dateTimeToken();
 
                     state._fsp--;
 
-                    match(input,18,FOLLOW_18_in_dateOrDateTimeComparison572); 
-                    pushFollow(FOLLOW_predicateExpr_in_dateOrDateTimeComparison576);
+                    match(input,18,FOLLOW_18_in_dateOrDateTimeComparison575); 
+                    pushFollow(FOLLOW_predicateExpr_in_dateOrDateTimeComparison579);
                     p=predicateExpr(current);
 
                     state._fsp--;
 
-                    match(input,19,FOLLOW_19_in_dateOrDateTimeComparison579); 
-                    pushFollow(FOLLOW_comparator_in_dateOrDateTimeComparison583);
+                    match(input,19,FOLLOW_19_in_dateOrDateTimeComparison582); 
+                    pushFollow(FOLLOW_comparator_in_dateOrDateTimeComparison586);
                     c=comparator();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_xsToken_in_dateOrDateTimeComparison598);
+                    pushFollow(FOLLOW_xsToken_in_dateOrDateTimeComparison601);
                     xsToken();
 
                     state._fsp--;
 
-                    match(input,13,FOLLOW_13_in_dateOrDateTimeComparison600); 
-                    pushFollow(FOLLOW_dateTimeToken_in_dateOrDateTimeComparison602);
+                    match(input,13,FOLLOW_13_in_dateOrDateTimeComparison603); 
+                    pushFollow(FOLLOW_dateTimeToken_in_dateOrDateTimeComparison605);
                     dateTimeToken();
 
                     state._fsp--;
 
-                    match(input,18,FOLLOW_18_in_dateOrDateTimeComparison604); 
-                    str=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_dateOrDateTimeComparison608); 
-                    match(input,19,FOLLOW_19_in_dateOrDateTimeComparison610); 
+                    match(input,18,FOLLOW_18_in_dateOrDateTimeComparison607); 
+                    str=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_dateOrDateTimeComparison611); 
+                    match(input,19,FOLLOW_19_in_dateOrDateTimeComparison613); 
 
                     }
 
@@ -1039,38 +1050,38 @@ public class SelectionParser extends Parser {
             // java/com/google/gdata/model/select/parser/Selection.g:216:3: (p= predicateExpr[current] (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )? )
             // java/com/google/gdata/model/select/parser/Selection.g:216:5: p= predicateExpr[current] (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?
             {
-            pushFollow(FOLLOW_predicateExpr_in_otherComparison648);
+            pushFollow(FOLLOW_predicateExpr_in_otherComparison651);
             p=predicateExpr(current);
 
             state._fsp--;
 
             // java/com/google/gdata/model/select/parser/Selection.g:216:30: (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?
-            int alt13=2;
-            alt13 = dfa13.predict(input);
-            switch (alt13) {
+            int alt14=2;
+            alt14 = dfa14.predict(input);
+            switch (alt14) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:216:31: c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )
                     {
-                    pushFollow(FOLLOW_comparator_in_otherComparison654);
+                    pushFollow(FOLLOW_comparator_in_otherComparison657);
                     c=comparator();
 
                     state._fsp--;
 
                     // java/com/google/gdata/model/select/parser/Selection.g:216:44: (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )
-                    int alt12=4;
-                    alt12 = dfa12.predict(input);
-                    switch (alt12) {
+                    int alt13=4;
+                    alt13 = dfa13.predict(input);
+                    switch (alt13) {
                         case 1 :
                             // java/com/google/gdata/model/select/parser/Selection.g:216:45: str= STRINGLITERAL
                             {
-                            str=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_otherComparison659); 
+                            str=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_otherComparison662); 
 
                             }
                             break;
                         case 2 :
                             // java/com/google/gdata/model/select/parser/Selection.g:217:9: num= NUMBER
                             {
-                            num=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_otherComparison672); 
+                            num=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_otherComparison675); 
 
                             }
                             break;
@@ -1080,7 +1091,7 @@ public class SelectionParser extends Parser {
                             // java/com/google/gdata/model/select/parser/Selection.g:218:9: ( naNToken )
                             // java/com/google/gdata/model/select/parser/Selection.g:218:10: naNToken
                             {
-                            pushFollow(FOLLOW_naNToken_in_otherComparison684);
+                            pushFollow(FOLLOW_naNToken_in_otherComparison687);
                             naNToken();
 
                             state._fsp--;
@@ -1098,7 +1109,7 @@ public class SelectionParser extends Parser {
                             // java/com/google/gdata/model/select/parser/Selection.g:219:9: ( infToken )
                             // java/com/google/gdata/model/select/parser/Selection.g:219:10: infToken
                             {
-                            pushFollow(FOLLOW_infToken_in_otherComparison699);
+                            pushFollow(FOLLOW_infToken_in_otherComparison702);
                             infToken();
 
                             state._fsp--;
@@ -1155,9 +1166,9 @@ public class SelectionParser extends Parser {
 
         try {
             // java/com/google/gdata/model/select/parser/Selection.g:236:3: ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) )
-            int alt20=6;
-            alt20 = dfa20.predict(input);
-            switch (alt20) {
+            int alt21=6;
+            alt21 = dfa21.predict(input);
+            switch (alt21) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:236:5: ( ( eqToken | '=' ) )
                     {
@@ -1165,26 +1176,26 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:236:6: ( eqToken | '=' )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:236:6: ( eqToken | '=' )
-                    int alt14=2;
-                    int LA14_0 = input.LA(1);
+                    int alt15=2;
+                    int LA15_0 = input.LA(1);
 
-                    if ( (LA14_0==NCNAME) ) {
-                        alt14=1;
+                    if ( (LA15_0==NCNAME) ) {
+                        alt15=1;
                     }
-                    else if ( (LA14_0==14) ) {
-                        alt14=2;
+                    else if ( (LA15_0==14) ) {
+                        alt15=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 14, 0, input);
+                            new NoViableAltException("", 15, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt14) {
+                    switch (alt15) {
                         case 1 :
                             // java/com/google/gdata/model/select/parser/Selection.g:236:7: eqToken
                             {
-                            pushFollow(FOLLOW_eqToken_in_comparator726);
+                            pushFollow(FOLLOW_eqToken_in_comparator729);
                             eqToken();
 
                             state._fsp--;
@@ -1195,7 +1206,7 @@ public class SelectionParser extends Parser {
                         case 2 :
                             // java/com/google/gdata/model/select/parser/Selection.g:236:17: '='
                             {
-                            match(input,14,FOLLOW_14_in_comparator730); 
+                            match(input,14,FOLLOW_14_in_comparator733); 
 
                             }
                             break;
@@ -1216,26 +1227,26 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:237:6: ( neToken | '!=' )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:237:6: ( neToken | '!=' )
-                    int alt15=2;
-                    int LA15_0 = input.LA(1);
+                    int alt16=2;
+                    int LA16_0 = input.LA(1);
 
-                    if ( (LA15_0==NCNAME) ) {
-                        alt15=1;
+                    if ( (LA16_0==NCNAME) ) {
+                        alt16=1;
                     }
-                    else if ( (LA15_0==20) ) {
-                        alt15=2;
+                    else if ( (LA16_0==20) ) {
+                        alt16=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 15, 0, input);
+                            new NoViableAltException("", 16, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt15) {
+                    switch (alt16) {
                         case 1 :
                             // java/com/google/gdata/model/select/parser/Selection.g:237:7: neToken
                             {
-                            pushFollow(FOLLOW_neToken_in_comparator742);
+                            pushFollow(FOLLOW_neToken_in_comparator745);
                             neToken();
 
                             state._fsp--;
@@ -1246,7 +1257,7 @@ public class SelectionParser extends Parser {
                         case 2 :
                             // java/com/google/gdata/model/select/parser/Selection.g:237:17: '!='
                             {
-                            match(input,20,FOLLOW_20_in_comparator746); 
+                            match(input,20,FOLLOW_20_in_comparator749); 
 
                             }
                             break;
@@ -1267,26 +1278,26 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:238:6: ( gtToken | '>' )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:238:6: ( gtToken | '>' )
-                    int alt16=2;
-                    int LA16_0 = input.LA(1);
+                    int alt17=2;
+                    int LA17_0 = input.LA(1);
 
-                    if ( (LA16_0==NCNAME) ) {
-                        alt16=1;
+                    if ( (LA17_0==NCNAME) ) {
+                        alt17=1;
                     }
-                    else if ( (LA16_0==21) ) {
-                        alt16=2;
+                    else if ( (LA17_0==21) ) {
+                        alt17=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 16, 0, input);
+                            new NoViableAltException("", 17, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt16) {
+                    switch (alt17) {
                         case 1 :
                             // java/com/google/gdata/model/select/parser/Selection.g:238:7: gtToken
                             {
-                            pushFollow(FOLLOW_gtToken_in_comparator758);
+                            pushFollow(FOLLOW_gtToken_in_comparator761);
                             gtToken();
 
                             state._fsp--;
@@ -1297,7 +1308,7 @@ public class SelectionParser extends Parser {
                         case 2 :
                             // java/com/google/gdata/model/select/parser/Selection.g:238:17: '>'
                             {
-                            match(input,21,FOLLOW_21_in_comparator762); 
+                            match(input,21,FOLLOW_21_in_comparator765); 
 
                             }
                             break;
@@ -1318,26 +1329,26 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:239:6: ( gteToken | '>=' )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:239:6: ( gteToken | '>=' )
-                    int alt17=2;
-                    int LA17_0 = input.LA(1);
+                    int alt18=2;
+                    int LA18_0 = input.LA(1);
 
-                    if ( (LA17_0==NCNAME) ) {
-                        alt17=1;
+                    if ( (LA18_0==NCNAME) ) {
+                        alt18=1;
                     }
-                    else if ( (LA17_0==22) ) {
-                        alt17=2;
+                    else if ( (LA18_0==22) ) {
+                        alt18=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 17, 0, input);
+                            new NoViableAltException("", 18, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt17) {
+                    switch (alt18) {
                         case 1 :
                             // java/com/google/gdata/model/select/parser/Selection.g:239:7: gteToken
                             {
-                            pushFollow(FOLLOW_gteToken_in_comparator774);
+                            pushFollow(FOLLOW_gteToken_in_comparator777);
                             gteToken();
 
                             state._fsp--;
@@ -1348,7 +1359,7 @@ public class SelectionParser extends Parser {
                         case 2 :
                             // java/com/google/gdata/model/select/parser/Selection.g:239:18: '>='
                             {
-                            match(input,22,FOLLOW_22_in_comparator778); 
+                            match(input,22,FOLLOW_22_in_comparator781); 
 
                             }
                             break;
@@ -1369,26 +1380,26 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:240:6: ( ltToken | '<' )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:240:6: ( ltToken | '<' )
-                    int alt18=2;
-                    int LA18_0 = input.LA(1);
+                    int alt19=2;
+                    int LA19_0 = input.LA(1);
 
-                    if ( (LA18_0==NCNAME) ) {
-                        alt18=1;
+                    if ( (LA19_0==NCNAME) ) {
+                        alt19=1;
                     }
-                    else if ( (LA18_0==23) ) {
-                        alt18=2;
+                    else if ( (LA19_0==23) ) {
+                        alt19=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 18, 0, input);
+                            new NoViableAltException("", 19, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt18) {
+                    switch (alt19) {
                         case 1 :
                             // java/com/google/gdata/model/select/parser/Selection.g:240:7: ltToken
                             {
-                            pushFollow(FOLLOW_ltToken_in_comparator790);
+                            pushFollow(FOLLOW_ltToken_in_comparator793);
                             ltToken();
 
                             state._fsp--;
@@ -1399,7 +1410,7 @@ public class SelectionParser extends Parser {
                         case 2 :
                             // java/com/google/gdata/model/select/parser/Selection.g:240:17: '<'
                             {
-                            match(input,23,FOLLOW_23_in_comparator794); 
+                            match(input,23,FOLLOW_23_in_comparator797); 
 
                             }
                             break;
@@ -1420,26 +1431,26 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:241:6: ( lteToken | '<=' )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:241:6: ( lteToken | '<=' )
-                    int alt19=2;
-                    int LA19_0 = input.LA(1);
+                    int alt20=2;
+                    int LA20_0 = input.LA(1);
 
-                    if ( (LA19_0==NCNAME) ) {
-                        alt19=1;
+                    if ( (LA20_0==NCNAME) ) {
+                        alt20=1;
                     }
-                    else if ( (LA19_0==24) ) {
-                        alt19=2;
+                    else if ( (LA20_0==24) ) {
+                        alt20=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 19, 0, input);
+                            new NoViableAltException("", 20, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt19) {
+                    switch (alt20) {
                         case 1 :
                             // java/com/google/gdata/model/select/parser/Selection.g:241:7: lteToken
                             {
-                            pushFollow(FOLLOW_lteToken_in_comparator806);
+                            pushFollow(FOLLOW_lteToken_in_comparator809);
                             lteToken();
 
                             state._fsp--;
@@ -1450,7 +1461,7 @@ public class SelectionParser extends Parser {
                         case 2 :
                             // java/com/google/gdata/model/select/parser/Selection.g:241:18: '<='
                             {
-                            match(input,24,FOLLOW_24_in_comparator810); 
+                            match(input,24,FOLLOW_24_in_comparator813); 
 
                             }
                             break;
@@ -1488,16 +1499,16 @@ public class SelectionParser extends Parser {
 
         try {
             // java/com/google/gdata/model/select/parser/Selection.g:245:3: ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) )
-            int alt21=2;
-            alt21 = dfa21.predict(input);
-            switch (alt21) {
+            int alt22=2;
+            alt22 = dfa22.predict(input);
+            switch (alt22) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:245:5: (path= selectionPathExpr[current] )
                     {
                     // java/com/google/gdata/model/select/parser/Selection.g:245:5: (path= selectionPathExpr[current] )
                     // java/com/google/gdata/model/select/parser/Selection.g:245:6: path= selectionPathExpr[current]
                     {
-                    pushFollow(FOLLOW_selectionPathExpr_in_predicateExpr836);
+                    pushFollow(FOLLOW_selectionPathExpr_in_predicateExpr839);
                     path=selectionPathExpr(current);
 
                     state._fsp--;
@@ -1515,13 +1526,13 @@ public class SelectionParser extends Parser {
                     // java/com/google/gdata/model/select/parser/Selection.g:246:5: ( textToken '(' ')' )
                     // java/com/google/gdata/model/select/parser/Selection.g:246:6: textToken '(' ')'
                     {
-                    pushFollow(FOLLOW_textToken_in_predicateExpr847);
+                    pushFollow(FOLLOW_textToken_in_predicateExpr850);
                     textToken();
 
                     state._fsp--;
 
-                    match(input,18,FOLLOW_18_in_predicateExpr849); 
-                    match(input,19,FOLLOW_19_in_predicateExpr851); 
+                    match(input,18,FOLLOW_18_in_predicateExpr852); 
+                    match(input,19,FOLLOW_19_in_predicateExpr854); 
                      value = Path.ROOT; 
 
                     }
@@ -1555,22 +1566,22 @@ public class SelectionParser extends Parser {
             // java/com/google/gdata/model/select/parser/Selection.g:253:3: ( pathStep[builder] ( '/' pathStep[builder] )* )
             // java/com/google/gdata/model/select/parser/Selection.g:253:5: pathStep[builder] ( '/' pathStep[builder] )*
             {
-            pushFollow(FOLLOW_pathStep_in_selectionPathExpr882);
+            pushFollow(FOLLOW_pathStep_in_selectionPathExpr885);
             pathStep(builder);
 
             state._fsp--;
 
             // java/com/google/gdata/model/select/parser/Selection.g:253:23: ( '/' pathStep[builder] )*
-            loop22:
+            loop23:
             do {
-                int alt22=2;
-                alt22 = dfa22.predict(input);
-                switch (alt22) {
+                int alt23=2;
+                alt23 = dfa23.predict(input);
+                switch (alt23) {
             	case 1 :
             	    // java/com/google/gdata/model/select/parser/Selection.g:253:24: '/' pathStep[builder]
             	    {
-            	    match(input,25,FOLLOW_25_in_selectionPathExpr886); 
-            	    pushFollow(FOLLOW_pathStep_in_selectionPathExpr888);
+            	    match(input,25,FOLLOW_25_in_selectionPathExpr889); 
+            	    pushFollow(FOLLOW_pathStep_in_selectionPathExpr891);
             	    pathStep(builder);
 
             	    state._fsp--;
@@ -1580,7 +1591,7 @@ public class SelectionParser extends Parser {
             	    break;
 
             	default :
-            	    break loop22;
+            	    break loop23;
                 }
             } while (true);
 
@@ -1614,24 +1625,24 @@ public class SelectionParser extends Parser {
             // java/com/google/gdata/model/select/parser/Selection.g:259:5: (at= '@' )? qname= nameTest[at != null]
             {
             // java/com/google/gdata/model/select/parser/Selection.g:259:5: (at= '@' )?
-            int alt23=2;
-            int LA23_0 = input.LA(1);
+            int alt24=2;
+            int LA24_0 = input.LA(1);
 
-            if ( (LA23_0==26) ) {
-                alt23=1;
+            if ( (LA24_0==26) ) {
+                alt24=1;
             }
-            switch (alt23) {
+            switch (alt24) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:259:6: at= '@'
                     {
-                    at=(Token)match(input,26,FOLLOW_26_in_pathStep911); 
+                    at=(Token)match(input,26,FOLLOW_26_in_pathStep914); 
 
                     }
                     break;
 
             }
 
-            pushFollow(FOLLOW_nameTest_in_pathStep917);
+            pushFollow(FOLLOW_nameTest_in_pathStep920);
             qname=nameTest(at != null);
 
             state._fsp--;
@@ -1697,13 +1708,13 @@ public class SelectionParser extends Parser {
             }
 
             // java/com/google/gdata/model/select/parser/Selection.g:285:25: ( ':' right= ( '*' | NCNAME ) )?
-            int alt24=2;
-            alt24 = dfa24.predict(input);
-            switch (alt24) {
+            int alt25=2;
+            alt25 = dfa25.predict(input);
+            switch (alt25) {
                 case 1 :
                     // java/com/google/gdata/model/select/parser/Selection.g:285:26: ':' right= ( '*' | NCNAME )
                     {
-                    match(input,13,FOLLOW_13_in_nameTest950); 
+                    match(input,13,FOLLOW_13_in_nameTest953); 
                     right=(Token)input.LT(1);
                     if ( input.LA(1)==NCNAME||input.LA(1)==27 ) {
                         input.consume();
@@ -1748,7 +1759,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("xmlns"))) ) {
                 throw new FailedPredicateException(input, "xmlnsToken", "input.LT(1).getText().equals(\"xmlns\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_xmlnsToken978); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_xmlnsToken981); 
 
             }
 
@@ -1774,7 +1785,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("or"))) ) {
                 throw new FailedPredicateException(input, "orToken", "input.LT(1).getText().equals(\"or\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_orToken988); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_orToken991); 
 
             }
 
@@ -1800,7 +1811,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("and"))) ) {
                 throw new FailedPredicateException(input, "andToken", "input.LT(1).getText().equals(\"and\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_andToken998); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_andToken1001); 
 
             }
 
@@ -1826,7 +1837,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("not"))) ) {
                 throw new FailedPredicateException(input, "notToken", "input.LT(1).getText().equals(\"not\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_notToken1008); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_notToken1011); 
 
             }
 
@@ -1852,7 +1863,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("true"))) ) {
                 throw new FailedPredicateException(input, "trueToken", "input.LT(1).getText().equals(\"true\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_trueToken1018); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_trueToken1021); 
 
             }
 
@@ -1878,7 +1889,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("false"))) ) {
                 throw new FailedPredicateException(input, "falseToken", "input.LT(1).getText().equals(\"false\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_falseToken1028); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_falseToken1031); 
 
             }
 
@@ -1904,7 +1915,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("eq"))) ) {
                 throw new FailedPredicateException(input, "eqToken", "input.LT(1).getText().equals(\"eq\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_eqToken1038); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_eqToken1041); 
 
             }
 
@@ -1930,7 +1941,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("ne"))) ) {
                 throw new FailedPredicateException(input, "neToken", "input.LT(1).getText().equals(\"ne\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_neToken1048); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_neToken1051); 
 
             }
 
@@ -1956,7 +1967,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("text"))) ) {
                 throw new FailedPredicateException(input, "textToken", "input.LT(1).getText().equals(\"text\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_textToken1058); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_textToken1061); 
 
             }
 
@@ -1982,7 +1993,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("lt"))) ) {
                 throw new FailedPredicateException(input, "ltToken", "input.LT(1).getText().equals(\"lt\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_ltToken1068); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_ltToken1071); 
 
             }
 
@@ -2008,7 +2019,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("lte"))) ) {
                 throw new FailedPredicateException(input, "lteToken", "input.LT(1).getText().equals(\"lte\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_lteToken1078); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_lteToken1081); 
 
             }
 
@@ -2034,7 +2045,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("gt"))) ) {
                 throw new FailedPredicateException(input, "gtToken", "input.LT(1).getText().equals(\"gt\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_gtToken1088); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_gtToken1091); 
 
             }
 
@@ -2060,7 +2071,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("gte"))) ) {
                 throw new FailedPredicateException(input, "gteToken", "input.LT(1).getText().equals(\"gte\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_gteToken1098); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_gteToken1101); 
 
             }
 
@@ -2086,7 +2097,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("NaN"))) ) {
                 throw new FailedPredicateException(input, "naNToken", "input.LT(1).getText().equals(\"NaN\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_naNToken1108); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_naNToken1111); 
 
             }
 
@@ -2112,7 +2123,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("INF"))) ) {
                 throw new FailedPredicateException(input, "infToken", "input.LT(1).getText().equals(\"INF\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_infToken1118); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_infToken1121); 
 
             }
 
@@ -2138,7 +2149,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("xs"))) ) {
                 throw new FailedPredicateException(input, "xsToken", "input.LT(1).getText().equals(\"xs\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_xsToken1128); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_xsToken1131); 
 
             }
 
@@ -2164,7 +2175,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("date"))) ) {
                 throw new FailedPredicateException(input, "dateToken", "input.LT(1).getText().equals(\"date\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_dateToken1138); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_dateToken1141); 
 
             }
 
@@ -2190,7 +2201,7 @@ public class SelectionParser extends Parser {
             if ( !((input.LT(1).getText().equals("dateTime"))) ) {
                 throw new FailedPredicateException(input, "dateTimeToken", "input.LT(1).getText().equals(\"dateTime\")");
             }
-            match(input,NCNAME,FOLLOW_NCNAME_in_dateTimeToken1148); 
+            match(input,NCNAME,FOLLOW_NCNAME_in_dateTimeToken1151); 
 
             }
 
@@ -2210,30 +2221,31 @@ public class SelectionParser extends Parser {
 
     protected DFA1 dfa1 = new DFA1(this);
     protected DFA2 dfa2 = new DFA2(this);
-    protected DFA8 dfa8 = new DFA8(this);
     protected DFA9 dfa9 = new DFA9(this);
     protected DFA10 dfa10 = new DFA10(this);
+    protected DFA11 dfa11 = new DFA11(this);
+    protected DFA14 dfa14 = new DFA14(this);
     protected DFA13 dfa13 = new DFA13(this);
-    protected DFA12 dfa12 = new DFA12(this);
-    protected DFA20 dfa20 = new DFA20(this);
     protected DFA21 dfa21 = new DFA21(this);
     protected DFA22 dfa22 = new DFA22(this);
-    protected DFA24 dfa24 = new DFA24(this);
+    protected DFA23 dfa23 = new DFA23(this);
+    protected DFA25 dfa25 = new DFA25(this);
     static final String DFA1_eotS =
-        "\13\uffff";
+        "\14\uffff";
     static final String DFA1_eofS =
-        "\1\uffff\1\2\11\uffff";
+        "\2\2\12\uffff";
     static final String DFA1_minS =
-        "\1\4\1\15\2\uffff\1\0\6\uffff";
+        "\1\4\1\15\3\uffff\1\0\6\uffff";
     static final String DFA1_maxS =
-        "\1\33\1\31\2\uffff\1\0\6\uffff";
+        "\1\33\1\31\3\uffff\1\0\6\uffff";
     static final String DFA1_acceptS =
-        "\2\uffff\1\2\7\uffff\1\1";
+        "\2\uffff\1\2\3\uffff\1\1\5\uffff";
     static final String DFA1_specialS =
-        "\4\uffff\1\0\6\uffff}>";
+        "\5\uffff\1\0\6\uffff}>";
     static final String[] DFA1_transitionS = {
             "\1\1\25\uffff\2\2",
-            "\1\4\1\12\2\2\1\uffff\1\2\6\uffff\1\2",
+            "\1\5\1\6\2\2\1\uffff\1\2\6\uffff\1\2",
+            "",
             "",
             "",
             "\1\uffff",
@@ -2282,18 +2294,18 @@ public class SelectionParser extends Parser {
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA1_4 = input.LA(1);
+                        int LA1_5 = input.LA(1);
 
                          
-                        int index1_4 = input.index();
+                        int index1_5 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( ((input.LT(1).getText().equals("xmlns"))) ) {s = 10;}
+                        if ( ((input.LT(1).getText().equals("xmlns"))) ) {s = 6;}
 
                         else if ( (true) ) {s = 2;}
 
                          
-                        input.seek(index1_4);
+                        input.seek(index1_5);
                         if ( s>=0 ) return s;
                         break;
             }
@@ -2304,20 +2316,21 @@ public class SelectionParser extends Parser {
         }
     }
     static final String DFA2_eotS =
-        "\13\uffff";
+        "\14\uffff";
     static final String DFA2_eofS =
-        "\1\uffff\1\2\11\uffff";
+        "\2\2\12\uffff";
     static final String DFA2_minS =
-        "\1\4\1\15\2\uffff\1\0\6\uffff";
+        "\1\4\1\15\3\uffff\1\0\6\uffff";
     static final String DFA2_maxS =
-        "\1\33\1\31\2\uffff\1\0\6\uffff";
+        "\1\33\1\31\3\uffff\1\0\6\uffff";
     static final String DFA2_acceptS =
-        "\2\uffff\1\2\7\uffff\1\1";
+        "\2\uffff\1\2\10\uffff\1\1";
     static final String DFA2_specialS =
-        "\4\uffff\1\0\6\uffff}>";
+        "\5\uffff\1\0\6\uffff}>";
     static final String[] DFA2_transitionS = {
             "\1\1\25\uffff\2\2",
-            "\1\4\1\12\2\2\1\uffff\1\2\6\uffff\1\2",
+            "\1\5\1\13\2\2\1\uffff\1\2\6\uffff\1\2",
+            "",
             "",
             "",
             "\1\uffff",
@@ -2366,18 +2379,18 @@ public class SelectionParser extends Parser {
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA2_4 = input.LA(1);
+                        int LA2_5 = input.LA(1);
 
                          
-                        int index2_4 = input.index();
+                        int index2_5 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( ((input.LT(1).getText().equals("xmlns"))) ) {s = 10;}
+                        if ( ((input.LT(1).getText().equals("xmlns"))) ) {s = 11;}
 
                         else if ( (true) ) {s = 2;}
 
                          
-                        input.seek(index2_4);
+                        input.seek(index2_5);
                         if ( s>=0 ) return s;
                         break;
             }
@@ -2387,19 +2400,19 @@ public class SelectionParser extends Parser {
             throw nvae;
         }
     }
-    static final String DFA8_eotS =
+    static final String DFA9_eotS =
         "\12\uffff";
-    static final String DFA8_eofS =
+    static final String DFA9_eofS =
         "\1\2\11\uffff";
-    static final String DFA8_minS =
+    static final String DFA9_minS =
         "\2\4\3\uffff\4\0\1\uffff";
-    static final String DFA8_maxS =
+    static final String DFA9_maxS =
         "\1\23\1\33\3\uffff\4\0\1\uffff";
-    static final String DFA8_acceptS =
+    static final String DFA9_acceptS =
         "\2\uffff\1\2\6\uffff\1\1";
-    static final String DFA8_specialS =
+    static final String DFA9_specialS =
         "\5\uffff\1\0\1\1\1\2\1\3\1\uffff}>";
-    static final String[] DFA8_transitionS = {
+    static final String[] DFA9_transitionS = {
             "\1\1\14\uffff\1\2\1\uffff\1\2",
             "\1\5\15\uffff\1\6\7\uffff\1\7\1\10",
             "",
@@ -2409,145 +2422,6 @@ public class SelectionParser extends Parser {
             "\1\uffff",
             "\1\uffff",
             "\1\uffff",
-            ""
-    };
-
-    static final short[] DFA8_eot = DFA.unpackEncodedString(DFA8_eotS);
-    static final short[] DFA8_eof = DFA.unpackEncodedString(DFA8_eofS);
-    static final char[] DFA8_min = DFA.unpackEncodedStringToUnsignedChars(DFA8_minS);
-    static final char[] DFA8_max = DFA.unpackEncodedStringToUnsignedChars(DFA8_maxS);
-    static final short[] DFA8_accept = DFA.unpackEncodedString(DFA8_acceptS);
-    static final short[] DFA8_special = DFA.unpackEncodedString(DFA8_specialS);
-    static final short[][] DFA8_transition;
-
-    static {
-        int numStates = DFA8_transitionS.length;
-        DFA8_transition = new short[numStates][];
-        for (int i=0; i<numStates; i++) {
-            DFA8_transition[i] = DFA.unpackEncodedString(DFA8_transitionS[i]);
-        }
-    }
-
-    class DFA8 extends DFA {
-
-        public DFA8(BaseRecognizer recognizer) {
-            this.recognizer = recognizer;
-            this.decisionNumber = 8;
-            this.eot = DFA8_eot;
-            this.eof = DFA8_eof;
-            this.min = DFA8_min;
-            this.max = DFA8_max;
-            this.accept = DFA8_accept;
-            this.special = DFA8_special;
-            this.transition = DFA8_transition;
-        }
-        public String getDescription() {
-            return "()* loopback of 182:5: ( andToken right= finalExpr[current] )*";
-        }
-        public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
-            TokenStream input = (TokenStream)_input;
-        	int _s = s;
-            switch ( s ) {
-                    case 0 : 
-                        int LA8_5 = input.LA(1);
-
-                         
-                        int index8_5 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((input.LT(1).getText().equals("and"))) ) {s = 9;}
-
-                        else if ( (true) ) {s = 2;}
-
-                         
-                        input.seek(index8_5);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 1 : 
-                        int LA8_6 = input.LA(1);
-
-                         
-                        int index8_6 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((input.LT(1).getText().equals("and"))) ) {s = 9;}
-
-                        else if ( (true) ) {s = 2;}
-
-                         
-                        input.seek(index8_6);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 2 : 
-                        int LA8_7 = input.LA(1);
-
-                         
-                        int index8_7 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((input.LT(1).getText().equals("and"))) ) {s = 9;}
-
-                        else if ( (true) ) {s = 2;}
-
-                         
-                        input.seek(index8_7);
-                        if ( s>=0 ) return s;
-                        break;
-                    case 3 : 
-                        int LA8_8 = input.LA(1);
-
-                         
-                        int index8_8 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((input.LT(1).getText().equals("and"))) ) {s = 9;}
-
-                        else if ( (true) ) {s = 2;}
-
-                         
-                        input.seek(index8_8);
-                        if ( s>=0 ) return s;
-                        break;
-            }
-            NoViableAltException nvae =
-                new NoViableAltException(getDescription(), 8, _s, input);
-            error(nvae);
-            throw nvae;
-        }
-    }
-    static final String DFA9_eotS =
-        "\25\uffff";
-    static final String DFA9_eofS =
-        "\1\uffff\1\3\23\uffff";
-    static final String DFA9_minS =
-        "\2\4\3\uffff\1\0\17\uffff";
-    static final String DFA9_maxS =
-        "\1\33\1\31\3\uffff\1\0\17\uffff";
-    static final String DFA9_acceptS =
-        "\2\uffff\1\4\1\5\16\uffff\1\1\1\2\1\3";
-    static final String DFA9_specialS =
-        "\5\uffff\1\0\17\uffff}>";
-    static final String[] DFA9_transitionS = {
-            "\1\1\15\uffff\1\2\7\uffff\2\3",
-            "\1\3\10\uffff\2\3\2\uffff\1\3\1\5\7\3",
-            "",
-            "",
-            "",
-            "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             ""
     };
 
@@ -2581,7 +2455,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA9_transition;
         }
         public String getDescription() {
-            return "185:1: finalExpr[Path current] returns [ElementCondition value] : ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) );";
+            return "()* loopback of 182:5: ( andToken right= finalExpr[current] )*";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2594,16 +2468,57 @@ public class SelectionParser extends Parser {
                         int index9_5 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( ((input.LT(1).getText().equals("not"))) ) {s = 18;}
+                        if ( ((input.LT(1).getText().equals("and"))) ) {s = 9;}
 
-                        else if ( ((input.LT(1).getText().equals("true"))) ) {s = 19;}
-
-                        else if ( ((input.LT(1).getText().equals("false"))) ) {s = 20;}
-
-                        else if ( ((input.LT(1).getText().equals("text"))) ) {s = 3;}
+                        else if ( (true) ) {s = 2;}
 
                          
                         input.seek(index9_5);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 1 : 
+                        int LA9_6 = input.LA(1);
+
+                         
+                        int index9_6 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( ((input.LT(1).getText().equals("and"))) ) {s = 9;}
+
+                        else if ( (true) ) {s = 2;}
+
+                         
+                        input.seek(index9_6);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 2 : 
+                        int LA9_7 = input.LA(1);
+
+                         
+                        int index9_7 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( ((input.LT(1).getText().equals("and"))) ) {s = 9;}
+
+                        else if ( (true) ) {s = 2;}
+
+                         
+                        input.seek(index9_7);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 3 : 
+                        int LA9_8 = input.LA(1);
+
+                         
+                        int index9_8 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( ((input.LT(1).getText().equals("and"))) ) {s = 9;}
+
+                        else if ( (true) ) {s = 2;}
+
+                         
+                        input.seek(index9_8);
                         if ( s>=0 ) return s;
                         break;
             }
@@ -2614,24 +2529,27 @@ public class SelectionParser extends Parser {
         }
     }
     static final String DFA10_eotS =
-        "\22\uffff";
+        "\25\uffff";
     static final String DFA10_eofS =
-        "\1\uffff\1\2\20\uffff";
+        "\1\uffff\1\3\23\uffff";
     static final String DFA10_minS =
-        "\2\4\3\uffff\1\0\14\uffff";
+        "\2\4\3\uffff\1\0\17\uffff";
     static final String DFA10_maxS =
-        "\1\33\1\31\3\uffff\1\0\14\uffff";
+        "\1\33\1\31\3\uffff\1\0\17\uffff";
     static final String DFA10_acceptS =
-        "\2\uffff\1\2\16\uffff\1\1";
+        "\2\uffff\1\4\1\5\16\uffff\1\1\1\2\1\3";
     static final String DFA10_specialS =
-        "\5\uffff\1\0\14\uffff}>";
+        "\5\uffff\1\0\17\uffff}>";
     static final String[] DFA10_transitionS = {
-            "\1\1\25\uffff\2\2",
-            "\1\2\10\uffff\1\5\1\2\2\uffff\11\2",
+            "\1\1\15\uffff\1\2\7\uffff\2\3",
+            "\1\3\10\uffff\2\3\2\uffff\1\3\1\5\7\3",
             "",
             "",
             "",
             "\1\uffff",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -2676,7 +2594,7 @@ public class SelectionParser extends Parser {
             this.transition = DFA10_transition;
         }
         public String getDescription() {
-            return "193:1: comparisonOrExistenceExpr[Path current] returns [ElementCondition value] : (d= dateOrDateTimeComparison[current] | o= otherComparison[current] );";
+            return "185:1: finalExpr[Path current] returns [ElementCondition value] : ( ( notToken '(' notl= orExpr[current] ')' ) | ( trueToken '(' ')' ) | ( falseToken '(' ')' ) | ( '(' l= orExpr[current] ')' ) | (c= comparisonOrExistenceExpr[current] ) );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
@@ -2689,9 +2607,13 @@ public class SelectionParser extends Parser {
                         int index10_5 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( ((input.LT(1).getText().equals("xs"))) ) {s = 17;}
+                        if ( ((input.LT(1).getText().equals("not"))) ) {s = 18;}
 
-                        else if ( (true) ) {s = 2;}
+                        else if ( ((input.LT(1).getText().equals("true"))) ) {s = 19;}
+
+                        else if ( ((input.LT(1).getText().equals("false"))) ) {s = 20;}
+
+                        else if ( ((input.LT(1).getText().equals("text"))) ) {s = 3;}
 
                          
                         input.seek(index10_5);
@@ -2704,19 +2626,110 @@ public class SelectionParser extends Parser {
             throw nvae;
         }
     }
-    static final String DFA13_eotS =
+    static final String DFA11_eotS =
+        "\22\uffff";
+    static final String DFA11_eofS =
+        "\1\uffff\1\2\20\uffff";
+    static final String DFA11_minS =
+        "\2\4\2\uffff\1\0\15\uffff";
+    static final String DFA11_maxS =
+        "\1\33\1\31\2\uffff\1\0\15\uffff";
+    static final String DFA11_acceptS =
+        "\2\uffff\1\2\16\uffff\1\1";
+    static final String DFA11_specialS =
+        "\4\uffff\1\0\15\uffff}>";
+    static final String[] DFA11_transitionS = {
+            "\1\1\25\uffff\2\2",
+            "\1\2\10\uffff\1\4\1\2\2\uffff\11\2",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+    };
+
+    static final short[] DFA11_eot = DFA.unpackEncodedString(DFA11_eotS);
+    static final short[] DFA11_eof = DFA.unpackEncodedString(DFA11_eofS);
+    static final char[] DFA11_min = DFA.unpackEncodedStringToUnsignedChars(DFA11_minS);
+    static final char[] DFA11_max = DFA.unpackEncodedStringToUnsignedChars(DFA11_maxS);
+    static final short[] DFA11_accept = DFA.unpackEncodedString(DFA11_acceptS);
+    static final short[] DFA11_special = DFA.unpackEncodedString(DFA11_specialS);
+    static final short[][] DFA11_transition;
+
+    static {
+        int numStates = DFA11_transitionS.length;
+        DFA11_transition = new short[numStates][];
+        for (int i=0; i<numStates; i++) {
+            DFA11_transition[i] = DFA.unpackEncodedString(DFA11_transitionS[i]);
+        }
+    }
+
+    class DFA11 extends DFA {
+
+        public DFA11(BaseRecognizer recognizer) {
+            this.recognizer = recognizer;
+            this.decisionNumber = 11;
+            this.eot = DFA11_eot;
+            this.eof = DFA11_eof;
+            this.min = DFA11_min;
+            this.max = DFA11_max;
+            this.accept = DFA11_accept;
+            this.special = DFA11_special;
+            this.transition = DFA11_transition;
+        }
+        public String getDescription() {
+            return "193:1: comparisonOrExistenceExpr[Path current] returns [ElementCondition value] : (d= dateOrDateTimeComparison[current] | o= otherComparison[current] );";
+        }
+        public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
+            TokenStream input = (TokenStream)_input;
+        	int _s = s;
+            switch ( s ) {
+                    case 0 : 
+                        int LA11_4 = input.LA(1);
+
+                         
+                        int index11_4 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( ((input.LT(1).getText().equals("xs"))) ) {s = 17;}
+
+                        else if ( (true) ) {s = 2;}
+
+                         
+                        input.seek(index11_4);
+                        if ( s>=0 ) return s;
+                        break;
+            }
+            NoViableAltException nvae =
+                new NoViableAltException(getDescription(), 11, _s, input);
+            error(nvae);
+            throw nvae;
+        }
+    }
+    static final String DFA14_eotS =
         "\21\uffff";
-    static final String DFA13_eofS =
+    static final String DFA14_eofS =
         "\1\10\20\uffff";
-    static final String DFA13_minS =
+    static final String DFA14_minS =
         "\2\4\13\uffff\1\0\3\uffff";
-    static final String DFA13_maxS =
+    static final String DFA14_maxS =
         "\1\30\1\33\13\uffff\1\0\3\uffff";
-    static final String DFA13_acceptS =
+    static final String DFA14_acceptS =
         "\2\uffff\1\1\5\uffff\1\2\10\uffff";
-    static final String DFA13_specialS =
+    static final String DFA14_specialS =
         "\15\uffff\1\0\3\uffff}>";
-    static final String[] DFA13_transitionS = {
+    static final String[] DFA14_transitionS = {
             "\1\1\11\uffff\1\2\2\uffff\1\10\1\uffff\1\10\5\2",
             "\1\15\2\2\13\uffff\1\10\7\uffff\2\10",
             "",
@@ -2731,6 +2744,89 @@ public class SelectionParser extends Parser {
             "",
             "",
             "\1\uffff",
+            "",
+            "",
+            ""
+    };
+
+    static final short[] DFA14_eot = DFA.unpackEncodedString(DFA14_eotS);
+    static final short[] DFA14_eof = DFA.unpackEncodedString(DFA14_eofS);
+    static final char[] DFA14_min = DFA.unpackEncodedStringToUnsignedChars(DFA14_minS);
+    static final char[] DFA14_max = DFA.unpackEncodedStringToUnsignedChars(DFA14_maxS);
+    static final short[] DFA14_accept = DFA.unpackEncodedString(DFA14_acceptS);
+    static final short[] DFA14_special = DFA.unpackEncodedString(DFA14_specialS);
+    static final short[][] DFA14_transition;
+
+    static {
+        int numStates = DFA14_transitionS.length;
+        DFA14_transition = new short[numStates][];
+        for (int i=0; i<numStates; i++) {
+            DFA14_transition[i] = DFA.unpackEncodedString(DFA14_transitionS[i]);
+        }
+    }
+
+    class DFA14 extends DFA {
+
+        public DFA14(BaseRecognizer recognizer) {
+            this.recognizer = recognizer;
+            this.decisionNumber = 14;
+            this.eot = DFA14_eot;
+            this.eof = DFA14_eof;
+            this.min = DFA14_min;
+            this.max = DFA14_max;
+            this.accept = DFA14_accept;
+            this.special = DFA14_special;
+            this.transition = DFA14_transition;
+        }
+        public String getDescription() {
+            return "216:30: (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?";
+        }
+        public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
+            TokenStream input = (TokenStream)_input;
+        	int _s = s;
+            switch ( s ) {
+                    case 0 : 
+                        int LA14_13 = input.LA(1);
+
+                         
+                        int index14_13 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (((input.LT(1).getText().equals("gte"))||(input.LT(1).getText().equals("lte"))||(input.LT(1).getText().equals("gt"))||(input.LT(1).getText().equals("lt"))||(input.LT(1).getText().equals("eq"))||(input.LT(1).getText().equals("ne")))) ) {s = 2;}
+
+                        else if ( (true) ) {s = 8;}
+
+                         
+                        input.seek(index14_13);
+                        if ( s>=0 ) return s;
+                        break;
+            }
+            NoViableAltException nvae =
+                new NoViableAltException(getDescription(), 14, _s, input);
+            error(nvae);
+            throw nvae;
+        }
+    }
+    static final String DFA13_eotS =
+        "\12\uffff";
+    static final String DFA13_eofS =
+        "\12\uffff";
+    static final String DFA13_minS =
+        "\1\4\2\uffff\1\0\6\uffff";
+    static final String DFA13_maxS =
+        "\1\6\2\uffff\1\0\6\uffff";
+    static final String DFA13_acceptS =
+        "\1\uffff\1\1\1\2\5\uffff\1\3\1\4";
+    static final String DFA13_specialS =
+        "\3\uffff\1\0\6\uffff}>";
+    static final String[] DFA13_transitionS = {
+            "\1\3\1\1\1\2",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "",
             "",
             "",
             ""
@@ -2766,25 +2862,25 @@ public class SelectionParser extends Parser {
             this.transition = DFA13_transition;
         }
         public String getDescription() {
-            return "216:30: (c= comparator (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) ) )?";
+            return "216:44: (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA13_13 = input.LA(1);
+                        int LA13_3 = input.LA(1);
 
                          
-                        int index13_13 = input.index();
+                        int index13_3 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (((input.LT(1).getText().equals("gte"))||(input.LT(1).getText().equals("lte"))||(input.LT(1).getText().equals("lt"))||(input.LT(1).getText().equals("gt"))||(input.LT(1).getText().equals("eq"))||(input.LT(1).getText().equals("ne")))) ) {s = 2;}
+                        if ( ((input.LT(1).getText().equals("NaN"))) ) {s = 8;}
 
-                        else if ( (true) ) {s = 8;}
+                        else if ( ((input.LT(1).getText().equals("INF"))) ) {s = 9;}
 
                          
-                        input.seek(index13_13);
+                        input.seek(index13_3);
                         if ( s>=0 ) return s;
                         break;
             }
@@ -2794,202 +2890,21 @@ public class SelectionParser extends Parser {
             throw nvae;
         }
     }
-    static final String DFA12_eotS =
-        "\12\uffff";
-    static final String DFA12_eofS =
-        "\12\uffff";
-    static final String DFA12_minS =
-        "\1\4\2\uffff\1\0\6\uffff";
-    static final String DFA12_maxS =
-        "\1\6\2\uffff\1\0\6\uffff";
-    static final String DFA12_acceptS =
-        "\1\uffff\1\1\1\2\5\uffff\1\3\1\4";
-    static final String DFA12_specialS =
-        "\3\uffff\1\0\6\uffff}>";
-    static final String[] DFA12_transitionS = {
-            "\1\3\1\1\1\2",
-            "",
-            "",
-            "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-    };
-
-    static final short[] DFA12_eot = DFA.unpackEncodedString(DFA12_eotS);
-    static final short[] DFA12_eof = DFA.unpackEncodedString(DFA12_eofS);
-    static final char[] DFA12_min = DFA.unpackEncodedStringToUnsignedChars(DFA12_minS);
-    static final char[] DFA12_max = DFA.unpackEncodedStringToUnsignedChars(DFA12_maxS);
-    static final short[] DFA12_accept = DFA.unpackEncodedString(DFA12_acceptS);
-    static final short[] DFA12_special = DFA.unpackEncodedString(DFA12_specialS);
-    static final short[][] DFA12_transition;
-
-    static {
-        int numStates = DFA12_transitionS.length;
-        DFA12_transition = new short[numStates][];
-        for (int i=0; i<numStates; i++) {
-            DFA12_transition[i] = DFA.unpackEncodedString(DFA12_transitionS[i]);
-        }
-    }
-
-    class DFA12 extends DFA {
-
-        public DFA12(BaseRecognizer recognizer) {
-            this.recognizer = recognizer;
-            this.decisionNumber = 12;
-            this.eot = DFA12_eot;
-            this.eof = DFA12_eof;
-            this.min = DFA12_min;
-            this.max = DFA12_max;
-            this.accept = DFA12_accept;
-            this.special = DFA12_special;
-            this.transition = DFA12_transition;
-        }
-        public String getDescription() {
-            return "216:44: (str= STRINGLITERAL | num= NUMBER | ( naNToken ) | ( infToken ) )";
-        }
-        public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
-            TokenStream input = (TokenStream)_input;
-        	int _s = s;
-            switch ( s ) {
-                    case 0 : 
-                        int LA12_3 = input.LA(1);
-
-                         
-                        int index12_3 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((input.LT(1).getText().equals("NaN"))) ) {s = 8;}
-
-                        else if ( ((input.LT(1).getText().equals("INF"))) ) {s = 9;}
-
-                         
-                        input.seek(index12_3);
-                        if ( s>=0 ) return s;
-                        break;
-            }
-            NoViableAltException nvae =
-                new NoViableAltException(getDescription(), 12, _s, input);
-            error(nvae);
-            throw nvae;
-        }
-    }
-    static final String DFA20_eotS =
+    static final String DFA21_eotS =
         "\13\uffff";
-    static final String DFA20_eofS =
+    static final String DFA21_eofS =
         "\13\uffff";
-    static final String DFA20_minS =
+    static final String DFA21_minS =
         "\1\4\1\0\11\uffff";
-    static final String DFA20_maxS =
+    static final String DFA21_maxS =
         "\1\30\1\0\11\uffff";
-    static final String DFA20_acceptS =
+    static final String DFA21_acceptS =
         "\2\uffff\1\1\1\2\1\3\1\4\1\5\1\6\3\uffff";
-    static final String DFA20_specialS =
+    static final String DFA21_specialS =
         "\1\uffff\1\0\11\uffff}>";
-    static final String[] DFA20_transitionS = {
+    static final String[] DFA21_transitionS = {
             "\1\1\11\uffff\1\2\5\uffff\1\3\1\4\1\5\1\6\1\7",
             "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-    };
-
-    static final short[] DFA20_eot = DFA.unpackEncodedString(DFA20_eotS);
-    static final short[] DFA20_eof = DFA.unpackEncodedString(DFA20_eofS);
-    static final char[] DFA20_min = DFA.unpackEncodedStringToUnsignedChars(DFA20_minS);
-    static final char[] DFA20_max = DFA.unpackEncodedStringToUnsignedChars(DFA20_maxS);
-    static final short[] DFA20_accept = DFA.unpackEncodedString(DFA20_acceptS);
-    static final short[] DFA20_special = DFA.unpackEncodedString(DFA20_specialS);
-    static final short[][] DFA20_transition;
-
-    static {
-        int numStates = DFA20_transitionS.length;
-        DFA20_transition = new short[numStates][];
-        for (int i=0; i<numStates; i++) {
-            DFA20_transition[i] = DFA.unpackEncodedString(DFA20_transitionS[i]);
-        }
-    }
-
-    class DFA20 extends DFA {
-
-        public DFA20(BaseRecognizer recognizer) {
-            this.recognizer = recognizer;
-            this.decisionNumber = 20;
-            this.eot = DFA20_eot;
-            this.eof = DFA20_eof;
-            this.min = DFA20_min;
-            this.max = DFA20_max;
-            this.accept = DFA20_accept;
-            this.special = DFA20_special;
-            this.transition = DFA20_transition;
-        }
-        public String getDescription() {
-            return "235:1: comparator returns [Operation value] : ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) );";
-        }
-        public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
-            TokenStream input = (TokenStream)_input;
-        	int _s = s;
-            switch ( s ) {
-                    case 0 : 
-                        int LA20_1 = input.LA(1);
-
-                         
-                        int index20_1 = input.index();
-                        input.rewind();
-                        s = -1;
-                        if ( ((input.LT(1).getText().equals("eq"))) ) {s = 2;}
-
-                        else if ( ((input.LT(1).getText().equals("ne"))) ) {s = 3;}
-
-                        else if ( ((input.LT(1).getText().equals("gt"))) ) {s = 4;}
-
-                        else if ( ((input.LT(1).getText().equals("gte"))) ) {s = 5;}
-
-                        else if ( ((input.LT(1).getText().equals("lt"))) ) {s = 6;}
-
-                        else if ( ((input.LT(1).getText().equals("lte"))) ) {s = 7;}
-
-                         
-                        input.seek(index20_1);
-                        if ( s>=0 ) return s;
-                        break;
-            }
-            NoViableAltException nvae =
-                new NoViableAltException(getDescription(), 20, _s, input);
-            error(nvae);
-            throw nvae;
-        }
-    }
-    static final String DFA21_eotS =
-        "\21\uffff";
-    static final String DFA21_eofS =
-        "\2\uffff\1\1\16\uffff";
-    static final String DFA21_minS =
-        "\1\4\1\uffff\1\4\16\uffff";
-    static final String DFA21_maxS =
-        "\1\33\1\uffff\1\31\16\uffff";
-    static final String DFA21_acceptS =
-        "\1\uffff\1\1\2\uffff\1\2\14\uffff";
-    static final String DFA21_specialS =
-        "\21\uffff}>";
-    static final String[] DFA21_transitionS = {
-            "\1\2\25\uffff\2\1",
-            "",
-            "\1\1\10\uffff\2\1\2\uffff\1\1\1\4\7\1",
-            "",
-            "",
-            "",
-            "",
-            "",
             "",
             "",
             "",
@@ -3031,23 +2946,58 @@ public class SelectionParser extends Parser {
             this.transition = DFA21_transition;
         }
         public String getDescription() {
-            return "244:1: predicateExpr[Path current] returns [Path value] : ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) );";
+            return "235:1: comparator returns [Operation value] : ( ( ( eqToken | '=' ) ) | ( ( neToken | '!=' ) ) | ( ( gtToken | '>' ) ) | ( ( gteToken | '>=' ) ) | ( ( ltToken | '<' ) ) | ( ( lteToken | '<=' ) ) );";
+        }
+        public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
+            TokenStream input = (TokenStream)_input;
+        	int _s = s;
+            switch ( s ) {
+                    case 0 : 
+                        int LA21_1 = input.LA(1);
+
+                         
+                        int index21_1 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( ((input.LT(1).getText().equals("eq"))) ) {s = 2;}
+
+                        else if ( ((input.LT(1).getText().equals("ne"))) ) {s = 3;}
+
+                        else if ( ((input.LT(1).getText().equals("gt"))) ) {s = 4;}
+
+                        else if ( ((input.LT(1).getText().equals("gte"))) ) {s = 5;}
+
+                        else if ( ((input.LT(1).getText().equals("lt"))) ) {s = 6;}
+
+                        else if ( ((input.LT(1).getText().equals("lte"))) ) {s = 7;}
+
+                         
+                        input.seek(index21_1);
+                        if ( s>=0 ) return s;
+                        break;
+            }
+            NoViableAltException nvae =
+                new NoViableAltException(getDescription(), 21, _s, input);
+            error(nvae);
+            throw nvae;
         }
     }
     static final String DFA22_eotS =
-        "\17\uffff";
+        "\21\uffff";
     static final String DFA22_eofS =
-        "\1\1\16\uffff";
+        "\2\uffff\1\1\16\uffff";
     static final String DFA22_minS =
-        "\1\4\16\uffff";
+        "\1\4\1\uffff\1\4\16\uffff";
     static final String DFA22_maxS =
-        "\1\31\16\uffff";
+        "\1\33\1\uffff\1\31\16\uffff";
     static final String DFA22_acceptS =
-        "\1\uffff\1\2\14\uffff\1\1";
+        "\1\uffff\1\1\2\uffff\1\2\14\uffff";
     static final String DFA22_specialS =
-        "\17\uffff}>";
+        "\21\uffff}>";
     static final String[] DFA22_transitionS = {
-            "\1\1\11\uffff\13\1\1\16",
+            "\1\2\25\uffff\2\1",
+            "",
+            "\1\1\10\uffff\2\1\2\uffff\1\1\1\4\7\1",
             "",
             "",
             "",
@@ -3094,22 +3044,85 @@ public class SelectionParser extends Parser {
             this.transition = DFA22_transition;
         }
         public String getDescription() {
+            return "244:1: predicateExpr[Path current] returns [Path value] : ( (path= selectionPathExpr[current] ) | ( textToken '(' ')' ) );";
+        }
+    }
+    static final String DFA23_eotS =
+        "\17\uffff";
+    static final String DFA23_eofS =
+        "\1\1\16\uffff";
+    static final String DFA23_minS =
+        "\1\4\16\uffff";
+    static final String DFA23_maxS =
+        "\1\31\16\uffff";
+    static final String DFA23_acceptS =
+        "\1\uffff\1\2\14\uffff\1\1";
+    static final String DFA23_specialS =
+        "\17\uffff}>";
+    static final String[] DFA23_transitionS = {
+            "\1\1\11\uffff\13\1\1\16",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+    };
+
+    static final short[] DFA23_eot = DFA.unpackEncodedString(DFA23_eotS);
+    static final short[] DFA23_eof = DFA.unpackEncodedString(DFA23_eofS);
+    static final char[] DFA23_min = DFA.unpackEncodedStringToUnsignedChars(DFA23_minS);
+    static final char[] DFA23_max = DFA.unpackEncodedStringToUnsignedChars(DFA23_maxS);
+    static final short[] DFA23_accept = DFA.unpackEncodedString(DFA23_acceptS);
+    static final short[] DFA23_special = DFA.unpackEncodedString(DFA23_specialS);
+    static final short[][] DFA23_transition;
+
+    static {
+        int numStates = DFA23_transitionS.length;
+        DFA23_transition = new short[numStates][];
+        for (int i=0; i<numStates; i++) {
+            DFA23_transition[i] = DFA.unpackEncodedString(DFA23_transitionS[i]);
+        }
+    }
+
+    class DFA23 extends DFA {
+
+        public DFA23(BaseRecognizer recognizer) {
+            this.recognizer = recognizer;
+            this.decisionNumber = 23;
+            this.eot = DFA23_eot;
+            this.eof = DFA23_eof;
+            this.min = DFA23_min;
+            this.max = DFA23_max;
+            this.accept = DFA23_accept;
+            this.special = DFA23_special;
+            this.transition = DFA23_transition;
+        }
+        public String getDescription() {
             return "()* loopback of 253:23: ( '/' pathStep[builder] )*";
         }
     }
-    static final String DFA24_eotS =
+    static final String DFA25_eotS =
         "\20\uffff";
-    static final String DFA24_eofS =
+    static final String DFA25_eofS =
         "\1\2\17\uffff";
-    static final String DFA24_minS =
+    static final String DFA25_minS =
         "\1\4\17\uffff";
-    static final String DFA24_maxS =
+    static final String DFA25_maxS =
         "\1\31\17\uffff";
-    static final String DFA24_acceptS =
+    static final String DFA25_acceptS =
         "\1\uffff\1\1\1\2\15\uffff";
-    static final String DFA24_specialS =
+    static final String DFA25_specialS =
         "\20\uffff}>";
-    static final String[] DFA24_transitionS = {
+    static final String[] DFA25_transitionS = {
             "\1\2\10\uffff\1\1\14\2",
             "",
             "",
@@ -3128,34 +3141,34 @@ public class SelectionParser extends Parser {
             ""
     };
 
-    static final short[] DFA24_eot = DFA.unpackEncodedString(DFA24_eotS);
-    static final short[] DFA24_eof = DFA.unpackEncodedString(DFA24_eofS);
-    static final char[] DFA24_min = DFA.unpackEncodedStringToUnsignedChars(DFA24_minS);
-    static final char[] DFA24_max = DFA.unpackEncodedStringToUnsignedChars(DFA24_maxS);
-    static final short[] DFA24_accept = DFA.unpackEncodedString(DFA24_acceptS);
-    static final short[] DFA24_special = DFA.unpackEncodedString(DFA24_specialS);
-    static final short[][] DFA24_transition;
+    static final short[] DFA25_eot = DFA.unpackEncodedString(DFA25_eotS);
+    static final short[] DFA25_eof = DFA.unpackEncodedString(DFA25_eofS);
+    static final char[] DFA25_min = DFA.unpackEncodedStringToUnsignedChars(DFA25_minS);
+    static final char[] DFA25_max = DFA.unpackEncodedStringToUnsignedChars(DFA25_maxS);
+    static final short[] DFA25_accept = DFA.unpackEncodedString(DFA25_acceptS);
+    static final short[] DFA25_special = DFA.unpackEncodedString(DFA25_specialS);
+    static final short[][] DFA25_transition;
 
     static {
-        int numStates = DFA24_transitionS.length;
-        DFA24_transition = new short[numStates][];
+        int numStates = DFA25_transitionS.length;
+        DFA25_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA24_transition[i] = DFA.unpackEncodedString(DFA24_transitionS[i]);
+            DFA25_transition[i] = DFA.unpackEncodedString(DFA25_transitionS[i]);
         }
     }
 
-    class DFA24 extends DFA {
+    class DFA25 extends DFA {
 
-        public DFA24(BaseRecognizer recognizer) {
+        public DFA25(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 24;
-            this.eot = DFA24_eot;
-            this.eof = DFA24_eof;
-            this.min = DFA24_min;
-            this.max = DFA24_max;
-            this.accept = DFA24_accept;
-            this.special = DFA24_special;
-            this.transition = DFA24_transition;
+            this.decisionNumber = 25;
+            this.eot = DFA25_eot;
+            this.eof = DFA25_eof;
+            this.min = DFA25_min;
+            this.max = DFA25_max;
+            this.accept = DFA25_accept;
+            this.special = DFA25_special;
+            this.transition = DFA25_transition;
         }
         public String getDescription() {
             return "285:25: ( ':' right= ( '*' | NCNAME ) )?";
@@ -3176,108 +3189,108 @@ public class SelectionParser extends Parser {
     public static final BitSet FOLLOW_14_in_namespaceDeclaration144 = new BitSet(new long[]{0x0000000000000020L});
     public static final BitSet FOLLOW_STRINGLITERAL_in_namespaceDeclaration148 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_selector_in_selectors181 = new BitSet(new long[]{0x0000000000008002L});
-    public static final BitSet FOLLOW_15_in_selectors193 = new BitSet(new long[]{0x000000000C000010L});
-    public static final BitSet FOLLOW_selector_in_selectors197 = new BitSet(new long[]{0x0000000000008002L});
-    public static final BitSet FOLLOW_selectionPathExpr_in_selector225 = new BitSet(new long[]{0x0000000000050002L});
-    public static final BitSet FOLLOW_16_in_selector233 = new BitSet(new long[]{0x000000000C040010L});
-    public static final BitSet FOLLOW_orExpr_in_selector237 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_17_in_selector240 = new BitSet(new long[]{0x0000000000040002L});
-    public static final BitSet FOLLOW_18_in_selector250 = new BitSet(new long[]{0x000000000C000010L});
-    public static final BitSet FOLLOW_selectors_in_selector254 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_selector257 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_andExpr_in_orExpr286 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_orToken_in_orExpr297 = new BitSet(new long[]{0x000000000C040010L});
-    public static final BitSet FOLLOW_andExpr_in_orExpr301 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_finalExpr_in_andExpr327 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_andToken_in_andExpr337 = new BitSet(new long[]{0x000000000C040010L});
-    public static final BitSet FOLLOW_finalExpr_in_andExpr341 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_notToken_in_finalExpr366 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_finalExpr368 = new BitSet(new long[]{0x000000000C040010L});
-    public static final BitSet FOLLOW_orExpr_in_finalExpr372 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_finalExpr375 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_trueToken_in_finalExpr385 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_finalExpr387 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_finalExpr389 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_falseToken_in_finalExpr399 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_finalExpr401 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_finalExpr403 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_18_in_finalExpr413 = new BitSet(new long[]{0x000000000C040010L});
-    public static final BitSet FOLLOW_orExpr_in_finalExpr417 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_finalExpr420 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_comparisonOrExistenceExpr_in_finalExpr432 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dateOrDateTimeComparison_in_comparisonOrExistenceExpr459 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_otherComparison_in_comparisonOrExistenceExpr472 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_xsToken_in_dateOrDateTimeComparison499 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_13_in_dateOrDateTimeComparison501 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_dateToken_in_dateOrDateTimeComparison514 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_dateOrDateTimeComparison516 = new BitSet(new long[]{0x000000000C040010L});
-    public static final BitSet FOLLOW_predicateExpr_in_dateOrDateTimeComparison520 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_dateOrDateTimeComparison523 = new BitSet(new long[]{0x0000000001F04010L});
-    public static final BitSet FOLLOW_comparator_in_dateOrDateTimeComparison527 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_xsToken_in_dateOrDateTimeComparison542 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_13_in_dateOrDateTimeComparison544 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_dateToken_in_dateOrDateTimeComparison546 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_dateOrDateTimeComparison548 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_STRINGLITERAL_in_dateOrDateTimeComparison552 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_dateOrDateTimeComparison554 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dateTimeToken_in_dateOrDateTimeComparison570 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_dateOrDateTimeComparison572 = new BitSet(new long[]{0x000000000C040010L});
-    public static final BitSet FOLLOW_predicateExpr_in_dateOrDateTimeComparison576 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_dateOrDateTimeComparison579 = new BitSet(new long[]{0x0000000001F04010L});
-    public static final BitSet FOLLOW_comparator_in_dateOrDateTimeComparison583 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_xsToken_in_dateOrDateTimeComparison598 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_13_in_dateOrDateTimeComparison600 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_dateTimeToken_in_dateOrDateTimeComparison602 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_dateOrDateTimeComparison604 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_STRINGLITERAL_in_dateOrDateTimeComparison608 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_dateOrDateTimeComparison610 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_predicateExpr_in_otherComparison648 = new BitSet(new long[]{0x0000000001F04012L});
-    public static final BitSet FOLLOW_comparator_in_otherComparison654 = new BitSet(new long[]{0x0000000000000070L});
-    public static final BitSet FOLLOW_STRINGLITERAL_in_otherComparison659 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUMBER_in_otherComparison672 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_naNToken_in_otherComparison684 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_infToken_in_otherComparison699 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_eqToken_in_comparator726 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_14_in_comparator730 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_neToken_in_comparator742 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_20_in_comparator746 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_gtToken_in_comparator758 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_21_in_comparator762 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_gteToken_in_comparator774 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_22_in_comparator778 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ltToken_in_comparator790 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_23_in_comparator794 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lteToken_in_comparator806 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_24_in_comparator810 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_selectionPathExpr_in_predicateExpr836 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_textToken_in_predicateExpr847 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_predicateExpr849 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_predicateExpr851 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathStep_in_selectionPathExpr882 = new BitSet(new long[]{0x0000000002000002L});
-    public static final BitSet FOLLOW_25_in_selectionPathExpr886 = new BitSet(new long[]{0x000000000C000010L});
-    public static final BitSet FOLLOW_pathStep_in_selectionPathExpr888 = new BitSet(new long[]{0x0000000002000002L});
-    public static final BitSet FOLLOW_26_in_pathStep911 = new BitSet(new long[]{0x000000000C000010L});
-    public static final BitSet FOLLOW_nameTest_in_pathStep917 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_nameTest941 = new BitSet(new long[]{0x0000000000002002L});
-    public static final BitSet FOLLOW_13_in_nameTest950 = new BitSet(new long[]{0x0000000008000010L});
-    public static final BitSet FOLLOW_set_in_nameTest954 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_xmlnsToken978 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_orToken988 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_andToken998 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_notToken1008 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_trueToken1018 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_falseToken1028 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_eqToken1038 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_neToken1048 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_textToken1058 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_ltToken1068 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_lteToken1078 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_gtToken1088 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_gteToken1098 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_naNToken1108 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_infToken1118 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_xsToken1128 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_dateToken1138 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NCNAME_in_dateTimeToken1148 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_15_in_selectors194 = new BitSet(new long[]{0x000000000C000010L});
+    public static final BitSet FOLLOW_selector_in_selectors198 = new BitSet(new long[]{0x0000000000008002L});
+    public static final BitSet FOLLOW_selectionPathExpr_in_selector228 = new BitSet(new long[]{0x0000000000050002L});
+    public static final BitSet FOLLOW_16_in_selector236 = new BitSet(new long[]{0x000000000C040010L});
+    public static final BitSet FOLLOW_orExpr_in_selector240 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_17_in_selector243 = new BitSet(new long[]{0x0000000000040002L});
+    public static final BitSet FOLLOW_18_in_selector253 = new BitSet(new long[]{0x000000000C080010L});
+    public static final BitSet FOLLOW_selectors_in_selector257 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_selector260 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_andExpr_in_orExpr289 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_orToken_in_orExpr300 = new BitSet(new long[]{0x000000000C040010L});
+    public static final BitSet FOLLOW_andExpr_in_orExpr304 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_finalExpr_in_andExpr330 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_andToken_in_andExpr340 = new BitSet(new long[]{0x000000000C040010L});
+    public static final BitSet FOLLOW_finalExpr_in_andExpr344 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_notToken_in_finalExpr369 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_finalExpr371 = new BitSet(new long[]{0x000000000C040010L});
+    public static final BitSet FOLLOW_orExpr_in_finalExpr375 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_finalExpr378 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_trueToken_in_finalExpr388 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_finalExpr390 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_finalExpr392 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_falseToken_in_finalExpr402 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_finalExpr404 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_finalExpr406 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_18_in_finalExpr416 = new BitSet(new long[]{0x000000000C040010L});
+    public static final BitSet FOLLOW_orExpr_in_finalExpr420 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_finalExpr423 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_comparisonOrExistenceExpr_in_finalExpr435 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dateOrDateTimeComparison_in_comparisonOrExistenceExpr462 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_otherComparison_in_comparisonOrExistenceExpr475 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_xsToken_in_dateOrDateTimeComparison502 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_13_in_dateOrDateTimeComparison504 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_dateToken_in_dateOrDateTimeComparison517 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_dateOrDateTimeComparison519 = new BitSet(new long[]{0x000000000C040010L});
+    public static final BitSet FOLLOW_predicateExpr_in_dateOrDateTimeComparison523 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_dateOrDateTimeComparison526 = new BitSet(new long[]{0x0000000001F04010L});
+    public static final BitSet FOLLOW_comparator_in_dateOrDateTimeComparison530 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_xsToken_in_dateOrDateTimeComparison545 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_13_in_dateOrDateTimeComparison547 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_dateToken_in_dateOrDateTimeComparison549 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_dateOrDateTimeComparison551 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_STRINGLITERAL_in_dateOrDateTimeComparison555 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_dateOrDateTimeComparison557 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dateTimeToken_in_dateOrDateTimeComparison573 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_dateOrDateTimeComparison575 = new BitSet(new long[]{0x000000000C040010L});
+    public static final BitSet FOLLOW_predicateExpr_in_dateOrDateTimeComparison579 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_dateOrDateTimeComparison582 = new BitSet(new long[]{0x0000000001F04010L});
+    public static final BitSet FOLLOW_comparator_in_dateOrDateTimeComparison586 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_xsToken_in_dateOrDateTimeComparison601 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_13_in_dateOrDateTimeComparison603 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_dateTimeToken_in_dateOrDateTimeComparison605 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_dateOrDateTimeComparison607 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_STRINGLITERAL_in_dateOrDateTimeComparison611 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_dateOrDateTimeComparison613 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_predicateExpr_in_otherComparison651 = new BitSet(new long[]{0x0000000001F04012L});
+    public static final BitSet FOLLOW_comparator_in_otherComparison657 = new BitSet(new long[]{0x0000000000000070L});
+    public static final BitSet FOLLOW_STRINGLITERAL_in_otherComparison662 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUMBER_in_otherComparison675 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_naNToken_in_otherComparison687 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_infToken_in_otherComparison702 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_eqToken_in_comparator729 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_14_in_comparator733 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_neToken_in_comparator745 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_20_in_comparator749 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_gtToken_in_comparator761 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_21_in_comparator765 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_gteToken_in_comparator777 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_22_in_comparator781 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ltToken_in_comparator793 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_23_in_comparator797 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lteToken_in_comparator809 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_24_in_comparator813 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_selectionPathExpr_in_predicateExpr839 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_textToken_in_predicateExpr850 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_predicateExpr852 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_predicateExpr854 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathStep_in_selectionPathExpr885 = new BitSet(new long[]{0x0000000002000002L});
+    public static final BitSet FOLLOW_25_in_selectionPathExpr889 = new BitSet(new long[]{0x000000000C000010L});
+    public static final BitSet FOLLOW_pathStep_in_selectionPathExpr891 = new BitSet(new long[]{0x0000000002000002L});
+    public static final BitSet FOLLOW_26_in_pathStep914 = new BitSet(new long[]{0x000000000C000010L});
+    public static final BitSet FOLLOW_nameTest_in_pathStep920 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_nameTest944 = new BitSet(new long[]{0x0000000000002002L});
+    public static final BitSet FOLLOW_13_in_nameTest953 = new BitSet(new long[]{0x0000000008000010L});
+    public static final BitSet FOLLOW_set_in_nameTest957 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_xmlnsToken981 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_orToken991 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_andToken1001 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_notToken1011 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_trueToken1021 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_falseToken1031 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_eqToken1041 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_neToken1051 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_textToken1061 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_ltToken1071 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_lteToken1081 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_gtToken1091 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_gteToken1101 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_naNToken1111 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_infToken1121 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_xsToken1131 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_dateToken1141 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NCNAME_in_dateTimeToken1151 = new BitSet(new long[]{0x0000000000000002L});
 
 }

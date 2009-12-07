@@ -352,7 +352,7 @@ public class MediaService extends GoogleService {
    * @param entry the new entry to insert into the feed.
    * @return the newly inserted Entry returned by the service.
    * @throws IOException error communicating with the GData service.
-   * @throws com.google.gdata.util.ParseException error parsing the return 
+   * @throws com.google.gdata.util.ParseException error parsing the return
    *         entry data.
    * @throws ServiceException insert request failed due to system error.
    *
@@ -375,18 +375,19 @@ public class MediaService extends GoogleService {
     GDataRequest request = null;
     try {
       startVersionScope();
-      
+
       // Write as MIME multipart containing the entry and media.  Use the
       // content type from the multipart since this contains auto-generated
       // boundary attributes.
       MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
-      request = 
+      request =
           createRequest(GDataRequest.RequestType.INSERT, feedUrl,
-              new ContentType(mediaMultipart.getContentType()));  
-      
+              new ContentType(mediaMultipart.getContentType()));
+
       initMediaRequest(media, request);
-      
-      writeRequestData(request, mediaMultipart);
+
+      writeRequestData(request,
+          new ClientOutputProperties(request, entry), mediaMultipart);
       request.execute();
       return parseResponseData(request, classOf(entry));
 
@@ -419,7 +420,7 @@ public class MediaService extends GoogleService {
    * @param media the media source that contains the media content to insert.
    * @return the newly inserted entry returned by the service.
    * @throws IOException error communicating with the GData service.
-   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   * @throws com.google.gdata.util.ParseException error parsing the returned
    *         entry data.
    * @throws ServiceException insert request failed due to system error.
    *
@@ -452,6 +453,29 @@ public class MediaService extends GoogleService {
   }
 
   /**
+   * Updates an existing entry metadata by writing it to the specified edit
+   * URL. The resulting entry (after update) will be returned.
+   * If the entry has media resource, the media part will not be updated.
+   * To update both metadata and media, use {@link #updateMedia(URL, IEntry)}.
+   * To update media only, use {@link #updateMedia(URL, Class, MediaSource)}.
+   *
+   * @param url the media edit URL associated with the resource.
+   * @param entry the updated entry to be written to the server.
+   * @return the updated entry returned by the service.
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.ParseException error parsing the updated
+   *         entry data.
+   * @throws ServiceException update request failed due to system error.
+   *
+   * @see IEntry#getMediaEditLink()
+   */
+  @Override
+  public <E extends IEntry> E update(URL url, E entry)
+      throws IOException, ServiceException {
+    return super.update(url, entry);
+  }
+
+  /**
    * Updates an existing entry and associated media resource by writing it
    * to the specified media edit URL.  The resulting entry (after update) will
    * be returned.  To update only the media content, use
@@ -461,7 +485,7 @@ public class MediaService extends GoogleService {
    * @param entry the updated entry to be written to the server.
    * @return the updated entry returned by the service.
    * @throws IOException error communicating with the GData service.
-   * @throws com.google.gdata.util.ParseException error parsing the updated 
+   * @throws com.google.gdata.util.ParseException error parsing the updated
    *         entry data.
    * @throws ServiceException update request failed due to system error.
    *
@@ -486,15 +510,16 @@ public class MediaService extends GoogleService {
     GDataRequest request = null;
     try {
       startVersionScope();
-      
+
       // Write as MIME multipart containing the entry and media.  Use the
       // content type from the multipart since this contains auto-generated
       // boundary attributes.
-      MediaMultipart mediaMultipart = new MediaMultipart(entry, media); 
+      MediaMultipart mediaMultipart = new MediaMultipart(entry, media);
       request =  createRequest(GDataRequest.RequestType.UPDATE, mediaUrl,
           new ContentType(mediaMultipart.getContentType()));
 
-      writeRequestData(request, mediaMultipart);
+      writeRequestData(request,
+          new ClientOutputProperties(request, entry), mediaMultipart);
       request.execute();
       return parseResponseData(request, classOf(entry));
 
@@ -522,7 +547,7 @@ public class MediaService extends GoogleService {
    * @param media the media source data to be written to the server.
    * @return the updated Entry returned by the service.
    * @throws IOException error communicating with the GData service.
-   * @throws com.google.gdata.util.ParseException error parsing the updated 
+   * @throws com.google.gdata.util.ParseException error parsing the updated
    *         entry data.
    * @throws ServiceException update request failed due to system error.
    *
@@ -555,4 +580,6 @@ public class MediaService extends GoogleService {
       request.end();
     }
   }
+
+
 }

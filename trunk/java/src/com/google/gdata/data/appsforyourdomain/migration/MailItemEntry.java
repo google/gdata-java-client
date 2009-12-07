@@ -19,6 +19,7 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.util.Namespaces;
 
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.List;
  * 
  */
 @Kind.Term(MailItemEntry.MAILITEM_KIND)
-public class MailItemEntry extends BaseEntry<MailItemEntry> {
+public class MailItemEntry extends MediaEntry<MailItemEntry> {
   
   /**
    * Kind term value for MailItem category labels.

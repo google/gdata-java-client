@@ -21,6 +21,7 @@
   <import file="build-src/docs.xml"/>
   <import file="build-src/finance.xml"/>
   <import file="build-src/gbase.xml"/>
+  <import file="build-src/gtt.xml"/>
   <import file="build-src/health.xml"/>
   <import file="build-src/maps.xml"/>
   <import file="build-src/photos.xml"/>
@@ -48,6 +49,7 @@
                                 build.docs,
                                 build.finance,
                                 build.gbase,
+                                build.gtt,
                                 build.health,
                                 build.maps,
                                 build.photos,
@@ -68,6 +70,7 @@
                                 clean.docs,
                                 clean.finance,
                                 clean.gbase,
+                                clean.gtt,
                                 clean.health,
                                 clean.maps,
                                 clean.photos,
