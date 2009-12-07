@@ -71,3 +71,4 @@ public class PositionFeedLink extends FeedLink<TransactionFeed> {
   }
 
 }
+

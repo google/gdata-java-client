@@ -111,3 +111,4 @@ public class TransactionEntry extends BaseEntry<TransactionEntry> {
   }
 
 }
+

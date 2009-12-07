@@ -35,6 +35,7 @@ import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.MetadataContext;
 import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.Schema;
+import com.google.gdata.model.atom.Entry;
 import com.google.gdata.model.atom.Feed;
 import com.google.gdata.model.batch.BatchUtils;
 import com.google.gdata.model.gd.Partial;
@@ -58,6 +59,7 @@ import com.google.gdata.wireformats.input.InputParser;
 import com.google.gdata.wireformats.input.InputProperties;
 import com.google.gdata.wireformats.output.AtomDualGenerator;
 import com.google.gdata.wireformats.output.AtomServiceDualGenerator;
+import com.google.gdata.wireformats.output.ElementGenerator;
 import com.google.gdata.wireformats.output.OutputGenerator;
 import com.google.gdata.wireformats.output.OutputProperties;
 
@@ -106,19 +108,33 @@ public class Service {
   public static class Versions {
 
     /**
-     * The V1 version of the GData core protocol that was released in May 2006
-     * and is in use for all current GData services.
+     * Version 1.  GData core protocol released in May 2006 and is still in use
+     * by version 1 of some GData services.
      */
     public static final Version V1 = new Version(Service.class, 1, 0);
+
     /**
-     * The upcoming V2 release of the GData core protocol that will bring full
-     * alignment with the now standard Atom Publishing Protocol specification,
-     * migration to OpenSearch 1.1, and other (TBD) features.
+     * Version 2.  GData core protocol release that brings full alignment with
+     * the now standard Atom Publishing Protocol specification and migrates to
+     * OpenSearch 1.1.
      */
     public static final Version V2 = new Version(Service.class, 2, 0);
+
     /**
-     * The eventual future V3 release (not yet supported) of the GData
-     * core protocol that will default to structured error messages.
+     * Version {@code 2.1}.  Support new gd:kind attribute on feeds and
+     * entries.
+     */
+    public static final Version V2_1 = new Version(Service.class, 2, 1);
+
+    /**
+     * Version {@code 2.2}.  Unreleased next minor version of the GData
+     * protocol.
+     */
+    public static final Version V2_2 = new Version(Service.class, 2, 2);
+
+    /**
+     * Version 3.  Unreleased next major version of the GData protocol that will
+     * default to structured error messages.
      */
     public static final Version V3 = new Version(Service.class, 3, 0);
 
@@ -178,12 +194,13 @@ public class Service {
      * <li><b>QUERY</b> - query a feed, entry, or description document.</li>
      * <li><b>INSERT</b> - insert a new entry into a feed.</li>
      * <li><b>UPDATE</b> - update an existing entry within a feed.</li>
+     * <li><b>PATCH</b> - patch an existing entry within a feed.</li>
      * <li><b>DELETE</b> - delete an existing entry within a feed.</li>
      * <li><b>BATCH</b> - execute several insert/update/delete operations</li>
      * </ul>
      */
     public enum RequestType {
-      QUERY, INSERT, UPDATE, DELETE, BATCH
+      QUERY, INSERT, UPDATE, PATCH, DELETE, BATCH
     }
 
     /**
@@ -512,7 +529,6 @@ public class Service {
     Feed.registerMetadata(metadataRegistry);
     AtomVersionTransforms.addTransforms(metadataRegistry);
     AtompubVersionTransforms.addTransforms(metadataRegistry);
-    Partial.registerMetadata(metadataRegistry);
   }
 
   /**
@@ -539,6 +555,10 @@ public class Service {
     BASE_REGISTRY.register(AltFormat.ATOM_SERVICE,
         new AtomServiceDualParser(),
         new AtomServiceDualGenerator());
+    
+    BASE_REGISTRY.register(AltFormat.APPLICATION_XML, 
+        null, 
+        ElementGenerator.of(AltFormat.APPLICATION_XML, Element.class));
 
     // protect against subsequent changes
     BASE_REGISTRY.lock();
@@ -1447,8 +1467,8 @@ public class Service {
     }
     return update(entryUrl, entry, etag);
   }
-
-
+  
+  
   /**
    * Updates an existing {@link IEntry} by writing it to the specified entry
    * edit URL. The resulting entry (after update) will be returned. This update
@@ -1508,6 +1528,111 @@ public class Service {
         contentType);
   }
 
+
+  /**
+   * Patches an existing {@link IEntry} by removing a set of selected fields and
+   * then merging a partial entry representation into the resource at the
+   * specified entry edit URL. The resulting entry (after update) will be
+   * returned.
+   * 
+   * @param entryUrl the edit URL associated with the entry.
+   * @param fields selection representing the set of fields to be removed from
+   *        the resource.
+   * @param entry the partial entry to be merged with current resource.
+   * @return the patched Entry returned by the service.
+   * @throws IOException error communicating with the GData service.
+   * @throws com.google.gdata.util.ParseException error parsing the returned
+   *         entry data.
+   * @throws ServiceException update request failed due to system error.
+   * 
+   * @see IEntry#getEditLink()
+   */
+  @SuppressWarnings("unchecked")
+  public <E extends Entry> E patch(URL entryUrl, String fields, E entry)
+      throws IOException, ServiceException {
+
+    // If the entry has a strong etag, use it as a precondition.
+    String etag = entry.getEtag();
+    if (GDataProtocol.isWeakEtag(etag)) {
+      etag = null;
+    }
+    return patch(entryUrl, fields, entry, etag);
+  }
+
+
+  /**
+   * Patches an existing {@link IEntry} by removing a set of selected fields and
+   * then merging a partial entry representation into the resource at the
+   * specified entry edit URL. The resulting entry (after update) will be
+   * returned. This update is conditional upon the provided tag matching the
+   * current entity tag for the entry. If (and only if) they match, the patch
+   * will be performed.
+   * 
+   * @param entryUrl the edit URL associated with the entry.
+   * @param fields selection representing the set of fields to be removed from
+   *        the resource.
+   * @param entry the partial entry to be merged with current resource.
+   * @param etag the entity tag value that is the expected value for the target
+   *        resource. A value of {@code null} will not set an etag precondition
+   *        and a value of <code>"*"</code> will perform an unconditional
+   *        update.
+   * @return the patched Entry returned by the service.
+   * @throws IOException error communicating with the GData service.
+   * @throws PreconditionFailedException if the resource entity tag does not
+   *         match the provided value.
+   * @throws com.google.gdata.util.ParseException error parsing the patched
+   *         entry data.
+   * @throws ServiceException update request failed due to system error.
+   * 
+   * @see IEntry#getEditLink()
+   */
+  public <E extends Entry> E patch(URL entryUrl, String fields, E entry, 
+      String etag) throws IOException, ServiceException {
+
+    GDataRequest request = createPatchRequest(entryUrl);
+    try {
+      startVersionScope();
+      request.setEtag(etag);
+      
+      Partial partial = new Partial();
+      if (fields != null) {
+        partial.setFields(fields);
+      }
+      if (entry != null) {
+        partial.addElement(entry);
+      }
+      writeRequestData(request, partial);
+      request.execute();
+      return parseResponseData(request, classOf(entry));
+    } finally {
+      endVersionScope();
+      request.end();
+    }
+  }
+
+
+  /**
+   * Creates a new GDataRequest that can be used to update an existing Atom
+   * entry. The updated entry content can be written to the GDataRequest request
+   * stream and the resulting updated entry can be obtained from the
+   * GDataRequest response stream.
+   * <p>
+   * Clients should be sure to call {@link GDataRequest#end()} on the
+   * returned request once they have finished using it.
+   *
+   * @param entryUrl the edit URL associated with the entry.
+   * @throws IOException error communicating with the GData service.
+   * @throws ServiceException creation of update request failed.
+   */
+  public GDataRequest createPatchRequest(URL entryUrl) throws IOException,
+      ServiceException {
+
+    return createRequest(GDataRequest.RequestType.PATCH, entryUrl,
+        ContentType.APPLICATION_XML);
+  }
+
+  
+ 
 
   /**
    * Deletes an existing entry (and associated media content, if any) using the
@@ -1666,6 +1791,9 @@ public class Service {
       return req;
     }
 
+    public Version getRequestVersion() {
+      return getProtocolVersion();
+    }
 
     public AltRegistry getAltRegistry() {
       return Service.this.getAltRegistry();
@@ -1776,7 +1904,7 @@ public class Service {
 
     private final ElementMetadata<?, ?> elementMetadata;
 
-    protected ClientOutputProperties(GDataRequest req, Object source) {
+    public ClientOutputProperties(GDataRequest req, Object source) {
       super(req);
 
       if (source instanceof Element) {
@@ -1807,8 +1935,20 @@ public class Service {
    */
   protected void writeRequestData(GDataRequest req, Object source)
       throws IOException {
+    writeRequestData(req, new ClientOutputProperties(req, source), source);
+  }
 
-    OutputProperties outProps = new ClientOutputProperties(req, source);
+  /**
+   * Writes the request body to the target service based upon requested
+   * output properties and the source object.
+   *
+   * @param outProps client output properties
+   * @param source source object to be written
+   * @throws IOException
+   */
+  protected void writeRequestData(GDataRequest req,
+      ClientOutputProperties outProps, Object source) throws IOException {
+
     AltFormat outputFormat = altRegistry.lookupType(outProps.getContentType());
     if (outputFormat == null) {
       // If no registered type, see if the target service supports media

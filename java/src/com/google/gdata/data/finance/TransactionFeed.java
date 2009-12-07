@@ -52,3 +52,4 @@ public class TransactionFeed extends BaseFeed<TransactionFeed,
   }
 
 }
+

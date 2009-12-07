@@ -106,3 +106,4 @@ public class Price extends ExtensionPoint {
   }
 
 }
+

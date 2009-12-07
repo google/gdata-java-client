@@ -51,3 +51,4 @@ public class PositionFeed extends BaseFeed<PositionFeed, PositionEntry> {
   }
 
 }
+

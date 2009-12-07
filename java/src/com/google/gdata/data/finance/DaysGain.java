@@ -106,3 +106,4 @@ public class DaysGain extends ExtensionPoint {
   }
 
 }
+

@@ -1,0 +1,69 @@
+<project name="gtt" default="sample.gtt.build" basedir=".">
+  <!-- Path containing core.xml -->
+  <dirname property="build_dir" file="${ant.file.gtt}"/>
+  <import file="${build_dir}/core.xml"/>
+  <import file="${build_dir}/gtt.xml"/>
+
+  <property name="gdata-gtt.jar"
+    value="${build.jars}/gdata-gtt-${gtt.spec.version}.jar"/>
+
+  <!--  ===================================================================== -->
+  <!--             Build GData Translator Toolkit  samples.                   -->
+  <!--  ===================================================================== -->
+
+  <!-- build Properties -->
+  <property name="sample.gtt.basedir"       value="${build}/sample/gtt"/>
+  <property name="sample.gtt.src.home"      value="${sample.gtt.basedir}"/>
+  <property name="sample.gtt.build.classes" value="${sample.gtt.basedir}/classes"/>
+  <property name="sample.gtt.build.lib"     value="${sample.gtt.basedir}/lib"/>
+  <property name="sample.gtt.jar"           value="${sample.gtt.build.lib}/GttClient.jar"/>
+  <property name="sample.gtt.main"          value="sample.gtt.GttClient"/>
+
+  <path id="sample.gtt.compile.classpath">
+     <path refid="build.service.media.classpath"/>
+     <path location="${gdata-gtt.jar}"/>
+     <path location="${sample-util.jar}"/>
+  </path>
+
+  <target name="sample.gtt.dependencies">
+    <antcall target="template.require.service.jar">
+      <param name="template.service.name" value="gtt"/>
+      <param name="template.service.version" value="${gtt.spec.version}"/>
+    </antcall>
+  </target>
+
+  <target name="sample.gtt.build" depends="sample.gtt.dependencies">
+    <mkdir dir="${sample.gtt.build.lib}"/>
+    <mkdir dir="${sample.gtt.build.classes}"/>
+    <javac srcdir="${sample.gtt.src.home}"
+           destdir="${sample.gtt.build.classes}"
+           debug="${javac.debug}" debuglevel="${javac.debuglevel}"
+           deprecation="false"
+           optimize="true">
+        <classpath refid="sample.gtt.compile.classpath"/>
+    </javac>
+    <jar jarfile="${sample.gtt.jar}"
+         basedir="${sample.gtt.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.gtt.main}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="sample.gtt.clean"
+   description="Delete old build and dist directories">
+    <delete dir="${sample.gtt.build.classes}"/>
+  </target>
+
+  <target name="sample.gtt.run" depends="sample.gtt.build">
+    <java fork="true" classname="${sample.gtt.main}">
+      <arg line="login --username ${sample.credentials.username} --password ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.gtt.compile.classpath"/>
+        <path location="${sample-util.jar}"/>
+        <path location="${sample.gtt.jar}"/>
+      </classpath>
+    </java>
+  </target>
+
+</project>

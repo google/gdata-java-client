@@ -1,0 +1,110 @@
+/* Copyright (c) 2008 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package com.google.gdata.data.gtt;
+
+import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
+import com.google.gdata.data.acl.AclNamespace;
+import com.google.gdata.data.media.MediaEntry;
+
+/**
+ * Describes a translation memory entry.
+ *
+ * 
+ */
+public class TranslationMemoryEntry extends MediaEntry<TranslationMemoryEntry> {
+
+  /**
+   * Default mutable constructor.
+   */
+  public TranslationMemoryEntry() {
+    super();
+  }
+
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link BaseEntry} instance.
+   *
+   * @param sourceEntry source entry
+   */
+  public TranslationMemoryEntry(BaseEntry<?> sourceEntry) {
+    super(sourceEntry);
+  }
+
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    if (extProfile.isDeclared(TranslationMemoryEntry.class)) {
+      return;
+    }
+    super.declareExtensions(extProfile);
+    extProfile.declare(TranslationMemoryEntry.class, ScopeEntry.class);
+  }
+
+  /**
+   * Returns the scope entry.
+   *
+   * @return scope entry
+   */
+  public ScopeEntry getScope() {
+    return getExtension(ScopeEntry.class);
+  }
+
+  /**
+   * Sets the scope entry.
+   *
+   * @param scope scope entry or <code>null</code> to reset
+   */
+  public void setScope(ScopeEntry scope) {
+    if (scope == null) {
+      removeExtension(ScopeEntry.class);
+    } else {
+      setExtension(scope);
+    }
+  }
+
+  /**
+   * Returns whether it has the scope entry.
+   *
+   * @return whether it has the scope entry
+   */
+  public boolean hasScope() {
+    return hasExtension(ScopeEntry.class);
+  }
+
+  /**
+   * Returns the link that provides the URI of the feed for the access control
+   * list for the entry.
+   *
+   * @return Link that provides the URI of the feed for the access control list
+   *     for the entry or {@code null} for none.
+   */
+  public Link getAccessControlListLink() {
+    return getLink(AclNamespace.LINK_REL_ACCESS_CONTROL_LIST, Link.Type.ATOM);
+  }
+
+  @Override
+  protected void validate() {
+  }
+
+  @Override
+  public String toString() {
+    return "{TranslationMemoryEntry " + super.toString() + "}";
+  }
+
+}
+

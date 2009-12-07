@@ -198,7 +198,7 @@ public class AppsGroupsService extends AppsPropertyService {
     if (!(groupDescription == null || groupDescription.equals(""))) {
       entry.addProperty(APPS_PROP_GROUP_DESC, groupDescription);
     }
-    if (!(emailPermission == null || groupDescription.equals(""))) {
+    if (!(emailPermission == null || emailPermission.equals(""))) {
       entry.addProperty(APPS_PROP_GROUP_PERMISSION, emailPermission);
     }
     if (entry.getAllProperties().size() == 0) {

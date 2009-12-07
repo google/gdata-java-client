@@ -2,6 +2,11 @@ Google Data API - Release Notes
 
 Notes for v1.40.0
 -----------------
+o  Added Google Translator Tookkit Data API.
+o  Updated Finance Data API to use version 2 of GData protocol.
+
+Notes for v1.39.1
+-----------------
 o  Added site usefulness element in Google Sidewiki Data API.  For additional
    details see http://code.google.com/apis/sidewiki/changelog.html.
 
