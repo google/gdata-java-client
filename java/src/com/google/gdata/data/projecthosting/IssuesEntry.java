@@ -52,20 +52,83 @@ public class IssuesEntry extends BaseEntry<IssuesEntry> {
       return;
     }
     super.declareExtensions(extProfile);
+    extProfile.declare(IssuesEntry.class, BlockedOn.getDefaultDescription(false,
+        true));
+    new BlockedOn().declareExtensions(extProfile);
+    extProfile.declare(IssuesEntry.class, Blocking.getDefaultDescription(false,
+        true));
+    new Blocking().declareExtensions(extProfile);
     extProfile.declare(IssuesEntry.class, Cc.getDefaultDescription(false,
         true));
     new Cc().declareExtensions(extProfile);
+    extProfile.declare(IssuesEntry.class, ClosedDate.class);
     extProfile.declare(IssuesEntry.class, Id.class);
     extProfile.declare(IssuesEntry.class, Label.getDefaultDescription(false,
         true));
     extProfile.declare(IssuesEntry.class,
         IssuesLink.getDefaultDescription(false, true));
+    extProfile.declare(IssuesEntry.class, MergedInto.class);
+    new MergedInto().declareExtensions(extProfile);
     extProfile.declare(IssuesEntry.class, Owner.class);
     new Owner().declareExtensions(extProfile);
     extProfile.declare(IssuesEntry.class, SendEmail.class);
     extProfile.declare(IssuesEntry.class, Stars.class);
     extProfile.declare(IssuesEntry.class, State.class);
     extProfile.declare(IssuesEntry.class, Status.class);
+  }
+
+  /**
+   * Returns the blocked ons.
+   *
+   * @return blocked ons
+   */
+  public List<BlockedOn> getBlockedOns() {
+    return getRepeatingExtension(BlockedOn.class);
+  }
+
+  /**
+   * Adds a new blocked on.
+   *
+   * @param blockedOn blocked on
+   */
+  public void addBlockedOn(BlockedOn blockedOn) {
+    getBlockedOns().add(blockedOn);
+  }
+
+  /**
+   * Returns whether it has the blocked ons.
+   *
+   * @return whether it has the blocked ons
+   */
+  public boolean hasBlockedOns() {
+    return hasRepeatingExtension(BlockedOn.class);
+  }
+
+  /**
+   * Returns the blockings.
+   *
+   * @return blockings
+   */
+  public List<Blocking> getBlockings() {
+    return getRepeatingExtension(Blocking.class);
+  }
+
+  /**
+   * Adds a new blocking.
+   *
+   * @param blocking blocking
+   */
+  public void addBlocking(Blocking blocking) {
+    getBlockings().add(blocking);
+  }
+
+  /**
+   * Returns whether it has the blockings.
+   *
+   * @return whether it has the blockings
+   */
+  public boolean hasBlockings() {
+    return hasRepeatingExtension(Blocking.class);
   }
 
   /**
@@ -93,6 +156,37 @@ public class IssuesEntry extends BaseEntry<IssuesEntry> {
    */
   public boolean hasCcs() {
     return hasRepeatingExtension(Cc.class);
+  }
+
+  /**
+   * Returns the closed date.
+   *
+   * @return closed date
+   */
+  public ClosedDate getClosedDate() {
+    return getExtension(ClosedDate.class);
+  }
+
+  /**
+   * Sets the closed date.
+   *
+   * @param closedDate closed date or <code>null</code> to reset
+   */
+  public void setClosedDate(ClosedDate closedDate) {
+    if (closedDate == null) {
+      removeExtension(ClosedDate.class);
+    } else {
+      setExtension(closedDate);
+    }
+  }
+
+  /**
+   * Returns whether it has the closed date.
+   *
+   * @return whether it has the closed date
+   */
+  public boolean hasClosedDate() {
+    return hasExtension(ClosedDate.class);
   }
 
   /**
@@ -151,6 +245,37 @@ public class IssuesEntry extends BaseEntry<IssuesEntry> {
    */
   public boolean hasLabels() {
     return hasRepeatingExtension(Label.class);
+  }
+
+  /**
+   * Returns the merged into.
+   *
+   * @return merged into
+   */
+  public MergedInto getMergedInto() {
+    return getExtension(MergedInto.class);
+  }
+
+  /**
+   * Sets the merged into.
+   *
+   * @param mergedInto merged into or <code>null</code> to reset
+   */
+  public void setMergedInto(MergedInto mergedInto) {
+    if (mergedInto == null) {
+      removeExtension(MergedInto.class);
+    } else {
+      setExtension(mergedInto);
+    }
+  }
+
+  /**
+   * Returns whether it has the merged into.
+   *
+   * @return whether it has the merged into
+   */
+  public boolean hasMergedInto() {
+    return hasExtension(MergedInto.class);
   }
 
   /**

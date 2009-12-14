@@ -118,21 +118,29 @@ public class ProjectHostingWriteDemo {
     String issueId = client.getIssueId(issueInserted.getId());
     System.out.println("Issue #" + issueId + " created");
 
-    // Update the issue by adding a comment with some updates
-    IssueCommentsEntry commentInserted =
-        client.insertComment(issueId, makeUpdatingComment());
-    String commentId = client.getCommentId(commentInserted.getId());
-    System.out.println("Comment #" + commentId + " added in issue #" + issueId);
-
-    // Close the issue by adding a comment with Status "Fixed"
-    commentInserted = client.insertComment(issueId, makeClosingComment());
-    commentId = client.getCommentId(commentInserted.getId());
-    System.out.println("Comment #" + commentId + " added in issue #" + issueId);
+    // Add comments and updates to the issue created
+    addComment(issueId, makeUpdatingComment());
+    addComment(issueId, makePlainComment());
+    addComment(issueId, makeClosingComment());
 
     // Print the issue and comments added
     System.out.println("-----------------------------------------------------");
     System.out.println("Issue created and comments added:");
     client.printIssueAndComments(issueInserted);
+  }
+
+  /**
+   * Adds the given comment to the given issue.
+   *
+   * @throws IOException if there is a problem communicating with the server
+   * @throws ServiceException if the service is unable to handle the request
+   */
+  private void addComment(String issueId, IssueCommentsEntry issueComment)
+      throws IOException, ServiceException {
+    IssueCommentsEntry commentInserted = client.insertComment(
+        issueId, issueComment);
+    String commentId = client.getCommentId(commentInserted.getId());
+    System.out.println("Comment #" + commentId + " added in issue #" + issueId);
   }
 
   /**
@@ -191,6 +199,22 @@ public class ProjectHostingWriteDemo {
     entry.getAuthors().add(author);
     entry.setContent(new HtmlTextConstruct("some comment"));
     entry.setUpdates(updates);
+    entry.setSendEmail(new SendEmail("False"));
+
+    return entry;
+  }
+
+  /**
+   * Creates a comment without any updates.
+   */
+  protected IssueCommentsEntry makePlainComment() {
+    Person author = new Person();
+    author.setName(username);
+
+    // Create issue comment entry
+    IssueCommentsEntry entry = new IssueCommentsEntry();
+    entry.getAuthors().add(author);
+    entry.setContent(new HtmlTextConstruct("Some comment"));
     entry.setSendEmail(new SendEmail("False"));
 
     return entry;

@@ -51,7 +51,7 @@ public class ProjectHostingService extends GoogleService {
 
     /** Version 1. */
     public static final Version V1 = new Version(ProjectHostingService.class,
-        "1.0", Service.Versions.V2);
+        "1.0", Service.Versions.V2_1);
 
     private Versions() {}
   }

@@ -21,6 +21,9 @@ import com.google.gdata.client.projecthosting.ProjectHostingService;
 import com.google.gdata.data.HtmlTextConstruct;
 import com.google.gdata.data.Person;
 import com.google.gdata.data.TextContent;
+import com.google.gdata.data.projecthosting.BlockedOn;
+import com.google.gdata.data.projecthosting.BlockedOnUpdate;
+import com.google.gdata.data.projecthosting.Blocking;
 import com.google.gdata.data.projecthosting.Cc;
 import com.google.gdata.data.projecthosting.CcUpdate;
 import com.google.gdata.data.projecthosting.IssueCommentsEntry;
@@ -385,6 +388,36 @@ public class ProjectHostingClient {
             (cc.getUri() == null) ? null : cc.getUri().getValue());
       }
     }
+
+    if (entry.getBlockedOns().size() > 0) {
+      System.out.println("\tBlockedOn");
+      for (BlockedOn blockedOn : entry.getBlockedOns()) {
+        System.out.print("\t\t");
+        if (blockedOn.hasProject()) {
+          System.out.print(blockedOn.getProject().getValue() + ":");
+        }
+        System.out.println(blockedOn.getId().getValue());
+      }
+    }
+
+    if (entry.getBlockings().size() > 0) {
+      System.out.println("\tBlocking");
+      for (Blocking blocking : entry.getBlockings()) {
+        System.out.print("\t\t");
+        if (blocking.hasProject()) {
+          System.out.print(blocking.getProject().getValue() + ":");
+        }
+        System.out.println(blocking.getId().getValue());
+      }
+    }
+
+    if (entry.hasMergedInto()) {
+      System.out.print("\tMergedInto\n\t\t");
+      if (entry.getMergedInto().hasProject()) {
+        System.out.print(entry.getMergedInto().getProject().getValue() + ":");
+      }
+      System.out.println(entry.getMergedInto().getId().getValue());
+    }
   }
 
   /**
@@ -522,6 +555,19 @@ public class ProjectHostingClient {
         for (CcUpdate cc : updates.getCcUpdates()) {
           System.out.println("\t\t" + cc.getValue());
         }
+      }
+
+      if (updates.getBlockedOnUpdates().size() > 0) {
+        System.out.println("\tBlockedOnUpdate");
+        for (BlockedOnUpdate blockedOnUpdate : updates.getBlockedOnUpdates()) {
+          System.out.println("\t\t" + blockedOnUpdate.getValue());
+        }
+      }
+
+      if (updates.hasMergedIntoUpdate()) {
+        System.out.println(
+            "\tMergedIntoUpdate\n\t\t" +
+            updates.getMergedIntoUpdate().getValue());
       }
     }
   }

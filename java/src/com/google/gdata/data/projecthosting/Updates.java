@@ -48,12 +48,42 @@ public class Updates extends ExtensionPoint {
     if (extProfile.isDeclared(Updates.class)) {
       return;
     }
+    extProfile.declare(Updates.class,
+        BlockedOnUpdate.getDefaultDescription(false, true));
     extProfile.declare(Updates.class, CcUpdate.getDefaultDescription(false,
         true));
     extProfile.declare(Updates.class, Label.getDefaultDescription(false, true));
+    extProfile.declare(Updates.class, MergedIntoUpdate.class);
     extProfile.declare(Updates.class, OwnerUpdate.class);
     extProfile.declare(Updates.class, Status.class);
     extProfile.declare(Updates.class, Summary.class);
+  }
+
+  /**
+   * Returns the blocked on updates.
+   *
+   * @return blocked on updates
+   */
+  public List<BlockedOnUpdate> getBlockedOnUpdates() {
+    return getRepeatingExtension(BlockedOnUpdate.class);
+  }
+
+  /**
+   * Adds a new blocked on update.
+   *
+   * @param blockedOnUpdate blocked on update
+   */
+  public void addBlockedOnUpdate(BlockedOnUpdate blockedOnUpdate) {
+    getBlockedOnUpdates().add(blockedOnUpdate);
+  }
+
+  /**
+   * Returns whether it has the blocked on updates.
+   *
+   * @return whether it has the blocked on updates
+   */
+  public boolean hasBlockedOnUpdates() {
+    return hasRepeatingExtension(BlockedOnUpdate.class);
   }
 
   /**
@@ -108,6 +138,37 @@ public class Updates extends ExtensionPoint {
    */
   public boolean hasLabels() {
     return hasRepeatingExtension(Label.class);
+  }
+
+  /**
+   * Returns the merged into update.
+   *
+   * @return merged into update
+   */
+  public MergedIntoUpdate getMergedIntoUpdate() {
+    return getExtension(MergedIntoUpdate.class);
+  }
+
+  /**
+   * Sets the merged into update.
+   *
+   * @param mergedIntoUpdate merged into update or <code>null</code> to reset
+   */
+  public void setMergedIntoUpdate(MergedIntoUpdate mergedIntoUpdate) {
+    if (mergedIntoUpdate == null) {
+      removeExtension(MergedIntoUpdate.class);
+    } else {
+      setExtension(mergedIntoUpdate);
+    }
+  }
+
+  /**
+   * Returns whether it has the merged into update.
+   *
+   * @return whether it has the merged into update
+   */
+  public boolean hasMergedIntoUpdate() {
+    return hasExtension(MergedIntoUpdate.class);
   }
 
   /**

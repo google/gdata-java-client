@@ -18,6 +18,7 @@ package com.google.gdata.data.projecthosting;
 
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
 
 /**
  * Describes an issue comments entry.
@@ -49,6 +50,8 @@ public class IssueCommentsEntry extends BaseEntry<IssueCommentsEntry> {
       return;
     }
     super.declareExtensions(extProfile);
+    extProfile.declare(IssueCommentsEntry.class,
+        IssuesLink.getDefaultDescription(false, true));
     extProfile.declare(IssueCommentsEntry.class, SendEmail.class);
     extProfile.declare(IssueCommentsEntry.class, Updates.class);
     new Updates().declareExtensions(extProfile);
@@ -114,6 +117,16 @@ public class IssueCommentsEntry extends BaseEntry<IssueCommentsEntry> {
    */
   public boolean hasUpdates() {
     return hasExtension(Updates.class);
+  }
+
+  /**
+   * Returns the replies Project Hosting Issue Tracker Link class.
+   *
+   * @return Replies Project Hosting Issue Tracker Link class or {@code null}
+   *     for none.
+   */
+  public Link getAtomRepliesLink() {
+    return getLink(IssuesLink.Rel.REPLIES, Link.Type.ATOM);
   }
 
   @Override

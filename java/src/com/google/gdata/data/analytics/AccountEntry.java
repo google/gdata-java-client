@@ -33,6 +33,7 @@ public class AccountEntry extends BaseEntry<AccountEntry> {
    */
   public AccountEntry() {
     super();
+    setKind("analytics#account");
   }
 
   /**
@@ -51,10 +52,69 @@ public class AccountEntry extends BaseEntry<AccountEntry> {
       return;
     }
     super.declareExtensions(extProfile);
+    extProfile.declare(AccountEntry.class,
+        CustomVariable.getDefaultDescription(false, true));
+    extProfile.declare(AccountEntry.class, Goal.getDefaultDescription(false,
+        true));
+    new Goal().declareExtensions(extProfile);
     extProfile.declare(AccountEntry.class, Property.getDefaultDescription(false,
         true));
     extProfile.declare(AccountEntry.class, TableId.getDefaultDescription(true,
         false));
+  }
+
+  /**
+   * Returns the custom variables.
+   *
+   * @return custom variables
+   */
+  public List<CustomVariable> getCustomVariables() {
+    return getRepeatingExtension(CustomVariable.class);
+  }
+
+  /**
+   * Adds a new custom variable.
+   *
+   * @param customVariable custom variable
+   */
+  public void addCustomVariable(CustomVariable customVariable) {
+    getCustomVariables().add(customVariable);
+  }
+
+  /**
+   * Returns whether it has the custom variables.
+   *
+   * @return whether it has the custom variables
+   */
+  public boolean hasCustomVariables() {
+    return hasRepeatingExtension(CustomVariable.class);
+  }
+
+  /**
+   * Returns the goals.
+   *
+   * @return goals
+   */
+  public List<Goal> getGoals() {
+    return getRepeatingExtension(Goal.class);
+  }
+
+  /**
+   * Adds a new goal.
+   *
+   * @param goal goal
+   */
+  public void addGoal(Goal goal) {
+    getGoals().add(goal);
+  }
+
+  /**
+   * Returns whether it has the goals.
+   *
+   * @return whether it has the goals
+   */
+  public boolean hasGoals() {
+    return hasRepeatingExtension(Goal.class);
   }
 
   /**
@@ -126,26 +186,28 @@ public class AccountEntry extends BaseEntry<AccountEntry> {
 
 
   /**
-   * Returns the value of the named property off this entry. More specifically,
+   * Returns the value of the named property of this entry. More specifically,
    * it returns the content of the {@code value} attribute of the
    * {@code dxp:property} whose {@code name} attribute matches the argument.
-   * Returns null if no such property exists.
+   * Returns {@code null} if no such property exists.
    *
-   * @param name The property to retrieve from this entry
-   * @return The String value of a named property, or null if no such property
-   *     exists
+   * @param name the property to retrieve from this entry
+   * @return string value of the named property or null if it doesn't exist
    */
   public String getProperty(String name) {
-    if (!hasProperties()) {
-      return null;
-    } else {
+    // We assume that each Property object has unique non null name.  This code
+    // will ignore Property
+    // with null name and if there are two Property objects with the same name,
+    // it will return the
+    // first one it found.
+    if (hasProperties()) {
       for (Property property : getProperties()) {
-        if (property.getName().equalsIgnoreCase(name)) {
+        if (property.hasName() && property.getName().equalsIgnoreCase(name)) {
           return property.getValue();
         }
       }
-      return null;
     }
+    return null;
   }
 
 }

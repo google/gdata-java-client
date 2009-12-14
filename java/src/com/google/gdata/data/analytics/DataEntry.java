@@ -33,6 +33,7 @@ public class DataEntry extends BaseEntry<DataEntry> {
    */
   public DataEntry() {
     super();
+    setKind("analytics#datarow");
   }
 
   /**
