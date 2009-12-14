@@ -27,13 +27,13 @@ import java.net.URL;
  */
 public class DataQuery extends Query {
 
-  /** Row keys. */
+  /** Comma separated list of row keys. */
   private String dimensions;
 
   /** Last day for which to retrieve data in form YYYY-MM-DD. */
   private String endDate;
 
-  /** Dimension value filters. */
+  /** Dimension and metric filters. */
   private String filters;
 
   /** Google Analytics profile ID, prefixed by 'ga:'. */
@@ -42,7 +42,10 @@ public class DataQuery extends Query {
   /** Comma separated list of numeric value fields. */
   private String metrics;
 
-  /** Comma separated list of sort keys in order of importance. */
+  /** Segment to be applied. */
+  private String segment;
+
+  /** Comma separated list of sort parameters in order of importance. */
   private String sort;
 
   /** First day for which to retrieve data in form YYYY-MM-DD. */
@@ -60,20 +63,20 @@ public class DataQuery extends Query {
   }
 
   /**
-   * Returns the row keys.
+   * Returns the comma separated list of row keys.
    *
-   * @return row keys or <code>null</code> to indicate that the parameter is not
-   *     set.
+   * @return comma separated list of row keys or <code>null</code> to indicate
+   *     that the parameter is not set.
    */
   public String getDimensions() {
     return dimensions;
   }
 
   /**
-   * Sets the row keys.
+   * Sets the comma separated list of row keys.
    *
-   * @param dimensions row keys or <code>null</code> to remove this parameter if
-   *     set.
+   * @param dimensions comma separated list of row keys or <code>null</code> to
+   *     remove this parameter if set.
    */
   public void setDimensions(String dimensions) {
     // check if setting to existing value
@@ -112,20 +115,20 @@ public class DataQuery extends Query {
   }
 
   /**
-   * Returns the dimension value filters.
+   * Returns the dimension and metric filters.
    *
-   * @return dimension value filters or <code>null</code> to indicate that the
-   *     parameter is not set.
+   * @return dimension and metric filters or <code>null</code> to indicate that
+   *     the parameter is not set.
    */
   public String getFilters() {
     return filters;
   }
 
   /**
-   * Sets the dimension value filters.
+   * Sets the dimension and metric filters.
    *
-   * @param filters dimension value filters or <code>null</code> to remove this
-   *     parameter if set.
+   * @param filters dimension and metric filters or <code>null</code> to remove
+   *     this parameter if set.
    */
   public void setFilters(String filters) {
     // check if setting to existing value
@@ -189,9 +192,35 @@ public class DataQuery extends Query {
   }
 
   /**
-   * Returns the comma separated list of sort keys in order of importance.
+   * Returns the segment to be applied.
    *
-   * @return comma separated list of sort keys in order of importance or
+   * @return segment to be applied or <code>null</code> to indicate that the
+   *     parameter is not set.
+   */
+  public String getSegment() {
+    return segment;
+  }
+
+  /**
+   * Sets the segment to be applied.
+   *
+   * @param segment segment to be applied or <code>null</code> to remove this
+   *     parameter if set.
+   */
+  public void setSegment(String segment) {
+    // check if setting to existing value
+    if (this.segment == null ? segment != null : !this.segment.equals(segment))
+        {
+      // set to new value for customer parameter
+      this.segment = segment;
+      setStringCustomParameter("segment", segment);
+    }
+  }
+
+  /**
+   * Returns the comma separated list of sort parameters in order of importance.
+   *
+   * @return comma separated list of sort parameters in order of importance or
    *     <code>null</code> to indicate that the parameter is not set.
    */
   public String getSort() {
@@ -199,10 +228,10 @@ public class DataQuery extends Query {
   }
 
   /**
-   * Sets the comma separated list of sort keys in order of importance.
+   * Sets the comma separated list of sort parameters in order of importance.
    *
-   * @param sort comma separated list of sort keys in order of importance or
-   *     <code>null</code> to remove this parameter if set.
+   * @param sort comma separated list of sort parameters in order of importance
+   *     or <code>null</code> to remove this parameter if set.
    */
   public void setSort(String sort) {
     // check if setting to existing value
@@ -240,3 +269,4 @@ public class DataQuery extends Query {
   }
 
 }
+

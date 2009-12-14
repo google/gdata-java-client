@@ -72,3 +72,4 @@ public class EndDate extends ValueConstruct {
   }
 
 }
+

@@ -32,6 +32,15 @@ import java.util.Map;
  */
 public class OAuthParameters {
 
+  /**
+   * Type of OAuth for this parameter set (i.e., two-legged or three-legged
+   * OAuth (see {@link "https://sites.google.com/a/google.com/oauth/"}). 
+   */
+  public static enum OAuthType {
+    TWO_LEGGED_OAUTH,
+    THREE_LEGGED_OAUTH
+  }
+
   // OAuth related parameters, as defined in http://oauth.net/core/1.0/#anchor3
   public static final String OAUTH_CALLBACK_KEY = "oauth_callback";
   public static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
@@ -50,6 +59,7 @@ public class OAuthParameters {
 
   protected Map<String, String> baseParameters;
   protected Map<String, String> extraParameters;
+  private OAuthType oauthType = OAuthType.THREE_LEGGED_OAUTH;
 
   /**
    * Creates a new {@link OAuthParameters} object.  Initializes parameters
@@ -413,6 +423,20 @@ public class OAuthParameters {
    */
   public void assertOAuthTokenSecretExists() throws OAuthException {
     assertExists(OAUTH_TOKEN_SECRET_KEY, extraParameters);
+  }
+
+  /**
+   * Retrieves the OAuth type requested. 
+   */
+  public OAuthType getOAuthType() {
+    return oauthType;
+  }
+  
+  /**
+   * Sets the value of the OAuth type. 
+   */
+  public void setOAuthType(OAuthType type) {
+    this.oauthType = type;
   }
 
   /**

@@ -172,20 +172,29 @@ public class DataSource extends ExtensionPoint {
   }
 
 
-   /**
-    * Retrieves the value of the property with the given name.
-    *
-    * @param name The name of the property to retrieve
-    * @return The named property's value, or null if the property was not
-    *     present
-    */
-   public String getProperty(String name) {
-     for (Property property : getProperties()) {
-       if (property.getName().equals(name)) {
-         return property.getValue();
-       }
-     }
-     return null;
-   }
+  /**
+   * Returns the value of the named property of this entry. More specifically,
+   * it returns the content of the {@code value} attribute of the
+   * {@code dxp:property} whose {@code name} attribute matches the argument.
+   * Returns {@code null} if no such property exists.
+   *
+   * @param name the property to retrieve from this entry
+   * @return string value of the named property or null if it doesn't exist
+   */
+  public String getProperty(String name) {
+    // We assume that each Property object has unique non null name.  This code
+    // will ignore Property
+    // with null name and if there are two Property objects with the same name,
+    // it will return the
+    // first one it found.
+    if (hasProperties()) {
+      for (Property property : getProperties()) {
+        if (property.hasName() && property.getName().equalsIgnoreCase(name)) {
+          return property.getValue();
+        }
+      }
+    }
+    return null;
+  }
 
 }

@@ -33,6 +33,7 @@ public class DataFeed extends BaseFeed<DataFeed, DataEntry> {
    */
   public DataFeed() {
     super(DataEntry.class);
+    setKind("analytics#data");
   }
 
   /**
@@ -58,6 +59,9 @@ public class DataFeed extends BaseFeed<DataFeed, DataEntry> {
     new DataSource().declareExtensions(extProfile);
     extProfile.declare(DataFeed.class, EndDate.getDefaultDescription(true,
         false));
+    extProfile.declare(DataFeed.class, Segment.getDefaultDescription(false,
+        true));
+    new Segment().declareExtensions(extProfile);
     extProfile.declare(DataFeed.class, StartDate.getDefaultDescription(true,
         false));
   }
@@ -152,6 +156,33 @@ public class DataFeed extends BaseFeed<DataFeed, DataEntry> {
   }
 
   /**
+   * Returns the segments.
+   *
+   * @return segments
+   */
+  public List<Segment> getSegments() {
+    return getRepeatingExtension(Segment.class);
+  }
+
+  /**
+   * Adds a new segment.
+   *
+   * @param segment segment
+   */
+  public void addSegment(Segment segment) {
+    getSegments().add(segment);
+  }
+
+  /**
+   * Returns whether it has the segments.
+   *
+   * @return whether it has the segments
+   */
+  public boolean hasSegments() {
+    return hasRepeatingExtension(Segment.class);
+  }
+
+  /**
    * Returns the start date.
    *
    * @return start date
@@ -192,3 +223,4 @@ public class DataFeed extends BaseFeed<DataFeed, DataEntry> {
   }
 
 }
+

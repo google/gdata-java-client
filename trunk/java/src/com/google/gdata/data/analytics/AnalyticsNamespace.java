@@ -19,7 +19,7 @@ package com.google.gdata.data.analytics;
 import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
- * GData namespace definitions related to Analytics.
+ * Namespace definitions related to Google Analytics Data Export API.
  *
  * 
  */
@@ -27,16 +27,42 @@ public class AnalyticsNamespace {
 
   private AnalyticsNamespace() {}
 
-  /** Dxp (DXP) namespace */
+  /** Google Analytics (DXP) namespace */
   public static final String DXP = "http://schemas.google.com/analytics/2009";
 
-  /** Dxp (DXP) namespace prefix */
+  /** Google Analytics (DXP) namespace prefix */
   public static final String DXP_PREFIX = DXP + "#";
 
-  /** Dxp (DXP) namespace alias */
+  /** Google Analytics (DXP) namespace alias */
   public static final String DXP_ALIAS = "dxp";
 
-  /** XML writer namespace for Dxp (DXP) */
+  /** XML writer namespace for Google Analytics (DXP) */
   public static final XmlNamespace DXP_NS = new XmlNamespace(DXP_ALIAS, DXP);
 
+  /** Analytics-specific data (GA) namespace */
+  public static final String GA = "http://schemas.google.com/ga/2009";
+
+  /** Analytics-specific data (GA) namespace prefix */
+  public static final String GA_PREFIX = GA + "#";
+
+  /** Analytics-specific data (GA) namespace alias */
+  public static final String GA_ALIAS = "ga";
+
+  /** XML writer namespace for Analytics-specific data (GA) */
+  public static final XmlNamespace GA_NS = new XmlNamespace(GA_ALIAS, GA);
+
+  /** Gwo (GWO) namespace */
+  public static final String GWO =
+      "http://schemas.google.com/analytics/websiteoptimizer/2009";
+
+  /** Gwo (GWO) namespace prefix */
+  public static final String GWO_PREFIX = GWO + "#";
+
+  /** Gwo (GWO) namespace alias */
+  public static final String GWO_ALIAS = "gwo";
+
+  /** XML writer namespace for Gwo (GWO) */
+  public static final XmlNamespace GWO_NS = new XmlNamespace(GWO_ALIAS, GWO);
+
 }
+

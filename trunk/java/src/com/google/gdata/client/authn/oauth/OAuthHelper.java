@@ -683,7 +683,9 @@ public class OAuthHelper {
     }
   }
 
-  /** Returns whether the request is a Two-Legged OAuth request. */
+  /** Returns whether the request is a Two-Legged OAuth request.
+   * the oauthParameter type - 2LO is performed in TwoLeggedOAuthHelper now.
+   */
   private boolean containsUser(String requestUrl) {
     return requestUrl.contains(OAuthParameters.XOAUTH_REQUESTOR_ID_KEY);
   }

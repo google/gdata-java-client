@@ -1,5 +1,10 @@
 Google Data API - Release Notes
 
+Notes for v1.40.1
+-----------------
+o  Updated Project Hosting Data API.
+o  Updated Google Analytics Data API.
+
 Notes for v1.40.0
 -----------------
 o  Added Google Translator Tookkit Data API.

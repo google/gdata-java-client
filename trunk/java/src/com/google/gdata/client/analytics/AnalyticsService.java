@@ -19,22 +19,27 @@ package com.google.gdata.client.analytics;
 import com.google.gdata.client.AuthTokenFactory;
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Service;
+import com.google.gdata.data.analytics.AbPageVariationFeed;
 import com.google.gdata.data.analytics.AccountFeed;
+import com.google.gdata.data.analytics.CombinationFeed;
 import com.google.gdata.data.analytics.DataFeed;
+import com.google.gdata.data.analytics.ExperimentFeed;
+import com.google.gdata.data.analytics.SectionFeed;
+import com.google.gdata.data.analytics.VariationFeed;
 import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
 
 /**
  * Extends the basic {@link GoogleService} abstraction to define a service that
- * is preconfigured for access to the Analytics data API.
+ * is preconfigured for access to the Google Analytics Data Export API.
  *
  * 
  */
 public class AnalyticsService extends GoogleService {
 
   /**
-   * The abbreviated name of Analytics recognized by Google.  The service name
-   * is used when requesting an authentication token.
+   * The abbreviated name of Google Analytics Data Export API recognized by
+   * Google.  The service name is used when requesting an authentication token.
    */
   public static final String ANALYTICS_SERVICE = "analytics";
 
@@ -44,33 +49,42 @@ public class AnalyticsService extends GoogleService {
   public static final String ANALYTICS_SERVICE_VERSION = "GAnalytics-Java/" +
       AnalyticsService.class.getPackage().getImplementationVersion();
 
-  /**
-   * GData versions supported by Analytics Service.
-   */
+  /** GData versions supported by the Google Analytics Data Export API. */
   public static final class Versions {
 
-    /** Version 1 of the Analytics Data Export API, based on GData version 1. */
+    /** Version 1.  Based on GData version 1. */
     public static final Version V1 = new Version(AnalyticsService.class, "1.0",
         Service.Versions.V1);
 
-    /** Version 2 of the Analytics Data Export API. This version adds OAuth
-     * support and full compliance with the Atom Publishing Protocol,
+    /** Version 2.  This version adds OAuth support, fully complies with the
+     * Atom Publishing Protocol, upgrades OpenSearch to 1.1,
      * and is based on GData version 2. */
     public static final Version V2 = new Version(AnalyticsService.class, "2.0",
         Service.Versions.V2);
+
+    /** Version {@code 2.1}.  This version adds generalized account feeds,
+     * gd:kind attributes, advanced segment support, expanded goal information,
+     * and Website Optimizer support, and is based on GData version 2.1. */
+    public static final Version V2_1 = new Version(AnalyticsService.class,
+        "2.1", Service.Versions.V2_1);
+
+    /** Version {@code 2.2}.  This version adds generalized account feeds, and
+     * is based on GData version 2.1. */
+    public static final Version V2_2 = new Version(AnalyticsService.class,
+        "2.2", Service.Versions.V2_1);
 
     private Versions() {}
   }
 
   /**
-   * Default GData version used by the Analytics service.
+   * Default GData version used by the Google Analytics Data Export API.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(AnalyticsService.class, Versions.V2);
+      Service.initServiceVersion(AnalyticsService.class, Versions.V2_1);
 
   /**
-   * Constructs an instance connecting to the Analytics service for an
-   * application with the name {@code applicationName}.
+   * Constructs an instance connecting to the Google Analytics Data Export API
+   * for an application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -83,10 +97,10 @@ public class AnalyticsService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Analytics service for an
-   * application with the name {@code applicationName} and the given {@code
-   * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
-   * override the default factories.
+   * Constructs an instance connecting to the Google Analytics Data Export API
+   * for an application with the name {@code applicationName} and the given
+   * {@code GDataRequestFactory} and {@code AuthTokenFactory}. Use this
+   * constructor to override the default factories.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -104,9 +118,10 @@ public class AnalyticsService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Analytics service with name {@code
-   * serviceName} for an application with the name {@code applicationName}.  The
-   * service will authenticate at the provided {@code domainName}.
+   * Constructs an instance connecting to the Google Analytics Data Export API
+   * with name {@code serviceName} for an application with the name {@code
+   * applicationName}.  The service will authenticate at the provided {@code
+   * domainName}.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -128,18 +143,25 @@ public class AnalyticsService extends GoogleService {
   }
 
   /**
-   * Returns the current GData version used by the Analytics service.
+   * Returns the current GData version used by the Google Analytics Data Export
+   * API.
    */
   public static Version getVersion() {
     return VersionRegistry.get().getVersion(AnalyticsService.class);
   }
 
   /**
-   * Declare the extensions of the feeds for the Analytics service.
+   * Declare the extensions of the feeds for the Google Analytics Data Export
+   * API.
    */
   private void declareExtensions() {
+    new AbPageVariationFeed().declareExtensions(extProfile);
     new AccountFeed().declareExtensions(extProfile);
+    new CombinationFeed().declareExtensions(extProfile);
     new DataFeed().declareExtensions(extProfile);
+    new ExperimentFeed().declareExtensions(extProfile);
+    new SectionFeed().declareExtensions(extProfile);
+    new VariationFeed().declareExtensions(extProfile);
   }
 
 }
