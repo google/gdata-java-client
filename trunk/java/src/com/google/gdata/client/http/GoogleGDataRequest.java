@@ -27,6 +27,7 @@ import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.Version;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -60,6 +61,25 @@ public class GoogleGDataRequest extends HttpGDataRequest {
    */
   public static final String DISABLE_COOKIE_HANDLER_PROPERTY =
     "com.google.gdata.DisableCookieHandler";
+
+  /*
+   * Disables cookie handling when run in AppEngine. This is a no-op if run
+   * outside of AppEngine.
+   */
+  static {
+    try {
+      Class apiProxyClass = Class.forName(
+          "com.google.apphosting.api.ApiProxy");
+      if (apiProxyClass.getMethod(
+          "getCurrentEnvironment").invoke(null) != null) {
+        System.setProperty(DISABLE_COOKIE_HANDLER_PROPERTY, "true");
+      }
+    } catch (ClassNotFoundException e) {
+    } catch (IllegalAccessException e) {
+    } catch (InvocationTargetException e) {
+    } catch (NoSuchMethodException e) {
+    }
+  }
 
   /**
    * The GoogleGDataRequest.Factory class is a factory class for

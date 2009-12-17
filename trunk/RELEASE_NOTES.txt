@@ -1,5 +1,11 @@
 Google Data API - Release Notes
 
+Notes for v1.40.2
+-----------------
+o  Added support for 2 Legged OAuth authentication.
+o  Removed requirement to set com.google.gdata.DisableCookieHandler property
+   when running in Google App Engine environment.
+
 Notes for v1.40.1
 -----------------
 o  Updated Project Hosting Data API.
