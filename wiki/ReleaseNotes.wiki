@@ -8,6 +8,14 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.40.2 ==
+   * Added support for 2 Legged OAuth authentication.
+   * Removed requirement to set !com.google.gdata.DisableCookieHandler property when running in Google App Engine environment.
+
+== 1.40.1 ==
+   * Updated Project Hosting Data API.
+   * Updated Google Analytics Data API.
+
 == 1.40.0 ==
    * Added support for Google Translator Toolkit Data API.
    * Updated Google Finance Data API to use version 2 of !GData protocol.
