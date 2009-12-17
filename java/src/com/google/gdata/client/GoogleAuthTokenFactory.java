@@ -29,7 +29,9 @@ import com.google.gdata.client.GoogleService.TermsNotAgreedException;
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthParameters;
+import com.google.gdata.client.authn.oauth.OAuthParameters.OAuthType;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
+import com.google.gdata.client.authn.oauth.TwoLeggedOAuthHelper;
 import com.google.gdata.client.http.AuthSubUtil;
 import com.google.gdata.client.http.HttpAuthToken;
 import com.google.gdata.util.AuthenticationException;
@@ -166,7 +168,7 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
   public static class OAuthToken implements HttpAuthToken {
 
     OAuthParameters parameters;
-    GoogleOAuthHelper oauthHelper;
+    final OAuthSigner signer;
 
     /**
      * Create a new {@link OAuthToken} object.  Store the
@@ -183,7 +185,7 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
      */
     public OAuthToken(OAuthParameters parameters, OAuthSigner signer) {
       this.parameters = parameters;
-      oauthHelper = new GoogleOAuthHelper(signer);
+      this.signer = signer;
     }
 
     /**
@@ -196,8 +198,16 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
      */
     public String getAuthorizationHeader(URL requestUrl, String requestMethod) {
       try {
-        return oauthHelper.getAuthorizationHeader(requestUrl.toString(),
+        if (parameters.getOAuthType() == OAuthType.TWO_LEGGED_OAUTH) {
+          TwoLeggedOAuthHelper twoLeggedOAuthHelper
+              = new TwoLeggedOAuthHelper(signer, parameters);
+          return twoLeggedOAuthHelper.getAuthorizationHeader(requestUrl.toString(),
+              requestMethod);
+        } else {
+          GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(signer);
+          return oauthHelper.getAuthorizationHeader(requestUrl.toString(),
             requestMethod, parameters);
+        }
       } catch (OAuthException e) {
         throw new RuntimeException(e);
       }
