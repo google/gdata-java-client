@@ -73,6 +73,9 @@ public class SitesLink extends Link {
     public static final String REVISION = SitesNamespace.SITES_PREFIX +
         "revision";
 
+    /** Source sites link. */
+    public static final String SOURCE = SitesNamespace.SITES_PREFIX + "source";
+
   }
 
   /** MIME type of link target. */

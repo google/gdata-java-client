@@ -23,6 +23,8 @@ import com.google.gdata.data.MediaContent;
 import com.google.gdata.data.OutOfLineContent;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.XhtmlTextConstruct;
+import com.google.gdata.data.acl.AclEntry;
+import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.media.MediaFileSource;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.sites.ActivityFeed;
@@ -38,7 +40,10 @@ import com.google.gdata.data.sites.FileCabinetPageEntry;
 import com.google.gdata.data.sites.ListItemEntry;
 import com.google.gdata.data.sites.ListPageEntry;
 import com.google.gdata.data.sites.RevisionFeed;
+import com.google.gdata.data.sites.SiteFeed;
+import com.google.gdata.data.sites.SiteEntry;
 import com.google.gdata.data.sites.SitesLink;
+import com.google.gdata.data.sites.Theme;
 import com.google.gdata.data.sites.WebAttachmentEntry;
 import com.google.gdata.data.sites.WebPageEntry;
 import com.google.gdata.data.spreadsheet.Column;
@@ -209,6 +214,40 @@ public class SitesHelper {
       return this.scheme + "sites.google.com/feeds/activity/" + domain + "/" + siteName + "/";
     }
 
+    public String getSiteFeedUrl() {
+      return this.scheme + "sites.google.com/feeds/site/" + domain + "/";
+    }
+    
+    public String getAclFeedUrl(String siteName) {
+      return this.scheme + "sites.google.com/feeds/acl/site/" + domain + "/" + siteName + "/";
+    }
+
+    /**
+     * Fetches and displays the user's site feed.
+     */
+    public void getSiteFeed() throws IOException, ServiceException {
+      SiteFeed siteFeed = service.getFeed(
+          new URL(getSiteFeedUrl()), SiteFeed.class);
+      for (SiteEntry entry : siteFeed.getEntries()){
+        System.out.println("title: " + entry.getTitle().getPlainText());
+        System.out.println("site name: " + entry.getSiteName().getValue());
+        System.out.println("theme: " + entry.getTheme().getValue());
+        System.out.println("");
+      }
+    }
+
+    /**
+     * Fetches and displays a Site's acl feed.
+     */
+    public void getAclFeed(String siteName) throws IOException, ServiceException {
+      AclFeed aclFeed = service.getFeed(
+          new URL(getAclFeedUrl(siteName)), AclFeed.class);
+      for (AclEntry entry : aclFeed.getEntries()) {
+        System.out.println(entry.getScope().getValue() + " (" +
+                           entry.getScope().getType() + ") : " + entry.getRole().getValue());
+      }
+    }
+
     /**
      * Fetches and displays the Site's activity feed.
      */
@@ -226,7 +265,7 @@ public class SitesHelper {
     public void getRevisionFeed(String contentEntryId) throws IOException, ServiceException {
       URL url = new URL(getRevisionFeedUrl() + contentEntryId);
       RevisionFeed revisionFeed = service.getFeed(url, RevisionFeed.class);
-      for (BaseContentEntry<?> entry : revisionFeed.getEntries()){
+      for (BaseContentEntry<?> entry : revisionFeed.getEntries()) {
         System.out.println(entry.getTitle().getPlainText());
         System.out.println("  updated: " + entry.getUpdated().toUiString() + " by " +
             entry.getAuthors().get(0).getEmail());
@@ -365,6 +404,61 @@ public class SitesHelper {
       xml.setBlob(String.format(
           "content for %s", entry.getCategories().iterator().next().getLabel()));
       entry.setContent(new XhtmlTextConstruct(xml));
+    }
+
+    public SiteEntry createSite(String title, String summary)
+        throws MalformedURLException, IOException, ServiceException {
+      return createSite(title, summary, null);
+    }
+
+    /**
+     * Creates a new Google Sites.
+     *
+     * @param title A name for the site.
+     * @param summary A description for the site.
+     * @param theme A theme to create the site with.
+     * @return The created site entry.
+     * @throws ServiceException 
+     * @throws IOException 
+     * @throws MalformedURLException 
+     */
+    public SiteEntry createSite(String title, String summary, String theme)
+        throws MalformedURLException, IOException, ServiceException {
+      SiteEntry entry = new SiteEntry();
+      entry.setTitle(new PlainTextConstruct(title));
+      entry.setSummary(new PlainTextConstruct(summary));
+
+      // Set theme if user specified it.
+      if (theme !=  null) {
+        Theme tt = new Theme();
+        tt.setValue(theme);
+        entry.setTheme(tt);
+      }
+
+      return service.insert(new URL(getSiteFeedUrl()), entry);
+    }
+
+    /**
+     * Copies a Google Site from an existing site.
+     *
+     * @param title A title heading for the new site.
+     * @param summary A description for the site.
+     * @param theme A theme to create the site with.
+     * @param sourceHref The self link of the site entry to copy this site from.
+     *     If null, an empty site is created.
+     * @return The created site entry.
+     * @throws ServiceException 
+     * @throws IOException 
+     * @throws MalformedURLException 
+     */
+    public SiteEntry copySite(String title, String summary, String sourceHref)
+        throws MalformedURLException, IOException, ServiceException {
+      SiteEntry entry = new SiteEntry();
+      entry.setTitle(new PlainTextConstruct(title));
+      entry.setSummary(new PlainTextConstruct(summary));
+      entry.addLink(SitesLink.Rel.SOURCE, Link.Type.ATOM, sourceHref);
+
+      return service.insert(new URL(getSiteFeedUrl()), entry);
     }
 
     public BaseContentEntry<?> createPage(String kind, String title)

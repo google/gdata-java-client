@@ -88,10 +88,10 @@ public class QuotaBytesUsed extends Element {
     setValue(value);
   }
 
-   @Override
-   public QuotaBytesUsed lock() {
-     return (QuotaBytesUsed) super.lock();
-   }
+  @Override
+  public QuotaBytesUsed lock() {
+    return (QuotaBytesUsed) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class QuotaBytesUsed extends Element {
     }
     return result;
   }
-
 }
 
 

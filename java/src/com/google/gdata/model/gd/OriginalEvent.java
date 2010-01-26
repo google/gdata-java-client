@@ -96,10 +96,10 @@ public class OriginalEvent extends Element {
     super(key, source);
   }
 
-   @Override
-   public OriginalEvent lock() {
-     return (OriginalEvent) super.lock();
-   }
+  @Override
+  public OriginalEvent lock() {
+    return (OriginalEvent) super.lock();
+  }
 
   /**
    * Returns the URL of the original recurring event entry.
@@ -128,7 +128,7 @@ public class OriginalEvent extends Element {
    * @return whether it has the URL of the original recurring event entry
    */
   public boolean hasHref() {
-    return getHref() != null;
+    return super.hasAttribute(HREF);
   }
 
   /**
@@ -158,7 +158,7 @@ public class OriginalEvent extends Element {
    * @return whether it has the event ID of the original recurring event entry
    */
   public boolean hasOriginalId() {
-    return getOriginalId() != null;
+    return super.hasAttribute(ORIGINAL_ID);
   }
 
   /**
@@ -189,7 +189,6 @@ public class OriginalEvent extends Element {
   public boolean hasOriginalStartTime() {
     return super.hasElement(When.KEY);
   }
-
 
 }
 

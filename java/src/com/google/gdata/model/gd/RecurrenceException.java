@@ -90,10 +90,10 @@ public class RecurrenceException extends Element {
     super(key, source);
   }
 
-   @Override
-   public RecurrenceException lock() {
-     return (RecurrenceException) super.lock();
-   }
+  @Override
+  public RecurrenceException lock() {
+    return (RecurrenceException) super.lock();
+  }
 
   /**
    * Returns the nested entry providing the details about the exception.
@@ -155,9 +155,8 @@ public class RecurrenceException extends Element {
    * @return whether it has the whether the exception is specialized
    */
   public boolean hasSpecialized() {
-    return getSpecialized() != null;
+    return super.hasAttribute(SPECIALIZED);
   }
-
 
 }
 

@@ -94,10 +94,10 @@ public class Money extends Element {
     super(key, source);
   }
 
-   @Override
-   public Money lock() {
-     return (Money) super.lock();
-   }
+  @Override
+  public Money lock() {
+    return (Money) super.lock();
+  }
 
   /**
    * Returns the amount.
@@ -125,7 +125,7 @@ public class Money extends Element {
    * @return whether it has the amount
    */
   public boolean hasAmount() {
-    return getAmount() != null;
+    return super.hasAttribute(AMOUNT);
   }
 
   /**
@@ -154,7 +154,7 @@ public class Money extends Element {
    * @return whether it has the ISO4217 currency code
    */
   public boolean hasCurrencyCode() {
-    return getCurrencyCode() != null;
+    return super.hasAttribute(CURRENCY_CODE);
   }
 
   @Override
@@ -181,7 +181,6 @@ public class Money extends Element {
     }
     return result;
   }
-
 }
 
 

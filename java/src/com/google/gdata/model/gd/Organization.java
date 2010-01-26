@@ -130,10 +130,10 @@ public class Organization extends Element {
     super(key, source);
   }
 
-   @Override
-   public Organization lock() {
-     return (Organization) super.lock();
-   }
+  @Override
+  public Organization lock() {
+    return (Organization) super.lock();
+  }
 
   /**
    * Returns the label.
@@ -161,7 +161,7 @@ public class Organization extends Element {
    * @return whether it has the label
    */
   public boolean hasLabel() {
-    return getLabel() != null;
+    return super.hasAttribute(LABEL);
   }
 
   /**
@@ -338,7 +338,7 @@ public class Organization extends Element {
    * @return whether it has the whether this is the primary organization
    */
   public boolean hasPrimary() {
-    return getPrimary() != null;
+    return super.hasAttribute(PRIMARY);
   }
 
   /**
@@ -367,7 +367,7 @@ public class Organization extends Element {
    * @return whether it has the organization type
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   /**
@@ -398,7 +398,6 @@ public class Organization extends Element {
   public boolean hasWhere() {
     return super.hasElement(Where.KEY);
   }
-
 
 }
 

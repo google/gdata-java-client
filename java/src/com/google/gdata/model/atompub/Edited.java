@@ -88,10 +88,10 @@ public class Edited extends Element {
     setValue(value);
   }
 
-   @Override
-   public Edited lock() {
-     return (Edited) super.lock();
-   }
+  @Override
+  public Edited lock() {
+    return (Edited) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class Edited extends Element {
     }
     return result;
   }
-
 }
 
 

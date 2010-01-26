@@ -84,10 +84,10 @@ public class RecurrenceExceptionEntryLink extends EntryLink {
     super(key, source);
   }
 
-   @Override
-   public RecurrenceExceptionEntryLink lock() {
-     return (RecurrenceExceptionEntryLink) super.lock();
-   }
+  @Override
+  public RecurrenceExceptionEntryLink lock() {
+    return (RecurrenceExceptionEntryLink) super.lock();
+  }
 
   /**
    * Returns the nested entry.
@@ -115,11 +115,9 @@ public class RecurrenceExceptionEntryLink extends EntryLink {
    *
    * @return whether it has the nested entry
    */
-  @Override
   public boolean hasEntry() {
     return super.hasElement(RecurrenceExceptionEntry.KEY);
   }
-
 
 }
 

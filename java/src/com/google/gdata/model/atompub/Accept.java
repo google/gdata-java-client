@@ -87,10 +87,10 @@ public class Accept extends Element {
     setValue(value);
   }
 
-   @Override
-   public Accept lock() {
-     return (Accept) super.lock();
-   }
+  @Override
+  public Accept lock() {
+    return (Accept) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -141,7 +141,6 @@ public class Accept extends Element {
     }
     return result;
   }
-
 }
 
 

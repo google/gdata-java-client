@@ -83,11 +83,10 @@ public class LastModifiedBy extends Person {
     super(key, source);
   }
 
-   @Override
-   public LastModifiedBy lock() {
-     return (LastModifiedBy) super.lock();
-   }
-
+  @Override
+  public LastModifiedBy lock() {
+    return (LastModifiedBy) super.lock();
+  }
 
 }
 

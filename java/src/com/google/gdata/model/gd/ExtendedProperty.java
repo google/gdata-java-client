@@ -121,10 +121,10 @@ public class ExtendedProperty extends Element {
     super(key, source);
   }
 
-   @Override
-   public ExtendedProperty lock() {
-     return (ExtendedProperty) super.lock();
-   }
+  @Override
+  public ExtendedProperty lock() {
+    return (ExtendedProperty) super.lock();
+  }
 
   /**
    * Returns the name of the property expressed as a URI.
@@ -153,7 +153,7 @@ public class ExtendedProperty extends Element {
    * @return whether it has the name of the property expressed as a URI
    */
   public boolean hasName() {
-    return getName() != null;
+    return super.hasAttribute(NAME);
   }
 
   /**
@@ -185,7 +185,7 @@ public class ExtendedProperty extends Element {
    *     property
    */
   public boolean hasRealm() {
-    return getRealm() != null;
+    return super.hasAttribute(REALM);
   }
 
   /**
@@ -214,7 +214,7 @@ public class ExtendedProperty extends Element {
    * @return whether it has the property value
    */
   public boolean hasValue() {
-    return getValue() != null;
+    return super.hasAttribute(VALUE);
   }
 
   @Override
@@ -245,7 +245,6 @@ public class ExtendedProperty extends Element {
     }
     return result;
   }
-
 }
 
 

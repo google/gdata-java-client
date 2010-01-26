@@ -206,10 +206,10 @@ public class StructuredPostalAddress extends Element {
     super(key, source);
   }
 
-   @Override
-   public StructuredPostalAddress lock() {
-     return (StructuredPostalAddress) super.lock();
-   }
+  @Override
+  public StructuredPostalAddress lock() {
+    return (StructuredPostalAddress) super.lock();
+  }
 
   /**
    * Returns the Used in work addresses.  Also for 'in care of' or 'c/o'.
@@ -392,7 +392,7 @@ public class StructuredPostalAddress extends Element {
    * @return whether it has the Simple string value used to name this address
    */
   public boolean hasLabel() {
-    return getLabel() != null;
+    return super.hasAttribute(LABEL);
   }
 
   /**
@@ -421,7 +421,7 @@ public class StructuredPostalAddress extends Element {
    * @return whether it has the The mail class
    */
   public boolean hasMailClass() {
-    return getMailClass() != null;
+    return super.hasAttribute(MAIL_CLASS);
   }
 
   /**
@@ -539,7 +539,7 @@ public class StructuredPostalAddress extends Element {
    * @return whether it has the whether this is the primary postal address
    */
   public boolean hasPrimary() {
-    return getPrimary() != null;
+    return super.hasAttribute(PRIMARY);
   }
 
   /**
@@ -603,7 +603,7 @@ public class StructuredPostalAddress extends Element {
    * @return whether it has the the postal address type
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   /**
@@ -700,9 +700,8 @@ public class StructuredPostalAddress extends Element {
    * @return whether it has the The context for the address use
    */
   public boolean hasUsage() {
-    return getUsage() != null;
+    return super.hasAttribute(USAGE);
   }
-
 
 }
 

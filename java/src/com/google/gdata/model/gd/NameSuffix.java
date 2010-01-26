@@ -88,10 +88,10 @@ public class NameSuffix extends Element {
     setValue(value);
   }
 
-   @Override
-   public NameSuffix lock() {
-     return (NameSuffix) super.lock();
-   }
+  @Override
+  public NameSuffix lock() {
+    return (NameSuffix) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class NameSuffix extends Element {
     }
     return result;
   }
-
 }
 
 

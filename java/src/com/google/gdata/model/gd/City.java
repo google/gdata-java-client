@@ -87,10 +87,10 @@ public class City extends Element {
     setValue(value);
   }
 
-   @Override
-   public City lock() {
-     return (City) super.lock();
-   }
+  @Override
+  public City lock() {
+    return (City) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -141,7 +141,6 @@ public class City extends Element {
     }
     return result;
   }
-
 }
 
 

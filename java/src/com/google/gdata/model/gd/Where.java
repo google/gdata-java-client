@@ -131,10 +131,10 @@ public class Where extends Element {
     super(key, source);
   }
 
-   @Override
-   public Where lock() {
-     return (Where) super.lock();
-   }
+  @Override
+  public Where lock() {
+    return (Where) super.lock();
+  }
 
   /**
    * Returns the nested person or venue (Contact) entry.
@@ -198,7 +198,7 @@ public class Where extends Element {
    *     location in case multiple locations may be present
    */
   public boolean hasLabel() {
-    return getLabel() != null;
+    return super.hasAttribute(LABEL);
   }
 
   /**
@@ -227,7 +227,7 @@ public class Where extends Element {
    * @return whether it has the meaning of this location
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   /**
@@ -256,9 +256,8 @@ public class Where extends Element {
    * @return whether it has the text description of the place
    */
   public boolean hasValueString() {
-    return getValueString() != null;
+    return super.hasAttribute(VALUE_STRING);
   }
-
 
 }
 

@@ -88,10 +88,10 @@ public class OrgDepartment extends Element {
     setValue(value);
   }
 
-   @Override
-   public OrgDepartment lock() {
-     return (OrgDepartment) super.lock();
-   }
+  @Override
+  public OrgDepartment lock() {
+    return (OrgDepartment) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class OrgDepartment extends Element {
     }
     return result;
   }
-
 }
 
 

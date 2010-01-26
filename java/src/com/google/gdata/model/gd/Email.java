@@ -141,10 +141,10 @@ public class Email extends Element {
     super(key, source);
   }
 
-   @Override
-   public Email lock() {
-     return (Email) super.lock();
-   }
+  @Override
+  public Email lock() {
+    return (Email) super.lock();
+  }
 
   /**
    * Returns the email address.
@@ -172,7 +172,7 @@ public class Email extends Element {
    * @return whether it has the email address
    */
   public boolean hasAddress() {
-    return getAddress() != null;
+    return super.hasAttribute(ADDRESS);
   }
 
   /**
@@ -201,7 +201,7 @@ public class Email extends Element {
    * @return whether it has the displayName
    */
   public boolean hasDisplayName() {
-    return getDisplayName() != null;
+    return super.hasAttribute(DISPLAY_NAME);
   }
 
   /**
@@ -230,7 +230,7 @@ public class Email extends Element {
    * @return whether it has the label
    */
   public boolean hasLabel() {
-    return getLabel() != null;
+    return super.hasAttribute(LABEL);
   }
 
   /**
@@ -260,7 +260,7 @@ public class Email extends Element {
    * @return whether it has the whether this is the primary email address
    */
   public boolean hasPrimary() {
-    return getPrimary() != null;
+    return super.hasAttribute(PRIMARY);
   }
 
   /**
@@ -289,7 +289,7 @@ public class Email extends Element {
    * @return whether it has the email type
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   @Override
@@ -328,7 +328,6 @@ public class Email extends Element {
     }
     return result;
   }
-
 }
 
 

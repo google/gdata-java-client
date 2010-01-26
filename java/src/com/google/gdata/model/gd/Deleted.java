@@ -77,11 +77,10 @@ public class Deleted extends Element {
     super(key, source);
   }
 
-   @Override
-   public Deleted lock() {
-     return (Deleted) super.lock();
-   }
-
+  @Override
+  public Deleted lock() {
+    return (Deleted) super.lock();
+  }
 
 }
 

@@ -108,10 +108,10 @@ public class RecurrenceExceptionEntry extends Entry {
     super(key, source);
   }
 
-   @Override
-   public RecurrenceExceptionEntry lock() {
-     return (RecurrenceExceptionEntry) super.lock();
-   }
+  @Override
+  public RecurrenceExceptionEntry lock() {
+    return (RecurrenceExceptionEntry) super.lock();
+  }
 
   /**
    * Returns the Comments class.
@@ -274,7 +274,7 @@ public class RecurrenceExceptionEntry extends Entry {
    * @param when time period description
    */
   public RecurrenceExceptionEntry addWhen(When when) {
-    super.addElement(when);
+    super.addElement(When.KEY, when);
     return this;
   }
 
@@ -319,7 +319,7 @@ public class RecurrenceExceptionEntry extends Entry {
    * @param where place description
    */
   public RecurrenceExceptionEntry addWhere(Where where) {
-    super.addElement(where);
+    super.addElement(Where.KEY, where);
     return this;
   }
 
@@ -364,7 +364,7 @@ public class RecurrenceExceptionEntry extends Entry {
    * @param who person description
    */
   public RecurrenceExceptionEntry addWho(Who who) {
-    super.addElement(who);
+    super.addElement(Who.KEY, who);
     return this;
   }
 
@@ -393,7 +393,6 @@ public class RecurrenceExceptionEntry extends Entry {
   public boolean hasWho() {
     return super.hasElement(Who.KEY);
   }
-
 
 }
 

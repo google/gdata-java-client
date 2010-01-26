@@ -89,10 +89,10 @@ public class FormattedAddress extends Element {
     setValue(value);
   }
 
-   @Override
-   public FormattedAddress lock() {
-     return (FormattedAddress) super.lock();
-   }
+  @Override
+  public FormattedAddress lock() {
+    return (FormattedAddress) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -143,7 +143,6 @@ public class FormattedAddress extends Element {
     }
     return result;
   }
-
 }
 
 

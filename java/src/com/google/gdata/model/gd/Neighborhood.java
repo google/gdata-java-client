@@ -88,10 +88,10 @@ public class Neighborhood extends Element {
     setValue(value);
   }
 
-   @Override
-   public Neighborhood lock() {
-     return (Neighborhood) super.lock();
-   }
+  @Override
+  public Neighborhood lock() {
+    return (Neighborhood) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class Neighborhood extends Element {
     }
     return result;
   }
-
 }
 
 

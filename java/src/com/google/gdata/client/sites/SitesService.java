@@ -19,6 +19,7 @@ package com.google.gdata.client.sites;
 import com.google.gdata.client.AuthTokenFactory;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.media.MediaService;
+import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.sites.ActivityFeed;
 import com.google.gdata.data.sites.AnnouncementEntry;
@@ -35,6 +36,7 @@ import com.google.gdata.data.sites.ListPageEntry;
 import com.google.gdata.data.sites.MoveActivityEntry;
 import com.google.gdata.data.sites.RecoveryActivityEntry;
 import com.google.gdata.data.sites.RevisionFeed;
+import com.google.gdata.data.sites.SiteFeed;
 import com.google.gdata.data.sites.WebAttachmentEntry;
 import com.google.gdata.data.sites.WebPageEntry;
 import com.google.gdata.util.Version;
@@ -67,6 +69,10 @@ public class SitesService extends MediaService {
     public static final Version V1 = new Version(SitesService.class, "1.0",
         Service.Versions.V2);
 
+    /** Version {@code 1.1}. */
+    public static final Version V1_1 = new Version(SitesService.class, "1.1",
+        Service.Versions.V2);
+
     private Versions() {}
   }
 
@@ -74,7 +80,7 @@ public class SitesService extends MediaService {
    * Default GData version used by the Google Sites Data API.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(SitesService.class, Versions.V1);
+      Service.initServiceVersion(SitesService.class, Versions.V1_1);
 
   /**
    * Constructs an instance connecting to the Google Sites Data API for an
@@ -147,6 +153,11 @@ public class SitesService extends MediaService {
    * Declare the extensions of the feeds for the Google Sites Data API.
    */
   private void declareExtensions() {
+    new AclFeed().declareExtensions(extProfile);
+    new SiteFeed().declareExtensions(extProfile);
+    /* Declarations for extensions that need to be handled as specific type
+     * should be done before call to {@see ExtensionProfile#setAutoExtending}.
+     * Order of declaration is important. */
     extProfile.setAutoExtending(true);
     new ActivityFeed().declareExtensions(extProfile);
     new AnnouncementEntry().declareExtensions(extProfile);

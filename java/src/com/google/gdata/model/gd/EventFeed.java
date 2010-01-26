@@ -113,16 +113,15 @@ public class EventFeed extends Feed {
     super(key, source);
   }
 
-   @Override
-   public EventFeed lock() {
-     return (EventFeed) super.lock();
-   }
+  @Override
+  public EventFeed lock() {
+    return (EventFeed) super.lock();
+  }
 
   @Override
   public List<? extends EventEntry> getEntries() {
     return getEntries(EventEntry.KEY);
   }
-
 
 }
 

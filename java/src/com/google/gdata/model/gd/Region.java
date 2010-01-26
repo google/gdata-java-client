@@ -88,10 +88,10 @@ public class Region extends Element {
     setValue(value);
   }
 
-   @Override
-   public Region lock() {
-     return (Region) super.lock();
-   }
+  @Override
+  public Region lock() {
+    return (Region) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class Region extends Element {
     }
     return result;
   }
-
 }
 
 

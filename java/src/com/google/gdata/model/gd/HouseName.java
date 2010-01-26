@@ -88,10 +88,10 @@ public class HouseName extends Element {
     setValue(value);
   }
 
-   @Override
-   public HouseName lock() {
-     return (HouseName) super.lock();
-   }
+  @Override
+  public HouseName lock() {
+    return (HouseName) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class HouseName extends Element {
     }
     return result;
   }
-
 }
 
 

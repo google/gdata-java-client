@@ -207,10 +207,10 @@ public class PhoneNumber extends Element {
     setValue(value);
   }
 
-   @Override
-   public PhoneNumber lock() {
-     return (PhoneNumber) super.lock();
-   }
+  @Override
+  public PhoneNumber lock() {
+    return (PhoneNumber) super.lock();
+  }
 
   /**
    * Returns the simple string value used to name this phone number.
@@ -241,7 +241,7 @@ public class PhoneNumber extends Element {
    *     number
    */
   public boolean hasLabel() {
-    return getLabel() != null;
+    return super.hasAttribute(LABEL);
   }
 
   /**
@@ -271,7 +271,7 @@ public class PhoneNumber extends Element {
    * @return whether it has the whether this is the primary phone number
    */
   public boolean hasPrimary() {
-    return getPrimary() != null;
+    return super.hasAttribute(PRIMARY);
   }
 
   /**
@@ -303,7 +303,7 @@ public class PhoneNumber extends Element {
    *     phone number
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   /**
@@ -367,7 +367,6 @@ public class PhoneNumber extends Element {
     }
     return result;
   }
-
 }
 
 

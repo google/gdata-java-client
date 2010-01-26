@@ -87,10 +87,10 @@ public class Street extends Element {
     setValue(value);
   }
 
-   @Override
-   public Street lock() {
-     return (Street) super.lock();
-   }
+  @Override
+  public Street lock() {
+    return (Street) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -141,7 +141,6 @@ public class Street extends Element {
     }
     return result;
   }
-
 }
 
 

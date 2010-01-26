@@ -166,10 +166,10 @@ public class Who extends Element {
     super(key, source);
   }
 
-   @Override
-   public Who lock() {
-     return (Who) super.lock();
-   }
+  @Override
+  public Who lock() {
+    return (Who) super.lock();
+  }
 
   /**
    * Returns the event attendee status.
@@ -255,7 +255,7 @@ public class Who extends Element {
    * @return whether it has the email address
    */
   public boolean hasEmail() {
-    return getEmail() != null;
+    return super.hasAttribute(EMAIL);
   }
 
   /**
@@ -318,7 +318,7 @@ public class Who extends Element {
    *     the contained person
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   /**
@@ -353,9 +353,8 @@ public class Who extends Element {
    *     representation of this person
    */
   public boolean hasValueString() {
-    return getValueString() != null;
+    return super.hasAttribute(VALUE_STRING);
   }
-
 
 }
 

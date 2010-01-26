@@ -87,10 +87,10 @@ public class Partial extends Element {
     super(key, source);
   }
 
-   @Override
-   public Partial lock() {
-     return (Partial) super.lock();
-   }
+  @Override
+  public Partial lock() {
+    return (Partial) super.lock();
+  }
 
   /**
    * Returns the fields selection for this partial representation.
@@ -120,7 +120,7 @@ public class Partial extends Element {
    * @return whether it has the fields selection for this partial representation
    */
   public boolean hasFields() {
-    return getFields() != null;
+    return super.hasAttribute(FIELDS);
   }
 
   @Override
@@ -143,7 +143,6 @@ public class Partial extends Element {
     }
     return result;
   }
-
 }
 
 

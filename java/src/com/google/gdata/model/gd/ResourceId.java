@@ -89,10 +89,10 @@ public class ResourceId extends Element {
     setValue(value);
   }
 
-   @Override
-   public ResourceId lock() {
-     return (ResourceId) super.lock();
-   }
+  @Override
+  public ResourceId lock() {
+    return (ResourceId) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -143,7 +143,6 @@ public class ResourceId extends Element {
     }
     return result;
   }
-
 }
 
 

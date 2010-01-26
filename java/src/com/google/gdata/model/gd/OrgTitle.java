@@ -88,10 +88,10 @@ public class OrgTitle extends Element {
     setValue(value);
   }
 
-   @Override
-   public OrgTitle lock() {
-     return (OrgTitle) super.lock();
-   }
+  @Override
+  public OrgTitle lock() {
+    return (OrgTitle) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class OrgTitle extends Element {
     }
     return result;
   }
-
 }
 
 

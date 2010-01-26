@@ -88,10 +88,10 @@ public class NamePrefix extends Element {
     setValue(value);
   }
 
-   @Override
-   public NamePrefix lock() {
-     return (NamePrefix) super.lock();
-   }
+  @Override
+  public NamePrefix lock() {
+    return (NamePrefix) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class NamePrefix extends Element {
     }
     return result;
   }
-
 }
 
 
