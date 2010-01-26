@@ -89,10 +89,10 @@ public class OrgJobDescription extends Element {
     setValue(value);
   }
 
-   @Override
-   public OrgJobDescription lock() {
-     return (OrgJobDescription) super.lock();
-   }
+  @Override
+  public OrgJobDescription lock() {
+    return (OrgJobDescription) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -143,7 +143,6 @@ public class OrgJobDescription extends Element {
     }
     return result;
   }
-
 }
 
 

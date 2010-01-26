@@ -191,10 +191,10 @@ public class Im extends Element {
     super(key, source);
   }
 
-   @Override
-   public Im lock() {
-     return (Im) super.lock();
-   }
+  @Override
+  public Im lock() {
+    return (Im) super.lock();
+  }
 
   /**
    * Returns the IM address.
@@ -222,7 +222,7 @@ public class Im extends Element {
    * @return whether it has the IM address
    */
   public boolean hasAddress() {
-    return getAddress() != null;
+    return super.hasAttribute(ADDRESS);
   }
 
   /**
@@ -251,7 +251,7 @@ public class Im extends Element {
    * @return whether it has the label
    */
   public boolean hasLabel() {
-    return getLabel() != null;
+    return super.hasAttribute(LABEL);
   }
 
   /**
@@ -283,7 +283,7 @@ public class Im extends Element {
    *     address
    */
   public boolean hasPrimary() {
-    return getPrimary() != null;
+    return super.hasAttribute(PRIMARY);
   }
 
   /**
@@ -312,7 +312,7 @@ public class Im extends Element {
    * @return whether it has the im protocol
    */
   public boolean hasProtocol() {
-    return getProtocol() != null;
+    return super.hasAttribute(PROTOCOL);
   }
 
   /**
@@ -341,7 +341,7 @@ public class Im extends Element {
    * @return whether it has the im type
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   @Override
@@ -380,7 +380,6 @@ public class Im extends Element {
     }
     return result;
   }
-
 }
 
 

@@ -113,16 +113,15 @@ public class MessageFeed extends Feed {
     super(key, source);
   }
 
-   @Override
-   public MessageFeed lock() {
-     return (MessageFeed) super.lock();
-   }
+  @Override
+  public MessageFeed lock() {
+    return (MessageFeed) super.lock();
+  }
 
   @Override
   public List<? extends MessageEntry> getEntries() {
     return getEntries(MessageEntry.KEY);
   }
-
 
 }
 

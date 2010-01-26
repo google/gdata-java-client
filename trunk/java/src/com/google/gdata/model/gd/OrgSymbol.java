@@ -88,10 +88,10 @@ public class OrgSymbol extends Element {
     setValue(value);
   }
 
-   @Override
-   public OrgSymbol lock() {
-     return (OrgSymbol) super.lock();
-   }
+  @Override
+  public OrgSymbol lock() {
+    return (OrgSymbol) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class OrgSymbol extends Element {
     }
     return result;
   }
-
 }
 
 

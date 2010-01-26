@@ -80,10 +80,10 @@ public class Comments extends Element {
     super(key, source);
   }
 
-   @Override
-   public Comments lock() {
-     return (Comments) super.lock();
-   }
+  @Override
+  public Comments lock() {
+    return (Comments) super.lock();
+  }
 
   /**
    * Returns the nested feed link.
@@ -113,7 +113,6 @@ public class Comments extends Element {
   public boolean hasFeedLink() {
     return super.hasElement(FeedLink.KEY);
   }
-
 
 }
 

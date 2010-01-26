@@ -1,5 +1,9 @@
 Google Data API - Release Notes
 
+Notes for v1.40.3
+-----------------
+o  Updated Google Sites API to include sites and user access control feeds.
+
 Notes for v1.40.2
 -----------------
 o  Added support for 2 Legged OAuth authentication.

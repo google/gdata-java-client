@@ -119,10 +119,10 @@ public class AttendeeStatus extends Element {
     super(key, source);
   }
 
-   @Override
-   public AttendeeStatus lock() {
-     return (AttendeeStatus) super.lock();
-   }
+  @Override
+  public AttendeeStatus lock() {
+    return (AttendeeStatus) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -150,7 +150,7 @@ public class AttendeeStatus extends Element {
    * @return whether it has the value
    */
   public boolean hasValue() {
-    return getValue() != null;
+    return super.hasAttribute(VALUE);
   }
 
   @Override
@@ -173,7 +173,6 @@ public class AttendeeStatus extends Element {
     }
     return result;
   }
-
 }
 
 

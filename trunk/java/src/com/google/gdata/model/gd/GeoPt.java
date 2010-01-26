@@ -116,10 +116,10 @@ public class GeoPt extends Element {
     super(key, source);
   }
 
-   @Override
-   public GeoPt lock() {
-     return (GeoPt) super.lock();
-   }
+  @Override
+  public GeoPt lock() {
+    return (GeoPt) super.lock();
+  }
 
   /**
    * Returns the Elevation.
@@ -147,7 +147,7 @@ public class GeoPt extends Element {
    * @return whether it has the Elevation
    */
   public boolean hasElev() {
-    return getElev() != null;
+    return super.hasAttribute(ELEV);
   }
 
   /**
@@ -176,7 +176,7 @@ public class GeoPt extends Element {
    * @return whether it has the Label
    */
   public boolean hasLabel() {
-    return getLabel() != null;
+    return super.hasAttribute(LABEL);
   }
 
   /**
@@ -205,7 +205,7 @@ public class GeoPt extends Element {
    * @return whether it has the Latitude
    */
   public boolean hasLat() {
-    return getLat() != null;
+    return super.hasAttribute(LAT);
   }
 
   /**
@@ -234,7 +234,7 @@ public class GeoPt extends Element {
    * @return whether it has the Longitude
    */
   public boolean hasLon() {
-    return getLon() != null;
+    return super.hasAttribute(LON);
   }
 
   /**
@@ -263,7 +263,7 @@ public class GeoPt extends Element {
    * @return whether it has the Time
    */
   public boolean hasTime() {
-    return getTime() != null;
+    return super.hasAttribute(TIME);
   }
 
   @Override
@@ -302,7 +302,6 @@ public class GeoPt extends Element {
     }
     return result;
   }
-
 }
 
 

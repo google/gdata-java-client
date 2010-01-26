@@ -88,10 +88,10 @@ public class Recurrence extends Element {
     setValue(value);
   }
 
-   @Override
-   public Recurrence lock() {
-     return (Recurrence) super.lock();
-   }
+  @Override
+  public Recurrence lock() {
+    return (Recurrence) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class Recurrence extends Element {
     }
     return result;
   }
-
 }
 
 

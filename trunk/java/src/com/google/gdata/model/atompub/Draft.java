@@ -130,10 +130,10 @@ public class Draft extends Element {
     setValue(value);
   }
 
-   @Override
-   public Draft lock() {
-     return (Draft) super.lock();
-   }
+  @Override
+  public Draft lock() {
+    return (Draft) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -184,7 +184,6 @@ public class Draft extends Element {
     }
     return result;
   }
-
 }
 
 

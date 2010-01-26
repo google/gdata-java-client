@@ -19,6 +19,7 @@ package sample.sites;
 import sample.util.SimpleCommandLineParser;
 import com.google.gdata.data.sites.AttachmentEntry;
 import com.google.gdata.data.sites.BaseContentEntry;
+import com.google.gdata.data.sites.SiteEntry;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.util.ServiceException;
@@ -38,7 +39,7 @@ import java.net.URL;
 public class SitesDemo {
   private SitesHelper sitesHelper;
 
-  public static final String APP_NAME = "google-JavaSitesClientSample-v1.0";
+  public static final String APP_NAME = "google-JavaSitesClientSample-v1.1";
 
   /**
    * The message for displaying the usage parameters.
@@ -61,12 +62,15 @@ public class SitesDemo {
       "This app lets you fetch, upload, and download content to/from Google Sites.",
       "Type 'help' for a list of commands.", ""
       };
-  
+
   /**
    * Help on all available commands.
    */
   private static final String[] COMMAND_HELP_MESSAGE = {
       "Commands:",
+      "    sites                                             [[lists the user's sites]]",
+      "    newsite <title> <description> [theme]             [[creates a new Google Site]]",
+      "    copysite <title> <description> <source site>      [[copies an existing Google Site]]",
       "    content [all|kind|kind1,kind2,kind3,...]          [[lists the Site content]]",
       "    activity                                          [[lists recent Site activity]]",
       "    create <kind> <title> [parentEntryId]             [[create a new page]]",
@@ -77,6 +81,8 @@ public class SitesDemo {
                                                              + "Site's attachments to the folder "
                                                              + "specified by file_path]]",
       "    revisions <entryId>                               [[lists revisions of an page/item]]",
+      "    acls <siteName>                                   [[lists the sharing permissions "
+                                                             + "for a site]]",
       "",
       "    kinds                                             [[lists possible values for page "
                                                              + "kinds]]",
@@ -102,7 +108,7 @@ public class SitesDemo {
     sitesHelper = new SitesHelper(appName, domain, siteName, enableLogging, useSsl);
     sitesHelper.login(username, password);
   }
-  
+
   /**
    * Constructor
    *
@@ -118,7 +124,7 @@ public class SitesDemo {
     sitesHelper = new SitesHelper(appName, domain, siteName, enableLogging, useSsl);
     sitesHelper.login(authSubToken);
   }
-  
+
   /**
    * Prints out a given message.
    *
@@ -128,7 +134,7 @@ public class SitesDemo {
   private static void printMessage(String[] msg) {
     printMessage(msg, true);
   }
-  
+
   /**
    * Prints out a given message.
    *
@@ -144,7 +150,7 @@ public class SitesDemo {
       }
     }
   }
-  
+
   /**
    * Prints out the supported page kinds.
    */
@@ -170,7 +176,42 @@ public class SitesDemo {
     String[] args = parseCommand(reader.readLine());
     String name = args[0];
 
-    if (name.equals("content")) {
+    if (name.equals("sites")) {
+      sitesHelper.getSiteFeed();
+
+    } else if (name.equals("newsite")) {
+      if (args.length < 3) {
+        System.out.flush();
+        throw new SitesException("Wrong number of args");
+      }
+
+      SiteEntry siteEntry = null;
+
+      if (args.length == 4) {
+        siteEntry = sitesHelper.createSite(args[1], args[2], args[3]);
+      } else if (args.length == 3) {
+        siteEntry =  sitesHelper.createSite(args[1], args[2]);
+      }
+
+      System.out.println("Created!");
+      if (siteEntry.getHtmlLink() != null) {
+        System.out.println("View it at " + siteEntry.getHtmlLink().getHref());
+      }
+
+    } else if (name.equals("copysite")) {
+      if (args.length < 4) {
+        System.out.flush();
+        throw new SitesException("Wrong number of args");
+      }
+
+      SiteEntry siteEntry =  siteEntry = sitesHelper.copySite(args[1], args[2], args[3]);
+
+      System.out.println("Created!");
+      if (siteEntry.getHtmlLink() != null) {
+        System.out.println("View it at " + siteEntry.getHtmlLink().getHref());
+      }
+
+    } else if (name.equals("content")) {
       if (args.length == 1) {
         sitesHelper.listSiteContents("all");
       } else {
@@ -254,6 +295,13 @@ public class SitesDemo {
 
       sitesHelper.getRevisionFeed(args[1]);
 
+    } else if (name.equals("acls")) {
+      if (args.length == 1) {
+        throw new SitesException("Wrong number of args");
+      }
+
+      sitesHelper.getAclFeed(args[1]);
+
     } else if (name.equals("kinds")) {
       listSupportedKinds();
 
@@ -289,7 +337,7 @@ public class SitesDemo {
     // Split into n args using a space as the separator.
     return command.trim().split(" ");
   }
-       
+
   /**
    * Starts up the demo and prompts for commands.
    *
@@ -334,17 +382,17 @@ public class SitesDemo {
     boolean useSsl = parser.containsKey("ssl");
     boolean help = parser.containsKey("help", "h");
     boolean logItUp = parser.containsKey("log", "l");
-    
+
     if (siteName == null || help) {
       printMessage(USAGE_MESSAGE);
       System.exit(1);
     }
-    
+
     // If domain is set, use "site" for a non-Google Apps hosted Site.
     if (domain == null) {
       domain = "site";
     }
-    
+
     SitesDemo demo = null;
     try {
       if (username != null && password != null) {
@@ -365,5 +413,3 @@ public class SitesDemo {
     }
   }
 }
-
-

@@ -98,10 +98,10 @@ public class FullName extends Element {
     setValue(value);
   }
 
-   @Override
-   public FullName lock() {
-     return (FullName) super.lock();
-   }
+  @Override
+  public FullName lock() {
+    return (FullName) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -158,7 +158,7 @@ public class FullName extends Element {
    * @return whether it has the pronunciation help
    */
   public boolean hasYomi() {
-    return getYomi() != null;
+    return super.hasAttribute(YOMI);
   }
 
   @Override
@@ -185,7 +185,6 @@ public class FullName extends Element {
     }
     return result;
   }
-
 }
 
 

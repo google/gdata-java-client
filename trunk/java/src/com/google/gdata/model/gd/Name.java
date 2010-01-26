@@ -85,10 +85,10 @@ public class Name extends Element {
     super(key, source);
   }
 
-   @Override
-   public Name lock() {
-     return (Name) super.lock();
-   }
+  @Override
+  public Name lock() {
+    return (Name) super.lock();
+  }
 
   /**
    * Returns the additional name.
@@ -263,7 +263,6 @@ public class Name extends Element {
   public boolean hasNameSuffix() {
     return super.hasElement(NameSuffix.KEY);
   }
-
 
 }
 

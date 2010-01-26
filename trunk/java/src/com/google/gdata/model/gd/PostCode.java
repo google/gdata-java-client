@@ -88,10 +88,10 @@ public class PostCode extends Element {
     setValue(value);
   }
 
-   @Override
-   public PostCode lock() {
-     return (PostCode) super.lock();
-   }
+  @Override
+  public PostCode lock() {
+    return (PostCode) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class PostCode extends Element {
     }
     return result;
   }
-
 }
 
 

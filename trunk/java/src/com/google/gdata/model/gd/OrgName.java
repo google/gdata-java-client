@@ -97,10 +97,10 @@ public class OrgName extends Element {
     setValue(value);
   }
 
-   @Override
-   public OrgName lock() {
-     return (OrgName) super.lock();
-   }
+  @Override
+  public OrgName lock() {
+    return (OrgName) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -157,7 +157,7 @@ public class OrgName extends Element {
    * @return whether it has the yomi name of organization
    */
   public boolean hasYomi() {
-    return getYomi() != null;
+    return super.hasAttribute(YOMI);
   }
 
   @Override
@@ -184,7 +184,6 @@ public class OrgName extends Element {
     }
     return result;
   }
-
 }
 
 

@@ -87,10 +87,10 @@ public class PoBox extends Element {
     setValue(value);
   }
 
-   @Override
-   public PoBox lock() {
-     return (PoBox) super.lock();
-   }
+  @Override
+  public PoBox lock() {
+    return (PoBox) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -141,7 +141,6 @@ public class PoBox extends Element {
     }
     return result;
   }
-
 }
 
 

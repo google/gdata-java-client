@@ -118,10 +118,10 @@ public class MessageEntry extends Entry {
     super(key, source);
   }
 
-   @Override
-   public MessageEntry lock() {
-     return (MessageEntry) super.lock();
-   }
+  @Override
+  public MessageEntry lock() {
+    return (MessageEntry) super.lock();
+  }
 
   /**
    * Returns the geo pt.
@@ -225,7 +225,7 @@ public class MessageEntry extends Entry {
    * @param whoList person description
    */
   public MessageEntry addWhoList(Who whoList) {
-    super.addElement(whoList);
+    super.addElement(Who.KEY, whoList);
     return this;
   }
 
@@ -254,7 +254,6 @@ public class MessageEntry extends Entry {
   public boolean hasWhoList() {
     return super.hasElement(Who.KEY);
   }
-
 
 }
 

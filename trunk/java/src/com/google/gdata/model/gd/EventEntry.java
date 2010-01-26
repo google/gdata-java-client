@@ -128,10 +128,10 @@ public class EventEntry extends Entry {
     super(key, source);
   }
 
-   @Override
-   public EventEntry lock() {
-     return (EventEntry) super.lock();
-   }
+  @Override
+  public EventEntry lock() {
+    return (EventEntry) super.lock();
+  }
 
   /**
    * Returns the nested comments feed.
@@ -206,7 +206,7 @@ public class EventEntry extends Entry {
    * @param location event location
    */
   public EventEntry addLocation(Where location) {
-    super.addElement(location);
+    super.addElement(Where.KEY, location);
     return this;
   }
 
@@ -280,7 +280,7 @@ public class EventEntry extends Entry {
    * @param participant event participant
    */
   public EventEntry addParticipant(Who participant) {
-    super.addElement(participant);
+    super.addElement(Who.KEY, participant);
     return this;
   }
 
@@ -355,7 +355,7 @@ public class EventEntry extends Entry {
    */
   public EventEntry addRecurrenceException(RecurrenceException
       recurrenceException) {
-    super.addElement(recurrenceException);
+    super.addElement(RecurrenceException.KEY, recurrenceException);
     return this;
   }
 
@@ -401,7 +401,7 @@ public class EventEntry extends Entry {
    * @param reminder event reminder
    */
   public EventEntry addReminder(Reminder reminder) {
-    super.addElement(reminder);
+    super.addElement(Reminder.KEY, reminder);
     return this;
   }
 
@@ -446,7 +446,7 @@ public class EventEntry extends Entry {
    * @param time event time
    */
   public EventEntry addTime(When time) {
-    super.addElement(time);
+    super.addElement(When.KEY, time);
     return this;
   }
 
@@ -533,7 +533,6 @@ public class EventEntry extends Entry {
   public boolean hasVisibility() {
     return super.hasElement(Visibility.KEY);
   }
-
 
 }
 

@@ -88,10 +88,10 @@ public class Subregion extends Element {
     setValue(value);
   }
 
-   @Override
-   public Subregion lock() {
-     return (Subregion) super.lock();
-   }
+  @Override
+  public Subregion lock() {
+    return (Subregion) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -142,7 +142,6 @@ public class Subregion extends Element {
     }
     return result;
   }
-
 }
 
 

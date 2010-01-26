@@ -121,10 +121,10 @@ public class Visibility extends Element {
     super(key, source);
   }
 
-   @Override
-   public Visibility lock() {
-     return (Visibility) super.lock();
-   }
+  @Override
+  public Visibility lock() {
+    return (Visibility) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -152,7 +152,7 @@ public class Visibility extends Element {
    * @return whether it has the value
    */
   public boolean hasValue() {
-    return getValue() != null;
+    return super.hasAttribute(VALUE);
   }
 
   @Override
@@ -175,7 +175,6 @@ public class Visibility extends Element {
     }
     return result;
   }
-
 }
 
 

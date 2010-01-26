@@ -150,10 +150,10 @@ public class Rating extends Element {
     super(key, source);
   }
 
-   @Override
-   public Rating lock() {
-     return (Rating) super.lock();
-   }
+  @Override
+  public Rating lock() {
+    return (Rating) super.lock();
+  }
 
   /**
    * Returns the average rating.
@@ -181,7 +181,7 @@ public class Rating extends Element {
    * @return whether it has the average rating
    */
   public boolean hasAverage() {
-    return getAverage() != null;
+    return super.hasAttribute(AVERAGE);
   }
 
   /**
@@ -210,7 +210,7 @@ public class Rating extends Element {
    * @return whether it has the rating scale's maximum value
    */
   public boolean hasMax() {
-    return getMax() != null;
+    return super.hasAttribute(MAX);
   }
 
   /**
@@ -239,7 +239,7 @@ public class Rating extends Element {
    * @return whether it has the rating scale's minimum value
    */
   public boolean hasMin() {
-    return getMin() != null;
+    return super.hasAttribute(MIN);
   }
 
   /**
@@ -274,7 +274,7 @@ public class Rating extends Element {
    *     computing the average value
    */
   public boolean hasNumRaters() {
-    return getNumRaters() != null;
+    return super.hasAttribute(NUM_RATERS);
   }
 
   /**
@@ -310,7 +310,7 @@ public class Rating extends Element {
    *     that's being rated, if not specified, the rating is an overall rating
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   /**
@@ -339,7 +339,7 @@ public class Rating extends Element {
    * @return whether it has the rating value
    */
   public boolean hasValue() {
-    return getValue() != null;
+    return super.hasAttribute(VALUE);
   }
 
   @Override
@@ -382,7 +382,6 @@ public class Rating extends Element {
     }
     return result;
   }
-
 }
 
 

@@ -151,10 +151,10 @@ public class Reminder extends Element {
     super(key, source);
   }
 
-   @Override
-   public Reminder lock() {
-     return (Reminder) super.lock();
-   }
+  @Override
+  public Reminder lock() {
+    return (Reminder) super.lock();
+  }
 
   /**
    * Returns the absolute time of the reminder.
@@ -182,7 +182,7 @@ public class Reminder extends Element {
    * @return whether it has the absolute time of the reminder
    */
   public boolean hasAbsoluteTime() {
-    return getAbsoluteTime() != null;
+    return super.hasAttribute(ABSOLUTE_TIME);
   }
 
   /**
@@ -211,7 +211,7 @@ public class Reminder extends Element {
    * @return whether it has the number of days before the start time
    */
   public boolean hasDays() {
-    return getDays() != null;
+    return super.hasAttribute(DAYS);
   }
 
   /**
@@ -240,7 +240,7 @@ public class Reminder extends Element {
    * @return whether it has the number of hours before the start time
    */
   public boolean hasHours() {
-    return getHours() != null;
+    return super.hasAttribute(HOURS);
   }
 
   /**
@@ -269,7 +269,7 @@ public class Reminder extends Element {
    * @return whether it has the method
    */
   public boolean hasMethod() {
-    return getMethod() != null;
+    return super.hasAttribute(METHOD);
   }
 
   /**
@@ -299,7 +299,7 @@ public class Reminder extends Element {
    * @return whether it has the number of minute before the start times
    */
   public boolean hasMinutes() {
-    return getMinutes() != null;
+    return super.hasAttribute(MINUTES);
   }
 
   @Override
@@ -338,7 +338,6 @@ public class Reminder extends Element {
     }
     return result;
   }
-
 }
 
 

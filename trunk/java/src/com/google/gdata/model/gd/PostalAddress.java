@@ -138,10 +138,10 @@ public class PostalAddress extends Element {
     setValue(value);
   }
 
-   @Override
-   public PostalAddress lock() {
-     return (PostalAddress) super.lock();
-   }
+  @Override
+  public PostalAddress lock() {
+    return (PostalAddress) super.lock();
+  }
 
   /**
    * Returns the simple string value used to name this address.
@@ -170,7 +170,7 @@ public class PostalAddress extends Element {
    * @return whether it has the simple string value used to name this address
    */
   public boolean hasLabel() {
-    return getLabel() != null;
+    return super.hasAttribute(LABEL);
   }
 
   /**
@@ -200,7 +200,7 @@ public class PostalAddress extends Element {
    * @return whether it has the whether this is the primary postal address
    */
   public boolean hasPrimary() {
-    return getPrimary() != null;
+    return super.hasAttribute(PRIMARY);
   }
 
   /**
@@ -229,7 +229,7 @@ public class PostalAddress extends Element {
    * @return whether it has the postal address type
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   /**
@@ -293,7 +293,6 @@ public class PostalAddress extends Element {
     }
     return result;
   }
-
 }
 
 

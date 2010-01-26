@@ -149,10 +149,10 @@ public class Categories extends Element {
     super(key, source);
   }
 
-   @Override
-   public Categories lock() {
-     return (Categories) super.lock();
-   }
+  @Override
+  public Categories lock() {
+    return (Categories) super.lock();
+  }
 
   /**
    * Returns the categories.
@@ -169,7 +169,7 @@ public class Categories extends Element {
    * @param category category
    */
   public Categories addCategory(Category category) {
-    super.addElement(category);
+    super.addElement(Category.KEY, category);
     return this;
   }
 
@@ -230,7 +230,7 @@ public class Categories extends Element {
    *     fixed or an open set
    */
   public boolean hasFixed() {
-    return getFixed() != null;
+    return super.hasAttribute(FIXED);
   }
 
   /**
@@ -260,7 +260,7 @@ public class Categories extends Element {
    * @return whether it has the an IRI reference to a Category Document
    */
   public boolean hasHref() {
-    return getHref() != null;
+    return super.hasAttribute(HREF);
   }
 
   /**
@@ -292,9 +292,8 @@ public class Categories extends Element {
    *     elements
    */
   public boolean hasScheme() {
-    return getScheme() != null;
+    return super.hasAttribute(SCHEME);
   }
-
 
 }
 

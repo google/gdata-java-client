@@ -112,10 +112,10 @@ public class CustomProperty extends Element {
     setValue(value);
   }
 
-   @Override
-   public CustomProperty lock() {
-     return (CustomProperty) super.lock();
-   }
+  @Override
+  public CustomProperty lock() {
+    return (CustomProperty) super.lock();
+  }
 
   /**
    * Returns the can be a URI to indicate a specific ontology.
@@ -144,7 +144,7 @@ public class CustomProperty extends Element {
    * @return whether it has the can be a URI to indicate a specific ontology
    */
   public boolean hasName() {
-    return getName() != null;
+    return super.hasAttribute(NAME);
   }
 
   /**
@@ -179,7 +179,7 @@ public class CustomProperty extends Element {
    *     an ontology-specific URI
    */
   public boolean hasType() {
-    return getType() != null;
+    return super.hasAttribute(TYPE);
   }
 
   /**
@@ -212,7 +212,7 @@ public class CustomProperty extends Element {
    *     specific ontology
    */
   public boolean hasUnit() {
-    return getUnit() != null;
+    return super.hasAttribute(UNIT);
   }
 
   /**
@@ -276,7 +276,6 @@ public class CustomProperty extends Element {
     }
     return result;
   }
-
 }
 
 

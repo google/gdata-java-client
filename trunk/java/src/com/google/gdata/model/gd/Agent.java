@@ -87,10 +87,10 @@ public class Agent extends Element {
     setValue(value);
   }
 
-   @Override
-   public Agent lock() {
-     return (Agent) super.lock();
-   }
+  @Override
+  public Agent lock() {
+    return (Agent) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -141,7 +141,6 @@ public class Agent extends Element {
     }
     return result;
   }
-
 }
 
 

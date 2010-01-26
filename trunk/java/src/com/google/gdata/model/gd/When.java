@@ -107,10 +107,10 @@ public class When extends Element {
     super(key, source);
   }
 
-   @Override
-   public When lock() {
-     return (When) super.lock();
-   }
+  @Override
+  public When lock() {
+    return (When) super.lock();
+  }
 
   /**
    * Returns the event end time.
@@ -138,7 +138,7 @@ public class When extends Element {
    * @return whether it has the event end time
    */
   public boolean hasEndTime() {
-    return getEndTime() != null;
+    return super.hasAttribute(END_TIME);
   }
 
   /**
@@ -156,7 +156,7 @@ public class When extends Element {
    * @param reminder event reminder
    */
   public When addReminder(Reminder reminder) {
-    super.addElement(reminder);
+    super.addElement(Reminder.KEY, reminder);
     return this;
   }
 
@@ -212,7 +212,7 @@ public class When extends Element {
    * @return whether it has the event start time
    */
   public boolean hasStartTime() {
-    return getStartTime() != null;
+    return super.hasAttribute(START_TIME);
   }
 
   /**
@@ -242,9 +242,8 @@ public class When extends Element {
    * @return whether it has the string description of the event times
    */
   public boolean hasValueString() {
-    return getValueString() != null;
+    return super.hasAttribute(VALUE_STRING);
   }
-
 
 }
 

@@ -89,10 +89,10 @@ public class LastViewed extends Element {
     setValue(value);
   }
 
-   @Override
-   public LastViewed lock() {
-     return (LastViewed) super.lock();
-   }
+  @Override
+  public LastViewed lock() {
+    return (LastViewed) super.lock();
+  }
 
   /**
    * Returns the value.
@@ -143,7 +143,6 @@ public class LastViewed extends Element {
     }
     return result;
   }
-
 }
 
 

@@ -97,10 +97,10 @@ public class Country extends Element {
     setValue(value);
   }
 
-   @Override
-   public Country lock() {
-     return (Country) super.lock();
-   }
+  @Override
+  public Country lock() {
+    return (Country) super.lock();
+  }
 
   /**
    * Returns the The 3166-1 alpha-2 country code.
@@ -128,7 +128,7 @@ public class Country extends Element {
    * @return whether it has the The 3166-1 alpha-2 country code
    */
   public boolean hasCode() {
-    return getCode() != null;
+    return super.hasAttribute(CODE);
   }
 
   /**
@@ -184,7 +184,6 @@ public class Country extends Element {
     }
     return result;
   }
-
 }
 
 

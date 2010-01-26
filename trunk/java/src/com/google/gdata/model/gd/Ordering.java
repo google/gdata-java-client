@@ -141,10 +141,10 @@ public class Ordering extends Element {
     super(key, source);
   }
 
-   @Override
-   public Ordering lock() {
-     return (Ordering) super.lock();
-   }
+  @Override
+  public Ordering lock() {
+    return (Ordering) super.lock();
+  }
 
   /**
    * Returns the next element.
@@ -172,7 +172,7 @@ public class Ordering extends Element {
    * @return whether it has the next element
    */
   public boolean hasNext() {
-    return getNext() != null;
+    return super.hasAttribute(NEXT);
   }
 
   /**
@@ -201,7 +201,7 @@ public class Ordering extends Element {
    * @return whether it has the ordered feed id
    */
   public boolean hasOrderId() {
-    return getOrderId() != null;
+    return super.hasAttribute(ORDER_ID);
   }
 
   /**
@@ -230,7 +230,7 @@ public class Ordering extends Element {
    * @return whether it has the previous element
    */
   public boolean hasPrev() {
-    return getPrev() != null;
+    return super.hasAttribute(PREV);
   }
 
   /**
@@ -259,7 +259,7 @@ public class Ordering extends Element {
    * @return whether it has the other entry id
    */
   public boolean hasRef() {
-    return getRef() != null;
+    return super.hasAttribute(REF);
   }
 
   /**
@@ -288,7 +288,7 @@ public class Ordering extends Element {
    * @return whether it has the order type
    */
   public boolean hasRel() {
-    return getRel() != null;
+    return super.hasAttribute(REL);
   }
 
   @Override
@@ -327,7 +327,6 @@ public class Ordering extends Element {
     }
     return result;
   }
-
 }
 
 
