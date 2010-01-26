@@ -8,6 +8,9 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.40.3 ==
+   * Updated Google Sites API to include sites and user access control feeds.
+
 == 1.40.2 ==
    * Added support for 2 Legged OAuth authentication.
    * Removed requirement to set !com.google.gdata.DisableCookieHandler property when running in Google App Engine environment.
