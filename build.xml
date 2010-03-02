@@ -1,21 +1,18 @@
 <?xml version="1.0"?>
 
-<!--
+  <!--
 
-  You must:
-   * have ANDROID_JAR set to location of android.jar (minimum 2.0)
-   * have JAVA_HOME set to a JDK (minimum 1.5) installation
-   * have unzipped $JAVA_HOME/src.zip to $JAVA_HOME/src
-   * specify -Dversion=2.0.0 (for example) on the ant command line
-
--->
-<project basedir="." default="dist" name="gdata">
+    You must: * have ANDROID_JAR set to location of android.jar (minimum 2.0) *
+    have JAVA_HOME set to a JDK (minimum 1.5) installation
+  -->
+<project basedir="." default="compile-debug" name="gdata">
 
   <property environment="env" />
   <property file="build.properties" />
   <property name="classes.dir" value="${build.dir}/classes" />
   <property name="classes.debug.dir" value="${build.dir}/classes-debug" />
   <property name="dist.dir" value="${build.dir}/dist" />
+  <property name="javadoc.dir" value="${dist.dir}/javadoc" />
 
   <target name="compile-debug" description="Compile with debugging information and source">
     <mkdir dir="${dist.dir}" />
@@ -23,12 +20,13 @@
     <copy includeemptydirs="false" todir="${classes.debug.dir}">
       <fileset dir="${src.dir}" />
     </copy>
-    <javac debug="true" debuglevel="source,lines,vars" destdir="${classes.debug.dir}" source="1.5" target="1.5">
+    <javac debug="true" debuglevel="source,lines,vars" destdir="${classes.debug.dir}"
+      source="1.5" target="1.5">
       <compilerarg value="-Xlint:all" />
       <src path="${src.dir}" />
       <classpath>
         <pathelement location="${env.ANDROID_JAR}" />
-        <pathelement location="lib/jackson-core-asl-1.4.3.jar" />
+        <pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
       </classpath>
     </javac>
   </target>
@@ -41,7 +39,7 @@
       <src path="${src.dir}" />
       <classpath>
         <pathelement location="${env.ANDROID_JAR}" />
-        <pathelement location="lib/jackson-core-asl-1.4.3.jar" />
+        <pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
       </classpath>
     </javac>
   </target>
@@ -55,26 +53,48 @@
   </target>
 
   <target name="gdata-android-v2-jar" depends="compile">
-    <jar destfile="${dist.dir}/gdata-android-v2.jar" basedir="${classes.dir}" includes="com/google/api/data/client/v2/*.class,com/google/api/data/client/v2/android/*.class,com/google/api/data/client/v2/apache/*.class,com/google/api/data/client/v2/escape/*.class" />
+    <jar destfile="${dist.dir}/gdata-android-v2.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/client/v2/*.class,com/google/api/data/client/v2/android/*.class,com/google/api/data/client/v2/apache/*.class,com/google/api/data/client/v2/escape/*.class" />
   </target>
 
   <target name="gdata-atom-v2-jar" depends="compile">
-    <jar destfile="${dist.dir}/gdata-atom-v2.jar" basedir="${classes.dir}" includes="com/google/api/data/client/v2/atom/**,com/google/api/data/client/v2/android/atom/**" />
+    <jar destfile="${dist.dir}/gdata-atom-v2.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/client/v2/atom/**,com/google/api/data/client/v2/android/atom/**" />
   </target>
 
   <target name="gdata-jsonc-v2-jar" depends="compile">
-    <jar destfile="${dist.dir}/gdata-jsonc-v2.jar" basedir="${classes.dir}" includes="com/google/api/data/client/v2/jsonc/**" />
+    <jar destfile="${dist.dir}/gdata-jsonc-v2.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/client/v2/jsonc/**" />
   </target>
 
   <target name="gdata-picasa-v2-jar" depends="compile">
-    <jar destfile="${dist.dir}/gdata-picasa-v2.jar" basedir="${classes.dir}" includes="com/google/api/data/picasa/v2/**" />
+    <jar destfile="${dist.dir}/gdata-picasa-v2.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/picasa/v2/**" />
   </target>
 
   <target name="gdata-youtube-v2-jar" depends="compile">
-    <jar destfile="${dist.dir}/gdata-youtube-v2.jar" basedir="${classes.dir}" includes="com/google/api/data/youtube/v2/**" />
+    <jar destfile="${dist.dir}/gdata-youtube-v2.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/youtube/v2/**" />
   </target>
 
-  <target name="dist" description="Build the distribution zip file that includes all compiled jar files" depends="gdata-full-jar,gdata-android-v2-jar,gdata-atom-v2-jar,gdata-jsonc-v2-jar,gdata-picasa-v2-jar,gdata-youtube-v2-jar">
-    <zip destfile="${dist.dir}/gdata.java-${version}.zip" basedir="${dist.dir}" includes="*.jar" />
+  <target name="javadoc" description="Generate JavaDoc">
+    <delete dir="${javadoc.dir}" />
+    <mkdir dir="${javadoc.dir}" />
+    <javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}"
+      use="true" windowtitle="GData Java Library ${version}" doctitle="GData Java Library ${version}"
+      packagenames="com.google.api.data.client.v2.atom,com.google.api.data.client.v2.jsonc.jackson,com.google.api.data.client.v2.android,com.google.api.data.client.v2.jsonc,com.google.api.data.client.v2.apache,com.google.api.data.picasa.v2,com.google.api.data.client.v2.escape,com.google.api.data.youtube.v2,com.google.api.data.client.v2,com.google.api.data.client.v2.android.atom">
+      <classpath>
+        <pathelement location="${env.ANDROID_JAR}" />
+        <pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
+      </classpath>
+      <link href="http://jackson.codehaus.org/1.4.2/javadoc" />
+    </javadoc>
   </target>
+
+  <target name="dist"
+    description="Build the distribution zip file that includes all compiled jar files"
+    depends="javadoc,gdata-full-jar,gdata-android-v2-jar,gdata-atom-v2-jar,gdata-jsonc-v2-jar,gdata-picasa-v2-jar,gdata-youtube-v2-jar">
+    <zip destfile="${build.dir}/gdata.java-${version}.zip" basedir="${dist.dir}" />
+  </target>
+
 </project>
