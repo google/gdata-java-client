@@ -14,6 +14,8 @@ import java.io.InputStream;
 /** GData Atom error response to a GData Atom request. */
 public final class AtomException extends GDataException {
 
+  static final long serialVersionUID = 1;
+
   /** Atom client. */
   public final AtomClient client;
 
