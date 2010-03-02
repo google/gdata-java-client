@@ -1,0 +1,103 @@
+// Copyright 2010 Google Inc. All Rights Reserved.
+
+package com.google.api.data.client.v2.escape;
+
+/**
+ * Utility functions for dealing with {@code CharEscaper}s, and some commonly
+ * used {@code CharEscaper} instances.
+ */
+public final class CharEscapers {
+  private CharEscapers() {
+  }
+
+  /**
+   * Escapes the string value so it can be safely included in URI path segments.
+   * For details on escaping URIs, see section 2.4 of <a
+   * href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+   * 
+   * <p>
+   * When encoding a String, the following rules apply:
+   * <ul>
+   * <li>The alphanumeric characters "a" through "z", "A" through "Z" and "0"
+   * through "9" remain the same.
+   * <li>The unreserved characters ".", "-", "~", and "_" remain the same.
+   * <li>The general delimiters "@" and ":" remain the same.
+   * <li>The subdelimiters "!", "$", "&amp;", "'", "(", ")", "*", ",", ";", and
+   * "=" remain the same.
+   * <li>The space character " " is converted into %20.
+   * <li>All other characters are converted into one or more bytes using UTF-8
+   * encoding and each byte is then represented by the 3-character string "%XY",
+   * where "XY" is the two-digit, uppercase, hexadecimal representation of the
+   * byte value.
+   * </ul>
+   * 
+   * <p>
+   * <b>Note</b>: Unlike other escapers, URI escapers produce uppercase
+   * hexadecimal sequences. From <a href="http://www.ietf.org/rfc/rfc3986.txt">
+   * RFC 3986</a>:<br>
+   * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+   * for all percent-encodings."</i>
+   */
+  public static String escapeUriPath(String value) {
+    return URI_PATH_ESCAPER.escape(value);
+  }
+
+  /**
+   * Escapes the string value so it can be safely included in URI query string
+   * segments. When the query string consists of a sequence of name=value pairs
+   * separated by &amp;, the names and values should be individually encoded. If
+   * you escape an entire query string in one pass with this escaper, then the
+   * "=" and "&amp;" characters used as separators will also be escaped.
+   * 
+   * <p>
+   * This escaper is also suitable for escaping fragment identifiers.
+   * 
+   * <p>
+   * For details on escaping URIs, see section 2.4 of <a
+   * href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+   * 
+   * <p>
+   * When encoding a String, the following rules apply:
+   * <ul>
+   * <li>The alphanumeric characters "a" through "z", "A" through "Z" and "0"
+   * through "9" remain the same.
+   * <li>The unreserved characters ".", "-", "~", and "_" remain the same.
+   * <li>The general delimiters "@" and ":" remain the same.
+   * <li>The path delimiters "/" and "?" remain the same.
+   * <li>The subdelimiters "!", "$", "'", "(", ")", "*", ",", and ";", remain
+   * the same.
+   * <li>The space character " " is converted into %20.
+   * <li>The equals sign "=" is converted into %3D.
+   * <li>The ampersand "&amp;" is converted into %26.
+   * <li>All other characters are converted into one or more bytes using UTF-8
+   * encoding and each byte is then represented by the 3-character string "%XY",
+   * where "XY" is the two-digit, uppercase, hexadecimal representation of the
+   * byte value.
+   * </ul>
+   * 
+   * <p>
+   * <b>Note</b>: Unlike other escapers, URI escapers produce uppercase
+   * hexadecimal sequences. From <a href="http://www.ietf.org/rfc/rfc3986.txt">
+   * RFC 3986</a>:<br>
+   * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+   * for all percent-encodings."</i>
+   */
+  public static String escapeUriQuery(String value) {
+    return URI_QUERY_STRING_ESCAPER.escape(value);
+  }
+
+  public static String escapeSlug(String value) {
+    return SLUG_ESCAPER.escape(value);
+  }
+
+  private static final Escaper URI_PATH_ESCAPER =
+      new PercentEscaper(PercentEscaper.SAFEPATHCHARS_URLENCODER, false);
+
+
+  private static final Escaper URI_QUERY_STRING_ESCAPER =
+      new PercentEscaper(PercentEscaper.SAFEQUERYSTRINGCHARS_URLENCODER, false);
+
+
+  private static final PercentEscaper SLUG_ESCAPER =
+      new PercentEscaper(" !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~", false);
+}
