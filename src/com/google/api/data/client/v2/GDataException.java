@@ -10,6 +10,8 @@ import java.io.InputStream;
 /** GData error response to a GData request. */
 public class GDataException extends Exception {
 
+  static final long serialVersionUID = 1;
+
   /** Error status code of the response. */
   public final int statusCode;
 
