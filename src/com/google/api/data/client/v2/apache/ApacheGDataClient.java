@@ -61,7 +61,7 @@ final class ApacheGDataClient implements GDataClient {
     HttpConnectionParams.setSoTimeout(params, 20 * 1000);
     HttpConnectionParams.setSocketBufferSize(params, 8192);
     StringBuilder userAgentBuf =
-        new StringBuilder().append(applicationName).append(" GData-Android/2.0.0");
+        new StringBuilder().append(applicationName).append(" GData-Java/2.0.0");
     if (ENABLE_GZIP) {
       userAgentBuf.append("(gzip)");
     }
