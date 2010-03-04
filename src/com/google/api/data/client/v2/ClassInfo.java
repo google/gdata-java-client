@@ -16,7 +16,6 @@ import java.util.IdentityHashMap;
 import java.util.WeakHashMap;
 
 public final class ClassInfo {
-  // TODO: FieldInfo with name, field type
   private static final ThreadLocal<WeakHashMap<Class<?>, ClassInfo>> CACHE =
       new ThreadLocal<WeakHashMap<Class<?>, ClassInfo>>() {
         @Override
@@ -26,8 +25,10 @@ public final class ClassInfo {
       };
 
   public final Class<?> clazz;
-  private final IdentityHashMap<String, Field> nameToFieldMap =
-      new IdentityHashMap<String, Field>();
+  private final IdentityHashMap<String, FieldInfo> nameToFieldInfoMap =
+      new IdentityHashMap<String, FieldInfo>();
+  private final IdentityHashMap<Field, FieldInfo> fieldToFieldInfoMap =
+      new IdentityHashMap<Field, FieldInfo>();
 
   public static ClassInfo of(Class<?> clazz) {
     WeakHashMap<Class<?>, ClassInfo> cache = CACHE.get();
@@ -39,32 +40,26 @@ public final class ClassInfo {
     return classInfo;
   }
 
-  public Field getField(String name) {
-    return this.nameToFieldMap.get(name.intern());
+  public FieldInfo getFieldInfo(String fieldName) {
+    return this.nameToFieldInfoMap.get(fieldName.intern());
+  }
+
+  public FieldInfo getFieldInfo(Field field) {
+    return this.fieldToFieldInfoMap.get(field);
+  }
+
+  public String getFieldName(Field field) {
+    FieldInfo fieldInfo = getFieldInfo(field);
+    return fieldInfo == null ? null : fieldInfo.name;
+  }
+
+  public Field getField(String fieldName) {
+    FieldInfo fieldInfo = getFieldInfo(fieldName);
+    return fieldInfo == null ? null : fieldInfo.field;
   }
 
   public Iterable<String> getNames() {
-    return Collections.unmodifiableSet(this.nameToFieldMap.keySet());
-  }
-
-  public static Object getValue(Field field, Object obj)
-      throws IllegalArgumentException {
-    try {
-      return field.get(obj);
-    } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException(e);
-    }
-  }
-
-  public static void setValue(Field field, Object obj, Object value)
-      throws IllegalArgumentException {
-    try {
-      field.set(obj, value);
-    } catch (SecurityException e) {
-      throw new IllegalArgumentException(e);
-    } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException(e);
-    }
+    return Collections.unmodifiableSet(this.nameToFieldInfoMap.keySet());
   }
 
   public static <T> T newInstance(Class<T> clazz) {
@@ -161,7 +156,10 @@ public final class ClassInfo {
     this.clazz = clazz;
     Field[] fields = clazz.getFields();
     int fieldsSize = fields.length;
-    IdentityHashMap<String, Field> nameToFieldMap = this.nameToFieldMap;
+    IdentityHashMap<String, FieldInfo> nameToFieldInfoMap =
+        this.nameToFieldInfoMap;
+    IdentityHashMap<Field, FieldInfo> fieldToFieldInfoMap =
+        this.fieldToFieldInfoMap;
     for (int fieldsIndex = 0; fieldsIndex < fieldsSize; fieldsIndex++) {
       Field field = fields[fieldsIndex];
       String fieldName;
@@ -171,7 +169,10 @@ public final class ClassInfo {
       } else {
         fieldName = name.value();
       }
-      nameToFieldMap.put(fieldName.intern(), field);
+      fieldName = fieldName.intern();
+      FieldInfo fieldInfo = new FieldInfo(field, fieldName);
+      nameToFieldInfoMap.put(fieldName, fieldInfo);
+      fieldToFieldInfoMap.put(field, fieldInfo);
     }
   }
 }

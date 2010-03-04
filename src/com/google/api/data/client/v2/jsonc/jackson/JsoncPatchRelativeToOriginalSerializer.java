@@ -3,6 +3,7 @@
 package com.google.api.data.client.v2.jsonc.jackson;
 
 import com.google.api.data.client.v2.ClassInfo;
+import com.google.api.data.client.v2.FieldInfo;
 
 import org.codehaus.jackson.JsonGenerator;
 
@@ -33,8 +34,8 @@ final class JsoncPatchRelativeToOriginalSerializer extends JsoncSerializer {
     ClassInfo classInfo = ClassInfo.of(item.getClass());
     for (String name : classInfo.getNames()) {
       Field field = classInfo.getField(name);
-      Object patchedValue = ClassInfo.getValue(field, item);
-      Object originalValue = ClassInfo.getValue(field, originalItem);
+      Object patchedValue = FieldInfo.getFieldValue(field, item);
+      Object originalValue = FieldInfo.getFieldValue(field, originalItem);
       Class<?> fieldClass = field.getType();
       // TODO: handle Map and List values
       if (patchedValue != originalValue && ClassInfo.isImmutable(fieldClass)

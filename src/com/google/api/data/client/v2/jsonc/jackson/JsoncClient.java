@@ -3,9 +3,9 @@
 package com.google.api.data.client.v2.jsonc.jackson;
 
 import com.google.api.data.client.v2.GDataClient;
-import com.google.api.data.client.v2.GDataClientFactory;
 import com.google.api.data.client.v2.GDataResponse;
-import com.google.api.data.client.v2.jsonc.JsoncObject;
+import com.google.api.data.client.v2.HttpTransport;
+import com.google.api.data.client.v2.jsonc.JsoncEntity;
 
 import org.codehaus.jackson.JsonParser;
 
@@ -16,23 +16,23 @@ public final class JsoncClient {
   private static final String CONTENT_TYPE = "application/json";
 
   public static final class Builder {
-    public GDataClientFactory clientFactory;
+    public HttpTransport httpTransport;
     public String applicationName;
     public String authToken;
     public String version;
 
     public JsoncClient build() {
-      return new JsoncClient(clientFactory, applicationName, authToken, version);
+      return new JsoncClient(httpTransport, applicationName, authToken, version);
     }
   }
 
   private final GDataClient gdataClient;
 
-  JsoncClient(GDataClientFactory clientFactory, String applicationName,
+  JsoncClient(HttpTransport httpTransport, String applicationName,
       String authToken, String version) {
     gdataClient =
-        clientFactory.createClient(CONTENT_TYPE, applicationName + "(jsonc)",
-            authToken, version);
+        new GDataClient(httpTransport, CONTENT_TYPE,
+            (applicationName + "(jsonc)"), authToken, version);
   }
 
   // TODO: GDataJsoncRequest with an execute() method?
@@ -116,9 +116,9 @@ public final class JsoncClient {
 
   public JsoncItemResponse executePutItemIfNotModified(String uri, String etag,
       Object item) throws IOException, JsoncException {
-    if (!(item instanceof JsoncObject)) {
+    if (!(item instanceof JsoncEntity)) {
       throw new IllegalArgumentException("can only post an item that extends "
-          + JsoncObject.class.getName());
+          + JsoncEntity.class.getName());
       // TODO: check subclasses extend GDataJsoncObject
     }
     GDataResponse response =
@@ -209,7 +209,7 @@ public final class JsoncClient {
             inputStream = null;
           }
         } else {
-          exception.parseContent(inputStream);
+          exception.parseContent(inputStream, response.getContentLength());
           inputStream = null;
         }
       } finally {

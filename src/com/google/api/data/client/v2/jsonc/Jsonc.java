@@ -4,6 +4,7 @@ package com.google.api.data.client.v2.jsonc;
 
 import com.google.api.data.client.v2.DateTime;
 import com.google.api.data.client.v2.ClassInfo;
+import com.google.api.data.client.v2.FieldInfo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -108,9 +109,9 @@ public class Jsonc {
       // deep clone of each field
       Field field = fields[i];
       Class<?> fieldType = field.getType();
-      Object thisValue = ClassInfo.getValue(field, item);
+      Object thisValue = FieldInfo.getFieldValue(field, item);
       if (thisValue != null && !Modifier.isFinal(field.getModifiers())) {
-        ClassInfo.setValue(field, result, clone(thisValue));
+        FieldInfo.setFieldValue(field, result, clone(thisValue));
       }
     }
     // TODO: clone JsoncObject
@@ -153,13 +154,13 @@ public class Jsonc {
         ClassInfo typeInfo = ClassInfo.of(item.getClass());
         for (String name : typeInfo.getNames()) {
           Field field = typeInfo.getField(name);
-          Object fieldValue = ClassInfo.getValue(field, item);
+          Object fieldValue = FieldInfo.getFieldValue(field, item);
           if (fieldValue != null) {
             firstField = appendField(buf, firstField, name, fieldValue);
           }
         }
-        if (item instanceof JsoncObject) {
-          item = ((JsoncObject) item).getUnknownKeyMap();
+        if (item instanceof JsoncEntity) {
+          item = ((JsoncEntity) item).getUnknownKeyMap();
         }
       }
       if (item instanceof Map<?, ?>) {

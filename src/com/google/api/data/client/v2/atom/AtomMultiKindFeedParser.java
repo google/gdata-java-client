@@ -3,6 +3,7 @@
 package com.google.api.data.client.v2.atom;
 
 import com.google.api.data.client.v2.ClassInfo;
+import com.google.api.data.client.v2.FieldInfo;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -32,7 +33,7 @@ public final class AtomMultiKindFeedParser<T> extends AbstractAtomFeedParser<T> 
             + entryClass.getName());
       }
       Object item = ClassInfo.newInstance(entryClass);
-      String kind = (String) ClassInfo.getValue(field, item);
+      String kind = (String) FieldInfo.getFieldValue(field, item);
       if (kind == null) {
         throw new IllegalArgumentException(
             "missing value for @gd:kind field in " + entryClass.getName());
