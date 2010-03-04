@@ -1,16 +1,11 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+package com.google.api.data.client.v2;
 
-package com.google.api.data.client.v2.apache;
-
-import com.google.api.data.client.v2.GDataSerializer;
-
-import org.apache.http.Header;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-final class GDataMultipartEntity extends GDataEntity {
+final class GDataMultipartHttpSerializer implements HttpSerializer {
 
   private static final byte[] CR_LF = "\r\n".getBytes();
   private static final byte[] HEADER = "Media multipart posting".getBytes();
@@ -24,8 +19,10 @@ final class GDataMultipartEntity extends GDataEntity {
   private final byte[] mediaTypeBytes;
   private final GDataSerializer metadata;
   private final InputStream mediaContent;
+  final long length;
 
-  static GDataMultipartEntity create(GDataSerializer metadata,
+  // TODO: is gzip allowed here?
+  static GDataMultipartHttpSerializer create(GDataSerializer metadata,
       String metadataContentType, String mediaType, InputStream mediaContent,
       long mediaContentLength) {
     byte[] metadataContentTypeBytes = metadataContentType.getBytes();
@@ -39,24 +36,18 @@ final class GDataMultipartEntity extends GDataEntity {
               * CONTENT_TYPE.length + CONTENT_TRANSFER_ENCODING.length + 3
               * END_OF_PART.length + 10 * CR_LF.length + 4 * TWO_DASHES.length;
     }
-    return new GDataMultipartEntity(metadata, metadataContentTypeBytes, length,
-        mediaTypeBytes, mediaContent);
+    return new GDataMultipartHttpSerializer(metadata, metadataContentTypeBytes,
+        length, mediaTypeBytes, mediaContent);
   }
 
-  private GDataMultipartEntity(GDataSerializer metadata,
+  private GDataMultipartHttpSerializer(GDataSerializer metadata,
       byte[] metadataContentTypeBytes, long length, byte[] mediaTypeBytes,
       InputStream mediaContent) {
-    super(length);
-    setContentType("multipart/related; boundary=\"END_OF_PART\"");
+    this.length = length;
     this.metadata = metadata;
     this.mediaContent = mediaContent;
     this.metadataContentTypeBytes = metadataContentTypeBytes;
     this.mediaTypeBytes = mediaTypeBytes;
-  }
-
-  @Override
-  public Header getContentEncoding() {
-    return null;
   }
 
   public void writeTo(OutputStream out) throws IOException {

@@ -3,6 +3,7 @@
 package com.google.api.data.client.v2.jsonc.jackson;
 
 import com.google.api.data.client.v2.ClassInfo;
+import com.google.api.data.client.v2.FieldInfo;
 
 import org.codehaus.jackson.JsonParser;
 
@@ -31,7 +32,7 @@ public final class JsoncMultiKindFeedParser<T> extends
             + itemClass.getName());
       }
       Object item = ClassInfo.newInstance(itemClass);
-      String kind = (String) ClassInfo.getValue(field, item);
+      String kind = (String) FieldInfo.getFieldValue(field, item);
       if (kind == null) {
         throw new IllegalArgumentException("missing value for kind field in "
             + itemClass.getName());

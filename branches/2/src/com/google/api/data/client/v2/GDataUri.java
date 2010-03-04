@@ -64,7 +64,7 @@ public class GDataUri {
     name = name.intern();
     Field field = this.classInfo.getField(name);
     if (field != null) {
-      return ClassInfo.getValue(field, this);
+      return FieldInfo.getFieldValue(field, this);
     }
     Object value = null;
     IdentityHashMap<String, Object> unknown = this.unknown;
@@ -78,7 +78,7 @@ public class GDataUri {
     name = name.intern();
     Field field = this.classInfo.getField(name);
     if (field != null) {
-      ClassInfo.setValue(field, this, value);
+      FieldInfo.setFieldValue(field, this, value);
       return;
     }
     IdentityHashMap<String, Object> unknown = this.unknown;
@@ -93,7 +93,7 @@ public class GDataUri {
     boolean startedQuery = false;
     ClassInfo classInfo = this.classInfo;
     for (String name : classInfo.getNames()) {
-      Object value = ClassInfo.getValue(classInfo.getField(name), this);
+      Object value = FieldInfo.getFieldValue(classInfo.getField(name), this);
       startedQuery = appendValue(startedQuery, buf, name, value);
     }
     IdentityHashMap<String, Object> unknown = this.unknown;

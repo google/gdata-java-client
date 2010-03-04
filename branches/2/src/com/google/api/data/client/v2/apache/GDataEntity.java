@@ -2,31 +2,41 @@
 
 package com.google.api.data.client.v2.apache;
 
+import com.google.api.data.client.v2.HttpSerializer;
+
 import org.apache.http.entity.AbstractHttpEntity;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-abstract class GDataEntity extends AbstractHttpEntity {
+final class GDataEntity extends AbstractHttpEntity {
 
   private final long contentLength;
+  private final HttpSerializer serializer;
 
-  GDataEntity(long contentLength) {
+  GDataEntity(long contentLength, HttpSerializer serializer) {
     this.contentLength = contentLength;
+    this.serializer = serializer;
   }
 
-  public final InputStream getContent() {
+  public InputStream getContent() {
     throw new UnsupportedOperationException();
   }
 
-  public final long getContentLength() {
+  public long getContentLength() {
     return this.contentLength;
   }
 
-  public final boolean isRepeatable() {
+  public boolean isRepeatable() {
     return false;
   }
 
-  public final boolean isStreaming() {
+  public boolean isStreaming() {
     return true;
+  }
+
+  public void writeTo(OutputStream out) throws IOException {
+    serializer.writeTo(out);
   }
 }

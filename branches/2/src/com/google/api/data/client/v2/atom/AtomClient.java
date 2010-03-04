@@ -4,10 +4,11 @@ package com.google.api.data.client.v2.atom;
 
 import com.google.api.data.client.v2.ClassInfo;
 import com.google.api.data.client.v2.DateTime;
+import com.google.api.data.client.v2.FieldInfo;
 import com.google.api.data.client.v2.GDataClient;
-import com.google.api.data.client.v2.GDataClientFactory;
 import com.google.api.data.client.v2.GDataResponse;
 import com.google.api.data.client.v2.GDataSerializer;
+import com.google.api.data.client.v2.HttpTransport;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -37,7 +38,7 @@ public final class AtomClient {
     private List<String> namespaceAliases = null;
     private List<String> namespaceUris = null;
 
-    public GDataClientFactory clientFactory;
+    public HttpTransport httpTransport;
 
     public GDataXmlParserFactory parserFactory;
 
@@ -61,7 +62,7 @@ public final class AtomClient {
     }
 
     public AtomClient build() throws XmlPullParserException {
-      return new AtomClient(this.clientFactory, this.applicationName,
+      return new AtomClient(this.httpTransport, this.applicationName,
           this.authToken, this.version, this.parserFactory,
           this.namespaceAliases, this.namespaceUris);
     }
@@ -74,7 +75,7 @@ public final class AtomClient {
   private final ConcurrentHashMap<String, String> namespaceAliasToUriMap =
       new ConcurrentHashMap<String, String>();
 
-  AtomClient(GDataClientFactory clientFactory, String applicationName,
+  AtomClient(HttpTransport httpTransport, String applicationName,
       String authToken, String version, GDataXmlParserFactory parserFactory,
       List<String> namespaceAliases, List<String> namespaceUris)
       throws XmlPullParserException {
@@ -94,8 +95,9 @@ public final class AtomClient {
       }
     }
     this.gdataClient =
-        clientFactory.createClient(CONTENT_TYPE,
-            applicationName + "(atom+xml)", authToken, version);
+        new GDataClient(httpTransport, CONTENT_TYPE, (applicationName
+                + "(atom+xml)"),
+        authToken, version);
   }
 
   public AtomFeedResponse executeGetFeed(String uri) throws IOException,
@@ -169,9 +171,9 @@ public final class AtomClient {
   public AtomEntryResponse executePutEntryIfNotModified(String uri,
       String etag, Object entry) throws IOException, XmlPullParserException,
       AtomException {
-    if (!(entry instanceof AtomObject)) {
+    if (!(entry instanceof AtomEntity)) {
       throw new IllegalArgumentException("can only post an item that extends "
-          + AtomObject.class.getName());
+          + AtomEntity.class.getName());
       // TODO: check subclasses extend GDataJsoncObject
     }
     return parseEntryResponse(this.gdataClient.executePutIfNotModified(uri,
@@ -281,7 +283,7 @@ public final class AtomClient {
           exception.parser = parser;
           exception.inputStream = inputStream;
         } else {
-          exception.parseContent(inputStream);
+          exception.parseContent(inputStream, response.getContentLength());
         }
         inputStream = null;
       } finally {
@@ -352,27 +354,27 @@ public final class AtomClient {
     final List<String> subElementNames = new ArrayList<String>();
     final List<Object> subElementValues = new ArrayList<Object>();
 
-    ElementSerializer(Object elmentValue) {
-      Class<?> valueClass = elmentValue.getClass();
+    ElementSerializer(Object elementValue) {
+      Class<?> valueClass = elementValue.getClass();
       if (ClassInfo.isImmutable(valueClass)) {
-        this.textValue = elmentValue;
+        this.textValue = elementValue;
       } else {
-        if (!(elmentValue instanceof Map<?, ?>)) {
-          ClassInfo typeInfo = ClassInfo.of(elmentValue.getClass());
-          for (String name : typeInfo.getNames()) {
-            Field field = typeInfo.getField(name);
-            Object fieldValue = ClassInfo.getValue(field, elmentValue);
+        if (!(elementValue instanceof Map<?, ?>)) {
+          ClassInfo classInfo = ClassInfo.of(elementValue.getClass());
+          for (String name : classInfo.getNames()) {
+            FieldInfo fieldInfo = classInfo.getFieldInfo(name);
+            Object fieldValue = fieldInfo.getValue(elementValue);
             if (fieldValue != null) {
               set(name, fieldValue);
             }
           }
-          if (elmentValue instanceof AtomObject) {
-            elmentValue = ((AtomObject) elmentValue).getUnknownKeyMap();
+          if (elementValue instanceof AtomEntity) {
+            elementValue = ((AtomEntity) elementValue).getUnknownKeyMap();
           }
         }
-        if (elmentValue instanceof Map<?, ?>) {
+        if (elementValue instanceof Map<?, ?>) {
           @SuppressWarnings("unchecked")
-          Map<String, Object> mapValue = (Map<String, Object>) elmentValue;
+          Map<String, Object> mapValue = (Map<String, Object>) elementValue;
           for (Map.Entry<String, Object> entry : mapValue.entrySet()) {
             set(entry.getKey().intern(), entry.getValue());
           }
@@ -489,24 +491,24 @@ public final class AtomClient {
       Map<String, Object> destinationMap, String name) {
     if (field == null) {
       if (isAtomObject) {
-        ((AtomObject) destination).set(name, parseValue(stringValue, null));
+        ((AtomEntity) destination).set(name, parseValue(stringValue, null));
       } else if (destinationMap != null) {
         destinationMap.put(name, parseValue(stringValue, null));
       }
     } else {
-      Class<?> fieldType = field.getType();
+      Class<?> fieldClass = field.getType();
       if (Modifier.isFinal(field.getModifiers())) {
         // TODO: check for other kinds of field types?
-        if (fieldType == String.class) {
-          Object fieldValue = ClassInfo.getValue(field, destination);
-          if (fieldType == String.class && !stringValue.equals(fieldValue)) {
+        if (fieldClass == String.class) {
+          Object fieldValue = FieldInfo.getFieldValue(field, destination);
+          if (fieldClass == String.class && !stringValue.equals(fieldValue)) {
             throw new IllegalArgumentException("expected " + name + " value <"
                 + fieldValue + "> but was <" + stringValue + ">");
           }
         }
       } else {
-        Object fieldValue = parseValue(stringValue, fieldType);
-        ClassInfo.setValue(field, destination, fieldValue);
+        Object fieldValue = parseValue(stringValue, fieldClass);
+        FieldInfo.setFieldValue(field, destination, fieldValue);
       }
     }
   }
@@ -570,7 +572,7 @@ public final class AtomClient {
         destination == null ? null : destination.getClass();
     boolean isAtomObject =
         destination != null
-            && AtomObject.class.isAssignableFrom(destinationClass);
+            && AtomEntity.class.isAssignableFrom(destinationClass);
     boolean isMap =
         destination != null && Map.class.isAssignableFrom(destinationClass);
     @SuppressWarnings("unchecked")
@@ -676,9 +678,9 @@ public final class AtomClient {
               }
               list.add(mapValue);
             } else if (field != null) {
-              ClassInfo.setValue(field, destination, mapValue);
+              FieldInfo.setFieldValue(field, destination, mapValue);
             } else {
-              AtomObject atom = (AtomObject) destination;
+              AtomEntity atom = (AtomEntity) destination;
               @SuppressWarnings("unchecked")
               List<Object> list = (List<Object>) atom.get(fieldName);
               if (list == null) {
@@ -690,14 +692,14 @@ public final class AtomClient {
           } else if (List.class.isAssignableFrom(fieldClass)) {
             @SuppressWarnings("unchecked")
             List<Object> listValue =
-                (List<Object>) ClassInfo.getValue(field, destination);
+                (List<Object>) FieldInfo.getFieldValue(field, destination);
             Class<?> subFieldClass = ClassInfo.getListParameter(field);
             if (listValue == null) {
               @SuppressWarnings("unchecked")
               List<Object> listValueTemp =
                   (List<Object>) ClassInfo.newListInstance(fieldClass, 1);
               listValue = listValueTemp;
-              ClassInfo.setValue(field, destination, listValue);
+              FieldInfo.setFieldValue(field, destination, listValue);
             }
             Object elementValue = null;
             if (ClassInfo.isImmutable(subFieldClass)) {
@@ -725,7 +727,7 @@ public final class AtomClient {
             }
             listValue.add(elementValue);
           } else {
-            ClassInfo.setValue(field, destination, parseElement(parser,
+            FieldInfo.setFieldValue(field, destination, parseElement(parser,
                 fieldClass, false));
           }
           break;

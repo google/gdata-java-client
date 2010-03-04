@@ -3,6 +3,7 @@
 package com.google.api.data.client.v2.atom;
 
 import com.google.api.data.client.v2.ClassInfo;
+import com.google.api.data.client.v2.FieldInfo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -107,9 +108,9 @@ public final class Atom {
       // deep clone of each field
       Field field = fields[i];
       Class<?> fieldType = field.getType();
-      Object thisValue = ClassInfo.getValue(field, item);
+      Object thisValue = FieldInfo.getFieldValue(field, item);
       if (thisValue != null && !Modifier.isFinal(field.getModifiers())) {
-        ClassInfo.setValue(field, result, clone(thisValue));
+        FieldInfo.setFieldValue(field, result, clone(thisValue));
       }
     }
     // TODO: clone AtomObject

@@ -8,20 +8,21 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
- * Arbitrary object that stores all unknown keys. Subclasses can declare public
- * fields for keys they know, and those keys will be taken into account as well.
+ * Arbitrary entity object that stores all unknown keys. Subclasses can declare
+ * public fields for keys they know, and those keys will be taken into account
+ * as well.
  */
-public class GDataObject {
-  
+public class GDataEntity {
+
   private IdentityHashMap<String, Object> unknown = null;
-  
+
   private final ClassInfo classInfo = ClassInfo.of(getClass());
-  
+
   public final Object get(String key) {
     key = key.intern();
-    Field field = classInfo.getField(key);
-    if (field != null) {
-      return ClassInfo.getValue(field, this);
+    FieldInfo fieldInfo = classInfo.getFieldInfo(key);
+    if (fieldInfo != null) {
+      return fieldInfo.getValue(this);
     }
     Object value = null;
     if (unknown != null) {
@@ -34,7 +35,7 @@ public class GDataObject {
     key = key.intern();
     Field field = classInfo.getField(key);
     if (field != null) {
-      ClassInfo.setValue(field, this, value);
+      FieldInfo.setFieldValue(field, this, value);
       return;
     }
     if (unknown == null) {

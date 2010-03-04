@@ -2,8 +2,6 @@
 
 package com.google.api.data.client.v2;
 
-import org.apache.http.util.ByteArrayBuffer;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -13,10 +11,10 @@ public class GDataException extends Exception {
   static final long serialVersionUID = 1;
 
   /** Error status code of the response. */
-  public final int statusCode;
+  public final int errorCode;
 
-  /** Reason phrase of the response. */
-  public final String reasonPhrase;
+  /** Error message of the response. */
+  public final String errorMessage;
 
   private String content;
 
@@ -24,8 +22,8 @@ public class GDataException extends Exception {
    * @param response GData response
    */
   public GDataException(GDataResponse response) {
-    this.statusCode = response.getStatusCode();
-    this.reasonPhrase = response.getReasonPhrase();
+    this.errorCode = response.getStatusCode();
+    this.errorMessage = response.getStatusMessage();
   }
 
   /**
@@ -35,17 +33,27 @@ public class GDataException extends Exception {
    * @param inputStream input stream or {@code null} to reset message to {@code
    *        null}
    */
-  public void parseContent(InputStream inputStream) throws IOException {
+  public void parseContent(InputStream inputStream, long contentLength)
+      throws IOException {
     this.content = null;
     if (inputStream != null) {
       try {
-        ByteArrayBuffer buffer = new ByteArrayBuffer(4096);
+        int bufferSize = contentLength == -1 ? 4096 : (int) contentLength;
+        int length = 0;
+        byte[] buffer = new byte[bufferSize];
         byte[] tmp = new byte[4096];
         int bytesRead;
         while ((bytesRead = inputStream.read(tmp)) != -1) {
-          buffer.append(tmp, 0, bytesRead);
+          if (length + bytesRead > bufferSize) {
+            bufferSize = Math.max(bufferSize << 1, length + bytesRead);
+            byte[] newbuffer = new byte[bufferSize];
+            System.arraycopy(buffer, 0, newbuffer, 0, length);
+            buffer = newbuffer;
+          }
+          System.arraycopy(tmp, 0, buffer, length, bytesRead);
+          length += bytesRead;
         }
-        this.content = new String(buffer.buffer(), 0, buffer.length());
+        this.content = new String(buffer, 0, length);
       } finally {
         inputStream.close();
       }
@@ -54,8 +62,8 @@ public class GDataException extends Exception {
 
   @Override
   public String getMessage() {
-    StringBuilder messageBuilder = new StringBuilder().append(this.statusCode);
-    String reasonPhrase = this.reasonPhrase;
+    StringBuilder messageBuilder = new StringBuilder().append(this.errorCode);
+    String reasonPhrase = this.errorMessage;
     if (reasonPhrase != null) {
       messageBuilder.append(' ').append(reasonPhrase);
     }

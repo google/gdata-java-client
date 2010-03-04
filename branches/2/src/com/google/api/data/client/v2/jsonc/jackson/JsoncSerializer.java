@@ -3,9 +3,10 @@
 package com.google.api.data.client.v2.jsonc.jackson;
 
 import com.google.api.data.client.v2.DateTime;
+import com.google.api.data.client.v2.FieldInfo;
 import com.google.api.data.client.v2.GDataSerializer;
 import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.jsonc.JsoncObject;
+import com.google.api.data.client.v2.jsonc.JsoncEntity;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
@@ -81,13 +82,13 @@ class JsoncSerializer implements GDataSerializer {
         ClassInfo typeInfo = ClassInfo.of(value.getClass());
         for (String name : typeInfo.getNames()) {
           Field field = typeInfo.getField(name);
-          Object fieldValue = ClassInfo.getValue(field, value);
+          Object fieldValue = FieldInfo.getFieldValue(field, value);
           if (fieldValue != null) {
             serializeField(generator, name, fieldValue);
           }
         }
-        if (value instanceof JsoncObject) {
-          value = ((JsoncObject) value).getUnknownKeyMap();
+        if (value instanceof JsoncEntity) {
+          value = ((JsoncEntity) value).getUnknownKeyMap();
         }
       }
       if (value instanceof Map<?, ?>) {
@@ -101,9 +102,9 @@ class JsoncSerializer implements GDataSerializer {
     }
   }
 
-  private static void serializeField(JsonGenerator generator, String fieldName,
+  private static void serializeField(JsonGenerator generator, String name,
       Object fieldValue) throws IOException {
-    generator.writeFieldName(fieldName);
+    generator.writeFieldName(name);
     serialize(generator, fieldValue);
 
   }

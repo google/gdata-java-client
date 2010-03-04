@@ -4,7 +4,8 @@ package com.google.api.data.client.v2.jsonc.jackson;
 
 import com.google.api.data.client.v2.DateTime;
 import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.jsonc.JsoncObject;
+import com.google.api.data.client.v2.FieldInfo;
+import com.google.api.data.client.v2.jsonc.JsoncEntity;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
@@ -117,9 +118,9 @@ public class Jackson {
       // deep clone of each field
       Field field = fields[i];
       Class<?> fieldClass = field.getType();
-      Object thisValue = ClassInfo.getValue(field, item);
+      Object thisValue = FieldInfo.getFieldValue(field, item);
       if (thisValue != null && !Modifier.isFinal(field.getModifiers())) {
-        ClassInfo.setValue(field, result, clone(thisValue));
+        FieldInfo.setFieldValue(field, result, clone(thisValue));
       }
     }
     return result;
@@ -168,8 +169,8 @@ public class Jackson {
       Field field = typeInfo.getField(key);
       if (field == null) {
         // TODO: handle Map
-        if (JsoncObject.class.isAssignableFrom(destinationClass)) {
-          JsoncObject object = (JsoncObject) destination;
+        if (JsoncEntity.class.isAssignableFrom(destinationClass)) {
+          JsoncEntity object = (JsoncEntity) destination;
           object.set(key, parseValue(parser, curToken, null, null));
         } else {
           // skip unrecognized field and its value
@@ -182,7 +183,7 @@ public class Jackson {
       if (Modifier.isFinal(field.getModifiers())) {
         // TODO: check for other kinds of field types?
         if (fieldClass == String.class) {
-          Object fieldValue = ClassInfo.getValue(field, destination);
+          Object fieldValue = FieldInfo.getFieldValue(field, destination);
           String actualValue = parser.getText();
           if (fieldClass == String.class && !actualValue.equals(fieldValue)) {
             throw new IllegalArgumentException("expected " + key + " value <"
@@ -195,7 +196,7 @@ public class Jackson {
       // TODO: "special" values like Double.POSITIVE_INFINITY?
       Object fieldValue = parseValue(parser, curToken, field, fieldClass);
       // TODO: support any subclasses of List and Map?
-      ClassInfo.setValue(field, destination, fieldValue);
+      FieldInfo.setFieldValue(field, destination, fieldValue);
     }
   }
 
