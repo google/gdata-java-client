@@ -55,6 +55,11 @@
       includes="com/google/api/data/client/v2/jsonc/**" />
   </target>
 
+  <target name="gdata-maps-v2-jar" depends="compile,dist-init">
+    <jar destfile="${dist.dir}/gdata-maps-v2.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/maps/v2/**" />
+  </target>
+
   <target name="gdata-picasa-v2-jar" depends="compile,dist-init">
     <jar destfile="${dist.dir}/gdata-picasa-v2.jar" basedir="${classes.dir}"
       includes="com/google/api/data/picasa/v2/**" />
@@ -71,7 +76,7 @@
     <mkdir dir="${javadoc.dir}" />
     <javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}"
       use="true" windowtitle="GData Java Library ${version}" doctitle="GData Java Library ${version}"
-      packagenames="com.google.api.data.client.v2.atom,com.google.api.data.client.v2.jsonc.jackson,com.google.api.data.client.v2.android,com.google.api.data.client.v2.jsonc,com.google.api.data.client.v2.apache,com.google.api.data.picasa.v2,com.google.api.data.client.v2.escape,com.google.api.data.youtube.v2,com.google.api.data.client.v2,com.google.api.data.client.v2.android.atom">
+      packagenames="com.google.api.data.client.v2.atom,com.google.api.data.client.v2.jsonc.jackson,com.google.api.data.client.v2.net,com.google.api.data.client.v2.android,com.google.api.data.client.v2.jsonc,com.google.api.data.client.v2.apache,com.google.api.data.picasa.v2,com.google.api.data.client.v2.escape,com.google.api.data.youtube.v2,com.google.api.data.maps.v2,com.google.api.data.client.v2,com.google.api.data.client.v2.android.atom">
       <classpath>
         <pathelement location="${env.ANDROID_JAR}" />
         <pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
@@ -81,7 +86,7 @@
   </target>
 
   <target name="jars" description="Compile all jars"
-    depends="gdata-full-jar,gdata-android-v2-jar,gdata-atom-v2-jar,gdata-jsonc-v2-jar,gdata-picasa-v2-jar,gdata-youtube-v2-jar" />
+    depends="gdata-full-jar,gdata-android-v2-jar,gdata-atom-v2-jar,gdata-jsonc-v2-jar,gdata-maps-v2-jar,gdata-picasa-v2-jar,gdata-youtube-v2-jar" />
 
   <target name="dist"
     description="Build the distribution zip file that includes all compiled jar files"
@@ -106,8 +111,9 @@
         <pathelement location="${dist.dir}/gdata-full.jar" />
         <pathelement location="${lib.dir}/junit.jar" />
       </classpath>
-      <arg value="com.google.api.data.AllTests"/>
+      <arg value="com.google.api.data.AllTests" />
     </java>
   </target>
 
+  <target name="all" depends="clean,dist,test" />
 </project>
