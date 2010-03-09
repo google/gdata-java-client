@@ -1,8 +1,8 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2.apache;
+package com.google.api.data.client.http.apache;
 
-import com.google.api.data.client.v2.HttpSerializer;
+import com.google.api.data.client.http.HttpSerializer;
 
 import org.apache.http.entity.AbstractHttpEntity;
 
@@ -37,6 +37,6 @@ final class GDataEntity extends AbstractHttpEntity {
   }
 
   public void writeTo(OutputStream out) throws IOException {
-    serializer.writeTo(out);
+    this.serializer.writeTo(out);
   }
 }

@@ -1,8 +1,8 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2.apache;
+package com.google.api.data.client.http.apache;
 
-import com.google.api.data.client.v2.HttpResponse;
+import com.google.api.data.client.http.HttpResponse;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

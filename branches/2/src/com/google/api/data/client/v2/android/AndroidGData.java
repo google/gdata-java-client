@@ -5,8 +5,8 @@ package com.google.api.data.client.v2.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 
-import com.google.api.data.client.v2.HttpTransport;
-import com.google.api.data.client.v2.apache.ApacheGData;
+import com.google.api.data.client.http.HttpTransport;
+import com.google.api.data.client.http.apache.ApacheGData;
 
 public class AndroidGData {
 

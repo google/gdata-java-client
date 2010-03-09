@@ -11,6 +11,43 @@ public final class CharEscapers {
   }
 
   /**
+   * Escapes the string value so it can be safely included in URIs. For details
+   * on escaping URIs, see section 2.4 of <a
+   * href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>.
+   * 
+   * <p>
+   * When encoding a String, the following rules apply:
+   * <ul>
+   * <li>The alphanumeric characters "a" through "z", "A" through "Z" and "0"
+   * through "9" remain the same.
+   * <li>The special characters ".", "-", "*", and "_" remain the same.
+   * <li>The space character " " is converted into a plus sign "+".
+   * <li>All other characters are converted into one or more bytes using UTF-8
+   * encoding and each byte is then represented by the 3-character string "%XY",
+   * where "XY" is the two-digit, uppercase, hexadecimal representation of the
+   * byte value.
+   * <ul>
+   * 
+   * <p>
+   * <b>Note</b>: Unlike other escapers, URI escapers produce uppercase
+   * hexadecimal sequences. From <a href="http://www.ietf.org/rfc/rfc3986.txt">
+   * RFC 3986</a>:<br>
+   * <i>"URI producers and normalizers should use uppercase hexadecimal digits
+   * for all percent-encodings."</i>
+   * 
+   * <p>
+   * This escaper has identical behavior to (but is potentially much faster
+   * than):
+   * <ul>
+   * <li>{@link java.net.URLEncoder#encode(String, String)} with the encoding
+   * name "UTF-8"
+   * </ul>
+   */
+  public static String escapeUri(String value) {
+    return URI_ESCAPER.escape(value);
+  }
+
+  /**
    * Escapes the string value so it can be safely included in URI path segments.
    * For details on escaping URIs, see section 2.4 of <a
    * href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
@@ -89,6 +126,9 @@ public final class CharEscapers {
   public static String escapeSlug(String value) {
     return SLUG_ESCAPER.escape(value);
   }
+
+  private static final Escaper URI_ESCAPER =
+      new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, true);
 
   private static final Escaper URI_PATH_ESCAPER =
       new PercentEscaper(PercentEscaper.SAFEPATHCHARS_URLENCODER, false);

@@ -2,13 +2,14 @@
 
 package com.google.api.data.client.v2;
 
+import com.google.api.data.client.http.HttpSerializer;
+import com.google.api.data.client.http.MultipartHttpSerializer;
+import com.google.api.data.client.http.Request;
+import com.google.api.data.client.http.Response;
+import com.google.api.data.client.http.Transport;
 import com.google.api.data.client.v2.escape.CharEscapers;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class GDataClient {
 
@@ -57,274 +58,141 @@ public final class GDataClient {
    */
   public static final int ERROR_INTERNAL_SERVER_ERROR = 500;
 
-  public static final String IMAGE_BMP = "image/bmp";
-  public static final String IMAGE_GIF = "image/gif";
-  public static final String IMAGE_JPEG = "image/jpeg";
-  public static final String IMAGE_PNG = "image/png";
+  private final Transport transport;
 
-  public static final String VIDEO_3GPP = "video/3gpp";
-  public static final String VIDEO_AVI = "video/avi";
-  public static final String VIDEO_QUICKTIME = "video/quicktime";
-  public static final String VIDEO_MP4 = "video/mp4";
-  public static final String VIDEO_MPEG = "video/mpeg";
-  public static final String VIDEO_MPEG4 = "video/mpeg4";
-  public static final String VIDEO_MSVIDEO = "video/msvideo";
-  public static final String VIDEO_X_MS_ASF = "video/x-ms-asf";
-  public static final String VIDEO_X_MS_WMV = "video/x-ms-wmv";
-  public static final String VIDEO_X_MSVIDEO = "video/x-msvideo";
-
-  /**
-   * If this system property is set to {@code true}, the GData HTTP client
-   * library will use POST to send data to the associated GData service and will
-   * specify the actual method using the method override HTTP header. This can
-   * be used as a workaround for HTTP proxies or gateways that do not handle
-   * PUT, PATCH, or DELETE HTTP methods properly. If the system property is
-   * {@code false}, the regular verbs will be used.
-   */
-  public static final boolean ENABLE_METHOD_OVERRIDE =
-      Boolean.getBoolean("com.google.gdata.UseMethodOverride");
-
-  private static final boolean ENABLE_GZIP = true;
-  private final String contentType;
-  private final HttpTransport httpTransport;
-  private final ArrayList<String> defaultHeaderNames = new ArrayList<String>();
-  private final ArrayList<String> defaultHeaderValues = new ArrayList<String>();
-
-  public GDataClient(HttpTransport httpTransport, String contentType,
-      String applicationName, String authToken, String version) {
-    this.httpTransport = httpTransport;
-    this.contentType = contentType;
-    addDefaultHeader("GData-Version", version);
-    if (authToken != null) {
-      addDefaultHeader("Authorization", "GoogleLogin auth=" + authToken);
-    }
-    StringBuilder buf =
-        new StringBuilder().append(applicationName).append(
-            " GData-Java/2.0.0-alpha");
-    if (ENABLE_GZIP) {
-      buf.append("(gzip)");
-      addDefaultHeader("Accept-Encoding", "gzip");
-    }
-    addDefaultHeader("User-Agent", buf.toString());
+  public GDataClient(Transport transport, String version) {
+    this.transport = transport;
+    transport.addDefaultHeader("GData-Version", version);
   }
 
-  public GDataResponse executeGet(String uri) throws IOException {
-    return execute(getRequest(uri));
+  public Response executeGet(String uri) throws IOException {
+    return execute(buildGetRequest(uri));
   }
 
-  public GDataResponse executeGetIfModified(String uri, String etag)
+  public Response executeGetIfModified(String uri, String etag)
       throws IOException {
-    HttpRequest request = getRequest(uri);
+    Request request = buildGetRequest(uri);
     request.addHeader("If-None-Match", etag);
     return execute(request);
   }
 
-  public GDataResponse executePutIfNotModified(String uri, String etag,
-      GDataSerializer content) throws IOException {
-    HttpRequest request = putRequest(uri);
+  public Response executePutIfNotModified(String uri, String etag,
+      HttpSerializer content) throws IOException {
+    Request request = buildPutRequest(uri);
     addIfMatchHeader(request, etag);
-    setContent(request, content, this.contentType);
+    request.setContent(content);
     return execute(request);
   }
 
-  public GDataResponse executePatchIfNotModified(String uri, String etag,
-      GDataSerializer content, String patchContentType) throws IOException {
-    HttpRequest request = patchRequest(uri);
-    setContent(request, content, patchContentType);
+  public Response executePatchIfNotModified(String uri, String etag,
+      HttpSerializer content) throws IOException {
+    Request request = buildPatchRequest(uri);
+    request.setContent(content);
     addIfMatchHeader(request, etag);
-    if (ENABLE_METHOD_OVERRIDE || !httpTransport.supportsPatch()) {
-      addMethodOverrideHeader(request, "PATCH");
-    }
     return execute(request);
   }
 
-  public GDataResponse executePost(String uri, GDataSerializer content)
+  public Response executePost(String uri, HttpSerializer content)
       throws IOException {
-    HttpRequest request = postRequest(uri);
-    setContent(request, content, this.contentType);
+    Request request = buildPostRequest(uri);
+    request.setContent(content);
     return execute(request);
   }
 
-  public GDataResponse executePostMediaWithMetadata(String uri,
-      GDataSerializer metadata, String mediaType, InputStream mediaContent,
-      long mediaContentLength) throws IOException {
-    return executeMediaWithMetadata(postRequest(uri), metadata, mediaType,
-        mediaContent, mediaContentLength);
+  public Response executePostMediaWithMetadata(String uri,
+      HttpSerializer metadata, HttpSerializer mediaContent) throws IOException {
+    return executeMediaWithMetadata(buildPostRequest(uri), metadata, mediaContent);
   }
 
   /**
    * For example, to post media from a file, use {@code executePostMedia(uri,
-   * file.getName(), mediaType, new FileInputStream(file), file.length()}.
+   * file.getName(), mediaType, new FileHttpSerializer(file))}.
    */
-  public GDataResponse executePostMedia(String uri, String fileName,
-      String mediaType, InputStream mediaContent, long mediaContentLength)
-      throws IOException {
-    return executeMedia(postRequest(uri), fileName, mediaType, mediaContent,
-        mediaContentLength);
+  public Response executePostMedia(String uri, String fileName,
+      HttpSerializer mediaContent) throws IOException {
+    return executeMedia(buildPostRequest(uri), fileName, mediaContent);
   }
 
-  public GDataResponse executePutMediaWithMetadata(String uri,
-      GDataSerializer metadata, String mediaType, InputStream mediaContent,
-      long mediaContentLength) throws IOException {
-    return executeMediaWithMetadata(putRequest(uri), null, mediaType,
-        mediaContent, mediaContentLength);
+  public Response executePutMediaWithMetadata(String uri,
+      HttpSerializer metadata, HttpSerializer content) throws IOException {
+    return executeMediaWithMetadata(buildPutRequest(uri), metadata, content);
   }
 
-  public GDataResponse executePutMediaIfNotModified(String uri, String etag,
-      String mediaType, InputStream mediaContent, long mediaContentLength)
-      throws IOException {
-    HttpRequest request = putRequest(uri);
+  public Response executePutMediaIfNotModified(String uri, String etag,
+      HttpSerializer mediaContent) throws IOException {
+    Request request = buildPutRequest(uri);
     addIfMatchHeader(request, etag);
-    return executeMedia(request, null, mediaType, mediaContent,
-        mediaContentLength);
+    return executeMedia(request, null, mediaContent);
   }
 
-  public GDataResponse executeDelete(String uri) throws IOException {
+  public Response executeDelete(String uri) throws IOException {
     return executeDelete(uri, null);
   }
 
-  public GDataResponse executeDeleteIfNotModified(String uri, String etag)
+  public Response executeDeleteIfNotModified(String uri, String etag)
       throws IOException {
     return executeDelete(uri, etag);
   }
 
-  private GDataResponse execute(HttpRequest request) throws IOException {
-    // default headers
-    ArrayList<String> defaultHeaderNames = this.defaultHeaderNames;
-    ArrayList<String> defaultHeaderValues = this.defaultHeaderValues;
-    int size = defaultHeaderNames.size();
-    for (int i = 0; i < size; i++) {
-      request.addHeader(defaultHeaderNames.get(i), defaultHeaderValues.get(i));
-    }
+  private Response execute(Request request) throws IOException {
     // execute
-    return new GDataResponse(request.execute());
+    return request.execute();
   }
 
-  private GDataResponse executeDelete(String uri, String etag)
-      throws IOException {
-    HttpRequest request = deleteRequest(uri);
+  private Response executeDelete(String uri, String etag) throws IOException {
+    Request request = buildDeleteRequest(uri);
     if (etag != null) {
       addIfMatchHeader(request, etag);
     }
-    if (ENABLE_METHOD_OVERRIDE) {
-      addMethodOverrideHeader(request, "DELETE");
-    }
     return execute(request);
   }
 
-  private GDataResponse executeMediaWithMetadata(HttpRequest request,
-      GDataSerializer metadata, String mediaType, InputStream mediaContent,
-      long mediaContentLength) throws IOException {
-    GDataMultipartHttpSerializer httpSerializer =
-        GDataMultipartHttpSerializer.create(metadata, this.contentType,
-            mediaType, mediaContent, mediaContentLength);
-    long length = httpSerializer.length;
-    request.setContent(length, "multipart/related; boundary=\"END_OF_PART\"",
-        null, httpSerializer);
-    Logger logger = GData.LOGGER;
-    if (logger.isLoggable(Level.CONFIG)) {
-      GDataResponse.debugContentMetadata(logger, contentType, null, length);
-    }
-    addHeader(request, "MIME-version", "1.0");
+  private Response executeMediaWithMetadata(Request request,
+      HttpSerializer metadata, HttpSerializer content) throws IOException {
+    MultipartHttpSerializer serializer =
+        new MultipartHttpSerializer(metadata, content);
+    serializer.addHeaders(request);
     return execute(request);
   }
 
-  private GDataResponse executeMedia(HttpRequest request, String fileName,
-      String mediaType, InputStream mediaContent, long mediaContentLength)
-      throws IOException {
-    setContent(request, mediaContent, mediaType, mediaContentLength);
+  private Response executeMedia(Request request, String fileName,
+      HttpSerializer mediaContent) throws IOException {
+    request.setContent(mediaContent);
     return executeMedia(request, fileName);
   }
 
-  private GDataResponse executeMedia(HttpRequest request, String fileName)
+  private Response executeMedia(Request request, String fileName)
       throws IOException {
     if (fileName != null) {
-      addHeader(request, "Slug", CharEscapers.escapeSlug(fileName));
+      request.addHeader("Slug", CharEscapers.escapeSlug(fileName));
     }
     return execute(request);
   }
 
-  private void addIfMatchHeader(HttpRequest request, String etag) {
+  private void addIfMatchHeader(Request request, String etag) {
     // TODO: shouldn't set if etag.startsWith("W/")?
-    addHeader(request, "If-Match", etag);
+    request.addHeader("If-Match", etag);
   }
 
-  private void addMethodOverrideHeader(HttpRequest request, String method) {
-    addHeader(request, "X-HTTP-Method-Override", method);
+  private Request buildGetRequest(String uri) throws IOException {
+    return this.transport.buildGetRequest(uri);
   }
 
-  private void addHeader(HttpRequest request, String name, String value) {
-    Logger logger = GData.LOGGER;
-    if (logger.isLoggable(Level.CONFIG) && !name.equals("Authorization")) {
-      logger.config(name + ": " + value);
-    }
-    request.addHeader(name, value);
+  private Request buildDeleteRequest(String uri) throws IOException {
+    return this.transport.buildDeleteRequest(uri);
   }
 
-  private void setContent(HttpRequest request, InputStream inputStream,
-      String contentType, long contentLength) {
-    request.setContent(contentLength, contentType, inputStream);
-    Logger logger = GData.LOGGER;
-    if (logger.isLoggable(Level.CONFIG)) {
-      GDataResponse.debugContentMetadata(logger, contentType, null,
-          contentLength);
-    }
+  private Request buildPutRequest(String uri) throws IOException {
+    return this.transport.buildPutRequest(uri);
   }
 
-  private void setContent(HttpRequest request, GDataSerializer content,
-      String contentType) {
-    GDataHttpSerializer httpSerializer =
-        GDataHttpSerializer.create(content, contentType);
-    String contentEncoding = httpSerializer.contentEncoding;
-    long contentLength = httpSerializer.contentLength;
-    request.setContent(contentLength, contentType, contentEncoding,
-        httpSerializer);
-    Logger logger = GData.LOGGER;
-    if (logger.isLoggable(Level.CONFIG)) {
-      GDataResponse.debugContentMetadata(logger, contentType, contentEncoding,
-          contentLength);
-    }
+  private Request buildPostRequest(String uri) throws IOException {
+    return this.transport.buildPostRequest(uri);
   }
 
-  private void logVerb(String verb, String uri) {
-    Logger logger = GData.LOGGER;
-    if (logger.isLoggable(Level.CONFIG)) {
-      logger.config(verb + " " + uri);
-    }
-  }
-
-  private HttpRequest getRequest(String uri) throws IOException {
-    logVerb("GET", uri);
-    return this.httpTransport.getRequest(uri);
-  }
-
-  private HttpRequest deleteRequest(String uri) throws IOException {
-    logVerb("DELETE", uri);
-    return this.httpTransport.deleteRequest(uri);
-  }
-
-  private HttpRequest putRequest(String uri) throws IOException {
-    logVerb("PUT", uri);
-    return this.httpTransport.putRequest(uri);
-  }
-
-  private HttpRequest postRequest(String uri) throws IOException {
-    logVerb("POST", uri);
-    return this.httpTransport.postRequest(uri);
-  }
-
-  private HttpRequest patchRequest(String uri) throws IOException {
-    logVerb("PATCH", uri);
-    return this.httpTransport.patchRequest(uri);
-  }
-
-  private void addDefaultHeader(String name, String value) {
-    this.defaultHeaderNames.add(name);
-    this.defaultHeaderValues.add(value);
+  private Request buildPatchRequest(String uri) throws IOException {
+    return this.transport.buildPatchRequest(uri);
   }
 
   // TODO: support If-Modified-Since or does ETag deprecate it?
-  // TODO: consider a request-style model
-  // TODO: support running operations async with a callback?
-  // TODO: ability to set additional arbitrary headers per request?
 }

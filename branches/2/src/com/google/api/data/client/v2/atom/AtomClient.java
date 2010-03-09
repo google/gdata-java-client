@@ -2,13 +2,14 @@
 
 package com.google.api.data.client.v2.atom;
 
+import com.google.api.data.client.auth.Authorizer;
+import com.google.api.data.client.http.HttpSerializer;
+import com.google.api.data.client.http.Response;
+import com.google.api.data.client.http.Transport;
 import com.google.api.data.client.v2.ClassInfo;
 import com.google.api.data.client.v2.DateTime;
 import com.google.api.data.client.v2.FieldInfo;
 import com.google.api.data.client.v2.GDataClient;
-import com.google.api.data.client.v2.GDataResponse;
-import com.google.api.data.client.v2.GDataSerializer;
-import com.google.api.data.client.v2.HttpTransport;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -27,24 +28,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class AtomClient {
-  private static final String CONTENT_TYPE = "application/atom+xml";
+  static final String CONTENT_TYPE = "application/atom+xml";
 
-  private static final String PATCH_CONTENT_TYPE = "application/xml";
   static final String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";
   static final String GD_NAMESPACE = "http://schemas.google.com/g/2005";
 
   public static final class Builder {
 
+    public Authorizer authorizer;
+
     private List<String> namespaceAliases = null;
     private List<String> namespaceUris = null;
-
-    public HttpTransport httpTransport;
 
     public GDataXmlParserFactory parserFactory;
 
     public String applicationName;
-
-    public String authToken;
 
     public String version;
 
@@ -62,9 +60,9 @@ public final class AtomClient {
     }
 
     public AtomClient build() throws XmlPullParserException {
-      return new AtomClient(this.httpTransport, this.applicationName,
-          this.authToken, this.version, this.parserFactory,
-          this.namespaceAliases, this.namespaceUris);
+      return new AtomClient(this.applicationName, this.authorizer,
+          this.version, this.parserFactory, this.namespaceAliases,
+          this.namespaceUris);
     }
   }
 
@@ -75,10 +73,9 @@ public final class AtomClient {
   private final ConcurrentHashMap<String, String> namespaceAliasToUriMap =
       new ConcurrentHashMap<String, String>();
 
-  AtomClient(HttpTransport httpTransport, String applicationName,
-      String authToken, String version, GDataXmlParserFactory parserFactory,
-      List<String> namespaceAliases, List<String> namespaceUris)
-      throws XmlPullParserException {
+  AtomClient(String applicationName, Authorizer authorizer, String version,
+      GDataXmlParserFactory parserFactory, List<String> namespaceAliases,
+      List<String> namespaceUris) throws XmlPullParserException {
     this.parserFactory =
         parserFactory == null ? new DefaultGDataXmlParserFactory()
             : parserFactory;
@@ -94,10 +91,9 @@ public final class AtomClient {
             + previousUri);
       }
     }
-    this.gdataClient =
-        new GDataClient(httpTransport, CONTENT_TYPE, (applicationName
-                + "(atom+xml)"),
-        authToken, version);
+    Transport transport =
+        new Transport(applicationName + "(atom+xml)", authorizer);
+    this.gdataClient = new GDataClient(transport, version);
   }
 
   public AtomFeedResponse executeGetFeed(String uri) throws IOException,
@@ -132,32 +128,31 @@ public final class AtomClient {
   }
 
   public AtomEntryResponse executePostMedia(String uri, String fileName,
-      String mediaType, InputStream mediaContent, long mediaContentLength)
-      throws IOException, XmlPullParserException, AtomException {
+      HttpSerializer mediaContent) throws IOException, XmlPullParserException,
+      AtomException {
     return parseEntryResponse(this.gdataClient.executePostMedia(uri, fileName,
-        mediaType, mediaContent, mediaContentLength));
+        mediaContent));
   }
 
   public AtomEntryResponse executePostMediaWithMetadata(String uri,
-      GDataSerializer metadata, String mediaType, InputStream mediaContent,
-      long mediaContentLength) throws IOException, XmlPullParserException,
-      AtomException {
+      HttpSerializer metadata, HttpSerializer mediaContent) throws IOException,
+      XmlPullParserException, AtomException {
     return parseEntryResponse(this.gdataClient.executePostMediaWithMetadata(
-        uri, metadata, mediaType, mediaContent, mediaContentLength));
+        uri, metadata, mediaContent));
   }
 
   public AtomEntryResponse executePatchEntryIfNotModified(String uri,
       String etag, Object patchedEntry) throws IOException, AtomException,
       XmlPullParserException {
     return parseEntryResponse(this.gdataClient.executePatchIfNotModified(uri,
-        etag, new AtomSerializer(this, patchedEntry), PATCH_CONTENT_TYPE));
+        etag, new AtomSerializer(this, patchedEntry)));
   }
 
   public AtomEntryResponse executePatchEntryIfNotModified(String uri,
-      String etag, GDataSerializer content) throws IOException,
+      String etag, HttpSerializer content) throws IOException,
       XmlPullParserException, AtomException {
     return parseEntryResponse(this.gdataClient.executePatchIfNotModified(uri,
-        etag, content, PATCH_CONTENT_TYPE));
+        etag, content));
   }
 
   public AtomEntryResponse executePatchEntryRelativeToOriginalIfNotModified(
@@ -165,7 +160,7 @@ public final class AtomClient {
       throws IOException, AtomException, XmlPullParserException {
     return parseEntryResponse(this.gdataClient.executePatchIfNotModified(uri,
         etag, new AtomPatchRelativeToOriginalSerializer(this, patchedEntry,
-            originalEntry), PATCH_CONTENT_TYPE));
+            originalEntry)));
   }
 
   public AtomEntryResponse executePutEntryIfNotModified(String uri,
@@ -181,26 +176,24 @@ public final class AtomClient {
   }
 
   public AtomEntryResponse executePutEntryIfNotModified(String uri,
-      String etag, GDataSerializer content) throws IOException,
+      String etag, HttpSerializer content) throws IOException,
       XmlPullParserException, AtomException {
     return parseEntryResponse(this.gdataClient.executePutIfNotModified(uri,
         etag, content));
   }
 
   public AtomEntryResponse executePutMediaIfNotModified(String uri,
-      String etag, String mediaType, InputStream mediaContent,
-      long mediaContentLength) throws IOException, XmlPullParserException,
-      AtomException {
+      String etag, HttpSerializer mediaContent) throws IOException,
+      XmlPullParserException, AtomException {
     return parseEntryResponse(this.gdataClient.executePutMediaIfNotModified(
-        uri, etag, mediaType, mediaContent, mediaContentLength));
+        uri, etag, mediaContent));
   }
 
   public AtomEntryResponse executePutMediaWithMetadata(String uri,
-      GDataSerializer metadata, String mediaType, InputStream mediaContent,
-      long mediaContentLength) throws IOException, XmlPullParserException,
-      AtomException {
+      HttpSerializer metadata, HttpSerializer mediaContent) throws IOException,
+      XmlPullParserException, AtomException {
     return parseEntryResponse(this.gdataClient.executePutMediaWithMetadata(uri,
-        metadata, mediaType, mediaContent, mediaContentLength));
+        metadata, mediaContent));
   }
 
   public void executeDeleteEntry(String uri) throws IOException, AtomException,
@@ -234,12 +227,12 @@ public final class AtomClient {
     return newInstance;
   }
 
-  private void ignoreSuccessResponse(GDataResponse response)
-      throws AtomException, IOException, XmlPullParserException {
+  private void ignoreSuccessResponse(Response response) throws AtomException,
+      IOException, XmlPullParserException {
     processResponse(response).close();
   }
 
-  private AtomEntryResponse parseEntryResponse(GDataResponse response)
+  private AtomEntryResponse parseEntryResponse(Response response)
       throws XmlPullParserException, IOException, AtomException {
     InputStream content = processResponse(response);
     try {
@@ -254,7 +247,7 @@ public final class AtomClient {
     }
   }
 
-  private AtomFeedResponse parseFeedResponse(GDataResponse response)
+  private AtomFeedResponse parseFeedResponse(Response response)
       throws XmlPullParserException, IOException, AtomException {
     InputStream content = processResponse(response);
     try {
@@ -269,8 +262,8 @@ public final class AtomClient {
     }
   }
 
-  private InputStream processResponse(GDataResponse response)
-      throws IOException, AtomException, XmlPullParserException {
+  private InputStream processResponse(Response response) throws IOException,
+      AtomException, XmlPullParserException {
     if (response.isSuccessStatusCode()) {
       return response.getContent();
     }
@@ -283,7 +276,7 @@ public final class AtomClient {
           exception.parser = parser;
           exception.inputStream = inputStream;
         } else {
-          exception.parseContent(inputStream, response.getContentLength());
+          exception.content = response.parseContentAsString();
         }
         inputStream = null;
       } finally {

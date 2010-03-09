@@ -1,6 +1,6 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2;
+package com.google.api.data.client.http;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-public final class GDataResponse {
+public final class Response {
 
   private final boolean isSuccessStatusCode;
   private final long contentLength;
@@ -21,7 +21,7 @@ public final class GDataResponse {
   private final String statusMessage;
   private final String contentEncoding;
 
-  GDataResponse(HttpResponse response) throws IOException {
+  Response(HttpResponse response) {
     this.response = response;
     long contentLength = this.contentLength = response.getContentLength();
     String contentType = this.contentType = response.getContentType();
@@ -29,10 +29,10 @@ public final class GDataResponse {
         this.contentEncoding = response.getContentEncoding();
     int code = response.getStatusCode();
     this.statusCode = code;
-    this.isSuccessStatusCode = code >= 200 && code < 300;
+    this.isSuccessStatusCode = isSuccessStatusCode(code);
     String message = response.getReasonPhrase();
     this.statusMessage = message;
-    Logger logger = GData.LOGGER;
+    Logger logger = Transport.LOGGER;
     if (logger.isLoggable(Level.CONFIG)) {
       logger.config(response.getStatusLine());
       debugContentMetadata(logger, contentType, contentEncoding, contentLength);
@@ -41,9 +41,7 @@ public final class GDataResponse {
 
   static void debugContentMetadata(Logger logger, String contentType,
       String contentEncoding, long contentLength) {
-    if (contentType != null) {
-      logger.config("Content-Type: " + contentType);
-    }
+    logger.config("Content-Type: " + contentType);
     if (contentEncoding != null) {
       logger.config("Content-Encoding: " + contentEncoding);
     }
@@ -62,10 +60,9 @@ public final class GDataResponse {
       return this.content;
     }
     InputStream content = this.response.getContent();
-    this.content = content;
     this.response = null;
     if (content != null) {
-      Logger logger = GData.LOGGER;
+      Logger logger = Transport.LOGGER;
       if (logger.isLoggable(Level.CONFIG)) {
         byte[] debugContent = readStream(content);
         logger.config("Response size: " + debugContent.length + " bytes");
@@ -87,8 +84,40 @@ public final class GDataResponse {
           content = new ByteArrayInputStream(debugContent);
         }
       }
+      this.content = content;
     }
     return content;
+  }
+
+  public String parseContentAsString() throws IOException {
+    return parseContentAsString(getContent(), this.contentLength);
+  }
+
+  public static String parseContentAsString(InputStream content,
+      long contentLength) throws IOException {
+    if (content == null) {
+      return null;
+    }
+    try {
+      int bufferSize = contentLength == -1 ? 4096 : (int) contentLength;
+      int length = 0;
+      byte[] buffer = new byte[bufferSize];
+      byte[] tmp = new byte[4096];
+      int bytesRead;
+      while ((bytesRead = content.read(tmp)) != -1) {
+        if (length + bytesRead > bufferSize) {
+          bufferSize = Math.max(bufferSize << 1, length + bytesRead);
+          byte[] newbuffer = new byte[bufferSize];
+          System.arraycopy(buffer, 0, newbuffer, 0, length);
+          buffer = newbuffer;
+        }
+        System.arraycopy(tmp, 0, buffer, length, bytesRead);
+        length += bytesRead;
+      }
+      return new String(buffer, 0, length);
+    } finally {
+      content.close();
+    }
   }
 
   public long getContentLength() {
@@ -119,5 +148,9 @@ public final class GDataResponse {
       content.close();
     }
     return debugStream.toByteArray();
+  }
+
+  public static boolean isSuccessStatusCode(int statusCode) {
+    return statusCode >= 200 && statusCode < 300;
   }
 }
