@@ -1,24 +1,25 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2.net;
+package com.google.api.data.client.http.net;
 
-import com.google.api.data.client.v2.HttpRequest;
-import com.google.api.data.client.v2.HttpResponse;
-import com.google.api.data.client.v2.HttpSerializer;
+import com.google.api.data.client.http.HttpRequest;
+import com.google.api.data.client.http.HttpResponse;
+import com.google.api.data.client.http.HttpSerializer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 final class NetHttpRequest implements HttpRequest {
 
   private final HttpURLConnection connection;
+  private HttpSerializer serializer;
 
   NetHttpRequest(String requestMethod, String uri) throws IOException {
     HttpURLConnection connection =
         this.connection = (HttpURLConnection) new URL(uri).openConnection();
     connection.setRequestMethod(requestMethod);
+    connection.setUseCaches(false);
   }
 
   public void addHeader(String name, String value) {
@@ -26,6 +27,22 @@ final class NetHttpRequest implements HttpRequest {
   }
 
   public HttpResponse execute() throws IOException {
+    HttpURLConnection connection = this.connection;
+    // write content
+    HttpSerializer serializer = this.serializer;
+    if (serializer != null) {
+      connection.setDoOutput(true);
+      addHeader("Content-Type", serializer.getContentType());
+      String contentEncoding = serializer.getContentEncoding();
+      if (contentEncoding != null) {
+        addHeader("Content-Encoding", contentEncoding);
+      }
+      long contentLength = serializer.getContentLength();
+      if (contentLength >= 0) {
+        addHeader("Content-Length", Long.toString(contentLength));
+      }
+      serializer.writeTo(connection.getOutputStream());
+    }
     // Set the http.strictPostRedirect property to prevent redirected
     // POST/PUT/DELETE from being mapped to a GET. This
     // system property was a hack to fix a jdk bug w/out changing back
@@ -49,16 +66,8 @@ final class NetHttpRequest implements HttpRequest {
     }
   }
 
-  public void setContent(long contentLength, String contentType,
-      String contentEncoding, HttpSerializer serializer) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  public void setContent(long contentLength, String contentType,
-      InputStream inputStream) {
-    // TODO Auto-generated method stub
-    
+  public void setContent(HttpSerializer serializer) {
+    this.serializer = serializer;
   }
 
 }

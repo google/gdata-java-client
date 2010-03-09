@@ -2,10 +2,10 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
+import com.google.api.data.client.http.HttpSerializer;
+import com.google.api.data.client.v2.ClassInfo;
 import com.google.api.data.client.v2.DateTime;
 import com.google.api.data.client.v2.FieldInfo;
-import com.google.api.data.client.v2.GDataSerializer;
-import com.google.api.data.client.v2.ClassInfo;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 
 import org.codehaus.jackson.JsonEncoding;
@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-class JsoncSerializer implements GDataSerializer {
+class JsoncSerializer implements HttpSerializer {
   // TODO: ability to annotate fields as not needed, or only needed for
   // POST?
 
@@ -34,7 +34,15 @@ class JsoncSerializer implements GDataSerializer {
     return -1;
   }
 
-  public final void serialize(OutputStream out) throws IOException {
+  public String getContentEncoding() {
+    return null;
+  }
+
+  public String getContentType() {
+    return JsoncClient.CONTENT_TYPE;
+  }
+
+  public void writeTo(OutputStream out) throws IOException {
     JsonGenerator generator =
         Jackson.JSON_FACTORY.createJsonGenerator(out, JsonEncoding.UTF8);
     generator.writeStartObject();

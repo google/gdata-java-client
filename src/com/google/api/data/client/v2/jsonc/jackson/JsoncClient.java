@@ -2,9 +2,11 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
+import com.google.api.data.client.auth.Authorizer;
+import com.google.api.data.client.http.HttpSerializer;
+import com.google.api.data.client.http.Response;
+import com.google.api.data.client.http.Transport;
 import com.google.api.data.client.v2.GDataClient;
-import com.google.api.data.client.v2.GDataResponse;
-import com.google.api.data.client.v2.HttpTransport;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 
 import org.codehaus.jackson.JsonParser;
@@ -13,26 +15,26 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public final class JsoncClient {
-  private static final String CONTENT_TYPE = "application/json";
+  static final String CONTENT_TYPE = "application/json";
 
   public static final class Builder {
-    public HttpTransport httpTransport;
+
+    public Authorizer authorizer;
     public String applicationName;
-    public String authToken;
     public String version;
 
     public JsoncClient build() {
-      return new JsoncClient(httpTransport, applicationName, authToken, version);
+      return new JsoncClient(this.applicationName, this.authorizer,
+          this.version);
     }
   }
 
   private final GDataClient gdataClient;
 
-  JsoncClient(HttpTransport httpTransport, String applicationName,
-      String authToken, String version) {
-    gdataClient =
-        new GDataClient(httpTransport, CONTENT_TYPE,
-            (applicationName + "(jsonc)"), authToken, version);
+  JsoncClient(String applicationName, Authorizer authorizer, String version) {
+    Transport transport =
+        new Transport(applicationName + "(jsonc)", authorizer);
+    this.gdataClient = new GDataClient(transport, version);
   }
 
   // TODO: GDataJsoncRequest with an execute() method?
@@ -80,37 +82,34 @@ public final class JsoncClient {
 
   public JsoncItemResponse executePostItem(String uri, Object item)
       throws IOException, JsoncException {
-    GDataResponse response =
+    Response response =
         this.gdataClient.executePost(uri, new JsoncSerializer(item));
     return new JsoncItemResponse(parseUpToData(response));
   }
 
   public JsoncItemResponse executePostMedia(String uri, String fileName,
-      String mediaType, InputStream mediaContent, long mediaContentLength)
-      throws IOException, JsoncException {
-    GDataResponse response =
-        this.gdataClient.executePostMedia(uri, fileName, mediaType,
-            mediaContent, mediaContentLength);
+      HttpSerializer mediaContent) throws IOException, JsoncException {
+    Response response =
+        this.gdataClient.executePostMedia(uri, fileName, mediaContent);
     return new JsoncItemResponse(parseUpToData(response));
   }
 
   public JsoncItemResponse executePatchItemWithMaskIfNotModified(String uri,
       String etag, Object patchedItem, String partialMask) throws IOException,
       JsoncException {
-    GDataResponse response =
+    Response response =
         this.gdataClient.executePatchIfNotModified(uri, etag,
-            new JsoncPatchWithMaskSerializer(patchedItem, partialMask),
-            CONTENT_TYPE);
+            new JsoncPatchWithMaskSerializer(patchedItem, partialMask));
     return new JsoncItemResponse(parseUpToData(response));
   }
 
   public JsoncItemResponse executePatchItemRelativeToOriginalIfNotModified(
       String uri, String etag, Object patchedItem, Object originalItem)
       throws IOException, JsoncException {
-    GDataResponse response =
+    Response response =
         this.gdataClient.executePatchIfNotModified(uri, etag,
             new JsoncPatchRelativeToOriginalSerializer(patchedItem,
-                originalItem), CONTENT_TYPE);
+                originalItem));
     return new JsoncItemResponse(parseUpToData(response));
   }
 
@@ -121,18 +120,17 @@ public final class JsoncClient {
           + JsoncEntity.class.getName());
       // TODO: check subclasses extend GDataJsoncObject
     }
-    GDataResponse response =
+    Response response =
         this.gdataClient.executePutIfNotModified(uri, etag,
             new JsoncSerializer(item));
     return new JsoncItemResponse(parseUpToData(response));
   }
 
   public JsoncItemResponse executePutMediaIfNotModified(String uri,
-      String etag, String mediaType, InputStream mediaContent,
-      long mediaContentLength) throws IOException, JsoncException {
-    GDataResponse response =
-        this.gdataClient.executePutMediaIfNotModified(uri, etag, mediaType,
-            mediaContent, mediaContentLength);
+      String etag, HttpSerializer mediaContent) throws IOException,
+      JsoncException {
+    Response response =
+        this.gdataClient.executePutMediaIfNotModified(uri, etag, mediaContent);
     return new JsoncItemResponse(parseUpToData(response));
   }
 
@@ -148,21 +146,21 @@ public final class JsoncClient {
 
   private JsonParser executeGetIfModified(String uri, String etag)
       throws IOException, JsoncException {
-    GDataResponse response = this.gdataClient.executeGetIfModified(uri, etag);
+    Response response = this.gdataClient.executeGetIfModified(uri, etag);
     return parseUpToData(response);
   }
 
   private JsonParser executeGet(String uri) throws IOException, JsoncException {
-    GDataResponse response = this.gdataClient.executeGet(uri);
+    Response response = this.gdataClient.executeGet(uri);
     return parseUpToData(response);
   }
 
-  private static void ignoreSuccessResponse(GDataResponse response)
+  private static void ignoreSuccessResponse(Response response)
       throws JsoncException, IOException {
     processResponse(response).close();
   }
 
-  private static JsonParser parseUpToData(GDataResponse response)
+  private static JsonParser parseUpToData(Response response)
       throws IOException, JsoncException {
     InputStream content = processResponse(response);
     try {
@@ -184,7 +182,7 @@ public final class JsoncClient {
     }
   }
 
-  private static InputStream processResponse(GDataResponse response)
+  private static InputStream processResponse(Response response)
       throws JsoncException, IOException {
     if (response.isSuccessStatusCode()) {
       return response.getContent();
@@ -209,7 +207,7 @@ public final class JsoncClient {
             inputStream = null;
           }
         } else {
-          exception.parseContent(inputStream, response.getContentLength());
+          exception.content = response.parseContentAsString();
           inputStream = null;
         }
       } finally {

@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.v2.atom;
 
+import com.google.api.data.client.http.Response;
 import com.google.api.data.client.v2.GDataException;
-import com.google.api.data.client.v2.GDataResponse;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -25,7 +25,7 @@ public final class AtomException extends GDataException {
   /** Parser or {@code null} for none or if already parsed. */
   public XmlPullParser parser;
 
-  AtomException(AtomClient client, GDataResponse response) {
+  AtomException(AtomClient client, Response response) {
     super(response);
     this.client = client;
   }

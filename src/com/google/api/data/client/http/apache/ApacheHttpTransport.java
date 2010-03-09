@@ -1,9 +1,9 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2.apache;
+package com.google.api.data.client.http.apache;
 
-import com.google.api.data.client.v2.HttpRequest;
-import com.google.api.data.client.v2.HttpTransport;
+import com.google.api.data.client.http.HttpRequest;
+import com.google.api.data.client.http.HttpTransport;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -35,23 +35,23 @@ final class ApacheHttpTransport implements HttpTransport {
     return true;
   }
 
-  public HttpRequest deleteRequest(String uri) {
+  public HttpRequest buildDeleteRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpDelete(uri));
   }
 
-  public HttpRequest getRequest(String uri) {
+  public HttpRequest buildGetRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpGet(uri));
   }
 
-  public HttpRequest patchRequest(String uri) {
+  public HttpRequest buildPatchRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpPatch(uri));
   }
 
-  public HttpRequest postRequest(String uri) {
+  public HttpRequest buildPostRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpPost(uri));
   }
 
-  public HttpRequest putRequest(String uri) {
+  public HttpRequest buildPutRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpPut(uri));
   }
 }

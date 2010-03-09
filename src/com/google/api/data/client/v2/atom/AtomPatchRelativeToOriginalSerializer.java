@@ -49,5 +49,9 @@ final class AtomPatchRelativeToOriginalSerializer extends AtomSerializer {
     patch.put("@gd:fields", fieldsMaskBuf.toString());
     serializeEntry(serializer, patch);
   }
-  
+
+  @Override
+  public String getContentType() {
+    return "application/xml";
+  }
 }

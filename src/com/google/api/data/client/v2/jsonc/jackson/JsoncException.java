@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
+import com.google.api.data.client.http.Response;
 import com.google.api.data.client.v2.GDataException;
-import com.google.api.data.client.v2.GDataResponse;
 
 import org.codehaus.jackson.JsonParser;
 
@@ -17,7 +17,7 @@ public final class JsoncException extends GDataException {
   /** JSON-C error response to parse or {@code null} for none. */
   public JsonParser parser;
 
-  JsoncException(GDataResponse response) {
+  JsoncException(Response response) {
     super(response);
   }
 
