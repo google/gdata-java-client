@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.http.apache;
 
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpResponse;
+import com.google.api.data.client.http.LowLevelHttpRequestInterface;
+import com.google.api.data.client.http.LowLevelHttpResponseInterface;
 import com.google.api.data.client.http.HttpSerializer;
 
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -12,7 +12,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.IOException;
 
-final class ApacheHttpRequest implements HttpRequest {
+final class ApacheHttpRequest implements LowLevelHttpRequestInterface {
   private final HttpClient httpClient;
 
   private final HttpRequestBase request;
@@ -26,7 +26,7 @@ final class ApacheHttpRequest implements HttpRequest {
     this.request.addHeader(name, value);
   }
 
-  public HttpResponse execute() throws IOException {
+  public LowLevelHttpResponseInterface execute() throws IOException {
     return new ApacheHttpResponse(this.httpClient.execute(request));
   }
 

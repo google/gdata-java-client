@@ -2,7 +2,7 @@
 
 package com.google.api.data.client.http.apache;
 
-import com.google.api.data.client.http.HttpResponse;
+import com.google.api.data.client.http.LowLevelHttpResponseInterface;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -11,7 +11,7 @@ import org.apache.http.StatusLine;
 import java.io.IOException;
 import java.io.InputStream;
 
-final class ApacheHttpResponse implements HttpResponse {
+final class ApacheHttpResponse implements LowLevelHttpResponseInterface {
 
   private final org.apache.http.HttpResponse response;
 

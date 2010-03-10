@@ -29,8 +29,8 @@ public abstract class AbstractJsoncFeedParser<T> {
   public T parseFeed() throws IOException {
     boolean close = true;
     try {
-      feedParsed = true;
-      T result = Jackson.parse(parser, feedClass, "items");
+      this.feedParsed = true;
+      T result = Jackson.parse(this.parser, this.feedClass, "items");
       close = false;
       return result;
     } finally {
@@ -69,7 +69,7 @@ public abstract class AbstractJsoncFeedParser<T> {
 
   /** Closes the underlying parser. */
   public void close() throws IOException {
-    parser.close();
+    this.parser.close();
   }
 
   abstract Object parseItemInternal() throws IOException;

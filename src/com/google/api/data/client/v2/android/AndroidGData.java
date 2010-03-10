@@ -5,7 +5,7 @@ package com.google.api.data.client.v2.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 
-import com.google.api.data.client.http.HttpTransport;
+import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.apache.ApacheGData;
 
 public class AndroidGData {
@@ -14,7 +14,8 @@ public class AndroidGData {
 
   // TODO: android.util.Log for logging?
 
-  public static final HttpTransport HTTP_TRANSPORT = ApacheGData.HTTP_TRANSPORT;
+  public static final LowLevelHttpTransportInterface HTTP_TRANSPORT =
+      ApacheGData.HTTP_TRANSPORT;
 
   public static Account[] getGoogleAccounts(AccountManager manager) {
     return manager.getAccountsByType("com.google");

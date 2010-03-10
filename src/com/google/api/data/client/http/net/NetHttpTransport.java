@@ -2,11 +2,11 @@
 
 package com.google.api.data.client.http.net;
 
-import com.google.api.data.client.http.HttpTransport;
+import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 
 import java.io.IOException;
 
-final class NetHttpTransport implements HttpTransport {
+final class NetHttpTransport implements LowLevelHttpTransportInterface {
 
   NetHttpTransport() {
   }

@@ -2,6 +2,7 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
+import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.v2.ClassInfo;
 import com.google.api.data.client.v2.FieldInfo;
 
@@ -11,14 +12,20 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
 
-final class JsoncPatchRelativeToOriginalSerializer extends JsoncSerializer {
+public final class JsoncPatchRelativeToOriginalSerializer extends
+    JsoncSerializer {
 
   private final Object originalItem;
 
-  public JsoncPatchRelativeToOriginalSerializer(Object patchedItem,
-      Object originalItem) {
+  JsoncPatchRelativeToOriginalSerializer(Object patchedItem, Object originalItem) {
     super(patchedItem);
     this.originalItem = originalItem;
+  }
+
+  public static void setContent(HttpRequest request, Object patchedItem,
+      Object originalItem) {
+    request.setContent(new JsoncPatchRelativeToOriginalSerializer(patchedItem,
+        originalItem));
   }
 
   @Override

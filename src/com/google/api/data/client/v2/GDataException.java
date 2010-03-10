@@ -2,7 +2,7 @@
 
 package com.google.api.data.client.v2;
 
-import com.google.api.data.client.http.Response;
+import com.google.api.data.client.http.HttpResponse;
 
 /** GData error response to a GData request. */
 public class GDataException extends Exception {
@@ -20,7 +20,7 @@ public class GDataException extends Exception {
   /**
    * @param response GData response
    */
-  public GDataException(Response response) {
+  public GDataException(HttpResponse response) {
     this.errorCode = response.getStatusCode();
     this.errorMessage = response.getStatusMessage();
   }

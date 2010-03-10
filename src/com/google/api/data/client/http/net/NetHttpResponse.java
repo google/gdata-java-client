@@ -2,14 +2,14 @@
 
 package com.google.api.data.client.http.net;
 
+import com.google.api.data.client.http.LowLevelHttpResponseInterface;
 import com.google.api.data.client.http.HttpResponse;
-import com.google.api.data.client.http.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
-final class NetHttpResponse implements HttpResponse {
+final class NetHttpResponse implements LowLevelHttpResponseInterface {
 
   private final HttpURLConnection connection;
   private final int responseCode;
@@ -27,7 +27,7 @@ final class NetHttpResponse implements HttpResponse {
 
   public InputStream getContent() throws IOException {
     HttpURLConnection connection = this.connection;
-    return Response.isSuccessStatusCode(responseCode) ? connection
+    return HttpResponse.isSuccessStatusCode(responseCode) ? connection
         .getInputStream() : connection.getErrorStream();
   }
 

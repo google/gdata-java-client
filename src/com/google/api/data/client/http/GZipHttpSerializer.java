@@ -25,7 +25,7 @@ final class GZipHttpSerializer implements HttpSerializer {
     String contentType = this.contentType = httpSerializer.getContentType();
     boolean isGZiped =
         this.isGZiped =
-            !Transport.DISABLE_GZIP && contentLength >= MIN_GZIP_BYTES
+            !HttpTransport.DISABLE_GZIP && contentLength >= MIN_GZIP_BYTES
                 && contentEncoding == null
                 && LogHttpSerializer.isTextualContentType(contentType);
     if (isGZiped) {
