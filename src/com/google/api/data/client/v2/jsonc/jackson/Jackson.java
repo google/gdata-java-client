@@ -32,7 +32,7 @@ public class Jackson {
   // TODO: remove the feature to allow unquoted control chars when tab
   // escaping is fixed?
 
-  static final JsonFactory JSON_FACTORY =
+  public static final JsonFactory JSON_FACTORY =
       new JsonFactory().configure(
           JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true).configure(
           JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
@@ -126,7 +126,8 @@ public class Jackson {
     return result;
   }
 
-  static void skipToKey(JsonParser parser, String keyToFind) throws IOException {
+  public static void skipToKey(JsonParser parser, String keyToFind)
+      throws IOException {
     while (parser.nextToken() != JsonToken.END_OBJECT) {
       String key = parser.getCurrentName();
       parser.nextToken();
@@ -138,7 +139,7 @@ public class Jackson {
   }
 
   // TODO: make this public?
-  static void parseAndClose(JsonParser parser, Object destination)
+  public static void parseAndClose(JsonParser parser, Object destination)
       throws IOException {
     try {
       parse(parser, destination, null);

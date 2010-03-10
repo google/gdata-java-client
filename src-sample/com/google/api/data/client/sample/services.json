@@ -1,0 +1,56 @@
+{
+  'photos' : {
+    'service' : 'picasa',
+    'version' : '2.0',
+    'urlBase': 'http://picasaweb.google.com/data/feed/',
+    'headers' : [ 'v=2', 'Authorization' ],
+    'params' : [ 'alt|atom:jsonc' ],
+    'resources' : {
+        'user' : {
+            'urlTemplate' : '{projection}/user/{username}',
+            'restMethods' : {
+                'query' : {
+                     'params' : [ 'access', 'kind' ]
+                },
+                'insert' : {}
+            }
+        },
+        'contacts' : {
+            'urlTemplate' : '{projection}/user/{username}/contacts'
+        },
+        'album' : {
+            'urlTemplate' : '{projection}/user/{username}/albumid/{albumId}'
+        },
+        'photo' : {
+            'urlTemplate' : '{projection}/user/{username}/albumid/{albumId}/photoid/{photoId}'
+        },
+        'community' : {
+            'urlTemplate' : '{projection}/all'
+        },
+        'featuredPhoto' : {
+            'urlTemplate' : '{projection}/featured'
+        }
+    }
+  },
+  'xdremel' : {
+    'service' : 'dremel',
+    'version' : '1.0',
+    'urlBase' : 'http://apiary-test/cloud/xdremel/',
+    'headers' : ['Authorization'],
+    'params' : [ 'alt|json' ],
+    'resources' : {
+       'table' : {
+          'urlTemplate' : 'tables/',
+          'itemTemplate' : '{tableName}',
+          'restMethods' : {
+            'query' : {},
+            'queryItem' : {},
+            'insert' : {},
+            'delete' : {}
+          }
+       }
+    }
+    
+
+  }
+}
