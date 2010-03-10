@@ -18,7 +18,7 @@
       <src path="${src.dir}" />
       <classpath>
       	<!-- TODO Remove once request layer is using generic jsonEntity -->
-
+      	<pathelement location="${lib.dir}/json.jar" />
         <!-- TODO change to this env variable @release time
         <pathelement location="${env.ANDROID_JAR}" />
         -->

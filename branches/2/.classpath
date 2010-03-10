@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-sample"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ANDROID_JAR"/>
+	<classpathentry kind="lib" path="lib/json.jar"/>
+	<classpathentry kind="lib" path="lib/android-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-asl-1.4.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
