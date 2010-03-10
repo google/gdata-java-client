@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class Atom {
-  private Atom() {
-  }
+  public static final String CONTENT_TYPE = "application/atom+xml";
 
   public static String getEntryFields(Class<?> itemType) {
     StringBuilder buf = new StringBuilder();
@@ -115,5 +114,8 @@ public final class Atom {
     }
     // TODO: clone AtomObject
     return result;
+  }
+
+  private Atom() {
   }
 }

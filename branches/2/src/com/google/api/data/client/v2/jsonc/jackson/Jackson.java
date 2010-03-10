@@ -2,9 +2,11 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
-import com.google.api.data.client.v2.DateTime;
+import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.v2.ClassInfo;
+import com.google.api.data.client.v2.DateTime;
 import com.google.api.data.client.v2.FieldInfo;
+import com.google.api.data.client.v2.jsonc.Jsonc;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 
 import org.codehaus.jackson.JsonFactory;
@@ -13,6 +15,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -32,47 +35,70 @@ public class Jackson {
   // TODO: remove the feature to allow unquoted control chars when tab
   // escaping is fixed?
 
-  public static final JsonFactory JSON_FACTORY =
+  static final JsonFactory JSON_FACTORY =
       new JsonFactory().configure(
           JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true).configure(
           JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
 
   // TODO: turn off INTERN_FIELD_NAMES???
 
-  public static <T> T parsePartialItem(JsonParser parser, Class<T> itemClass)
-      throws IOException {
+  public static <T> T parsePartialItem(HttpResponse response, Class<T> itemClass)
+      throws IOException, JsoncException {
+    JsonParser parser = processAsJsonParser(response);
     skipToKey(parser, "entry");
     parser.nextToken();
-    return parseItem(parser, itemClass);
+    return parse(parser, itemClass);
   }
 
   public static <T, I> JsoncFeedParser<T, I> usePartialFeedParser(
-      JsonParser parser, Class<T> feedClass, Class<I> itemClass)
-      throws IOException {
+      HttpResponse response, Class<T> feedClass, Class<I> itemClass)
+      throws IOException, JsoncException {
+    JsonParser parser = processAsJsonParser(response);
     skipToKey(parser, "feed");
     return useFeedParser(parser, feedClass, itemClass);
   }
 
   public static <T, I> JsoncMultiKindFeedParser<T> usePartialMultiKindFeedParser(
-      JsonParser parser, Class<T> feedClass, Class<?>... itemClasses)
-      throws IOException {
+      HttpResponse response, Class<T> feedClass, Class<?>... itemClasses)
+      throws IOException, JsoncException {
+    JsonParser parser = processAsJsonParser(response);
     skipToKey(parser, "feed");
     return useMultiKindFeedParser(parser, feedClass, itemClasses);
   }
 
-  public static <T> T parseItem(JsonParser parser, Class<T> itemClass)
+  public static <T> T parse(HttpResponse response,
+      Class<T> classToInstantiateAndParse) throws IOException, JsoncException {
+    JsonParser parser = processAsJsonParser(response);
+    return parse(parser, classToInstantiateAndParse);
+  }
+
+  static <T> T parse(JsonParser parser, Class<T> classToInstantiateAndParse)
       throws IOException {
-    T newInstance = ClassInfo.newInstance(itemClass);
+    T newInstance = ClassInfo.newInstance(classToInstantiateAndParse);
     parseAndClose(parser, newInstance);
     return newInstance;
   }
 
-  public static <T, I> JsoncFeedParser<T, I> useFeedParser(JsonParser parser,
+  public static <T, I> JsoncFeedParser<T, I> useFeedParser(HttpResponse response,
+      Class<T> feedClass, Class<I> itemClass) throws JsoncException,
+      IOException {
+    JsonParser parser = processAsJsonParser(response);
+    return useFeedParser(parser, feedClass, itemClass);
+  }
+
+  private static <T, I> JsoncFeedParser<T, I> useFeedParser(JsonParser parser,
       Class<T> feedClass, Class<I> itemClass) {
     return new JsoncFeedParser<T, I>(parser, feedClass, itemClass);
   }
 
   public static <T, I> JsoncMultiKindFeedParser<T> useMultiKindFeedParser(
+      HttpResponse response, Class<T> feedClass, Class<?>... itemClasses)
+      throws JsoncException, IOException {
+    return useMultiKindFeedParser(processAsJsonParser(response), feedClass,
+        itemClasses);
+  }
+
+  private static <T, I> JsoncMultiKindFeedParser<T> useMultiKindFeedParser(
       JsonParser parser, Class<T> feedClass, Class<?>... itemClasses) {
     return new JsoncMultiKindFeedParser<T>(parser, feedClass, itemClasses);
   }
@@ -126,7 +152,7 @@ public class Jackson {
     return result;
   }
 
-  public static void skipToKey(JsonParser parser, String keyToFind)
+  static void skipToKey(JsonParser parser, String keyToFind)
       throws IOException {
     while (parser.nextToken() != JsonToken.END_OBJECT) {
       String key = parser.getCurrentName();
@@ -138,8 +164,71 @@ public class Jackson {
     }
   }
 
-  // TODO: make this public?
-  public static void parseAndClose(JsonParser parser, Object destination)
+  public static void checkForError(HttpResponse response) throws JsoncException,
+      IOException {
+    processAsInputStream(response).close();
+  }
+
+  public static JsonParser processAsJsonParser(HttpResponse response)
+      throws IOException, JsoncException {
+    InputStream content = processAsInputStream(response);
+    try {
+      // check for JSON content type
+      String contentType = response.getContentType();
+      if (!contentType.startsWith(Jsonc.CONTENT_TYPE)) {
+        throw new IllegalArgumentException("Wrong content type: expected <"
+            + Jsonc.CONTENT_TYPE + "> but got <" + contentType + ">");
+      }
+      JsonParser parser = Jackson.JSON_FACTORY.createJsonParser(content);
+      content = null;
+      parser.nextToken();
+      Jackson.skipToKey(parser, "data");
+      return parser;
+    } finally {
+      if (content != null) {
+        content.close();
+      }
+    }
+  }
+
+  public static InputStream processAsInputStream(HttpResponse response)
+      throws JsoncException, IOException {
+    if (response.isSuccessStatusCode()) {
+      return response.getContent();
+    }
+    // TODO: use err=json (or jsonc?) to force error response to json-c?
+    JsoncException exception = new JsoncException(response);
+    InputStream inputStream = response.getContent();
+    if (inputStream != null) {
+      try {
+        if (response.getContentType().startsWith(Jsonc.CONTENT_TYPE)) {
+          JsonParser parser =
+              Jackson.JSON_FACTORY.createJsonParser(inputStream);
+          exception.parser = parser;
+          try {
+            parser.nextToken();
+            Jackson.skipToKey(parser, "error");
+            parser = null;
+          } finally {
+            if (parser != null) {
+              parser.close();
+            }
+            inputStream = null;
+          }
+        } else {
+          exception.content = response.parseContentAsString();
+          inputStream = null;
+        }
+      } finally {
+        if (inputStream != null) {
+          inputStream.close();
+        }
+      }
+    }
+    throw exception;
+  }
+
+  static void parseAndClose(JsonParser parser, Object destination)
       throws IOException {
     try {
       parse(parser, destination, null);
@@ -309,5 +398,4 @@ public class Jackson {
             + ": unexpected JSON node type");
     }
   }
-
 }

@@ -14,11 +14,17 @@ public class InputStreamHttpSerializer implements HttpSerializer {
   private final long contentLength;
   private final InputStream inputStream;
 
-  public InputStreamHttpSerializer(InputStream inputStream, long contentLength,
-      String contentType, String contentEncoding) {
+  protected InputStreamHttpSerializer(InputStream inputStream,
+      long contentLength, String contentType, String contentEncoding) {
     this.inputStream = inputStream;
     this.contentType = contentType;
     this.contentLength = contentLength;
+  }
+
+  public static void setContent(HttpRequest request, InputStream inputStream,
+      long contentLength, String contentType, String contentEncoding) {
+    request.setContent(new InputStreamHttpSerializer(inputStream,
+        contentLength, contentType, contentEncoding));
   }
 
   public final void writeTo(OutputStream out) throws IOException {

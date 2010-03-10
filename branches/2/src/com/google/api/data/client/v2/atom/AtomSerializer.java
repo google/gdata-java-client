@@ -29,7 +29,7 @@ class AtomSerializer implements HttpSerializer {
   }
 
   public String getContentType() {
-    return AtomClient.CONTENT_TYPE;
+    return Atom.CONTENT_TYPE;
   }
 
   public final void writeTo(OutputStream out) throws IOException {

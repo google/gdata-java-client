@@ -36,8 +36,9 @@ public final class MultipartHttpSerializer implements HttpSerializer {
     this.mediaTypeBytes = mediaTypeBytes;
   }
 
-  public void addHeaders(Request request) {
+  public void forRequest(HttpRequest request) {
     request.addHeader("MIME-version", "1.0");
+    request.setContent(this);
   }
 
   public void writeTo(OutputStream out) throws IOException {

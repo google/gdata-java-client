@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.http.apache;
 
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpTransport;
+import com.google.api.data.client.http.LowLevelHttpRequestInterface;
+import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -15,7 +15,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-final class ApacheHttpTransport implements HttpTransport {
+final class ApacheHttpTransport implements LowLevelHttpTransportInterface {
 
   private final HttpClient httpClient;
 
@@ -35,23 +35,23 @@ final class ApacheHttpTransport implements HttpTransport {
     return true;
   }
 
-  public HttpRequest buildDeleteRequest(String uri) {
+  public ApacheHttpRequest buildDeleteRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpDelete(uri));
   }
 
-  public HttpRequest buildGetRequest(String uri) {
+  public ApacheHttpRequest buildGetRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpGet(uri));
   }
 
-  public HttpRequest buildPatchRequest(String uri) {
+  public ApacheHttpRequest buildPatchRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpPatch(uri));
   }
 
-  public HttpRequest buildPostRequest(String uri) {
+  public ApacheHttpRequest buildPostRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpPost(uri));
   }
 
-  public HttpRequest buildPutRequest(String uri) {
+  public ApacheHttpRequest buildPutRequest(String uri) {
     return new ApacheHttpRequest(this.httpClient, new HttpPut(uri));
   }
 }

@@ -23,7 +23,7 @@ final class LogHttpSerializer implements HttpSerializer {
   }
 
   public void writeTo(OutputStream out) throws IOException {
-    Logger logger = Transport.LOGGER;
+    Logger logger = HttpTransport.LOGGER;
     HttpSerializer httpSerializer = this.httpSerializer;
     if (logger.isLoggable(Level.CONFIG) && this.contentLength != 0
         && this.contentEncoding == null

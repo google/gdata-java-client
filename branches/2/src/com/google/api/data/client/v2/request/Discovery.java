@@ -1,11 +1,9 @@
 package com.google.api.data.client.v2.request;
 
-import com.google.api.data.client.v2.GDataEntity;
+import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.HttpRequest;
+import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.http.Response;
-import com.google.api.data.client.http.Request;
-import com.google.api.data.client.http.Transport;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,18 +13,18 @@ import java.util.regex.Pattern;
 
 public class Discovery {
   
-  private final Transport transport = new Transport("sample", null);
+  private final HttpTransport transport = new HttpTransport("sample");
   private final ServiceDocument serviceDoc;
   private final String resource;
 
-  Discovery(ServiceDocument serviceDoc, HttpTransport transport) {
-    Transport.httpTransport = transport;
+  Discovery(ServiceDocument serviceDoc, LowLevelHttpTransportInterface transport) {
+    HttpTransport.lowLevelHttpTransportInterface = transport;
     this.serviceDoc = serviceDoc;
     this.resource = null;
   }
   
-  Discovery(String resource, HttpTransport transport) {
-    Transport.httpTransport = transport;
+  Discovery(String resource, LowLevelHttpTransportInterface transport) {
+    HttpTransport.lowLevelHttpTransportInterface = transport;
     this.resource = resource;
     this.serviceDoc = null;
   }
@@ -39,13 +37,13 @@ public class Discovery {
     return false;
   }
   
-  Response doRestRequest(
+  HttpResponse doRestRequest(
       String resource, String method, Entity params) throws IOException {
     String uri = getUrl(resource, params);
     
     // separate headers, query parameters and content body
     // TODO(vbarathan): determine this from discovery doc.  for now hardcoded.
-    Map<String, String> headers = new HashMap();
+    Map<String, String> headers = new HashMap<String, String>();
     Object body = null;
     StringBuilder query = null;
     for (Map.Entry<String, Object> param : params.entrySet()) {
@@ -68,7 +66,7 @@ public class Discovery {
     }
 
     // Create transport request
-    Request request;
+    HttpRequest request;
     if ("query".equals(method)) {
       request = transport.buildGetRequest(uri);
     } else if ("insert".equals(method)) {

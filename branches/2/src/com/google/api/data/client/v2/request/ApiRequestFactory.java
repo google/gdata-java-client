@@ -2,7 +2,7 @@
 
 package com.google.api.data.client.v2.request;
 
-import com.google.api.data.client.http.HttpTransport;
+import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.net.NetGData;
 import com.google.api.data.client.v2.GDataEntity;
 
@@ -13,14 +13,14 @@ import org.json.JSONException;
  *
  * @author vbarathan@google.com (Parakash Barathan)
  */
-public class RequestFactory {
+public class ApiRequestFactory {
 
   public static class Builder {
 
     private String resource;
     private ServiceDocument serviceDoc = null;
 
-    private HttpTransport transport;
+    private LowLevelHttpTransportInterface transport;
 
     private Entity paramMap = new Entity();
     private Object paramObject;
@@ -38,7 +38,7 @@ public class RequestFactory {
       return this;
     }
 
-    public Builder transport(HttpTransport transport) {
+    public Builder transport(LowLevelHttpTransportInterface transport) {
       this.transport = transport;
       return this;
     }
@@ -53,29 +53,29 @@ public class RequestFactory {
       return this;
     }
 
-    public RequestFactory build() throws JSONException {
+    public ApiRequestFactory build() throws JSONException {
       // TODO(vbarathan): merge paramObject and paramMap
       if (transport == null) {
         transport = NetGData.HTTP_TRANSPORT;
       }
       if (serviceDoc != null) {
-        return new RequestFactory(
+        return new ApiRequestFactory(
             new Discovery(serviceDoc, transport), paramMap);
       }
-      return new RequestFactory(
+      return new ApiRequestFactory(
           new Discovery(resource, transport), paramMap);
     }
   }
 
   private String resource = null;
   private ServiceDocument serviceDoc = null;
-  private HttpTransport transport;
+  private LowLevelHttpTransportInterface transport;
 
   private Entity paramMap = new Entity();
   private Object paramObject;
   private Discovery discovery;
   
-  private RequestFactory(Discovery discovery, Entity params) {
+  private ApiRequestFactory(Discovery discovery, Entity params) {
     this.discovery = discovery;
     this.paramMap = params;
   }
@@ -89,33 +89,33 @@ public class RequestFactory {
     return resource;
   }
 
-  public Request<GDataEntity> request(String method) {
-    return new Request<GDataEntity>(discovery, method, paramMap);
+  public ApiRequest<GDataEntity> request(String method) {
+    return new ApiRequest<GDataEntity>(discovery, method, paramMap);
   }
 
-  public Request<GDataEntity> request(String resource, String method) {
-    return new Request<GDataEntity>(discovery, resource, method, paramMap);
+  public ApiRequest<GDataEntity> request(String resource, String method) {
+    return new ApiRequest<GDataEntity>(discovery, resource, method, paramMap);
   }
 
-  public Request<GDataEntity> query(String resource) {
+  public ApiRequest<GDataEntity> query(String resource) {
     return request(resource, "query");
   }
 
-  public Request<GDataEntity> insert(String resource, Entity data) {
+  public ApiRequest<GDataEntity> insert(String resource, Entity data) {
     return request(resource, "insert").with("content", data);
   }
 
-  public Request<GDataEntity> update(GDataEntity data) {
+  public ApiRequest<GDataEntity> update(GDataEntity data) {
     String editUri = (String) ((GDataEntity) data.get("links")).get("edit");
     return request(editUri, "update").with("content", data);
   }
 
-  public Request<GDataEntity> delete(GDataEntity data) {
+  public ApiRequest<GDataEntity> delete(GDataEntity data) {
     String editUri = (String) ((GDataEntity) data.get("links")).get("edit");
     return request(editUri, "delete");
   }
 
-  public Request<GDataEntity> batch(String resource) {
+  public ApiRequest<GDataEntity> batch(String resource) {
     return request(resource, "batch");
   }
 
@@ -127,7 +127,7 @@ public class RequestFactory {
    */
   public <T> T service(Class<T> cls) {
     try {
-      return cls.getConstructor(RequestFactory.class).newInstance(this);
+      return cls.getConstructor(ApiRequestFactory.class).newInstance(this);
     } catch (Exception e) {
       throw new RuntimeException(
           "Could not call appropriate constructor for service " + cls, e);

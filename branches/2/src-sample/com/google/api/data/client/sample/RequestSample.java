@@ -1,7 +1,7 @@
 package com.google.api.data.client.sample;
 
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
-import com.google.api.data.client.v2.request.RequestFactory;
+import com.google.api.data.client.v2.request.ApiRequestFactory;
 import com.google.api.data.client.v2.request.ServiceDocument;
 
 import java.io.BufferedReader;
@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 
 public class RequestSample {
 
-  private static RequestFactory apis;
+  private static ApiRequestFactory apis;
 
   public static void main(String[] args) throws Exception {
     init();
@@ -22,7 +22,7 @@ public class RequestSample {
 
   static void init() throws Exception {
     // Defines the REST service to use for all requests
-    apis = new RequestFactory.Builder()
+    apis = new ApiRequestFactory.Builder()
         .restService(getServiceDocument("photos", "xdremel"))
         .with("projection", "api")
         .with("alt", "jsonc")

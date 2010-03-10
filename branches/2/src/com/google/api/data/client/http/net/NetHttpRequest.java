@@ -2,15 +2,15 @@
 
 package com.google.api.data.client.http.net;
 
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpResponse;
+import com.google.api.data.client.http.LowLevelHttpRequestInterface;
+import com.google.api.data.client.http.LowLevelHttpResponseInterface;
 import com.google.api.data.client.http.HttpSerializer;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-final class NetHttpRequest implements HttpRequest {
+final class NetHttpRequest implements LowLevelHttpRequestInterface {
 
   private final HttpURLConnection connection;
   private HttpSerializer serializer;
@@ -26,7 +26,7 @@ final class NetHttpRequest implements HttpRequest {
     this.connection.addRequestProperty(name, value);
   }
 
-  public HttpResponse execute() throws IOException {
+  public LowLevelHttpResponseInterface execute() throws IOException {
     HttpURLConnection connection = this.connection;
     // write content
     HttpSerializer serializer = this.serializer;

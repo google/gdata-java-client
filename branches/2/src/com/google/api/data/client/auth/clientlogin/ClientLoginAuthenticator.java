@@ -3,11 +3,11 @@
 package com.google.api.data.client.auth.clientlogin;
 
 import com.google.api.data.client.auth.Authorizer;
-import com.google.api.data.client.http.HttpRequest;
+import com.google.api.data.client.http.LowLevelHttpRequestInterface;
+import com.google.api.data.client.http.LowLevelHttpResponseInterface;
+import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.http.Response;
-import com.google.api.data.client.http.Transport;
 import com.google.api.data.client.http.UrlEncodedFormHttpSerializer;
 
 import java.io.IOException;
@@ -24,8 +24,9 @@ public final class ClientLoginAuthenticator {
   public String captchaAnswer;
 
   public Authorizer authenticate() throws IOException {
-    HttpTransport httpTransport = Transport.httpTransport;
-    HttpRequest request =
+    LowLevelHttpTransportInterface httpTransport =
+        HttpTransport.lowLevelHttpTransportInterface;
+    LowLevelHttpRequestInterface request =
         httpTransport
             .buildPostRequest("https://www.google.com/accounts/ClientLogin");
     // build request content
@@ -46,9 +47,9 @@ public final class ClientLoginAuthenticator {
     }
     request.setContent(builder.build());
     // execute and parse auth key
-    HttpResponse response = request.execute();
+    LowLevelHttpResponseInterface response = request.execute();
     String string =
-        Response.parseContentAsString(response.getContent(), response
+        HttpResponse.parseContentAsString(response.getContent(), response
             .getContentLength());
     int auth = string.indexOf(AUTH_KEY);
     if (auth == -1) {

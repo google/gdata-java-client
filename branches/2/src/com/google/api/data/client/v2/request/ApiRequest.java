@@ -1,13 +1,9 @@
 package com.google.api.data.client.v2.request;
 
-import com.google.api.data.client.http.Response;
-import com.google.api.data.client.v2.GDataEntity;
+import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 import com.google.api.data.client.v2.jsonc.jackson.Jackson;
-import com.google.api.data.client.v2.jsonc.jackson.JsoncClient;
 import com.google.api.data.client.v2.jsonc.jackson.JsoncException;
-
-import org.codehaus.jackson.JsonParser;
 
 import java.io.IOException;
 
@@ -47,7 +43,7 @@ import java.io.IOException;
  *
  * @author vbarathan@google.com (Prakash Barathan)
  */
-public class Request<T> {
+public class ApiRequest<T> {
   /** Parameter map for use with .with(key, value) */
   private Entity paramMap = new Entity();
 
@@ -72,7 +68,7 @@ public class Request<T> {
   
   private final String resourceHandle;
   
-  Request(Discovery discovery, String method, Entity defaultParams) {
+  ApiRequest(Discovery discovery, String method, Entity defaultParams) {
     this(discovery, null, method, defaultParams);
   }
   
@@ -84,7 +80,7 @@ public class Request<T> {
    * @param method The method
    * @param defaultParams default parameters to use in request
    */
-  Request(
+  ApiRequest(
       Discovery discovery, String handle, String method, Entity defaultParams) {
     this.discovery = discovery;
     this.fullyQualifiedMethod = method;
@@ -111,13 +107,15 @@ public class Request<T> {
       Entity allParams = params.merge(defaultParamMap);
       Entity e;
       
-      Response response = discovery.doRestRequest(
+      HttpResponse response = discovery.doRestRequest(
           resourceHandle, fullyQualifiedMethod, allParams);
       
-      result = GDataEntityConvert.toObject(response, responseClass);
+      result = Jackson.parse(response, responseClass); 
       called = true;    
       return (T)result;
     } catch(IOException e) {
+      throw new RuntimeException(e);
+    } catch (JsoncException e) {
       throw new RuntimeException(e);
     }
   }
@@ -132,7 +130,7 @@ public class Request<T> {
    * @param params The request parameters
    * @return The request
    */
-  public Request<T> with(Object params) {
+  public ApiRequest<T> with(Object params) {
     this.paramObject = params;
     return this;
   }
@@ -144,7 +142,7 @@ public class Request<T> {
    * @param value The parameter value
    * @return The request
    */
-  public Request<T> with(String key, Object value) {
+  public ApiRequest<T> with(String key, Object value) {
     this.paramMap.put(key, value);
     return this;
   }
@@ -156,8 +154,8 @@ public class Request<T> {
    * @return The request.
    */
   @SuppressWarnings("unchecked")
-  public <R> Request<R> returning(Class<? extends R> cls) {
+  public <R> ApiRequest<R> returning(Class<? extends R> cls) {
     this.responseClass = cls;
-    return (Request<R>)this;
+    return (ApiRequest<R>)this;
   }
 }

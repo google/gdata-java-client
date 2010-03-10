@@ -15,6 +15,8 @@ import java.util.Map;
 
 public class Jsonc {
 
+  public static final String CONTENT_TYPE = "application/json";
+
   public static String getItemFields(Class<?> itemType) {
     StringBuilder buf = new StringBuilder();
     appendItemFields(buf, itemType);
