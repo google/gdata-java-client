@@ -17,7 +17,12 @@
       <compilerarg value="-Xlint:all" />
       <src path="${src.dir}" />
       <classpath>
+      	<!-- TODO Remove once request layer is using generic jsonEntity -->
+
+        <!-- TODO change to this env variable @release time
         <pathelement location="${env.ANDROID_JAR}" />
+        -->
+        <pathelement location="${lib.dir}/android-2.0.1.jar" />
         <pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
       </classpath>
     </javac>
@@ -38,7 +43,7 @@
 
   <target name="gdata-full-jar" depends="compile,dist-init">
     <jar destfile="${dist.dir}/gdata-full.jar" basedir="${classes.dir}" />
-  </target>
+  </target>	
 
   <target name="gdata-android-v2-jar" depends="compile,dist-init">
     <jar destfile="${dist.dir}/gdata-android-v2.jar" basedir="${classes.dir}"
