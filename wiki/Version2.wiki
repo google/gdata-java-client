@@ -5,7 +5,7 @@
 We are experimenting with a new version 2 model for the GData Java Client.  It will have all of the functionality of version 1 of the client library (including Atom XML), plus these new features:
   * Much better experience on Android: much smaller library, and much more efficient
   * Native support for the new JSON-C wire format
-  * User-defined object models
+  * User-defined object models (see below)
   * And we have some more surprises planned for the future that just won't be possible to do in the version 1 library
 
 *WARNING:* this is an experimental branch of the library, and as such all API is subject to change.
@@ -18,12 +18,65 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
 
 = Source and Samples =
 
-[http://code.google.com/p/gdata-java-client/source/browse/#svn/branches/2/gdata GData Client Library Version 2]
+[http://code.google.com/p/gdata-java-client/source/browse/branches/2/#2/gdata/src/com/google/api/data GData Client Library Version 2]
 
-[http://code.google.com/p/gdata-java-client/source/browse/#svn/branches/2/sample/picasa/picasa-jsonc-android-sample Picasa Web Albums JSON-C Android Sample]
+[http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/picasa/picasa-jsonc-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicJsoncAndroidSample.java Picasa Web Albums JSON-C Android Sample]
 
-[http://code.google.com/p/gdata-java-client/source/browse/#svn/branches/2/sample/picasa/picasa-atom-android-sample Picasa Web Albums Atom XML Android Sample]
+[http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java Picasa Web Albums Atom XML Android Sample]
 
-[http://code.google.com/p/gdata-java-client/source/browse/#svn/branches/2/sample/picasa/picasa-jsonc-sample Picasa Web Albums JSON-C Sample]
+[http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/picasa/picasa-jsonc-sample/src/com/google/api/data/sample/picasa/PicasaBasicJsoncSample.java Picasa Web Albums JSON-C Sample]
 
-[http://code.google.com/p/gdata-java-client/source/browse/#svn/branches/2/sample/picasa/picasa-atom-sample Picasa Web Albums Atom XML Android Sample]
+[http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/picasa/picasa-atom-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomSample.java Picasa Web Albums Atom XML Android Sample]
+
+
+= User-defined Object Models =
+
+Let's take a look at a typical partial JSON-C output from the Picasa Web Albums Data API:
+
+{
+ "apiVersion": "2.0",
+ "data": {
+  "kind": "album",
+  "etag": "...",
+  "title": "My favorite web logos",
+  "description": "My favorite photos",
+  "access": "private",
+  "numPhotos": 1,
+  "links": {
+   "feed": "http://picasaweb.google.com/data/feed/api/user/.../albumid/...?alt\u003djsonc...",
+   "alternate": "http://picasaweb.google.com/.../MyFavoriteWebLogos?...",
+   "self": "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt\u003djsonc...",
+   "edit": "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt\u003djsonc..."
+  },
+ }
+}
+
+How would you represent that in Java?  Here's a quick idea of how you might represent it in a particular application:
+
+{{{
+  public static class Album {
+    public final String kind = "album";
+    public String etag;
+    public String title;
+    public String description;
+    public String access;
+    public int numPhotos;
+    public Links links;
+  }
+
+  public static class Links {
+    public String edit;
+    public String feed;
+    public String post;
+    public String self;
+  }
+}}}
+
+Now execute the request, and let the library parse into it:
+
+{{{
+    HttpRequest request = transport.buildGetRequest(albumUri);
+    Album album = request.execute(Album.class);
+}}}
+
+NOTE: As you might guess, the library uses reflection to populate the user-defined object model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.  If you want to write the parser code yourself, go ahead.  The library supports just getting a byte stream using request.execute().
