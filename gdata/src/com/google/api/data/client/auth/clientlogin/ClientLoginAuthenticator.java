@@ -18,7 +18,6 @@ public final class ClientLoginAuthenticator {
   public String authTokenType;
   public String username;
   public String password;
-  public String applicationName;
   public String captchaToken;
   public String captchaAnswer;
 
@@ -33,7 +32,7 @@ public final class ClientLoginAuthenticator {
     builder.add("Email", this.username);
     builder.add("Passwd", this.password);
     builder.add("service", this.authTokenType);
-    builder.add("source", this.applicationName);
+    builder.add("source", httpTransport.applicationName);
     builder.add("accountType", "HOSTED_OR_GOOGLE");
     String captchaToken = this.captchaToken;
     if (captchaToken != null) {
