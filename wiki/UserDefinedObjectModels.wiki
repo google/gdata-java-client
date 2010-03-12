@@ -1,0 +1,56 @@
+#summary Version 2 Feature: User-defined Object Models.
+
+Let's take a look at a typical partial JSON-C output from the Picasa Web Albums Data API:
+
+{
+ "apiVersion": "2.0",
+ "data": {
+  "kind": "album",
+  "etag": "...",
+  "title": "My favorite web logos",
+  "description": "My favorite photos",
+  "access": "private",
+  "numPhotos": 1,
+  "links": {
+   "feed": "http://picasaweb.google.com/data/feed/api/user/.../albumid/...?alt\u003djsonc...",
+   "alternate": "http://picasaweb.google.com/.../MyFavoriteWebLogos?...",
+   "self": "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt\u003djsonc...",
+   "edit": "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt\u003djsonc..."
+  },
+ }
+}
+
+How would you represent that in Java?  Here's a quick idea of how you might represent it in a particular application:
+
+{{{
+  public static class Album {
+    public final String kind = "album";
+    public String etag;
+    public String title;
+    public String description;
+    public String access;
+    public int numPhotos;
+    public Links links;
+  }
+
+  public static class Links {
+    public String edit;
+    public String feed;
+    public String post;
+    public String self;
+  }
+}}}
+
+Now execute the request, and let the library parse into it:
+
+{{{
+    String albumUri = "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt=jsonc";
+    HttpRequest request = transport.buildGetRequest(albumUri);
+    Album album = request.execute(Album.class);
+}}}
+
+Everything else you don't need just gets dropped, so it potentially uses much less memory than the version 1 client data classes.
+
+NOTE: As you might guess, the library uses reflection to populate the user-defined object model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
+
+NOTE: If you prefer to use your favorite JSON parsing library instead (there are many of them listed for example on http://json.org), that's supported as well.  Just call request.execute() and parse the returned byte stream.
