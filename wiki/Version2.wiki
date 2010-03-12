@@ -81,4 +81,6 @@ Now execute the request, and let the library parse into it:
 
 Everything else you don't need just gets dropped, so it potentially uses much less memory than the version 1 client data classes.
 
-NOTE: As you might guess, the library uses reflection to populate the user-defined object model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.  If you want to write the parser code yourself, go ahead.  The library supports just getting a byte stream using request.execute().
+NOTE: As you might guess, the library uses reflection to populate the user-defined object model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
+
+NOTE: If you prefer to use your favorite JSON parsing library instead (there are many of them listed for example on http://json.org), that's supported as well.  Just call request.execute() and parse the returned byte stream.
