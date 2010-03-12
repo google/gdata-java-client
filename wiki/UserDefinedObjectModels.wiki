@@ -1,5 +1,7 @@
 #summary Version 2 Feature: User-defined Object Models.
 
+= Version 2 Feature: User-defined Object Models =
+
 Let's take a look at a typical partial JSON-C output from the Picasa Web Albums Data API:
 
 {
