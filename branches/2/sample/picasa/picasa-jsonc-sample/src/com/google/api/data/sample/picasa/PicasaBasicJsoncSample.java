@@ -104,7 +104,6 @@ public class PicasaBasicJsoncSample {
     HttpTransport transport = new HttpTransport(APP_NAME);
     ClientLoginAuthenticator authenticator = new ClientLoginAuthenticator();
     authenticator.httpTransport = transport;
-    authenticator.applicationName = APP_NAME;
     authenticator.authTokenType = Picasa.AUTH_TOKEN_TYPE;
     Scanner s = new Scanner(System.in);
     System.out.println("Username: ");
