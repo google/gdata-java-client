@@ -79,4 +79,6 @@ Now execute the request, and let the library parse into it:
     Album album = request.execute(Album.class);
 }}}
 
+Everything else you don't need just gets dropped, so it potentially uses much less memory than the version 1 client data classes.
+
 NOTE: As you might guess, the library uses reflection to populate the user-defined object model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.  If you want to write the parser code yourself, go ahead.  The library supports just getting a byte stream using request.execute().
