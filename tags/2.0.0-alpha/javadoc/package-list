@@ -1,0 +1,17 @@
+com.google.api.data.client.auth
+com.google.api.data.client.auth.clientlogin
+com.google.api.data.client.http
+com.google.api.data.client.http.apache
+com.google.api.data.client.http.net
+com.google.api.data.client.v2
+com.google.api.data.client.v2.android
+com.google.api.data.client.v2.android.atom
+com.google.api.data.client.v2.atom
+com.google.api.data.client.v2.escape
+com.google.api.data.client.v2.jsonc
+com.google.api.data.client.v2.jsonc.jackson
+com.google.api.data.client.v2.request
+com.google.api.data.maps.v2
+com.google.api.data.picasa.v2
+com.google.api.data.picasa.v2.atom
+com.google.api.data.youtube.v2
