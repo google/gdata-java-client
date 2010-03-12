@@ -3,14 +3,14 @@
 package com.google.api.data.client.v2.jsonc.jackson;
 
 import com.google.api.data.client.http.HttpResponse;
-import com.google.api.data.client.v2.GDataException;
+import com.google.api.data.client.http.HttpResponseException;
 
 import org.codehaus.jackson.JsonParser;
 
 import java.io.IOException;
 
 /** JSON-C error response to a JSON-C request. */
-public final class JsoncException extends GDataException {
+public final class JsoncException extends HttpResponseException {
 
   static final long serialVersionUID = 1;
 

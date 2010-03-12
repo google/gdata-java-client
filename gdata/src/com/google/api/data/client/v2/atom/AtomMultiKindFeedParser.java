@@ -19,9 +19,9 @@ public final class AtomMultiKindFeedParser<T> extends AbstractAtomFeedParser<T> 
   private final HashMap<String, Class<?>> kindToEntryClassMap =
       new HashMap<String, Class<?>>();
 
-  AtomMultiKindFeedParser(AtomClient client, XmlPullParser parser,
-      InputStream inputStream, Class<T> feedClass, Class<?>... itemClasses) {
-    super(client, parser, inputStream, feedClass);
+  AtomMultiKindFeedParser(XmlPullParser parser, InputStream inputStream,
+      Class<T> feedClass, Class<?>... itemClasses) {
+    super(parser, inputStream, feedClass);
     int numItems = itemClasses.length;
     HashMap<String, Class<?>> kindToEntryClassMap = this.kindToEntryClassMap;
     for (int i = 0; i < numItems; i++) {
@@ -45,11 +45,11 @@ public final class AtomMultiKindFeedParser<T> extends AbstractAtomFeedParser<T> 
   @Override
   Object parseEntryInternal() throws IOException, XmlPullParserException {
     XmlPullParser parser = this.parser;
-    String kind = parser.getAttributeValue(AtomClient.GD_NAMESPACE, "kind");
+    String kind = parser.getAttributeValue(NamespaceDictionary.GD_NAMESPACE, "kind");
     Class<?> itemClass = this.kindToEntryClassMap.get(kind);
     if (itemClass == null) {
       throw new IllegalArgumentException("unrecognized kind: " + kind);
     }
-    return client.parseElement(parser, itemClass, false);
+    return Atom.parseElement(parser, itemClass, false);
   }
 }

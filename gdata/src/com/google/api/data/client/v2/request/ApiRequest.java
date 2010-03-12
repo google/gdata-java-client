@@ -3,7 +3,6 @@ package com.google.api.data.client.v2.request;
 import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 import com.google.api.data.client.v2.jsonc.jackson.Jackson;
-import com.google.api.data.client.v2.jsonc.jackson.JsoncException;
 
 import java.io.IOException;
 
@@ -114,8 +113,6 @@ public class ApiRequest<T> {
       called = true;    
       return (T)result;
     } catch(IOException e) {
-      throw new RuntimeException(e);
-    } catch (JsoncException e) {
       throw new RuntimeException(e);
     }
   }

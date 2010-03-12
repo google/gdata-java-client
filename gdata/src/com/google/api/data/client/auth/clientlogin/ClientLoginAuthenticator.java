@@ -2,11 +2,9 @@
 
 package com.google.api.data.client.auth.clientlogin;
 
-import com.google.api.data.client.auth.Authorizer;
-import com.google.api.data.client.http.LowLevelHttpRequestInterface;
-import com.google.api.data.client.http.LowLevelHttpResponseInterface;
-import com.google.api.data.client.http.LowLevelHttpTransportInterface;
+import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpResponse;
+import com.google.api.data.client.http.HttpResponseException;
 import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.http.UrlEncodedFormHttpSerializer;
 
@@ -16,6 +14,7 @@ public final class ClientLoginAuthenticator {
 
   private static final String AUTH_KEY = "Auth=";
 
+  public HttpTransport httpTransport;
   public String authTokenType;
   public String username;
   public String password;
@@ -23,10 +22,9 @@ public final class ClientLoginAuthenticator {
   public String captchaToken;
   public String captchaAnswer;
 
-  public Authorizer authenticate() throws IOException {
-    LowLevelHttpTransportInterface httpTransport =
-        HttpTransport.lowLevelHttpTransportInterface;
-    LowLevelHttpRequestInterface request =
+  public void authenticate() throws IOException {
+    HttpTransport httpTransport = this.httpTransport;
+    HttpRequest request =
         httpTransport
             .buildPostRequest("https://www.google.com/accounts/ClientLogin");
     // build request content
@@ -45,18 +43,23 @@ public final class ClientLoginAuthenticator {
     if (captchaAnswer != null) {
       builder.add("logincaptcha", captchaAnswer);
     }
-    request.setContent(builder.build());
+    request.setContentNoLogging(builder.build());
     // execute and parse auth key
-    LowLevelHttpResponseInterface response = request.execute();
+    HttpResponse response = request.execute();
     String string =
-        HttpResponse.parseContentAsString(response.getContent(), response
-            .getContentLength());
+        HttpResponse.parseContentAsString(response.getContentNoLogging(),
+            response.getContentLength());
+    if (response.getStatusCode() != 200) {
+      HttpResponseException exception = new HttpResponseException(response);
+      exception.content = string;
+      throw exception;
+    }
     int auth = string.indexOf(AUTH_KEY);
     if (auth == -1) {
       throw new IllegalStateException("no auth key found");
     }
     String authToken =
         string.substring(auth + AUTH_KEY.length(), string.length() - 1);
-    return new ClientLoginAuthorizer(authToken);
+    httpTransport.authorizer = new ClientLoginAuthorizer(authToken);
   }
 }

@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.http.net;
 
-import com.google.api.data.client.http.LowLevelHttpResponseInterface;
 import com.google.api.data.client.http.HttpResponse;
+import com.google.api.data.client.http.LowLevelHttpResponseInterface;
 
 import java.io.IOException;
 import java.io.InputStream;

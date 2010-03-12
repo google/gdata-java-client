@@ -2,6 +2,7 @@
 
 package com.google.api.data.client.v2.atom;
 
+import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.v2.ClassInfo;
 import com.google.api.data.client.v2.FieldInfo;
 
@@ -11,19 +12,26 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
 
-final class AtomPatchRelativeToOriginalSerializer extends AtomSerializer {
+public final class AtomPatchRelativeToOriginalSerializer extends AtomSerializer {
 
   private final Object originalItem;
 
-  AtomPatchRelativeToOriginalSerializer(AtomClient client, Object patchedItem,
+  AtomPatchRelativeToOriginalSerializer(NamespaceDictionary client, Object patchedItem,
       Object originalItem) {
     super(client, patchedItem);
     this.originalItem = originalItem;
   }
 
+  public static void setContent(HttpRequest request, NamespaceDictionary client,
+      Object patchedItem, Object originalItem) {
+    request.setContent(new AtomPatchRelativeToOriginalSerializer(client,
+        patchedItem, originalItem));
+  }
+
   @Override
   void serialize(XmlSerializer serializer) throws IOException {
-    IdentityHashMap<String, Object> patch = new IdentityHashMap<String, Object>();
+    IdentityHashMap<String, Object> patch =
+        new IdentityHashMap<String, Object>();
     Object originalItem = this.originalItem;
     StringBuilder fieldsMaskBuf = new StringBuilder();
     boolean first = true;

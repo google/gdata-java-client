@@ -164,11 +164,6 @@ public class Jackson {
     }
   }
 
-  public static void checkForError(HttpResponse response) throws JsoncException,
-      IOException {
-    processAsInputStream(response).close();
-  }
-
   public static JsonParser processAsJsonParser(HttpResponse response)
       throws IOException, JsoncException {
     InputStream content = processAsInputStream(response);

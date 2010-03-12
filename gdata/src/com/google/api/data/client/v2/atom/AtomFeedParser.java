@@ -13,9 +13,9 @@ public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {
 
   private final Class<I> entryClass;
 
-  AtomFeedParser(AtomClient client, XmlPullParser parser, InputStream inputStream,
+  AtomFeedParser(XmlPullParser parser, InputStream inputStream,
       Class<T> feedClass, Class<I> entryClass) {
-    super(client, parser, inputStream, feedClass);
+    super(parser, inputStream, feedClass);
     this.entryClass = entryClass;
   }
 
@@ -27,6 +27,6 @@ public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {
 
   @Override
   Object parseEntryInternal() throws IOException, XmlPullParserException {
-    return client.parseElement(parser, entryClass, false);
+    return Atom.parseElement(parser, entryClass, false);
   }
 }

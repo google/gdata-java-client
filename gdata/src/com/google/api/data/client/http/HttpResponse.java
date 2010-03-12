@@ -54,7 +54,15 @@ public final class HttpResponse {
     return this.isSuccessStatusCode;
   }
 
+  public InputStream getContentNoLogging() throws IOException {
+    return getContent(false);
+  }
+
   public InputStream getContent() throws IOException {
+    return getContent(true);
+  }
+
+  private InputStream getContent(boolean logging) throws IOException {
     LowLevelHttpResponseInterface response = this.response;
     if (response == null) {
       return this.content;
@@ -73,7 +81,7 @@ public final class HttpResponse {
       if (contentEncoding != null && contentEncoding.contains("gzip")) {
         content = new GZIPInputStream(content);
       }
-      if (logger.isLoggable(Level.CONFIG)) {
+      if (logging && logger.isLoggable(Level.CONFIG)) {
         // print content using a buffered input stream that can be re-read
         String contentType = this.contentType;
         if (this.contentLength != 0 && contentType != null

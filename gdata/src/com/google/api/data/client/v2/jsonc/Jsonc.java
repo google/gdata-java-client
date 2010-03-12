@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.v2.jsonc;
 
-import com.google.api.data.client.v2.DateTime;
 import com.google.api.data.client.v2.ClassInfo;
+import com.google.api.data.client.v2.DateTime;
 import com.google.api.data.client.v2.FieldInfo;
 
 import java.lang.reflect.Field;

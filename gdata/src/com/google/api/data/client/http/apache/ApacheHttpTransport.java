@@ -2,7 +2,6 @@
 
 package com.google.api.data.client.http.apache;
 
-import com.google.api.data.client.http.LowLevelHttpRequestInterface;
 import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 
 import org.apache.http.client.HttpClient;

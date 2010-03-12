@@ -27,7 +27,7 @@ public final class HttpRequest {
     this.transport = transport;
     this.uri = uri;
     LowLevelHttpTransportInterface httpTransport =
-        HttpTransport.lowLevelHttpTransportInterface;
+        transport.getLowLevelHttpTransportInterface();
     // method override?
     boolean isPatch = method == "PATCH";
     String actualMethod;
@@ -60,7 +60,29 @@ public final class HttpRequest {
   }
 
   public void setContent(HttpSerializer serializer) {
-    this.content = new GZipHttpSerializer(new LogHttpSerializer(serializer));
+    setContentNoLogging(new LogHttpSerializer(serializer));
+  }
+
+  public void setContentNoLogging(HttpSerializer serializer) {
+    this.content = new GZipHttpSerializer(serializer);
+  }
+
+  public void executeIgnoreResponse() throws IOException {
+    HttpResponse response = execute();
+    checkForError(response);
+    response.getContent().close();
+  }
+
+  public <T> T execute(Class<T> entityClass) throws IOException {
+    HttpResponse response = execute();
+    checkForError(response);
+    String contentType = response.getContentType();
+    HttpParser parser = this.transport.getParser(contentType);
+    if (parser == null) {
+      throw new IllegalArgumentException("No parser defined for content type: "
+          + contentType);
+    }
+    return parser.parse(response, entityClass);
   }
 
   public HttpResponse execute() throws IOException {
@@ -127,6 +149,19 @@ public final class HttpRequest {
         logger.config(name + ": " + value);
       }
       httpRequest.addHeader(name, value);
+    }
+  }
+
+  private void checkForError(HttpResponse response) throws IOException {
+    if (!response.isSuccessStatusCode()) {
+      String contentType = response.getContentType();
+      HttpParser parser = this.transport.getParser(contentType);
+      if (parser == null) {
+        HttpResponseException exception = new HttpResponseException(response);
+        exception.content = response.parseContentAsString();
+        throw exception;
+      }
+      parser.parse(response, Object.class);
     }
   }
 }
