@@ -75,6 +75,7 @@ How would you represent that in Java?  Here's a quick idea of how you might repr
 Now execute the request, and let the library parse into it:
 
 {{{
+    String albumUri = "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt=jsonc";
     HttpRequest request = transport.buildGetRequest(albumUri);
     Album album = request.execute(Album.class);
 }}}
