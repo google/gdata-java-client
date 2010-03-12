@@ -4,13 +4,11 @@ import com.google.api.data.client.auth.clientlogin.ClientLoginAuthenticator;
 import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.http.InputStreamHttpSerializer;
-import com.google.api.data.client.http.apache.ApacheGData;
 import com.google.api.data.client.v2.GData;
 import com.google.api.data.client.v2.GDataUri;
 import com.google.api.data.client.v2.Name;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
-import com.google.api.data.client.v2.jsonc.jackson.Jackson;
-import com.google.api.data.client.v2.jsonc.jackson.JsoncException;
+import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
 import com.google.api.data.client.v2.jsonc.jackson.JsoncSerializer;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
@@ -103,23 +101,24 @@ public class PicasaBasicJsoncSample {
   }
 
   private static HttpTransport authenticate() throws IOException {
-    HttpTransport.lowLevelHttpTransportInterface = ApacheGData.HTTP_TRANSPORT;
     HttpTransport transport = new HttpTransport(APP_NAME);
     ClientLoginAuthenticator authenticator = new ClientLoginAuthenticator();
+    authenticator.httpTransport = transport;
+    authenticator.applicationName = APP_NAME;
     authenticator.authTokenType = Picasa.AUTH_TOKEN_TYPE;
     Scanner s = new Scanner(System.in);
     System.out.println("Username: ");
     authenticator.username = s.nextLine();
     System.out.println("Password: ");
     authenticator.password = s.nextLine();
-    authenticator.applicationName = APP_NAME;
-    transport.authorizer = authenticator.authenticate();
+    authenticator.authenticate();
     GData.setVersionHeader(transport, Picasa.VERSION);
+    JacksonHttpParser.set(transport);
     return transport;
   }
 
   private static AlbumFeed showAlbums(HttpTransport transport)
-      throws JsoncException, IOException {
+      throws IOException {
     // build URI for the default user feed of albums
     PicasaPath path = PicasaPath.feed();
     path.user = "default";
@@ -128,7 +127,7 @@ public class PicasaBasicJsoncSample {
     uri.maxResults = MAX_ALBUMS_TO_SHOW;
     // execute GData request for the feed
     HttpRequest request = transport.buildGetRequest(uri.build());
-    AlbumFeed feed = Jackson.parse(request.execute(), AlbumFeed.class);
+    AlbumFeed feed = request.execute(AlbumFeed.class);
     System.out.println("User: " + feed.author);
     System.out.println("Total number of albums: " + feed.totalItems);
     // show albums
@@ -139,7 +138,7 @@ public class PicasaBasicJsoncSample {
   }
 
   private static void showAlbum(HttpTransport transport, Album album)
-      throws IOException, JsoncException {
+      throws IOException {
     System.out.println();
     System.out.println("-----------------------------------------------");
     System.out.println("Album title: " + album.title);
@@ -151,7 +150,7 @@ public class PicasaBasicJsoncSample {
       uri.kinds = "photo";
       uri.maxResults = MAX_PHOTOS_TO_SHOW;
       HttpRequest request = transport.buildGetRequest(uri.build());
-      PhotoFeed feed = Jackson.parse(request.execute(), PhotoFeed.class);
+      PhotoFeed feed = request.execute(PhotoFeed.class);
       for (Photo photo : feed.items) {
         System.out.println();
         System.out.println("Photo title: " + photo.title);
@@ -163,7 +162,7 @@ public class PicasaBasicJsoncSample {
   }
 
   private static Album postAlbum(HttpTransport transport, AlbumFeed feed)
-      throws IOException, JsoncException {
+      throws IOException {
     System.out.println();
     Album newAlbum = new Album();
     newAlbum.access = "private";
@@ -171,13 +170,13 @@ public class PicasaBasicJsoncSample {
     newAlbum.description = "My favorite photos";
     HttpRequest request = transport.buildPostRequest(feed.links.post);
     JsoncSerializer.setContent(request, newAlbum);
-    Album album = Jackson.parse(request.execute(), Album.class);
+    Album album = request.execute(Album.class);
     showAlbum(transport, album);
     return album;
   }
 
   private static Photo postPhoto(HttpTransport transport, Album album)
-      throws IOException, JsoncException {
+      throws IOException {
     String fileName = "picasaweblogo-en_US.gif";
     String photoUrlString = "http://www.google.com/accounts/lh2/" + fileName;
     URL photoUrl = new URL(photoUrlString);
@@ -185,41 +184,40 @@ public class PicasaBasicJsoncSample {
     GData.setSlugHeader(request, fileName);
     InputStreamHttpSerializer.setContent(request, photoUrl.openStream(), -1,
         "image/jpeg", null);
-    Photo photo = Jackson.parse(request.execute(), Photo.class);
+    Photo photo = request.execute(Photo.class);
     System.out.println("Posted photo: " + photo.title);
     return photo;
   }
 
   private static Album getUpdatedAlbum(HttpTransport transport, Album album)
-      throws JsoncException, IOException {
+      throws IOException {
     HttpRequest request = transport.buildGetRequest(album.links.self);
-    album = Jackson.parse(request.execute(), Album.class);
+    album = request.execute(Album.class);
     showAlbum(transport, album);
     return album;
   }
 
   private static Album updateTitle(HttpTransport transport, Album album)
-      throws IOException, JsoncException {
+      throws IOException {
     // must do a GET into JsoncEntity
     HttpRequest request = transport.buildGetRequest(album.links.self);
-    JsoncEntity albumToEdit =
-        Jackson.parse(request.execute(), JsoncEntity.class);
+    JsoncEntity albumToEdit = request.execute(JsoncEntity.class);
     // now can safely do a PUT with the returned JsoncEntity
     albumToEdit.set("title", "My favorite web logos");
     request = transport.buildPutRequest(album.links.edit);
     GData.setIfMatchHeader(request, album.etag);
     JsoncSerializer.setContent(request, albumToEdit);
-    album = Jackson.parse(request.execute(), Album.class);
+    album = request.execute(Album.class);
     // show updated album
     showAlbum(transport, album);
     return album;
   }
 
   private static void deleteAlbum(HttpTransport transport, Album album)
-      throws JsoncException, IOException {
+      throws IOException {
     HttpRequest request = transport.buildDeleteRequest(album.links.edit);
     GData.setIfMatchHeader(request, album.etag);
-    Jackson.checkForError(request.execute());
+    request.executeIgnoreResponse();
     System.out.println();
     System.out.println("Album deleted.");
   }
