@@ -48,7 +48,7 @@
 
   <target name="gdata-android-v2-jar" depends="compile,dist-init">
     <jar destfile="${dist.dir}/gdata-android-v2.jar" basedir="${classes.dir}"
-      includes="com/google/api/data/client/v2/*.class,com/google/api/data/client/v2/android/*.class,com/google/api/data/client/v2/apache/*.class,com/google/api/data/client/v2/escape/*.class" />
+      includes="com/google/api/data/client/auth/*.class,com/google/api/data/client/auth/clientlogin/*.class,com/google/api/data/client/http/*.class,com/google/api/data/client/http/apache/*.class,com/google/api/data/client/v2/*.class,com/google/api/data/client/v2/android/*.class,com/google/api/data/client/v2/apache/*.class,com/google/api/data/client/v2/escape/*.class" />
   </target>
 
   <target name="gdata-atom-v2-jar" depends="compile,dist-init">

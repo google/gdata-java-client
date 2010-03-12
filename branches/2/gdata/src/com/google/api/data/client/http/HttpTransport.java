@@ -56,6 +56,8 @@ public class HttpTransport {
   private final ConcurrentHashMap<String, HttpParser> contentTypeToParserMap =
       new ConcurrentHashMap<String, HttpParser>();
 
+  public final String applicationName;
+
   public void setParser(HttpParser parser) {
     this.contentTypeToParserMap.put(parser.getContentType(), parser);
   }
@@ -72,6 +74,7 @@ public class HttpTransport {
   }
 
   public HttpTransport(String applicationName) {
+    this.applicationName = applicationName;
     StringBuilder userAgent = new StringBuilder();
     if (applicationName != null) {
       userAgent.append(applicationName).append(' ');
