@@ -2,9 +2,9 @@
 
 package com.google.api.data.client.http.apache;
 
+import com.google.api.data.client.http.HttpSerializer;
 import com.google.api.data.client.http.LowLevelHttpRequestInterface;
 import com.google.api.data.client.http.LowLevelHttpResponseInterface;
-import com.google.api.data.client.http.HttpSerializer;
 
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.client.HttpClient;

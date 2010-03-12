@@ -1,11 +1,10 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2;
+package com.google.api.data.client.http;
 
-import com.google.api.data.client.http.HttpResponse;
+import java.io.IOException;
 
-/** GData error response to a GData request. */
-public class GDataException extends Exception {
+public class HttpResponseException extends IOException {
 
   static final long serialVersionUID = 1;
 
@@ -18,9 +17,9 @@ public class GDataException extends Exception {
   public String content;
 
   /**
-   * @param response GData response
+   * @param response HTTP response
    */
-  public GDataException(HttpResponse response) {
+  public HttpResponseException(HttpResponse response) {
     this.errorCode = response.getStatusCode();
     this.errorMessage = response.getStatusMessage();
   }
@@ -38,4 +37,5 @@ public class GDataException extends Exception {
     }
     return messageBuilder.toString();
   }
+
 }

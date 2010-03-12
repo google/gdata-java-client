@@ -2,9 +2,9 @@
 
 package com.google.api.data.client.http.net;
 
+import com.google.api.data.client.http.HttpSerializer;
 import com.google.api.data.client.http.LowLevelHttpRequestInterface;
 import com.google.api.data.client.http.LowLevelHttpResponseInterface;
-import com.google.api.data.client.http.HttpSerializer;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

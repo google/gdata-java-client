@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
-import com.google.api.data.client.http.HttpSerializer;
 import com.google.api.data.client.http.HttpRequest;
+import com.google.api.data.client.http.HttpSerializer;
 import com.google.api.data.client.v2.ClassInfo;
 import com.google.api.data.client.v2.DateTime;
 import com.google.api.data.client.v2.FieldInfo;

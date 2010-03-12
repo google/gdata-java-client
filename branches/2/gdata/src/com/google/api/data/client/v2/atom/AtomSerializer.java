@@ -2,6 +2,7 @@
 
 package com.google.api.data.client.v2.atom;
 
+import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpSerializer;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -10,14 +11,19 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.io.OutputStream;
 
-class AtomSerializer implements HttpSerializer {
+public class AtomSerializer implements HttpSerializer {
 
-  final AtomClient client;
+  final NamespaceDictionary client;
   final Object entry;
 
-  AtomSerializer(AtomClient client, Object entry) {
+  AtomSerializer(NamespaceDictionary client, Object entry) {
     this.client = client;
     this.entry = entry;
+  }
+
+  public static void setContent(HttpRequest request, NamespaceDictionary client,
+      Object entry) {
+    request.setContent(new AtomSerializer(client, entry));
   }
 
   public final long getContentLength() {
@@ -51,7 +57,7 @@ class AtomSerializer implements HttpSerializer {
       throws IOException {
     serializer.startDocument(null, null);
     this.client.setNamespacePrefixes(serializer);
-    this.client.serializeElement(serializer, AtomClient.ATOM_NAMESPACE,
+    this.client.serializeElement(serializer, NamespaceDictionary.ATOM_NAMESPACE,
         "entry", entry);
     serializer.endDocument();
   }

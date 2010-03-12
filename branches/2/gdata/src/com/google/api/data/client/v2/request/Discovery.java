@@ -1,9 +1,9 @@
 package com.google.api.data.client.v2.request;
 
-import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.http.HttpTransport;
+import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,13 +18,13 @@ public class Discovery {
   private final String resource;
 
   Discovery(ServiceDocument serviceDoc, LowLevelHttpTransportInterface transport) {
-    HttpTransport.lowLevelHttpTransportInterface = transport;
+    this.transport.lowLevelHttpTransportInterface = transport;
     this.serviceDoc = serviceDoc;
     this.resource = null;
   }
   
   Discovery(String resource, LowLevelHttpTransportInterface transport) {
-    HttpTransport.lowLevelHttpTransportInterface = transport;
+    this.transport.lowLevelHttpTransportInterface = transport;
     this.resource = resource;
     this.serviceDoc = null;
   }

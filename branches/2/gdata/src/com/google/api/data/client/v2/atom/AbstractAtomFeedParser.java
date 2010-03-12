@@ -15,14 +15,12 @@ import java.io.InputStream;
 public abstract class AbstractAtomFeedParser<T> {
 
   private boolean feedParsed;
-  final AtomClient client;
   final XmlPullParser parser;
   final InputStream inputStream;
   final Class<T> feedClass;
 
-  AbstractAtomFeedParser(AtomClient client, XmlPullParser parser,
-      InputStream inputStream, Class<T> feedClass) {
-    this.client = client;
+  AbstractAtomFeedParser(XmlPullParser parser, InputStream inputStream,
+      Class<T> feedClass) {
     this.parser = parser;
     this.inputStream = inputStream;
     this.feedClass = feedClass;
@@ -38,7 +36,7 @@ public abstract class AbstractAtomFeedParser<T> {
     boolean close = true;
     try {
       feedParsed = true;
-      T result = client.parseElement(parser, feedClass, true);
+      T result = Atom.parseElement(parser, feedClass, true);
       close = false;
       return result;
     } finally {
@@ -60,7 +58,7 @@ public abstract class AbstractAtomFeedParser<T> {
     XmlPullParser parser = this.parser;
     if (!this.feedParsed) {
       this.feedParsed = true;
-      this.client.parseElement(parser, null, true);
+      Atom.parseElement(parser, null, true);
     }
     boolean close = true;
     try {

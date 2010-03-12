@@ -3,9 +3,11 @@
 package com.google.api.data.client.http;
 
 import com.google.api.data.client.auth.Authorizer;
+import com.google.api.data.client.http.net.NetGData;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class HttpTransport {
@@ -26,8 +28,24 @@ public class HttpTransport {
   public static final boolean DISABLE_GZIP =
       Boolean.getBoolean(HttpTransport.class.getName() + ".DisableGZip");
 
-  // TODO: specify this in the metadata of the packaged jar?
-  public static LowLevelHttpTransportInterface lowLevelHttpTransportInterface;
+  /**
+   * Low level HTTP transport interface to use or {@code null} to use the
+   * default of {@code java.net} transport. See
+   * {@link #getLowLevelHttpTransportInterface()}.
+   */
+  public LowLevelHttpTransportInterface lowLevelHttpTransportInterface;
+
+  /** Returns the low-level HTTP transport to use. */
+  public LowLevelHttpTransportInterface getLowLevelHttpTransportInterface() {
+    LowLevelHttpTransportInterface lowLevelHttpTransportInterface =
+        this.lowLevelHttpTransportInterface;
+    if (lowLevelHttpTransportInterface == null) {
+      // TODO: specify this in the metadata of the packaged jar?
+      this.lowLevelHttpTransportInterface =
+          lowLevelHttpTransportInterface = NetGData.HTTP_TRANSPORT;
+    }
+    return lowLevelHttpTransportInterface;
+  }
 
   final ArrayList<String> defaultHeaderNames = new ArrayList<String>();
   final ArrayList<String> defaultHeaderValues = new ArrayList<String>();
@@ -35,10 +53,30 @@ public class HttpTransport {
   /** Authorizer or {@code null} for none. */
   public Authorizer authorizer;
 
+  private final ConcurrentHashMap<String, HttpParser> contentTypeToParserMap =
+      new ConcurrentHashMap<String, HttpParser>();
+
+  public void setParser(HttpParser parser) {
+    this.contentTypeToParserMap.put(parser.getContentType(), parser);
+  }
+
+  public HttpParser getParser(String contentType) {
+    if (contentType == null) {
+      return null;
+    }
+    int semicolon = contentType.indexOf(';');
+    if (semicolon != -1) {
+      contentType = contentType.substring(0, semicolon);
+    }
+    return this.contentTypeToParserMap.get(contentType);
+  }
+
   public HttpTransport(String applicationName) {
-    StringBuilder userAgent =
-        new StringBuilder().append(applicationName).append(
-            " Google-API-Java/2.0.0-alpha");
+    StringBuilder userAgent = new StringBuilder();
+    if (applicationName != null) {
+      userAgent.append(applicationName).append(' ');
+    }
+    userAgent.append("Google-API-Java/2.0.0-alpha");
     if (!DISABLE_GZIP) {
       userAgent.append("(gzip)");
       setDefaultHeader("Accept-Encoding", "gzip");

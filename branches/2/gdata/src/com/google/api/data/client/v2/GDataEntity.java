@@ -1,7 +1,5 @@
 package com.google.api.data.client.v2;
 
-import com.google.api.data.client.v2.ClassInfo;
-
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.IdentityHashMap;
