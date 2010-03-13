@@ -16,7 +16,5 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
   * Download: [http://gdata-java-client.googlecode.com/files/gdata.java-2.0.0-alpha.zip gdata.java-2.0.0-alpha.zip]
   * Source: [http://code.google.com/p/gdata-java-client/source/browse/branches/2/#2/gdata/src/com/google/api/data GData Client Library Version 2]
   * Samples
-    * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/picasa/picasa-jsonc-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicJsoncAndroidSample.java Picasa Web Albums JSON-C Android Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java Picasa Web Albums Atom XML Android Sample]
-    * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/picasa/picasa-jsonc-sample/src/com/google/api/data/sample/picasa/PicasaBasicJsoncSample.java Picasa Web Albums JSON-C Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/picasa/picasa-atom-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomSample.java Picasa Web Albums Atom XML Android Sample]
