@@ -8,7 +8,9 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
   * User-defined object models (see UserDefinedObjectModels)
   * And we have some more surprises planned for the future that just won't be possible to do in the version 1 library
 
-*WARNING:* this is an experimental branch of the library, and as such all API is subject to change.
+*WARNING:* this is an experimental branch of the library, and as such all API is subject to change.  There are known bugs and missing features, and therefore not for use in high quality applications.  We invite you to experiment with this library and provide us with early feedback.
+
+*WARNING:* this is a complete rewrite compared to version 1 of the library, and is *not* backwards compatible with version 1.  We are not yet deprecating version 1, though that is our ultimate goal once version 2 is out of beta.
 
 
 = Links =
