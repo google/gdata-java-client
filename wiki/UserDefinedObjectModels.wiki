@@ -2,57 +2,279 @@
 
 = Version 2 Feature: User-Defined Object Models =
 
-Let's take a look at a typical partial JSON-C output from the Picasa Web Albums Data API:
+== JSON-C ==
+
+Reference: [http://code.google.com/apis/youtube/2.0/developers_guide_jsonc.html YouTube JSON-C Developer's Guide]
+
+Let's take a look at a typical partial JSON-C video feed from the !YouYube Data API (showing only the data our sample application is interested in):
+
 {{{
-{
- "apiVersion": "2.0",
- "data": {
-  "kind": "album",
-  "etag": "...",
-  "title": "My favorite web logos",
-  "description": "My favorite photos",
-  "access": "private",
-  "numPhotos": 1,
-  "links": {
-   "feed": "http://picasaweb.google.com/data/feed/api/user/.../albumid/...?alt\u003djsonc...",
-   "alternate": "http://picasaweb.google.com/.../MyFavoriteWebLogos?...",
-   "self": "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt\u003djsonc...",
-   "edit": "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt\u003djsonc..."
-  },
+ "data":{
+    "updated":"2010-01-07T19:58:42.949Z",
+    "totalItems":800,
+    "startIndex":1,
+    "itemsPerPage":1,
+    "items":[
+        {"id":"hYB0mn5zh2c",
+         "updated":"2010-01-07T13:26:50.000Z",
+         "title":"Google Developers Day US - Maps API Introduction",
+         "description":"Google Maps API Introduction ...",
+         "tags":[
+            "GDD07","GDD07US","Maps"
+         ],
+         "player":{
+            "default":"http://www.youtube.com/watch?v\u003dhYB0mn5zh2c"
+         },
+...
+        }
+    ]
  }
-}
 }}}
-How would you represent that in Java?  Here's a quick idea of how you might represent it in a particular application:
+
+How would you represent that in Java?  Here's one way to represent it for our sample application:
 
 {{{
-  public static class Album {
-    public final String kind = "album";
-    public String etag;
+
+import com.google.api.data.client.v2.DateTime;
+import com.google.api.data.client.v2.Name;
+import java.util.List;
+
+  public static class VideoFeed {
+    public int itemsPerPage;
+    public int startIndex;
+    public int totalItems;
+    public DateTime updated;
+    public List<Video> items;
+  }
+
+  public static class Video {
+    public String id;
     public String title;
+    public DateTime updated;
     public String description;
-    public String access;
-    public int numPhotos;
-    public Links links;
+    public List<String> tags;
+    public Player player;
   }
 
-  public static class Links {
-    public String edit;
-    public String feed;
-    public String post;
-    public String self;
+  public static class Player {
+    // "default" is a Java keyword, so need to specify the JSON key manually
+    @Name("default")
+    public String defaultUrl;
   }
 }}}
 
-Now execute the request, and let the library parse into it:
+Similarly, we can build URI using our own defined object model:
 
 {{{
-    String albumUri = "http://picasaweb.google.com/data/entry/api/user/.../albumid/...?alt=jsonc";
-    HttpRequest request = transport.buildGetRequest(albumUri);
-    Album album = request.execute(Album.class);
+import com.google.api.data.client.http.HttpRequest;
+import com.google.api.data.client.http.HttpTransport;
+import com.google.api.data.client.v2.GDataUri;
+import com.google.api.data.youtube.v2.YouTubePath;
+import java.io.IOException;
+
+  public static class YouTubeUri extends GDataUri {
+
+    public String author;
+
+    @Name("max-results")
+    public Integer maxResults;
+
+    public YouTubeUri(String uri) {
+      super(uri);
+      this.alt = "jsonc";
+    }
+  }
+
+  private static VideoFeed showVideos(HttpTransport transport) throws IOException {
+    YouTubePath path = YouTubePath.videos();
+    YouTubeUri uri = new YouTubeUri(path.build());
+    uri.author = "searchstories";
+    String videosUri = uri.build();
 }}}
 
-Everything else you don't need just gets dropped, so it potentially uses much less memory than the version 1 client data classes.
+Now we execute the request and parse the result:
+
+{{{
+    HttpRequest request = transport.buildGetRequest(videosUri);
+    VideoFeed feed = request.execute(VideoFeed.class);
+    System.out.println("Total number of videos: " + feed.totalItems);
+    for (Video video : feed.items) {
+      showVideo(video);
+    }
+  }
+}}}
+
+Everything else we don't need just gets dropped, so it potentially uses much less memory than the version 1 client data classes.
 
 NOTE: As you might guess, the library uses reflection to populate the user-defined object model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
 
 NOTE: If you prefer to use your favorite JSON parsing library instead (there are many of them listed for example on http://json.org), that's supported as well.  Just call request.execute() and parse the returned byte stream.
+
+
+== Atom XML ==
+
+Reference: [http://code.google.com/apis/picasaweb/docs/2.0/developers_guide_protocol.html Picasa Web Albums Atom XML Developer's Guide]
+
+Now that we've seen how easy it is to use JSON, we can use the same ideas to define an object model for XML.  However, it's not quite as elegant as XML because we need to deal with XML namespaces.  Also, the structure of the data is more cumbersome to use.
+
+The primary advantage of XML is simply that it has more features than JSON-C, such as the ability to make updates to a feed, and unlike the newer JSON-C format, all Google Data API's support XML.
+
+Let's take a look at a typical Atom XML album feed from the Picasa Web Albums Data API (showing only the data our sample application is interested in):
+
+{{{
+<?xml version='1.0' encoding='utf-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom'
+    xmlns:openSearch='http://a9.com/-/spec/opensearch/1.1/'
+    xmlns:gphoto='http://schemas.google.com/photos/2007'>
+  <link rel='http://schemas.google.com/g/2005#post'
+    type='application/atom+xml'
+    href='http://picasaweb.google.com/data/feed/api/user/liz' />
+  <author>
+    <name>Liz</name>
+  </author>
+  <openSearch:totalResults>1</openSearch:totalResults>
+  <entry gd:etag='"RXY8fjVSLyp7ImA9WxVVGE8KQAE."'>
+    <category scheme='http://schemas.google.com/g/2005#kind'
+      term='http://schemas.google.com/photos/2007#album' />
+    <title>lolcats</title>
+    <summary>Hilarious Felines</summary>
+    <gphoto:access>public</gphoto:access>
+  </entry>
+</feed>
+}}}
+
+How would you represent that in Java?  Here's one way to represent it for our sample application:
+
+{{{
+  public static class Link {
+
+    @Name("@href")
+    public String href;
+
+    @Name("@rel")
+    public String rel;
+  }
+
+  public static String getLink(List<Link> links, String rel) {
+    for (Link link : links) {
+      if (rel.equals(link.rel)) {
+        return link.href;
+      }
+    }
+    return null;
+  }
+
+  public static class Category {
+
+    @Name("@scheme")
+    public String scheme;
+
+    @Name("@term")
+    public String term;
+  }
+
+  public static Category newKind(String kind) {
+    Category category = new Category();
+    category.scheme = "http://schemas.google.com/g/2005#kind";
+    category.term = "http://schemas.google.com/photos/2007#" + kind;
+    return category;
+  }
+
+  public static class AlbumEntry {
+
+    public String summary;
+
+    public String title;
+
+    @Name("gphoto:access")
+    public String access;
+
+    public Category category = newKind("album");
+  }
+
+  public static class Author {
+    public String name;
+  }
+
+  public static class AlbumFeed {
+
+    public Author author;
+
+    @Name("openSearch:totalResults")
+    public int totalResults;
+
+    @Name("entry")
+    public List<AlbumEntry> entries;
+
+    @Name("link")
+    public List<Link> links;
+
+    String getPostLink() {
+      return getLink(links, "http://schemas.google.com/g/2005#post");
+    }
+  }
+}}}
+
+
+Similarly, we can build URI using our own defined object model:
+
+{{{
+import com.google.api.data.client.http.HttpRequest;
+import com.google.api.data.client.http.HttpTransport;
+import com.google.api.data.picasa.v2.PicasaPath;
+import com.google.api.data.client.v2.GDataUri;
+import java.io.IOException;
+
+  public static class PicasaUri extends GDataUri {
+
+    @Name("max-results")
+    public Integer maxResults;
+
+    public String kinds;
+
+    public PicasaUri(String uri) {
+      super(uri);
+    }
+  }
+
+  private static AlbumFeed showAlbums(HttpTransport transport) throws IOException {
+    // build URI for the default user feed of albums
+    PicasaPath path = PicasaPath.feed();
+    path.user = "default";
+    PicasaUri uri = new PicasaUri(path.build());
+    uri.kinds = "album";
+    String albumsUri = uri.build();
+}}}
+
+Now we execute the request and parse the result:
+
+{{{
+    HttpRequest request = transport.buildGetRequest(albumsUri);
+    AlbumFeed feed = request.execute(AlbumFeed.class);
+    System.out.println("User: " + feed.author.name);
+    System.out.println("Total number of albums: " + feed.totalResults);
+    for (AlbumEntry album : feed.entries) {
+      showAlbum(transport, album);
+    }
+  }
+}}}
+
+Everything else we don't need just gets dropped, so it potentially uses much less memory than the version 1 client data classes.
+
+Now, let's POST a new album to the album feed:
+
+{{{
+import com.google.api.data.picasa.v2.atom.PicasaAtom;
+
+  private static AlbumEntry postAlbum(HttpTransport transport, AlbumFeed feed) throws IOException {
+    AlbumEntry newAlbum = new AlbumEntry();
+    newAlbum.access = "private";
+    newAlbum.title = "A new album";
+    newAlbum.summary = "My favorite photos";
+    HttpRequest request = transport.buildPostRequest(feed.getPostLink());
+    AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY, newAlbum);
+    AlbumEntry postedAlbum = request.execute(AlbumEntry.class);
+    showAlbum(transport, postedAlbum);
+    return postedAlbum;
+  }
+}}}
