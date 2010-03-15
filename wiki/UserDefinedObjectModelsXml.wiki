@@ -167,3 +167,7 @@ import com.google.api.data.picasa.v2.atom.PicasaAtom;
     return postedAlbum;
   }
 }}}
+
+NOTE: As you might guess, the library uses reflection to populate the user-defined object model. It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
+
+NOTE: If you prefer to write your own XML parsing code instead, that's supported as well. Just call request.execute() and parse the returned byte stream.
