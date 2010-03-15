@@ -16,6 +16,7 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
 = Links =
 
   * Download: [http://gdata-java-client.googlecode.com/files/gdata.java-2.0.0-alpha.zip gdata.java-2.0.0-alpha.zip]
+  * [http://gdata-java-client.googlecode.com/svn/tags/2.0.0-alpha/javadoc/index.html JavaDoc]
   * Source: [http://code.google.com/p/gdata-java-client/source/browse/branches/2/#2/gdata/src/com/google/api/data GData Client Library Version 2]
   * Samples
     * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeBasicJsoncSample.java YouTube JSON-C Java 5 Sample]
