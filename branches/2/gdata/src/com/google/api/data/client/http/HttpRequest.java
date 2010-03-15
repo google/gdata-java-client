@@ -125,11 +125,17 @@ public final class HttpRequest {
     // content
     HttpSerializer content = this.content;
     if (content != null) {
-      String contentEncoding = content.getContentEncoding();
-      String contentType = content.getContentType();
-      long contentLength = content.getContentLength();
-      HttpResponse.debugContentMetadata(logger, contentType, contentEncoding,
-          contentLength);
+      if (loggable) {
+        logger.config("Content-Type: " + content.getContentType());
+        String contentEncoding = content.getContentEncoding();
+        if (contentEncoding != null) {
+          logger.config("Content-Encoding: " + contentEncoding);
+        }
+        long contentLength = content.getContentLength();
+        if (contentLength >= 0) {
+          logger.config("Content-Length: " + contentLength);
+        }
+      }
       httpRequest.setContent(content);
     }
     // execute

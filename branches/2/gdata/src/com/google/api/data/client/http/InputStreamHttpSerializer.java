@@ -14,7 +14,7 @@ public class InputStreamHttpSerializer implements HttpSerializer {
   private final long contentLength;
   private final InputStream inputStream;
 
-  protected InputStreamHttpSerializer(InputStream inputStream,
+  public InputStreamHttpSerializer(InputStream inputStream,
       long contentLength, String contentType, String contentEncoding) {
     this.inputStream = inputStream;
     this.contentType = contentType;

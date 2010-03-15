@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -20,6 +21,8 @@ public final class HttpResponse {
   private LowLevelHttpResponseInterface response;
   private final String statusMessage;
   private final String contentEncoding;
+  private final HashMap<String, String> headerNameToValueMap =
+      new HashMap<String, String>();
 
   HttpResponse(LowLevelHttpResponseInterface response) {
     this.response = response;
@@ -33,20 +36,20 @@ public final class HttpResponse {
     String message = response.getReasonPhrase();
     this.statusMessage = message;
     Logger logger = HttpTransport.LOGGER;
-    if (logger.isLoggable(Level.CONFIG)) {
+    boolean loggable = logger.isLoggable(Level.CONFIG);
+    if (loggable) {
       logger.config(response.getStatusLine());
-      debugContentMetadata(logger, contentType, contentEncoding, contentLength);
     }
-  }
-
-  static void debugContentMetadata(Logger logger, String contentType,
-      String contentEncoding, long contentLength) {
-    logger.config("Content-Type: " + contentType);
-    if (contentEncoding != null) {
-      logger.config("Content-Encoding: " + contentEncoding);
-    }
-    if (contentLength >= 0) {
-      logger.config("Content-Length: " + contentLength);
+    // headers
+    HashMap<String, String> headerNameToValueMap = this.headerNameToValueMap;
+    int size = response.getHeaderCount();
+    for (int i = 0; i < size; i++) {
+      String headerName = response.getHeaderName(i);
+      String headerValue = response.getHeaderValue(i);
+      headerNameToValueMap.put(headerName, headerValue);
+      if (loggable) {
+        logger.config(headerName + ": " + headerValue);
+      }
     }
   }
 
@@ -142,6 +145,20 @@ public final class HttpResponse {
 
   public String getContentType() {
     return this.contentType;
+  }
+
+  /**
+   * Returns the value of the named header field.
+   * <p>
+   * If called on a connection that sets the same header multiple times with
+   * possibly different values, only the last value is returned.
+   * 
+   * @param name the name of a header field.
+   * @return the value of the named header field, or {@code null} if there is no
+   *         such field in the header.
+   */
+  public String getHeaderValue(String name) {
+    return this.headerNameToValueMap.get(name);
   }
 
   private static byte[] readStream(InputStream content) throws IOException {

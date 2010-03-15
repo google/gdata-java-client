@@ -7,15 +7,16 @@ import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.http.HttpSerializer;
 import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.http.InputStreamHttpSerializer;
-import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.MultipartHttpSerializer;
 import com.google.api.data.client.v2.GDataEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +25,10 @@ public class Discovery {
   private HttpTransport transport = new HttpTransport("sample");
   private final ServiceDocument serviceDoc;
   private final String resource;
-  
+  private final ConcurrentHashMap<String, Class<HttpSerializer>>
+  contentTypeToSerializerMap
+      = new ConcurrentHashMap<String, Class<HttpSerializer>>();
+
   Discovery(ServiceDocument serviceDoc, HttpTransport transport) {
     this.transport = transport;
     this.serviceDoc = serviceDoc;
@@ -129,14 +133,14 @@ public class Discovery {
       HttpSerializer serializer;
       if (contents.size() == 1) {
         GDataEntity content = contents.get(0);
-        serializer = transport.getSerializer(
+        serializer = getSerializer(
             (String) content.get("type"), content.get("value"));
       } else {
         GDataEntity content = contents.get(0);
-        HttpSerializer serializer1 = transport.getSerializer(
+        HttpSerializer serializer1 = getSerializer(
             (String) content.get("type"), content.get("value"));
         content = contents.get(1);
-        HttpSerializer serializer2 = transport.getSerializer(
+        HttpSerializer serializer2 = getSerializer(
             (String) content.get("type"), content.get("value"));
         serializer = new MultipartHttpSerializer(serializer1, serializer2);
       }
@@ -188,5 +192,47 @@ public class Discovery {
       params.set(var, null);
     }
     return url;
+  }
+
+  private HttpSerializer getSerializer(String contentType, Object content) {
+    if (contentType == null) {
+      return null;
+    }
+    if (content instanceof InputStream) {
+      return new InputStreamHttpSerializer(
+          (InputStream) content, -1, contentType, null);
+    }
+    int semicolon = contentType.indexOf(';');
+    if (semicolon != -1) {
+      contentType = contentType.substring(0, semicolon);
+    }
+    Class<HttpSerializer> clazz =
+      this.contentTypeToSerializerMap.get(contentType);
+    if (clazz == null) {
+      throw new RuntimeException(
+          "Dont know how to generate for: " + contentType);
+    }
+    HttpSerializer serializer = null;
+      try {
+        serializer = clazz.getConstructor(
+            new Class[] {Object.class}).newInstance(content);
+      } catch (SecurityException e) {
+        e.printStackTrace();
+      } catch (InstantiationException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (NoSuchMethodException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    if (serializer == null) {
+      throw new RuntimeException("content is not serializable");
+    }
+    return serializer;
   }
 }

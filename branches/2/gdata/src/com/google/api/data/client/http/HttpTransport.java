@@ -6,8 +6,6 @@ import com.google.api.data.client.auth.Authorizer;
 import com.google.api.data.client.http.net.NetGData;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -57,9 +55,6 @@ public class HttpTransport {
 
   private final ConcurrentHashMap<String, HttpParser> contentTypeToParserMap =
       new ConcurrentHashMap<String, HttpParser>();
-  private final ConcurrentHashMap<String, Class<HttpSerializer>>
-      contentTypeToSerializerMap
-          = new ConcurrentHashMap<String, Class<HttpSerializer>>();
 
   public final String applicationName;
 
@@ -78,54 +73,6 @@ public class HttpTransport {
     return this.contentTypeToParserMap.get(contentType);
   }
   
-  public HttpSerializer getSerializer(String contentType, Object content) {
-    if (contentType == null) {
-      return null;
-    }
-    if (content instanceof InputStream) {
-      return new InputStreamHttpSerializer(
-          (InputStream) content, -1, contentType, null);
-    }
-    int semicolon = contentType.indexOf(';');
-    if (semicolon != -1) {
-      contentType = contentType.substring(0, semicolon);
-    }
-    Class<HttpSerializer> clazz =
-      this.contentTypeToSerializerMap.get(contentType);
-    if (clazz == null) {
-      throw new RuntimeException(
-          "Dont know how to generate for: " + contentType);
-    }
-    HttpSerializer serializer = null;
-    try {
-      serializer = clazz.getConstructor(
-          new Class[] {Object.class}).newInstance(content);
-    } catch (InvocationTargetException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IllegalArgumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (SecurityException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (InstantiationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (NoSuchMethodException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    if (serializer == null) {
-      throw new RuntimeException("content is not serializable");
-    }
-    return serializer;
-  }
-
-
   public HttpTransport(String applicationName) {
     this.applicationName = applicationName;
     StringBuilder userAgent = new StringBuilder();

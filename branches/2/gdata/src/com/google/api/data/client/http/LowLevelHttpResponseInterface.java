@@ -16,9 +16,14 @@ public interface LowLevelHttpResponseInterface {
   String getContentType();
 
   String getStatusLine();
-  
+
   int getStatusCode();
 
   String getReasonPhrase();
 
+  int getHeaderCount();
+
+  String getHeaderName(int index);
+
+  String getHeaderValue(int index);
 }
