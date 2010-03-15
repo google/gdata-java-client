@@ -2,11 +2,17 @@
 
 package com.google.api.data.client.v2.request;
 
+import com.google.api.data.client.auth.Authorizer;
+import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.net.NetGData;
 import com.google.api.data.client.v2.GDataEntity;
+import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
 
 import org.json.JSONException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Creates requests with default set of parameters.
@@ -17,15 +23,22 @@ public class ApiRequestFactory {
 
   public static class Builder {
 
+    private String appName;
+    private Authorizer auth;
     private String resource;
     private ServiceDocument serviceDoc = null;
 
-    private LowLevelHttpTransportInterface transport;
+    private LowLevelHttpTransportInterface lowLevelTransport;
+    private HttpTransport transport;
 
-    private Entity paramMap = new Entity();
-    private Object paramObject;
+    private GDataEntity paramMap = new GDataEntity();
 
     public Builder() {
+    }
+    
+    public Builder application(String appName) {
+      this.appName = appName;
+      return this;
     }
 
     public Builder rpcService(String rpcServiceUri) {
@@ -38,25 +51,34 @@ public class ApiRequestFactory {
       return this;
     }
 
-    public Builder transport(LowLevelHttpTransportInterface transport) {
+    public Builder transport(LowLevelHttpTransportInterface lowLevelTransport) {
+      this.lowLevelTransport = lowLevelTransport;
+      return this;
+    }
+    
+    public Builder transport(HttpTransport transport) {
       this.transport = transport;
       return this;
     }
 
-    public Builder with(Object params) {
-      this.paramObject = params;
-      return this;
-    }
-
     public Builder with(String key, String value) {
-      paramMap.put(key, value);
+      paramMap.set(key, value);
+      return this;
+    }
+    
+    public Builder withAuth(Authorizer auth) {
+      paramMap.set("auth", auth);
       return this;
     }
 
-    public ApiRequestFactory build() throws JSONException {
-      // TODO(vbarathan): merge paramObject and paramMap
+    public ApiRequestFactory build() {
       if (transport == null) {
-        transport = NetGData.HTTP_TRANSPORT;
+        transport = new HttpTransport(
+            appName != null ? appName : "Apiary_Java");
+        transport.lowLevelHttpTransportInterface =
+            lowLevelTransport != null ? lowLevelTransport :
+            NetGData.HTTP_TRANSPORT;
+        JacksonHttpParser.set(transport);
       }
       if (serviceDoc != null) {
         return new ApiRequestFactory(
@@ -69,13 +91,10 @@ public class ApiRequestFactory {
 
   private String resource = null;
   private ServiceDocument serviceDoc = null;
-  private LowLevelHttpTransportInterface transport;
-
-  private Entity paramMap = new Entity();
-  private Object paramObject;
+  private GDataEntity paramMap = new GDataEntity();
   private Discovery discovery;
   
-  private ApiRequestFactory(Discovery discovery, Entity params) {
+  private ApiRequestFactory(Discovery discovery, GDataEntity params) {
     this.discovery = discovery;
     this.paramMap = params;
   }
@@ -101,18 +120,16 @@ public class ApiRequestFactory {
     return request(resource, "query");
   }
 
-  public ApiRequest<GDataEntity> insert(String resource, Entity data) {
-    return request(resource, "insert").with("content", data);
+  public ApiRequest<GDataEntity> insert(String resource, Object data) {
+    return request(resource, "insert").withContent(data);
   }
 
-  public ApiRequest<GDataEntity> update(GDataEntity data) {
-    String editUri = (String) ((GDataEntity) data.get("links")).get("edit");
-    return request(editUri, "update").with("content", data);
+  public ApiRequest<GDataEntity> update(String resource, Object data) {
+    return request(resource, "update").withContent(data);
   }
 
-  public ApiRequest<GDataEntity> delete(GDataEntity data) {
-    String editUri = (String) ((GDataEntity) data.get("links")).get("edit");
-    return request(editUri, "delete");
+  public ApiRequest<GDataEntity> delete(String resource) {
+    return request(resource, "delete");
   }
 
   public ApiRequest<GDataEntity> batch(String resource) {
