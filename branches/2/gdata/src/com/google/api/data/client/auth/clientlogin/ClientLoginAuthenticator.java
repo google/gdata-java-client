@@ -2,6 +2,7 @@
 
 package com.google.api.data.client.auth.clientlogin;
 
+import com.google.api.data.client.auth.Authorizer;
 import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.http.HttpResponseException;
@@ -21,7 +22,7 @@ public final class ClientLoginAuthenticator {
   public String captchaToken;
   public String captchaAnswer;
 
-  public void authenticate() throws IOException {
+  private String getAuthToken() throws IOException {
     HttpTransport httpTransport = this.httpTransport;
     HttpRequest request =
         httpTransport
@@ -59,6 +60,14 @@ public final class ClientLoginAuthenticator {
     }
     String authToken =
         string.substring(auth + AUTH_KEY.length(), string.length() - 1);
-    httpTransport.authorizer = new ClientLoginAuthorizer(authToken);
+    return authToken;
+  }
+  
+  public Authorizer getAuthorizer() throws IOException {
+    return new ClientLoginAuthorizer(getAuthToken());
+  }
+  
+  public void authenticate() throws IOException {
+    httpTransport.authorizer = new ClientLoginAuthorizer(getAuthToken());
   }
 }

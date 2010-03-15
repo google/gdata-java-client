@@ -1,10 +1,15 @@
 package com.google.api.data.client.v2.request;
 
+import com.google.api.data.client.auth.Authorizer;
 import com.google.api.data.client.http.HttpResponse;
+import com.google.api.data.client.v2.GDataEntity;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 import com.google.api.data.client.v2.jsonc.jackson.Jackson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class for making requests.
@@ -43,13 +48,13 @@ import java.io.IOException;
  * @author vbarathan@google.com (Prakash Barathan)
  */
 public class ApiRequest<T> {
+  
+  private static final String DEFAULT_CONTENT_TYPE = "application/json";
+  
   /** Parameter map for use with .with(key, value) */
-  private Entity paramMap = new Entity();
+  private GDataEntity paramMap = new GDataEntity();
 
-  private Entity defaultParamMap;
-
-  /** Parameter set from .with(params) */
-  private Object paramObject = null;
+  private GDataEntity defaultParamMap;
 
   /** The requested response class  */
   private Class<?> responseClass = JsoncEntity.class;
@@ -67,7 +72,7 @@ public class ApiRequest<T> {
   
   private final String resourceHandle;
   
-  ApiRequest(Discovery discovery, String method, Entity defaultParams) {
+  ApiRequest(Discovery discovery, String method, GDataEntity defaultParams) {
     this(discovery, null, method, defaultParams);
   }
   
@@ -79,8 +84,8 @@ public class ApiRequest<T> {
    * @param method The method
    * @param defaultParams default parameters to use in request
    */
-  ApiRequest(
-      Discovery discovery, String handle, String method, Entity defaultParams) {
+  ApiRequest(Discovery discovery, String handle, String method,
+      GDataEntity defaultParams) {
     this.discovery = discovery;
     this.fullyQualifiedMethod = method;
     this.defaultParamMap = defaultParams;
@@ -91,7 +96,7 @@ public class ApiRequest<T> {
    * Execute the request.
    * If .returning() or .returningList() functions was called,
    * returns an object of the appropriate type. Otherwise, returns
-   * and Entity.
+   * a {@link GDataEntity}.
    */
   @SuppressWarnings("unchecked")
   public T execute() {
@@ -99,19 +104,9 @@ public class ApiRequest<T> {
       return (T)result;
     }
     try {
-      // Right now only allow paramObject || param map
-      Entity params = (paramObject != null) ?
-          Convert.fromObject(paramObject) : paramMap;
-
-      Entity allParams = params.merge(defaultParamMap);
-      Entity e;
-      
-      HttpResponse response = discovery.doRestRequest(
-          resourceHandle, fullyQualifiedMethod, allParams);
-      
-      result = Jackson.parse(response, responseClass); 
-      called = true;    
-      return (T)result;
+      GDataEntity allParams = paramMap.merge(defaultParamMap);
+      return (T) discovery.doRestRequest(
+          resourceHandle, fullyQualifiedMethod, allParams, responseClass);
     } catch(IOException e) {
       throw new RuntimeException(e);
     }
@@ -128,7 +123,12 @@ public class ApiRequest<T> {
    * @return The request
    */
   public ApiRequest<T> with(Object params) {
-    this.paramObject = params;
+    if (params instanceof String) {
+      // TODO(vbarathan): Parse json string
+      throw new RuntimeException("Raw string parameter not yet supported");
+    } else { 
+      paramMap.merge(params);
+    }
     return this;
   }
 
@@ -137,10 +137,48 @@ public class ApiRequest<T> {
    *
    * @param key The key
    * @param value The parameter value
-   * @return The request
+   * @return the request
    */
   public ApiRequest<T> with(String key, Object value) {
-    this.paramMap.put(key, value);
+    paramMap.set(key, value);
+    return this;
+  }
+  
+  /**
+   * Add request content to the request with specified mime-type.
+   * 
+   * @param type mime-type for the content
+   * @param value content value
+   * @return the request
+   */
+  @SuppressWarnings("unchecked")
+  public ApiRequest<T> withContent(String type, Object value) {
+    GDataEntity content = new GDataEntity();
+    content.set("type", type);
+    content.set("value", value);
+    if (paramMap.get("content") != null) {
+      List<GDataEntity> contents = (List<GDataEntity>) paramMap.get("content");
+      contents.add(content);
+    } else {
+      List<GDataEntity> contents = new ArrayList<GDataEntity>();
+      contents.add(content);
+      paramMap.set("content", contents);
+    }
+    return this;
+  }
+  
+  /**
+   * Add request content to the request with default mime type.
+   * 
+   * @param value content value
+   * @return the request
+   */
+  public ApiRequest<T> withContent(Object value) {
+    return withContent(DEFAULT_CONTENT_TYPE, value);
+  }
+  
+  public ApiRequest<T> withAuth(Authorizer auth) {
+    paramMap.set("auth", auth);
     return this;
   }
 
