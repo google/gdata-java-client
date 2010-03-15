@@ -14,9 +14,11 @@ import java.io.InputStream;
 final class ApacheHttpResponse implements LowLevelHttpResponseInterface {
 
   private final org.apache.http.HttpResponse response;
+  private final Header[] allHeaders;
 
   ApacheHttpResponse(org.apache.http.HttpResponse response) {
     this.response = response;
+    this.allHeaders = response.getAllHeaders();
   }
 
   public int getStatusCode() {
@@ -66,4 +68,19 @@ final class ApacheHttpResponse implements LowLevelHttpResponseInterface {
     return statusLine == null ? null : statusLine.toString();
   }
 
+  public String getHeaderValue(String name) {
+    return this.response.getLastHeader(name).getValue();
+  }
+
+  public int getHeaderCount() {
+    return this.allHeaders.length;
+  }
+
+  public String getHeaderName(int index) {
+    return this.allHeaders[index].getName();
+  }
+
+  public String getHeaderValue(int index) {
+    return this.allHeaders[index].getValue();
+  }
 }

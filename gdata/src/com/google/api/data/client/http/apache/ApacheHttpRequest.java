@@ -18,6 +18,7 @@ final class ApacheHttpRequest implements LowLevelHttpRequestInterface {
   private final HttpRequestBase request;
 
   ApacheHttpRequest(HttpClient httpClient, HttpRequestBase request) {
+    // TODO: test with HTTPS
     this.httpClient = httpClient;
     this.request = request;
   }
@@ -27,6 +28,7 @@ final class ApacheHttpRequest implements LowLevelHttpRequestInterface {
   }
 
   public LowLevelHttpResponseInterface execute() throws IOException {
+    // TODO: handle redirect on POST
     return new ApacheHttpResponse(this.httpClient.execute(request));
   }
 
