@@ -1,10 +1,12 @@
-#summary Version 2 Feature: User-Defined Object Models.
+#summary Version 2 Feature: User-Defined Object Models in JSON-C.
 
-= [Version2 Version 2] Feature: User-Defined Object Models =
+= [Version2 Version 2] Feature: User-Defined Object Models in JSON-C =
 
 == JSON-C ==
 
 Reference: [http://code.google.com/apis/youtube/2.0/developers_guide_jsonc.html YouTube JSON-C Developer's Guide]
+
+In this library, user-defined object models in JSON-C are similar to [UserDefinedObjectModelsXml user-defined object models in XML].  However, it's more elegant than XML because we don't need to deal with XML namespaces, and the structure of the JSON-C data is more natural to use.  Unfortunately, currently only !YouTube has a JSON-C feed, and it is read-only.
 
 Let's take a look at a typical partial JSON-C video feed from the !YouYube Data API (showing only the data our sample application is interested in):
 
