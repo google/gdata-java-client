@@ -61,6 +61,7 @@ public class YouTubeBasicJsoncSample {
   }
 
   public static class Player {
+    // "default" is a Java keyword, so need to specify the JSON key manually
     @Name("default")
     public String defaultUrl;
   }
@@ -87,7 +88,7 @@ public class YouTubeBasicJsoncSample {
     uri.author = "searchstories";
     // execute GData request for the feed
     HttpRequest request = transport.buildGetRequest(uri.build());
-    VideoFeed feed = request.execute(VideoFeed.class);
+    VideoFeed feed = request.execute().parseAs(VideoFeed.class);
     System.out.println("Total number of videos: " + feed.totalItems);
     for (Video video : feed.items) {
       showVideo(video);
@@ -100,6 +101,7 @@ public class YouTubeBasicJsoncSample {
     System.out.println("-----------------------------------------------");
     System.out.println("Video title: " + video.title);
     System.out.println("Description: " + video.description);
+    System.out.println("Updated: " + video.updated);
     System.out.println("Tags: " + video.tags);
     System.out.println("Play URL: " + video.player.defaultUrl);
   }
