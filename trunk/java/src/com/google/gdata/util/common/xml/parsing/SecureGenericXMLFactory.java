@@ -46,12 +46,12 @@ public class SecureGenericXMLFactory {
   /* Supports customization via subclassing */
   protected SecureGenericXMLFactory() {}
 
-  public SAXParserFactory getSAXParserFactory(SAXParserFactory factory)
+  public static SAXParserFactory getSAXParserFactory(SAXParserFactory factory)
       throws ParserConfigurationException, SAXException {
     return new SecureSAXParserFactory(factory);
   }
 
-  public DocumentBuilderFactory getDocumentBuilderFactory(
+  public static DocumentBuilderFactory getDocumentBuilderFactory(
       DocumentBuilderFactory factory) {
     return new SecureDocumentBuilderFactory(factory);
   }

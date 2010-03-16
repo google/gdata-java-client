@@ -32,3 +32,4 @@ public class MapsNamespace {
   public static final String MAPS_PREFIX = MAPS + "#";
 
 }
+

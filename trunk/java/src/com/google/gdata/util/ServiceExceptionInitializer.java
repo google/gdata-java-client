@@ -126,16 +126,46 @@ public class ServiceExceptionInitializer {
 
   public void parse(ContentType contentType, String body)
       throws ParseException {
-    if (!(ContentType.GDATA_ERROR.equals(contentType))) {
-      return;        // nothing to parse
+    if (ContentType.GDATA_ERROR.equals(contentType)) {
+      XmlParser xp = new XmlParser();
+      try {
+        xp.parse(new StringReader(body), new ErrorsHandler(),
+            "http://schemas.google.com/g/2005", "errors");
+      } catch (IOException ioe) {
+        // Impossible case: we are always parsing from a String
+        throw new RuntimeException("Impossible parser I/O", ioe);
+      }
     }
-    XmlParser xp = new XmlParser();
+  }
+
+  /**
+   * Creates a new exception, registers it and sets {@code currentException}.
+   * The first time this method is called, {@code currentException} is set
+   * to {@code initialException}.
+   * @return the new value of {@code currentException}
+   */
+  private ServiceException nextException() {
+    // nextException/currentException
+    if (currentException == null) {
+      currentException = initialException;
+      return currentException;
+    } 
     try {
-      xp.parse(new StringReader(body), new ErrorsHandler(),
-          "http://schemas.google.com/g/2005", "errors");
-    } catch (IOException ioe) {
-      // Impossible case: we are always parsing from a String
-      throw new RuntimeException("Impossible parser I/O", ioe);
+      // Create an exception of the same type as this one
+      // and make it a sibling.
+      currentException = initialException.getClass()
+          .getConstructor(String.class).newInstance(
+              initialException.getMessage());
+      initialException.addSibling(currentException);
+      return currentException;
+    } catch (InstantiationException ie) {
+      throw new IllegalStateException(ie);
+    } catch (NoSuchMethodException nsme) {
+        throw new IllegalStateException(nsme);
+    } catch (IllegalAccessException iae) {
+      throw new IllegalStateException(iae);
+    } catch (InvocationTargetException ite) {
+      throw new IllegalStateException(ite);
     }
   }
 
@@ -148,26 +178,7 @@ public class ServiceExceptionInitializer {
         Attributes attrs) throws ParseException, IOException {
       if (Namespaces.g.equals(namespace)) {
         if ("error".equals(localName)) {
-          if (currentException == null) {
-            currentException = initialException;
-          } else {
-            try {
-              // Create an exception of the same type as this one
-              // and make it a sibling.
-              currentException = initialException.getClass()
-                  .getConstructor(String.class).newInstance(
-                      initialException.getMessage());
-              initialException.addSibling(currentException);
-            } catch (InstantiationException ie) {
-              throw new IllegalStateException(ie);
-            } catch (NoSuchMethodException nsme) {
-              throw new IllegalStateException(nsme);
-            } catch (IllegalAccessException iae) {
-              throw new IllegalStateException(iae);
-            } catch (InvocationTargetException ite) {
-              throw new IllegalStateException(ite);
-            }
-          }
+          nextException();
           return new ErrorHandler();
         }
       }

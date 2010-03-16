@@ -83,6 +83,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode cantDecodeCategoryQuery =
       new ErrorCode("cantDecodeCategoryQuery")
       .withInternalReason("Unable to decode category query");
+  
+  public final ErrorCode cannotEditResource =
+      new ErrorCode("cannotEditResource")
+      .withInternalReason("Target resource cannot be edited by client");
 
   public final ErrorCode cantEncodeQueryParams =
       new ErrorCode("cantEncodeQueryParams")
@@ -316,6 +320,11 @@ public class CoreErrorDomain extends ErrorDomain {
       .withInternalReason(
       "If-Modified-Since HTTP precondition not supported on POST");
 
+  public final ErrorCode incompatiblePaginationParameters =
+      new ErrorCode("incompatiblePaginationParameters")
+      .withInternalReason("start-token and start-index cannot both "
+          + "be specified at the same time");
+  
   public final ErrorCode incorrectDataVersion =
       new ErrorCode("incorrectDataVersion");
   
@@ -353,9 +362,21 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("invalidBatchOperationType")
       .withInternalReason("Invalid type for batch:operation");
 
+  public final ErrorCode invalidBigDecimalAttribute =
+      new ErrorCode("invalidBigDecimalAttribute")
+          .withInternalReason("Invalid value for big decimal attribute");
+
+  public final ErrorCode invalidBigIntegerAttribute =
+      new ErrorCode("invalidBigIntegerAttribute")
+          .withInternalReason("Invalid value for big integer attribute");
+
   public final ErrorCode invalidBooleanAttribute =
       new ErrorCode("invalidBooleanAttribute")
       .withInternalReason("Invalid value for boolean attribute");
+
+  public final ErrorCode invalidByteAttribute =
+      new ErrorCode("invalidByteAttribute")
+          .withInternalReason("Invalid value for byte attribute");
 
   public final ErrorCode invalidCacheControlOption =
       new ErrorCode("invalidCacheControlOption")
@@ -473,6 +494,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode invalidRedirectedToUrl =
       new ErrorCode("invalidRedirectedToUrl")
       .withInternalReason("Invalid redirected-to URL");
+  
+  public final ErrorCode invalidPatchTarget =
+    new ErrorCode("invalidPatchTarget")
+    .withInternalReason("Target resource cannot be patched");
 
   public final ErrorCode invalidReminderAbsoluteTime =
       new ErrorCode("invalidReminderAbsoluteTime")
@@ -513,6 +538,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode invalidServiceClass =
       new ErrorCode("invalidServiceClass")
       .withInternalReason("Invalid service class attribute");
+
+  public final ErrorCode invalidShortAttribute =
+      new ErrorCode("invalidShortAttribute")
+          .withInternalReason("Invalid value for short attribute");
 
   public final ErrorCode invalidStartValue =
       new ErrorCode("invalidStartValue")
@@ -783,6 +812,10 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode optimisticConcurrencyNotSupported =
       new ErrorCode("optimisticConcurrencyNotSupported")
       .withInternalReason("Optimistic concurrency is no longer supported");
+  
+  public final ErrorCode partialJsoncUnsupported =
+    new ErrorCode("partialJsonUnsupported")
+    .withInternalReason("Partial operations are not suppported with JSONC");
 
   public final ErrorCode pathPrefixValueRequired =
       new ErrorCode("pathPrefixValueRequired")
@@ -792,6 +825,14 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("predicatesNotAllowed")
       .withInternalReason(
       "Cannot specify any predicates with requested content type");
+
+  public final ErrorCode quotaExceeded =
+      new ErrorCode("quotaExceeded")
+      .withInternalReason("Insufficient storage quota");
+
+  public final ErrorCode rateLimitExceeded =
+      new ErrorCode("rateLimitExceeded")
+      .withInternalReason("Rate limit exceeded, lower query rate");
 
   public final ErrorCode responseMissingContentType =
       new ErrorCode("responseMissingContentType")
@@ -918,6 +959,11 @@ public class CoreErrorDomain extends ErrorDomain {
       new ErrorCode("updateNotSupported")
       .withInternalReason("Update not supported by feed");
 
+  public final ErrorCode updateRequiresFullRepresentation =
+      new ErrorCode("updateRequiresFullRepresentation")
+      .withInternalReason("PUT requires a full resource representation.  " +
+            "Use PATCH to update using a partial representation"); 
+  
   public final ErrorCode uriValueRequired =
       new ErrorCode("uriValueRequired")
       .withInternalReason("URI must have a value");
@@ -957,5 +1003,8 @@ public class CoreErrorDomain extends ErrorDomain {
   public final ErrorCode workspaceTitleRequired =
       new ErrorCode("workspaceTitleRequired")
       .withInternalReason("Workspace must contain a title");
-
+  
+  public final ErrorCode uploadTooLarge = 
+      new ErrorCode("uploadTooLarge")
+      .withInternalReason("The requested upload is too large");
 }

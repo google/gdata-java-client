@@ -22,7 +22,6 @@ import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.Service;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.IEntry;
-import com.google.gdata.model.AttributeKey;
 import com.google.gdata.model.Element;
 import com.google.gdata.model.ElementCreator;
 import com.google.gdata.model.ElementKey;
@@ -37,12 +36,16 @@ import com.google.gdata.model.batch.BatchId;
 import com.google.gdata.model.batch.BatchInterrupted;
 import com.google.gdata.model.batch.BatchOperation;
 import com.google.gdata.model.batch.BatchStatus;
+import com.google.gdata.model.gd.GdAttributes;
+import com.google.gdata.model.gd.Partial;
 import com.google.gdata.util.Namespaces;
+import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -50,29 +53,32 @@ import java.util.Set;
 /**
  * The Entry class is a base class that defines the in-memory object model for
  * GData entries.
- *
- * <p>Entry subclasses should expose convenience APIs to retrieve and set
+ * 
+ * <p>
+ * Entry subclasses should expose convenience APIs to retrieve and set
  * attributes or subelements, with implementations that delegate to
  * {@link Element} methods to store/retrieve the appropriate data.
- *
- * <p>Here is the Relax-NG schema that represents an Atom 1.0 entry:
+ * 
+ * <p>
+ * Here is the Relax-NG schema that represents an Atom 1.0 entry:
+ * 
  * <pre>
  * atomEntry =
  *   element atom:entry {
  *     atomCommonAttributes,
  *     (atomAuthor*
- *     & atomCategory*
- *     & atomContent?
- *     & atomContributor*
- *     & atomId
- *     & atomLink*
- *     & atomPublished?
- *     & atomRights?
- *     & atomSource?
- *     & atomSummary?
- *     & atomTitle
- *     & atomUpdated
- *     & extensionElement*)
+ *     &amp; atomCategory*
+ *     &amp; atomContent?
+ *     &amp; atomContributor*
+ *     &amp; atomId
+ *     &amp; atomLink*
+ *     &amp; atomPublished?
+ *     &amp; atomRights?
+ *     &amp; atomSource?
+ *     &amp; atomSummary?
+ *     &amp; atomTitle
+ *     &amp; atomUpdated
+ *     &amp; extensionElement*)
  * </pre>
  */
 public class Entry extends Element implements IEntry {
@@ -80,11 +86,11 @@ public class Entry extends Element implements IEntry {
   /**
    * The key for this element.
    */
-  public static final ElementKey<Void, Entry> KEY = ElementKey.of(
-      new QName(Namespaces.atomNs, "entry"), Entry.class);
+  public static final ElementKey<Void, Entry> KEY =
+      ElementKey.of(new QName(Namespaces.atomNs, "entry"), Entry.class);
 
   // Some of the Keys from Source are replicated below for easier
-  // discoverability via Javadoc.  Since Entry doesn't directly extend Source
+  // discoverability via Javadoc. Since Entry doesn't directly extend Source
   // but shares many primitive types, we'll at least include the Key
   // constants for the shared types here.
 
@@ -101,8 +107,9 @@ public class Entry extends Element implements IEntry {
   /**
    * The atom:published child element
    */
-  public static final ElementKey<DateTime, Element> PUBLISHED = ElementKey.of(
-      new QName(Namespaces.atomNs, "published"), DateTime.class, Element.class);
+  public static final ElementKey<DateTime, Element> PUBLISHED =
+      ElementKey.of(new QName(Namespaces.atomNs, "published"), DateTime.class,
+          Element.class);
 
   /**
    * The atom:title child element
@@ -118,22 +125,9 @@ public class Entry extends Element implements IEntry {
   /**
    * The atom:summary child element.
    */
-  public static final ElementKey<String, TextContent> SUMMARY = ElementKey.of(
-      new QName(Namespaces.atomNs, "summary"), String.class, TextContent.class);
-
-  /**
-   * The gd:etag attribute.
-   *
-   * See RFC 2616, Section 3.11.
-   */
-  public static final AttributeKey<String> ETAG = AttributeKey.of(
-      new QName(Namespaces.gNs, "etag"));
-
-  /**
-   * The gd:kind attribute.
-   */
-  public static final AttributeKey<String> GD_KIND = AttributeKey.of(
-      new QName(Namespaces.gNs, "kind"));
+  public static final ElementKey<String, TextContent> SUMMARY =
+      ElementKey.of(new QName(Namespaces.atomNs, "summary"), String.class,
+          TextContent.class);
 
   /**
    * Registers the metadata for this element.
@@ -148,10 +142,11 @@ public class Entry extends Element implements IEntry {
     registry.build(SUMMARY);
 
     // Build atom:entry.
-    ElementCreator builder = registry.build(KEY)
-        .setCardinality(Cardinality.MULTIPLE);
-    builder.addAttribute(ETAG);
-    builder.addAttribute(GD_KIND);
+    ElementCreator builder =
+        registry.build(KEY).setCardinality(Cardinality.MULTIPLE);
+    builder.addAttribute(GdAttributes.ETAG);
+    builder.addAttribute(GdAttributes.KIND);
+    builder.addAttribute(GdAttributes.FIELDS);
     builder.addElement(ID);
     builder.addElement(PUBLISHED);
     builder.addElement(UPDATED);
@@ -161,9 +156,9 @@ public class Entry extends Element implements IEntry {
     builder.addElement(TITLE);
     builder.addElement(SUMMARY);
     builder.addElement(RIGHTS);
-    builder.addElement(Content.KEY).adapt(TextContent.KIND,
-        TextContent.KEY).adapt(OtherContent.KIND, OtherContent.KEY).adapt(
-        OutOfLineContent.KIND, OutOfLineContent.KEY);
+    builder.addElement(Content.KEY).adapt(TextContent.KIND, TextContent.KEY)
+        .adapt(OtherContent.KIND, OtherContent.KEY).adapt(
+            OutOfLineContent.KIND, OutOfLineContent.KEY);
     builder.addElement(Link.KEY);
     builder.addElement(Author.KEY);
     builder.addElement(Contributor.KEY);
@@ -173,6 +168,10 @@ public class Entry extends Element implements IEntry {
     builder.addElement(BatchOperation.KEY);
     builder.addElement(BatchStatus.KEY);
 
+    // Register the Partial type so partial entry representations are implicitly
+    // declared.
+    Partial.registerMetadata(registry);
+
     // Register adaptations.
     TextContent.registerMetadata(registry);
     OtherContent.registerMetadata(registry);
@@ -180,24 +179,25 @@ public class Entry extends Element implements IEntry {
   }
 
   /**
-   * The EntryState class provides a simple structure that encapsulates
-   * the attributes of an Atom entry that should be shared with a shallow
-   * copy if the entry is adapted to a more specific Entry subtype.
+   * The EntryState class provides a simple structure that encapsulates the
+   * attributes of an Atom entry that should be shared with a shallow copy if
+   * the entry is adapted to a more specific Entry subtype.
    */
   protected static class EntryState {
 
     /**
-     * Version ID. This is a unique number representing this particular
-     * entry. Every update changes the version ID (unless the update
-     * doesn't modify anything, in which case it's permissible for
-     * version ID to stay the same). Services are free to interpret this
-     * string in the most convenient way. Some services may choose to use
-     * a monotonically increasing sequence of version IDs. Other services
-     * may compute a hash of entry properties and use that.
-     *
-     * <p>This property is only used for services to communicate the current
-     * version ID back to the servlet. It is NOT set when entries are
-     * parsed (either from requests or from arbitrary XML).
+     * Version ID. This is a unique number representing this particular entry.
+     * Every update changes the version ID (unless the update doesn't modify
+     * anything, in which case it's permissible for version ID to stay the
+     * same). Services are free to interpret this string in the most convenient
+     * way. Some services may choose to use a monotonically increasing sequence
+     * of version IDs. Other services may compute a hash of entry properties and
+     * use that.
+     * 
+     * <p>
+     * This property is only used for services to communicate the current
+     * version ID back to the servlet. It is NOT set when entries are parsed
+     * (either from requests or from arbitrary XML).
      */
     public String versionId;
 
@@ -209,8 +209,8 @@ public class Entry extends Element implements IEntry {
   }
 
   /**
-   * Basic state for this entry.   May be shared across multiple adapted
-   * instances associated with the same logical entry.
+   * Basic state for this entry. May be shared across multiple adapted instances
+   * associated with the same logical entry.
    */
   protected EntryState state;
 
@@ -230,12 +230,11 @@ public class Entry extends Element implements IEntry {
   }
 
   /**
-   * Copy constructor that initializes a new Entry instance to have
-   * identical contents to another instance, using a shared reference to
-   * the same {@link EntryState}. Subclasses of {@code Entry} can use this
-   * constructor to create adaptor instances of an entry that share state with
-   * the original.
-   *
+   * Copy constructor that initializes a new Entry instance to have identical
+   * contents to another instance, using a shared reference to the same
+   * {@link EntryState}. Subclasses of {@code Entry} can use this constructor to
+   * create adaptor instances of an entry that share state with the original.
+   * 
    * @param key the element key to use for this entry.
    * @param source to copy data from
    */
@@ -270,20 +269,52 @@ public class Entry extends Element implements IEntry {
     state.versionId = v;
   }
 
+  /**
+   * Returns the {@link GdAttributes#ETAG} value for this feed. A value of
+   * {@code null} indicates the value is unknown.
+   */
   public String getEtag() {
-    return getAttributeValue(ETAG);
+    return getAttributeValue(GdAttributes.ETAG);
   }
 
+  /**
+   * Sets the {@link GdAttributes#ETAG} value for this entry. A value of {@code
+   * null} indicates the value is unknown.
+   */
   public void setEtag(String v) {
-    setAttributeValue(ETAG, v);
+    setAttributeValue(GdAttributes.ETAG, v);
   }
 
+  /**
+   * Returns the {@link GdAttributes#KIND} value for this entry. The kind
+   * attribute may be null if this feed does not have a kind.
+   */
   public String getKind() {
-    return getAttributeValue(GD_KIND);
+    return getAttributeValue(GdAttributes.KIND);
   }
 
+  /**
+   * Sets the {@link GdAttributes#KIND} value for this entry. The kind may be
+   * set to null to remove the attribute value.
+   */
   public void setKind(String v) {
-    setAttributeValue(GD_KIND, v);
+    setAttributeValue(GdAttributes.KIND, v);
+  }
+
+  /**
+   * Returns the {@link GdAttributes#FIELDS} value for this entry. The fields
+   * attribute may be null if this entry contains a full representation.
+   */
+  public String getSelectedFields() {
+    return getAttributeValue(GdAttributes.FIELDS);
+  }
+
+  /**
+   * Sets the{@link GdAttributes#FIELDS} value for this entry. The fields
+   * attribute may be set to null to remove the attribute value.
+   */
+  public void setSelectedFields(String v) {
+    setAttributeValue(GdAttributes.FIELDS, v);
   }
 
   public DateTime getPublished() {
@@ -295,8 +326,8 @@ public class Entry extends Element implements IEntry {
       throw new IllegalArgumentException(
           "Entry.published must have a timezone.");
     }
-    setElement(PUBLISHED,
-        (v == null) ? null : new Element(PUBLISHED).setTextValue(v));
+    setElement(PUBLISHED, (v == null) ? null : new Element(PUBLISHED)
+        .setTextValue(v));
   }
 
   public DateTime getUpdated() {
@@ -307,8 +338,8 @@ public class Entry extends Element implements IEntry {
     if (v != null && v.getTzShift() == null) {
       throw new IllegalArgumentException("Entry.updated must have a timezone.");
     }
-    setElement(UPDATED,
-        (v == null) ? null : new Element(UPDATED).setTextValue(v));
+    setElement(UPDATED, (v == null) ? null : new Element(UPDATED)
+        .setTextValue(v));
   }
 
 
@@ -369,22 +400,21 @@ public class Entry extends Element implements IEntry {
 
   /**
    * Removes any content element.
-   *
-   * This method is equivalent to: {@code setContent((Content) null); },
-   * but without the ugly cast.
+   * 
+   * This method is equivalent to: {@code setContent((Content) null); }, but
+   * without the ugly cast.
    */
   public void removeContent() {
     removeElement(Content.KEY);
   }
 
   /**
-   * Assumes the content element's contents are text and
-   * returns them as a TextContent.
-   *
+   * Assumes the content element's contents are text and returns them as a
+   * TextContent.
+   * 
    * @return A TextContent containing the value of the content tag.
-   *
-   * @throws IllegalStateException
-   *            If the content element is not a text type.
+   * 
+   * @throws IllegalStateException If the content element is not a text type.
    */
   public TextContent getTextContent() {
     Content content = getContent();
@@ -398,13 +428,12 @@ public class Entry extends Element implements IEntry {
   }
 
   /**
-   * Assumes the <content> element's contents are plain-text and
-   * returns its value as a string
-   *
+   * Assumes the <content> element's contents are plain-text and returns its
+   * value as a string
+   * 
    * @return A string containing the plain-text value of the content tag.
-   *
-   * @throws IllegalStateException
-   *            If the content element is not a text type.
+   * 
+   * @throws IllegalStateException If the content element is not a text type.
    */
   public String getPlainTextContent() {
     TextContent content = getTextContent();
@@ -466,6 +495,7 @@ public class Entry extends Element implements IEntry {
   public boolean removeContributor(Person v) {
     return removeElement(Contributor.KEY, v);
   }
+
   public void clearContributors() {
     removeElement(Contributor.KEY);
   }
@@ -479,10 +509,9 @@ public class Entry extends Element implements IEntry {
   }
 
   /**
-   * Set draft status. Passing a null value means clearing the draft
-   * status.
-   *
-   * @param v   Draft status, or null to clear.
+   * Set draft status. Passing a null value means clearing the draft status.
+   * 
+   * @param v Draft status, or null to clear.
    */
   public void setDraft(Boolean v) {
     Control control = null;
@@ -495,7 +524,7 @@ public class Entry extends Element implements IEntry {
 
   /**
    * Draft status.
-   *
+   * 
    * @return True if draft status is set and equals true.
    */
   public boolean isDraft() {
@@ -505,7 +534,7 @@ public class Entry extends Element implements IEntry {
 
   /**
    * Gets the app:control tag.
-   *
+   * 
    * @return pub control tag or null if unset
    */
   public Control getControl() {
@@ -514,11 +543,21 @@ public class Entry extends Element implements IEntry {
 
   /**
    * Sets the app:control tag, which usually contains app:draft.
-   *
+   * 
    * @param value Control the new object or null
    */
-  public void setControl(Control value) {
+  public Entry setControl(Control value) {
     setElement(Control.KEY, value);
+    return this;
+  }
+
+  /**
+   * Returns whether it has the Atom publication control status.
+   * 
+   * @return whether it has the Atom publication control status
+   */
+  public boolean hasControl() {
+    return hasElement(Control.KEY);
   }
 
   public void setService(Service s) {
@@ -538,12 +577,12 @@ public class Entry extends Element implements IEntry {
   }
 
   /**
-   * Retrieves the first link with the supplied {@code rel} and/or
-   * {@code type} value.
+   * Retrieves the first link with the supplied {@code rel} and/or {@code type}
+   * value.
    * <p>
-   * If either parameter is {@code null}, doesn't return matches
-   * for that parameter.
-   *
+   * If either parameter is {@code null}, doesn't return matches for that
+   * parameter.
+   * 
    * @param rel link relation
    * @param type link type
    * @return link
@@ -561,11 +600,11 @@ public class Entry extends Element implements IEntry {
 
   /**
    * Return the links that match the given {@code rel} and {@code type} values.
-   *
-   * @param relToMatch  {@code rel} value to match or {@code null} to match any
-   *                    {@code rel} value.
+   * 
+   * @param relToMatch {@code rel} value to match or {@code null} to match any
+   *        {@code rel} value.
    * @param typeToMatch {@code type} value to match or {@code null} to match any
-   *                    {@code type} value.
+   *        {@code type} value.
    * @return matching links.
    */
   public List<Link> getLinks(String relToMatch, String typeToMatch) {
@@ -580,11 +619,11 @@ public class Entry extends Element implements IEntry {
 
   /**
    * Remove all links that match the given {@code rel} and {@code type} values.
-   *
-   * @param relToMatch  {@code rel} value to match or {@code null} to match any
-   *                    {@code rel} value.
+   * 
+   * @param relToMatch {@code rel} value to match or {@code null} to match any
+   *        {@code rel} value.
    * @param typeToMatch {@code type} value to match or {@code null} to match any
-   *                    {@code type} value.
+   *        {@code type} value.
    */
   public void removeLinks(String relToMatch, String typeToMatch) {
     List<Link> toRemove = Lists.newArrayList();
@@ -600,15 +639,12 @@ public class Entry extends Element implements IEntry {
 
   /**
    * Adds a link pointing to an HTML representation.
-   *
-   * @param   htmlUri
-   *            Link URI.
-   *
-   * @param   lang
-   *            Optional language code.
-   *
-   * @param   title
-   *            Optional title.
+   * 
+   * @param htmlUri Link URI.
+   * 
+   * @param lang Optional language code.
+   * 
+   * @param title Optional title.
    */
   public void addHtmlLink(String htmlUri, String lang, String title) {
 
@@ -646,6 +682,12 @@ public class Entry extends Element implements IEntry {
     return mediaLink;
   }
 
+  /** Retrieves the media resource resumable edit link. */
+  public Link getResumableEditMediaLink() {
+    Link resumableEditMediaLink = getLink(Link.Rel.RESUMABLE_EDIT_MEDIA, null);
+    return resumableEditMediaLink;
+  }
+
   /** Retrieves the first HTML link. */
   public Link getHtmlLink() {
     Link htmlLink = getLink(Link.Rel.ALTERNATE, Link.Type.HTML);
@@ -653,90 +695,83 @@ public class Entry extends Element implements IEntry {
   }
 
   /**
-   * Retrieves the current version of this Entry by requesting it from
-   * the associated GData service.
-   *
+   * Retrieves the current version of this Entry by requesting it from the
+   * associated GData service.
+   * 
    * @return the current version of the entry.
    * @throws IOException on IO error during retrieval from the service.
    * @throws ServiceException if there is a problem retrieving the element.
    */
   public Entry getSelf() throws IOException, ServiceException {
     if (state.service == null) {
-      throw new ServiceException(
-          CoreErrorDomain.ERR.entryNotAssociated);
+      throw new ServiceException(CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link selfLink = getSelfLink();
     if (selfLink == null) {
       throw new UnsupportedOperationException("Entry cannot be retrieved");
     }
-    URI entryUrl = selfLink.getHrefUri();
-    throw new UnsupportedOperationException("Not supported yet");
-//    try {
-//      // If an etag is available, use it to conditionalize the retrieval,
-//      // otherwise, use time of last edit or update.
-//      String etag = getEtag();
-//      if (etag != null) {
-//        return (E) state.service.getEntry(entryUrl, this.getClass(), etag);
-//      } else {
-//        return (E) state.service.getEntry(entryUrl, this.getClass(),
-//            (getEdited() != null ? getEdited() : getUpdated()));
-//      }
-//    } catch (NotModifiedException e) {
-//      return (E) this;
-//    }
+
+    URL entryUrl = selfLink.getHrefUri().toURL();
+    try {
+      // If an etag is available, use it to conditionalize the retrieval,
+      // otherwise, use time of last edit or update.
+      String etag = getEtag();
+      if (etag != null) {
+        return state.service.getEntry(entryUrl, this.getClass(), etag);
+      } else {
+        return state.service.getEntry(entryUrl, this.getClass(),
+            (getEdited() != null ? getEdited() : getUpdated()));
+      }
+    } catch (NotModifiedException e) {
+      return this;
+    }
   }
 
   /**
-   * Updates this entry by sending the current representation to the
-   * associated GData service.
-   *
+   * Updates this entry by sending the current representation to the associated
+   * GData service.
+   * 
    * @return the updated entry returned by the Service.
-   *
-   * @throws ServiceException
-   *           If there is no associated GData service or the service is
-   *           unable to perform the update.
-   *
-   * @throws UnsupportedOperationException
-   *           If update is not supported for the target entry.
-   *
-   * @throws IOException
-   *           If there is an error communicating with the GData service.
+   * 
+   * @throws ServiceException If there is no associated GData service or the
+   *         service is unable to perform the update.
+   * 
+   * @throws UnsupportedOperationException If update is not supported for the
+   *         target entry.
+   * 
+   * @throws IOException If there is an error communicating with the GData
+   *         service.
    */
   public Entry update() throws IOException, ServiceException {
 
     if (state.service == null) {
-      throw new ServiceException(
-          CoreErrorDomain.ERR.entryNotAssociated);
+      throw new ServiceException(CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link editLink = getEditLink();
     if (editLink == null) {
       throw new UnsupportedOperationException("Entry cannot be updated");
     }
 
-    URI editUrl = editLink.getHrefUri();
-    throw new UnsupportedOperationException("Not supported yet");
-//    return (E) state.service.update(editUrl, this);
+    URL editUrl = editLink.getHrefUri().toURL();
+    return state.service.update(editUrl, this);
   }
 
   /**
-   * Deletes this entry by sending a request to the associated GData
-   * service.
-   *
-   * @throws ServiceException
-   *           If there is no associated GData service or the service is
-   *           unable to perform the deletion.
-   *
-   * @throws UnsupportedOperationException
-   *           If deletion is not supported for the target entry.
-   *
-   * @throws IOException
-   *           If there is an error communicating with the GData service.
+   * Deletes this entry by sending a request to the associated GData service.
+   * 
+   * @throws ServiceException If there is no associated GData service or the
+   *         service is unable to perform the deletion.
+   * 
+   * @throws UnsupportedOperationException If deletion is not supported for the
+   *         target entry.
+   * 
+   * @throws IOException If there is an error communicating with the GData
+   *         service.
    */
   public void delete() throws IOException, ServiceException {
 
     if (state.service == null) {
-      throw new ServiceException(
-          CoreErrorDomain.ERR.entryNotAssociated);
+      throw new ServiceException(CoreErrorDomain.ERR.entryNotAssociated);
     }
     Link editLink = getEditLink();
     if (editLink == null) {
@@ -750,22 +785,18 @@ public class Entry extends Element implements IEntry {
   }
 
   /**
-   * Narrows this entry using categories with an appropriate kind value.
-   * This will loop through the categories, checking if they represent kinds,
-   * and adapting the entry to that kind of an appropriate adaptation was
-   * found. This will return the most specific subtype of the narrowed type
-   * that could be found.
+   * Narrows this entry using categories with an appropriate kind value. This
+   * will loop through the categories, checking if they represent kinds, and
+   * adapting the entry to that kind of an appropriate adaptation was found.
+   * This will return the most specific subtype of the narrowed type that could
+   * be found.
    */
   @Override
-  protected Element narrow(ElementMetadata<?, ?> metadata,
-      ValidationContext vc) {
-    Element narrowed = super.narrow(metadata, vc);
-    for (Category category : getCategories()) {
-      if (Namespaces.gKind.equals(category.getScheme())) {
-        narrowed = adapt(narrowed, metadata, category.getTerm());
-      }
+  protected Element narrow(ElementMetadata<?, ?> metadata, ValidationContext vc) {
+    String term = Kinds.getElementKind(this);
+    if (term != null) {
+      return adapt(this, metadata, term);
     }
-
-    return narrowed;
+    return super.narrow(metadata, vc);
   }
 }

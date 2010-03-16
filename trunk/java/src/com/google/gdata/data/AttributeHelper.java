@@ -21,6 +21,8 @@ import com.google.gdata.util.ParseException;
 
 import org.xml.sax.Attributes;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -119,6 +121,87 @@ public class AttributeHelper {
   }
 
   /**
+   * Gets the value of a byte attribute and remove it from the list.
+   *
+   * @param name attribute name or <code>null</code> for text content
+   * @param required indicates attribute is required
+   * @param defaultValue the default value for an optional attribute (used if
+   *     not present)
+   * @return the byte value of this attribute
+   * @exception ParseException if required is set and the attribute
+   *     is not defined, or if the attribute value is not a valid byte
+   */
+  public byte consumeByte(String name, boolean required, byte defaultValue)
+      throws ParseException {
+    String value = consume(name, required);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Byte.parseByte(value);
+    } catch (NumberFormatException e) {
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidByteAttribute);
+      pe.setInternalReason("Invalid byte value for attribute: '" + name + "'");
+      throw pe;
+    }
+  }
+
+  /**
+   * Gets the value of a byte attribute and remove it from the list.
+   *
+   * @param name attribute name
+   * @param required indicates attribute is required
+   * @return the byte value of this attribute, 0 by default
+   * @exception ParseException if required is set and the attribute is not
+   *     defined, or if the attribute value is not a valid byte
+   */
+  public byte consumeByte(String name, boolean required) throws ParseException {
+    return consumeByte(name, required, (byte) 0);
+  }
+
+  /**
+   * Gets the value of a short attribute and remove it from the list.
+   *
+   * @param name attribute name or <code>null</code> for text content
+   * @param required indicates attribute is required
+   * @param defaultValue the default value for an optional attribute (used if
+   *     not present)
+   * @return the short value of this attribute
+   * @exception ParseException if required is set and the attribute
+   *     is not defined, or if the attribute value is not a valid short
+   */
+  public short consumeShort(String name, boolean required, short defaultValue)
+      throws ParseException {
+    String value = consume(name, required);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Short.parseShort(value);
+    } catch (NumberFormatException e) {
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidShortAttribute);
+      pe.setInternalReason("Invalid short value for attribute: '" + name + "'");
+      throw pe;
+    }
+  }
+
+  /**
+   * Gets the value of a short attribute and remove it from the list.
+   *
+   * @param name attribute name
+   * @param required indicates attribute is required
+   * @return the short value of this attribute, 0 by default
+   * @exception ParseException if required is set and the attribute
+   *   is not defined, or if the attribute value is not a valid short
+   */
+  public short consumeShort(String name, boolean required)
+      throws ParseException {
+    return consumeShort(name, required, (short) 0);
+  }
+
+  /**
    * Gets the value of an integer attribute and remove it from the list.
    *
    * @param name attribute name or <code>null</code> for text content
@@ -201,6 +284,90 @@ public class AttributeHelper {
   public long consumeLong(String name, boolean required)
       throws ParseException {
     return consumeLong(name, required, 0);
+  }
+
+  /**
+   * Gets the value of a big integer attribute and remove it from the list.
+   *
+   * @param name attribute name or <code>null</code> for text content
+   * @param required indicates attribute is required
+   * @param defaultValue the default value for an optional attribute (used if
+   *     not present)
+   * @return the big integer value of this attribute
+   * @exception ParseException if required is set and the attribute
+   *     is not defined, or if the attribute value is not a valid big integer
+   */
+  public BigInteger consumeBigInteger(String name, boolean required,
+      BigInteger defaultValue) throws ParseException {
+    String value = consume(name, required);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return new BigInteger(value);
+    } catch (NumberFormatException e) {
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidBigIntegerAttribute);
+      pe.setInternalReason("Invalid big integer value for attribute: '" + name
+          + "'");
+      throw pe;
+    }
+  }
+
+  /**
+   * Gets the value of a big integer attribute and remove it from the list.
+   *
+   * @param name attribute name
+   * @param required indicates attribute is required
+   * @return the big integer value of this attribute, 0 by default
+   * @exception ParseException if required is set and the attribute
+   *   is not defined, or if the attribute value is not a valid big integer
+   */
+  public BigInteger consumeBigInteger(String name, boolean required)
+      throws ParseException {
+    return consumeBigInteger(name, required, BigInteger.ZERO);
+  }
+
+  /**
+   * Gets the value of a big decimal attribute and remove it from the list.
+   *
+   * @param name attribute name or <code>null</code> for text content
+   * @param required indicates attribute is required
+   * @param defaultValue the default value for an optional attribute (used if
+   *     not present)
+   * @return the big decimal value of this attribute
+   * @exception ParseException if required is set and the attribute
+   *     is not defined, or if the attribute value is not a valid big decimal
+   */
+  public BigDecimal consumeBigDecimal(String name, boolean required,
+      BigDecimal defaultValue) throws ParseException {
+    String value = consume(name, required);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return new BigDecimal(value);
+    } catch (NumberFormatException e) {
+      ParseException pe = new ParseException(
+          CoreErrorDomain.ERR.invalidBigDecimalAttribute);
+      pe.setInternalReason("Invalid big decimal value for attribute: '" + name
+          + "'");
+      throw pe;
+    }
+  }
+
+  /**
+   * Gets the value of a big decimal attribute and remove it from the list.
+   *
+   * @param name attribute name
+   * @param required indicates attribute is required
+   * @return the big decimal value of this attribute, 0 by default
+   * @exception ParseException if required is set and the attribute
+   *   is not defined, or if the attribute value is not a valid big decimal
+   */
+  public BigDecimal consumeBigDecimal(String name, boolean required)
+      throws ParseException {
+    return consumeBigDecimal(name, required, BigDecimal.ZERO);
   }
 
   /**

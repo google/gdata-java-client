@@ -1455,6 +1455,48 @@ public class StringUtil {
     return sb.toString();
   }
 
+  // C0 control characters except \t, \n, and \r and 0xFFFE and 0xFFFF
+  private static final CharMatcher CONTROL_MATCHER = CharMatcher.anyOf(
+      "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007" +
+      "\u0008\u000B\u000C\u000E\u000F" +
+      "\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017" +
+      "\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F" +
+      "\uFFFE\uFFFF");
+
+  /**
+   * Escape a string that is meant to be embedded in a CDATA section.
+   * The returned string is guaranteed to be valid CDATA content.
+   * The syntax of CDATA sections is the following:
+   * <blockquote>
+   *   <code>&lt;[!CDATA[...]]&gt;</code>
+   * </blockquote>
+   * The only invalid character sequence in a CDATA tag is "]]&gt;".
+   * If this sequence is present in the input string, we replace
+   * it by closing the current CDATA field, then write ']]&amp;gt;',
+   * then reopen a new CDATA section.
+   */
+  public static String xmlCDataEscape(String s) {
+     // Make sure there are no illegal control characters.
+     s = CONTROL_MATCHER.removeFrom(s);
+    // Return the original reference if the string doesn't have a match.
+    int found = s.indexOf("]]>");
+    if (found == -1) {
+      return s;
+    }
+
+    // For each occurrence of "]]>", append a string that adds "]]&gt;" after
+    // the end of the CDATA which has just been closed, then opens a new CDATA.
+    StringBuilder sb = new StringBuilder();
+    int prev = 0;
+    do {
+      sb.append(s.substring(prev, found + 3));
+      sb.append("]]&gt;<![CDATA[");
+      prev = found + 3;
+    } while ((found = s.indexOf("]]>", prev)) != -1);
+    sb.append(s.substring(prev));
+    return sb.toString();
+  }
+
   /**
    * We escape some characters in s to be able to insert strings into Java code
    */

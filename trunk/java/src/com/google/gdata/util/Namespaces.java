@@ -19,7 +19,6 @@ package com.google.gdata.util;
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.client.Service;
 
-
 /** Collection of various namespace URIs. */
 public final class Namespaces {
 
@@ -33,7 +32,7 @@ public final class Namespaces {
   public static final String xml =
     "http://www.w3.org/XML/1998/namespace";
   
-  /** XML writer namespace */
+  /** XML namespace */
   public static final XmlNamespace xmlNs = new XmlNamespace("xml", xml);
 
 
@@ -41,7 +40,7 @@ public final class Namespaces {
   public static final String atom =
     "http://www.w3.org/2005/Atom";
 
-  /** Atom XML writer namespace, for assigning {@code atom:} prefix. */
+  /** Atom XML namespace, for assigning {@code atom:} prefix. */
   public static final XmlNamespace atomNs = new XmlNamespace("atom", atom);
 
   /**
@@ -56,7 +55,7 @@ public final class Namespaces {
     "http://purl.org/atom/app#";
 
   /**
-   * Atom Publishing Protocol (draft) XML writer namespace.
+   * Atom Publishing Protocol (draft) XML namespace.
    *
    * <p>Use this only when you are sure you want the draft version
    * of the namespace. Use {@link #getAtomPubNs()} when
@@ -78,7 +77,7 @@ public final class Namespaces {
     "http://www.w3.org/2007/app";
 
   /**
-   * Atom Publishing Protocol (final) XML writer namespace.
+   * Atom Publishing Protocol (final) XML namespace.
    *
    * <p>Use this only when you are sure you want the standard version
    * of the namespace. Use {@link #getAtomPubNs()} when
@@ -99,7 +98,7 @@ public final class Namespaces {
   public static final String atomPub = atomPubDraft;
 
   /**
-   * Atom Publishing Protocol (draft) XML writer namespace.
+   * Atom Publishing Protocol (draft) XML namespace.
    *
    * @deprecated Use {@link #getAtomPubNs()} instead. Use
    * {@link #atomPubDraftNs} if you absolutely want the draft app namespace
@@ -109,7 +108,7 @@ public final class Namespaces {
   public static final XmlNamespace atomPubNs = atomPubDraftNs;
 
   /**
-   * Returns the XML writer namespace associated with the Atom Publishing
+   * Returns the XML namespace associated with the Atom Publishing
    * Protocol.
    */
   public static final XmlNamespace getAtomPubNs() {
@@ -118,7 +117,7 @@ public final class Namespaces {
         atomPubStandardNs;
   }
 
-  /** RSS XML writer namespace. */
+  /** RSS XML namespace. */
   public static final XmlNamespace rssNs = null;
 
   /**
@@ -126,18 +125,18 @@ public final class Namespaces {
    *
    * <p>Use this only when you are sure you want the version 1.0
    * of the namespace. Use {@code getOpenSearchNs().getUri()} when
-   * you want the opensearch uri that should be used for the
+   * you want the opensearch URI that should be used for the
    * current version.
    */
   public static final String openSearch1_0 =
     "http://a9.com/-/spec/opensearchrss/1.0/";
 
   /**
-   * Amazon OpenSearch/RSS 1.0 XML writer namespace.
+   * Amazon OpenSearch/RSS 1.0 XML namespace.
    *
    * <p>Use this only when you are sure you want the version 1.0
    * of the namespace. Use {@link #getOpenSearchNs()} when
-   * you want the opensearch uri that should be used for the
+   * you want the opensearch URI that should be used for the
    * current version.
    */
   public static final XmlNamespace openSearch1_0Ns =
@@ -148,18 +147,18 @@ public final class Namespaces {
    *
    * <p>Use this only when you are sure you want the version 1.1
    * of the namespace. Use {@code getOpenSearchNs().getUri()} when
-   * you want the opensearch uri that should be used for the
+   * you want the opensearch URI that should be used for the
    * current version.
    */
   public static final String openSearch1_1 =
     "http://a9.com/-/spec/opensearch/1.1/";
 
   /**
-   * Amazon OpenSearch 1.1 XML writer namespace.
+   * Amazon OpenSearch 1.1 XML namespace.
    *
    * <p>Use this only when you are sure you want the version 1.1
    * of the namespace. Use {@code getOpenSearchNs().getUri()} when
-   * you want the opensearch uri that should be used for the
+   * you want the opensearch URI that should be used for the
    * current version.
    */
   public static final XmlNamespace openSearch1_1Ns = 
@@ -177,7 +176,7 @@ public final class Namespaces {
   public static final String openSearch = openSearch1_0;
 
   /**
-   * Amazon OpenSearch/RSS XML writer namespace.
+   * Amazon OpenSearch/RSS XML namespace.
    *
    * @deprecated Use {@link #getOpenSearchNs()} instead. Use 
    * {@link #openSearch1_0Ns} if you absolutely want the namespace of 
@@ -187,7 +186,7 @@ public final class Namespaces {
   public static final XmlNamespace openSearchNs = openSearch1_0Ns;
 
   /**
-   * Returns the XML writer namespace associated with OpenSearch.
+   * Returns the XML namespace associated with OpenSearch.
    */
   public static final XmlNamespace getOpenSearchNs() {
     return Service.getVersion().isCompatible(Service.Versions.V1) ?
@@ -205,7 +204,7 @@ public final class Namespaces {
     "http://a9.com/-/spec/opensearchdescription/1.0/";
 
   /**
-   * Amazon OpenSearch/RSS Description Document XML writer namespace.
+   * Amazon OpenSearch/RSS Description Document XML namespace.
    *
    * @deprecated Use {@link #getOpenSearchDescNs()} instead.
    */
@@ -223,7 +222,7 @@ public final class Namespaces {
     "http://a9.com/-/spec/opensearchdescription/1.1/";
 
   /**
-   * Amazon OpenSearch 1.1 Description Document XML writer namespace.
+   * Amazon OpenSearch 1.1 Description Document XML namespace.
    *
    * @deprecated Use {@link #getOpenSearchDescNs()} instead.
    */
@@ -232,7 +231,7 @@ public final class Namespaces {
     new XmlNamespace("openSearchDesc", openSearchDesc1_1);
 
   /**
-   * Returns the XML writer namespace associated with OpenSearch Description.
+   * Returns the XML namespace associated with OpenSearch Description.
    */
   public static final XmlNamespace getOpenSearchDescNs() {
     return Service.getVersion().isCompatible(Service.Versions.V1) ?
@@ -243,7 +242,7 @@ public final class Namespaces {
   /** XHTML namespace. */
   public static final String xhtml = "http://www.w3.org/1999/xhtml";
 
-  /** XHTML XML writer namespace. */
+  /** XHTML XML namespace. */
   public static final XmlNamespace xhtmlNs =
     new XmlNamespace("xh", xhtml);
 
@@ -252,7 +251,7 @@ public final class Namespaces {
   public static final String gdataConfig =
     "http://schemas.google.com/gdata/config/2005";
 
-  /** GData XML writer namespace. */
+  /** GData XML namespace. */
   public static final XmlNamespace gdataConfigNs =
     new XmlNamespace("gc", gdataConfig);
 
@@ -262,7 +261,7 @@ public final class Namespaces {
   public static final String gPrefix = g + "#";
   public static final String gAlias = "gd";
 
-  /** Google data XML writer namespace. */
+  /** Google data XML namespace. */
   public static final XmlNamespace gNs =
     new XmlNamespace(gAlias, g);
 
@@ -270,7 +269,7 @@ public final class Namespaces {
   /** Google data runtime namespace. */
   public static final String gr = gPrefix + "runtime";
 
-  /** Google data runtime XML writer namespace. */
+  /** Google data runtime XML namespace. */
   public static final XmlNamespace grNs = new XmlNamespace("gr", gr);
 
 

@@ -528,6 +528,10 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     urlConnection.setRequestMethod("POST");
     urlConnection.setRequestProperty("Content-Type",
                                      "application/x-www-form-urlencoded");
+    // Add user-agent string "<service_name> GData-Java/x.x.x"
+    urlConnection.setRequestProperty("User-Agent", parameters.get("service")
+        + " GData-Java/"
+        + GoogleAuthTokenFactory.class.getPackage().getImplementationVersion());
 
     // Form the POST parameters
     StringBuilder content = new StringBuilder();

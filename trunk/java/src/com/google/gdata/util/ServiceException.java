@@ -17,6 +17,8 @@
 package com.google.gdata.util;
 
 import com.google.gdata.util.common.base.CharEscapers;
+import com.google.gdata.client.authn.oauthproxy.OAuthProxyProtocol;
+import com.google.gdata.client.authn.oauthproxy.OAuthProxyResponse;
 import com.google.gdata.util.ErrorContent.LocationType;
 
 import java.io.IOException;
@@ -87,13 +89,13 @@ public class ServiceException extends Exception {
   }
 
   public ServiceException(String message, Throwable cause) {
-    super(nullsafe(message), cause);
-    httpHeaders = new HashMap<String, List<String>>();
+    this(message);
+    initCause(cause);
   }
 
   public ServiceException(Throwable cause) {
-    super(nullsafe(cause.getMessage()));
-    httpHeaders = new HashMap<String, List<String>>();
+    this(cause.getMessage());
+    initCause(cause);
   }
 
   /**
@@ -131,8 +133,7 @@ public class ServiceException extends Exception {
    * the errors for a GData domain (service or portion of service).
    */
   public ServiceException(ErrorContent errorCode) {
-    super(nullsafe(errorCode.getInternalReason()));
-    httpHeaders = new HashMap<String, List<String>>();
+    this(errorCode.getInternalReason());
     this.errorElement = new ErrorElement(errorCode);
   }
 
@@ -144,9 +145,24 @@ public class ServiceException extends Exception {
    * (service or portion of service).
    */
   public ServiceException(ErrorContent errorCode, Throwable cause) {
-    super(nullsafe(errorCode.getInternalReason()), cause);
-    httpHeaders = new HashMap<String, List<String>>();
-    this.errorElement = new ErrorElement(errorCode);
+    this(errorCode);
+    initCause(cause);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>If {@code cause} is a {@link ServiceException}, it is added to
+   * the list of siblings so that the original exception appears when
+   * using XML error output.
+   */
+  @Override
+  public Throwable initCause(Throwable cause) {
+    super.initCause(cause);
+    if (cause instanceof ServiceException) {
+      addSibling((ServiceException) cause);
+    }
+    return this;
   }
 
   // Private method used in constructors
@@ -221,7 +237,7 @@ public class ServiceException extends Exception {
 
   /**
    * Converts the exception into a well-formated XML error
-   * message suitable.
+   * message suitable for external uses.
    *
    * @param includeDebugInfo if {@code true}, include debug information.
    *        Such error message should only be returned to internal clients.
@@ -240,7 +256,7 @@ public class ServiceException extends Exception {
     return CharEscapers.xmlEscaper().escape(src);
   }
 
-  private void addXmlError(ServiceException se, StringBuilder sb, 
+  private void addXmlError(ServiceException se, StringBuilder sb,
       boolean includeDebugInfo) {
     // Simplistic StringBuffer implementation because the XML is trivial.
     sb.append("<error>\n");
@@ -256,10 +272,7 @@ public class ServiceException extends Exception {
     sb.append("</code>\n");
 
     String location = se.getLocation();
-    LocationType locationType = se.getLocationType();
-    if (locationType == null) {
-      locationType = LocationType.OTHER;
-    }
+    LocationType locationType = se.getLocationTypeWithDefault();
     if (location != null) {
       sb.append("<location type='");
       sb.append(escape(locationType.toString()));
@@ -345,10 +358,10 @@ public class ServiceException extends Exception {
   }
 
   // Error model getters and setters
-  
+
   /**
    * Return error domain.
-   * 
+   *
    * <p>Defaults to "GData", indicating an error that has
    * not yet been upgraded to the new architecture.
    */
@@ -359,7 +372,7 @@ public class ServiceException extends Exception {
 
   /**
    * Set error domain.
-   * 
+   *
    * @throws NullPointerException if {@code domain} is {@code null}.
    */
   public void setDomain(String domain) {
@@ -368,7 +381,7 @@ public class ServiceException extends Exception {
 
   /**
    * Return error code.
-   * 
+   *
    * <p>Defaults to the class name of {@code this}.
    */
   public String getCodeName() {
@@ -378,32 +391,40 @@ public class ServiceException extends Exception {
 
   /**
    * Set error code.
-   * 
+   *
    * @throws NullPointerException if {@code code} is {@code null}.
    */
   public void setCode(String code) {
     errorElement.setCode(code);
   }
-  
+
   /**
    * Return error location.
    */
   public String getLocation() {
     return errorElement.getLocation();
   }
-  
+
   /**
    * Return error location type.
    */
   public LocationType getLocationType() {
     return errorElement.getLocationType();
   }
-  
+
+  /**
+   * Returns error location type, defaulting to {@link LocationType#OTHER}.
+   */
+  private LocationType getLocationTypeWithDefault() {
+    LocationType type = getLocationType();
+    return type != null ? type : LocationType.OTHER;
+  }
+
   /**
    * Set XPath-based error location.
    * This must be a valid XPath expression sibling to the atom:entry
    * element (or the atom:feed element if we are not in an entry).
-   * 
+   *
    * @throws NullPointerException if {@code location} is {@code null}.
    */
   public void setXpathLocation(String location) {
@@ -412,7 +433,7 @@ public class ServiceException extends Exception {
 
   /**
    * Set header name for an error in a header.
-   * 
+   *
    * @throws NullPointerException if {@code location} is {@code null}.
    */
   public void setHeaderLocation(String location) {
@@ -421,23 +442,23 @@ public class ServiceException extends Exception {
 
   /**
    * Set generic error location.
-   * 
+   *
    * @throws NullPointerException if {@code location} is {@code null}.
    */
   public void setLocation(String location) {
     errorElement.setLocation(location);
   }
-  
+
   /**
    * Return error internal reason.
-   * 
+   *
    * <p>Defaults to the message set at construction time.
    */
   public String getInternalReason() {
     String internalReason = errorElement.getInternalReason();
     return (internalReason != null) ? internalReason : super.getMessage();
   }
-  
+
   /**
    * Return message: same as getInternalReason.
    */
@@ -445,10 +466,10 @@ public class ServiceException extends Exception {
   public String getMessage() {
     return getInternalReason();
   }
-  
+
   /**
    * Sets the internal reason of the error.
-   * 
+   *
    * @throws NullPointerException if {@code internalReason} is {@code null}.
    */
   public void setInternalReason(String internalReason) {
@@ -464,7 +485,7 @@ public class ServiceException extends Exception {
 
   /**
    * Set URI for extended help.
-   * 
+   *
    * @throws NullPointerException if {@code extendedHelp} is {@code null}.
    */
   public void setExtendedHelp(String extendedHelp) {
@@ -480,13 +501,13 @@ public class ServiceException extends Exception {
 
   /**
    * Set URI to send report to.
-   * 
+   *
    * @throws NullPointerException if {@code sendReport} is {@code null}.
    */
   public void setSendReport(String sendReport) {
     errorElement.setSendReport(sendReport);
   }
-  
+
   /**
    * Return debugging information.
    * Defaults to the stack trace.
@@ -497,13 +518,13 @@ public class ServiceException extends Exception {
 
   /**
    * Set debugging information.
-   * 
+   *
    * @throws NullPointerException if {@code debugInfo} is {@code null}.
    */
   public void setDebugInfo(String debugInfo) {
     errorElement.setDebugInfo(debugInfo);
   }
-  
+
   // Logic for handling sibling exceptions.
 
   // All the siblings, including this one.  We keep ourselves
@@ -561,5 +582,27 @@ public class ServiceException extends Exception {
       }
     }
     return false;
+  }
+
+  /**
+   * Returns whether or not the request has OAuth Proxy-related headers.
+   */
+  public boolean hasOAuthProxyResponse() {
+    return httpHeaders.containsKey(
+        OAuthProxyProtocol.Header.X_OAUTH_APPROVAL_URL)
+    || httpHeaders.containsKey(OAuthProxyProtocol.Header.X_OAUTH_STATE)
+    || httpHeaders.containsKey(OAuthProxyProtocol.Header.X_OAUTH_ERROR)
+    || httpHeaders.containsKey(OAuthProxyProtocol.Header.X_OAUTH_ERROR);
+  }
+
+  /**
+   * Returns the headers related to the OAuth Proxy.  If there are no OAuth
+   * Proxy related headers on the request, this method will return an
+   * {@link OAuthProxyResponse} object with null values for the headers.  Use
+   * {@link #hasOAuthProxyResponse()} to determine whether the request has
+   * OAuth Proxy information.
+   */
+  public OAuthProxyResponse getOAuthProxyResponse() {
+    return new OAuthProxyResponse(httpHeaders);
   }
 }

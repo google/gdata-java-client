@@ -28,6 +28,8 @@
             value="${sample.photos.build.lib}/PhotosClient.jar"/>
   <property name="sample.photos.main"
             value="sample.photos.PicasawebCommandLine"/>
+  <property name="sample.photospartial.main"
+            value="sample.photos.PicasawebPartialDemo"/>
 
   <target name="sample.photos.clean"
    description="Delete old build and dist directories">
@@ -79,6 +81,20 @@
           description="Runs the Photos sample">
 
     <java fork="true" classname="${sample.photos.main}">
+      <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.photos.compile.classpath"/>
+        <path location="${sample.photos.jar}"/>
+      </classpath>
+    </java>
+
+  </target>
+
+  <target name="sample.photospartial.run"
+          depends="sample.photos.build"
+          description="Runs the Photos sample">
+
+    <java fork="true" classname="${sample.photospartial.main}">
       <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
       <classpath>
         <path refid="sample.photos.compile.classpath"/>

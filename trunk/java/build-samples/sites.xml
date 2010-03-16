@@ -81,7 +81,7 @@
           description="Runs the sites sample">
 
     <java fork="true" classname="${sample.sites.main}">
-      <arg line="--username ${sample.credentials.username} --password ${sample.credentials.password} --siteName ${sample.sites.webspacename}"/>
+      <arg line="--username ${sample.credentials.username} --password ${sample.credentials.password} --domain ${sample.sites.domain} --siteName ${sample.sites.webspacename}"/>
       <classpath>
         <path refid="sample.sites.compile.classpath"/>
         <path location="${sample.sites.jar}"/>

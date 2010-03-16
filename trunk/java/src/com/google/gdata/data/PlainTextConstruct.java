@@ -68,10 +68,13 @@ public class PlainTextConstruct extends TextConstruct {
   /** Specifies the plain text contents of this text construct. */
   public void setText(String v) { text = v; }
 
-  /** @return a plain-text representation of this text construct */
+  /**
+   * @return a plain-text representation of this text construct or {@code null}
+   *         if there is no text content.
+   */
   @Override
   public String getPlainText() {
-    return new String(text);
+    return text != null ? new String(text) : null;
   }
 
   /**

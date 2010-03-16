@@ -89,6 +89,23 @@ public interface ILink extends Reference {
     public static final String MEDIA_EDIT = "edit-media";
 
     /**
+     * Link provides the URI that can be used to add a media entry to the feed.
+     * This relation does not exist if the feed is read-only, not a media feed
+     * or if resumable uploads are not supported.
+     */
+    public static final String RESUMABLE_CREATE_MEDIA =
+        Namespaces.gPrefix + "resumable-create-media";
+
+    /**
+     * Link provides the URI that can be used to edit the media
+     * associated with an entry in a resumable fashion.  This relation
+     * does not exist if there is no associated media, the media is read-only
+     * or resumable uploads are not supported.
+     */
+    public static final String RESUMABLE_EDIT_MEDIA =
+        Namespaces.gPrefix + "resumable-edit-media";
+
+    /**
      * Previous media edit link relation value that will temporarily be
      * supported to enable back compatibility for Picasa Web.  This rel
      * will be deleted after all usage has been migrated to use
@@ -118,6 +135,12 @@ public interface ILink extends Reference {
      */
     public static final String ENCLOSURE = "enclosure";
     
+    /**
+     * Relation for links that provide the URI of a hub that enables
+     * registration for real-time updates to the resource.
+     */
+    public static final String HUB = "hub";
+
     private Rel() {}
   }
 

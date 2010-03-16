@@ -162,7 +162,13 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
      * If there is no entity tag, this variable is null.
      */
     public String etag;
-    
+
+    /**
+     * gd:fields.  This is the field selection associated with this feed.
+     * If fields attribute is present, the feed is a partial feed.
+     */
+    public String fields;
+
     /** gd:kind.  This is the kind attribute for this entry. */
     public String kind;
 
@@ -292,6 +298,22 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
    */
   public void setEtag(String v) {
     feedState.etag = v;
+  }
+
+  /**
+   * Returns the current fields selection for this partial feed.  A
+   * value of {@code null} indicates the feed is not a partial feed.
+   */
+  public String getSelectedFields() {
+    return feedState.fields;
+  }
+
+  /**
+   * Sets the current fields selection for this partial feed.  A
+   * value of {@code null} indicates the feed is not a partial feed.
+   */
+  public void setSelectedFields(String fields) {
+    feedState.fields = fields;
   }
 
   /**
@@ -616,7 +638,14 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       attrs.add(new XmlWriter.Attribute(
           Namespaces.gAlias, "etag", feedState.etag));
     }
-    
+
+    if (feedState.fields != null
+        && Service.getVersion().isAfter(Service.Versions.V1)) {
+      nsDecls.add(Namespaces.gNs);
+      attrs.add(new XmlWriter.Attribute(
+          Namespaces.gAlias, "fields", feedState.fields));
+    }
+
     // Add any attribute extensions.
     AttributeGenerator generator = new AttributeGenerator();
     putAttributes(generator);
@@ -875,6 +904,10 @@ public abstract class BaseFeed<F extends BaseFeed, E extends BaseEntry>
       if (namespace.equals(Namespaces.g)) {
         if (localName.equals("etag")) {
           setEtag(value);
+          return;
+        }
+        if (localName.equals("fields")) {
+          setSelectedFields(value);
           return;
         }
         if (localName.equals("kind")) {

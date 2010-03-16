@@ -47,6 +47,23 @@ public abstract class AbstractExtension implements Extension {
   /** XML local name for this extension or <code>null</code> if not defined */
   protected final String localName;
 
+  /** Indicates if strict XML parsing/generation validation enabled/disabled */
+  private static ThreadLocal<Boolean> strictValidation =
+      new ThreadLocal<Boolean>() {
+        @Override protected Boolean initialValue() {
+          return Boolean.TRUE;
+        }
+      };
+  public static final boolean isStrictValidation() {
+    return strictValidation.get();
+  }
+  public static final void enableStrictValidation() {
+    strictValidation.set(Boolean.TRUE);
+  }
+  public static final void disableStrictValidation() {
+    strictValidation.set(Boolean.FALSE);
+  }
+
   /**
    * Indicates that the extension is constant after construction ({@code false}
    * by default).
@@ -169,7 +186,10 @@ public abstract class AbstractExtension implements Extension {
           "No @ExtensionDescription.Default annotation found on subclass "
               + name.substring(name.lastIndexOf('.') + 1));
     }
-    validate();
+
+    if (isStrictValidation()) {
+      validate();
+    }
 
     // generate attributes
     AttributeGenerator generator = new AttributeGenerator();
@@ -241,14 +261,15 @@ public abstract class AbstractExtension implements Extension {
       if (helper != null) {
         helper.setContent(value);
         consumeAttributes(helper);
-        helper.assertAllConsumed();
       }
 
-      // validate
-      try {
-        validate();
-      } catch (IllegalStateException e) {
-        throw new ParseException(e.getMessage(), e);
+      if (isStrictValidation()) {
+        // validate
+        try {
+          validate();
+        } catch (IllegalStateException e) {
+          throw new ParseException(e.getMessage(), e);
+        }
       }
     }
   }

@@ -30,7 +30,7 @@ import com.google.gdata.util.ParseException;
  *
  * Example:
  * <pre class="code">
- *   <wt:verification-method type="htmltag" in-use="false">
+ *   <wt:verification-method type="METATAG" in-use="false">
  *      SOMEVALUE
  *   </wt:verification-method>
  * </pre>
@@ -52,6 +52,9 @@ public class VerificationMethod extends AbstractExtension {
   /** Specifies whether the method is currently in use. */
   private boolean inUse;
 
+  /** Specifies the file content for HTML file verification. */
+  private String fileContent;
+
   /**
    * Specifies verification value which is interpreted accordingly to
    * verification type. For instance for HTML file verification, the value
@@ -63,6 +66,7 @@ public class VerificationMethod extends AbstractExtension {
   public static final String METHOD_NODE = "verification-method";
   private static final String METHODTYPE = "type";
   private static final String INUSE = "in-use";
+  private static final String FILECONTENT = "file-content";
 
   /**
    * Checks whether specified node name matches node name for the verification
@@ -82,12 +86,13 @@ public class VerificationMethod extends AbstractExtension {
     super(Namespaces.WT_NAMESPACE, METHOD_NODE);
     this.methodType = MethodType.METATAG;
     this.inUse = false;
+    this.fileContent = "";
     this.value = "";
   }
 
   /**
    * Compares {@link VerificationMethod} objects based on the verification
-   * method type, value and in-use flag.
+   * method type, value, file-content and in-use flag.
    */
   @Override
   public boolean equals(Object rhs) {
@@ -102,6 +107,9 @@ public class VerificationMethod extends AbstractExtension {
     if (inUse != r.inUse) {
       return false;
     }
+    if (!fileContent.equals(r.fileContent)) {
+      return false;
+    }
     if (!value.equals(r.value)) {
       return false;
     }
@@ -109,7 +117,7 @@ public class VerificationMethod extends AbstractExtension {
     return true;
   }
 
-  /** 
+  /**
    * Returns hash code which is based on the method type.
    */
   @Override
@@ -133,7 +141,7 @@ public class VerificationMethod extends AbstractExtension {
 
   /**
    * Mark this method as the verification method that is currently in use.
-   */  
+   */
   public void setInUse(boolean inUse) {
     this.inUse = inUse;
   }
@@ -143,6 +151,20 @@ public class VerificationMethod extends AbstractExtension {
    */
   public boolean getInUse() {
     return inUse;
+  }
+
+  /**
+   * Sets file content for HTML file verification.
+   */
+  public void setFileContent(String fileContent) {
+    this.fileContent = fileContent;
+  }
+
+  /**
+   * Returns file content for HTML file verification.
+   */
+  public String getFileContent() {
+    return fileContent;
   }
 
   /**
@@ -159,7 +181,7 @@ public class VerificationMethod extends AbstractExtension {
    */
   public String getValue() {
     return value;
-  }  
+  }
 
   /**
    * Overrides base class method to output attributes defined by this class.
@@ -168,11 +190,12 @@ public class VerificationMethod extends AbstractExtension {
   protected void putAttributes(AttributeGenerator generator) {
     generator.put(METHODTYPE, methodType.toString().toLowerCase());
     generator.put(INUSE, inUse);
+    generator.put(FILECONTENT, fileContent);
     generator.setContent(value);
   }
 
   /**
-   * Overrides base class method to parse attributes specific to this class. 
+   * Overrides base class method to parse attributes specific to this class.
    */
   @Override
   protected void consumeAttributes(AttributeHelper helper)
@@ -180,6 +203,7 @@ public class VerificationMethod extends AbstractExtension {
     methodType = helper.consumeEnum(
         METHODTYPE, true, MethodType.class, MethodType.METATAG);
     inUse = helper.consumeBoolean(INUSE, true);
+    fileContent = helper.consume(FILECONTENT, false);
     String content = helper.consumeContent(false);
     if (content != null) {
       value = content;

@@ -69,3 +69,4 @@ public class FeatureQuery extends Query {
   }
 
 }
+

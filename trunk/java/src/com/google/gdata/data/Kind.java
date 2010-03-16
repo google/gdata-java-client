@@ -45,6 +45,12 @@ import java.util.Map;
 public class Kind {
 
   /**
+   * The location of the <code>META-INF</code> jar directory where GData kind
+   * mapping information is stored.
+   */
+  public static final String META_DIRECTORY = "META-INF/gdata/kinds/";
+  
+  /**
    * Caches the mappings from a kind term to the {@link Adaptor} classes that
    * handle the kind.  Since these are configured by JAR-based metadata,
    * they are guaranteed to be constant once loaded unless/until the
@@ -238,7 +244,7 @@ public class Kind {
       String termService = getKindServiceName(kindTerm);
       InputStream serviceStream;
       try {
-        serviceStream = cl.getResourceAsStream("META-INF/gdata/kinds/"
+        serviceStream = cl.getResourceAsStream(META_DIRECTORY
             + termService);
         if (serviceStream == null) {
           return null;

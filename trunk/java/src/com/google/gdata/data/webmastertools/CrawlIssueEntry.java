@@ -270,3 +270,4 @@ public class CrawlIssueEntry extends BaseEntry<CrawlIssueEntry> {
   }
 
 }
+

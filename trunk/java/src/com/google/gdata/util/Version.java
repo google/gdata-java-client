@@ -185,10 +185,10 @@ public class Version {
   }
   
   /**
-   * Returns {@code true} if the specified is compatible with this version or
-   * one of its implied versions.   Two versions are compatible if they are
-   * for the same service and have a matching major version number (or one
-   * of them has a major version of {@link #ANY}.
+   * Returns {@code true} if the specified version is compatible with this
+   * version or one of its implied versions. Two versions are compatible if they
+   * are for the same service and have a matching major version number (or one
+   * of them has a major version of {@link #ANY}).
    */
   public final boolean isCompatible(Version v) {
     if (isSameService(v) && 
@@ -215,6 +215,29 @@ public class Version {
     return (versionNumber != ANY) ? versionNumber : Integer.MAX_VALUE;
   }
 
+  /**
+   * Returns {@code true} if the specified version is a match with this version
+   * or one of its implied versions. Two versions are compatible if they are for
+   * the same service and have matching major and minor version numbers.  A
+   * version number is a match if it is the same or one is {@link #ANY}.
+   */
+  public final boolean matches(Version v) {
+    if (isSameService(v)
+        && (major == v.major || major == ANY || v.major == ANY)
+        && (minor == v.minor || minor == ANY || v.minor == ANY)) {
+      return true;
+    }
+    for (Version impliedVersion : impliedVersions) {
+      if (impliedVersion == this) {
+        continue;
+      }
+      if (impliedVersion.matches(v)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
   /**
    * Returns {@code true} if this version is a later version than the argument,
    * on the basis of comparing the major and minor versions. For the purposes of

@@ -189,3 +189,4 @@ public class CrawlIssueCrawlType extends AbstractExtension {
   }
 
 }
+

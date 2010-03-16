@@ -22,11 +22,14 @@ import java.net.HttpURLConnection;
 /**
  * Thrown when an exception occurs that is temporary; i.e., the user should
  * try again.  This includes failing backends, rate limiting, and so on.
+ * Set the retryTime in seconds to tell the client when to retry.
  * <p>
  *
  * 
  */
 public class ServiceUnavailableException extends ServiceException {
+
+  private int retryTime = -1;
 
   public ServiceUnavailableException(String message) {
     super(message);
@@ -63,4 +66,13 @@ public class ServiceUnavailableException extends ServiceException {
   private void initResponseCode() {
     setHttpErrorCodeOverride(HttpURLConnection.HTTP_UNAVAILABLE);
   }
+
+  public int getRetryTime() {
+    return retryTime;
+  }
+
+  public void setRetryTime(int retryTime) {
+    this.retryTime = retryTime;
+  }
+
 }

@@ -259,6 +259,7 @@
       <include name="com/google/gdata/client/authn/**/*.java"/>
       <include name="com/google/gdata/client/batch/**/*.java"/>
       <include name="com/google/gdata/client/http/**/*.java"/>
+      <include name="com/google/gdata/client/uploader/**/*.java"/>
       <include name="com/google/gdata/data/*.java"/>
       <include name="com/google/gdata/data/acl/**/*.java"/>
       <include name="com/google/gdata/data/apt/**/*.java"/>
@@ -366,6 +367,8 @@
       <include name="**/data/MediaContent.java"/>
       <include name="**/data/media/**"/>
       <include name="**/client/media/**"/>
+      <include name="**/model/media/*.java"/>
+      <include name="**/model/mediarss/*.java"/>
       <include name="**/wireformats/input/media/*.java"/>
       <include name="**/wireformats/output/media/*.java"/>
     </javac>

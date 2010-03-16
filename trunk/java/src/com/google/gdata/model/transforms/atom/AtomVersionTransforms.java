@@ -23,6 +23,7 @@ import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.atom.Entry;
 import com.google.gdata.model.atom.Feed;
+import com.google.gdata.model.gd.GdAttributes;
 import com.google.gdata.util.Namespaces;
 
 /**
@@ -40,8 +41,8 @@ public class AtomVersionTransforms {
     addOssTransform(registry, Feed.START_INDEX);
     addOssTransform(registry, Feed.ITEMS_PER_PAGE);
 
-    registry.build(Entry.KEY, Entry.GD_KIND, V1_CONTEXT).setVisible(false);
-    registry.build(Feed.KEY, Feed.GD_KIND, V1_CONTEXT).setVisible(false);
+    registry.build(Entry.KEY, GdAttributes.KIND, V1_CONTEXT).setVisible(false);
+    registry.build(Feed.KEY, GdAttributes.KIND, V1_CONTEXT).setVisible(false);
   }
 
   @SuppressWarnings("deprecation")

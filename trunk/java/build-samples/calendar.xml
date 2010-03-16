@@ -17,6 +17,8 @@
   <property name="sample.calendar.build.lib"         value="${sample.calendar.basedir}/lib"/>
   <property name="sample.calendar.eventfeed.jar"     value="${sample.calendar.build.lib}/EventFeedDemo.jar"/>
   <property name="sample.calendar.eventfeed.main"    value="sample.calendar.EventFeedDemo"/>
+  <property name="sample.calendar.eventpartial.jar"  value="${sample.calendar.build.lib}/EventFeedPartialDemo.jar"/>
+  <property name="sample.calendar.eventpartial.main" value="sample.calendar.EventFeedPartialDemo"/>
   <property name="sample.calendar.calendarfeed.jar"  value="${sample.calendar.build.lib}/CalendarFeedDemo.jar"/>
   <property name="sample.calendar.calendarfeed.main" value="sample.calendar.CalendarFeedDemo"/>
   <property name="sample.calendar.aclfeed.jar"       value="${sample.calendar.build.lib}/AclFeedDemo.jar"/>
@@ -62,6 +64,14 @@
       </manifest>
     </jar>
 
+    <!-- Create EventFeedDemo application JAR file -->
+    <jar jarfile="${sample.calendar.eventpartial.jar}"
+         basedir="${sample.calendar.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.calendar.eventpartial.main}"/>
+      </manifest>
+    </jar>
+
     <!-- Create CalendarFeedDemo application JAR file -->
     <jar jarfile="${sample.calendar.calendarfeed.jar}"
          basedir="${sample.calendar.build.classes}">
@@ -97,6 +107,18 @@
       <classpath>
         <path refid="sample.calendar.compile.classpath"/>
         <path location="${sample.calendar.eventfeed.jar}"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="sample.calendar.eventpartial.run" depends="sample.calendar.build"
+   description="Runs the Calendar event feed partial demo sample">
+    <!-- Run EventFeedDemo -->
+    <java fork="true" classname="${sample.calendar.eventpartial.main}">
+      <arg line="${sample.credentials.username} ${sample.credentials.password}"/>
+      <classpath>
+        <path refid="sample.calendar.compile.classpath"/>
+        <path location="${sample.calendar.eventpartial.jar}"/>
       </classpath>
     </java>
   </target>

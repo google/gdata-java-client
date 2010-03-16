@@ -17,21 +17,23 @@
 package com.google.gdata.client.maps;
 
 import com.google.gdata.client.AuthTokenFactory;
-import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Service;
+import com.google.gdata.client.media.MediaService;
+import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.maps.FeatureFeed;
 import com.google.gdata.data.maps.MapFeed;
+import com.google.gdata.data.maps.VersionFeed;
 import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
 
 /**
- * Extends the basic {@link GoogleService} abstraction to define a service that
+ * Extends the basic {@link MediaService} abstraction to define a service that
  * is preconfigured for access to the Google Maps Data API.
  *
  * 
  */
-public class MapsService extends GoogleService {
+public class MapsService extends MediaService {
 
   /**
    * The abbreviated name of Google Maps Data API recognized by Google.  The
@@ -55,6 +57,10 @@ public class MapsService extends GoogleService {
     /** Version 2. */
     public static final Version V2 = new Version(MapsService.class, "2.0",
         Service.Versions.V2);
+
+    /** Version {@code 2.1}. */
+    public static final Version V2_1 = new Version(MapsService.class, "2.1",
+        Service.Versions.V2_1);
 
     private Versions() {}
   }
@@ -136,9 +142,12 @@ public class MapsService extends GoogleService {
    * Declare the extensions of the feeds for the Google Maps Data API.
    */
   private void declareExtensions() {
+    new AclFeed().declareExtensions(extProfile);
     new FeatureFeed().declareExtensions(extProfile);
     new MapFeed().declareExtensions(extProfile);
+    new VersionFeed().declareExtensions(extProfile);
     BatchUtils.declareExtensions(extProfile);
   }
 
 }
+

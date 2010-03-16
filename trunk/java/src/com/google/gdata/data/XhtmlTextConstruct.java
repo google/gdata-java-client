@@ -79,11 +79,14 @@ public class XhtmlTextConstruct extends TextConstruct {
 
   /**
    * @return a plain-text representation of this text construct,
-   * or {@code null} in case of error
+   *         or {@code null} if there is no text content available.
    */
   @Override
   public String getPlainText() {
 
+    if (xhtml == null) {
+      return null;
+    }
     try {
 
       StringWriter sw = new StringWriter();
@@ -201,4 +204,3 @@ public class XhtmlTextConstruct extends TextConstruct {
     }
   }
 }
-

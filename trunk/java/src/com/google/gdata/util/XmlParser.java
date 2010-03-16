@@ -20,7 +20,7 @@ package com.google.gdata.util;
 
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
-
+import com.google.gdata.util.common.xml.parsing.SecureGenericXMLFactory;
 import com.google.gdata.client.CoreErrorDomain;
 
 import org.xml.sax.Attributes;
@@ -85,11 +85,19 @@ public class XmlParser extends DefaultHandler {
   // Always return secure SAX parser, which is secured against XXE attacks
   private static SAXParserFactory getSAXParserFactory()
       throws ParserConfigurationException, SAXException {
-
-    SAXParserFactory factory =  SAXParserFactory.newInstance();
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    try {
+      SAXParserFactory secureFactory =
+          SecureGenericXMLFactory.getSAXParserFactory(factory);
+      secureFactory.newSAXParser();
+      factory = secureFactory;
+    } catch (ParserConfigurationException e) {
+      // OK. Cannot create secure xml parser. Use insecure one.
+    }
     factory.setNamespaceAware(true);
     return factory;
   }
+
 
   /**
    * Base class for custom element handlers.
@@ -1084,7 +1092,8 @@ public class XmlParser extends DefaultHandler {
 
 
   /** Ensures that the namespace from the QName is stored with the blob. */
-  private void ensureBlobNamespace(ElementHandler handler, String qName) {
+  private void ensureBlobNamespace(ElementHandler handler, String qName) 
+      throws SAXException {
 
     // Get the namespace.
     NamespaceDecl nsDecl = null;
@@ -1095,13 +1104,15 @@ public class XmlParser extends DefaultHandler {
     }
 
     Stack<NamespaceDecl> mapping = namespaceMap.get(alias);
-    if (mapping != null) {
+    if (mapping != null && mapping.size() != 0) {
       nsDecl = mapping.peek();
     }
 
     // The namespace might be null for a namespace-less element.
-    assert alias.length() == 0 || nsDecl != null :
-      "Namespace alias '" + alias + "' should be mapped in 'namespaceMap'.";
+    if (nsDecl == null && alias.length() != 0) {
+        throw new SAXException(
+            new ParseException("Undeclared namespace prefix: " + alias));
+    }
 
     // Make sure the namespace is described within the blob if it was
     // originally declared externally to it
@@ -1113,4 +1124,3 @@ public class XmlParser extends DefaultHandler {
     }
   }
 }
-

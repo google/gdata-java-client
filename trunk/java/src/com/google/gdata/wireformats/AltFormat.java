@@ -81,16 +81,16 @@ public class AltFormat {
       .build();
   
   /**
-   * Constant value representing application/xml, which is used for partial
-   * document representations of xml formats.
+   * Constant value representing application/xml document
    */
   public static final AltFormat APPLICATION_XML = builder()
       .setName("application-xml")
       .setWireFormat(WireFormat.XML)
       .setContentType(ContentType.APPLICATION_XML)
       .setAcceptableXmlTypes()
+      .setSelectableByType(true)
       .build();
-
+  
   /**
    * Constant value representing the media content associated with a GData
    * resource. The actual content type returned will depend upon the native

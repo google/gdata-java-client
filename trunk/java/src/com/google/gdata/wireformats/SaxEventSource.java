@@ -17,7 +17,7 @@
 package com.google.gdata.wireformats;
 
 import com.google.gdata.util.common.base.Preconditions;
-import com.google.gdata.util.common.xml.parsing.SecureXMLParsing;
+import com.google.gdata.util.common.xml.parsing.SecureGenericXMLFactory;
 import com.google.gdata.data.XmlEventSource;
 
 import org.xml.sax.InputSource;
@@ -48,17 +48,21 @@ public class SaxEventSource implements XmlEventSource {
   /** Creates a secure SAX parser, which is secured against XXE attacks. */
   private static SAXParserFactory createSAXParserFactory() {
     try {
-      SAXParserFactory factory =  SecureXMLParsing.getSAXParserFactory();
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      try {
+        SAXParserFactory secureFactory =
+            SecureGenericXMLFactory.getSAXParserFactory(factory);
+        secureFactory.newSAXParser();
+        factory = secureFactory;
+      } catch (ParserConfigurationException e) {
+        // OK. Cannot create secure xml parser. Use insecure one.
+      }
       factory.setNamespaceAware(true);
       return factory;
-    } catch (ParserConfigurationException e) {
-      // The parser factory failing for any reasons should be considered
-      // a bug in this class, since the parser configuration is hardcoded.
-      throw new IllegalStateException("Invalid parser configuration", e);
     } catch (SAXException e) {
       throw new IllegalStateException(
           "Failed to create a SAX parser factory", e);
-    } 
+    }
   }
 
   /** Reader used by this parser. */

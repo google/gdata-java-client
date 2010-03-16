@@ -19,6 +19,7 @@ package com.google.gdata.data.maps;
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.media.MediaFeed;
 
 /**
  * Describes a map feed.
@@ -26,7 +27,7 @@ import com.google.gdata.data.Link;
  * 
  */
 @Kind.Term(MapEntry.KIND)
-public class MapFeed extends BaseFeed<MapFeed, MapEntry> {
+public class MapFeed extends MediaFeed<MapFeed, MapEntry> {
 
   /**
    * Default mutable constructor.
@@ -63,3 +64,4 @@ public class MapFeed extends BaseFeed<MapFeed, MapEntry> {
   }
 
 }
+

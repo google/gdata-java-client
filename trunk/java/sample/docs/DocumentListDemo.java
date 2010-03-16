@@ -93,7 +93,7 @@ public class DocumentListDemo {
       "    remove <resource_id> <folder_resource_id> [[removes an object from a folder]]",
       "    search <search_text>                      [[search documents for text strings]]",
       "    asearch <search_option>                   [[advanced search]]",
-      "    upload <file_path>                        [[uploads a object]]",
+      "    upload <file_path> <title>                [[uploads a object]]",
       "    revisions <resource_id>                   [[lists revisions of a document]]",
       "",
       "    help [command]                            [[display this message, or info about"
@@ -197,7 +197,7 @@ public class DocumentListDemo {
    * Authenticates the client using ClientLogin
    *
    * @param username User's email address
-   * @param username User's password
+   * @param password User's password
    * @throws DocumentListException
    * @throws AuthenticationException
    */
@@ -209,11 +209,12 @@ public class DocumentListDemo {
   /**
    * Authenticates the client using AuthSub
    *
-   * @param username User's AuthSub token
+   * @param authSubToken authsub authorization token.
    * @throws DocumentListException
    * @throws AuthenticationException
    */
-  public void login(String authSubToken) throws AuthenticationException, DocumentListException {
+  public void login(String authSubToken)
+      throws AuthenticationException, DocumentListException {
     documentList.loginWithAuthSubToken(authSubToken);
   }
 
@@ -300,7 +301,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeTrash(String[] args) throws IOException, MalformedURLException,
+  private void executeTrash(String[] args) throws IOException,
       ServiceException, DocumentListException {
     if (args.length == 3) {
       documentList.trashObject(args[1], true);
@@ -326,7 +327,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeDownload(String[] args) throws IOException, MalformedURLException,
+  private void executeDownload(String[] args) throws IOException,
       ServiceException, DocumentListException {
     if (args.length == 3) {
       String docType = documentList.getResourceIdPrefix(args[1]);
@@ -381,7 +382,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeList(String[] args) throws IOException, MalformedURLException,
+  private void executeList(String[] args) throws IOException,
       ServiceException, DocumentListException {
     DocumentListFeed feed = null;
     String msg = "";
@@ -427,7 +428,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeMove(String[] args) throws IOException, MalformedURLException,
+  private void executeMove(String[] args) throws IOException,
       ServiceException, DocumentListException {
     if (args.length == 3) {
       printDocumentEntry(documentList.moveObjectToFolder(args[1], args[2]));
@@ -460,7 +461,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executePerms(String[] args) throws IOException, MalformedURLException,
+  private void executePerms(String[] args) throws IOException,
       ServiceException, DocumentListException {
     if (args.length < 3) {
       printMessage(COMMAND_HELP_PERMS);
@@ -520,7 +521,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeRemove(String[] args) throws IOException, MalformedURLException,
+  private void executeRemove(String[] args) throws IOException,
       ServiceException, DocumentListException {
     if (args.length == 3) {
       documentList.removeFromFolder(args[1], args[2]);
@@ -543,7 +544,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeSearch(String[] args) throws IOException, MalformedURLException,
+  private void executeSearch(String[] args) throws IOException,
       ServiceException, DocumentListException {
     if (args.length == 2) {
       HashMap<String, String> searchParameters = new HashMap<String, String>();
@@ -572,7 +573,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeAdvancedSearch(String[] args) throws IOException, MalformedURLException,
+  private void executeAdvancedSearch(String[] args) throws IOException,
       ServiceException, DocumentListException {
     if (args.length <= 1) {
       printMessage(COMMAND_HELP_ASEARCH);
@@ -607,8 +608,8 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeUpload(String[] args) throws IOException, MalformedURLException,
-      ServiceException, DocumentListException {
+  private void executeUpload(String[] args) throws IOException,
+      ServiceException, DocumentListException, InterruptedException {
     if (args.length == 3) {
       DocumentListEntry entry = documentList.uploadFile(args[1], args[2]);
       printDocumentEntry(entry);
@@ -631,7 +632,7 @@ public class DocumentListDemo {
    *         service.
    * @throws DocumentListException
    */
-  private void executeRevisions(String[] args) throws IOException, MalformedURLException,
+  private void executeRevisions(String[] args) throws IOException,
       ServiceException, DocumentListException {
     if (args.length == 2) {
       RevisionFeed feed = documentList.getRevisionsFeed(args[1]);
@@ -711,7 +712,8 @@ public class DocumentListDemo {
    * @throws IOException
    * @throws ServiceException
    */
-  private boolean executeCommand(BufferedReader reader) throws IOException, ServiceException {
+  private boolean executeCommand(BufferedReader reader)
+      throws IOException, ServiceException, InterruptedException {
     System.err.print("Command: ");
 
     try {
@@ -762,13 +764,10 @@ public class DocumentListDemo {
   /**
    * Starts up the demo and prompts for commands.
    *
-   * @param username name of user to authenticate (e.g. yourname@gmail.com)
-   * @param password password to use for authentication
-   * @param feedUrl URL of the feed to connect to
    * @throws ServiceException
    * @throws IOException
    */
-  public void run() throws IOException, ServiceException {
+  public void run() throws IOException, ServiceException, InterruptedException {
     printMessage(WELCOME_MESSAGE);
 
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -813,7 +812,8 @@ public class DocumentListDemo {
    * @throws IOException
    */
   public static void main(String[] args)
-      throws DocumentListException, IOException, ServiceException {
+      throws DocumentListException, IOException, ServiceException,
+      InterruptedException {
     SimpleCommandLineParser parser = new SimpleCommandLineParser(args);
     String authProtocol = parser.getValue("auth_protocol");
     String authHost = parser.getValue("auth_host");

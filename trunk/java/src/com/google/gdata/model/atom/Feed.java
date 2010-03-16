@@ -29,7 +29,10 @@ import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.batch.BatchOperation;
+import com.google.gdata.model.gd.GdAttributes;
+import com.google.gdata.model.gd.Partial;
 import com.google.gdata.util.Namespaces;
+import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.wireformats.ContentCreationException;
 
@@ -90,20 +93,6 @@ public class Feed extends Source implements IFeed {
       new QName(Namespaces.atomNs, "feed"), Feed.class);
 
   /**
-   * The gd:etag attribute.
-   *
-   * See RFC 2616, Section 3.11.
-   */
-  public static final AttributeKey<String> ETAG = AttributeKey.of(
-      new QName(Namespaces.gNs, "etag"));
-
-  /**
-   * The gd:kind attribute.
-   */
-  public static final AttributeKey<String> GD_KIND = AttributeKey.of(
-      new QName(Namespaces.gNs, "kind"));
-
-  /**
    * The xml:base attribute.
    */
   public static final AttributeKey<URI> XML_BASE = AttributeKey.of(
@@ -140,13 +129,18 @@ public class Feed extends Source implements IFeed {
 
     // Register superclass metadata.
     Source.registerMetadata(registry);
+      
+    // Register the Partial type so partial feed representations are implicitly
+    // declared.
+    Partial.registerMetadata(registry);
 
     // The builder for this element
     ElementCreator builder = registry.build(KEY);
 
     // Local properties
-    builder.addAttribute(ETAG);
-    builder.addAttribute(GD_KIND);
+    builder.addAttribute(GdAttributes.ETAG);
+    builder.addAttribute(GdAttributes.KIND);
+    builder.addAttribute(GdAttributes.FIELDS);
     builder.addAttribute(XML_BASE);
     builder.addElement(TOTAL_RESULTS);
     builder.addElement(START_INDEX);
@@ -281,35 +275,51 @@ public class Feed extends Source implements IFeed {
   }
 
   /**
-   * Returns the current entity tag value for this feed. A value of {@code null}
-   * indicates the value is unknown.
+   * Returns the {@link GdAttributes#ETAG} value for this feed. A value of
+   * {@code null} indicates the value is unknown.
    */
   public String getEtag() {
-    return getAttributeValue(ETAG);
+    return getAttributeValue(GdAttributes.ETAG);
   }
 
   /**
-   * Sets the current entity tag value (for this feed. A value of {@code null}
-   * indicates the value is unknown.
+   * Sets the {@link GdAttributes#ETAG} value for this feed. A value of
+   * {@code null} indicates the value is unknown.
    */
   public void setEtag(String v) {
-    setAttributeValue(ETAG, v);
+    setAttributeValue(GdAttributes.ETAG, v);
   }
 
   /**
-   * Returns the current gd:kind attribute for this feed.  The kind attribute
-   * may be null if this feed does not have a kind.
+   * Returns the {@link GdAttributes#KIND} value for this feed. The kind
+   * attribute may be null if this feed does not have a kind.
    */
   public String getKind() {
-    return getAttributeValue(GD_KIND);
+    return getAttributeValue(GdAttributes.KIND);
   }
 
   /**
-   * Sets current gd:kind attribute for this feed.  The kind may be set to null
-   * to remove the attribute value.
+   * Sets the {@link GdAttributes#KIND} value for this feed. The kind may be set
+   * to null to remove the attribute value.
    */
   public void setKind(String v) {
-    setAttributeValue(GD_KIND, v);
+    setAttributeValue(GdAttributes.KIND, v);
+  }
+
+  /**
+   * Returns the {@link GdAttributes#FIELDS} value for this feed. The
+   * fields attribute may be null if this feed contains a full representation.
+   */
+  public String getSelectedFields() {
+    return getAttributeValue(GdAttributes.FIELDS);
+  }
+
+  /**
+   * Sets the{@link GdAttributes#FIELDS} value for this feed. The fields
+   * attribute may be set to null to remove the attribute value.
+   */
+  public void setSelectedFields(String v) {
+    setAttributeValue(GdAttributes.FIELDS, v);
   }
 
   /**
@@ -347,7 +357,11 @@ public class Feed extends Source implements IFeed {
    * {@link Query#UNDEFINED} indicates the total size is undefined.
    */
   public void setTotalResults(int v) {
-    setElement(TOTAL_RESULTS, new Element(TOTAL_RESULTS).setTextValue(v));
+    if (v != Query.UNDEFINED) {
+      setElement(TOTAL_RESULTS, new Element(TOTAL_RESULTS).setTextValue(v));
+    } else {
+      removeElement(TOTAL_RESULTS);
+    }
   }
 
   /**
@@ -367,7 +381,11 @@ public class Feed extends Source implements IFeed {
    * of {@link Query#UNDEFINED} indicates the start index is undefined.
    */
   public void setStartIndex(int v) {
-    setElement(START_INDEX, new Element(START_INDEX).setTextValue(v));
+    if (v != Query.UNDEFINED) {
+      setElement(START_INDEX, new Element(START_INDEX).setTextValue(v));
+    } else {
+      removeElement(START_INDEX);
+    }
   }
 
   /**
@@ -389,7 +407,11 @@ public class Feed extends Source implements IFeed {
    * undefined.
    */
   public void setItemsPerPage(int v) {
-    setElement(ITEMS_PER_PAGE, new Element(ITEMS_PER_PAGE).setTextValue(v));
+    if (v != Query.UNDEFINED) {
+      setElement(ITEMS_PER_PAGE, new Element(ITEMS_PER_PAGE).setTextValue(v));
+    } else {
+      removeElement(ITEMS_PER_PAGE);
+    }
   }
 
   /** Returns the list of entries in this feed */
@@ -510,21 +532,20 @@ public class Feed extends Source implements IFeed {
     if (selfLink == null) {
       throw new UnsupportedOperationException("Feed cannot be retrieved");
     }
-    URL feedUrl = new URL(selfLink.getHref());
-    throw new UnsupportedOperationException("Not supported yet");
-    // try {
-    // // Use Etag if available to conditionalize the retrieval, otherwise use
-    // // the updated value.
-    // String etag = getEtag();
-    // if (etag != null) {
-    // return (F) feedState.service.getFeed(feedUrl, this.getClass(), etag);
-    // } else {
-    // return (F) feedState.service.getFeed(feedUrl, this.getClass(),
-    // getUpdated());
-    // }
-    // } catch (NotModifiedException e) {
-    // return (F) this;
-    // }
+    URL feedUrl = selfLink.getHrefUri().toURL();
+    try {
+      // Use Etag if available to conditionalize the retrieval, otherwise use
+      // the updated value.
+      String etag = getEtag();
+      if (etag != null) {
+        return feedState.service.getFeed(feedUrl, this.getClass(), etag);
+      } else {
+        return feedState.service.getFeed(
+            feedUrl, this.getClass(), getUpdated());
+      }
+    } catch (NotModifiedException e) {
+      return this;
+    }
   }
 
   /**
@@ -559,9 +580,8 @@ public class Feed extends Source implements IFeed {
     if (postLink == null) {
       throw new UnsupportedOperationException("Media cannot be inserted");
     }
-    URL postUrl = new URL(postLink.getHref());
-    throw new UnsupportedOperationException("Not supported yet");
-    // return feedState.service.insert(postUrl, newEntry);
+    URL postUrl = postLink.getHrefUri().toURL();
+    return feedState.service.insert(postUrl, newEntry);
   }
 
   /**
@@ -572,17 +592,11 @@ public class Feed extends Source implements IFeed {
    */
   @Override
   protected Element narrow(ElementMetadata<?,?> meta, ValidationContext vc) {
-    Element narrowed = this;
-    for (Category category : getCategories()) {
-      if (Namespaces.gKind.equals(category.getScheme())) {
-        narrowed = adapt(narrowed, meta, category.getTerm());
-      }
-    }
-
-    if (narrowed == this) {
-      narrowed = super.narrow(meta, vc);
-    }
-    return narrowed;
+    String kind = Kinds.getElementKind(this);
+    if (kind != null) {
+      return adapt(this, meta, kind);
+    } 
+    return super.narrow(meta, vc);
   }
 
   @Override
