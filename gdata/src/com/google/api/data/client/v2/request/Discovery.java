@@ -21,13 +21,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Discovery {
-  
+
+  private final ConcurrentHashMap<String, Class<? extends HttpSerializer>>
+  contentTypeToSerializerMap
+      = new ConcurrentHashMap<String, Class<? extends HttpSerializer>>();
   private HttpTransport transport = new HttpTransport("sample");
+  
   private final ServiceDocument serviceDoc;
   private final String resource;
-  private final ConcurrentHashMap<String, Class<HttpSerializer>>
-  contentTypeToSerializerMap
-      = new ConcurrentHashMap<String, Class<HttpSerializer>>();
 
   Discovery(ServiceDocument serviceDoc, HttpTransport transport) {
     this.transport = transport;
@@ -40,7 +41,12 @@ public class Discovery {
     this.resource = resource;
     this.serviceDoc = null;
   }
-    
+  
+  public <T extends HttpSerializer> void setSerializer(
+      String contentType, Class<T> serializerClazz) {
+    this.contentTypeToSerializerMap.put(contentType, serializerClazz);
+  }
+   
   boolean isRestHeader(String parameter) {
     if ("content-type".equals(parameter)
         || "content-length".equals(parameter)) {
@@ -50,8 +56,9 @@ public class Discovery {
   }
   
   boolean isItemRequest(String method) {
-    return "insert".equals(method) || "update".equals(method)
-        || "patch".equals(method);
+    return "update".equals(method)
+        || "patch".equals(method)
+        || "delete".equals(method);
   }
   
   HttpRequest buildRestRequest(
@@ -63,6 +70,7 @@ public class Discovery {
     Map<String, String> headers = new HashMap<String, String>();
     Object body = null;
     Authorizer auth = null;
+    String etag = null;
     StringBuilder query = null;
     for (Map.Entry<String, Object> param :
           params.getUnknownKeyMap().entrySet()) {
@@ -71,12 +79,18 @@ public class Discovery {
       }
       if ("auth".equals(param.getKey())) {
         auth = (Authorizer) param.getValue();
+      } else if ("etag".equals(param.getKey())) {
+        etag = (String) param.getValue();
       } else if ("content".equals(param.getKey())){
         body = param.getValue();
       } else if (param.getValue() instanceof String
           && isRestHeader(param.getKey())) {
         headers.put(param.getKey(), (String) param.getValue());
       } else  if (param.getValue() instanceof String) {
+        // TODO(vbarathan): exclude duplicate query parameters
+        if (uri.contains(param.getKey() + "=" + param.getValue())) {
+          continue;
+        }
         if (query == null) {
           query = uri.contains("?") ?
               new StringBuilder("&") : new StringBuilder("?");
@@ -103,6 +117,10 @@ public class Discovery {
       httpMethod = "DELETE";
     } else {
       throw new RuntimeException("Unknown REST method: " + method);
+    }
+    
+    if (etag != null && isItemRequest(method)) {
+      headers.put("If-Match", etag);
     }
     
     // Authenticate if required
@@ -157,6 +175,10 @@ public class Discovery {
   <T> T doRestRequest(
       String resource, String method, GDataEntity params, Class<T> resultType)
       throws IOException {
+    if (resultType == null) {
+      buildRestRequest(resource, method, params).execute();
+      return null;
+    }
     return buildRestRequest(resource, method, params).execute(resultType);
   }
   
@@ -186,15 +208,21 @@ public class Discovery {
     
     Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
     Matcher matcher = pattern.matcher(url);
+    System.out.println(url);
     while (matcher.find()) {
       String var = matcher.group(1);
+      if (params.get(var) == null) {
+        throw new RuntimeException(
+            "Required parameter '" + var + "' is not defined.");
+      }
+      System.out.println(var);
       url = url.replace("{" + var + "}", (String) params.get(var));
       params.set(var, null);
     }
     return url;
   }
-
-  private HttpSerializer getSerializer(String contentType, Object content) {
+  
+  public HttpSerializer getSerializer(String contentType, Object content) {
     if (contentType == null) {
       return null;
     }
@@ -206,30 +234,35 @@ public class Discovery {
     if (semicolon != -1) {
       contentType = contentType.substring(0, semicolon);
     }
-    Class<HttpSerializer> clazz =
+    Class<? extends HttpSerializer> clazz =
       this.contentTypeToSerializerMap.get(contentType);
     if (clazz == null) {
       throw new RuntimeException(
           "Dont know how to generate for: " + contentType);
     }
     HttpSerializer serializer = null;
-      try {
-        serializer = clazz.getConstructor(
-            new Class[] {Object.class}).newInstance(content);
-      } catch (SecurityException e) {
-        e.printStackTrace();
-      } catch (InstantiationException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (NoSuchMethodException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+    try {
+      serializer = clazz.getConstructor(
+          new Class[] {Object.class}).newInstance(content);
+    } catch (InvocationTargetException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (SecurityException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (InstantiationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     if (serializer == null) {
       throw new RuntimeException("content is not serializable");
     }

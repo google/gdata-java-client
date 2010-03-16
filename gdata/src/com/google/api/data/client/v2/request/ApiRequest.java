@@ -57,7 +57,7 @@ public class ApiRequest<T> {
   private GDataEntity defaultParamMap;
 
   /** The requested response class  */
-  private Class<?> responseClass = JsoncEntity.class;
+  private Class<?> responseClass = null;
 
   /** Cached result */
   private Object result;
