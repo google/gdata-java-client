@@ -29,15 +29,15 @@ import com.google.gdata.util.VersionRegistry;
 
 /**
  * Extends the basic {@link GoogleService} abstraction to define a service that
- * is preconfigured for access to the Webmaster Tools data API.
+ * is preconfigured for access to the Google Webmaster Tools Data API.
  *
  * 
  */
 public class WebmasterToolsService extends GoogleService {
 
   /**
-   * The abbreviated name of Webmaster Tools recognized by Google.  The service
-   * name is used when requesting an authentication token.
+   * The abbreviated name of Google Webmaster Tools Data API recognized by
+   * Google.  The service name is used when requesting an authentication token.
    */
   public static final String WEBMASTERTOOLS_SERVICE = "sitemaps";
 
@@ -48,33 +48,31 @@ public class WebmasterToolsService extends GoogleService {
       "GWebmasterTools-Java/" +
       WebmasterToolsService.class.getPackage().getImplementationVersion();
 
-  /**
-   * GData versions supported by Webmaster Tools Service.
-   */
+  /** GData versions supported by the Google Webmaster Tools Data API. */
   public static final class Versions {
 
-    /** Version 1 of the Webmaster Tools Google Data API. This is the initial
-     * version of the API and is based in Version 1 of the GData protocol. */
+    /** Version 1.  This is the initial version of the API and is based on
+     * Version 1 of the GData protocol. */
     public static final Version V1 = new Version(WebmasterToolsService.class,
         "1.0", Service.Versions.V1);
 
-    /** Version 2 of the Webmaster Tools GData API. This version adds full
-     * compliance with the Atom Publishing Protocol and is based on Version 2 of
-     * the GData protocol. */
+    /** Version 2.  This version adds full compliance with the Atom Publishing
+     * Protocol and is based on Version 2 of the GData protocol. */
     public static final Version V2 = new Version(WebmasterToolsService.class,
         "2.0", Service.Versions.V2);
 
+    private Versions() {}
   }
 
   /**
-   * Default GData version used by the Webmaster Tools service.
+   * Default GData version used by the Google Webmaster Tools Data API.
    */
   public static final Version DEFAULT_VERSION =
       Service.initServiceVersion(WebmasterToolsService.class, Versions.V2);
 
   /**
-   * Constructs an instance connecting to the Webmaster Tools service for an
-   * application with the name {@code applicationName}.
+   * Constructs an instance connecting to the Google Webmaster Tools Data API
+   * for an application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -87,10 +85,10 @@ public class WebmasterToolsService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Webmaster Tools service for an
-   * application with the name {@code applicationName} and the given {@code
-   * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
-   * override the default factories.
+   * Constructs an instance connecting to the Google Webmaster Tools Data API
+   * for an application with the name {@code applicationName} and the given
+   * {@code GDataRequestFactory} and {@code AuthTokenFactory}. Use this
+   * constructor to override the default factories.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -108,8 +106,8 @@ public class WebmasterToolsService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Webmaster Tools service with name
-   * {@code serviceName} for an application with the name {@code
+   * Constructs an instance connecting to the Google Webmaster Tools Data API
+   * with name {@code serviceName} for an application with the name {@code
    * applicationName}.  The service will authenticate at the provided {@code
    * domainName}.
    *
@@ -133,14 +131,16 @@ public class WebmasterToolsService extends GoogleService {
   }
 
   /**
-   * Returns the current GData version used by the Webmaster Tools service.
+   * Returns the current GData version used by the Google Webmaster Tools Data
+   * API.
    */
   public static Version getVersion() {
     return VersionRegistry.get().getVersion(WebmasterToolsService.class);
   }
 
   /**
-   * Declare the extensions of the feeds for the Webmaster Tools service.
+   * Declare the extensions of the feeds for the Google Webmaster Tools Data
+   * API.
    */
   private void declareExtensions() {
     new CrawlIssuesFeed().declareExtensions(extProfile);
@@ -151,3 +151,4 @@ public class WebmasterToolsService extends GoogleService {
   }
 
 }
+

@@ -23,7 +23,16 @@ package com.google.gdata.data.maps;
  */
 public class MapsLink {
 
+  /** Link relation type. */
+  public static final class Rel {
+
+    /** View Maps Link class. */
+    public static final String VIEW = MapsNamespace.MAPS_PREFIX + "view";
+
+  }
+
   /** Private constructor to ensure class is not instantiated. */
   private MapsLink() {}
 
 }
+

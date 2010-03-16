@@ -151,7 +151,13 @@ public abstract class BaseEntry<E extends BaseEntry>
      * a gd:etag attribute).
      */
     public String etag;
-    
+
+    /**
+     * gd:fields.  This is the field selection associated with this entry.
+     * If not {@code null} then this entry represents a partial entry.
+     */
+    public String fields;
+
     /**
      * gd:kind.  This is the kind attribute for this entry.  If there is no kind
      * attribute for this entry, this variable is null.
@@ -265,9 +271,21 @@ public abstract class BaseEntry<E extends BaseEntry>
   public String getEtag() { return state.etag; }
   public void setEtag(String v) { state.etag = v; }
 
+  /**
+   * Returns the current fields selection for this partial entry.  A
+   * value of {@code null} indicates the entry is not a partial entry.
+   */
+  public String getSelectedFields() { return state.fields; }
+
+  /**
+   * Sets the current fields selection for this partial entry.  A
+   * value of {@code null} indicates the entry is not a partial entry.
+   */
+  public void setSelectedFields(String v) { state.fields = v; }
+
   public String getKind() { return state.kind; }
   public void setKind(String v) { state.kind = v; }
-  
+
   public DateTime getPublished() { return state.published; }
   public void setPublished(DateTime v) {
     if (v != null && v.getTzShift() == null) {
@@ -546,6 +564,10 @@ public abstract class BaseEntry<E extends BaseEntry>
     return mediaLink;
   }
 
+  /** Retrieves the media resource resumable upload link. */
+  public Link getResumableEditMediaLink() {
+    return getLink(Link.Rel.RESUMABLE_EDIT_MEDIA, null);
+  }
 
   /** Retrieves the first HTML link. */
   public Link getHtmlLink() {
@@ -734,11 +756,18 @@ public abstract class BaseEntry<E extends BaseEntry>
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "kind", state.kind));
     }
-    
+
     if (state.etag != null &&
         !Service.getVersion().isCompatible(Service.Versions.V1)) {
       nsDecls.add(Namespaces.gNs);
       attrs.add(new XmlWriter.Attribute(Namespaces.gAlias, "etag", state.etag));
+    }
+
+    if (state.fields != null &&
+        Service.getVersion().isAfter(Service.Versions.V1)) {
+      nsDecls.add(Namespaces.gNs);
+      attrs.add(new XmlWriter.Attribute(
+          Namespaces.gAlias, "fields", state.fields));
     }
 
     // Add any attribute extensions.
@@ -1029,6 +1058,10 @@ public abstract class BaseEntry<E extends BaseEntry>
       if (namespace.equals(Namespaces.g)) {
         if (localName.equals("etag")) {
           setEtag(value);
+          return;
+        }
+        if (localName.equals("fields")) {
+          setSelectedFields(value);
           return;
         }
         if (localName.equals("kind")) {

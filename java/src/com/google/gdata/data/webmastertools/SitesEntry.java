@@ -38,9 +38,7 @@ import java.util.List;
  * <pre class="code">
  *   <entry>
  *     <id>http://www.websiteurl.com/</id>
- *     <wt:indexed>true</wt:indexed>
  *     <wt:verified>true</wt:verified>
- *     <wt:last-crawled>2007-1-1T18:30:00.000Z</wt:last-crawled>
  *     <wt:geolocation>US</wt:geolocation>
  *     <wt:crawl-rate>normal</wt:crawl-rate>
  *     <wt:preferred-domain>preferwww</wt:preferred-domain>
@@ -53,6 +51,11 @@ import java.util.List;
  *     </wt:verification-method>     
  *   </entry>
  * </pre>
+ *
+ * The indexed and last-crawled fields used below are deprecated.
+ * They are not used any more by the frontend so entries returned do not
+ * include them. However they are kept here in order to ensure that clients
+ * that send entries with those fields still work.
  *
  * 
  * 
@@ -133,6 +136,7 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
   /**
    * Changes site indexing status.
    *
+   * @deprecated This field is not used any more.
    * @param isIndexed specifies if site is indexed or not.
    */
   public void setIndexed(boolean isIndexed) {
@@ -148,6 +152,7 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
   /**
    * Returns site indexing status.
    *
+   * @deprecated This field is not used any more.
    * @return {@code true} if site is indexed or {@code false} otherwise.
    */
   public boolean getIndexed() {
@@ -162,6 +167,7 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
   /**
    * Changes the latest crawl time.
    *
+   * @deprecated This field is not used any more.
    * @param crawlTime specifies site last crawl time.
    */
   public void setCrawled(DateTime crawlTime) {
@@ -177,6 +183,7 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
   /**
    * Returns site last crawl time.
    *
+   * @deprecated This field is not used any more.
    * @return last crawl time or {@code null} if time is not set.
    */
   public DateTime getCrawled() {
@@ -380,6 +387,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
   
   /**
    * Boolean value construct to represent <indexed> field.
+   *
+   * @deprecated This class is not used any more.
    */
   @ExtensionDescription.Default(
       nsAlias = Namespaces.WT_ALIAS,
@@ -393,6 +402,8 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
   
   /**
    * Date/time value construct to represent <crawled> field. 
+   *
+   * @deprecated This class is not used any more.
    */
   @ExtensionDescription.Default(
       nsAlias = Namespaces.WT_ALIAS,
@@ -469,4 +480,3 @@ public class SitesEntry extends BaseEntry<SitesEntry> {
     }
   }   
 }
-

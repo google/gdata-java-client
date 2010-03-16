@@ -27,8 +27,15 @@ import com.google.gdata.wireformats.WireFormat;
  */
 public class AtomDualGenerator extends DualModeGenerator<IAtom> {
 
+  private AltFormat altFormat = AltFormat.ATOM;
+
   public AtomDualGenerator() {
     super(new AtomGenerator());
+  }
+
+  public AtomDualGenerator(AltFormat altFormat) {
+    super(new AtomGenerator());
+    this.altFormat = altFormat;
   }
 
   public Class<IAtom> getSourceType() {
@@ -36,7 +43,7 @@ public class AtomDualGenerator extends DualModeGenerator<IAtom> {
   }
 
   public AltFormat getAltFormat() {
-    return AltFormat.ATOM;
+    return altFormat;
   }
 
   @Override

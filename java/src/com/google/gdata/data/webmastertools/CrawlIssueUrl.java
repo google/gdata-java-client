@@ -100,3 +100,4 @@ public class CrawlIssueUrl extends ValueConstruct {
   }
 
 }
+

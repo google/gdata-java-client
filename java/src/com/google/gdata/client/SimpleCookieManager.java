@@ -16,9 +16,10 @@
 
 package com.google.gdata.client;
 
+import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.Multiset;
 import com.google.gdata.client.http.GoogleGDataRequest.GoogleCookie;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public class SimpleCookieManager implements CookieManager {
   /**
    * Storage for a set of cookies.
    */
-  protected Set<GoogleCookie> cookies = new HashSet<GoogleCookie>();
+  protected Multiset<GoogleCookie> cookies = ConcurrentHashMultiset.create();
 
   /**
    * Indicates whether cookie handling is enabled.
@@ -75,6 +76,6 @@ public class SimpleCookieManager implements CookieManager {
         cookieIter.remove();
       }
     }
-    return cookies;
+    return cookies.elementSet();
   }
 }

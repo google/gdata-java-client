@@ -23,6 +23,7 @@ import com.google.gdata.client.Query;
 import com.google.gdata.client.GDataProtocol.Header;
 import com.google.gdata.client.Service.GDataRequest;
 import com.google.gdata.client.Service.GDataRequestFactory;
+import com.google.gdata.client.authn.oauthproxy.OAuthProxyProtocol;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ParseSource;
 import com.google.gdata.util.AuthenticationException;
@@ -35,6 +36,7 @@ import com.google.gdata.util.NoLongerAvailableException;
 import com.google.gdata.util.NotAcceptableException;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.NotModifiedException;
+import com.google.gdata.util.OAuthProxyException;
 import com.google.gdata.util.PreconditionFailedException;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
@@ -53,6 +55,7 @@ import java.net.URLConnection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -104,7 +107,7 @@ public class HttpGDataRequest implements GDataRequest {
     protected Map<String, String> privateHeaderMap
         = new LinkedHashMap<String, String>();
     protected boolean useSsl = false;
-    protected HttpUrlConnectionSource connectionSource = 
+    protected HttpUrlConnectionSource connectionSource =
         JdkHttpUrlConnectionSource.INSTANCE;
 
     public void setAuthToken(AuthTokenFactory.AuthToken authToken) {
@@ -141,7 +144,7 @@ public class HttpGDataRequest implements GDataRequest {
 
     /**
      * Sets a specific {@link HttpUrlConnectionSource} instance to create
-     * backing {@link URLConnection} instance. 
+     * backing {@link URLConnection} instance.
      */
     public void setConnectionSource(HttpUrlConnectionSource connectionSource) {
       if (connectionSource == null) {
@@ -169,7 +172,7 @@ public class HttpGDataRequest implements GDataRequest {
     }
 
     /**
-     * Creates a {@link GDataRequest} instance. 
+     * Creates a {@link GDataRequest} instance.
      *
      * <p>This method is called from {@link #getRequest} after any changes to
      * the parameters have been applied.
@@ -177,7 +180,7 @@ public class HttpGDataRequest implements GDataRequest {
      * <p>Subclasses should overwrite this method and not {@link #getRequest}
      */
     protected GDataRequest createRequest(RequestType type,
-        URL requestUrl, ContentType contentType) 
+        URL requestUrl, ContentType contentType)
         throws IOException, ServiceException {
       return new HttpGDataRequest(type, requestUrl, contentType,
           authToken, headerMap, privateHeaderMap, connectionSource);
@@ -216,7 +219,7 @@ public class HttpGDataRequest implements GDataRequest {
    * True if the request type expects input from the client.
    */
   protected boolean expectsInput;
-  
+
   /**
    * Contains the content type of the request data
    */
@@ -240,7 +243,7 @@ public class HttpGDataRequest implements GDataRequest {
    * configured (use JDK default timeout behavior).
    */
   protected int readTimeout = -1;
-  
+
   /**
    * The input stream from which HTTP response data may be read or {@code null}
    * if no response stream or not opened yet via {@link #getResponseStream()}.
@@ -264,7 +267,7 @@ public class HttpGDataRequest implements GDataRequest {
       Map<String, String> headerMap, Map<String, String> privateHeaderMap,
       HttpUrlConnectionSource connectionSource)
       throws IOException {
-    
+
     this.connectionSource = connectionSource;
     this.type = type;
     this.inputType = inputType;
@@ -294,6 +297,17 @@ public class HttpGDataRequest implements GDataRequest {
         } else {
           setMethod("PUT");
         }
+        setHeader("Content-Type", inputType.toString());
+        break;
+
+      case PATCH:
+        expectsInput = true;
+        hasOutput = true;
+
+        // HTTPUrlConnection does not accept unrecognized methods, so always use
+        // the POST override model for PATCH requests
+        setMethod("POST");
+        setHeader(Header.METHOD_OVERRIDE, "PATCH");
         setHeader("Content-Type", inputType.toString());
         break;
 
@@ -416,6 +430,7 @@ public class HttpGDataRequest implements GDataRequest {
           setHeader(GDataProtocol.Header.IF_NONE_MATCH, etag);
         }
         break;
+      case PATCH:
       case UPDATE:
       case DELETE:
         if (etag != null) {
@@ -525,7 +540,6 @@ public class HttpGDataRequest implements GDataRequest {
     executed = true;
   }
 
-
   /**
    * Called after a request is executed to process the response and generate an
    * appropriate exception (on failure).
@@ -534,9 +548,27 @@ public class HttpGDataRequest implements GDataRequest {
 
     if (httpConn.getResponseCode() >= 300) {
       handleErrorResponse();
+    } else if (isOAuthProxyErrorResponse()) {
+      handleOAuthProxyErrorResponse();
     }
   }
 
+  /** Whether or not the http response comes from the OAuth Proxy. */
+  private boolean isOAuthProxyErrorResponse() {
+    Set<String> headers = httpConn.getHeaderFields().keySet();
+    return headers.contains(OAuthProxyProtocol.Header.X_OAUTH_APPROVAL_URL)
+        || headers.contains(OAuthProxyProtocol.Header.X_OAUTH_ERROR)
+        || headers.contains(OAuthProxyProtocol.Header.X_OAUTH_ERROR_TEXT);
+  }
+
+  /**
+   * Sets the appropriate parameters used by the OAuth Proxy and throws an
+   * {@link OAuthProxyException}.
+   */
+  private void handleOAuthProxyErrorResponse() throws IOException,
+      ServiceException {
+    throw new OAuthProxyException(httpConn);
+  }
 
   /**
    * Handles an error response received while executing a GData service request.
@@ -621,7 +653,7 @@ public class HttpGDataRequest implements GDataRequest {
     if (!hasOutput) {
       throw new IllegalStateException("Request doesn't have response data");
     }
-    
+
     if (inputStream != null) {
       return inputStream;
     }

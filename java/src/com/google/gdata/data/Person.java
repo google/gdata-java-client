@@ -18,6 +18,7 @@ package com.google.gdata.data;
 
 import com.google.gdata.util.common.xml.XmlNamespace;
 import com.google.gdata.util.common.xml.XmlWriter;
+import com.google.gdata.util.common.xml.XmlWriter.Attribute;
 import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
@@ -28,6 +29,7 @@ import org.xml.sax.Attributes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Person type used for feed and entry authors and contributors. It may also
@@ -138,6 +140,19 @@ public class Person extends ExtensionPoint implements IPerson {
     generateExtensions(w, extProfile);
 
     w.endElement(elementNamespace, elementName);
+  }
+
+
+  /**
+   * Generates XML.
+   * <p>
+   * Designed to be used by {@link ExtensionPoint} types that reuse Person.
+   */
+  @Override
+  protected void generate(XmlWriter w, ExtensionProfile p,
+      XmlNamespace namespace, String localName, List<Attribute> attrs,
+      AttributeGenerator generator) throws IOException {
+    generate(p, w, namespace, localName, attrs);
   }
 
   /**

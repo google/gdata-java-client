@@ -23,10 +23,15 @@ import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.batch.BatchId;
+import com.google.gdata.data.batch.BatchInterrupted;
+import com.google.gdata.data.batch.BatchOperation;
+import com.google.gdata.data.batch.BatchStatus;
 import com.google.gdata.data.extensions.CustomProperty;
 import com.google.gdata.data.extensions.Deleted;
 import com.google.gdata.data.extensions.FeedLink;
 import com.google.gdata.data.extensions.ResourceId;
+import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.util.Namespaces;
 
 import java.util.List;
@@ -37,7 +42,7 @@ import java.util.List;
  * 
  */
 @Kind.Term(MapEntry.KIND)
-public class MapEntry extends BaseEntry<MapEntry> {
+public class MapEntry extends MediaEntry<MapEntry> {
 
   /**
    * Map map category kind term value.
@@ -73,6 +78,21 @@ public class MapEntry extends BaseEntry<MapEntry> {
       return;
     }
     super.declareExtensions(extProfile);
+    extProfile.declare(MapEntry.class, new ExtensionDescription(BatchId.class,
+        new XmlNamespace("batch", "http://schemas.google.com/gdata/batch"),
+        "id", false, false, false));
+    extProfile.declare(MapEntry.class,
+        new ExtensionDescription(BatchInterrupted.class,
+        new XmlNamespace("batch", "http://schemas.google.com/gdata/batch"),
+        "interrupted", false, false, false));
+    extProfile.declare(MapEntry.class,
+        new ExtensionDescription(BatchOperation.class, new XmlNamespace("batch",
+        "http://schemas.google.com/gdata/batch"), "operation", false, false,
+        false));
+    extProfile.declare(MapEntry.class,
+        new ExtensionDescription(BatchStatus.class, new XmlNamespace("batch",
+        "http://schemas.google.com/gdata/batch"), "status", false, false,
+        false));
     extProfile.declare(MapEntry.class,
         CustomProperty.getDefaultDescription(false, true));
     extProfile.declare(MapEntry.class, new ExtensionDescription(Deleted.class,
@@ -83,6 +103,132 @@ public class MapEntry extends BaseEntry<MapEntry> {
         false, false, false));
     new FeedLink().declareExtensions(extProfile);
     extProfile.declare(MapEntry.class, ResourceId.class);
+  }
+
+  /**
+   * Returns the batch identifier.
+   *
+   * @return batch identifier
+   */
+  public BatchId getBatchId() {
+    return getExtension(BatchId.class);
+  }
+
+  /**
+   * Sets the batch identifier.
+   *
+   * @param batchId batch identifier or <code>null</code> to reset
+   */
+  public void setBatchId(BatchId batchId) {
+    if (batchId == null) {
+      removeExtension(BatchId.class);
+    } else {
+      setExtension(batchId);
+    }
+  }
+
+  /**
+   * Returns whether it has the batch identifier.
+   *
+   * @return whether it has the batch identifier
+   */
+  public boolean hasBatchId() {
+    return hasExtension(BatchId.class);
+  }
+
+  /**
+   * Returns the batch interruption information.
+   *
+   * @return batch interruption information
+   */
+  public BatchInterrupted getBatchInterrupted() {
+    return getExtension(BatchInterrupted.class);
+  }
+
+  /**
+   * Sets the batch interruption information.
+   *
+   * @param batchInterrupted batch interruption information or <code>null</code>
+   *     to reset
+   */
+  public void setBatchInterrupted(BatchInterrupted batchInterrupted) {
+    if (batchInterrupted == null) {
+      removeExtension(BatchInterrupted.class);
+    } else {
+      setExtension(batchInterrupted);
+    }
+  }
+
+  /**
+   * Returns whether it has the batch interruption information.
+   *
+   * @return whether it has the batch interruption information
+   */
+  public boolean hasBatchInterrupted() {
+    return hasExtension(BatchInterrupted.class);
+  }
+
+  /**
+   * Returns the batch operation.
+   *
+   * @return batch operation
+   */
+  public BatchOperation getBatchOperation() {
+    return getExtension(BatchOperation.class);
+  }
+
+  /**
+   * Sets the batch operation.
+   *
+   * @param batchOperation batch operation or <code>null</code> to reset
+   */
+  public void setBatchOperation(BatchOperation batchOperation) {
+    if (batchOperation == null) {
+      removeExtension(BatchOperation.class);
+    } else {
+      setExtension(batchOperation);
+    }
+  }
+
+  /**
+   * Returns whether it has the batch operation.
+   *
+   * @return whether it has the batch operation
+   */
+  public boolean hasBatchOperation() {
+    return hasExtension(BatchOperation.class);
+  }
+
+  /**
+   * Returns the batch response status information.
+   *
+   * @return batch response status information
+   */
+  public BatchStatus getBatchStatus() {
+    return getExtension(BatchStatus.class);
+  }
+
+  /**
+   * Sets the batch response status information.
+   *
+   * @param batchStatus batch response status information or <code>null</code>
+   *     to reset
+   */
+  public void setBatchStatus(BatchStatus batchStatus) {
+    if (batchStatus == null) {
+      removeExtension(BatchStatus.class);
+    } else {
+      setExtension(batchStatus);
+    }
+  }
+
+  /**
+   * Returns whether it has the batch response status information.
+   *
+   * @return whether it has the batch response status information
+   */
+  public boolean hasBatchStatus() {
+    return hasExtension(BatchStatus.class);
   }
 
   /**
@@ -252,6 +398,15 @@ public class MapEntry extends BaseEntry<MapEntry> {
       }
     }
     return null;
+  }
+
+  /**
+   * Gets the URL of the view projection of the feature feed.
+   *
+   * @return URL of the view projection of the feature feed or {@code null}
+   */
+  public Link getViewLink() {
+    return getLink(MapsNamespace.MAPS_PREFIX + "view", null);
   }
 
 }

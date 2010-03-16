@@ -43,6 +43,7 @@ import com.google.gdata.model.atom.Source;
 import com.google.gdata.model.atom.TextContent;
 import com.google.gdata.model.atom.Source.Generator;
 import com.google.gdata.model.atompub.Edited;
+import com.google.gdata.model.gd.GdAttributes;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.ParseException;
@@ -127,7 +128,7 @@ public class AtomRssTransforms {
   private static void addEntryTransforms(MetadataRegistry registry) {
     registry.build(Entry.KEY, RSS).setName(ITEM);
 
-    registry.build(Entry.KEY, Entry.ETAG, RSS)
+    registry.build(Entry.KEY, GdAttributes.ETAG, RSS)
         .setVisible(false);
 
     XmlWireFormatProperties properties = new XmlWireFormatProperties();
@@ -258,7 +259,7 @@ public class AtomRssTransforms {
   }
 
   private static void addFeedTransforms(final MetadataRegistry registry) {
-    registry.build(Feed.KEY, Entry.ETAG, RSS)
+    registry.build(Feed.KEY, GdAttributes.ETAG, RSS)
         .setVisible(false);
 
     XmlWireFormatProperties properties = new XmlWireFormatProperties();

@@ -977,14 +977,31 @@ public class XmlWriter {
    * @throws IOException thrown by the underlying writer.
    */
   public void characters(String s) throws IOException {
+    characters(s, false);
+  }
 
-
+  /**
+   * Emits character data subject to either XML escaping or CDATA escaping.
+   *
+   * @param s string to emit. Can be {@code null}.
+   * @param useCData CDATA used if true, XML escaping if false
+   * @throws IOException thrown by the underlying writer.
+   */
+  public void characters(String s, boolean useCData) throws IOException {
+    // Implementation note: xmlContentEscaper and xmlCDataEscape already
+    // filter out illegal control characters, so no need to do so here.
     if (s == null) {
       return;
     }
     endOpenTag();
     currentElement().unformattedChildren = true;
-    writer.write(StringUtil.xmlContentEscape(s));
+    String escaped;
+    if (useCData) {
+      escaped = "<![CDATA[" + StringUtil.xmlCDataEscape(s) + "]]>";
+    } else {
+      escaped = StringUtil.xmlContentEscape(s);
+    }
+    writer.write(escaped);
   }
 
   /**
@@ -1013,4 +1030,3 @@ public class XmlWriter {
     writer.write(s);
   }
 }
-

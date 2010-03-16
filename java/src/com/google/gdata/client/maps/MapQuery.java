@@ -97,3 +97,4 @@ public class MapQuery extends Query {
   }
 
 }
+

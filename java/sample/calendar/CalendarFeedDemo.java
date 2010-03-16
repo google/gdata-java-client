@@ -88,7 +88,7 @@ public class CalendarFeedDemo {
   /**
    * Utility classes should not have a public or default constructor.
    */
-  private CalendarFeedDemo() {
+  protected CalendarFeedDemo() {
   }
 
   /**

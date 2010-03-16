@@ -753,7 +753,7 @@ public class ExtensionPoint extends AbstractExtension {
 
       super.processEndElement();
 
-      if (this.extManifest != null) {
+      if (this.extManifest != null && isStrictValidation()) {
         checkRequiredExtensions(this.extManifest);
       }
 

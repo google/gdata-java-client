@@ -747,7 +747,7 @@ public class GoogleService extends Service implements TokenListener {
    * @throws BatchInterruptedException if something really wrong was detected by
    *         the server while parsing the request, like invalid XML data. Some
    *         operations might have succeeded when this exception is thrown.
-   *         Check {@link BatchInterruptedException#getFeed()}.
+   *         Check {@link BatchInterruptedException#getIFeed()}.
    */
   @Override
   public <F extends IFeed> F batch(URL feedUrl, F inputFeed)

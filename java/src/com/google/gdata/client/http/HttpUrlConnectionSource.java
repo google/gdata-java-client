@@ -21,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * An object that creates new {@link HttpUrlConnection}s.
+ * An object that creates new {@link HttpURLConnection}s.
  */
 public interface HttpUrlConnectionSource { 
 

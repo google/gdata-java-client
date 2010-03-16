@@ -21,6 +21,7 @@ import com.google.gdata.util.common.net.UriParameterMap;
 import com.google.gdata.client.AuthTokenFactory.AuthToken;
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.http.HttpGDataRequest;
+import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.IAtom;
@@ -35,10 +36,8 @@ import com.google.gdata.model.ElementMetadata;
 import com.google.gdata.model.MetadataContext;
 import com.google.gdata.model.MetadataRegistry;
 import com.google.gdata.model.Schema;
-import com.google.gdata.model.atom.Entry;
 import com.google.gdata.model.atom.Feed;
 import com.google.gdata.model.batch.BatchUtils;
-import com.google.gdata.model.gd.Partial;
 import com.google.gdata.model.transforms.atom.AtomVersionTransforms;
 import com.google.gdata.model.transforms.atompub.AtompubVersionTransforms;
 import com.google.gdata.util.ContentType;
@@ -52,14 +51,12 @@ import com.google.gdata.util.VersionRegistry;
 import com.google.gdata.wireformats.AltFormat;
 import com.google.gdata.wireformats.AltRegistry;
 import com.google.gdata.wireformats.StreamProperties;
-import com.google.gdata.wireformats.input.AdaptingPartialParser;
 import com.google.gdata.wireformats.input.AtomDualParser;
 import com.google.gdata.wireformats.input.AtomServiceDualParser;
 import com.google.gdata.wireformats.input.InputParser;
 import com.google.gdata.wireformats.input.InputProperties;
 import com.google.gdata.wireformats.output.AtomDualGenerator;
 import com.google.gdata.wireformats.output.AtomServiceDualGenerator;
-import com.google.gdata.wireformats.output.ElementGenerator;
 import com.google.gdata.wireformats.output.OutputGenerator;
 import com.google.gdata.wireformats.output.OutputProperties;
 
@@ -69,6 +66,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * The Service class represents a client connection to a GData service. It
@@ -555,10 +553,10 @@ public class Service {
     BASE_REGISTRY.register(AltFormat.ATOM_SERVICE,
         new AtomServiceDualParser(),
         new AtomServiceDualGenerator());
-    
-    BASE_REGISTRY.register(AltFormat.APPLICATION_XML, 
-        null, 
-        ElementGenerator.of(AltFormat.APPLICATION_XML, Element.class));
+
+    BASE_REGISTRY.register(AltFormat.APPLICATION_XML,
+        null,
+        new AtomDualGenerator(AltFormat.APPLICATION_XML));
 
     // protect against subsequent changes
     BASE_REGISTRY.lock();
@@ -668,6 +666,37 @@ public class Service {
    */
   public void setRequestFactory(GDataRequestFactory requestFactory) {
     this.requestFactory = requestFactory;
+  }
+
+  /**
+   * Set a header that will be included in all requests. If header of the same
+   * name was previously set, then replace the previous header value.
+   *
+   * @param header the name of the header
+   * @param value the value of the header, if null, then unset that header.
+   */
+  public void setHeader(String header, String value) {
+    getRequestFactory().setHeader(header, value);
+  }
+
+  /**
+   * Set a header that will be included in all requests and do not log the
+   * value. Useful for values that are sensitive or related to security. If
+   * header of the same name was previously set, then replace the previous
+   * header value.
+   *
+   * @param header the name of the header
+   * @param value the value of the header. If null, then unset that header.
+   */
+  public void setPrivateHeader(String header, String value) {
+    getRequestFactory().setPrivateHeader(header, value);
+  }
+
+  /** Adds OAuth Proxy-related headers to the request. */
+  public void setOAuthProxyHeaders(Map<String, String> headers) {
+    for (String key : headers.keySet()) {
+      setHeader(key, headers.get(key));
+    }
   }
 
   /**
@@ -1467,8 +1496,7 @@ public class Service {
     }
     return update(entryUrl, entry, etag);
   }
-  
-  
+
   /**
    * Updates an existing {@link IEntry} by writing it to the specified entry
    * edit URL. The resulting entry (after update) will be returned. This update
@@ -1534,9 +1562,9 @@ public class Service {
    * then merging a partial entry representation into the resource at the
    * specified entry edit URL. The resulting entry (after update) will be
    * returned.
-   * 
+   *
    * @param entryUrl the edit URL associated with the entry.
-   * @param fields selection representing the set of fields to be removed from
+   * @param fields selection representing the set of fields to be patched from
    *        the resource.
    * @param entry the partial entry to be merged with current resource.
    * @return the patched Entry returned by the service.
@@ -1544,17 +1572,20 @@ public class Service {
    * @throws com.google.gdata.util.ParseException error parsing the returned
    *         entry data.
    * @throws ServiceException update request failed due to system error.
-   * 
+   *
    * @see IEntry#getEditLink()
    */
   @SuppressWarnings("unchecked")
-  public <E extends Entry> E patch(URL entryUrl, String fields, E entry)
+  public <E extends IEntry> E patch(URL entryUrl, String fields, E entry)
       throws IOException, ServiceException {
 
     // If the entry has a strong etag, use it as a precondition.
-    String etag = entry.getEtag();
-    if (GDataProtocol.isWeakEtag(etag)) {
-      etag = null;
+    String etag = null;
+    if (entry != null) {
+      etag = entry.getEtag();
+      if (GDataProtocol.isWeakEtag(etag)) {
+        etag = null;
+      }
     }
     return patch(entryUrl, fields, entry, etag);
   }
@@ -1567,7 +1598,7 @@ public class Service {
    * returned. This update is conditional upon the provided tag matching the
    * current entity tag for the entry. If (and only if) they match, the patch
    * will be performed.
-   * 
+   *
    * @param entryUrl the edit URL associated with the entry.
    * @param fields selection representing the set of fields to be removed from
    *        the resource.
@@ -1583,25 +1614,18 @@ public class Service {
    * @throws com.google.gdata.util.ParseException error parsing the patched
    *         entry data.
    * @throws ServiceException update request failed due to system error.
-   * 
+   *
    * @see IEntry#getEditLink()
    */
-  public <E extends Entry> E patch(URL entryUrl, String fields, E entry, 
+  public <E extends IEntry> E patch(URL entryUrl, String fields, E entry,
       String etag) throws IOException, ServiceException {
 
     GDataRequest request = createPatchRequest(entryUrl);
     try {
       startVersionScope();
       request.setEtag(etag);
-      
-      Partial partial = new Partial();
-      if (fields != null) {
-        partial.setFields(fields);
-      }
-      if (entry != null) {
-        partial.addElement(entry);
-      }
-      writeRequestData(request, partial);
+      entry.setSelectedFields(fields);
+      writeRequestData(request, entry);
       request.execute();
       return parseResponseData(request, classOf(entry));
     } finally {
@@ -1609,7 +1633,6 @@ public class Service {
       request.end();
     }
   }
-
 
   /**
    * Creates a new GDataRequest that can be used to update an existing Atom
@@ -1630,9 +1653,6 @@ public class Service {
     return createRequest(GDataRequest.RequestType.PATCH, entryUrl,
         ContentType.APPLICATION_XML);
   }
-
-  
- 
 
   /**
    * Deletes an existing entry (and associated media content, if any) using the
@@ -1783,8 +1803,13 @@ public class Service {
     protected final UriParameterMap queryMap;
 
     protected ClientStreamProperties(GDataRequest req) {
-      this.req = req;
       this.queryMap = computeQueryMap(req);
+      this.req = req;
+    }
+
+    protected ClientStreamProperties() {
+      this.queryMap = UriParameterMap.EMPTY_MAP;
+      this.req = null;
     }
 
     public GDataRequest getGDataRequest() {
@@ -1797,6 +1822,10 @@ public class Service {
 
     public AltRegistry getAltRegistry() {
       return Service.this.getAltRegistry();
+    }
+
+    public boolean isPartial() {
+      return false;
     }
 
     public ExtensionProfile getExtensionProfile() {
@@ -1864,14 +1893,24 @@ public class Service {
 
     private final Class<?> expectType;
     protected final ContentType inputType;
-    private final ElementMetadata<?, ?> elementMetadata;
+    private ElementMetadata<?, ?> elementMetadata;
 
     protected ClientInputProperties(GDataRequest req, Class<?> expectType)
         throws IOException, ServiceException {
       super(req);
       this.expectType = expectType;
       this.inputType = req.getResponseContentType();
+      init();
+    }
 
+    protected ClientInputProperties(ContentType inputType, Class<?> expectType)
+        throws IOException, ServiceException {
+      this.expectType = expectType;
+      this.inputType = inputType;
+      init();
+    }
+
+    private void init() {
       if (Element.class.isAssignableFrom(expectType)) {
         ElementKey<?, ?> key =
             Element.getDefaultKey(expectType.asSubclass(Element.class));
@@ -1892,6 +1931,11 @@ public class Service {
     public ElementMetadata<?, ?> getRootMetadata() {
       return elementMetadata;
     }
+
+    @Override
+    public boolean isPartial() {
+      return getQueryParameter(GDataProtocol.Query.FIELDS) != null;
+    }
   }
 
   /**
@@ -1902,11 +1946,21 @@ public class Service {
   public class ClientOutputProperties extends ClientStreamProperties
       implements OutputProperties {
 
-    private final ElementMetadata<?, ?> elementMetadata;
+    protected final ContentType requestType;
+    private ElementMetadata<?, ?> elementMetadata;
 
     public ClientOutputProperties(GDataRequest req, Object source) {
       super(req);
+      this.requestType = req.getRequestContentType();
+      init(source);
+    }
 
+    public ClientOutputProperties(ContentType requestType, Object source) {
+      this.requestType = requestType;
+      init(source);
+    }
+
+    private void init(Object source) {
       if (source instanceof Element) {
         Element element = (Element) source;
         ElementKey<?, ?> key = element.getElementKey();
@@ -1917,11 +1971,15 @@ public class Service {
     }
 
     public ContentType getContentType() {
-      return req.getRequestContentType();
+      return requestType;
     }
 
     public ElementMetadata<?, ?> getRootMetadata() {
       return elementMetadata;
+    }
+
+    public String getCallback() {
+      return null;
     }
   }
 
@@ -1961,6 +2019,7 @@ public class Service {
     OutputGenerator<?> generator = altRegistry.getGenerator(outputFormat);
     if (!generator.getSourceType().isAssignableFrom(source.getClass())) {
       throw new IllegalArgumentException("Invalid source type: " +
+          "expected: " + generator.getSourceType() + " but got: " +
           source.getClass() + " for output format " + outputFormat);
     }
 
@@ -1968,7 +2027,20 @@ public class Service {
     @SuppressWarnings("unchecked")
     OutputGenerator<Object> typedGenerator =
         (OutputGenerator<Object>) generator;
-    typedGenerator.generate(req.getRequestStream(), outProps, source);
+
+    // If request type is partial, disable strict validation
+    if (outputFormat.equals(AltFormat.APPLICATION_XML)) {
+      AbstractExtension.disableStrictValidation();
+    }
+    try {
+      typedGenerator.generate(req.getRequestStream(), outProps, source);
+    } finally {
+      // If request type is partial, renable strict validation
+      if (outputFormat.equals(AltFormat.APPLICATION_XML)) {
+        AbstractExtension.enableStrictValidation();
+      }
+    }
+
   }
 
   /**
@@ -1986,10 +2058,37 @@ public class Service {
    */
   protected <E> E parseResponseData(GDataRequest req, Class<E> resultType)
       throws IOException, ServiceException {
-    Preconditions.checkNotNull("resultType", resultType);
-
     InputProperties inputProperties =
-      new ClientInputProperties(req, resultType);
+        new ClientInputProperties(req, resultType);
+    return parseResponseData(
+        req.getParseSource(), inputProperties, resultType);
+  }
+
+  /**
+   * Parses the response stream for a request based upon response content type
+   * and an expected result type.   The parser will be selected based upon the
+   * request alt type or response content type and used to parse the response
+   * content into the result object.
+   *
+   * @param <E> expected result type
+   * @param responseType content type of the response to parse.
+   * @param resultType expected result type, not {@code null}.
+   * @return an instance of the expected result type resulting from the parse.
+   * @throws IOException
+   * @throws ServiceException
+   */
+  protected <E> E parseResponseData(
+      ParseSource source, ContentType responseType, Class<E> resultType)
+      throws IOException, ServiceException {
+    InputProperties inputProperties =
+        new ClientInputProperties(responseType, resultType);
+    return parseResponseData(source, inputProperties, resultType);
+  }
+
+  private <E> E parseResponseData(
+      ParseSource source, InputProperties inputProperties, Class<E> resultType)
+      throws IOException, ServiceException {
+    Preconditions.checkNotNull("resultType", resultType);
 
     AltFormat inputFormat = null;
     String alt = inputProperties.getQueryParameter(GDataProtocol.Parameter.ALT);
@@ -2008,22 +2107,6 @@ public class Service {
       throw new ParseException("No parser for content type:" + inputFormat);
     }
 
-    // If a partial representation was requested, use the partial parser
-    String fields =
-        inputProperties.getQueryParameter(GDataProtocol.Parameter.FIELDS);
-    if (fields != null) {
-      if (!Element.class.isAssignableFrom(resultType)) {
-        throw new IllegalStateException("Unexpected result type: " +
-            resultType);
-      }
-      // This cast is safe given the above isAssignableFrom check ensures
-      // that the expected parse output is an Element subtype
-      @SuppressWarnings("unchecked")
-      InputParser<? extends Element> elementParser =
-          (InputParser<? extends Element>) inputParser;
-      inputParser = AdaptingPartialParser.from(elementParser);
-    }
-
     if (!inputParser.getResultType().isAssignableFrom(resultType)) {
       throw new IllegalStateException("Input parser (" + inputParser +
           ") does not produce expected result type: " + resultType);
@@ -2033,8 +2116,22 @@ public class Service {
     @SuppressWarnings("unchecked")
     InputParser<E> typedParser = (InputParser<E>) inputParser;
 
-    E result = typedParser.parse(req.getParseSource(),
-        inputProperties, resultType);
+    // Disable validation for partial request in old data model.
+    String fields =
+        inputProperties.getQueryParameter(GDataProtocol.Parameter.FIELDS);
+    if (fields != null && !Element.class.isAssignableFrom(resultType)) {
+      AbstractExtension.disableStrictValidation();
+    }
+
+    E result;
+    try {
+      result = typedParser.parse(source, inputProperties, resultType);
+    } finally {
+      // Re-enable validation.
+      if (fields != null && !Element.class.isAssignableFrom(resultType)) {
+        AbstractExtension.enableStrictValidation();
+      }
+    }
 
     // Associate service with the result if atom content
     if (result instanceof IAtom) {

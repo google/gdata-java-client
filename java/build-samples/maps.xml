@@ -30,7 +30,7 @@
   </target>
 
   <path id="sample.maps.compile.classpath">
-    <path refid="build.service.core.classpath"/>
+    <path refid="build.service.media.classpath"/>
     <pathelement location="${gdata-maps.jar}"/>
   </path>
 

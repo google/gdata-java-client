@@ -52,3 +52,4 @@ public class CrawlIssuesFeed extends BaseFeed<CrawlIssuesFeed,
   }
 
 }
+

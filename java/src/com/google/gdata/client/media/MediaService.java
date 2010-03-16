@@ -26,8 +26,10 @@ import com.google.gdata.client.Service;
 import com.google.gdata.client.http.HttpGDataRequest;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.IEntry;
+import com.google.gdata.data.ParseSource;
 import com.google.gdata.data.media.IMediaContent;
 import com.google.gdata.data.media.IMediaEntry;
+import com.google.gdata.data.media.MediaFileSource;
 import com.google.gdata.data.media.MediaMultipart;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.media.MediaStreamSource;
@@ -47,6 +49,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 
 /**
@@ -302,16 +305,22 @@ public class MediaService extends GoogleService {
   /**
    * Initializes the attributes of a media request.
    */
-  private void initMediaRequest(MediaSource media, GDataRequest request) {
-    String name = media.getName();
-    if (name != null) {
-      request.setHeader("Slug", escapeSlug(name));
+  private void initMediaRequest(GDataRequest request, String title) {
+    if (title != null) {
+      request.setHeader("Slug", escapeSlug(title));
     }
     if (chunkedBufferSize != NO_CHUNKED_MEDIA_REQUEST
         && request instanceof HttpGDataRequest) {
       HttpGDataRequest httpRequest = (HttpGDataRequest) request;
       httpRequest.getConnection().setChunkedStreamingMode(chunkedBufferSize);
     }
+  }
+
+  /**
+   * Initializes the attributes of a media request.
+   */
+  private void initMediaRequest(GDataRequest request, MediaSource media) {
+    initMediaRequest(request, media.getName());
   }
 
   /**
@@ -384,7 +393,7 @@ public class MediaService extends GoogleService {
           createRequest(GDataRequest.RequestType.INSERT, feedUrl,
               new ContentType(mediaMultipart.getContentType()));
 
-      initMediaRequest(media, request);
+      initMediaRequest(request, media);
 
       writeRequestData(request,
           new ClientOutputProperties(request, entry), mediaMultipart);
@@ -441,7 +450,7 @@ public class MediaService extends GoogleService {
     try {
       startVersionScope();
 
-      initMediaRequest(media, request);
+      initMediaRequest(request, media);
       writeRequestData(request, media);
       request.execute();
       return parseResponseData(request, entryClass);
@@ -581,5 +590,154 @@ public class MediaService extends GoogleService {
     }
   }
 
+  /**
+   * Initialize a resumable media upload request.
+   *
+   * @param request {@link GDataRequest} to initialize.
+   * @param file    media file that needs to be upload.
+   * @param title   title of uploaded media or {@code null} if no title.
+   */
+  private void initResumableMediaRequest(
+      GDataRequest request, MediaFileSource file, String title) {
+    initMediaRequest(request, title);
+    request.setHeader(
+        GDataProtocol.Header.X_UPLOAD_CONTENT_TYPE, file.getContentType());
+    request.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH,
+        new Long(file.getContentLength()).toString());
+  }
+
+  /**
+   * Creates a resumable upload session for a new media.
+   *
+   * @param createMediaUrl resumable put/post url.
+   * @param title media title for new upload or {@code null} for updating
+   *              media part of existing media resource.
+   * @param file  new media file to upload.
+   * @return resumable upload url to upload the media to.
+   * @throws IOException error communicating with the GData service.
+   * @throws ServiceException insert request failed due to system error.
+   */
+  URL createResumableUploadSession(
+      URL createMediaUrl, String title, MediaFileSource file)
+      throws IOException, ServiceException {
+
+    String mimeType = file.getContentType();
+    GDataRequest request = createRequest(GDataRequest.RequestType.INSERT,
+        createMediaUrl, new ContentType(mimeType));
+    initResumableMediaRequest(request, file, title);
+    try {
+      startVersionScope();
+      request.execute();
+      return new URL(request.getResponseHeader("Location"));
+    } finally {
+      endVersionScope();
+      request.end();
+    }
+  }
+
+  /**
+   * Creates a resumable upload session for a new media with specified metadata.
+   *
+   * @param createMediaUrl resumable put/post url.
+   * @param entry metadata for new media.
+   * @param file new media file to upload.
+   * @return resumable upload url to upload the media to.
+   * @throws IOException error communicating with the GData service.
+   * @throws ServiceException insert request failed due to system error.
+   */
+  URL createResumableUploadSession(
+      URL createMediaUrl, IEntry entry, MediaFileSource file)
+      throws IOException, ServiceException {
+
+    GDataRequest request = createInsertRequest(createMediaUrl);
+    initResumableMediaRequest(request, file, file.getName());
+    try {
+      startVersionScope();
+
+      writeRequestData(request, entry);
+      request.execute();
+      return new URL(request.getResponseHeader("Location"));
+    } finally {
+      endVersionScope();
+      request.end();
+    }
+
+  }
+
+  /**
+   * Creates a resumable upload session to update existing media.
+   *
+   * @param editMediaUrl resumable put/post url.
+   * @param entry media entry to update.
+   * @param file updated media file to upload.
+   * @param isMediaOnly whether to update media only or both media and metadata.
+   *                    {@code true} if media-only or {@code false} for both.
+   * @return resumable upload url to upload the media to.
+   * @throws IOException error communicating with the GData service.
+   * @throws ServiceException insert request failed due to system error.
+   */
+  URL createResumableUpdateSession(
+      URL editMediaUrl, IEntry entry, MediaFileSource file, boolean isMediaOnly)
+      throws IOException, ServiceException {
+
+    /**
+     * All resumable update requests need to be POST with x-http-method-override
+     * set to PUT.  Set the system property to enable httpoverride.
+     */
+    String methodOverrideProperty = System.getProperty(
+        HttpGDataRequest.METHOD_OVERRIDE_PROPERTY);
+    System.setProperty(HttpGDataRequest.METHOD_OVERRIDE_PROPERTY, "true");
+    GDataRequest request;
+    if (isMediaOnly) {
+      request = createRequest(GDataRequest.RequestType.UPDATE, editMediaUrl,
+          new ContentType(file.getContentType()));
+    } else {
+      request = createUpdateRequest(editMediaUrl);
+    }
+    if (methodOverrideProperty != null) {
+      System.setProperty(
+          HttpGDataRequest.METHOD_OVERRIDE_PROPERTY, methodOverrideProperty);
+    } else {
+      System.clearProperty(HttpGDataRequest.METHOD_OVERRIDE_PROPERTY);
+    }
+
+    initResumableMediaRequest(request, file, null);
+    if (entry.getEtag() != null) {
+      request.setEtag(entry.getEtag());
+    }
+    try {
+      startVersionScope();
+      if (!isMediaOnly) {
+        writeRequestData(request, entry);
+      }
+      request.execute();
+      return new URL(request.getResponseHeader("Location"));
+    } finally {
+      endVersionScope();
+      request.end();
+    }
+  }
+
+  /**
+   * Parses Resumable Upload response from RUPIO response stream.
+   *
+   * @param source response stream to parse.
+   * @param responseType response stream content type.
+   * @param resultType expected result type, not {@code null}.
+   * @return an instance of the expected result type resulting from the parse.
+   * @throws IOException read/write error
+   * @throws ServiceException server error
+   */
+  <E> E parseResumableUploadResponse(InputStream source,
+      ContentType responseType, Class<E> resultType)
+      throws IOException, ServiceException {
+    try {
+      startVersionScope();
+      return parseResponseData(
+          new ParseSource(source), responseType, resultType);
+    } finally {
+      endVersionScope();
+    }
+  }
 
 }

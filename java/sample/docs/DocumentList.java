@@ -466,8 +466,8 @@ public class DocumentList {
    *         service.
    * @throws DocumentListException
    */
-  public DocumentListEntry uploadFile(String filepath, String title) throws IOException,
-      ServiceException, DocumentListException {
+  public DocumentListEntry uploadFile(String filepath, String title)
+      throws IOException, ServiceException, DocumentListException {
     if (filepath == null || title == null) {
       throw new DocumentListException("null passed in for required parameters");
     }
@@ -765,8 +765,8 @@ public class DocumentList {
    * @throws ServiceException
    * @throws DocumentListException
    */
-  public AclEntry changeAclRole(AclRole role, AclScope scope, String resourceId) throws IOException,
-      MalformedURLException, ServiceException, DocumentListException {
+  public AclEntry changeAclRole(AclRole role, AclScope scope, String resourceId)
+      throws IOException, ServiceException, DocumentListException {
     if (role == null || scope == null || resourceId == null) {
       throw new DocumentListException("null passed in for required parameters");
     }

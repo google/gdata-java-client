@@ -11,13 +11,13 @@
     value="${build.jars}/gdata-maps-${maps.spec.version}.jar"/>
 
 
-  <target name="build.maps" depends="build.core.client">
+  <target name="build.maps" depends="build.core.media">
     <antcall target="template.build.service">
       <param name="template.service.name" value="maps"/>
       <param name="template.service.version" value="${maps.spec.version}"/>
       <param name="template.service.includes" value="**/maps/**"/>
       <param name="template.service.excludes" value="none"/>
-      <param name="template.service.classpath" value="build.service.core.classpath"/>
+      <param name="template.service.classpath" value="build.service.media.classpath"/>
       <param name="template.service.name" value="maps"/>
     </antcall>
   </target>

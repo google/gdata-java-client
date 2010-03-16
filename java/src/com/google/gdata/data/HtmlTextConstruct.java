@@ -69,11 +69,12 @@ public class HtmlTextConstruct extends TextConstruct {
   public void setHtml(String v) { html = v; }
 
   /**
-   * @return a plain-text representation of this text construct
+   * @return a plain-text representation of this text construct or
+   *         {@code null} if there is no html content.
    */
   @Override
   public String getPlainText() {
-    return HtmlToText.htmlToPlainText(html);
+    return !isEmpty() ? HtmlToText.htmlToPlainText(html) : null;
   }
 
   /**

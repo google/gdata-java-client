@@ -28,10 +28,18 @@
             value="${sample.youtube.build.lib}/YouTubeReadonlyClient.jar"/>
   <property name="sample.youtube.write.jar"
             value="${sample.youtube.build.lib}/YouTubeWriteClient.jar"/>
+  <property name="sample.youtube.upload.jar"
+            value="${sample.youtube.build.lib}/YouTubeUploadClient.jar"/>
+  <property name="sample.youtube.partial.jar"
+            value="${sample.youtube.build.lib}/YouTubePartialDemo.jar"/>
   <property name="sample.youtube.read.main"
             value="sample.youtube.YouTubeReadonlyClient"/>
   <property name="sample.youtube.write.main"
             value="sample.youtube.YouTubeWriteClient"/>
+  <property name="sample.youtube.partial.main"
+            value="sample.youtube.YouTubePartialDemo"/>
+  <property name="sample.youtube.upload.main"
+            value="sample.youtube.YouTubeUploadClient"/>
 
   <target name="sample.youtube.clean"
    description="Delete old build and dist directories">
@@ -81,6 +89,18 @@
         <attribute name="Main-Class" value="${sample.youtube.write.main}"/>
       </manifest>
     </jar>
+    <jar jarfile="${sample.youtube.partial.jar}"
+         basedir="${sample.youtube.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.youtube.partial.main}"/>
+      </manifest>
+    </jar>
+    <jar jarfile="${sample.youtube.upload.jar}"
+         basedir="${sample.youtube.build.classes}">
+      <manifest>
+        <attribute name="Main-Class" value="${sample.youtube.upload.main}"/>
+      </manifest>
+    </jar>
   </target>
 
   <!-- samples run -->
@@ -106,5 +126,30 @@
       </classpath>
     </java>
   </target>
+
+  <target name="sample.youtube.partial.run"
+          depends="sample.youtube.build"
+          description="Runs the youtube Partial Query/Patch demo">
+    <java fork="true" classname="${sample.youtube.partial.main}">
+      <arg line="-u ${sample.youtube.username} -p ${sample.youtube.password} -k ${sample.youtube.key}"/>
+      <classpath>
+        <path refid="sample.youtube.compile.classpath"/>
+        <path location="${sample.youtube.partial.jar}"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="sample.youtube.upload.run"
+          depends="sample.youtube.build"
+          description="Runs the youtube resumable upload sample">
+    <java fork="true" classname="${sample.youtube.upload.main}">
+      <arg line="-u ${sample.youtube.username} -p ${sample.youtube.password} -k ${sample.youtube.key}"/>
+      <classpath>
+        <path refid="sample.youtube.compile.classpath"/>
+        <path location="${sample.youtube.upload.jar}"/>
+      </classpath>
+    </java>
+  </target>
+
 
 </project>
