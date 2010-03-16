@@ -8,6 +8,11 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.41.0 ==
+   * Added support for resumable media upload feature.
+   * Added support for Apps for your domain Admin Settings API.
+   * Bug fix in webmaster tools API to handle file-content attribute.
+
 == 1.40.3 ==
    * Updated Google Sites API to include sites and user access control feeds.
 
