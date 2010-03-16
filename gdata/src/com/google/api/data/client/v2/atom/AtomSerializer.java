@@ -21,9 +21,9 @@ public class AtomSerializer implements HttpSerializer {
     this.entry = entry;
   }
 
-  public static void setContent(HttpRequest request, NamespaceDictionary client,
-      Object entry) {
-    request.setContent(new AtomSerializer(client, entry));
+  public static void setContent(HttpRequest request,
+      NamespaceDictionary namespaceDictionary, Object entry) {
+    request.setContent(new AtomSerializer(namespaceDictionary, entry));
   }
 
   public final long getContentLength() {
@@ -57,8 +57,8 @@ public class AtomSerializer implements HttpSerializer {
       throws IOException {
     serializer.startDocument(null, null);
     this.client.setNamespacePrefixes(serializer);
-    this.client.serializeElement(serializer, NamespaceDictionary.ATOM_NAMESPACE,
-        "entry", entry);
+    this.client.serializeElement(serializer,
+        NamespaceDictionary.ATOM_NAMESPACE, "entry", entry);
     serializer.endDocument();
   }
 }

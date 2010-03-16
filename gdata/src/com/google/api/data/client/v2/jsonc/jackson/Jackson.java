@@ -211,7 +211,7 @@ public class Jackson {
             inputStream = null;
           }
         } else {
-          exception.content = response.parseContentAsString();
+          exception.content = response.parseAsString();
           inputStream = null;
         }
       } finally {

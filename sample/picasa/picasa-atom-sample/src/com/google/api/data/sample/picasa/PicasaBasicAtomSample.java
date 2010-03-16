@@ -129,6 +129,8 @@ public class PicasaBasicAtomSample {
 
     public String title;
 
+    public String updated;
+
     public String getEditLink() {
       return getLink(links, "edit");
     }
@@ -202,7 +204,7 @@ public class PicasaBasicAtomSample {
     uri.maxResults = MAX_ALBUMS_TO_SHOW;
     // execute GData request for the feed
     HttpRequest request = transport.buildGetRequest(uri.build());
-    AlbumFeed feed = request.execute(AlbumFeed.class);
+    AlbumFeed feed = request.execute().parseAs(AlbumFeed.class);
     System.out.println("User: " + feed.author.name);
     System.out.println("Total number of albums: " + feed.totalResults);
     // show albums
@@ -217,6 +219,7 @@ public class PicasaBasicAtomSample {
     System.out.println();
     System.out.println("-----------------------------------------------");
     System.out.println("Album title: " + album.title);
+    System.out.println("Updated: " + album.updated);
     System.out.println("Album ETag: " + album.etag);
     if (album.summary != null) {
       System.out.println("Description: " + album.summary);
@@ -227,7 +230,7 @@ public class PicasaBasicAtomSample {
       uri.kinds = "photo";
       uri.maxResults = MAX_PHOTOS_TO_SHOW;
       HttpRequest request = transport.buildGetRequest(uri.build());
-      PhotoFeed feed = request.execute(PhotoFeed.class);
+      PhotoFeed feed = request.execute().parseAs(PhotoFeed.class);
       for (PhotoEntry photo : feed.entries) {
         System.out.println();
         System.out.println("Photo title: " + photo.title);
@@ -250,7 +253,7 @@ public class PicasaBasicAtomSample {
     HttpRequest request = transport.buildPostRequest(feed.getPostLink());
     AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY,
         newAlbum);
-    AlbumEntry album = request.execute(AlbumEntry.class);
+    AlbumEntry album = request.execute().parseAs(AlbumEntry.class);
     showAlbum(transport, album);
     return album;
   }
@@ -264,7 +267,7 @@ public class PicasaBasicAtomSample {
     GData.setSlugHeader(request, fileName);
     InputStreamHttpSerializer.setContent(request, photoUrl.openStream(), -1,
         "image/jpeg", null);
-    PhotoEntry photo = request.execute(PhotoEntry.class);
+    PhotoEntry photo = request.execute().parseAs(PhotoEntry.class);
     System.out.println("Posted photo: " + photo.title);
     return photo;
   }
@@ -273,7 +276,7 @@ public class PicasaBasicAtomSample {
       AlbumEntry album) throws IOException {
     PicasaUri selfUri = new PicasaUri(album.getSelfLink());
     HttpRequest request = transport.buildGetRequest(selfUri.build());
-    album = request.execute(AlbumEntry.class);
+    album = request.execute().parseAs(AlbumEntry.class);
     showAlbum(transport, album);
     return album;
   }
@@ -282,14 +285,14 @@ public class PicasaBasicAtomSample {
       AlbumEntry album) throws IOException {
     // must do a GET into AtomEntity
     HttpRequest request = transport.buildGetRequest(album.getSelfLink());
-    AtomEntity albumToEdit = request.execute(AtomEntity.class);
+    AtomEntity albumToEdit = request.execute().parseAs(AtomEntity.class);
     // now can safely do a PUT with the returned AtomEntity
     albumToEdit.set("title", "My favorite web logos");
     request = transport.buildPutRequest(album.getEditLink());
     GData.setIfMatchHeader(request, album.etag);
     AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY,
         albumToEdit);
-    album = request.execute(AlbumEntry.class);
+    album = request.execute().parseAs(AlbumEntry.class);
     // show updated album
     showAlbum(transport, album);
     return album;
@@ -299,7 +302,7 @@ public class PicasaBasicAtomSample {
       throws IOException {
     HttpRequest request = transport.buildDeleteRequest(album.getEditLink());
     GData.setIfMatchHeader(request, album.etag);
-    request.executeIgnoreResponse();
+    request.execute().ignore();
     System.out.println();
     System.out.println("Album deleted.");
   }

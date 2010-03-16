@@ -23,8 +23,10 @@ public final class HttpResponse {
   private final String contentEncoding;
   private final HashMap<String, String> headerNameToValueMap =
       new HashMap<String, String>();
+  private final HttpTransport transport;
 
-  HttpResponse(LowLevelHttpResponseInterface response) {
+  HttpResponse(HttpTransport transport, LowLevelHttpResponseInterface response) {
+    this.transport = transport;
     this.response = response;
     long contentLength = this.contentLength = response.getContentLength();
     String contentType = this.contentType = response.getContentType();
@@ -100,7 +102,23 @@ public final class HttpResponse {
     return content;
   }
 
-  public String parseContentAsString() throws IOException {
+  public void ignore() throws IOException {
+    checkForError();
+    getContent().close();
+  }
+
+  public <T> T parseAs(Class<T> entityClass) throws IOException {
+    checkForError();
+    String contentType = getContentType();
+    HttpParser parser = this.transport.getParser(contentType);
+    if (parser == null) {
+      throw new IllegalArgumentException("No parser defined for content type: "
+          + contentType);
+    }
+    return parser.parse(this, entityClass);
+  }
+
+  public String parseAsString() throws IOException {
     return parseContentAsString(getContent(), this.contentLength);
   }
 
@@ -177,5 +195,19 @@ public final class HttpResponse {
 
   public static boolean isSuccessStatusCode(int statusCode) {
     return statusCode >= 200 && statusCode < 300;
+  }
+
+  private void checkForError() throws IOException {
+    if (!isSuccessStatusCode()) {
+      String contentType = getContentType();
+      HttpParser parser = this.transport.getParser(contentType);
+      if (parser == null) {
+        HttpResponseException exception = new HttpResponseException(this);
+        exception.content = parseAsString();
+        throw exception;
+      }
+      // should throw an exception
+      parser.parse(this, Object.class);
+    }
   }
 }
