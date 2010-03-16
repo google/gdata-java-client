@@ -27,7 +27,7 @@ public class JsoncSerializer implements HttpSerializer {
 
   final Object item;
 
-  JsoncSerializer(Object item) {
+  public JsoncSerializer(Object item) {
     this.item = item;
   }
 

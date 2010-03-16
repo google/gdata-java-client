@@ -8,6 +8,7 @@ import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.net.NetGData;
 import com.google.api.data.client.v2.GDataEntity;
 import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
+import com.google.api.data.client.v2.jsonc.jackson.JsoncSerializer;
 
 import org.json.JSONException;
 
@@ -72,20 +73,25 @@ public class ApiRequestFactory {
     }
 
     public ApiRequestFactory build() {
+      HttpTransport newTransport;
       if (transport == null) {
-        transport = new HttpTransport(
+        newTransport = new HttpTransport(
             appName != null ? appName : "Apiary_Java");
-        transport.lowLevelHttpTransportInterface =
+        newTransport.lowLevelHttpTransportInterface =
             lowLevelTransport != null ? lowLevelTransport :
             NetGData.HTTP_TRANSPORT;
-        JacksonHttpParser.set(transport);
+        JacksonHttpParser.set(newTransport);
+      } else {
+        newTransport = transport;
       }
+      Discovery discovery = null;
       if (serviceDoc != null) {
-        return new ApiRequestFactory(
-            new Discovery(serviceDoc, transport), paramMap);
+        discovery = new Discovery(serviceDoc, newTransport);
+      } else {
+        discovery = new Discovery(resource, newTransport);
       }
-      return new ApiRequestFactory(
-          new Discovery(resource, transport), paramMap);
+      discovery.setSerializer("application/json", JsoncSerializer.class);
+      return new ApiRequestFactory(discovery, paramMap);
     }
   }
 
@@ -109,7 +115,8 @@ public class ApiRequestFactory {
   }
 
   public ApiRequest<GDataEntity> request(String method) {
-    return new ApiRequest<GDataEntity>(discovery, method, paramMap);
+    return new ApiRequest<GDataEntity>(discovery, method, paramMap)
+        .returning(GDataEntity.class);
   }
 
   public ApiRequest<GDataEntity> request(String resource, String method) {
@@ -117,15 +124,17 @@ public class ApiRequestFactory {
   }
 
   public ApiRequest<GDataEntity> query(String resource) {
-    return request(resource, "query");
+    return request(resource, "query").returning(GDataEntity.class);
   }
 
   public ApiRequest<GDataEntity> insert(String resource, Object data) {
-    return request(resource, "insert").withContent(data);
+    return request(resource, "insert").withContent(data)
+        .returning(GDataEntity.class);
   }
 
   public ApiRequest<GDataEntity> update(String resource, Object data) {
-    return request(resource, "update").withContent(data);
+    return request(resource, "update").withContent(data)
+        .returning(GDataEntity.class);
   }
 
   public ApiRequest<GDataEntity> delete(String resource) {
@@ -133,7 +142,7 @@ public class ApiRequestFactory {
   }
 
   public ApiRequest<GDataEntity> batch(String resource) {
-    return request(resource, "batch");
+    return request(resource, "batch").returning(GDataEntity.class);
   }
 
   /**
