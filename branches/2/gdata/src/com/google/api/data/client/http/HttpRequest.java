@@ -67,24 +67,6 @@ public final class HttpRequest {
     this.content = new GZipHttpSerializer(serializer);
   }
 
-  public void executeIgnoreResponse() throws IOException {
-    HttpResponse response = execute();
-    checkForError(response);
-    response.getContent().close();
-  }
-
-  public <T> T execute(Class<T> entityClass) throws IOException {
-    HttpResponse response = execute();
-    checkForError(response);
-    String contentType = response.getContentType();
-    HttpParser parser = this.transport.getParser(contentType);
-    if (parser == null) {
-      throw new IllegalArgumentException("No parser defined for content type: "
-          + contentType);
-    }
-    return parser.parse(response, entityClass);
-  }
-
   public HttpResponse execute() throws IOException {
     LowLevelHttpRequestInterface httpRequest = this.httpRequest;
     HttpTransport transport = this.transport;
@@ -139,7 +121,7 @@ public final class HttpRequest {
       httpRequest.setContent(content);
     }
     // execute
-    return new HttpResponse(httpRequest.execute());
+    return new HttpResponse(transport, httpRequest.execute());
   }
 
   private void addHeaders(ArrayList<String> headerNames,
@@ -155,19 +137,6 @@ public final class HttpRequest {
         logger.config(name + ": " + value);
       }
       httpRequest.addHeader(name, value);
-    }
-  }
-
-  private void checkForError(HttpResponse response) throws IOException {
-    if (!response.isSuccessStatusCode()) {
-      String contentType = response.getContentType();
-      HttpParser parser = this.transport.getParser(contentType);
-      if (parser == null) {
-        HttpResponseException exception = new HttpResponseException(response);
-        exception.content = response.parseContentAsString();
-        throw exception;
-      }
-      parser.parse(response, Object.class);
     }
   }
 }

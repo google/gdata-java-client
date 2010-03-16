@@ -211,7 +211,7 @@ public final class Atom {
           exception.parser = parser;
           exception.inputStream = content;
         } else {
-          exception.content = response.parseContentAsString();
+          exception.content = response.parseAsString();
         }
         content = null;
       } finally {

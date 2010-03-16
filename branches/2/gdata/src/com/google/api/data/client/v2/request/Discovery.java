@@ -179,7 +179,7 @@ public class Discovery {
       buildRestRequest(resource, method, params).execute();
       return null;
     }
-    return buildRestRequest(resource, method, params).execute(resultType);
+    return buildRestRequest(resource, method, params).execute().parseAs(resultType);
   }
   
   <T> T doRequest(
