@@ -180,7 +180,7 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
             GData.setSlugHeader(request, fileName);
             InputStreamHttpSerializer.setContent(request, stream, fileSize,
                 mimeType, null);
-            request.executeIgnoreResponse();
+            request.execute().ignore();
             success = true;
           } catch (IOException e) {
             e.printStackTrace();
@@ -214,7 +214,7 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
         try {
           HttpRequest request = transport.buildPostRequest(feed.links.post);
           JsoncSerializer.setContent(request, album);
-          request.executeIgnoreResponse();
+          request.execute().ignore();
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -250,20 +250,20 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
         case CONTEXT_EDIT:
           // must use JsoncEntity for PUT
           request = transport.buildGetRequest(album.links.self);
-          JsoncEntity albumToEdit = request.execute(JsoncEntity.class);
+          JsoncEntity albumToEdit = request.execute().parseAs(JsoncEntity.class);
           albumToEdit.set("title", album.title + " UPDATED "
               + new DateTime(new Date()));
           request = transport.buildPutRequest(album.links.edit);
           GData.setIfMatchHeader(request, album.etag);
           JsoncSerializer.setContent(request, 
               albumToEdit);
-          request.executeIgnoreResponse();
+          request.execute().ignore();
           executeRefreshAlbums();
           return true;
         case CONTEXT_DELETE:
           request = transport.buildDeleteRequest(album.links.edit);
           GData.setIfMatchHeader(request, album.etag);
-          request.executeIgnoreResponse();
+          request.execute().ignore();
           executeRefreshAlbums();
           return true;
         case CONTEXT_LOGGING:
