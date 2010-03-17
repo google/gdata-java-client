@@ -180,7 +180,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
             GData.setSlugHeader(request, fileName);
             InputStreamHttpSerializer.setContent(request, stream, fileSize,
                 mimeType, null);
-            request.executeIgnoreResponse();
+            request.execute().ignore();
             success = true;
           } catch (IOException e) {
             e.printStackTrace();
@@ -216,7 +216,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
           HttpRequest request = transport.buildPostRequest(feed.getPostLink());
           AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY,
               album);
-          request.executeIgnoreResponse();
+          request.execute().ignore();
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -252,20 +252,20 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
         case CONTEXT_EDIT:
           // must use AtomEntity for PUT
           request = transport.buildGetRequest(album.getSelfLink());
-          AtomEntity albumToEdit = request.execute(AtomEntity.class);
+          AtomEntity albumToEdit = request.execute().parseAs(AtomEntity.class);
           albumToEdit.set("title", album.title + " UPDATED "
               + new DateTime(new Date()));
           request = transport.buildPutRequest(album.getEditLink());
           GData.setIfMatchHeader(request, album.etag);
           AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY,
               albumToEdit);
-          request.executeIgnoreResponse();
+          request.execute().ignore();
           executeRefreshAlbums();
           return true;
         case CONTEXT_DELETE:
           request = transport.buildDeleteRequest(album.getEditLink());
           GData.setIfMatchHeader(request, album.etag);
-          request.executeIgnoreResponse();
+          request.execute().ignore();
           executeRefreshAlbums();
           return true;
         case CONTEXT_LOGGING:
