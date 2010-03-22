@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.v2.atom;
 
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.FieldInfo;
+import com.google.api.data.client.entity.ClassInfo;
+import com.google.api.data.client.entity.FieldInfo;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

@@ -1,8 +1,8 @@
 package com.google.api.data.client.v2.request;
 
 import com.google.api.data.client.auth.Authorizer;
+import com.google.api.data.client.entity.Entity;
 import com.google.api.data.client.http.HttpResponse;
-import com.google.api.data.client.v2.GDataEntity;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 import com.google.api.data.client.v2.jsonc.jackson.Jackson;
 
@@ -52,9 +52,9 @@ public class ApiRequest<T> {
   private static final String DEFAULT_CONTENT_TYPE = "application/json";
   
   /** Parameter map for use with .with(key, value) */
-  private GDataEntity paramMap = new GDataEntity();
+  private Entity paramMap = new Entity();
 
-  private GDataEntity defaultParamMap;
+  private Entity defaultParamMap;
 
   /** The requested response class  */
   private Class<?> responseClass = null;
@@ -72,7 +72,7 @@ public class ApiRequest<T> {
   
   private final String resourceHandle;
   
-  ApiRequest(Discovery discovery, String method, GDataEntity defaultParams) {
+  ApiRequest(Discovery discovery, String method, Entity defaultParams) {
     this(discovery, null, method, defaultParams);
   }
   
@@ -85,7 +85,7 @@ public class ApiRequest<T> {
    * @param defaultParams default parameters to use in request
    */
   ApiRequest(Discovery discovery, String handle, String method,
-      GDataEntity defaultParams) {
+      Entity defaultParams) {
     this.discovery = discovery;
     this.fullyQualifiedMethod = method;
     this.defaultParamMap = defaultParams;
@@ -96,7 +96,7 @@ public class ApiRequest<T> {
    * Execute the request.
    * If .returning() or .returningList() functions was called,
    * returns an object of the appropriate type. Otherwise, returns
-   * a {@link GDataEntity}.
+   * a {@link Entity}.
    */
   @SuppressWarnings("unchecked")
   public T execute() {
@@ -104,7 +104,7 @@ public class ApiRequest<T> {
       return (T)result;
     }
     try {
-      GDataEntity allParams = paramMap.merge(defaultParamMap);
+      Entity allParams = paramMap.setFrom(defaultParamMap);
       return (T) discovery.doRestRequest(
           resourceHandle, fullyQualifiedMethod, allParams, responseClass);
     } catch(IOException e) {
@@ -127,7 +127,7 @@ public class ApiRequest<T> {
       // TODO(vbarathan): Parse json string
       throw new RuntimeException("Raw string parameter not yet supported");
     } else { 
-      paramMap.merge(params);
+      paramMap.setFrom(params);
     }
     return this;
   }
@@ -153,14 +153,14 @@ public class ApiRequest<T> {
    */
   @SuppressWarnings("unchecked")
   public ApiRequest<T> withContent(String type, Object value) {
-    GDataEntity content = new GDataEntity();
+    Entity content = new Entity();
     content.set("type", type);
     content.set("value", value);
     if (paramMap.get("content") != null) {
-      List<GDataEntity> contents = (List<GDataEntity>) paramMap.get("content");
+      List<Entity> contents = (List<Entity>) paramMap.get("content");
       contents.add(content);
     } else {
-      List<GDataEntity> contents = new ArrayList<GDataEntity>();
+      List<Entity> contents = new ArrayList<Entity>();
       contents.add(content);
       paramMap.set("content", contents);
     }

@@ -2,9 +2,9 @@
 
 package com.google.api.data.client.v2.atom;
 
+import com.google.api.data.client.entity.ClassInfo;
+import com.google.api.data.client.entity.FieldInfo;
 import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.FieldInfo;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -38,7 +38,7 @@ public final class AtomPatchRelativeToOriginalSerializer extends AtomSerializer 
     Object entry = this.entry;
     // TODO: this needs a lot of work
     ClassInfo typeInfo = ClassInfo.of(entry.getClass());
-    for (String name : typeInfo.getNames()) {
+    for (String name : typeInfo.getFieldNames()) {
       Field field = typeInfo.getField(name);
       Object patchedValue = FieldInfo.getFieldValue(field, entry);
       Object originalValue = FieldInfo.getFieldValue(field, originalItem);

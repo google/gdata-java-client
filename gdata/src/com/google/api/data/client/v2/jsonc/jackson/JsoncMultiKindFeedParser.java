@@ -2,8 +2,8 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.FieldInfo;
+import com.google.api.data.client.entity.ClassInfo;
+import com.google.api.data.client.entity.FieldInfo;
 
 import org.codehaus.jackson.JsonParser;
 

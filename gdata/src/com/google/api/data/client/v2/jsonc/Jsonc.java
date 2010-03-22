@@ -2,9 +2,11 @@
 
 package com.google.api.data.client.v2.jsonc;
 
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.DateTime;
-import com.google.api.data.client.v2.FieldInfo;
+import com.google.api.data.client.DateTime;
+import com.google.api.data.client.entity.ClassInfo;
+import com.google.api.data.client.entity.FieldInfo;
+import com.google.api.data.client.entity.FieldIterator;
+import com.google.api.data.client.entity.FieldIterators;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -32,7 +34,7 @@ public class Jsonc {
   public static void appendItemFields(StringBuilder buf, Class<?> itemType) {
     ClassInfo typeInfo = ClassInfo.of(itemType);
     boolean first = true;
-    for (String name : typeInfo.getNames()) {
+    for (String name : typeInfo.getFieldNames()) {
       Field field = typeInfo.getField(name);
       if (Modifier.isFinal(field.getModifiers())) {
         continue;
@@ -152,42 +154,23 @@ public class Jsonc {
     } else {
       buf.append('{');
       boolean firstField = true;
-      if (!(item instanceof Map<?, ?>)) {
-        ClassInfo typeInfo = ClassInfo.of(item.getClass());
-        for (String name : typeInfo.getNames()) {
-          Field field = typeInfo.getField(name);
-          Object fieldValue = FieldInfo.getFieldValue(field, item);
-          if (fieldValue != null) {
-            firstField = appendField(buf, firstField, name, fieldValue);
+      FieldIterator fieldIterator = FieldIterators.of(item);
+      while (fieldIterator.hasNext()) {
+        String name = fieldIterator.nextFieldName();
+        Object value = fieldIterator.getFieldValue();
+        if (value != null) {
+          if (firstField) {
+            firstField = false;
+          } else {
+            buf.append(',');
           }
-        }
-        if (item instanceof JsoncEntity) {
-          item = ((JsoncEntity) item).getUnknownKeyMap();
-        }
-      }
-      if (item instanceof Map<?, ?>) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> mapValue = (Map<String, Object>) item;
-        for (Map.Entry<String, Object> entry : mapValue.entrySet()) {
-          firstField =
-              appendField(buf, firstField, entry.getKey(), entry.getValue());
+          appendString(buf, name);
+          buf.append(":");
+          appendValue(buf, value);
         }
       }
       buf.append('}');
     }
-  }
-
-  private static boolean appendField(StringBuilder buf, boolean firstField,
-      String name, Object value) {
-    if (firstField) {
-      firstField = false;
-    } else {
-      buf.append(',');
-    }
-    appendString(buf, name);
-    buf.append(":");
-    appendValue(buf, value);
-    return firstField;
   }
 
   private static void appendString(StringBuilder buf, String value) {

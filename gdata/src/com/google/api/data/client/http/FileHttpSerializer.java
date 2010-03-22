@@ -2,8 +2,6 @@
 
 package com.google.api.data.client.http;
 
-import com.google.api.data.client.v2.GData;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

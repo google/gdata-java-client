@@ -1,5 +1,7 @@
 package com.google.api.data.client.v2.request;
 
+import com.google.api.data.client.entity.Entity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,9 +24,11 @@ import java.util.List;
  * - toFoo creates for converting from an Entity,
  * toFoo is for converting to an Entity.
  *
+ * @deprecated use {@link Entity}
  * @author uidude@google.com (Evan Gilbert)
  * @author vbarathan@google.com (Parakash Barathan)
  */
+@Deprecated
 class Convert {
 
   /**
@@ -33,7 +37,7 @@ class Convert {
    * @param s The string
    * @return The entity
    */
-  static Entity fromString(String s) {
+  static ApiEntity fromString(String s) {
     try {
       JSONObject jo = new JSONObject(s);
       return fromJson(jo);
@@ -54,14 +58,14 @@ class Convert {
    * @param o The object
    * @return The entity
    */
-  static Entity fromObject(Object o) {
+  static ApiEntity fromObject(Object o) {
     // If a string, parse as JSON
     if (o instanceof String) {
       return fromString((String)o);
     }
 
     try {
-      Entity e = new Entity();
+      ApiEntity e = new ApiEntity();
       // Copy all public fields
       for (Field f : o.getClass().getFields()) {
         if (Modifier.isPublic(f.getModifiers())) {
@@ -97,10 +101,10 @@ class Convert {
    * @param jo The JSON object
    * @return The entity
    */
-  static Entity fromJson(JSONObject jo) {
+  static ApiEntity fromJson(JSONObject jo) {
     String[] names = JSONObject.getNames(jo);
 
-    Entity e = new Entity();
+    ApiEntity e = new ApiEntity();
     // No properties -> returns null
     if (names ==  null) {
       return e;
@@ -133,7 +137,7 @@ class Convert {
    */
   static Object fromAnyObject(Object o) {
     Class<?> cls = o.getClass();
-    if (Entity.isPrimitive(cls)) {
+    if (ApiEntity.isPrimitive(cls)) {
       return o;
     } else if (JSONObject.NULL.equals(o)) {
       return null;
@@ -158,7 +162,7 @@ class Convert {
    * @param e The entity
    * @return The JSON string
    */
-  static String toString(Entity e) {
+  static String toString(ApiEntity e) {
     try {
       return toJson(e).toString(2);
     } catch (JSONException je) {
@@ -185,7 +189,7 @@ class Convert {
   static Object toObject(Object o, Class<?> cls, CollectionType type) {
     if (o == null) {
       return null;
-    }  else if (Entity.isPrimitive(o.getClass())) {
+    }  else if (ApiEntity.isPrimitive(o.getClass())) {
       if (!cls.equals(o.getClass())) {
         if (o.getClass().equals(String.class)) {
           if (cls.equals(Long.class)) {
@@ -198,14 +202,14 @@ class Convert {
       return o;
     } else if (type.equals(CollectionType.LIST)) {
       Object possibleList = o;
-      if (o instanceof Entity) {
-        possibleList = ((Entity)o).get("list");
+      if (o instanceof ApiEntity) {
+        possibleList = ((ApiEntity)o).get("list");
       }
       if (possibleList instanceof List<?>) {
         return toTypedList((List<?>)possibleList, cls);
       }
-    } else if (o instanceof Entity) {
-      return toObject((Entity)o, cls);
+    } else if (o instanceof ApiEntity) {
+      return toObject((ApiEntity)o, cls);
     }
     throw new RuntimeException(
         "No conversion for " + o.getClass() + " to " + cls);
@@ -218,8 +222,8 @@ class Convert {
    * @param cls The class to convert to
    * @return The object
    */
-  static Object toObject(Entity e, Class<?> cls) {
-    if (cls.equals(Entity.class)) {
+  static Object toObject(ApiEntity e, Class<?> cls) {
+    if (cls.equals(ApiEntity.class)) {
       return e;
     }
     Object o;
@@ -275,7 +279,7 @@ class Convert {
    * @param e The entity
    * @return The JSON object.
    */
-  static JSONObject toJson(Entity e) {
+  static JSONObject toJson(ApiEntity e) {
     try {
       JSONObject jo = new JSONObject();
       for (String key : e.keySet()) {
@@ -308,11 +312,11 @@ class Convert {
    * @return The JSON object (JSONObject, JSONArray, or primitive)
    */
   static Object toJsonType(Object o) {
-    if (o instanceof Entity) {
-      return toJson((Entity)o);
+    if (o instanceof ApiEntity) {
+      return toJson((ApiEntity)o);
     } else if (o instanceof List<?>) {
       return toJsonArray((List<?>)o);
-    } else if (o == null || Entity.isPrimitive(o.getClass())) {
+    } else if (o == null || ApiEntity.isPrimitive(o.getClass())) {
       return o;
     } else {
       throw new RuntimeException(

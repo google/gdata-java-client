@@ -2,9 +2,10 @@
 
 package com.google.api.data.client.v2.atom;
 
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.DateTime;
-import com.google.api.data.client.v2.FieldInfo;
+import com.google.api.data.client.DateTime;
+import com.google.api.data.client.entity.ClassInfo;
+import com.google.api.data.client.entity.FieldIterator;
+import com.google.api.data.client.entity.FieldIterators;
 
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
@@ -91,24 +92,20 @@ public final class NamespaceDictionary {
       if (ClassInfo.isImmutable(valueClass)) {
         this.textValue = elementValue;
       } else {
-        if (!(elementValue instanceof Map<?, ?>)) {
-          ClassInfo classInfo = ClassInfo.of(elementValue.getClass());
-          for (String name : classInfo.getNames()) {
-            FieldInfo fieldInfo = classInfo.getFieldInfo(name);
-            Object fieldValue = fieldInfo.getValue(elementValue);
-            if (fieldValue != null) {
-              set(name, fieldValue);
+        FieldIterator fieldIterator = FieldIterators.of(elementValue);
+        while (fieldIterator.hasNext()) {
+          String fieldName = fieldIterator.nextFieldName().intern();
+          Object fieldValue = fieldIterator.getFieldValue();
+          if (fieldValue != null) {
+            if (fieldName == "text()") {
+              this.textValue = fieldValue;
+            } else if (fieldName.charAt(0) == '@') {
+              this.attributeNames.add(fieldName.substring(1));
+              this.attributeValues.add(fieldValue);
+            } else {
+              this.subElementNames.add(fieldName);
+              this.subElementValues.add(fieldValue);
             }
-          }
-          if (elementValue instanceof AtomEntity) {
-            elementValue = ((AtomEntity) elementValue).getUnknownKeyMap();
-          }
-        }
-        if (elementValue instanceof Map<?, ?>) {
-          @SuppressWarnings("unchecked")
-          Map<String, Object> mapValue = (Map<String, Object>) elementValue;
-          for (Map.Entry<String, Object> entry : mapValue.entrySet()) {
-            set(entry.getKey().intern(), entry.getValue());
           }
         }
       }
@@ -162,18 +159,6 @@ public final class NamespaceDictionary {
         }
       }
       serializer.endTag(elementNamespaceUri, elementLocalName);
-    }
-
-    private void set(String fieldName, Object fieldValue) {
-      if (fieldName == "text()") {
-        this.textValue = fieldValue;
-      } else if (fieldName.charAt(0) == '@') {
-        this.attributeNames.add(fieldName.substring(1));
-        this.attributeValues.add(fieldValue);
-      } else {
-        this.subElementNames.add(fieldName);
-        this.subElementValues.add(fieldValue);
-      }
     }
   }
 
