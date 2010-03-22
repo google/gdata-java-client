@@ -2,10 +2,10 @@
 
 package com.google.api.data.client.v2.atom;
 
+import com.google.api.data.client.DateTime;
+import com.google.api.data.client.entity.ClassInfo;
+import com.google.api.data.client.entity.FieldInfo;
 import com.google.api.data.client.http.HttpResponse;
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.DateTime;
-import com.google.api.data.client.v2.FieldInfo;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -49,7 +49,7 @@ public final class Atom {
   public static void appendEntryFields(StringBuilder buf, Class<?> itemType) {
     ClassInfo classInfo = ClassInfo.of(itemType);
     boolean first = true;
-    for (String name : classInfo.getNames()) {
+    for (String name : classInfo.getFieldNames()) {
       Field field = classInfo.getField(name);
       if (Modifier.isFinal(field.getModifiers())) {
         continue;

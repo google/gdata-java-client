@@ -2,13 +2,15 @@ package com.google.api.data.client.v2.request;
 
 import com.google.api.data.client.auth.AuthorizedRequest;
 import com.google.api.data.client.auth.Authorizer;
+import com.google.api.data.client.entity.Entity;
+import com.google.api.data.client.entity.FieldIterator;
+import com.google.api.data.client.entity.FieldIterators;
 import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpResponse;
 import com.google.api.data.client.http.HttpSerializer;
 import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.http.InputStreamHttpSerializer;
 import com.google.api.data.client.http.MultipartHttpSerializer;
-import com.google.api.data.client.v2.GDataEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,7 +64,7 @@ public class Discovery {
   }
   
   HttpRequest buildRestRequest(
-      String resource, String method, GDataEntity params) throws IOException {
+      String resource, String method, Entity params) throws IOException {
     String uri = getUrl(resource, method, params);
     
     // separate headers, query parameters and content body
@@ -72,23 +74,24 @@ public class Discovery {
     Authorizer auth = null;
     String etag = null;
     StringBuilder query = null;
-    for (Map.Entry<String, Object> param :
-          params.getUnknownKeyMap().entrySet()) {
-      if (param.getValue() == null) {
+    FieldIterator fieldIterator = FieldIterators.of(params);
+    while (fieldIterator.hasNext()) {
+      String name = fieldIterator.nextFieldName();
+      Object value = fieldIterator.getFieldValue();
+      if (value == null) {
         continue;
       }
-      if ("auth".equals(param.getKey())) {
-        auth = (Authorizer) param.getValue();
-      } else if ("etag".equals(param.getKey())) {
-        etag = (String) param.getValue();
-      } else if ("content".equals(param.getKey())){
-        body = param.getValue();
-      } else if (param.getValue() instanceof String
-          && isRestHeader(param.getKey())) {
-        headers.put(param.getKey(), (String) param.getValue());
-      } else  if (param.getValue() instanceof String) {
+      if ("auth".equals(name)) {
+        auth = (Authorizer) value;
+      } else if ("etag".equals(name)) {
+        etag = (String) value;
+      } else if ("content".equals(name)){
+        body = value;
+      } else if (value instanceof String && isRestHeader(name)) {
+        headers.put(name, (String) value);
+      } else  if (value instanceof String) {
         // TODO(vbarathan): exclude duplicate query parameters
-        if (uri.contains(param.getKey() + "=" + param.getValue())) {
+        if (uri.contains(name + "=" + value)) {
           continue;
         }
         if (query == null) {
@@ -97,7 +100,7 @@ public class Discovery {
         } else {
           query.append("&");
         }
-        query.append(param.getKey()).append("=").append(param.getValue());
+        query.append(name).append("=").append(value);
       }
     }
     if (query != null) {
@@ -141,7 +144,7 @@ public class Discovery {
     
     if (body != null) {
       @SuppressWarnings("unchecked")
-      List<GDataEntity> contents = (List<GDataEntity>) body;
+      List<Entity> contents = (List<Entity>) body;
       // cannot handle more than two parts
       if (contents.size() == 0 || contents.size() > 2) {
         throw new RuntimeException(
@@ -150,11 +153,11 @@ public class Discovery {
       
       HttpSerializer serializer;
       if (contents.size() == 1) {
-        GDataEntity content = contents.get(0);
+        Entity content = contents.get(0);
         serializer = getSerializer(
             (String) content.get("type"), content.get("value"));
       } else {
-        GDataEntity content = contents.get(0);
+        Entity content = contents.get(0);
         HttpSerializer serializer1 = getSerializer(
             (String) content.get("type"), content.get("value"));
         content = contents.get(1);
@@ -168,12 +171,12 @@ public class Discovery {
   }
   
   HttpResponse doRestRequest(
-      String resource, String method, GDataEntity params) throws IOException {
+      String resource, String method, Entity params) throws IOException {
     return buildRestRequest(resource, method, params).execute();
   }
   
   <T> T doRestRequest(
-      String resource, String method, GDataEntity params, Class<T> resultType)
+      String resource, String method, Entity params, Class<T> resultType)
       throws IOException {
     if (resultType == null) {
       buildRestRequest(resource, method, params).execute();
@@ -183,7 +186,7 @@ public class Discovery {
   }
   
   <T> T doRequest(
-      String resource, String method, GDataEntity params, Class<T> resultType)
+      String resource, String method, Entity params, Class<T> resultType)
       throws IOException {
     // determine REST versus RPC request
     // if rest request
@@ -192,7 +195,7 @@ public class Discovery {
     // TODO(vbarathan): RPC request
   }
   
-  public String getUrl(String resource, String method, GDataEntity params) {
+  public String getUrl(String resource, String method, Entity params) {
     String url;
     if (resource.startsWith("http")) {
       url = resource;

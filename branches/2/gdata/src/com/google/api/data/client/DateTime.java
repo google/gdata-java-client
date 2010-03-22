@@ -1,6 +1,6 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2;
+package com.google.api.data.client;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -9,7 +9,7 @@ import java.util.TimeZone;
 
 /**
  * Immutable representation of a date with an optional time and an optional time
- * zone.
+ * zone based on RFC 3339.
  */
 public class DateTime {
 

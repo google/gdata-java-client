@@ -2,10 +2,10 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
+import com.google.api.data.client.DateTime;
+import com.google.api.data.client.entity.ClassInfo;
+import com.google.api.data.client.entity.FieldInfo;
 import com.google.api.data.client.http.HttpResponse;
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.DateTime;
-import com.google.api.data.client.v2.FieldInfo;
 import com.google.api.data.client.v2.jsonc.Jsonc;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 
@@ -384,7 +384,7 @@ public class Jackson {
         }
         throw new IllegalArgumentException(
             parser.getCurrentName()
-                + ": expected type String/Long/long/Double/double/Character/char/BigInteger/BigDecimal/DateTime byte but got "
+                + ": expected type String/Long/long/Double/double/Character/char/BigInteger/BigDecimal/DateTime but got "
                 + fieldClass);
       case VALUE_NULL:
         return null;

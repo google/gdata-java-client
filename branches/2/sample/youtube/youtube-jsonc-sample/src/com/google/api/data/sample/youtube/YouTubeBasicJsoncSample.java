@@ -1,11 +1,11 @@
 package com.google.api.data.sample.youtube;
 
+import com.google.api.data.client.DateTime;
+import com.google.api.data.client.entity.Name;
+import com.google.api.data.client.entity.UriEntity;
+import com.google.api.data.client.http.GData;
 import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.v2.DateTime;
-import com.google.api.data.client.v2.GData;
-import com.google.api.data.client.v2.GDataUri;
-import com.google.api.data.client.v2.Name;
 import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
 import com.google.api.data.youtube.v2.YouTube;
 import com.google.api.data.youtube.v2.YouTubePath;
@@ -23,7 +23,7 @@ public class YouTubeBasicJsoncSample {
 
   private static final int MAX_VIDEOS_TO_SHOW = 5;
 
-  public static class YouTubeUri extends GDataUri {
+  public static class YouTubeUri extends UriEntity {
 
     public String author;
 

@@ -1,6 +1,8 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2;
+package com.google.api.data.client;
+
+import com.google.api.data.client.DateTime;
 
 import junit.framework.TestCase;
 

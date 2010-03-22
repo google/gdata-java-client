@@ -14,21 +14,21 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
+import com.google.api.data.client.DateTime;
 import com.google.api.data.client.auth.clientlogin.ClientLoginAuthorizer;
+import com.google.api.data.client.entity.UriEntity;
+import com.google.api.data.client.http.GData;
 import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.http.InputStreamHttpSerializer;
-import com.google.api.data.client.v2.DateTime;
-import com.google.api.data.client.v2.GData;
-import com.google.api.data.client.v2.GDataUri;
 import com.google.api.data.client.v2.android.AndroidGData;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 import com.google.api.data.client.v2.jsonc.jackson.Jackson;
@@ -171,7 +171,7 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
           PicasaPath path = PicasaPath.feed();
           path.user = "default";
           path.albumId = "default";
-          GDataUri feedUri = new GDataUri(path.build());
+          UriEntity feedUri = new UriEntity(path.build());
           feedUri.alt = "jsonc";
           boolean success = false;
           try {
@@ -305,7 +305,7 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
     try {
       PicasaPath path = PicasaPath.feed();
       path.user = "default";
-      GDataUri uri = new GDataUri(path.build());
+      UriEntity uri = new UriEntity(path.build());
       uri.alt = "jsonc";
       uri.set("kinds", Album.kind);
       HttpRequest request = this.transport.buildGetRequest(uri.build());

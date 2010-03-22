@@ -1,12 +1,12 @@
 package com.google.api.data.sample.picasa;
 
 import com.google.api.data.client.auth.clientlogin.ClientLoginAuthenticator;
+import com.google.api.data.client.entity.Name;
+import com.google.api.data.client.entity.UriEntity;
+import com.google.api.data.client.http.GData;
 import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.http.InputStreamHttpSerializer;
-import com.google.api.data.client.v2.GData;
-import com.google.api.data.client.v2.GDataUri;
-import com.google.api.data.client.v2.Name;
 import com.google.api.data.client.v2.jsonc.JsoncEntity;
 import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
 import com.google.api.data.client.v2.jsonc.jackson.JsoncSerializer;
@@ -29,7 +29,7 @@ public class PicasaBasicJsoncSample {
   private static final int MAX_ALBUMS_TO_SHOW = 3;
   private static final int MAX_PHOTOS_TO_SHOW = 5;
 
-  public static class PicasaUri extends GDataUri {
+  public static class PicasaUri extends UriEntity {
 
     @Name("max-results")
     public Integer maxResults;

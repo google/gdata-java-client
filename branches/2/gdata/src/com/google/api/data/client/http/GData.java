@@ -1,7 +1,5 @@
-package com.google.api.data.client.v2;
+package com.google.api.data.client.http;
 
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.v2.escape.CharEscapers;
 
 public class GData {

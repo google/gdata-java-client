@@ -2,9 +2,9 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
+import com.google.api.data.client.entity.ClassInfo;
+import com.google.api.data.client.entity.FieldInfo;
 import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.FieldInfo;
 
 import org.codehaus.jackson.JsonGenerator;
 
@@ -39,7 +39,7 @@ public final class JsoncPatchRelativeToOriginalSerializer extends
     // TODO: handle Map
     // TODO: handle JsoncObject
     ClassInfo classInfo = ClassInfo.of(item.getClass());
-    for (String name : classInfo.getNames()) {
+    for (String name : classInfo.getFieldNames()) {
       Field field = classInfo.getField(name);
       Object patchedValue = FieldInfo.getFieldValue(field, item);
       Object originalValue = FieldInfo.getFieldValue(field, originalItem);

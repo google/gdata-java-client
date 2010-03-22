@@ -1,5 +1,7 @@
 package com.google.api.data.client.v2.request;
 
+import com.google.api.data.client.entity.Entity;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +17,11 @@ import java.util.Map;
  * ArrayList<UntypedObject>
  * Primitives: String, Boolean, Integer, Long
  *
+ * @deprecated use {@link Entity}
  * @author uidude@google.com (Evan Gilbert)
  */
-public class Entity extends HashMap<String, Object> {
+@Deprecated
+public class ApiEntity extends HashMap<String, Object> {
 
   /**
    * Checks whether a class is an untyped primitive we support.
@@ -39,7 +43,7 @@ public class Entity extends HashMap<String, Object> {
     return sb.toString();
   }
 
-  public Entity merge(Entity other) {
+  public ApiEntity merge(ApiEntity other) {
     for (Map.Entry<String, Object> entry : other.entrySet()) {
       put(entry.getKey(), entry.getValue());
     }
@@ -71,8 +75,8 @@ public class Entity extends HashMap<String, Object> {
         sb.append(",\n");
       }
       sb.append(spaces(indent) + "]");
-    } else if (o instanceof Entity) {
-      Entity e = (Entity)o;
+    } else if (o instanceof ApiEntity) {
+      ApiEntity e = (ApiEntity)o;
       sb.append("{\n");
       for (String key : e.keySet()) {
         sb.append(spaces(indent + 2) + key + ": ");

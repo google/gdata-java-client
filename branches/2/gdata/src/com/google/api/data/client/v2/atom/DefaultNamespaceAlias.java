@@ -1,7 +1,7 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 package com.google.api.data.client.v2.atom;
 
-import com.google.api.data.client.v2.Name;
+import com.google.api.data.client.entity.Name;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

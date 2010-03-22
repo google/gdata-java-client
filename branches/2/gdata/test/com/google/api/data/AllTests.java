@@ -2,7 +2,7 @@
 
 package com.google.api.data;
 
-import com.google.api.data.client.v2.DateTimeTest;
+import com.google.api.data.client.DateTimeTest;
 
 import junit.framework.TestSuite;
 

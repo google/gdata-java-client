@@ -2,24 +2,21 @@
 
 package com.google.api.data.client.v2.jsonc.jackson;
 
+import com.google.api.data.client.DateTime;
+import com.google.api.data.client.entity.FieldIterator;
+import com.google.api.data.client.entity.FieldIterators;
 import com.google.api.data.client.http.HttpRequest;
 import com.google.api.data.client.http.HttpSerializer;
-import com.google.api.data.client.v2.ClassInfo;
-import com.google.api.data.client.v2.DateTime;
-import com.google.api.data.client.v2.FieldInfo;
 import com.google.api.data.client.v2.jsonc.Jsonc;
-import com.google.api.data.client.v2.jsonc.JsoncEntity;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
 
 public class JsoncSerializer implements HttpSerializer {
   // TODO: ability to annotate fields as not needed, or only needed for
@@ -92,34 +89,16 @@ public class JsoncSerializer implements HttpSerializer {
       generator.writeEndArray();
     } else {
       generator.writeStartObject();
-      if (!(value instanceof Map<?, ?>)) {
-        ClassInfo typeInfo = ClassInfo.of(value.getClass());
-        for (String name : typeInfo.getNames()) {
-          Field field = typeInfo.getField(name);
-          Object fieldValue = FieldInfo.getFieldValue(field, value);
-          if (fieldValue != null) {
-            serializeField(generator, name, fieldValue);
-          }
-        }
-        if (value instanceof JsoncEntity) {
-          value = ((JsoncEntity) value).getUnknownKeyMap();
-        }
-      }
-      if (value instanceof Map<?, ?>) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> mapValue = (Map<String, Object>) value;
-        for (Map.Entry<String, Object> entry : mapValue.entrySet()) {
-          serializeField(generator, entry.getKey(), entry.getValue());
+      FieldIterator fieldIterator = FieldIterators.of(value);
+      while (fieldIterator.hasNext()) {
+        String fieldName = fieldIterator.nextFieldName();
+        Object fieldValue = fieldIterator.getFieldValue();
+        if (fieldValue != null) {
+          generator.writeFieldName(fieldName);
+          serialize(generator, fieldValue);
         }
       }
       generator.writeEndObject();
     }
-  }
-
-  private static void serializeField(JsonGenerator generator, String name,
-      Object fieldValue) throws IOException {
-    generator.writeFieldName(name);
-    serialize(generator, fieldValue);
-
   }
 }

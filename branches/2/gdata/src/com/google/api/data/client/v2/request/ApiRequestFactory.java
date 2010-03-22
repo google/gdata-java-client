@@ -3,10 +3,10 @@
 package com.google.api.data.client.v2.request;
 
 import com.google.api.data.client.auth.Authorizer;
+import com.google.api.data.client.entity.Entity;
 import com.google.api.data.client.http.HttpTransport;
 import com.google.api.data.client.http.LowLevelHttpTransportInterface;
 import com.google.api.data.client.http.net.NetGData;
-import com.google.api.data.client.v2.GDataEntity;
 import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
 import com.google.api.data.client.v2.jsonc.jackson.JsoncSerializer;
 
@@ -32,7 +32,7 @@ public class ApiRequestFactory {
     private LowLevelHttpTransportInterface lowLevelTransport;
     private HttpTransport transport;
 
-    private GDataEntity paramMap = new GDataEntity();
+    private Entity paramMap = new Entity();
 
     public Builder() {
     }
@@ -97,10 +97,10 @@ public class ApiRequestFactory {
 
   private String resource = null;
   private ServiceDocument serviceDoc = null;
-  private GDataEntity paramMap = new GDataEntity();
+  private Entity paramMap = new Entity();
   private Discovery discovery;
   
-  private ApiRequestFactory(Discovery discovery, GDataEntity params) {
+  private ApiRequestFactory(Discovery discovery, Entity params) {
     this.discovery = discovery;
     this.paramMap = params;
   }
@@ -114,35 +114,35 @@ public class ApiRequestFactory {
     return resource;
   }
 
-  public ApiRequest<GDataEntity> request(String method) {
-    return new ApiRequest<GDataEntity>(discovery, method, paramMap)
-        .returning(GDataEntity.class);
+  public ApiRequest<Entity> request(String method) {
+    return new ApiRequest<Entity>(discovery, method, paramMap)
+        .returning(Entity.class);
   }
 
-  public ApiRequest<GDataEntity> request(String resource, String method) {
-    return new ApiRequest<GDataEntity>(discovery, resource, method, paramMap);
+  public ApiRequest<Entity> request(String resource, String method) {
+    return new ApiRequest<Entity>(discovery, resource, method, paramMap);
   }
 
-  public ApiRequest<GDataEntity> query(String resource) {
-    return request(resource, "query").returning(GDataEntity.class);
+  public ApiRequest<Entity> query(String resource) {
+    return request(resource, "query").returning(Entity.class);
   }
 
-  public ApiRequest<GDataEntity> insert(String resource, Object data) {
+  public ApiRequest<Entity> insert(String resource, Object data) {
     return request(resource, "insert").withContent(data)
-        .returning(GDataEntity.class);
+        .returning(Entity.class);
   }
 
-  public ApiRequest<GDataEntity> update(String resource, Object data) {
+  public ApiRequest<Entity> update(String resource, Object data) {
     return request(resource, "update").withContent(data)
-        .returning(GDataEntity.class);
+        .returning(Entity.class);
   }
 
-  public ApiRequest<GDataEntity> delete(String resource) {
+  public ApiRequest<Entity> delete(String resource) {
     return request(resource, "delete");
   }
 
-  public ApiRequest<GDataEntity> batch(String resource) {
-    return request(resource, "batch").returning(GDataEntity.class);
+  public ApiRequest<Entity> batch(String resource) {
+    return request(resource, "batch").returning(Entity.class);
   }
 
   /**
