@@ -1,0 +1,15 @@
+{
+  "id":"maps",
+  "name":"Google Maps Data API",
+  "authTokenType":"local",
+    "versions":[{
+    "id": "2",
+  "atom":{
+    "namespaces":{
+      "":"http://www.w3.org/2005/Atom",
+      "app":"http://www.w3.org/2007/app",
+      "openSearch":"http://a9.com/-/spec/opensearch/1.1/",
+      "gAcl":"http://schemas.google.com/acl/2007"
+    }
+  } }]
+}
