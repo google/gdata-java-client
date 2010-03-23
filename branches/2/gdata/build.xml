@@ -4,81 +4,43 @@
     You must have ANDROID_JAR set to the location of android.jar (minimum 2.0),
     and JAVA_HOME set to a JDK (minimum 1.5) installation.
   -->
-<project basedir="." default="compile" name="gdata">
+<project basedir="." default="compile" name="google-api">
 
-  <property environment="env" />
-  <property file="build.properties" />
-  <property name="classes.dir" value="${build.dir}/classes" />
+  <import file="build-common.xml"/>
+  <import file="build-apis.xml"/>
+
   <property name="classes.test.dir" value="${build.dir}/classes-test" />
-
-  <target name="compile" description="Compile">
-    <mkdir dir="${classes.dir}" />
-    <javac debug="true" destdir="${classes.dir}" source="1.5" target="1.5">
-      <compilerarg value="-Xlint:all" />
-      <src path="${src.dir}" />
-      <classpath>
-        <!-- TODO Remove once request layer is using generic jsonEntity -->
-        <pathelement location="${lib.dir}/json.jar" />
-        <!--
-          TODO change to this env variable @release time <pathelement
-          location="${env.ANDROID_JAR}" />
-        -->
-        <pathelement location="${lib.dir}/android-2.0.1.jar" />
-        <pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
-      </classpath>
-    </javac>
-  </target>
 
   <target name="clean" description="Remove generated files.">
     <delete dir="${build.dir}" />
   </target>
 
-  <target name="dist-init">
-    <property name="dist.dir" value="${build.dir}/dist" />
-    <mkdir dir="${dist.dir}" />
-  </target>
-
   <target name="zipsrc" depends="dist-init" description="Zip source.">
-    <zip destfile="${dist.dir}/src.zip" basedir="${src.dir}" />
+    <zip destfile="${dist.dir}/google-api-${version}-src.zip" basedir="${src.dir}" />
   </target>
 
-  <target name="gdata-full-jar" depends="compile,dist-init">
-    <jar destfile="${dist.dir}/gdata-full.jar" basedir="${classes.dir}" />
+  <target name="google-api-full-jar" depends="compile,dist-init">
+    <jar destfile="${dist.dir}/google-api-${version}.jar" basedir="${classes.dir}" />
   </target>
 
-  <target name="gdata-android-v2-jar" depends="compile,dist-init">
-    <jar destfile="${dist.dir}/gdata-android-v2.jar" basedir="${classes.dir}"
+  <target name="google-api-android-v2-jar" depends="compile,dist-init">
+    <jar destfile="${android.dir}/google-api-android-v2.jar" basedir="${classes.dir}"
       includes="com/google/api/data/client/*.class,com/google/api/data/client/auth/*.class,com/google/api/data/client/auth/clientlogin/*.class,com/google/api/data/client/http/*.class,com/google/api/data/client/http/apache/*.class,com/google/api/data/client/v2/android/*.class,com/google/api/data/client/v2/apache/*.class,com/google/api/data/client/v2/escape/*.class" />
   </target>
 
-  <target name="gdata-atom-v2-jar" depends="compile,dist-init">
-    <jar destfile="${dist.dir}/gdata-atom-v2.jar" basedir="${classes.dir}"
-      includes="com/google/api/data/client/entity/**,com/google/api/data/client/v2/atom/**,com/google/api/data/client/v2/android/atom/**" />
+  <target name="google-api-entity-jar" depends="compile,dist-init">
+    <jar destfile="${android.dir}/google-api-entity.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/client/entity/*.class" />
   </target>
 
-  <target name="gdata-jsonc-v2-jar" depends="compile,dist-init">
-    <jar destfile="${dist.dir}/gdata-jsonc-v2.jar" basedir="${classes.dir}"
-      includes="com/google/api/data/client/entity/**,com/google/api/data/client/v2/jsonc/**" />
+  <target name="google-api-atom-v2-jar" depends="compile,dist-init">
+    <jar destfile="${android.dir}/google-api-atom-v2.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/client/v2/atom/*.class,com/google/api/data/client/v2/android/atom/*.class" />
   </target>
 
-  <target name="gdata-calendar-v2-jar" depends="compile,dist-init">
-    <jar destfile="${dist.dir}/gdata-calendar-v2.jar" basedir="${classes.dir}"
-      includes="com/google/api/data/calendar/v2/**" />
-  </target>
-
-  <target name="gdata-maps-v2-jar" depends="compile,dist-init">
-    <jar destfile="${dist.dir}/gdata-maps-v2.jar" basedir="${classes.dir}"
-      includes="com/google/api/data/maps/v2/**" />
-  </target>
-
-  <target name="gdata-picasa-v2-jar" depends="compile,dist-init">
-    <jar destfile="${dist.dir}/gdata-picasa-v2.jar" basedir="${classes.dir}"
-      includes="com/google/api/data/picasa/v2/**" />
-  </target>
-
-  <target name="gdata-youtube-v2-jar" depends="compile,dist-init">
-    <jar destfile="${dist.dir}/gdata-youtube-v2.jar" basedir="${classes.dir}"
-      includes="com/google/api/data/youtube/v2/**" />
+  <target name="google-api-jsonc-v2-jar" depends="compile,dist-init">
+    <jar destfile="${android.dir}/google-api-jsonc-v2.jar" basedir="${classes.dir}"
+      includes="com/google/api/data/client/v2/jsonc/*.class,com/google/api/data/client/v2/jsonc/jackson/*.class" />
   </target>
 
   <target name="javadoc" description="Generate JavaDoc" depends="dist-init">
@@ -86,8 +48,8 @@
     <delete dir="${javadoc.dir}" />
     <mkdir dir="${javadoc.dir}" />
     <javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}"
-      use="true" windowtitle="GData Java Library ${version}" doctitle="GData Java Library ${version}"
-      packagenames="com.google.api.data.picasa.v2,com.google.api.data.maps.v2,com.google.api.data.client.v2.jsonc,com.google.api.data.client.auth,com.google.api.data.client.http,com.google.api.data.client.entity,com.google.api.data.youtube.v2,com.google.api.data.client.v2.request,com.google.api.data.client.http.apache,com.google.api.data.client.v2.escape,com.google.api.data.client.v2.android,com.google.api.data.client.http.net,com.google.api.data.calendar.v2.atom,com.google.api.data.client.auth.clientlogin,com.google.api.data.client.v2.android.atom,com.google.api.data.client.v2.jsonc.jackson,com.google.api.data.client.v2.atom,com.google.api.data.maps.v2.atom,com.google.api.data.picasa.v2.atom,com.google.api.data.calendar.v2">
+      use="true" windowtitle="Google API Java Library ${version}" doctitle="Google API Java Library ${version}"
+      packagenames="${api.packagenames},com.google.api.data.client,com.google.api.data.client.auth,com.google.api.data.client.auth.clientlogin,com.google.api.data.client.entity,com.google.api.data.client.http,com.google.api.data.client.http.apache,com.google.api.data.client.http.net,com.google.api.data.client.v2.android,com.google.api.data.client.v2.android.atom,com.google.api.data.client.v2.atom,com.google.api.data.client.v2.escape,com.google.api.data.client.v2.jsonc,com.google.api.data.client.v2.jsonc.jackson,com.google.api.data.client.v2.request">
       <classpath>
         <!--
           TODO change to this env variable @release time <pathelement
@@ -101,21 +63,21 @@
   </target>
 
   <target name="jars" description="Compile all jars"
-    depends="gdata-full-jar,gdata-android-v2-jar,gdata-atom-v2-jar,gdata-jsonc-v2-jar,gdata-calendar-v2-jar,gdata-maps-v2-jar,gdata-picasa-v2-jar,gdata-youtube-v2-jar" />
+    depends="google-api-full-jar,google-api-android-v2-jar,google-api-entity-jar,google-api-atom-v2-jar,google-api-jsonc-v2-jar,apijars" />
 
   <target name="dist"
     description="Build the distribution zip file that includes all compiled jar files"
     depends="jars,zipsrc,javadoc">
-    <zip destfile="${build.dir}/gdata.java-${version}.zip" basedir="${dist.dir}" />
+    <zip destfile="${build.dir}/google-api-java-${version}.zip" basedir="${dist.dir}" />
   </target>
 
-  <target name="test" depends="gdata-full-jar" description="Execute JUnit tests.">
+  <target name="test" depends="google-api-full-jar" description="Execute JUnit tests.">
     <mkdir dir="${classes.test.dir}" />
     <javac srcdir="${test.dir}" debug="true" destdir="${classes.test.dir}"
       source="1.5" target="1.5">
       <compilerarg value="-Xlint:all" />
       <classpath>
-        <pathelement location="${dist.dir}/gdata-full.jar" />
+        <pathelement location="${dist.dir}/google-api-${version}.jar" />
         <pathelement location="${lib.dir}/junit.jar" />
       </classpath>
     </javac>
@@ -123,7 +85,7 @@
       taskname="junit">
       <classpath>
         <pathelement location="${classes.test.dir}" />
-        <pathelement location="${dist.dir}/gdata-full.jar" />
+        <pathelement location="${dist.dir}/google-api-${version}.jar" />
         <pathelement location="${lib.dir}/junit.jar" />
       </classpath>
       <arg value="com.google.api.data.AllTests" />

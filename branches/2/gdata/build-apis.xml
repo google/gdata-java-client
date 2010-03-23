@@ -1,0 +1,54 @@
+<?xml version='1.0'?>
+
+<project basedir='.' default='apijars' name='apis'>
+
+  <import file='build-common.xml'/>
+
+  <property name='api.packagenames'
+      value='com.google.api.data.calendar.v2,com.google.api.data.calendar.v2.atom,com.google.api.data.maps.v2,com.google.api.data.maps.v2.atom,com.google.api.data.picasa.v2,com.google.api.data.picasa.v2.atom,com.google.api.data.youtube.v2'
+      />
+
+  <target name='api-init' depends='compile,dist-init'>
+    <property name='api.dist' value='${dist.dir}/apis' />
+    <mkdir dir='${api.dist}' />
+  </target>
+
+  <target name='calendar-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/calendar-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/calendar/v2/*.class' />
+  </target>
+
+  <target name='calendar-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/calendar-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/calendar/v2/atom/*.class' />
+  </target>
+
+  <target name='maps-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/maps-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/maps/v2/*.class' />
+  </target>
+
+  <target name='maps-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/maps-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/maps/v2/atom/*.class' />
+  </target>
+
+  <target name='picasa-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/picasa-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/picasa/v2/*.class' />
+  </target>
+
+  <target name='picasa-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/picasa-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/picasa/v2/atom/*.class' />
+  </target>
+
+  <target name='youtube-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/youtube-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/youtube/v2/*.class' />
+  </target>
+
+   <target name='apijars' description='Compile all API jars'
+       depends='calendar-v2-jar,calendar-v2-atom-jar,maps-v2-jar,maps-v2-atom-jar,picasa-v2-jar,picasa-v2-atom-jar,youtube-v2-jar'
+       />
+</project>

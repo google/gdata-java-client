@@ -2,13 +2,15 @@
 
 package com.google.api.data.picasa.v2;
 
-/** Picasa Web Albums Data API utilities and constants. */
+/** Constants for the Picasa Web Albums Data API. */
 public final class Picasa {
 
-  /** Picasa Web Album's authentication type to use. */
+/** The authentication token type or service name. */
   public static final String AUTH_TOKEN_TYPE = "lh2";
-  
-  /** Picasa Web Album's major version. */
+
+/** Version name. */
   public static final String VERSION = "2";
 
+  private Picasa() {
+  }
 }
