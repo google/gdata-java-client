@@ -23,18 +23,18 @@ import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.ParseException;
 
 /**
- * Allows editors to invite others.
+ * Whether the document is published outside of its domain.
  *
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = DocsNamespace.DOCS_ALIAS,
     nsUri = DocsNamespace.DOCS,
-    localName = WritersCanInvite.XML_NAME)
-public class WritersCanInvite extends ExtensionPoint {
+    localName = PublishOutsideDomain.XML_NAME)
+public class PublishOutsideDomain extends ExtensionPoint {
 
   /** XML element name */
-  static final String XML_NAME = "writersCanInvite";
+  static final String XML_NAME = "publishOutsideDomain";
 
   /** XML "value" attribute name */
   private static final String VALUE = "value";
@@ -45,7 +45,7 @@ public class WritersCanInvite extends ExtensionPoint {
   /**
    * Default mutable constructor.
    */
-  public WritersCanInvite() {
+  public PublishOutsideDomain() {
     super();
   }
 
@@ -54,7 +54,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @param value value.
    */
-  public WritersCanInvite(Boolean value) {
+  public PublishOutsideDomain(Boolean value) {
     super();
     setValue(value);
     setImmutable(true);
@@ -103,7 +103,7 @@ public class WritersCanInvite extends ExtensionPoint {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(WritersCanInvite.class);
+        ExtensionDescription.getDefaultDescription(PublishOutsideDomain.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -128,7 +128,7 @@ public class WritersCanInvite extends ExtensionPoint {
     if (!sameClassAs(obj)) {
       return false;
     }
-    WritersCanInvite other = (WritersCanInvite) obj;
+    PublishOutsideDomain other = (PublishOutsideDomain) obj;
     return eq(value, other.value);
   }
 
@@ -143,7 +143,7 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   public String toString() {
-    return "{WritersCanInvite value=" + value + "}";
+    return "{PublishOutsideDomain value=" + value + "}";
   }
 
 }

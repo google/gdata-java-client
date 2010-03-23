@@ -52,7 +52,7 @@ public class PdfEntry extends DocumentListEntry {
    */
   public PdfEntry() {
     super();
-    getCategories().remove(DocumentListEntry.UNKNOWN_CATEGORY);
+    getCategories().remove(DocumentListEntry.CATEGORY);
     getCategories().add(CATEGORY);
   }
 

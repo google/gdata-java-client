@@ -53,7 +53,7 @@ public class PresentationEntry extends DocumentListEntry {
    */
   public PresentationEntry() {
     super();
-    getCategories().remove(DocumentListEntry.UNKNOWN_CATEGORY);
+    getCategories().remove(DocumentListEntry.CATEGORY);
     getCategories().add(CATEGORY);
   }
 

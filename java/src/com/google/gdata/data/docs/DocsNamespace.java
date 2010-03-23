@@ -40,3 +40,4 @@ public class DocsNamespace {
   public static final XmlNamespace DOCS_NS = new XmlNamespace(DOCS_ALIAS, DOCS);
 
 }
+

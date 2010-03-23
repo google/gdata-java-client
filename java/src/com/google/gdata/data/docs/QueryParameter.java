@@ -260,3 +260,4 @@ public class QueryParameter extends ExtensionPoint {
   }
 
 }
+

@@ -30,6 +30,9 @@ public class SiteQuery extends Query {
   /** Include all sites that can be viewed. */
   private String includeAllSites;
 
+  /** Handle web address mappings. */
+  private Boolean withMappings;
+
   /**
    * Constructs a new query object that targets a feed.  The initial state of
    * the query contains no parameters, meaning all entries in the feed would be
@@ -64,6 +67,33 @@ public class SiteQuery extends Query {
       // set to new value for customer parameter
       this.includeAllSites = includeAllSites;
       setStringCustomParameter("include-all-sites", includeAllSites);
+    }
+  }
+
+  /**
+   * Returns the handle web address mappings.
+   *
+   * @return handle web address mappings or <code>null</code> to indicate that
+   *     the parameter is not set.
+   */
+  public Boolean getWithMappings() {
+    return withMappings;
+  }
+
+  /**
+   * Sets the handle web address mappings.
+   *
+   * @param withMappings handle web address mappings or <code>null</code> to
+   *     remove this parameter if set.
+   */
+  public void setWithMappings(Boolean withMappings) {
+    // check if setting to existing value
+    if (this.withMappings == null ? withMappings != null :
+        !this.withMappings.equals(withMappings)) {
+      // set to new value for customer parameter
+      this.withMappings = withMappings;
+      setStringCustomParameter("with-mappings",
+          withMappings == null ? null : withMappings.toString());
     }
   }
 

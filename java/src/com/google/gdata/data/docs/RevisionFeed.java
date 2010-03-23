@@ -17,12 +17,14 @@
 package com.google.gdata.data.docs;
 
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.Kind;
 
 /**
  * A feed for accessing different revisions of a doclist document.
  *
  * 
  */
+@Kind.Term(RevisionEntry.KIND)
 public class RevisionFeed
     extends BaseFeed<RevisionFeed, RevisionEntry> {
 
@@ -31,5 +33,6 @@ public class RevisionFeed
    */
   public RevisionFeed() {
     super(RevisionEntry.class);
+    getCategories().add(RevisionEntry.CATEGORY);
   }
 }

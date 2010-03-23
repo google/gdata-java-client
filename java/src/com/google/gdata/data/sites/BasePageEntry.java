@@ -18,6 +18,7 @@ package com.google.gdata.data.sites;
 
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
 
 /**
  * An entry representing a page in the site. These entries have namesand
@@ -84,6 +85,15 @@ public abstract class BasePageEntry<E extends BasePageEntry<E>> extends
    */
   public boolean hasPageName() {
     return hasExtension(PageName.class);
+  }
+
+  /**
+   * Returns the template sites link.
+   *
+   * @return Template sites link or {@code null} for none.
+   */
+  public Link getTemplateLink() {
+    return getLink(SitesLink.Rel.TEMPLATE, Link.Type.ATOM);
   }
 
   @Override

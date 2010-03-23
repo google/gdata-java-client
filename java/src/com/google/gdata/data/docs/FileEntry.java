@@ -18,39 +18,42 @@ package com.google.gdata.data.docs;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.Kind;
-import com.google.gdata.util.Namespaces;
 
 /**
- * An entry representing a single photo within a {@link DocumentListFeed}.
- *
+ * An entry representing a single file within a {@link DocumentListFeed}.
+ * This entry represents blobs stored in BlobStore that we do not
+ * recognize as specific types.
+ * 
  * 
  */
-@Kind.Term(PhotoEntry.KIND)
-public class PhotoEntry extends DocumentListEntry {
+@Kind.Term(FileEntry.KIND)
+public class FileEntry extends DocumentListEntry {
 
   /**
    * Label for category.
    */
-  public static final String LABEL = "photo";
+  public static final String LABEL = "file";
 
   /**
-   * Kind category term used to label the entries.
+   * Kind category term used to label the entries which are
+   * of document type.
    */
   public static final String KIND = DocumentListFeed.DOCUMENT_NAMESPACE
-      + "#" + PhotoEntry.LABEL;
+      + "#" + FileEntry.LABEL;
 
   /**
-   * Category used to label entries that contain photo data.
+   * Category used to label entries which are of document type.
    */
   public static final Category CATEGORY =
-      new Category(Namespaces.gKind, KIND, LABEL);
+    new Category(com.google.gdata.util.Namespaces.gKind, KIND, LABEL);
 
   /**
-   * Constructs a new uninitialized entry, to be populated by GData parsers.
+   * Constructs a new uninitialized entry, to be populated by the GData
+   * parsers.
    */
-  public PhotoEntry() {
+  public FileEntry() {
     super();
-    getCategories().remove(DocumentListEntry.UNKNOWN_CATEGORY);
+    getCategories().remove(DocumentListEntry.CATEGORY);
     getCategories().add(CATEGORY);
   }
 
@@ -58,7 +61,7 @@ public class PhotoEntry extends DocumentListEntry {
    * Constructs a new entry by doing a shallow copy from another BaseEntry
    * instance.
    */
-  public PhotoEntry(BaseEntry<PhotoEntry> sourceEntry) {
+  public FileEntry(BaseEntry sourceEntry) {
     super(sourceEntry);
   }
 }
