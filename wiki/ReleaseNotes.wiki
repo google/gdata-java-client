@@ -8,6 +8,10 @@ The wiki page shows the release notes for the current binary download, the subve
 
 = Details =
 
+== 1.41.1 ==
+   * Updated Document List Data API.
+   * Updates Sites Data API.
+
 == 1.41.0 ==
    * Added support for resumable media upload feature.
    * Added support for Apps for your domain Admin Settings API.
