@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
  * 
  * 
  */
-@Kind.Term(DocumentListEntry.UNKNOWN_KIND)
+@Kind.Term(DocumentListEntry.KIND)
 public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
   /**
@@ -121,21 +121,48 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
   /**
    * Label for category.
+   * 
+   * @deprecated Use LABEL instead.
    */
+  @Deprecated
   public static final String UNKNOWN_LABEL = "unknown";
 
   /**
    * Kind category term used to label the entries which are
    * of document type.
+   * 
+   * @deprecated Use KIND instead.
    */
+  @Deprecated
   public static final String UNKNOWN_KIND = DocsNamespace.DOCS_PREFIX
       + DocumentListEntry.UNKNOWN_LABEL;
 
   /**
    * Category used to label entries which are of document type.
+   * 
+   * @deprecated Use CATEGORY instead.
    */
+  @Deprecated
   public static final Category UNKNOWN_CATEGORY = new Category(
       Namespaces.gKind, UNKNOWN_KIND, UNKNOWN_LABEL);
+
+  /**
+   * Label for category.
+   */
+  public static final String LABEL = "item";
+
+  /**
+   * Kind category term used to label the entries which are
+   * of item type.
+   */
+  public static final String KIND = DocsNamespace.DOCS_PREFIX
+      + DocumentListEntry.LABEL;
+
+  /**
+   * Category used to label entries which are of item type.
+   */
+  public static final Category CATEGORY = new Category(
+      Namespaces.gKind, KIND, LABEL);
 
   public static final String FOLDERS_NAMESPACE =
       DocsNamespace.DOCS + "/folders";

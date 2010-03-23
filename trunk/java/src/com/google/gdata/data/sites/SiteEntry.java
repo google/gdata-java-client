@@ -20,6 +20,8 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Link;
 
+import java.util.List;
+
 /**
  * An entry representing a site.
  *
@@ -136,6 +138,15 @@ public class SiteEntry extends BaseEntry<SiteEntry> {
    */
   public Link getSourceLink() {
     return getLink(SitesLink.Rel.SOURCE, Link.Type.ATOM);
+  }
+
+  /**
+   * Returns the webAddressMapping sites link.
+   *
+   * @return WebAddressMapping sites link.
+   */
+  public List<Link> getWebAddressMappingLinks() {
+    return getLinks(SitesLink.Rel.WEBADDRESSMAPPING, Link.Type.HTML);
   }
 
   @Override

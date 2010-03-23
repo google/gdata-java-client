@@ -17,6 +17,9 @@
 package com.google.gdata.data.docs;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.Category;
+import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
 import com.google.gdata.data.Person;
 
 /**
@@ -29,12 +32,37 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
   public static final String PUBLISH_NAMESPACE =
       DocsNamespace.DOCS_PREFIX + "publish";
 
+  /**
+   * Label for category.
+   */
+  public static final String LABEL = "revision";
+  
+  /**
+   * Kind category term used to label revision entries.
+   */
+  public static final String KIND = DocsNamespace.DOCS_PREFIX + LABEL;
+
+  /**
+   * Category used to label revision entries.
+   */
+  public static final Category CATEGORY =
+    new Category(com.google.gdata.util.Namespaces.gKind, KIND, LABEL);
+
   public RevisionEntry() {
     super();
+    getCategories().add(CATEGORY);
   }
 
   public RevisionEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
+  }
+  
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    extProfile.declare(RevisionEntry.class, Publish.class);
+    extProfile.declare(RevisionEntry.class, PublishAuto.class);
+    extProfile.declare(RevisionEntry.class, PublishOutsideDomain.class);
   }
 
   /**
@@ -61,4 +89,79 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
     return null;
   }
 
+  /**
+   * Returns the publically accessible link for the published revision.
+   */
+  public Link getPublishLink() {
+    return getLink(PUBLISH_NAMESPACE, Link.Type.HTML);
+  }
+
+  /**
+   * Returns whether the revision is published.
+   *
+   * @return whether revision is published
+   */
+  public Boolean isPublish() {
+    Publish publish = getExtension(Publish.class);
+    return publish == null ? null : publish.getValue();
+  }
+
+  /**
+   * Sets whether the revision is published.
+   * 
+   * @param publish true if revision is published
+   */
+  public void setPublish(Boolean publish) {
+    if (publish == null) {
+      removeExtension(Publish.class);
+    } else {
+      setExtension(new Publish(publish));
+    }
+  }
+
+  /**
+   * Returns whether changes to the document are automatically re-published.
+   * 
+   * @return whether auto re-published
+   */
+  public Boolean isPublishAuto() {
+    PublishAuto publishAuto = getExtension(PublishAuto.class);
+    return publishAuto == null ? null : publishAuto.getValue();
+  }
+
+  /**
+   * Sets whether changes to the document are automatically re-published.
+   * 
+   * @param publishAuto true if auto re-published
+   */
+  public void setPublishAuto(Boolean publishAuto) {
+    if (publishAuto == null) {
+      removeExtension(PublishAuto.class);
+    } else {
+      setExtension(new PublishAuto(publishAuto));
+    }
+  }
+
+  /**
+   * Sets whether the document is published outside of its domain.
+   * 
+   * @return whether outside domain
+   */
+  public Boolean isPublishOutsideDomain() {
+    PublishOutsideDomain publishOutsideDomain = getExtension(PublishOutsideDomain.class);
+    return publishOutsideDomain == null ? null : publishOutsideDomain.getValue();
+  }
+
+  /**
+   * Sets whether the document is published outside of its domain.
+   * 
+   * @param publishOutsideDomain true if outside domain
+   */
+  public void setPublishOutsideDomain(Boolean publishOutsideDomain) {
+    if (publishOutsideDomain == null) {
+      removeExtension(PublishOutsideDomain.class);
+    } else {
+      setExtension(new PublishOutsideDomain(publishOutsideDomain));
+    }
+  }
 }

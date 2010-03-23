@@ -14,29 +14,29 @@
  */
 
 
-package com.google.gdata.data.docs;
+package com.google.gdata.data.sites;
 
 import com.google.gdata.util.Namespaces;
 
 /**
- * Describes a viewed category.
+ * Describes a template category.
  *
  * 
  */
-public class ViewedCategory {
+public class TemplateCategory {
 
   /** Human-readable label. */
   public static final class Label {
 
-    /** Viewed label. */
-    public static final String VIEWED = "viewed";
+    /** Template template category. */
+    public static final String TEMPLATE = "template";
 
   }
 
   /** Scheme (domain). */
   public static final class Scheme {
 
-    /** Labels scheme. */
+    /** Labels template category. */
     public static final String LABELS = Namespaces.gPrefix + "labels";
 
   }
@@ -44,13 +44,13 @@ public class ViewedCategory {
   /** Term. */
   public static final class Term {
 
-    /** Viewed term. */
-    public static final String VIEWED = Namespaces.gPrefix + "viewed";
+    /** Template template category. */
+    public static final String TEMPLATE = Namespaces.gPrefix + "template";
 
   }
 
   /** Private constructor to ensure class is not instantiated. */
-  private ViewedCategory() {}
+  private TemplateCategory() {}
 
 }
 

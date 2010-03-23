@@ -1,8 +1,13 @@
 Google Data API - Release Notes
 
+Notes for v1.41.1
+-----------------
+o  Updated Document List Data API.
+o  Updated Sites Data API.
+
 Notes for v1.41.0
 ------------------
-o  Added support for resumabel media upload feature.
+o  Added support for resumable media upload feature.
 o  Updated Appsforyour Domain Admin settings API.
 o  Bug fix in Webmaster tools API to handle file-content attribute.
 

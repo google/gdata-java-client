@@ -52,7 +52,7 @@ public class DocumentEntry extends DocumentListEntry {
    */
   public DocumentEntry() {
     super();
-    getCategories().remove(DocumentListEntry.UNKNOWN_CATEGORY);
+    getCategories().remove(DocumentListEntry.CATEGORY);
     getCategories().add(CATEGORY);
   }
 

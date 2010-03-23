@@ -16,27 +16,39 @@
 
 package com.google.gdata.data.docs;
 
+import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.Kind;
-import com.google.gdata.data.media.MediaFeed;
 
 /**
- * A feed for managing lists of documents from the Google Docs &amp;
- * Spreadsheets.
+ * Describes an Metadata feed.
  *
  * 
  */
-@Kind.Term(DocumentListEntry.KIND)
-public class DocumentListFeed
-    extends MediaFeed<DocumentListFeed, DocumentListEntry> {
-
-  public static final String DOCUMENT_NAMESPACE
-      = "http://schemas.google.com/docs/2007";
+@Kind.Term(MetadataEntry.KIND)
+public class MetadataFeed extends BaseFeed<MetadataFeed, MetadataEntry> {
 
   /**
-   * Contructs an empty feed.
+   * Default mutable constructor.
    */
-  public DocumentListFeed() {
-    super(DocumentListEntry.class);
-    getCategories().add(DocumentListEntry.CATEGORY);
+  public MetadataFeed() {
+    super(MetadataEntry.class);
+    getCategories().add(MetadataEntry.CATEGORY);
   }
+
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link BaseFeed} instance.
+   *
+   * @param sourceFeed source feed
+   */
+  public MetadataFeed(BaseFeed<?, ?> sourceFeed) {
+    super(MetadataEntry.class, sourceFeed);
+  }
+
+  @Override
+  public String toString() {
+    return "{MetadataFeed " + super.toString() + "}";
+  }
+
 }
+

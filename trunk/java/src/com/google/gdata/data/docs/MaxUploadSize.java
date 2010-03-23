@@ -16,48 +16,81 @@
 
 package com.google.gdata.data.docs;
 
+import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionDescription;
-import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.ParseException;
 
 /**
- * Allows editors to invite others.
+ * Maximum upload file size.
  *
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = DocsNamespace.DOCS_ALIAS,
     nsUri = DocsNamespace.DOCS,
-    localName = WritersCanInvite.XML_NAME)
-public class WritersCanInvite extends ExtensionPoint {
+    localName = MaxUploadSize.XML_NAME)
+public class MaxUploadSize extends AbstractExtension {
 
   /** XML element name */
-  static final String XML_NAME = "writersCanInvite";
+  static final String XML_NAME = "maxUploadSize";
 
-  /** XML "value" attribute name */
-  private static final String VALUE = "value";
+  /** XML "kind" attribute name */
+  private static final String KIND = "kind";
+
+  /** Kind */
+  private String kind = null;
 
   /** Value */
-  private Boolean value = null;
+  private Long value = null;
 
   /**
    * Default mutable constructor.
    */
-  public WritersCanInvite() {
+  public MaxUploadSize() {
     super();
   }
 
   /**
    * Immutable constructor.
    *
+   * @param kind kind.
    * @param value value.
    */
-  public WritersCanInvite(Boolean value) {
+  public MaxUploadSize(String kind, Long value) {
     super();
+    setKind(kind);
     setValue(value);
     setImmutable(true);
+  }
+
+  /**
+   * Returns the kind.
+   *
+   * @return kind
+   */
+  public String getKind() {
+    return kind;
+  }
+
+  /**
+   * Sets the kind.
+   *
+   * @param kind kind or <code>null</code> to reset
+   */
+  public void setKind(String kind) {
+    throwExceptionIfImmutable();
+    this.kind = kind;
+  }
+
+  /**
+   * Returns whether it has the kind.
+   *
+   * @return whether it has the kind
+   */
+  public boolean hasKind() {
+    return getKind() != null;
   }
 
   /**
@@ -65,7 +98,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @return value
    */
-  public Boolean getValue() {
+  public Long getValue() {
     return value;
   }
 
@@ -74,7 +107,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @param value value or <code>null</code> to reset
    */
-  public void setValue(Boolean value) {
+  public void setValue(Long value) {
     throwExceptionIfImmutable();
     this.value = value;
   }
@@ -90,6 +123,15 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   protected void validate() {
+    if (kind == null) {
+      throwExceptionForMissingAttribute(KIND);
+    }
+    if (value == null) {
+      throw new IllegalStateException("Missing text content");
+    } else if (value < 0) {
+      throw new IllegalStateException("Text content must be non-negative: " +
+          value);
+    }
   }
 
   /**
@@ -103,7 +145,7 @@ public class WritersCanInvite extends ExtensionPoint {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(WritersCanInvite.class);
+        ExtensionDescription.getDefaultDescription(MaxUploadSize.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -111,13 +153,15 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   protected void putAttributes(AttributeGenerator generator) {
-    generator.put(VALUE, value);
+    generator.put(KIND, kind);
+    generator.setContent(value.toString());
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException
       {
-    value = helper.consumeBoolean(VALUE, false);
+    kind = helper.consume(KIND, true);
+    value = helper.consumeLong(null, true);
   }
 
   @Override
@@ -128,13 +172,17 @@ public class WritersCanInvite extends ExtensionPoint {
     if (!sameClassAs(obj)) {
       return false;
     }
-    WritersCanInvite other = (WritersCanInvite) obj;
-    return eq(value, other.value);
+    MaxUploadSize other = (MaxUploadSize) obj;
+    return eq(kind, other.kind)
+        && eq(value, other.value);
   }
 
   @Override
   public int hashCode() {
     int result = getClass().hashCode();
+    if (kind != null) {
+      result = 37 * result + kind.hashCode();
+    }
     if (value != null) {
       result = 37 * result + value.hashCode();
     }
@@ -143,7 +191,7 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   public String toString() {
-    return "{WritersCanInvite value=" + value + "}";
+    return "{MaxUploadSize kind=" + kind + " value=" + value + "}";
   }
 
 }

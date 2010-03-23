@@ -24,13 +24,17 @@ import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
 import com.google.gdata.data.batch.BatchUtils;
+import com.google.gdata.data.docs.AudioEntry;
 import com.google.gdata.data.docs.DocumentEntry;
+import com.google.gdata.data.docs.DocumentExportEntry;
+import com.google.gdata.data.docs.DocumentExportFeed;
 import com.google.gdata.data.docs.DocumentListFeed;
 import com.google.gdata.data.docs.FolderEntry;
+import com.google.gdata.data.docs.MetadataFeed;
 import com.google.gdata.data.docs.PdfEntry;
-import com.google.gdata.data.docs.PhotoEntry;
 import com.google.gdata.data.docs.PresentationEntry;
 import com.google.gdata.data.docs.QueryParameter;
+import com.google.gdata.data.docs.RevisionFeed;
 import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.Version;
@@ -163,15 +167,18 @@ public class DocsService extends MediaService {
    */
   private void declareExtensions() {
     new AclFeed().declareExtensions(extProfile);
+    new DocumentExportFeed().declareExtensions(extProfile);
+    new MetadataFeed().declareExtensions(extProfile);
+    new RevisionFeed().declareExtensions(extProfile);
     /* Declarations for extensions that need to be handled as specific type
      * should be done before call to {@see ExtensionProfile#setAutoExtending}.
      * Order of declaration is important. */
     extProfile.setAutoExtending(true);
+    new AudioEntry().declareExtensions(extProfile);
     new DocumentEntry().declareExtensions(extProfile);
     new DocumentListFeed().declareExtensions(extProfile);
     new FolderEntry().declareExtensions(extProfile);
     new PdfEntry().declareExtensions(extProfile);
-    new PhotoEntry().declareExtensions(extProfile);
     new PresentationEntry().declareExtensions(extProfile);
     new SpreadsheetEntry().declareExtensions(extProfile);
     BatchUtils.declareExtensions(extProfile);
@@ -273,7 +280,24 @@ public class DocsService extends MediaService {
     }
   }
 
-
-
+  /**
+   *
+   * Start a new request to download the documents that match all search
+   * criteria as a zip file.
+   * @param exportFeedUrl the POST URL associated with the target export feed.
+   * @param params the search criteria.
+   * @return the newly inserted DocumentExportEntry returned by the service.
+   * @throws IOException an ill-formed URI, internal error.
+   * @throws ServiceException insert request failed due to lack of permissions,
+   *    scope already defined on this feed, unsupported role or scope, system
+   *    error, etc.
+   */
+  public DocumentExportEntry insert(URL exportFeedUrl,
+      List<QueryParameter> params) throws IOException, ServiceException {
+    DocumentExportEntry entry = new DocumentExportEntry();
+    for (QueryParameter param : params) {
+      entry.addQuery(param);
+    }
+    return insert(exportFeedUrl, entry);
+  }
 }
-

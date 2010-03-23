@@ -63,7 +63,7 @@ public class SpreadsheetEntry extends DocumentListEntry {
    */
   public SpreadsheetEntry() {
     super();
-    getCategories().remove(DocumentListEntry.UNKNOWN_CATEGORY);
+    getCategories().remove(DocumentListEntry.CATEGORY);
     getCategories().add(CATEGORY);
   }
 

@@ -50,7 +50,7 @@ public class FolderEntry extends DocumentListEntry {
    * parsers.
    */
   public FolderEntry() {
-    getCategories().remove(DocumentListEntry.UNKNOWN_CATEGORY);
+    getCategories().remove(DocumentListEntry.CATEGORY);
     getCategories().add(CATEGORY);
   }
 

@@ -16,36 +16,33 @@
 
 package com.google.gdata.data.docs;
 
+import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionDescription;
-import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.ParseException;
 
 /**
- * Allows editors to invite others.
+ * The amount of quota consumed by objects in trash.
  *
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = DocsNamespace.DOCS_ALIAS,
     nsUri = DocsNamespace.DOCS,
-    localName = WritersCanInvite.XML_NAME)
-public class WritersCanInvite extends ExtensionPoint {
+    localName = QuotaBytesUsedInTrash.XML_NAME)
+public class QuotaBytesUsedInTrash extends AbstractExtension {
 
   /** XML element name */
-  static final String XML_NAME = "writersCanInvite";
-
-  /** XML "value" attribute name */
-  private static final String VALUE = "value";
+  static final String XML_NAME = "quotaBytesUsedInTrash";
 
   /** Value */
-  private Boolean value = null;
+  private Long value = null;
 
   /**
    * Default mutable constructor.
    */
-  public WritersCanInvite() {
+  public QuotaBytesUsedInTrash() {
     super();
   }
 
@@ -54,7 +51,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @param value value.
    */
-  public WritersCanInvite(Boolean value) {
+  public QuotaBytesUsedInTrash(Long value) {
     super();
     setValue(value);
     setImmutable(true);
@@ -65,7 +62,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @return value
    */
-  public Boolean getValue() {
+  public Long getValue() {
     return value;
   }
 
@@ -74,7 +71,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @param value value or <code>null</code> to reset
    */
-  public void setValue(Boolean value) {
+  public void setValue(Long value) {
     throwExceptionIfImmutable();
     this.value = value;
   }
@@ -90,6 +87,10 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   protected void validate() {
+    if (value != null && value < 0) {
+      throw new IllegalStateException("Text content must be non-negative: " +
+          value);
+    }
   }
 
   /**
@@ -103,7 +104,7 @@ public class WritersCanInvite extends ExtensionPoint {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(WritersCanInvite.class);
+        ExtensionDescription.getDefaultDescription(QuotaBytesUsedInTrash.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -111,13 +112,13 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   protected void putAttributes(AttributeGenerator generator) {
-    generator.put(VALUE, value);
+    generator.setContent(value.toString());
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException
       {
-    value = helper.consumeBoolean(VALUE, false);
+    value = helper.consumeLong(null, false);
   }
 
   @Override
@@ -128,7 +129,7 @@ public class WritersCanInvite extends ExtensionPoint {
     if (!sameClassAs(obj)) {
       return false;
     }
-    WritersCanInvite other = (WritersCanInvite) obj;
+    QuotaBytesUsedInTrash other = (QuotaBytesUsedInTrash) obj;
     return eq(value, other.value);
   }
 
@@ -143,7 +144,7 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   public String toString() {
-    return "{WritersCanInvite value=" + value + "}";
+    return "{QuotaBytesUsedInTrash value=" + value + "}";
   }
 
 }

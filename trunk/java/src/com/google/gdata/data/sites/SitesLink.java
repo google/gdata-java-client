@@ -76,6 +76,14 @@ public class SitesLink extends Link {
     /** Source sites link. */
     public static final String SOURCE = SitesNamespace.SITES_PREFIX + "source";
 
+    /** Template sites link. */
+    public static final String TEMPLATE = SitesNamespace.SITES_PREFIX +
+        "template";
+
+    /** WebAddressMapping sites link. */
+    public static final String WEBADDRESSMAPPING = SitesNamespace.SITES_PREFIX +
+        "webAddressMapping";
+
   }
 
   /** MIME type of link target. */

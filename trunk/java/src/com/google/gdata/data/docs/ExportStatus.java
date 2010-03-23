@@ -16,36 +16,51 @@
 
 package com.google.gdata.data.docs;
 
+import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
 import com.google.gdata.data.ExtensionDescription;
-import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.ParseException;
 
 /**
- * Allows editors to invite others.
+ * The status of export requests.
  *
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = DocsNamespace.DOCS_ALIAS,
     nsUri = DocsNamespace.DOCS,
-    localName = WritersCanInvite.XML_NAME)
-public class WritersCanInvite extends ExtensionPoint {
+    localName = ExportStatus.XML_NAME)
+public class ExportStatus extends AbstractExtension {
 
   /** XML element name */
-  static final String XML_NAME = "writersCanInvite";
+  static final String XML_NAME = "status";
 
-  /** XML "value" attribute name */
-  private static final String VALUE = "value";
+  private static final AttributeHelper.EnumToAttributeValue<Value>
+      VALUE_ENUM_TO_ATTRIBUTE_VALUE = new
+      AttributeHelper.LowerCaseEnumToAttributeValue<Value>();
 
   /** Value */
-  private Boolean value = null;
+  private Value value = null;
+
+  /** Value. */
+  public enum Value {
+
+    /** Failed export status. */
+    FAILED,
+
+    /** Finished export status. */
+    FINISHED,
+
+    /** Ongoing export status. */
+    ONGOING
+
+  }
 
   /**
    * Default mutable constructor.
    */
-  public WritersCanInvite() {
+  public ExportStatus() {
     super();
   }
 
@@ -54,7 +69,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @param value value.
    */
-  public WritersCanInvite(Boolean value) {
+  public ExportStatus(Value value) {
     super();
     setValue(value);
     setImmutable(true);
@@ -65,7 +80,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @return value
    */
-  public Boolean getValue() {
+  public Value getValue() {
     return value;
   }
 
@@ -74,7 +89,7 @@ public class WritersCanInvite extends ExtensionPoint {
    *
    * @param value value or <code>null</code> to reset
    */
-  public void setValue(Boolean value) {
+  public void setValue(Value value) {
     throwExceptionIfImmutable();
     this.value = value;
   }
@@ -90,6 +105,9 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   protected void validate() {
+    if (value == null) {
+      throw new IllegalStateException("Missing text content");
+    }
   }
 
   /**
@@ -103,7 +121,7 @@ public class WritersCanInvite extends ExtensionPoint {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(WritersCanInvite.class);
+        ExtensionDescription.getDefaultDescription(ExportStatus.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -111,13 +129,15 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   protected void putAttributes(AttributeGenerator generator) {
-    generator.put(VALUE, value);
+    generator.setContent(VALUE_ENUM_TO_ATTRIBUTE_VALUE.getAttributeValue(
+        value));
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException
       {
-    value = helper.consumeBoolean(VALUE, false);
+    value = helper.consumeEnum(null, true, Value.class, null,
+        VALUE_ENUM_TO_ATTRIBUTE_VALUE);
   }
 
   @Override
@@ -128,7 +148,7 @@ public class WritersCanInvite extends ExtensionPoint {
     if (!sameClassAs(obj)) {
       return false;
     }
-    WritersCanInvite other = (WritersCanInvite) obj;
+    ExportStatus other = (ExportStatus) obj;
     return eq(value, other.value);
   }
 
@@ -143,7 +163,7 @@ public class WritersCanInvite extends ExtensionPoint {
 
   @Override
   public String toString() {
-    return "{WritersCanInvite value=" + value + "}";
+    return "{ExportStatus value=" + value + "}";
   }
 
 }

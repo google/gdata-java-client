@@ -1,0 +1,64 @@
+/* Copyright (c) 2008 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package com.google.gdata.data.docs;
+
+import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.Link;
+
+/**
+ * Describes a feed for a list of export requests.
+ *
+ * 
+ */
+public class DocumentExportFeed extends BaseFeed<DocumentExportFeed,
+    DocumentExportEntry> {
+
+  /**
+   * Default mutable constructor.
+   */
+  public DocumentExportFeed() {
+    super(DocumentExportEntry.class);
+  }
+
+  /**
+   * Constructs a new instance by doing a shallow copy of data from an existing
+   * {@link BaseFeed} instance.
+   *
+   * @param sourceFeed source feed
+   */
+  public DocumentExportFeed(BaseFeed<?, ?> sourceFeed) {
+    super(DocumentExportEntry.class, sourceFeed);
+  }
+
+  /**
+   * Returns the link for the zip file contains all exported documents.
+   *
+   * @return Link for the zip file contains all exported documents or {@code
+   *     null} for none.
+   */
+  public Link getDocumentExportLink() {
+    return getLink(DocumentListLink.Rel.EXPORT,
+        DocumentListLink.Type.APPLICATION_ZIP);
+  }
+
+  @Override
+  public String toString() {
+    return "{DocumentExportFeed " + super.toString() + "}";
+  }
+
+}
+

@@ -16,27 +16,24 @@
 
 package com.google.gdata.data.docs;
 
-import com.google.gdata.data.Kind;
-import com.google.gdata.data.media.MediaFeed;
-
 /**
- * A feed for managing lists of documents from the Google Docs &amp;
- * Spreadsheets.
+ * Describes a publish link.
  *
  * 
  */
-@Kind.Term(DocumentListEntry.KIND)
-public class DocumentListFeed
-    extends MediaFeed<DocumentListFeed, DocumentListEntry> {
+public class PublishLink {
 
-  public static final String DOCUMENT_NAMESPACE
-      = "http://schemas.google.com/docs/2007";
+  /** Link relation type. */
+  public static final class Rel {
 
-  /**
-   * Contructs an empty feed.
-   */
-  public DocumentListFeed() {
-    super(DocumentListEntry.class);
-    getCategories().add(DocumentListEntry.CATEGORY);
+    /** Link for the publically viewable published document. */
+    public static final String PUBLISH =
+        "http://schemas.google.com/docs/2007#publish";
+
   }
+
+  /** Private constructor to ensure class is not instantiated. */
+  private PublishLink() {}
+
 }
+
