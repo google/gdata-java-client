@@ -1,0 +1,8 @@
+{
+  "id":"youtube",
+  "name":"YouTube Data API",
+  "className":"YouTube",
+  "authTokenType":"youtube",
+    "versions":[{
+    "id": "2"}]
+}
