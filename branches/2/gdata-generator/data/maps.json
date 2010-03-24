@@ -1,15 +1,21 @@
 {
-  "id":"maps",
-  "name":"Google Maps Data API",
-  "authTokenType":"local",
-    "versions":[{
-    "id": "2",
-  "atom":{
-    "namespaces":{
-      "":"http://www.w3.org/2005/Atom",
-      "app":"http://www.w3.org/2007/app",
-      "openSearch":"http://a9.com/-/spec/opensearch/1.1/",
-      "gAcl":"http://schemas.google.com/acl/2007"
+  "id" : "maps",
+  "name" : "Google Maps Data API",
+  "className" : "Maps",
+  "authTokenType" : "local",
+  "versions" : [ {
+    "id" : "2",
+    "atom" : {
+      "namespaces" : {
+        "app" : "http://www.w3.org/2007/app",
+        "" : "http://www.w3.org/2005/Atom",
+        "atom" : "http://www.w3.org/2005/Atom",
+        "batch" : "http://schemas.google.com/gdata/batch",
+        "gAcl" : "http://schemas.google.com/acl/2007",
+        "gd" : "http://schemas.google.com/g/2005",
+        "openSearch" : "http://a9.com/-/spec/opensearch/1.1/",
+        "xml" : "http://www.w3.org/XML/1998/namespace"
+      }
     }
-  } }]
+  } ]
 }

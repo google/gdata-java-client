@@ -66,7 +66,7 @@ final class AntBuildFileGenerator implements FileGenerator {
       }
     }
     out.println();
-    out.print("   <target name='apijars' description='Compile all API jars' depends='");
+    out.print("  <target name='apijars' description='Compile all API jars' depends='");
     first = true;
     for (Client client : clients) {
       if (first) {
@@ -74,7 +74,13 @@ final class AntBuildFileGenerator implements FileGenerator {
       } else {
         out.print(",");
       }
+      boolean firstVersion = true;
       for (Version version : client.versions) {
+        if (firstVersion) {
+          firstVersion = false;
+        } else {
+          out.print(",");
+        }
         out.print(version.getJarName() + "-jar");
         if (version.atom != null) {
           out.print("," + version.getJarName() + "-atom-jar");

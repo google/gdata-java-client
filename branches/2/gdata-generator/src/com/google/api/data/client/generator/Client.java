@@ -64,9 +64,6 @@ public final class Client implements Comparable<Client> {
         throw new IllegalArgumentException("unrecognized key: " + key);
       }
     }
-    if (authTokenType == null) {
-      throw new IllegalArgumentException("authTokenType required");
-    }
     if (id == null) {
       throw new IllegalArgumentException("id required");
     }
