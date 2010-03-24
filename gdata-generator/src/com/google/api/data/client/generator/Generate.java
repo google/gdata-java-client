@@ -8,8 +8,10 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Generate {
+
+  File gdataRootDir;
 
   public static void main(String[] args) throws IOException {
     System.out.println("GData Generator");
@@ -28,9 +32,9 @@ public class Generate {
     SortedSet<Client> clients = readClients(args[0]);
     // display clients
     System.out.println();
-    System.out.println(clients.size() + " clients:");
+    System.out.println(clients.size() + " API description(s):");
     for (Client client : clients) {
-      System.out.print(client.name + " (" + client.id + "))");
+      System.out.print(client.name + " (" + client.id + ")");
       if (client.versions.size() == 1) {
         System.out.println(" version " + client.versions.first().id);
       } else {
@@ -58,19 +62,56 @@ public class Generate {
         fileGenerators.add(new AtomJavaFileGenerator(version));
       }
     }
-    File gdataRootDir = getDirectory(args[1]);
+    Generate generate = new Generate();
+    generate.gdataRootDir = getDirectory(args[1]);
+    int size = 0;
+    List<FileComputer> fileComputers = new ArrayList<FileComputer>();
     System.out.println();
-    int size = fileGenerators.size();
-    System.out.println(size + " generated files:");
-    for (int i = 0; i < size; i++) {
-      FileGenerator fileGenerator = fileGenerators.get(i);
-      String outputFilePath = fileGenerator.getOutputFilePath();
-      File mainFile = new File(gdataRootDir, outputFilePath);
-      boolean exists = mainFile.exists();
-      boolean isGenerated = fileGenerator.isGenerated();
-      if (isGenerated || exists) {
-        System.out.print("[" + (i + 1) + " of " + size + "] " + outputFilePath);
+    System.out.println("Computing " + fileGenerators.size() + " file(s):");
+    for (FileGenerator fileGenerator : fileGenerators) {
+      FileComputer fileComputer = generate.new FileComputer(fileGenerator);
+      fileComputers.add(fileComputer);
+      fileComputer.compute();
+      System.out.print('.');
+      if (fileComputer.status != FileStatus.UNCHANGED) {
+        size++;
       }
+    }
+    System.out.println();
+    System.out.println();
+    if (size != 0) {
+      System.out.println(size + " update(s):");
+      int index = 0;
+      for (FileComputer fileComputer : fileComputers) {
+        if (fileComputer.status != FileStatus.UNCHANGED) {
+          index++;
+          System.out.println(fileComputer.outputFilePath + " ("
+              + fileComputer.status.toString().toLowerCase() + ")");
+        }
+      }
+    } else {
+      System.out.println("All files up to date.");
+    }
+  }
+
+  enum FileStatus {
+    UNCHANGED, ADDED, UPDATED, DELETED
+  }
+
+  class FileComputer {
+    private final FileGenerator fileGenerator;
+    FileStatus status = FileStatus.UNCHANGED;
+    final String outputFilePath;
+
+    FileComputer(FileGenerator fileGenerator) {
+      this.fileGenerator = fileGenerator;
+      outputFilePath = fileGenerator.getOutputFilePath();
+    }
+
+    void compute() throws IOException {
+      File file = new File(gdataRootDir, outputFilePath);
+      boolean exists = file.exists();
+      boolean isGenerated = fileGenerator.isGenerated();
       if (isGenerated) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter stringPrintWriter = new PrintWriter(stringWriter);
@@ -80,20 +121,29 @@ public class Generate {
         if (lineWrapper != null) {
           content = lineWrapper.compute(content);
         }
-        mainFile.getParentFile().mkdirs();
-        FileWriter fileWriter = new FileWriter(mainFile);
+        if (exists) {
+          String currentContent = readFile(file);
+          if (currentContent.equals(content)) {
+            return;
+          }
+        }
+        file.getParentFile().mkdirs();
+        FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(content);
         fileWriter.close();
         if (exists) {
-          System.out.println(" (updated)");
+          status = FileStatus.UPDATED;
         } else {
-          System.out.println(" (added)");
+          status = FileStatus.ADDED;
         }
       } else if (exists) {
-        mainFile.delete();
-        System.out.println(" (deleted)");
+        file.delete();
+        status = FileStatus.DELETED;
       }
     }
+  }
+
+  private Generate() {
   }
 
   private static SortedSet<Client> readClients(String dataDirectoryPath) throws IOException {
@@ -118,9 +168,6 @@ public class Generate {
     return result;
   }
 
-  private Generate() {
-  }
-
   private static File getDirectory(String path) {
     File directory = new File(path);
     if (!directory.isDirectory()) {
@@ -128,5 +175,17 @@ public class Generate {
       System.exit(1);
     }
     return directory;
+  }
+
+  private static String readFile(File file) throws IOException {
+    InputStream content = new FileInputStream(file);
+    try {
+      int length = (int) file.length();
+      byte[] buffer = new byte[length];
+      content.read(buffer);
+      return new String(buffer, 0, length);
+    } finally {
+      content.close();
+    }
   }
 }

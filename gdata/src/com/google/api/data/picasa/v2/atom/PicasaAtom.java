@@ -10,8 +10,7 @@ public final class PicasaAtom {
   static {
     NamespaceDictionary.Builder builder = new NamespaceDictionary.Builder();
     builder.addNamespace("", "http://www.w3.org/2005/Atom");
-    builder.addNamespace("app", "http://www.w3.org/2007/app");
-    builder.addNamespace("batch", "http://schemas.google.com/gdata/batch");
+    builder.addNamespace("atom", "http://www.w3.org/2005/Atom");
     builder.addNamespace("exif", "http://schemas.google.com/photos/exif/2007");
     builder.addNamespace("gd", "http://schemas.google.com/g/2005");
     builder.addNamespace("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
@@ -20,6 +19,7 @@ public final class PicasaAtom {
     builder.addNamespace("gphoto", "http://schemas.google.com/photos/2007");
     builder.addNamespace("media", "http://search.yahoo.com/mrss/");
     builder.addNamespace("openSearch", "http://a9.com/-/spec/opensearch/1.1/");
+    builder.addNamespace("xml", "http://www.w3.org/XML/1998/namespace");
     NAMESPACE_DICTIONARY = builder.build();
   }
 
