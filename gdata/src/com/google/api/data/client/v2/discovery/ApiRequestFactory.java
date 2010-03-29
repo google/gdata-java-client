@@ -1,6 +1,6 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2.request;
+package com.google.api.data.client.v2.discovery;
 
 import com.google.api.data.client.auth.Authorizer;
 import com.google.api.data.client.entity.Entity;

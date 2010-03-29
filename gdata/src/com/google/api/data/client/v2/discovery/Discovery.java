@@ -1,4 +1,4 @@
-package com.google.api.data.client.v2.request;
+package com.google.api.data.client.v2.discovery;
 
 import com.google.api.data.client.auth.AuthorizedRequest;
 import com.google.api.data.client.auth.Authorizer;
@@ -30,6 +30,7 @@ public class Discovery {
   private HttpTransport transport = new HttpTransport("sample");
   
   private final ServiceDocument serviceDoc;
+  @SuppressWarnings("unused")
   private final String resource;
 
   Discovery(ServiceDocument serviceDoc, HttpTransport transport) {
@@ -61,6 +62,31 @@ public class Discovery {
     return "update".equals(method)
         || "patch".equals(method)
         || "delete".equals(method);
+  }
+  
+  HttpRequest buildRpcRequest(String resource, String method,
+      Entity params) throws IOException {
+    Map<String, String> headers = new HashMap<String, String>();
+    Authorizer auth = null;
+    Entity body = new Entity();
+    Entity bodyParam = new Entity();
+    
+    body.set("method", method);
+    FieldIterator iterator = params.getFieldIterator();
+    while (iterator.hasNext()) {
+      String paramName = iterator.nextFieldName();
+      Object paramValue = iterator.getFieldValue();
+      if ("auth".equals(paramName)) {
+        auth = (Authorizer) paramValue;
+        continue;
+      }
+      bodyParam.set(paramName, paramValue);
+    }
+    body.set("parm", bodyParam);
+    // Create transport request
+    HttpRequest request = transport.buildRequest("POST", resource);
+    request.setContent(getSerializer("application/json", bodyParam));
+    return request;
   }
   
   HttpRequest buildRestRequest(
@@ -182,7 +208,8 @@ public class Discovery {
       buildRestRequest(resource, method, params).execute();
       return null;
     }
-    return buildRestRequest(resource, method, params).execute().parseAs(resultType);
+    return buildRestRequest(resource, method, params).execute()
+        .parseAs(resultType);
   }
   
   <T> T doRequest(
