@@ -1,6 +1,6 @@
 // Copyright 2010 Google Inc. All Rights Reserved.
 
-package com.google.api.data.client.v2.request;
+package com.google.api.data.client.v2.discovery;
 
 import org.json.JSONException;
 import org.json.JSONObject;

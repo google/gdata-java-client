@@ -1,15 +1,11 @@
-package com.google.api.data.client.v2.request;
+package com.google.api.data.client.v2.discovery;
 
 import com.google.api.data.client.auth.Authorizer;
 import com.google.api.data.client.entity.Entity;
-import com.google.api.data.client.http.HttpResponse;
-import com.google.api.data.client.v2.jsonc.JsoncEntity;
-import com.google.api.data.client.v2.jsonc.jackson.Jackson;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Class for making requests.
