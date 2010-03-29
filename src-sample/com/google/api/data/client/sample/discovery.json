@@ -7,12 +7,17 @@
     'params' : [ 'alt|atom:jsonc' ],
     'resources' : {
         'user' : {
-            'urlTemplate' : '{projection}/user/{username}',
+            'urlTemplate' : '{projection}/user/{username}/',
+            'itemTemplate' : 'albumid/{albumId}',
             'restMethods' : {
                 'query' : {
                      'params' : [ 'access', 'kind' ]
                 },
-                'insert' : {}
+                'insert' : {},
+                'update' : {
+                },
+                'delete' : {
+                }
             }
         },
         'contacts' : {
@@ -50,7 +55,6 @@
           }
        }
     }
-    
-
   }
+  
 }
