@@ -1,6 +1,6 @@
 package com.google.api.data.picasa.v2;
 
-import com.google.api.data.client.v2.escape.CharEscapers;
+import com.google.api.client.escape.CharEscapers;
 
 /** Builder for the path part of Picasa Web Albums URI's. */
 public final class PicasaPath {
