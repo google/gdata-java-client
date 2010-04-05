@@ -1,7 +1,7 @@
-package com.google.api.data.client.v2.discovery;
+package com.google.api.client.http.discovery;
 
-import com.google.api.data.client.auth.Authorizer;
-import com.google.api.data.client.entity.Entity;
+import com.google.api.client.Entities;
+import com.google.api.client.Entity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,8 +50,6 @@ public class ApiRequest<T> {
   /** Parameter map for use with .with(key, value) */
   private Entity paramMap = new Entity();
 
-  private Entity defaultParamMap;
-
   /** The requested response class  */
   private Class<?> responseClass = null;
 
@@ -76,7 +74,6 @@ public class ApiRequest<T> {
    * Create a request
    *
    * @param handle resource endpoint
-   * @param transport ApiClient, used for transport
    * @param method The method
    * @param defaultParams default parameters to use in request
    */
@@ -84,7 +81,7 @@ public class ApiRequest<T> {
       Entity defaultParams) {
     this.discovery = discovery;
     this.fullyQualifiedMethod = method;
-    this.defaultParamMap = defaultParams;
+    this.paramMap.putAll(defaultParams);
     this.resourceHandle = handle;
   }
     
@@ -100,9 +97,8 @@ public class ApiRequest<T> {
       return (T)result;
     }
     try {
-      Entity allParams = paramMap.setFrom(defaultParamMap);
       return (T) discovery.doRestRequest(
-          resourceHandle, fullyQualifiedMethod, allParams, responseClass);
+          resourceHandle, fullyQualifiedMethod, paramMap, responseClass);
     } catch(IOException e) {
       throw new RuntimeException(e);
     }
@@ -123,7 +119,7 @@ public class ApiRequest<T> {
       // TODO(vbarathan): Parse json string
       throw new RuntimeException("Raw string parameter not yet supported");
     } else { 
-      paramMap.setFrom(params);
+      paramMap.putAll(Entities.mapOf(params));
     }
     return this;
   }
@@ -173,11 +169,6 @@ public class ApiRequest<T> {
     return withContent(DEFAULT_CONTENT_TYPE, value);
   }
   
-  public ApiRequest<T> withAuth(Authorizer auth) {
-    paramMap.set("auth", auth);
-    return this;
-  }
-
   /**
    * Tell the request to return an instance of a specific class.
    *
