@@ -1,4 +1,18 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+/*
+ * Copyright (c) 2010 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.google.api.data.client.generator;
 
@@ -9,34 +23,29 @@ public final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
   private final Version version;
 
   MainJavaFileGenerator(Version version) {
+    super(version.getPackageName(), version.client.className);
     this.version = version;
   }
 
   public void generate(PrintWriter out) {
     Client client = version.client;
-    out.println("// Copyright 2010 Google Inc. All Rights Reserved.");
-    out.println();
-    out.println("package " + version.getPackageName() + ";");
-    out.println();
+    generateHeader(out);
     out.println("/** Constants for the " + client.name + ". */");
-    out.println("public final class " + client.className + " {");
+    out.println("public final class " + className + " {");
     if (client.authTokenType != null) {
       out.println();
       out.println("/** The authentication token type or service name. */");
-      out.println("  public static final String AUTH_TOKEN_TYPE = \"" + client.authTokenType
-          + "\";");
+      out.println("  public static final String AUTH_TOKEN_TYPE = \""
+          + client.authTokenType + "\";");
     }
     out.println();
     out.println("/** Version name. */");
-    out.println("  public static final String VERSION = \"" + version.id + "\";");
+    out.println("  public static final String VERSION = \"" + version.id
+        + "\";");
     out.println();
-    out.println("  private " + client.className + "() {");
+    out.println("  private " + className + "() {");
     out.println("  }");
     out.println("}");
     out.close();
-  }
-
-  public String getOutputFilePath() {
-    return "src/" + version.getPathRelativeToSrc() + "/" + version.client.className + ".java";
   }
 }

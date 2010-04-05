@@ -1,12 +1,21 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+/*
+ * Copyright (c) 2010 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.google.api.data.client.generator;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-
-import java.io.IOException;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 public final class Client implements Comparable<Client> {
@@ -14,7 +23,7 @@ public final class Client implements Comparable<Client> {
   public String id;
   public String name;
   public String className;
-  public SortedSet<Version> versions;
+  public TreeSet<Version> versions;
   public String authTokenType;
 
   public int compareTo(Client client) {
@@ -41,34 +50,15 @@ public final class Client implements Comparable<Client> {
     return id.equals(other.id);
   }
 
-  void parse(JsonParser parser) throws IOException {
-    while (parser.nextToken() != JsonToken.END_OBJECT) {
-      String key = parser.getCurrentName();
-      parser.nextToken();
-      if (key == "authTokenType") {
-        authTokenType = parser.getText();
-      } else if (key == "className") {
-        className = parser.getText();
-      } else if (key == "id") {
-        id = parser.getText();
-      } else if (key == "name") {
-        name = parser.getText();
-      } else if (key == "versions") {
-        versions = new TreeSet<Version>();
-        while (parser.nextToken() != JsonToken.END_ARRAY) {
-          Version version = new Version(this);
-          version.parse(parser);
-          versions.add(version);
-        }
-      } else {
-        throw new IllegalArgumentException("unrecognized key: " + key);
-      }
-    }
+  void validate() {
     if (id == null) {
       throw new IllegalArgumentException("id required");
     }
     if (versions == null || versions.size() < 1) {
       throw new NullPointerException("at least one version required");
+    }
+    for (Version version : versions) {
+      version.validate();
     }
     if (className == null) {
       className = Character.toUpperCase(id.charAt(0)) + id.substring(1);
