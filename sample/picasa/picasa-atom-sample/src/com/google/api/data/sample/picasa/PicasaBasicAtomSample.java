@@ -1,15 +1,15 @@
 package com.google.api.data.sample.picasa;
 
-import com.google.api.data.client.auth.clientlogin.ClientLoginAuthenticator;
-import com.google.api.data.client.entity.Name;
-import com.google.api.data.client.entity.UriEntity;
-import com.google.api.data.client.http.GData;
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.http.InputStreamHttpSerializer;
-import com.google.api.data.client.v2.atom.AtomEntity;
-import com.google.api.data.client.v2.atom.AtomHttpParser;
-import com.google.api.data.client.v2.atom.AtomSerializer;
+import com.google.api.client.Name;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.InputStreamHttpSerializer;
+import com.google.api.client.http.UriEntity;
+import com.google.api.client.http.auth.googleapis.clientlogin.ClientLogin;
+import com.google.api.client.http.googleapis.GoogleHttp;
+import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.http.xml.atom.AtomHttpParser;
+import com.google.api.client.http.xml.atom.AtomSerializer;
+import com.google.api.client.xml.XmlEntity;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
@@ -169,7 +169,7 @@ public class PicasaBasicAtomSample {
 
   public static void main(String[] args) throws Exception {
     // enableLogging();
-    HttpTransport transport = authenticate();
+    GoogleTransport transport = authenticate();
     AlbumFeed feed = showAlbums(transport);
     AlbumEntry album = postAlbum(transport, feed);
     PhotoEntry postedPhoto = postPhoto(transport, album);
@@ -178,23 +178,22 @@ public class PicasaBasicAtomSample {
     deleteAlbum(transport, album);
   }
 
-  private static HttpTransport authenticate() throws IOException {
-    HttpTransport transport = new HttpTransport(APP_NAME);
-    ClientLoginAuthenticator authenticator = new ClientLoginAuthenticator();
-    authenticator.httpTransport = transport;
+  private static GoogleTransport authenticate() throws IOException {
+    ClientLogin authenticator = new ClientLogin();
     authenticator.authTokenType = Picasa.AUTH_TOKEN_TYPE;
     Scanner s = new Scanner(System.in);
     System.out.println("Username: ");
     authenticator.username = s.nextLine();
     System.out.println("Password: ");
     authenticator.password = s.nextLine();
-    authenticator.authenticate();
-    GData.setVersionHeader(transport, Picasa.VERSION);
-    AtomHttpParser.set(transport);
+    GoogleTransport transport = new GoogleTransport(APP_NAME);
+    authenticator.authenticate().setAuthorizationHeader(transport);
+    transport.setGDataVersionHeader(Picasa.VERSION);
+    AtomHttpParser.setAsParserOf(transport);
     return transport;
   }
 
-  private static AlbumFeed showAlbums(HttpTransport transport)
+  private static AlbumFeed showAlbums(GoogleTransport transport)
       throws IOException {
     // build URI for the default user feed of albums
     PicasaPath path = PicasaPath.feed();
@@ -214,7 +213,7 @@ public class PicasaBasicAtomSample {
     return feed;
   }
 
-  private static void showAlbum(HttpTransport transport, AlbumEntry album)
+  private static void showAlbum(GoogleTransport transport, AlbumEntry album)
       throws IOException {
     System.out.println();
     System.out.println("-----------------------------------------------");
@@ -243,7 +242,7 @@ public class PicasaBasicAtomSample {
     }
   }
 
-  private static AlbumEntry postAlbum(HttpTransport transport, AlbumFeed feed)
+  private static AlbumEntry postAlbum(GoogleTransport transport, AlbumFeed feed)
       throws IOException {
     System.out.println();
     AlbumEntry newAlbum = new AlbumEntry();
@@ -251,28 +250,28 @@ public class PicasaBasicAtomSample {
     newAlbum.title = "A new album";
     newAlbum.summary = "My favorite photos";
     HttpRequest request = transport.buildPostRequest(feed.getPostLink());
-    AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY,
-        newAlbum);
+    request.setContent(new AtomSerializer(PicasaAtom.NAMESPACE_DICTIONARY,
+        newAlbum));
     AlbumEntry album = request.execute().parseAs(AlbumEntry.class);
     showAlbum(transport, album);
     return album;
   }
 
-  private static PhotoEntry postPhoto(HttpTransport transport, AlbumEntry album)
-      throws IOException {
+  private static PhotoEntry postPhoto(GoogleTransport transport,
+      AlbumEntry album) throws IOException {
     String fileName = "picasaweblogo-en_US.gif";
     String photoUrlString = "http://www.google.com/accounts/lh2/" + fileName;
     URL photoUrl = new URL(photoUrlString);
     HttpRequest request = transport.buildPostRequest(album.getFeedLink());
-    GData.setSlugHeader(request, fileName);
-    InputStreamHttpSerializer.setContent(request, photoUrl.openStream(), -1,
-        "image/jpeg", null);
+    GoogleHttp.setSlugHeader(request, fileName);
+    request.setContent(new InputStreamHttpSerializer(photoUrl.openStream(), -1,
+        "image/jpeg", null));
     PhotoEntry photo = request.execute().parseAs(PhotoEntry.class);
     System.out.println("Posted photo: " + photo.title);
     return photo;
   }
 
-  private static AlbumEntry getUpdatedAlbum(HttpTransport transport,
+  private static AlbumEntry getUpdatedAlbum(GoogleTransport transport,
       AlbumEntry album) throws IOException {
     PicasaUri selfUri = new PicasaUri(album.getSelfLink());
     HttpRequest request = transport.buildGetRequest(selfUri.build());
@@ -281,27 +280,27 @@ public class PicasaBasicAtomSample {
     return album;
   }
 
-  private static AlbumEntry updateTitle(HttpTransport transport,
+  private static AlbumEntry updateTitle(GoogleTransport transport,
       AlbumEntry album) throws IOException {
     // must do a GET into AtomEntity
     HttpRequest request = transport.buildGetRequest(album.getSelfLink());
-    AtomEntity albumToEdit = request.execute().parseAs(AtomEntity.class);
+    XmlEntity albumToEdit = request.execute().parseAs(XmlEntity.class);
     // now can safely do a PUT with the returned AtomEntity
     albumToEdit.set("title", "My favorite web logos");
     request = transport.buildPutRequest(album.getEditLink());
-    GData.setIfMatchHeader(request, album.etag);
-    AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY,
-        albumToEdit);
+    request.setIfMatchHeader(album.etag);
+    request.setContent(new AtomSerializer(PicasaAtom.NAMESPACE_DICTIONARY,
+        albumToEdit));
     album = request.execute().parseAs(AlbumEntry.class);
     // show updated album
     showAlbum(transport, album);
     return album;
   }
 
-  private static void deleteAlbum(HttpTransport transport, AlbumEntry album)
+  private static void deleteAlbum(GoogleTransport transport, AlbumEntry album)
       throws IOException {
     HttpRequest request = transport.buildDeleteRequest(album.getEditLink());
-    GData.setIfMatchHeader(request, album.etag);
+    request.setIfMatchHeader(album.etag);
     request.execute().ignore();
     System.out.println();
     System.out.println("Album deleted.");
