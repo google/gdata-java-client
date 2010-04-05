@@ -22,19 +22,18 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.google.api.data.client.DateTime;
-import com.google.api.data.client.auth.clientlogin.ClientLoginAuthorizer;
-import com.google.api.data.client.entity.UriEntity;
-import com.google.api.data.client.http.GData;
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.http.InputStreamHttpSerializer;
-import com.google.api.data.client.v2.android.AndroidGData;
-import com.google.api.data.client.v2.jsonc.JsoncEntity;
-import com.google.api.data.client.v2.jsonc.jackson.Jackson;
-import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
-import com.google.api.data.client.v2.jsonc.jackson.JsoncFeedParser;
-import com.google.api.data.client.v2.jsonc.jackson.JsoncSerializer;
+import com.google.api.client.DateTime;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.InputStreamHttpSerializer;
+import com.google.api.client.http.android.AndroidGData;
+import com.google.api.client.http.googleapis.GoogleHttp;
+import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.http.googleapis.GoogleUriEntity;
+import com.google.api.client.http.json.googleapis.JsonHttp;
+import com.google.api.client.http.json.googleapis.JsonHttpParser;
+import com.google.api.client.http.json.googleapis.JsonSerializer;
+import com.google.api.client.json.JsonEntity;
+import com.google.api.client.json.googleapis.JsonFeedParser;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
 
@@ -56,8 +55,8 @@ import java.util.logging.Logger;
  * </p>
  * <p>
  * To enable logging of HTTP requests/responses, run this command: {@code adb
- * shell setprop log.tag.HttpTransport DEBUG}. Then press-and-hold an album, and
- * enable "Logging".
+ * shell setprop log.tag.GoogleTransport DEBUG}. Then press-and-hold an album,
+ * and enable "Logging".
  * </p>
  */
 public class PicasaBasicJsoncAndroidSample extends ListActivity {
@@ -76,7 +75,7 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
 
   private static final int DIALOG_ACCOUNTS = 0;
 
-  private HttpTransport transport;
+  private GoogleTransport transport;
 
   private UserFeed feed;
 
@@ -143,13 +142,13 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
           Toast.LENGTH_SHORT);
       return;
     }
-    HttpTransport transport =
+    GoogleTransport transport =
         this.transport =
-            new HttpTransport("google-picasajsoncandroidsample-1.0");
-    transport.lowLevelHttpTransportInterface = AndroidGData.HTTP_TRANSPORT;
-    transport.authorizer = new ClientLoginAuthorizer(authToken);
-    GData.setVersionHeader(transport, Picasa.VERSION);
-    JacksonHttpParser.set(transport);
+            new GoogleTransport("google-picasajsoncandroidsample-1.0");
+    transport.lowLevelHttpTransport = AndroidGData.HTTP_TRANSPORT;
+    transport.setGoogleLoginAuthorizationHeader(authToken);
+    transport.setGDataVersionHeader(Picasa.VERSION);
+    JsonHttpParser.setAsParserOf(transport);
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       Bundle extras = intent.getExtras();
@@ -171,15 +170,15 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
           PicasaPath path = PicasaPath.feed();
           path.user = "default";
           path.albumId = "default";
-          UriEntity feedUri = new UriEntity(path.build());
+          GoogleUriEntity feedUri = new GoogleUriEntity(path.build());
           feedUri.alt = "jsonc";
           boolean success = false;
           try {
             InputStream stream = contentResolver.openInputStream(uri);
             HttpRequest request = transport.buildPostRequest(feedUri.build());
-            GData.setSlugHeader(request, fileName);
-            InputStreamHttpSerializer.setContent(request, stream, fileSize,
-                mimeType, null);
+            GoogleHttp.setSlugHeader(request, fileName);
+            request.setContent(new InputStreamHttpSerializer(stream, fileSize,
+                mimeType, null));
             request.execute().ignore();
             success = true;
           } catch (IOException e) {
@@ -213,7 +212,7 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
         album.title = "Album " + new DateTime(new Date());
         try {
           HttpRequest request = transport.buildPostRequest(feed.links.post);
-          JsoncSerializer.setContent(request, album);
+          request.setContent(new JsonSerializer(album));
           request.execute().ignore();
         } catch (IOException e) {
           e.printStackTrace();
@@ -243,26 +242,25 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
   public boolean onContextItemSelected(MenuItem item) {
     AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
     Album album = albums.get((int) info.id);
-    HttpTransport transport = this.transport;
+    GoogleTransport transport = this.transport;
     HttpRequest request;
     try {
       switch (item.getItemId()) {
         case CONTEXT_EDIT:
-          // must use JsoncEntity for PUT
+          // must use JsonEntity for PUT
           request = transport.buildGetRequest(album.links.self);
-          JsoncEntity albumToEdit = request.execute().parseAs(JsoncEntity.class);
+          JsonEntity albumToEdit = request.execute().parseAs(JsonEntity.class);
           albumToEdit.set("title", album.title + " UPDATED "
               + new DateTime(new Date()));
           request = transport.buildPutRequest(album.links.edit);
-          GData.setIfMatchHeader(request, album.etag);
-          JsoncSerializer.setContent(request, 
-              albumToEdit);
+          request.setIfMatchHeader(album.etag);
+          request.setContent(new JsonSerializer(albumToEdit));
           request.execute().ignore();
           executeRefreshAlbums();
           return true;
         case CONTEXT_DELETE:
           request = transport.buildDeleteRequest(album.links.edit);
-          GData.setIfMatchHeader(request, album.etag);
+          request.setIfMatchHeader(album.etag);
           request.execute().ignore();
           executeRefreshAlbums();
           return true;
@@ -305,13 +303,13 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
     try {
       PicasaPath path = PicasaPath.feed();
       path.user = "default";
-      UriEntity uri = new UriEntity(path.build());
+      GoogleUriEntity uri = new GoogleUriEntity(path.build());
       uri.alt = "jsonc";
       uri.set("kinds", Album.kind);
       HttpRequest request = this.transport.buildGetRequest(uri.build());
-      JsoncFeedParser<UserFeed, Album> parser =
-          Jackson.useFeedParser(request.execute(), UserFeed.class,
-              Album.class);
+      JsonFeedParser<UserFeed, Album> parser =
+          JsonHttp
+              .useFeedParser(request.execute(), UserFeed.class, Album.class);
       this.feed = parser.parseFeed();
       Album album;
       List<String> result = new ArrayList<String>();

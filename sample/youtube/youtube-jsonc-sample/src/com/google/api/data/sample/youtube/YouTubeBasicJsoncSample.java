@@ -1,12 +1,11 @@
 package com.google.api.data.sample.youtube;
 
-import com.google.api.data.client.DateTime;
-import com.google.api.data.client.entity.Name;
-import com.google.api.data.client.entity.UriEntity;
-import com.google.api.data.client.http.GData;
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
+import com.google.api.client.DateTime;
+import com.google.api.client.Name;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.http.googleapis.GoogleUriEntity;
+import com.google.api.client.http.json.googleapis.JsonHttpParser;
 import com.google.api.data.youtube.v2.YouTube;
 import com.google.api.data.youtube.v2.YouTubePath;
 
@@ -23,7 +22,7 @@ public class YouTubeBasicJsoncSample {
 
   private static final int MAX_VIDEOS_TO_SHOW = 5;
 
-  public static class YouTubeUri extends UriEntity {
+  public static class YouTubeUri extends GoogleUriEntity {
 
     public String author;
 
@@ -68,18 +67,18 @@ public class YouTubeBasicJsoncSample {
 
   public static void main(String[] args) throws Exception {
     // enableLogging();
-    HttpTransport transport = newTransport();
+    GoogleTransport transport = newTransport();
     VideoFeed feed = showVideos(transport);
   }
 
-  private static HttpTransport newTransport() {
-    HttpTransport transport = new HttpTransport(APP_NAME);
-    GData.setVersionHeader(transport, YouTube.VERSION);
-    JacksonHttpParser.set(transport);
+  private static GoogleTransport newTransport() {
+    GoogleTransport transport = new GoogleTransport(APP_NAME);
+    transport.setGDataVersionHeader(YouTube.VERSION);
+    JsonHttpParser.setAsParserOf(transport);
     return transport;
   }
 
-  private static VideoFeed showVideos(HttpTransport transport)
+  private static VideoFeed showVideos(GoogleTransport transport)
       throws IOException {
     // build URI for the video feed for "searchstories"
     YouTubePath path = YouTubePath.videos();
