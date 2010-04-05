@@ -99,8 +99,7 @@ public class Xml {
     }
     if (Map.class.isAssignableFrom(itemClass)) {
       Map<String, Object> itemMap = (Map<String, Object>) item;
-      Map<String, Object> result =
-          (Map<String, Object>) ClassInfo.newMapInstance(itemClass);
+      Map<String, Object> result = ClassInfo.newMapInstance(itemClass);
       for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
         itemMap.put(entry.getKey(), clone(entry.getValue()));
       }
@@ -333,9 +332,7 @@ public class Xml {
             }
           } else if (field == null || Map.class.isAssignableFrom(fieldClass)) {
             // TODO: handle sub-field type
-            @SuppressWarnings("unchecked")
-            Map<String, Object> mapValue =
-                (Map<String, Object>) ClassInfo.newMapInstance(fieldClass);
+            Map<String, Object> mapValue = ClassInfo.newMapInstance(fieldClass);
             parseElement(parser, mapValue, customizeParser);
             if (isMap) {
               @SuppressWarnings("unchecked")
@@ -362,15 +359,12 @@ public class Xml {
             Collection<Object> collectionValue =
                 (Collection<Object>) FieldInfo
                     .getFieldValue(field, destination);
-            Class<?> subFieldClass = ClassInfo.getCollectionParameter(field);
             if (collectionValue == null) {
-              @SuppressWarnings("unchecked")
-              Collection<Object> collectionValueTemp =
-                  (Collection<Object>) ClassInfo.newInstance(fieldClass);
-              collectionValue = collectionValueTemp;
+              collectionValue = ClassInfo.newCollectionInstance(fieldClass);
               FieldInfo.setFieldValue(field, destination, collectionValue);
             }
             Object elementValue = null;
+            Class<?> subFieldClass = ClassInfo.getCollectionParameter(field);
             if (ClassInfo.isPrimitive(subFieldClass)) {
               int level = 1;
               while (level != 0) {

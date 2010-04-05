@@ -1,16 +1,17 @@
-/* Copyright (c) 2010 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+/*
+ * Copyright (c) 2010 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.google.api.data.client.generator.linewrap;
@@ -20,11 +21,11 @@ package com.google.api.data.client.generator.linewrap;
  */
 abstract class AbstractLineWrapper implements LineWrapper {
 
-  private static final ThreadLocal<StringBuilder> LOCAL_OUT_BUFFER
-      = new ThreadLocalStringBuilder();
+  private static final ThreadLocal<StringBuilder> LOCAL_OUT_BUFFER =
+      new ThreadLocalStringBuilder();
 
-  private static final ThreadLocal<StringBuilder> LOCAL_PREFIX_BUFFER
-      = new ThreadLocalStringBuilder();
+  private static final ThreadLocal<StringBuilder> LOCAL_PREFIX_BUFFER =
+      new ThreadLocalStringBuilder();
 
 
   /**
@@ -36,8 +37,8 @@ abstract class AbstractLineWrapper implements LineWrapper {
   }
 
   /** Thread-local string builder instance. */
-  private static class ThreadLocalStringBuilder
-      extends ThreadLocal<StringBuilder> {
+  private static class ThreadLocalStringBuilder extends
+      ThreadLocal<StringBuilder> {
 
     @Override
     protected StringBuilder initialValue() {
@@ -55,12 +56,13 @@ abstract class AbstractLineWrapper implements LineWrapper {
     StringBuilder prefix = LOCAL_PREFIX_BUFFER.get();
     StringBuilder outBuffer = LOCAL_OUT_BUFFER.get();
     outBuffer.setLength(0);
-    for (int curIndex = 0; nextNewLine != -1 && curIndex < textLength;
-        curIndex = nextNewLine + 1) {
+    for (int curIndex = 0; nextNewLine != -1 && curIndex < textLength; curIndex =
+        nextNewLine + 1) {
       // find next line separator which we know ends in '\n'
       nextNewLine = text.indexOf('\n', curIndex);
-      int highIndex = nextNewLine == -1 ? textLength - 1
-          : nextNewLine - lineSeparatorLength;
+      int highIndex =
+          nextNewLine == -1 ? textLength - 1 : nextNewLine
+              - lineSeparatorLength;
       // remove whitespace from end of line
       int lastNonSpace = Strings.lastIndexOfNonSpace(text, highIndex, curIndex);
       if (lastNonSpace == -1) {
@@ -87,17 +89,16 @@ abstract class AbstractLineWrapper implements LineWrapper {
         // run the language-specific line-wrapping algorithm
         int originalPrefixLength = prefix.length();
         String line = text.substring(firstNonSpace, lastNonSpace + 1);
-        int cut = getCuttingPoint(computationState, line, prefix,
-            firstCut);
+        int cut = getCuttingPoint(computationState, line, prefix, firstCut);
         // remove spaces from end of cut
         cut = Strings.lastIndexOfNonSpace(line, cut - 1) + 1;
         // don't want infinite recursion!
         if (cut == 0) {
-          throw new IllegalStateException("illegal cutting point:"
-              + "\nline (" + line.length() + "):" + line
-              + "\nprefix (" + originalPrefixLength + "): "
-              + prefix.substring(0, originalPrefixLength)
-              + "\nfirstCut: " + firstCut);
+          throw new IllegalStateException("illegal cutting point:" + "\nline ("
+              + line.length() + "):" + line + "\nprefix ("
+              + originalPrefixLength + "): "
+              + prefix.substring(0, originalPrefixLength) + "\nfirstCut: "
+              + firstCut);
         }
         if (cut == line.length() && nextNewLine != -1
             && lastNonSpace == highIndex) {
@@ -109,8 +110,8 @@ abstract class AbstractLineWrapper implements LineWrapper {
           // make a cut
           if (firstCut) {
             outBuffer.append(text, copyFromTextIndex, firstNonSpace + cut);
-            copyFromTextIndex = nextNewLine == -1 ? textLength
-                : nextNewLine + 1;
+            copyFromTextIndex =
+                nextNewLine == -1 ? textLength : nextNewLine + 1;
           } else {
             outBuffer.append(text, firstNonSpace, firstNonSpace + cut);
           }
@@ -136,12 +137,11 @@ abstract class AbstractLineWrapper implements LineWrapper {
   }
 
   /**
-   * Instantiates a new computation state.  By default just returns an empty
+   * Instantiates a new computation state. By default just returns an empty
    * object, but may be overriden by subclasses.
    */
   ComputationState computationState() {
-    return new ComputationState() {
-    };
+    return new ComputationState() {};
   }
 
   /**
@@ -152,17 +152,16 @@ abstract class AbstractLineWrapper implements LineWrapper {
    * <p/>
    * The default implementation cuts on a space if the line length is greater
    * than maximum width but subclasses may override.
-   *
+   * 
    * @param computationState computation state
-   * @param line             current line content to be cut
-   * @param prefix           current line prefix to be updated if necessary
-   * @param firstCut         whether this is the first cut in the original input
-   *                         line
+   * @param line current line content to be cut
+   * @param prefix current line prefix to be updated if necessary
+   * @param firstCut whether this is the first cut in the original input line
    * @return index of the character at which at cut {@code >= 1} and {@code <=
    *         line.length()}
    */
-  abstract int getCuttingPoint(ComputationState computationState,
-      String line, StringBuilder prefix, boolean firstCut);
+  abstract int getCuttingPoint(ComputationState computationState, String line,
+      StringBuilder prefix, boolean firstCut);
 
   /**
    * Returns a cut on a space or {@code -1} if no space found. It will try to

@@ -3,22 +3,23 @@
   "name" : "Picasa Web Albums Data API",
   "className" : "Picasa",
   "authTokenType" : "lh2",
-  "versions" : [ {
-    "id" : "2",
-    "atom" : {
-      "namespaces" : {
-        "" : "http://www.w3.org/2005/Atom",
-        "atom" : "http://www.w3.org/2005/Atom",
-        "exif" : "http://schemas.google.com/photos/exif/2007",
-        "gd" : "http://schemas.google.com/g/2005",
-        "geo" : "http://www.w3.org/2003/01/geo/wgs84_pos#",
-        "georss" : "http://www.georss.org/georss",
-        "gml" : "http://www.opengis.net/gml",
-        "gphoto" : "http://schemas.google.com/photos/2007",
-        "media" : "http://search.yahoo.com/mrss/",
-        "openSearch" : "http://a9.com/-/spec/opensearch/1.1/",
-        "xml" : "http://www.w3.org/XML/1998/namespace"
+  "versions" : {
+    "2" : {
+      "atom" : {
+        "namespaces" : {
+          "" : "http://www.w3.org/2005/Atom",
+          "atom" : "http://www.w3.org/2005/Atom",
+          "exif" : "http://schemas.google.com/photos/exif/2007",
+          "gd" : "http://schemas.google.com/g/2005",
+          "geo" : "http://www.w3.org/2003/01/geo/wgs84_pos#",
+          "georss" : "http://www.georss.org/georss",
+          "gml" : "http://www.opengis.net/gml",
+          "gphoto" : "http://schemas.google.com/photos/2007",
+          "media" : "http://search.yahoo.com/mrss/",
+          "openSearch" : "http://a9.com/-/spec/opensearch/1.1/",
+          "xml" : "http://www.w3.org/XML/1998/namespace"
+        }
       }
     }
-  } ]
+  }
 }

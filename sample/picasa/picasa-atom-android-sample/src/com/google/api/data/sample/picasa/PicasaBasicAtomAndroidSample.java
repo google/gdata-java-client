@@ -25,14 +25,15 @@ import android.widget.Toast;
 import com.google.api.client.DateTime;
 import com.google.api.client.Name;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamHttpSerializer;
 import com.google.api.client.http.UriEntity;
 import com.google.api.client.http.android.AndroidGData;
+import com.google.api.client.http.googleapis.GoogleHttp;
+import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.http.xml.atom.AtomHttp;
 import com.google.api.client.http.xml.atom.AtomHttpParser;
 import com.google.api.client.http.xml.atom.AtomSerializer;
-import com.google.api.client.http.xml.atom.googleapis.GData;
-import com.google.api.client.xml.atom.Atom;
+import com.google.api.client.xml.XmlEntity;
 import com.google.api.client.xml.atom.AtomFeedParser;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
@@ -56,8 +57,8 @@ import java.util.logging.Logger;
  * </p>
  * <p>
  * To enable logging of HTTP requests/responses, run this command: {@code adb
- * shell setprop log.tag.HttpTransport DEBUG}. Then press-and-hold an album, and
- * enable "Logging".
+ * shell setprop log.tag.GoogleTransport DEBUG}. Then press-and-hold an album,
+ * and enable "Logging".
  * </p>
  */
 public class PicasaBasicAtomAndroidSample extends ListActivity {
@@ -76,7 +77,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
 
   private static final int DIALOG_ACCOUNTS = 0;
 
-  private HttpTransport transport;
+  private GoogleTransport transport;
 
   private UserFeed feed;
 
@@ -143,12 +144,12 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
           Toast.LENGTH_SHORT);
       return;
     }
-    HttpTransport transport =
-        this.transport = new HttpTransport("google-picasaandroidsample-1.0");
-    transport.lowLevelHttpTransportInterface = AndroidGData.HTTP_TRANSPORT;
-    transport.authorizer = new ClientLoginAuthorizer(authToken);
-    GData.setVersionHeader(transport, Picasa.VERSION);
-    AtomHttpParser.set(transport);
+    GoogleTransport transport =
+        this.transport = new GoogleTransport("google-picasaandroidsample-1.0");
+    transport.lowLevelHttpTransport = AndroidGData.HTTP_TRANSPORT;
+    transport.setGDataVersionHeader(Picasa.VERSION);
+    transport.setGoogleLoginAuthorizationHeader(authToken);
+    AtomHttpParser.setAsParserOf(transport);
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       Bundle extras = intent.getExtras();
@@ -175,9 +176,9 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
           try {
             InputStream stream = contentResolver.openInputStream(uri);
             HttpRequest request = transport.buildPostRequest(feedUri.build());
-            GData.setSlugHeader(request, fileName);
-            InputStreamHttpSerializer.setContent(request, stream, fileSize,
-                mimeType, null);
+            GoogleHttp.setSlugHeader(request, fileName);
+            request.setContent(new InputStreamHttpSerializer(stream, fileSize,
+                mimeType, null));
             request.execute().ignore();
             success = true;
           } catch (IOException e) {
@@ -212,8 +213,8 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
         album.title = "Album " + new DateTime(new Date());
         try {
           HttpRequest request = transport.buildPostRequest(feed.getPostLink());
-          AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY,
-              album);
+          request.setContent(new AtomSerializer(
+              PicasaAtom.NAMESPACE_DICTIONARY, album));
           request.execute().ignore();
         } catch (IOException e) {
           e.printStackTrace();
@@ -243,26 +244,26 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
   public boolean onContextItemSelected(MenuItem item) {
     AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
     AlbumEntry album = albums.get((int) info.id);
-    HttpTransport transport = this.transport;
+    GoogleTransport transport = this.transport;
     HttpRequest request;
     try {
       switch (item.getItemId()) {
         case CONTEXT_EDIT:
-          // must use AtomEntity for PUT
+          // must use XmlEntity for PUT
           request = transport.buildGetRequest(album.getSelfLink());
-          AtomEntity albumToEdit = request.execute().parseAs(AtomEntity.class);
+          XmlEntity albumToEdit = request.execute().parseAs(XmlEntity.class);
           albumToEdit.set("title", album.title + " UPDATED "
               + new DateTime(new Date()));
           request = transport.buildPutRequest(album.getEditLink());
-          GData.setIfMatchHeader(request, album.etag);
-          AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY,
-              albumToEdit);
+          request.setIfMatchHeader(album.etag);
+          request.setContent(new AtomSerializer(
+              PicasaAtom.NAMESPACE_DICTIONARY, albumToEdit));
           request.execute().ignore();
           executeRefreshAlbums();
           return true;
         case CONTEXT_DELETE:
           request = transport.buildDeleteRequest(album.getEditLink());
-          GData.setIfMatchHeader(request, album.etag);
+          request.setIfMatchHeader(album.etag);
           request.execute().ignore();
           executeRefreshAlbums();
           return true;
@@ -361,7 +362,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
       uri.set("kinds", AlbumEntry.KIND);
       HttpRequest request = this.transport.buildGetRequest(uri.build());
       AtomFeedParser<UserFeed, AlbumEntry> parser =
-          Atom.useFeedParser(request.execute(), UserFeed.class,
+          AtomHttp.useFeedParser(request.execute(), UserFeed.class,
               AlbumEntry.class);
       this.feed = parser.parseFeed();
       AlbumEntry album;
@@ -381,7 +382,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
   }
 
   private void setLogging(boolean logging) {
-    Logger.getLogger("com.google.api.data").setLevel(
+    Logger.getLogger("com.google.api.client").setLevel(
         logging ? Level.ALL : Level.OFF);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     boolean currentSetting = settings.getBoolean("logging", false);

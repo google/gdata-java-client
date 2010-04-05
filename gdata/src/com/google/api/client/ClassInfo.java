@@ -22,8 +22,15 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.WeakHashMap;
 
 public final class ClassInfo {
@@ -52,7 +59,8 @@ public final class ClassInfo {
   }
 
   public FieldInfo getFieldInfo(String fieldName) {
-    return this.nameToFieldInfoMap.get(fieldName.intern());
+    return fieldName == null ? null : this.nameToFieldInfoMap.get(fieldName
+        .intern());
   }
 
   public FieldInfo getFieldInfo(Field field) {
@@ -127,17 +135,49 @@ public final class ClassInfo {
         || clazz == DateTime.class || clazz == Boolean.class;
   }
 
-  public static <T> T newMapInstance(Class<T> mapClass) {
-    if (mapClass == null || mapClass.isAssignableFrom(IdentityHashMap.class)) {
+  public static Collection<Object> newCollectionInstance(
+      Class<?> collectionClass) {
+    if (collectionClass != null
+        && 0 == (collectionClass.getModifiers() & (Modifier.ABSTRACT | Modifier.INTERFACE))) {
       @SuppressWarnings("unchecked")
-      T result = (T) new IdentityHashMap<String, Object>();
+      Collection<Object> result =
+          (Collection<Object>) ClassInfo.newInstance(collectionClass);
       return result;
     }
-    return ClassInfo.newInstance(mapClass);
+    if (collectionClass == null
+        || collectionClass.isAssignableFrom(ArrayList.class)) {
+      return new ArrayList<Object>();
+    }
+    if (collectionClass.isAssignableFrom(HashSet.class)) {
+      return new HashSet<Object>();
+    }
+    if (collectionClass.isAssignableFrom(TreeSet.class)) {
+      return new TreeSet<Object>();
+    }
+    throw new IllegalArgumentException(
+        "no default collection class defined for class: "
+            + collectionClass.getName());
+  }
+
+  public static Map<String, Object> newMapInstance(Class<?> mapClass) {
+    if (mapClass != null
+        && 0 == (mapClass.getModifiers() & (Modifier.ABSTRACT | Modifier.INTERFACE))) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> result =
+          (Map<String, Object>) ClassInfo.newInstance(mapClass);
+      return result;
+    }
+    if (mapClass == null || mapClass.isAssignableFrom(HashMap.class)) {
+      return new HashMap<String, Object>();
+    }
+    if (mapClass == null || mapClass.isAssignableFrom(TreeMap.class)) {
+      return new TreeMap<String, Object>();
+    }
+    throw new IllegalArgumentException(
+        "no default map class defined for class: " + mapClass.getName());
   }
 
   public static Class<?> getCollectionParameter(Field field) {
-    Class<?> subFieldClass = null;
     if (field != null) {
       Type genericType = field.getGenericType();
       if (genericType instanceof ParameterizedType) {
@@ -145,6 +185,20 @@ public final class ClassInfo {
             ((ParameterizedType) genericType).getActualTypeArguments();
         if (typeArgs.length == 1 && typeArgs[0] instanceof Class<?>) {
           return (Class<?>) typeArgs[0];
+        }
+      }
+    }
+    return null;
+  }
+
+  public static Class<?> getMapValueParameter(Field field) {
+    if (field != null) {
+      Type genericType = field.getGenericType();
+      if (genericType instanceof ParameterizedType) {
+        Type[] typeArgs =
+            ((ParameterizedType) genericType).getActualTypeArguments();
+        if (typeArgs.length == 2 && typeArgs[1] instanceof Class<?>) {
+          return (Class<?>) typeArgs[1];
         }
       }
     }

@@ -44,25 +44,26 @@ abstract class AbstractJavaFileGenerator implements FileGenerator {
   }
 
   void generateHeader(PrintWriter out) {
-    out.println("/* Copyright (c) 2010 Google Inc.");
+    out.println("/*");
+    out.println(" * Copyright (c) 2010 Google Inc.");
     out.println(" *");
     out
-        .println(" * Licensed under the Apache License, Version 2.0 (the \"License\");");
+        .println(" * Licensed under the Apache License, Version 2.0 (the \"License\"); you may not");
     out
-        .println(" * you may not use this file except in compliance with the License.");
-    out.println(" * You may obtain a copy of the License at");
+        .println(" * use this file except in compliance with the License. You may obtain a copy of");
+    out.println(" * the License at");
     out.println(" *");
-    out.println(" *     http://www.apache.org/licenses/LICENSE-2.0");
+    out.println(" * http://www.apache.org/licenses/LICENSE-2.0");
     out.println(" *");
     out
         .println(" * Unless required by applicable law or agreed to in writing, software");
     out
-        .println(" * distributed under the License is distributed on an \"AS IS\" BASIS,");
+        .println(" * distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT");
     out
-        .println(" * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
+        .println(" * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the");
     out
-        .println(" * See the License for the specific language governing permissions and");
-    out.println(" * limitations under the License.");
+        .println(" * License for the specific language governing permissions and limitations under");
+    out.println(" * the License.");
     out.println(" */");
     out.println();
     out.println("package " + packageName + ";");
@@ -73,5 +74,9 @@ abstract class AbstractJavaFileGenerator implements FileGenerator {
     String fullName = clazz.getName();
     int lastDot = fullName.lastIndexOf('.');
     return fullName.substring(lastDot + 1).replace('$', '.');
+  }
+
+  String indent(int numSpaces) {
+    return "                    ".substring(0, numSpaces);
   }
 }

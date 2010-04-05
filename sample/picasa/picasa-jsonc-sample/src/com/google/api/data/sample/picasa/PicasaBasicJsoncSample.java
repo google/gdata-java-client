@@ -224,7 +224,7 @@ public class PicasaBasicJsoncSample {
   }
 
   private static void enableLogging() {
-    Logger logger = Logger.getLogger("com.google.api.data");
+    Logger logger = Logger.getLogger("com.google.api.client");
     logger.setLevel(Level.ALL);
     logger.addHandler(new Handler() {
 

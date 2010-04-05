@@ -16,14 +16,15 @@
 
 package com.google.api.data.client.generator;
 
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.SortedMap;
 
 public final class Client implements Comparable<Client> {
 
   public String id;
   public String name;
   public String className;
-  public TreeSet<Version> versions;
+  public SortedMap<String, Version> versions;
   public String authTokenType;
 
   public int compareTo(Client client) {
@@ -57,8 +58,8 @@ public final class Client implements Comparable<Client> {
     if (versions == null || versions.size() < 1) {
       throw new NullPointerException("at least one version required");
     }
-    for (Version version : versions) {
-      version.validate();
+    for (Map.Entry<String, Version> entry : versions.entrySet()) {
+      entry.getValue().validate(entry.getKey(), this);
     }
     if (className == null) {
       className = Character.toUpperCase(id.charAt(0)) + id.substring(1);

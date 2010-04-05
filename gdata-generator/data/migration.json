@@ -3,16 +3,17 @@
   "name" : "Google Apps Email Migration API",
   "className" : "Migration",
   "authTokenType" : "migration",
-  "versions" : [ {
-    "id" : "1",
-    "atom" : {
-      "namespaces" : {
-        "apps" : "http://schemas.google.com/apps/2006",
-        "" : "http://www.w3.org/2005/Atom",
-        "atom" : "http://www.w3.org/2005/Atom",
-        "batch" : "http://schemas.google.com/gdata/batch",
-        "xml" : "http://www.w3.org/XML/1998/namespace"
+  "versions" : {
+    "1" : {
+      "atom" : {
+        "namespaces" : {
+          "apps" : "http://schemas.google.com/apps/2006",
+          "" : "http://www.w3.org/2005/Atom",
+          "atom" : "http://www.w3.org/2005/Atom",
+          "batch" : "http://schemas.google.com/gdata/batch",
+          "xml" : "http://www.w3.org/XML/1998/namespace"
+        }
       }
     }
-  } ]
+  }
 }

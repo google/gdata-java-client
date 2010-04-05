@@ -3,19 +3,20 @@
   "name" : "Google Contacts Data API",
   "className" : "Contacts",
   "authTokenType" : "cp",
-  "versions" : [ {
-    "id" : "3",
-    "atom" : {
-      "namespaces" : {
-        "app" : "http://www.w3.org/2007/app",
-        "" : "http://www.w3.org/2005/Atom",
-        "atom" : "http://www.w3.org/2005/Atom",
-        "batch" : "http://schemas.google.com/gdata/batch",
-        "gContact" : "http://schemas.google.com/contact/2008",
-        "gd" : "http://schemas.google.com/g/2005",
-        "openSearch" : "http://a9.com/-/spec/opensearch/1.1/",
-        "xml" : "http://www.w3.org/XML/1998/namespace"
+  "versions" : {
+    "3" : {
+      "atom" : {
+        "namespaces" : {
+          "app" : "http://www.w3.org/2007/app",
+          "" : "http://www.w3.org/2005/Atom",
+          "atom" : "http://www.w3.org/2005/Atom",
+          "batch" : "http://schemas.google.com/gdata/batch",
+          "gContact" : "http://schemas.google.com/contact/2008",
+          "gd" : "http://schemas.google.com/g/2005",
+          "openSearch" : "http://a9.com/-/spec/opensearch/1.1/",
+          "xml" : "http://www.w3.org/XML/1998/namespace"
+        }
       }
     }
-  } ]
+  }
 }

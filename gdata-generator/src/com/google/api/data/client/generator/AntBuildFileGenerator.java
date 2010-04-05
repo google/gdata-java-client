@@ -1,16 +1,17 @@
-/* Copyright (c) 2010 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+/*
+ * Copyright (c) 2010 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.google.api.data.client.generator;
@@ -40,7 +41,7 @@ final class AntBuildFileGenerator implements FileGenerator {
     out.print("  <property name='api.packagenames' value='");
     boolean first = true;
     for (Client client : clients) {
-      for (Version version : client.versions) {
+      for (Version version : client.versions.values()) {
         if (first) {
           first = false;
         } else {
@@ -59,27 +60,28 @@ final class AntBuildFileGenerator implements FileGenerator {
     out.println("    <mkdir dir='${api.dist}' />");
     out.println("  </target>");
     for (Client client : clients) {
-      for (Version version : client.versions) {
+      for (Version version : client.versions.values()) {
         out.println();
         out.println("  <target name='" + version.getJarName()
             + "-jar' depends='api-init'>");
         out.println("    <jar destfile='${api.dist}/" + version.getJarName()
-            + ".jar' basedir='${classes.dir}' includes='" + version.getPathRelativeToSrc()
-            + "/*.class' />");
+            + ".jar' basedir='${classes.dir}' includes='"
+            + version.getPathRelativeToSrc() + "/*.class' />");
         out.println("  </target>");
         if (version.atom != null) {
           out.println();
           out.println("  <target name='" + version.getJarName()
               + "-atom-jar' depends='api-init'>");
           out.println("    <jar destfile='${api.dist}/" + version.getJarName()
-              + "-atom.jar' basedir='${classes.dir}' includes='" + version.getPathRelativeToSrc()
-              + "/atom/*.class' />");
+              + "-atom.jar' basedir='${classes.dir}' includes='"
+              + version.getPathRelativeToSrc() + "/atom/*.class' />");
           out.println("  </target>");
         }
       }
     }
     out.println();
-    out.print("  <target name='apijars' description='Compile all API jars' depends='");
+    out
+        .print("  <target name='apijars' description='Compile all API jars' depends='");
     first = true;
     for (Client client : clients) {
       if (first) {
@@ -88,7 +90,7 @@ final class AntBuildFileGenerator implements FileGenerator {
         out.print(",");
       }
       boolean firstVersion = true;
-      for (Version version : client.versions) {
+      for (Version version : client.versions.values()) {
         if (firstVersion) {
           firstVersion = false;
         } else {

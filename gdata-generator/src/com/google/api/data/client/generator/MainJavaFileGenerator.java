@@ -34,17 +34,18 @@ public final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
     out.println("public final class " + className + " {");
     if (client.authTokenType != null) {
       out.println();
-      out.println("/** The authentication token type or service name. */");
-      out.println("  public static final String AUTH_TOKEN_TYPE = \""
+      out.println(indent(2)
+          + "/** The authentication token type or service name. */");
+      out.println(indent(2) + "public static final String AUTH_TOKEN_TYPE = \""
           + client.authTokenType + "\";");
     }
     out.println();
-    out.println("/** Version name. */");
-    out.println("  public static final String VERSION = \"" + version.id
-        + "\";");
+    out.println(indent(2) + "/** Version name. */");
+    out.println(indent(2) + "public static final String VERSION = \""
+        + version.id + "\";");
     out.println();
-    out.println("  private " + className + "() {");
-    out.println("  }");
+    out.println(indent(2) + "private " + className + "() {");
+    out.println(indent(2) + "}");
     out.println("}");
     out.close();
   }
