@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="/gdata/lib/jackson-core-asl-1.4.3.jar"/>
-	<classpathentry kind="lib" path="/gdata/build-bin/dist/gdata-android-v2.jar"/>
-	<classpathentry kind="lib" path="/gdata/build-bin/dist/gdata-jsonc-v2.jar"/>
-	<classpathentry kind="lib" path="/gdata/build-bin/dist/gdata-picasa-v2.jar"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/android/google-api-core.jar"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/android/google-api-json.jar"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/apis/picasa-v2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
