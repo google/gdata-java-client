@@ -13,9 +13,25 @@
  * limitations under the License.
  */
 
-package com.google.api.client.http.apache;
+package com.google.api.client.http.android;
 
-public class ApacheGData {
-  public static final ApacheHttpTransport HTTP_TRANSPORT =
-      new ApacheHttpTransport();
+import android.accounts.Account;
+import android.accounts.AccountManager;
+
+import com.google.api.client.http.LowLevelHttpTransport;
+import com.google.api.client.http.apache.ApacheGData;
+
+public class AndroidGData {
+
+  // TODO: take advantage of android.net.Uri?
+
+  // TODO: android.util.Log for logging?
+
+  public static final LowLevelHttpTransport HTTP_TRANSPORT =
+      ApacheGData.HTTP_TRANSPORT;
+
+  public static Account[] getGoogleAccounts(AccountManager manager) {
+    return manager.getAccountsByType("com.google");
+  }
+
 }

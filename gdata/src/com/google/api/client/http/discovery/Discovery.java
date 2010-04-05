@@ -1,16 +1,12 @@
-package com.google.api.data.client.v2.discovery;
+package com.google.api.client.http.discovery;
 
-import com.google.api.data.client.auth.AuthorizedRequest;
-import com.google.api.data.client.auth.Authorizer;
-import com.google.api.data.client.entity.Entity;
-import com.google.api.data.client.entity.FieldIterator;
-import com.google.api.data.client.entity.FieldIterators;
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpResponse;
-import com.google.api.data.client.http.HttpSerializer;
-import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.http.InputStreamHttpSerializer;
-import com.google.api.data.client.http.MultipartHttpSerializer;
+import com.google.api.client.Entity;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpSerializer;
+import com.google.api.client.http.InputStreamHttpSerializer;
+import com.google.api.client.http.MultipartHttpSerializer;
+import com.google.api.client.http.googleapis.GoogleTransport;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,19 +23,19 @@ public class Discovery {
   private final ConcurrentHashMap<String, Class<? extends HttpSerializer>>
   contentTypeToSerializerMap
       = new ConcurrentHashMap<String, Class<? extends HttpSerializer>>();
-  private HttpTransport transport = new HttpTransport("sample");
+  private final GoogleTransport transport;
   
   private final ServiceDocument serviceDoc;
   @SuppressWarnings("unused")
   private final String resource;
 
-  Discovery(ServiceDocument serviceDoc, HttpTransport transport) {
+  Discovery(ServiceDocument serviceDoc, GoogleTransport transport) {
     this.transport = transport;
     this.serviceDoc = serviceDoc;
     this.resource = null;
   }
   
-  Discovery(String resource, HttpTransport transport) {
+  Discovery(String resource, GoogleTransport transport) {
     this.transport = transport;
     this.resource = resource;
     this.serviceDoc = null;
@@ -67,24 +63,21 @@ public class Discovery {
   HttpRequest buildRpcRequest(String resource, String method,
       Entity params) throws IOException {
     Map<String, String> headers = new HashMap<String, String>();
-    Authorizer auth = null;
+    String auth = null;
     Entity body = new Entity();
     Entity bodyParam = new Entity();
     
     body.set("method", method);
-    FieldIterator iterator = params.getFieldIterator();
-    while (iterator.hasNext()) {
-      String paramName = iterator.nextFieldName();
-      Object paramValue = iterator.getFieldValue();
-      if ("auth".equals(paramName)) {
-        auth = (Authorizer) paramValue;
+    for (Map.Entry<String, Object> param : params.entrySet()) {
+      if ("auth".equals(param.getKey())) {
+        auth = (String) param.getValue();
         continue;
       }
-      bodyParam.set(paramName, paramValue);
+      bodyParam.set(param.getKey(), param.getValue());
     }
     body.set("parm", bodyParam);
     // Create transport request
-    HttpRequest request = transport.buildRequest("POST", resource);
+    HttpRequest request = transport.buildPostRequest(resource);
     request.setContent(getSerializer("application/json", bodyParam));
     return request;
   }
@@ -97,18 +90,17 @@ public class Discovery {
     // TODO(vbarathan): determine this from discovery doc.  for now hardcoded.
     Map<String, String> headers = new HashMap<String, String>();
     Object body = null;
-    Authorizer auth = null;
+    String auth = null;
     String etag = null;
     StringBuilder query = null;
-    FieldIterator fieldIterator = FieldIterators.of(params);
-    while (fieldIterator.hasNext()) {
-      String name = fieldIterator.nextFieldName();
-      Object value = fieldIterator.getFieldValue();
+    for (Map.Entry<String, Object> param : params.entrySet()) {
+      Object value = param.getValue();
       if (value == null) {
         continue;
       }
+      String name = param.getKey();
       if ("auth".equals(name)) {
-        auth = (Authorizer) value;
+        auth = (String) value;
       } else if ("etag".equals(name)) {
         etag = (String) value;
       } else if ("content".equals(name)){
@@ -134,16 +126,22 @@ public class Discovery {
     }
     
     String httpMethod = null;
+    HttpRequest request;
     if ("query".equals(method)) {
       httpMethod = "GET";
+      request = transport.buildGetRequest(uri);
     } else if ("insert".equals(method)) {
       httpMethod = "POST";
+      request = transport.buildPostRequest(uri);
     } else if ("update".equals(method)) {
       httpMethod = "PUT";
+      request = transport.buildPutRequest(uri);
     } else if ("patch".equals(method)) {
       httpMethod = "PATCH";
+      request = transport.buildPatchRequest(uri);
     } else if ("delete".equals(method)) {
       httpMethod = "DELETE";
+      request = transport.buildDeleteRequest(uri);
     } else {
       throw new RuntimeException("Unknown REST method: " + method);
     }
@@ -154,19 +152,12 @@ public class Discovery {
     
     // Authenticate if required
     if (auth != null) {
-      AuthorizedRequest authRequest = auth.getAuthorizedRequest(httpMethod, uri);
-      uri = authRequest.getUri();
-      for (int i = 0; i < authRequest.getHeaderCount(); i++) {
-        headers.put(
-            authRequest.getHeaderName(i), authRequest.getHeaderValue(i));
-      }
+      transport.setAuthorizationHeader(auth);
     }
     
     // Create transport request
-    HttpRequest request = transport.buildRequest(httpMethod, uri);
-    for(Map.Entry<String, String> header : headers.entrySet()) {
-      request.addHeader(header.getKey(), header.getValue());
-    }
+    request.headers.putAll(headers);
+    
     
     if (body != null) {
       @SuppressWarnings("unchecked")

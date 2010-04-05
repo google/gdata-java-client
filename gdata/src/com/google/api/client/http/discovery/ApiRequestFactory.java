@@ -1,19 +1,26 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+/* Copyright (c) 2010 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-package com.google.api.data.client.v2.discovery;
+package com.google.api.client.http.discovery;
 
-import com.google.api.data.client.auth.Authorizer;
-import com.google.api.data.client.entity.Entity;
-import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.http.LowLevelHttpTransportInterface;
-import com.google.api.data.client.http.net.NetGData;
-import com.google.api.data.client.v2.jsonc.jackson.JacksonHttpParser;
-import com.google.api.data.client.v2.jsonc.jackson.JsoncSerializer;
-
-import org.json.JSONException;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.api.client.Entity;
+import com.google.api.client.http.LowLevelHttpTransport;
+import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.http.json.googleapis.JsonHttpParser;
+import com.google.api.client.http.json.googleapis.JsonSerializer;
+import com.google.api.client.http.net.NetGData;
 
 /**
  * Creates requests with default set of parameters.
@@ -25,12 +32,11 @@ public class ApiRequestFactory {
   public static class Builder {
 
     private String appName;
-    private Authorizer auth;
     private String resource;
     private ServiceDocument serviceDoc = null;
 
-    private LowLevelHttpTransportInterface lowLevelTransport;
-    private HttpTransport transport;
+    private LowLevelHttpTransport lowLevelTransport;
+    private GoogleTransport transport;
 
     private Entity paramMap = new Entity();
 
@@ -52,12 +58,12 @@ public class ApiRequestFactory {
       return this;
     }
 
-    public Builder transport(LowLevelHttpTransportInterface lowLevelTransport) {
+    public Builder transport(LowLevelHttpTransport lowLevelTransport) {
       this.lowLevelTransport = lowLevelTransport;
       return this;
     }
     
-    public Builder transport(HttpTransport transport) {
+    public Builder transport(GoogleTransport transport) {
       this.transport = transport;
       return this;
     }
@@ -67,20 +73,15 @@ public class ApiRequestFactory {
       return this;
     }
     
-    public Builder withAuth(Authorizer auth) {
-      paramMap.set("auth", auth);
-      return this;
-    }
-
     public ApiRequestFactory build() {
-      HttpTransport newTransport;
+      GoogleTransport newTransport;
       if (transport == null) {
-        newTransport = new HttpTransport(
+        newTransport = new GoogleTransport(
             appName != null ? appName : "Apiary_Java");
-        newTransport.lowLevelHttpTransportInterface =
+        newTransport.lowLevelHttpTransport =
             lowLevelTransport != null ? lowLevelTransport :
             NetGData.HTTP_TRANSPORT;
-        JacksonHttpParser.set(newTransport);
+        JsonHttpParser.setAsParserOf(newTransport);
       } else {
         newTransport = transport;
       }
@@ -90,7 +91,7 @@ public class ApiRequestFactory {
       } else {
         discovery = new Discovery(resource, newTransport);
       }
-      discovery.setSerializer("application/json", JsoncSerializer.class);
+      discovery.setSerializer("application/json", JsonSerializer.class);
       return new ApiRequestFactory(discovery, paramMap);
     }
   }

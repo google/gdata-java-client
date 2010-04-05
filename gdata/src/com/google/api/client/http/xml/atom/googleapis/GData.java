@@ -13,9 +13,11 @@
  * limitations under the License.
  */
 
-package com.google.api.client.http.apache;
+package com.google.api.client.http.xml.atom.googleapis;
 
-public class ApacheGData {
-  public static final ApacheHttpTransport HTTP_TRANSPORT =
-      new ApacheHttpTransport();
+public class GData {
+  public static final String GD_NAMESPACE = "http://schemas.google.com/g/2005";
+
+  private GData() {
+  }
 }
