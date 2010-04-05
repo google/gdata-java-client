@@ -40,23 +40,23 @@ final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
     out.println();
     out.println("public final class " + className + " {");
     out.println();
-    out.println("  public static final "
+    out.println(indent(2) + "public static final "
         + useClass(XmlNamespaceDictionary.class)
         + " NAMESPACE_DICTIONARY = new "
         + useClass(XmlNamespaceDictionary.class) + "();");
-    out.println("  static {");
-    out.println("    " + useClass(Map.class) + "<" + useClass(String.class)
+    out.println(indent(2) + "static {");
+    out.println(indent(4) + useClass(Map.class) + "<" + useClass(String.class)
         + ", " + useClass(String.class)
         + "> map = NAMESPACE_DICTIONARY.namespaceAliasToUriMap;");
     for (Map.Entry<String, String> namespace : version.atom.namespaces
         .entrySet()) {
-      out.println("    map.put(\"" + namespace.getKey() + "\", \""
+      out.println(indent(4) + "map.put(\"" + namespace.getKey() + "\", \""
           + namespace.getValue() + "\");");
     }
-    out.println("  }");
+    out.println(indent(2) + "}");
     out.println();
-    out.println("  private " + className + "() {");
-    out.println("  }");
+    out.println(indent(2) + "private " + className + "() {");
+    out.println(indent(2) + "}");
     out.println("}");
   }
 

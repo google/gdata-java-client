@@ -2,18 +2,19 @@
   "id" : "sidewiki",
   "name" : "Google Sidewiki Data API",
   "className" : "Sidewiki",
-  "versions" : [ {
-    "id" : "2",
-    "atom" : {
-      "namespaces" : {
-        "app" : "http://www.w3.org/2007/app",
-        "" : "http://www.w3.org/2005/Atom",
-        "atom" : "http://www.w3.org/2005/Atom",
-        "gd" : "http://schemas.google.com/g/2005",
-        "openSearch" : "http://a9.com/-/spec/opensearch/1.1/",
-        "sidewiki" : "http://schemas.google.com/sidewiki/2009",
-        "xml" : "http://www.w3.org/XML/1998/namespace"
+  "versions" : {
+    "2" : {
+      "atom" : {
+        "namespaces" : {
+          "app" : "http://www.w3.org/2007/app",
+          "" : "http://www.w3.org/2005/Atom",
+          "atom" : "http://www.w3.org/2005/Atom",
+          "gd" : "http://schemas.google.com/g/2005",
+          "openSearch" : "http://a9.com/-/spec/opensearch/1.1/",
+          "sidewiki" : "http://schemas.google.com/sidewiki/2009",
+          "xml" : "http://www.w3.org/XML/1998/namespace"
+        }
       }
     }
-  } ]
+  }
 }

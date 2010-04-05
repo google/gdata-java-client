@@ -328,7 +328,7 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
   }
 
   private void setLogging(boolean logging) {
-    Logger.getLogger("com.google.api.data").setLevel(
+    Logger.getLogger("com.google.api.client").setLevel(
         logging ? Level.ALL : Level.OFF);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     boolean currentSetting = settings.getBoolean("logging", false);

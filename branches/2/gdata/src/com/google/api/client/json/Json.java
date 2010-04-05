@@ -34,7 +34,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +67,7 @@ public class Json {
     if (ClassInfo.isPrimitive(itemClass)) {
       return item;
     }
+    // TODO: fix me!
     // TODO: handle array?
     if (Collection.class.isAssignableFrom(itemClass)) {
       Collection<Object> itemCollection = (Collection<Object>) item;
@@ -80,8 +80,7 @@ public class Json {
     }
     if (Map.class.isAssignableFrom(itemClass)) {
       Map<String, Object> itemMap = (Map<String, Object>) item;
-      Map<String, Object> result =
-          (Map<String, Object>) ClassInfo.newMapInstance(itemClass);
+      Map<String, Object> result = ClassInfo.newMapInstance(itemClass);
       for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
         itemMap.put(entry.getKey(), clone(entry.getValue()));
       }
@@ -100,7 +99,7 @@ public class Json {
         FieldInfo.setFieldValue(field, result, clone(thisValue));
       }
     }
-    // TODO: clone JsoncObject
+    // TODO: clone JsonObject
     return result;
   }
 
@@ -163,10 +162,23 @@ public class Json {
     }
   }
 
+  /**
+   * Parse a JSON Object from the given JSON parser (which is closed after
+   * parsing completes) into the given destination class, optionally using the
+   * given parser customizer.
+   * 
+   * @param <T> destination class type
+   * @param parser JSON parser
+   * @param destinationClass destination class that has a public default
+   *        constructor to use to create a new instance
+   * @param customizeParser optional parser customizer or {@code null} for none
+   * @return new instance of the parsed destination class
+   * @throws IOException I/O exception
+   */
   public static <T> T parseAndClose(JsonParser parser,
-      Class<T> classToInstantiateAndParse, CustomizeParser customizeParser)
+      Class<T> destinationClass, CustomizeParser customizeParser)
       throws IOException {
-    T newInstance = ClassInfo.newInstance(classToInstantiateAndParse);
+    T newInstance = ClassInfo.newInstance(destinationClass);
     parseAndClose(parser, newInstance, customizeParser);
     return newInstance;
   }
@@ -183,6 +195,16 @@ public class Json {
     }
   }
 
+  /**
+   * Parse a JSON Object from the given JSON parser (which is closed after
+   * parsing completes) into the given destination object, optionally using the
+   * given parser customizer.
+   * 
+   * @param parser JSON parser
+   * @param destination destination object
+   * @param customizeParser optional parser customizer or {@code null} for none
+   * @throws IOException I/O exception
+   */
   public static void parseAndClose(JsonParser parser, Object destination,
       CustomizeParser customizeParser) throws IOException {
     try {
@@ -210,6 +232,18 @@ public class Json {
     }
   }
 
+  /**
+   * Parse a JSON Object from the given JSON parser into the given destination
+   * class, optionally using the given parser customizer.
+   * 
+   * @param <T> destination class type
+   * @param parser JSON parser
+   * @param destinationClass destination class that has a public default
+   *        constructor to use to create a new instance
+   * @param customizeParser optional parser customizer or {@code null} for none
+   * @return new instance of the parsed destination class
+   * @throws IOException I/O exception
+   */
   public static <T> T parse(JsonParser parser, Class<T> destinationClass,
       CustomizeParser customizeParser) throws IOException {
     T newInstance = ClassInfo.newInstance(destinationClass);
@@ -217,10 +251,26 @@ public class Json {
     return newInstance;
   }
 
+  /**
+   * Parse a JSON Object from the given JSON parser into the given destination
+   * object, optionally using the given parser customizer.
+   * 
+   * @param parser JSON parser
+   * @param destination destination object
+   * @param customizeParser optional parser customizer or {@code null} for none
+   * @throws IOException I/O exception
+   */
   public static void parse(JsonParser parser, Object destination,
       CustomizeParser customizeParser) throws IOException {
     Class<?> destinationClass = destination.getClass();
     ClassInfo classInfo = ClassInfo.of(destinationClass);
+    boolean isEntity = JsonEntity.class.isAssignableFrom(destinationClass);
+    if (!isEntity && Map.class.isAssignableFrom(destinationClass)) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> destinationMap = (Map<String, Object>) destination;
+      parseMap(parser, destinationMap, null, customizeParser);
+      return;
+    }
     while (parser.nextToken() != JsonToken.END_OBJECT) {
       String key = parser.getCurrentName();
       JsonToken curToken = parser.nextToken();
@@ -230,35 +280,48 @@ public class Json {
       }
       // get the field from the type information
       Field field = classInfo.getField(key);
-      if (field == null) {
-        // TODO: handle Map
-        if (JsonEntity.class.isAssignableFrom(destinationClass)) {
-          JsonEntity object = (JsonEntity) destination;
-          object.set(key, parseValue(parser, curToken, null, null, destination,
-              customizeParser));
-        } else {
-          // unrecognized field
-          if (customizeParser != null) {
-            customizeParser.handleUnrecognizedKey(destination, key);
-          }
-          // skip value
-          parser.skipChildren();
+      if (field != null) {
+        // skip final fields
+        Class<?> fieldClass = field.getType();
+        if (Modifier.isFinal(field.getModifiers())
+            && !ClassInfo.isPrimitive(fieldClass)) {
+          throw new IllegalArgumentException(
+              "final array/object fields are not supported");
         }
-        continue;
+        Object fieldValue =
+            parseValue(parser, curToken, field, fieldClass, destination,
+                customizeParser);
+        FieldInfo.setFieldValue(field, destination, fieldValue);
+      } else if (isEntity) {
+        // store unknown field in entity
+        JsonEntity object = (JsonEntity) destination;
+        object.set(key, parseValue(parser, curToken, null, null, destination,
+            customizeParser));
+      } else {
+        // unrecognized field, skip value
+        if (customizeParser != null) {
+          customizeParser.handleUnrecognizedKey(destination, key);
+        }
+        parser.skipChildren();
       }
-      // skip final fields
-      Class<?> fieldClass = field.getType();
-      if (Modifier.isFinal(field.getModifiers())
-          && !ClassInfo.isPrimitive(fieldClass)) {
-        throw new IllegalArgumentException(
-            "final array/object fields are not supported");
+    }
+  }
+
+  private static void parseMap(JsonParser parser,
+      Map<String, Object> destinationMap, Class<?> valueClass,
+      CustomizeParser customizeParser) throws IOException {
+    while (parser.nextToken() != JsonToken.END_OBJECT) {
+      String key = parser.getCurrentName();
+      JsonToken curToken = parser.nextToken();
+      // stop at items for feeds
+      if (customizeParser != null
+          && customizeParser.stopAt(destinationMap, key)) {
+        return;
       }
-      // TODO: "special" values like Double.POSITIVE_INFINITY?
-      Object fieldValue =
-          parseValue(parser, curToken, field, fieldClass, destination,
+      Object value =
+          parseValue(parser, curToken, null, valueClass, destinationMap,
               customizeParser);
-      // TODO: support any subclasses of List and Map?
-      FieldInfo.setFieldValue(field, destination, fieldValue);
+      destinationMap.put(key, value);
     }
   }
 
@@ -268,23 +331,16 @@ public class Json {
     switch (token) {
       case START_ARRAY:
         if (fieldClass == null || Collection.class.isAssignableFrom(fieldClass)) {
-          // TODO: handle array of array
-          Class<?> subFieldClass = ClassInfo.getCollectionParameter(field);
+          // TODO: handle JSON array of JSON array
           Collection<Object> collectionValue = null;
-          if (customizeParser != null) {
+          if (customizeParser != null && field != null) {
             collectionValue =
                 customizeParser.newInstanceForArray(destination, field);
           }
           if (collectionValue == null) {
-            if (fieldClass == null) {
-              collectionValue = new ArrayList<Object>();
-            } else {
-              @SuppressWarnings("unchecked")
-              Collection<Object> collectionValueTmp =
-                  (Collection<Object>) ClassInfo.newInstance(fieldClass);
-              collectionValue = collectionValueTmp;
-            }
+            collectionValue = ClassInfo.newCollectionInstance(fieldClass);
           }
+          Class<?> subFieldClass = ClassInfo.getCollectionParameter(field);
           JsonToken listToken;
           while ((listToken = parser.nextToken()) != JsonToken.END_ARRAY) {
             collectionValue.add(parseValue(parser, listToken, null,
@@ -292,33 +348,36 @@ public class Json {
           }
           return collectionValue;
         }
-        throw new IllegalArgumentException(field.getName()
-            + ": expected field type that implements Collection but got "
-            + fieldClass);
+        throw new IllegalArgumentException(
+            "expected field type that implements Collection but got "
+                + fieldClass);
       case START_OBJECT:
-        // TODO: breaks when fieldClass is an Entity!
-        if (fieldClass == null || Map.class.isAssignableFrom(fieldClass)) {
-          // TODO: handle sub-field type
-          @SuppressWarnings("unchecked")
-          Map<String, Object> mapValue =
-              (Map<String, Object>) ClassInfo.newMapInstance(fieldClass);
-          while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String mapKey = parser.getCurrentName();
-            JsonToken mapToken = parser.nextToken();
-            mapValue.put(mapKey, parseValue(parser, mapToken, null, null,
-                destination, customizeParser));
-          }
-          return mapValue;
-        }
-        if (customizeParser != null) {
-          Object newInstance =
+        Object newInstance = null;
+        boolean isMap =
+            fieldClass == null || Map.class.isAssignableFrom(fieldClass);
+        if (fieldClass != null && customizeParser != null) {
+          newInstance =
               customizeParser.newInstanceForObject(destination, fieldClass);
-          if (newInstance != null) {
-            parse(parser, newInstance, customizeParser);
+        }
+        if (newInstance == null) {
+          if (isMap) {
+            newInstance = ClassInfo.newMapInstance(fieldClass);
+          } else {
+            newInstance = ClassInfo.newInstance(fieldClass);
+          }
+        }
+        if (isMap && fieldClass != null) {
+          Class<?> valueClass = ClassInfo.getMapValueParameter(field);
+          if (valueClass != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> destinationMap =
+                (Map<String, Object>) newInstance;
+            parseMap(parser, destinationMap, valueClass, customizeParser);
             return newInstance;
           }
         }
-        return parse(parser, fieldClass, customizeParser);
+        parse(parser, newInstance, customizeParser);
+        return newInstance;
       case VALUE_TRUE:
       case VALUE_FALSE:
         if (fieldClass != null && fieldClass != Boolean.class
@@ -357,6 +416,7 @@ public class Json {
           return Long.parseLong(stringValue);
         }
         if (fieldClass == Double.class || fieldClass == double.class) {
+          // TODO: "special" values like Double.POSITIVE_INFINITY?
           return Double.parseDouble(stringValue);
         }
         if (fieldClass == Character.class || fieldClass == char.class) {

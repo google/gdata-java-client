@@ -52,26 +52,26 @@ public class Generate {
     for (Client client : clients) {
       System.out.print(client.name + " (" + client.id + ")");
       if (client.versions.size() == 1) {
-        System.out.println(" version " + client.versions.first().id);
+        System.out.print(" version ");
       } else {
         System.out.print(" versions ");
-        boolean first = true;
-        for (Version version : client.versions) {
-          if (first) {
-            first = false;
-          } else {
-            System.out.print(", ");
-          }
-          System.out.print(version.id);
-        }
-        System.out.println();
       }
+      boolean first = true;
+      for (Version version : client.versions.values()) {
+        if (first) {
+          first = false;
+        } else {
+          System.out.print(", ");
+        }
+        System.out.print(version.id);
+      }
+      System.out.println();
     }
     // compute file generators
     List<FileGenerator> fileGenerators = new ArrayList<FileGenerator>();
     fileGenerators.add(new AntBuildFileGenerator(clients));
     for (Client client : clients) {
-      for (Version version : client.versions) {
+      for (Version version : client.versions.values()) {
         fileGenerators.add(new MainJavaFileGenerator(version));
         fileGenerators.add(new MainPackageFileGenerator(version));
         fileGenerators.add(new AtomPackageFileGenerator(version));
@@ -167,15 +167,6 @@ public class Generate {
     @Override
     public void handleUnrecognizedKey(Object context, String key) {
       throw new IllegalArgumentException("unrecognized key: " + key);
-    }
-
-    @Override
-    public Object newInstanceForObject(Object context, Class<?> fieldClass) {
-      if (Version.class.equals(fieldClass)
-          && Client.class.equals(context.getClass())) {
-        return new Version((Client) context);
-      }
-      return null;
     }
   }
 
