@@ -120,11 +120,22 @@ public final class HttpResponse {
     getContent().close();
   }
 
+  public HttpParser getParser() {
+    return this.transport.getParser(this.contentType);
+  }
+
   public <T> T parseAs(Class<T> entityClass) throws IOException {
-    String contentType = getContentType();
-    HttpParser parser = this.transport.getParser(contentType);
+    HttpParser parser = getParser();
     if (parser == null) {
-      throw new IllegalArgumentException("No parser defined for content type: "
+      if (this.contentType == null) {
+        InputStream content = getContent();
+        if (content != null) {
+          throw new IllegalArgumentException(
+              "Missing Content-Type header in response: " + parseAsString());
+        }
+        return null;
+      }
+      throw new IllegalArgumentException("No parser defined for Content-Type: "
           + contentType);
     }
     return parser.parse(this, entityClass);
