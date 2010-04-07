@@ -73,13 +73,19 @@ public class GData {
         // TODO: handle Java collection of Java collection or Java map?
         fieldClass = ClassInfo.getCollectionParameter(fieldInfo.field);
       }
-      // TODO: handle map with specified key class?
-      if (fieldClass != null && !fieldInfo.isPrimitive
-          && !Collection.class.isAssignableFrom(fieldClass)
-          && !Map.class.isAssignableFrom(fieldClass)) {
-        buf.append('(');
-        appendFieldsFor(buf, fieldClass);
-        buf.append(')');
+      // TODO: implement support for map when server implements support for *
+      if (fieldClass != null) {
+        if (fieldInfo.isPrimitive) {
+          if (name.charAt(0) != '@' && !name.equals("text()")) {
+            // TODO: wait for bug fix from server
+            // buf.append("/text()");
+          }
+        } else if (!Collection.class.isAssignableFrom(fieldClass)
+            && !Map.class.isAssignableFrom(fieldClass)) {
+          buf.append('(');
+          appendFieldsFor(buf, fieldClass);
+          buf.append(')');
+        }
       }
     }
   }
