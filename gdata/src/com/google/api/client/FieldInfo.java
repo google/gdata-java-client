@@ -20,12 +20,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 public class FieldInfo {
+  public final boolean isFinal;
+  public final boolean isPrimitive;
+  public final Class<?> type;
   public final Field field;
   public final String name;
 
   FieldInfo(Field field, String name) {
     this.field = field;
     this.name = name;
+    this.isFinal = Modifier.isFinal(field.getModifiers());
+    this.type = field.getType();
+    this.isPrimitive = ClassInfo.isPrimitive(type);
   }
 
   public Object getValue(Object obj) {

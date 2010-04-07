@@ -22,6 +22,7 @@ public class AllTests extends TestSuite {
 
   public static TestSuite suite() {
     TestSuite result = new TestSuite();
+    result.addTestSuite(ArrayMapTest.class);
     result.addTestSuite(DateTimeTest.class);
     return result;
   }

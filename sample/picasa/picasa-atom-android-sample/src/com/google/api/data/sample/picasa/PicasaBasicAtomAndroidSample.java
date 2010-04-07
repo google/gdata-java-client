@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  * </p>
  * <p>
  * To enable logging of HTTP requests/responses, run this command: {@code adb
- * shell setprop log.tag.GoogleTransport DEBUG}. Then press-and-hold an album,
+ * shell setprop log.tag.HttpTransport DEBUG}. Then press-and-hold an album,
  * and enable "Logging".
  * </p>
  */
@@ -149,7 +149,9 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     transport.lowLevelHttpTransport = AndroidGData.HTTP_TRANSPORT;
     transport.setGDataVersionHeader(Picasa.VERSION);
     transport.setGoogleLoginAuthorizationHeader(authToken);
-    AtomHttpParser.setAsParserOf(transport);
+    AtomHttpParser parser = new AtomHttpParser();
+    parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
+    transport.setParser(parser);
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       Bundle extras = intent.getExtras();
@@ -362,8 +364,10 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
       uri.set("kinds", AlbumEntry.KIND);
       HttpRequest request = this.transport.buildGetRequest(uri.build());
       AtomFeedParser<UserFeed, AlbumEntry> parser =
-          AtomHttp.useFeedParser(request.execute(), UserFeed.class,
-              AlbumEntry.class);
+          AtomHttp
+              .useFeedParser(request.execute(),
+                  PicasaAtom.NAMESPACE_DICTIONARY, UserFeed.class,
+                  AlbumEntry.class);
       this.feed = parser.parseFeed();
       AlbumEntry album;
       List<String> result = new ArrayList<String>();

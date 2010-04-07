@@ -82,7 +82,7 @@ public class ApiRequestFactory {
         newTransport.lowLevelHttpTransport =
             lowLevelTransport != null ? lowLevelTransport :
             NetGData.HTTP_TRANSPORT;
-        JsonHttpParser.setAsParserOf(newTransport);
+        newTransport.setParser(new JsonHttpParser());
       } else {
         newTransport = transport;
       }

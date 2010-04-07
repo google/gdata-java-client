@@ -1,6 +1,7 @@
 package com.google.api.client.xml;
 
 import com.google.api.client.Entity;
+import com.google.api.client.Hide;
 
 /**
  * Represents an XML element and stores its attributes and text content or
@@ -14,14 +15,16 @@ public class XmlEntity extends Entity implements Cloneable {
    * Optional XML element local name prefixed by its namespace alias -- for
    * example {@code "atom:entry"} -- or {@code null} if not set.
    */
+  @Hide
   public volatile String name;
 
   /** Optional namespace dictionary or {@code null} if not set. */
+  @Hide
   public volatile XmlNamespaceDictionary namespaceDictionary;
 
   @Override
   public XmlEntity clone() {
-    return Xml.clone(this);
+    return (XmlEntity) super.clone();
   }
 
   @Override

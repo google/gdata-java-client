@@ -16,7 +16,9 @@
 
 package com.google.api.client.xml.atom;
 
+import com.google.api.client.ClassInfo;
 import com.google.api.client.xml.Xml;
+import com.google.api.client.xml.XmlNamespaceDictionary;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -31,16 +33,10 @@ import java.io.InputStream;
 public abstract class AbstractAtomFeedParser<T> {
 
   private boolean feedParsed;
-  protected final XmlPullParser parser;
-  final InputStream inputStream;
-  final Class<T> feedClass;
-
-  protected AbstractAtomFeedParser(XmlPullParser parser,
-      InputStream inputStream, Class<T> feedClass) {
-    this.parser = parser;
-    this.inputStream = inputStream;
-    this.feedClass = feedClass;
-  }
+  public volatile XmlPullParser parser;
+  public volatile InputStream inputStream;
+  public volatile Class<T> feedClass;
+  public volatile XmlNamespaceDictionary namespaceDictionary;
 
   /**
    * Parse the feed and return a new parsed instance of the feed type. This
@@ -52,9 +48,9 @@ public abstract class AbstractAtomFeedParser<T> {
     boolean close = true;
     try {
       this.feedParsed = true;
-      T result =
-          Xml.parseElement(this.parser, this.feedClass,
-              Atom.StopAtAtomEntry.INSTANCE);
+      T result = ClassInfo.newInstance(this.feedClass);
+      Xml.parseElement(this.parser, result, this.namespaceDictionary,
+          Atom.StopAtAtomEntry.INSTANCE);
       close = false;
       return result;
     } finally {
@@ -76,7 +72,8 @@ public abstract class AbstractAtomFeedParser<T> {
     XmlPullParser parser = this.parser;
     if (!this.feedParsed) {
       this.feedParsed = true;
-      Xml.parseElement(parser, null, Atom.StopAtAtomEntry.INSTANCE);
+      Xml.parseElement(parser, null, this.namespaceDictionary,
+          Atom.StopAtAtomEntry.INSTANCE);
     }
     boolean close = true;
     try {

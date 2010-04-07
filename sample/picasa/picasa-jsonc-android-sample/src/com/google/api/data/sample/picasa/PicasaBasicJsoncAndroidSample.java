@@ -55,7 +55,7 @@ import java.util.logging.Logger;
  * </p>
  * <p>
  * To enable logging of HTTP requests/responses, run this command: {@code adb
- * shell setprop log.tag.GoogleTransport DEBUG}. Then press-and-hold an album,
+ * shell setprop log.tag.HttpTransport DEBUG}. Then press-and-hold an album,
  * and enable "Logging".
  * </p>
  */
@@ -148,7 +148,7 @@ public class PicasaBasicJsoncAndroidSample extends ListActivity {
     transport.lowLevelHttpTransport = AndroidGData.HTTP_TRANSPORT;
     transport.setGoogleLoginAuthorizationHeader(authToken);
     transport.setGDataVersionHeader(Picasa.VERSION);
-    JsonHttpParser.setAsParserOf(transport);
+    transport.setParser(new JsonHttpParser());
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       Bundle extras = intent.getExtras();

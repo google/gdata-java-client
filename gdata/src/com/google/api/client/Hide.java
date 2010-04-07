@@ -14,22 +14,20 @@
  * the License.
  */
 
-package com.google.api.client.http.json.googleapis;
+package com.google.api.client;
 
-import com.google.api.client.http.HttpParser;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.json.Json;
+import static java.lang.annotation.ElementType.FIELD;
 
-import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public final class JsonHttpParser implements HttpParser {
-
-  public String getContentType() {
-    return Json.CONTENT_TYPE;
-  }
-
-  public <T> T parse(HttpResponse response, Class<T> entityClass)
-      throws IOException {
-    return JsonHttp.parse(response, entityClass);
-  }
+/**
+ * Use this annotation to hide a field from parsing/serialization. This allows a
+ * field to be public for reasons other than exposing it to
+ * parsing/serialization.
+ */
+@Target(FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Hide {
 }

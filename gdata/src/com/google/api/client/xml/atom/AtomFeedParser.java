@@ -16,24 +16,17 @@
 
 package com.google.api.client.xml.atom;
 
+import com.google.api.client.ClassInfo;
 import com.google.api.client.xml.Xml;
 
-import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /** Atom feed parser when the item class is known in advance. */
 public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {
 
-  private final Class<I> entryClass;
-
-  public AtomFeedParser(XmlPullParser parser, InputStream inputStream,
-      Class<T> feedClass, Class<I> entryClass) {
-    super(parser, inputStream, feedClass);
-    this.entryClass = entryClass;
-  }
+  public volatile Class<I> entryClass;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -44,6 +37,8 @@ public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {
   @Override
   protected Object parseEntryInternal() throws IOException,
       XmlPullParserException {
-    return Xml.parseElement(parser, entryClass, null);
+    I result = ClassInfo.newInstance(this.entryClass);
+    Xml.parseElement(parser, result, this.namespaceDictionary, null);
+    return result;
   }
 }

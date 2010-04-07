@@ -114,7 +114,7 @@ public class PicasaBasicJsoncSample {
     GoogleTransport transport = new GoogleTransport(APP_NAME);
     authenticator.authenticate().setAuthorizationHeader(transport);
     transport.setGDataVersionHeader(Picasa.VERSION);
-    JsonHttpParser.setAsParserOf(transport);
+    transport.setParser(new JsonHttpParser());
     return transport;
   }
 

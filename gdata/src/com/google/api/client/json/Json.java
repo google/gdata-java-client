@@ -31,7 +31,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -54,54 +53,6 @@ public class Json {
           JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
 
   public static final String CONTENT_TYPE = "application/json";
-
-  @SuppressWarnings("unchecked")
-  public static <T> T clone(T item) {
-    if (item == null) {
-      return null;
-    }
-    Class<? extends T> itemClass = (Class<? extends T>) item.getClass();
-    // TODO: support enum for JSON-C string value?
-    // TODO: support Java arrays?
-    // don't need to clone immutable types
-    if (ClassInfo.isPrimitive(itemClass)) {
-      return item;
-    }
-    // TODO: fix me!
-    // TODO: handle array?
-    if (Collection.class.isAssignableFrom(itemClass)) {
-      Collection<Object> itemCollection = (Collection<Object>) item;
-      Collection<Object> result =
-          (Collection<Object>) ClassInfo.newInstance(itemClass);
-      for (Object value : itemCollection) {
-        result.add(clone(value));
-      }
-      return (T) result;
-    }
-    if (Map.class.isAssignableFrom(itemClass)) {
-      Map<String, Object> itemMap = (Map<String, Object>) item;
-      Map<String, Object> result = ClassInfo.newMapInstance(itemClass);
-      for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
-        itemMap.put(entry.getKey(), clone(entry.getValue()));
-      }
-      return (T) result;
-    }
-    // clone basic JSON-C object
-    T result = ClassInfo.newInstance(itemClass);
-    Field[] fields = itemClass.getFields();
-    int numFields = fields.length;
-    for (int i = 0; i < numFields; i++) {
-      // deep clone of each field
-      Field field = fields[i];
-      Class<?> fieldType = field.getType();
-      Object thisValue = FieldInfo.getFieldValue(field, item);
-      if (thisValue != null && !Modifier.isFinal(field.getModifiers())) {
-        FieldInfo.setFieldValue(field, result, clone(thisValue));
-      }
-    }
-    // TODO: clone JsonObject
-    return result;
-  }
 
   public static String toString(Object item) {
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -279,17 +230,16 @@ public class Json {
         return;
       }
       // get the field from the type information
-      Field field = classInfo.getField(key);
-      if (field != null) {
+      FieldInfo fieldInfo = classInfo.getFieldInfo(key);
+      if (fieldInfo != null) {
         // skip final fields
-        Class<?> fieldClass = field.getType();
-        if (Modifier.isFinal(field.getModifiers())
-            && !ClassInfo.isPrimitive(fieldClass)) {
+        if (fieldInfo.isFinal && !fieldInfo.isPrimitive) {
           throw new IllegalArgumentException(
               "final array/object fields are not supported");
         }
+        Field field = fieldInfo.field;
         Object fieldValue =
-            parseValue(parser, curToken, field, fieldClass, destination,
+            parseValue(parser, curToken, field, fieldInfo.type, destination,
                 customizeParser);
         FieldInfo.setFieldValue(field, destination, fieldValue);
       } else if (isEntity) {

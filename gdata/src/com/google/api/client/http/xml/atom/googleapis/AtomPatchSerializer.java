@@ -16,9 +16,18 @@
 
 package com.google.api.client.http.xml.atom.googleapis;
 
-public class GData {
-  public static final String GD_NAMESPACE = "http://schemas.google.com/g/2005";
+import com.google.api.client.http.xml.atom.AtomSerializer;
+import com.google.api.client.xml.XmlNamespaceDictionary;
 
-  private GData() {
+public final class AtomPatchSerializer extends AtomSerializer {
+
+  public AtomPatchSerializer(XmlNamespaceDictionary namespaceDictionary,
+      Object entry) {
+    super(namespaceDictionary, entry);
+  }
+
+  @Override
+  public String getContentType() {
+    return "application/xml";
   }
 }

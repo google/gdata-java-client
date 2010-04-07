@@ -38,18 +38,47 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Cloneable {
   private Object[] data;
   private volatile EntrySet entrySet;
 
-  private ArrayMap() {
-  }
-
-  /** Returns a new instanceof of a slim map with initial capacity of zero. */
+  /**
+   * Returns a new instance of an array map with initial capacity of zero.
+   * Equivalent to calling the default constructor, except without the need to
+   * specify the type parameters. For example: {@code ArrayMap<String, String>
+   * map = ArrayMap.create();}.
+   */
   public static <K, V> ArrayMap<K, V> create() {
     return new ArrayMap<K, V>();
   }
 
-  /** Returns a new instanceof of a slim map of the given initial capacity. */
+  /**
+   * Returns a new instance of an array map of the given initial capacity. For
+   * example: {@code ArrayMap<String, String> map = ArrayMap.create(8);}.
+   */
   public static <K, V> ArrayMap<K, V> create(int initialCapacity) {
     ArrayMap<K, V> result = create();
     result.ensureCapacity(initialCapacity);
+    return result;
+  }
+
+  /**
+   * Returns a new instance of an array map of the given key value pairs in
+   * alternating order. For example: {@code ArrayMap<String, String> map =
+   * ArrayMap.of("key1", "value1", "key2", "value2", ...);}.
+   * <p>
+   * WARNING: there is no compile-time checking of the {@code keyValuePairs}
+   * parameter to ensure that the keys or values have the correct type, so if
+   * the wrong type is passed in, any problems will occur at runtime. Also,
+   * there is no checking that the keys are unique, which the caller must ensure
+   * is true.
+   */
+  public static <K, V> ArrayMap<K, V> of(Object... keyValuePairs) {
+    ArrayMap<K, V> result = create(1);
+    int length = keyValuePairs.length;
+    if (1 == (length % 2)) {
+      throw new IllegalArgumentException("missing value for last key: "
+          + keyValuePairs[length - 1]);
+    }
+    result.size = keyValuePairs.length / 2;
+    Object[] data = result.data = new Object[length];
+    System.arraycopy(keyValuePairs, 0, data, 0, length);
     return result;
   }
 
@@ -114,7 +143,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Cloneable {
     if (index < 0 || index >= size) {
       throw new IndexOutOfBoundsException();
     }
-    int valueDataIndex = 1 + index << 1;
+    int valueDataIndex = 1 + (index << 1);
     V result = valueAtDataIndex(valueDataIndex);
     this.data[valueDataIndex] = value;
     return result;
@@ -308,6 +337,12 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Cloneable {
     try {
       @SuppressWarnings("unchecked")
       ArrayMap<K, V> result = (ArrayMap<K, V>) super.clone();
+      Object[] data = this.data;
+      if (data != null) {
+        int length = data.length;
+        Object[] resultData = result.data = new Object[length];
+        System.arraycopy(data, 0, resultData, 0, length);
+      }
       return result;
     } catch (CloneNotSupportedException e) {
       // won't happen

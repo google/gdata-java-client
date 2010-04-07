@@ -32,6 +32,6 @@ public class JsonEntity extends Entity implements Cloneable {
 
   @Override
   public JsonEntity clone() {
-    return Json.clone(this);
+    return (JsonEntity) super.clone();
   }
 }

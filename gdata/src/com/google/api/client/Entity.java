@@ -42,7 +42,7 @@ public class Entity extends AbstractMap<String, Object> implements Cloneable {
   private final ClassInfo classInfo = ClassInfo.of(getClass());
 
   /** Returns the unknown fields map. */
-  public ArrayMap<String, Object> getUnkownFields() {
+  public ArrayMap<String, Object> getUnknownFields() {
     return this.unknownFields;
   }
 
@@ -124,7 +124,8 @@ public class Entity extends AbstractMap<String, Object> implements Cloneable {
     try {
       @SuppressWarnings("unchecked")
       Entity result = (Entity) super.clone();
-      result.unknownFields = this.unknownFields.clone();
+      Entities.cloneInternal(this, result);
+      result.unknownFields = Entities.clone(this.unknownFields);
       return result;
     } catch (CloneNotSupportedException e) {
       // won't happen

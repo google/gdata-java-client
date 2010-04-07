@@ -189,7 +189,9 @@ public class PicasaBasicAtomSample {
     GoogleTransport transport = new GoogleTransport(APP_NAME);
     authenticator.authenticate().setAuthorizationHeader(transport);
     transport.setGDataVersionHeader(Picasa.VERSION);
-    AtomHttpParser.setAsParserOf(transport);
+    AtomHttpParser parser = new AtomHttpParser();
+    parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
+    transport.setParser(parser);
     return transport;
   }
 

@@ -25,31 +25,28 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-/** GData Atom feed parser when the item class can be computed from the kind. */
+/** GData Atom feed parser when the entry class can be computed from the kind. */
 public final class MultiKindFeedParser<T> extends AbstractAtomFeedParser<T> {
 
   private final HashMap<String, Class<?>> kindToEntryClassMap =
       new HashMap<String, Class<?>>();
 
-  public MultiKindFeedParser(XmlPullParser parser, InputStream inputStream,
-      Class<T> feedClass, Class<?>... itemClasses) {
-    super(parser, inputStream, feedClass);
-    int numItems = itemClasses.length;
+  public void setEntryClasses(Class<?>... entryClasses) {
+    int numEntries = entryClasses.length;
     HashMap<String, Class<?>> kindToEntryClassMap = this.kindToEntryClassMap;
-    for (int i = 0; i < numItems; i++) {
-      Class<?> entryClass = itemClasses[i];
+    for (int i = 0; i < numEntries; i++) {
+      Class<?> entryClass = entryClasses[i];
       ClassInfo typeInfo = ClassInfo.of(entryClass);
       Field field = typeInfo.getField("@gd:kind");
       if (field == null) {
         throw new IllegalArgumentException("missing @gd:kind field for "
             + entryClass.getName());
       }
-      Object item = ClassInfo.newInstance(entryClass);
-      String kind = (String) FieldInfo.getFieldValue(field, item);
+      Object entry = ClassInfo.newInstance(entryClass);
+      String kind = (String) FieldInfo.getFieldValue(field, entry);
       if (kind == null) {
         throw new IllegalArgumentException(
             "missing value for @gd:kind field in " + entryClass.getName());
@@ -62,11 +59,13 @@ public final class MultiKindFeedParser<T> extends AbstractAtomFeedParser<T> {
   protected Object parseEntryInternal() throws IOException,
       XmlPullParserException {
     XmlPullParser parser = this.parser;
-    String kind = parser.getAttributeValue(GData.GD_NAMESPACE, "kind");
-    Class<?> itemClass = this.kindToEntryClassMap.get(kind);
-    if (itemClass == null) {
+    String kind = parser.getAttributeValue(GDataHttp.GD_NAMESPACE, "kind");
+    Class<?> entryClass = this.kindToEntryClassMap.get(kind);
+    if (entryClass == null) {
       throw new IllegalArgumentException("unrecognized kind: " + kind);
     }
-    return Xml.parseElement(parser, itemClass, null);
+    Object result = ClassInfo.newInstance(entryClass);
+    Xml.parseElement(parser, result, this.namespaceDictionary, null);
+    return result;
   }
 }
