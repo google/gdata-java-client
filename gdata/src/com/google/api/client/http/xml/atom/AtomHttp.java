@@ -18,7 +18,6 @@ package com.google.api.client.http.xml.atom;
 
 import com.google.api.client.ClassInfo;
 import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.xml.atom.googleapis.MultiKindFeedParser;
 import com.google.api.client.xml.Xml;
 import com.google.api.client.xml.XmlNamespaceDictionary;
@@ -32,14 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public final class AtomHttp {
-
-  public static InputStream processAsInputStream(HttpResponse response)
-      throws IOException {
-    if (response.isSuccessStatusCode()) {
-      return response.getContent();
-    }
-    throw new HttpResponseException(response);
-  }
 
   public static XmlPullParser processAsXmlPullParser(HttpResponse response,
       InputStream content) throws XmlPullParserException {
@@ -58,7 +49,7 @@ public final class AtomHttp {
       Class<T> classToInstantiateAndParse,
       XmlNamespaceDictionary namespaceDictionary) throws IOException,
       XmlPullParserException {
-    InputStream content = processAsInputStream(response);
+    InputStream content = response.getContent();
     try {
       XmlPullParser parser = processAsXmlPullParser(response, content);
       T result = ClassInfo.newInstance(classToInstantiateAndParse);
@@ -73,7 +64,7 @@ public final class AtomHttp {
       HttpResponse response, XmlNamespaceDictionary namespaceDictionary,
       Class<T> feedClass, Class<I> entryClass) throws XmlPullParserException,
       IOException {
-    InputStream content = processAsInputStream(response);
+    InputStream content = response.getContent();
     try {
       XmlPullParser parser = processAsXmlPullParser(response, content);
       AtomFeedParser<T, I> result = new AtomFeedParser<T, I>();
@@ -95,7 +86,7 @@ public final class AtomHttp {
       HttpResponse response, XmlNamespaceDictionary namespaceDictionary,
       Class<T> feedClass, Class<?>... entryClasses)
       throws XmlPullParserException, IOException {
-    InputStream content = processAsInputStream(response);
+    InputStream content = response.getContent();
     try {
       XmlPullParser parser = processAsXmlPullParser(response, content);
       MultiKindFeedParser<T> result = new MultiKindFeedParser<T>();

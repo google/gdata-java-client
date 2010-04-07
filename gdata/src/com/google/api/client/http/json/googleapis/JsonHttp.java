@@ -17,7 +17,6 @@
 package com.google.api.client.http.json.googleapis;
 
 import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.json.Json;
 import com.google.api.client.json.googleapis.JsonFeedParser;
 import com.google.api.client.json.googleapis.JsonMultiKindFeedParser;
@@ -54,7 +53,7 @@ public class JsonHttp {
 
   public static JsonParser processAsJsonParser(HttpResponse response)
       throws IOException {
-    InputStream content = processAsInputStream(response);
+    InputStream content = response.getContent();
     try {
       // check for JSON content type
       String contentType = response.getContentType();
@@ -65,21 +64,12 @@ public class JsonHttp {
       JsonParser parser = Json.JSON_FACTORY.createJsonParser(content);
       content = null;
       parser.nextToken();
-      Json.skipToKey(parser, "data");
+      Json.skipToKey(parser, response.isSuccessStatusCode() ? "data" : "error");
       return parser;
     } finally {
       if (content != null) {
         content.close();
       }
     }
-  }
-
-  public static InputStream processAsInputStream(HttpResponse response)
-      throws IOException {
-    if (response.isSuccessStatusCode()) {
-      return response.getContent();
-    }
-    // TODO: use err=json (or jsonc?) to force error response to json-c?
-    throw new HttpResponseException(response);
   }
 }
