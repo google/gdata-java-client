@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="/gdata/build-bin/dist/apis/picasa-v2-atom.jar"/>
 	<classpathentry kind="lib" path="/gdata/build-bin/dist/apis/picasa-v2.jar"/>
 	<classpathentry kind="lib" path="/gdata/build-bin/dist/android/google-api-core.jar"/>
-	<classpathentry kind="lib" path="/gdata/build-bin/dist/android/google-api-xml.jar"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/android/google-api-xml.jar" sourcepath="/gdata/build-bin/dist/google-api-2.1.0-alpha-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

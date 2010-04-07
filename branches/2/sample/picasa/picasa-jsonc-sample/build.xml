@@ -6,7 +6,7 @@
 	<property file="build.properties" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 	<property name="lib.dir" value="${gdata.dir}/lib" />
-	<property name="gdata.jar" value="${gdata.dir}/build-bin/dist/gdata-full.jar" />
+  <property name="gdata.jar" value="${gdata.dir}/build-bin/dist/google-api-2.1.0-alpha.jar" />
 
 	<target name="compile" description="Compile">
 		<mkdir dir="${classes.dir}" />

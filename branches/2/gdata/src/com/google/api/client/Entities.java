@@ -16,6 +16,8 @@
 
 package com.google.api.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -35,6 +37,101 @@ public class Entities {
       return result;
     }
     return new ReflectionMap(entity);
+  }
+
+  /**
+   * Returns a deep clone of the given entity, such that the result is a
+   * completely independent copy.
+   * <p>
+   * Note that final fields cannot be changed and therefore their value won't be
+   * copied.
+   * 
+   * @param entity entity to clone or {@code null} for a {@code null} return
+   *        value
+   * @return deep clone or {@code null} for {@code null} entity input
+   */
+  public static <T> T clone(T entity) {
+    // don't need to clone primitive
+    if (ClassInfo.isPrimitive(entity)) {
+      return entity;
+    }
+    T copy;
+    if (entity instanceof Entity) {
+      // use Entity's clone method if possible
+      @SuppressWarnings("unchecked")
+      T copyTmp = (T) ((Entity) entity).clone();
+      copy = copyTmp;
+    } else if (entity instanceof ArrayMap<?, ?>) {
+      // use ArrayMap's clone method if possible
+      @SuppressWarnings("unchecked")
+      T copyTmp = (T) ((ArrayMap) entity).clone();
+      copy = copyTmp;
+    } else {
+      // else new to use default constructor
+      @SuppressWarnings("unchecked")
+      T copyTmp = (T) ClassInfo.newInstance(entity.getClass());
+      copy = copyTmp;
+    }
+    cloneInternal(entity, copy);
+    return copy;
+  }
+
+  static void cloneInternal(Object src, Object dest) {
+    // TODO: support Java arrays?
+    Class<?> srcClass = src.getClass();
+    if (Collection.class.isAssignableFrom(srcClass)) {
+      @SuppressWarnings("unchecked")
+      Collection<Object> srcCollection = (Collection<Object>) src;
+      if (ArrayList.class.isAssignableFrom(srcClass)) {
+        @SuppressWarnings("unchecked")
+        ArrayList<Object> destArrayList = (ArrayList<Object>) dest;
+        destArrayList.ensureCapacity(srcCollection.size());
+      }
+      @SuppressWarnings("unchecked")
+      Collection<Object> destCollection = (Collection<Object>) dest;
+      for (Object srcValue : srcCollection) {
+        destCollection.add(clone(srcValue));
+      }
+    } else {
+      boolean isEntity = Entity.class.isAssignableFrom(srcClass);
+      if (isEntity || !Map.class.isAssignableFrom(srcClass)) {
+        ClassInfo classInfo = ClassInfo.of(srcClass);
+        for (String fieldName : classInfo.getFieldNames()) {
+          FieldInfo fieldInfo = classInfo.getFieldInfo(fieldName);
+          // skip final fields
+          if (!fieldInfo.isFinal) {
+            // entity already has primitive types copied by clone()
+            if (!isEntity || !fieldInfo.isPrimitive) {
+              Object srcValue = fieldInfo.getValue(src);
+              if (srcValue != null) {
+                fieldInfo.setValue(dest, clone(srcValue));
+              }
+            }
+          }
+        }
+      } else if (ArrayMap.class.isAssignableFrom(srcClass)) {
+        @SuppressWarnings("unchecked")
+        ArrayMap<Object, Object> destMap = (ArrayMap<Object, Object>) dest;
+        @SuppressWarnings("unchecked")
+        ArrayMap<Object, Object> srcMap = (ArrayMap<Object, Object>) src;
+        int size = srcMap.size();
+        for (int i = 0; i < size; i++) {
+          Object srcValue = srcMap.getValue(i);
+          if (!ClassInfo.isPrimitive(srcValue)) {
+            destMap.set(i, clone(srcValue));
+          }
+        }
+      } else {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> destMap = (Map<String, Object>) dest;
+        @SuppressWarnings("unchecked")
+        Map<String, Object> srcMap = (Map<String, Object>) src;
+        for (Map.Entry<String, Object> srcEntry : srcMap.entrySet()) {
+          destMap.put(srcEntry.getKey(), clone(srcEntry.getValue()));
+
+        }
+      }
+    }
   }
 
   private Entities() {

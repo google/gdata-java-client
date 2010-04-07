@@ -25,7 +25,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -135,6 +134,14 @@ public final class ClassInfo {
         || clazz == DateTime.class || clazz == Boolean.class;
   }
 
+  /**
+   * Returns whether to given value is {@code null} or its class is primitive as
+   * defined by {@link #isPrimitive(Class)}.
+   */
+  public static boolean isPrimitive(Object value) {
+    return value == null || isPrimitive(value.getClass());
+  }
+
   public static Collection<Object> newCollectionInstance(
       Class<?> collectionClass) {
     if (collectionClass != null
@@ -167,8 +174,8 @@ public final class ClassInfo {
           (Map<String, Object>) ClassInfo.newInstance(mapClass);
       return result;
     }
-    if (mapClass == null || mapClass.isAssignableFrom(HashMap.class)) {
-      return new HashMap<String, Object>();
+    if (mapClass == null || mapClass.isAssignableFrom(ArrayMap.class)) {
+      return ArrayMap.create();
     }
     if (mapClass == null || mapClass.isAssignableFrom(TreeMap.class)) {
       return new TreeMap<String, Object>();
@@ -216,6 +223,10 @@ public final class ClassInfo {
     for (int fieldsIndex = 0; fieldsIndex < fieldsSize; fieldsIndex++) {
       Field field = fields[fieldsIndex];
       String fieldName;
+      Hide hide = field.getAnnotation(Hide.class);
+      if (hide != null) {
+        continue;
+      }
       Name name = field.getAnnotation(Name.class);
       if (name == null) {
         fieldName = field.getName();

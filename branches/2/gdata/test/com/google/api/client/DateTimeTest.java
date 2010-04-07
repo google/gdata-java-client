@@ -28,7 +28,6 @@ import java.util.Date;
 public class DateTimeTest extends TestCase {
 
   public DateTimeTest() {
-    super();
   }
 
   public DateTimeTest(String testName) {

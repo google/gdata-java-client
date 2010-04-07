@@ -74,7 +74,7 @@ public class YouTubeBasicJsoncSample {
   private static GoogleTransport newTransport() {
     GoogleTransport transport = new GoogleTransport(APP_NAME);
     transport.setGDataVersionHeader(YouTube.VERSION);
-    JsonHttpParser.setAsParserOf(transport);
+    transport.setParser(new JsonHttpParser());
     return transport;
   }
 

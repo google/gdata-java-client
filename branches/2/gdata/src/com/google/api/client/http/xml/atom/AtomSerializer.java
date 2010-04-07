@@ -26,13 +26,13 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public final class AtomSerializer implements HttpSerializer {
+public class AtomSerializer implements HttpSerializer {
 
   private final XmlNamespaceDictionary namespaceDictionary;
   private final Object entry;
 
-  public AtomSerializer(XmlNamespaceDictionary client, Object entry) {
-    this.namespaceDictionary = client;
+  public AtomSerializer(XmlNamespaceDictionary namespaceDictionary, Object entry) {
+    this.namespaceDictionary = namespaceDictionary;
     this.entry = entry;
   }
 

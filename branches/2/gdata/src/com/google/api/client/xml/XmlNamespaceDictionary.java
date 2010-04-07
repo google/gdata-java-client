@@ -28,19 +28,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public final class XmlNamespaceDictionary {
 
   public final HashMap<String, String> namespaceAliasToUriMap =
+      new HashMap<String, String>();
 
-  new HashMap<String, String>();
-
-  // TODO: need ability to add more namespaces as we parse!
-
-  public void setNamespacePrefixes(XmlSerializer serializer) throws IOException {
-    // TODO: too many namespaces: should only use ones actually in use
-    for (Map.Entry<String, String> entry : namespaceAliasToUriMap.entrySet()) {
-      serializer.setPrefix(entry.getKey(), entry.getValue());
+  /**
+   * Adds a known namespace of the given alias and URI.
+   * 
+   * @param alias alias
+   * @param uri namespace URI
+   */
+  public void addNamespace(String alias, String uri) {
+    if (alias == null || uri == null) {
+      throw new NullPointerException();
+    }
+    HashMap<String, String> namespaceAliasToUriMap =
+        this.namespaceAliasToUriMap;
+    String knownUri = namespaceAliasToUriMap.get(alias);
+    if (!uri.equals(knownUri)) {
+      if (knownUri != null) {
+        throw new IllegalArgumentException("expected namespace alias <" + alias
+            + "> to be <" + knownUri + "> but encountered <" + uri + ">");
+      }
+      namespaceAliasToUriMap.put(alias, uri);
     }
   }
 
@@ -111,8 +125,36 @@ public final class XmlNamespaceDictionary {
   private ElementSerializer startDoc(XmlSerializer serializer, Object element,
       boolean errorOnUnknown) throws IOException {
     serializer.startDocument(null, null);
-    setNamespacePrefixes(serializer);
+    SortedSet<String> aliases = new TreeSet<String>();
+    computeAliases(element, aliases);
+    HashMap<String, String> namespaceAliasToUriMap =
+        this.namespaceAliasToUriMap;
+    for (String alias : aliases) {
+      serializer.setPrefix(alias, namespaceAliasToUriMap.get(alias));
+    }
     return new ElementSerializer(element, errorOnUnknown);
+  }
+
+  private void computeAliases(Object element, SortedSet<String> aliases) {
+    for (Map.Entry<String, Object> entry : Entities.mapOf(element).entrySet()) {
+      Object value = entry.getValue();
+      if (value != null) {
+        String name = entry.getKey();
+        if (!"text()".equals(name)) {
+          int colon = name.indexOf(':');
+          boolean isAttribute = name.charAt(0) == '@';
+          if (colon != -1 || !isAttribute) {
+            String alias =
+                colon == -1 ? "" : name.substring(
+                    name.charAt(0) == '@' ? 1 : 0, colon);
+            aliases.add(alias);
+          }
+          if (!isAttribute && !ClassInfo.isPrimitive(value)) {
+            computeAliases(value, aliases);
+          }
+        }
+      }
+    }
   }
 
   class ElementSerializer {
@@ -134,7 +176,10 @@ public final class XmlNamespaceDictionary {
           Object fieldValue = entry.getValue();
           if (fieldValue != null) {
             String fieldName = entry.getKey();
-            if (fieldName == "text()") {
+            if (fieldName.length() == 0) {
+              System.out.println("asdfo");
+            }
+            if ("text()".equals(fieldName)) {
               this.textValue = fieldValue;
             } else if (fieldName.charAt(0) == '@') {
               this.attributeNames.add(fieldName.substring(1));
@@ -150,8 +195,7 @@ public final class XmlNamespaceDictionary {
 
     String getNamespaceUriForAlias(String alias) {
       String result =
-          XmlNamespaceDictionary.this.namespaceAliasToUriMap
-              .get(alias.intern());
+          XmlNamespaceDictionary.this.namespaceAliasToUriMap.get(alias);
       if (result == null) {
         if (this.errorOnUnknown) {
           throw new IllegalArgumentException("unrecognized alias: "

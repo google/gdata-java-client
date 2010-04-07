@@ -16,10 +16,12 @@
 
 package com.google.api.client.http.xml.atom;
 
+import com.google.api.client.ClassInfo;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.xml.atom.googleapis.MultiKindFeedParser;
 import com.google.api.client.xml.Xml;
+import com.google.api.client.xml.XmlNamespaceDictionary;
 import com.google.api.client.xml.atom.Atom;
 import com.google.api.client.xml.atom.AtomFeedParser;
 
@@ -53,30 +55,33 @@ public final class AtomHttp {
 
 
   public static <T> T parse(HttpResponse response,
-      Class<T> classToInstantiateAndParse) throws IOException,
+      Class<T> classToInstantiateAndParse,
+      XmlNamespaceDictionary namespaceDictionary) throws IOException,
       XmlPullParserException {
     InputStream content = processAsInputStream(response);
     try {
       XmlPullParser parser = processAsXmlPullParser(response, content);
-      T result =
-          Xml.parseElementAndClose(parser, content, classToInstantiateAndParse);
-      content = null;
+      T result = ClassInfo.newInstance(classToInstantiateAndParse);
+      Xml.parseElement(parser, result, namespaceDictionary, null);
       return result;
     } finally {
-      if (content != null) {
-        content.close();
-      }
+      content.close();
     }
   }
 
   public static <T, I> AtomFeedParser<T, I> useFeedParser(
-      HttpResponse response, Class<T> feedType, Class<I> entryType)
-      throws XmlPullParserException, IOException {
+      HttpResponse response, XmlNamespaceDictionary namespaceDictionary,
+      Class<T> feedClass, Class<I> entryClass) throws XmlPullParserException,
+      IOException {
     InputStream content = processAsInputStream(response);
     try {
       XmlPullParser parser = processAsXmlPullParser(response, content);
-      AtomFeedParser<T, I> result =
-          new AtomFeedParser<T, I>(parser, content, feedType, entryType);
+      AtomFeedParser<T, I> result = new AtomFeedParser<T, I>();
+      result.parser = parser;
+      result.inputStream = content;
+      result.feedClass = feedClass;
+      result.entryClass = entryClass;
+      result.namespaceDictionary = namespaceDictionary;
       content = null;
       return result;
     } finally {
@@ -87,19 +92,21 @@ public final class AtomHttp {
   }
 
   public static <T, I> MultiKindFeedParser<T> useMultiKindFeedParser(
-      HttpResponse response, Class<T> feedType, Class<?>... entryTypes)
+      HttpResponse response, XmlNamespaceDictionary namespaceDictionary,
+      Class<T> feedClass, Class<?>... entryClasses)
       throws XmlPullParserException, IOException {
     InputStream content = processAsInputStream(response);
     try {
       XmlPullParser parser = processAsXmlPullParser(response, content);
-      MultiKindFeedParser<T> result =
-          new MultiKindFeedParser<T>(parser, content, feedType, entryTypes);
-      content = null;
+      MultiKindFeedParser<T> result = new MultiKindFeedParser<T>();
+      result.parser = parser;
+      result.inputStream = content;
+      result.feedClass = feedClass;
+      result.namespaceDictionary = namespaceDictionary;
+      result.setEntryClasses(entryClasses);
       return result;
     } finally {
-      if (content != null) {
-        content.close();
-      }
+      content.close();
     }
   }
 }

@@ -54,6 +54,28 @@ public class UriEntity extends Entity {
     this.path = path;
   }
 
+  @Override
+  public int hashCode() {
+    return super.hashCode() * 31 + path.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj) || !(obj instanceof UriEntity)) {
+      return false;
+    }
+    UriEntity other = (UriEntity) obj;
+    return this.path.equals(other.path);
+  }
+
+  @Override
+  public String toString() {
+    return build();
+  }
+
   public final String build() {
     StringBuilder buf = new StringBuilder(this.path);
     boolean startedQuery = false;

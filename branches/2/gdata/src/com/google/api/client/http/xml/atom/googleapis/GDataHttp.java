@@ -14,22 +14,11 @@
  * the License.
  */
 
-package com.google.api.client.http.json.googleapis;
+package com.google.api.client.http.xml.atom.googleapis;
 
-import com.google.api.client.http.HttpParser;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.json.Json;
+public class GDataHttp {
+  public static final String GD_NAMESPACE = "http://schemas.google.com/g/2005";
 
-import java.io.IOException;
-
-public final class JsonHttpParser implements HttpParser {
-
-  public String getContentType() {
-    return Json.CONTENT_TYPE;
-  }
-
-  public <T> T parse(HttpResponse response, Class<T> entityClass)
-      throws IOException {
-    return JsonHttp.parse(response, entityClass);
+  private GDataHttp() {
   }
 }
