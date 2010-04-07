@@ -18,7 +18,7 @@ package com.google.api.client.http.xml.atom.googleapis;
 
 import com.google.api.client.ArrayMap;
 import com.google.api.client.ClassInfo;
-import com.google.api.client.FieldInfo;
+import com.google.api.client.Entities;
 import com.google.api.client.http.HttpSerializer;
 import com.google.api.client.xml.Xml;
 import com.google.api.client.xml.XmlNamespaceDictionary;
@@ -28,20 +28,21 @@ import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Map;
 
 public final class PatchRelativeToOriginalSerializer implements HttpSerializer {
 
   private final XmlNamespaceDictionary namespaceDictionary;
-  private final Object patchedItem;
-  private final Object originalItem;
+  private final Object patchedEntry;
+  private final Object originalEntry;
 
   public PatchRelativeToOriginalSerializer(
-      XmlNamespaceDictionary namespaceDictionary, Object patchedItem,
-      Object originalItem) {
+      XmlNamespaceDictionary namespaceDictionary, Object patchedEntry,
+      Object originalEntry) {
     this.namespaceDictionary = namespaceDictionary;
-    this.patchedItem = patchedItem;
-    this.originalItem = originalItem;
+    this.patchedEntry = patchedEntry;
+    this.originalEntry = originalEntry;
   }
 
   public String getContentType() {
@@ -57,33 +58,56 @@ public final class PatchRelativeToOriginalSerializer implements HttpSerializer {
   }
 
   public void writeTo(OutputStream out) throws IOException {
-    ArrayMap<String, Object> patch = ArrayMap.create();
-    Object originalItem = this.originalItem;
+    ArrayMap<String, Object> differences = ArrayMap.create();
     StringBuilder fieldsMaskBuf = new StringBuilder();
-    boolean first = true;
-    Object patchedItem = this.patchedItem;
-    // TODO: this needs a lot of work
-    ClassInfo typeInfo = ClassInfo.of(patchedItem.getClass());
-    for (String name : typeInfo.getFieldNames()) {
-      Field field = typeInfo.getField(name);
-      Object patchedValue = FieldInfo.getFieldValue(field, patchedItem);
-      Object originalValue = FieldInfo.getFieldValue(field, originalItem);
-      Class<?> fieldType = field.getType();
-      if (patchedValue != originalValue && ClassInfo.isPrimitive(fieldType)
-          && (patchedValue == null || !patchedValue.equals(originalValue))) {
-        if (first) {
-          first = false;
-        } else {
-          fieldsMaskBuf.append(',');
-        }
-        fieldsMaskBuf.append(name);
-        patch.put(name, patchedValue);
-      }
-    }
-    patch.put("@gd:fields", fieldsMaskBuf.toString());
+    appendFields(differences, fieldsMaskBuf,
+        Entities.mapOf(this.originalEntry), Entities.mapOf(this.patchedEntry));
+    differences.put("@gd:fields", fieldsMaskBuf.toString());
     XmlSerializer serializer = Xml.createSerializer();
     serializer.setOutput(out, "UTF-8");
     this.namespaceDictionary.serialize(serializer, Atom.ATOM_NAMESPACE,
-        "entry", patch);
+        "entry", differences);
+  }
+
+  private static void appendFields(ArrayMap<String, Object> differences,
+      StringBuilder fieldsMaskBuf, Map<String, Object> original,
+      Map<String, Object> patched) {
+    boolean first = true;
+    for (Map.Entry<String, Object> entry : Entities.mapOf(original).entrySet()) {
+      String name = entry.getKey();
+      Object originalValue = entry.getValue();
+      Object patchedValue = patched.get(name);
+      if (originalValue == patchedValue || originalValue != null
+          && originalValue.equals(patchedValue)) {
+        continue;
+      }
+      Class<?> clazz;
+      boolean isPrimitive;
+      if (originalValue == null) {
+        isPrimitive = ClassInfo.isPrimitive(patchedValue);
+        clazz = patchedValue.getClass();
+      } else {
+        isPrimitive = ClassInfo.isPrimitive(originalValue);
+        clazz = originalValue.getClass();
+      }
+      if (first) {
+        first = false;
+      } else {
+        fieldsMaskBuf.append(',');
+      }
+      fieldsMaskBuf.append(name);
+      differences.put(name, patchedValue);
+      if (!isPrimitive) {
+        if (Collection.class.isAssignableFrom(clazz)) {
+          // TODO: implement
+          throw new UnsupportedOperationException("not yet implemented");
+        } else {
+          fieldsMaskBuf.append('(');
+          appendFields(differences, fieldsMaskBuf, Entities
+              .mapOf(originalValue), Entities.mapOf(patchedValue));
+          fieldsMaskBuf.append(')');
+        }
+      }
+    }
   }
 }
