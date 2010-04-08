@@ -15,7 +15,7 @@
 			<src path="${src.dir}" />
 			<classpath>
 				<pathelement location="${gdata.jar}" />
-				<pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
+				<pathelement location="${lib.dir}/jackson-core-asl-1.5.0.jar" />
 			</classpath>
 		</javac>
 	</target>
@@ -25,7 +25,7 @@
 			<classpath>
 				<pathelement location="${classes.dir}" />
 				<pathelement location="${gdata.jar}" />
-				<pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
+				<pathelement location="${lib.dir}/jackson-core-asl-1.5.0.jar" />
 				<pathelement location="${lib.dir}/httpclient-4.0.1.jar" />
 				<pathelement location="${lib.dir}/httpcore-4.0.1.jar" />
 				<pathelement location="${lib.dir}/commons-logging-1.1.1.jar" />

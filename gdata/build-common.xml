@@ -30,7 +30,7 @@
           location="${env.ANDROID_JAR}" />
         -->
         <pathelement location="${lib.dir}/android-2.0.1.jar" />
-        <pathelement location="${lib.dir}/jackson-core-asl-1.4.3.jar" />
+        <pathelement location="${lib.dir}/jackson-core-asl-1.5.0.jar" />
       </classpath>
     </javac>
   </target>
