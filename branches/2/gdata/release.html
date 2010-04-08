@@ -1,0 +1,39 @@
+<html>
+<title>Release Process</title>
+<body>
+<h2>Release Process</h2>
+
+<ul>
+  <li>Compile distribution jar <pre><code>cd gdata-java-client/gdata
+ant all
+</code></pre> (make sure all tests pass)</li>
+  <li>Upload to <a
+    href="http://code.google.com/p/gdata-java-client/downloads/entry">http://code.google.com/p/gdata-java-client/downloads/entry</a>
+  <ul>
+    <li>Summary: Experimental GData Java Client Library Version 2.1.0 Alpha
+    (not backwards compatible with version 1.X)</li>
+    <li>File: <code>gdata-java-client/gdata/build-bin/gdata-java-2.1.0-alpha.zip</code></li>
+    <li>click Submit file</li>
+  </ul>
+  </li>
+  <li>Create SVN Tag <pre><code>svn cp -m "Tagging 2.1.0-alpha" https://gdata-java-client.googlecode.com/svn/branches/2 https://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha</code></pre>
+  </li>
+  <li>Upload JavaDoc into Tag <pre><code>svn checkout https://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha /tmp/tag
+cd gdata-java-client/gdata
+cp -R build-bin/dist/javadoc /tmp/tag/javadoc
+cd /tmp/tag
+svn add javadoc
+cd javadoc
+find . -name "*.html" -type f -print0 | xargs -0 svn propset svn:mime-type text/html
+find . -name "*.css" -type f -print0 | xargs -0 svn propset svn:mime-type text/css
+cd ..
+svn commit -m "JavaDoc for version 2.1.0-alpha"
+cd ..
+rm -rf tag
+</pre></code></li>
+  <li>Update <a
+    href="http://code.google.com/p/gdata-java-client/w/edit/Version2">http://code.google.com/p/gdata-java-client/w/edit/Version2</a>
+  if necessary</li>
+</ul>
+</body>
+</html>
