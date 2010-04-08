@@ -1,7 +1,9 @@
 package com.google.api.data.sample.picasa;
 
+import com.google.api.client.Entity;
 import com.google.api.client.Name;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.InputStreamHttpSerializer;
 import com.google.api.client.http.auth.googleapis.clientlogin.ClientLogin;
 import com.google.api.client.http.googleapis.GoogleHttp;
@@ -91,16 +93,25 @@ public class PicasaBasicJsoncSample {
 
   public static void main(String[] args) throws Exception {
     // enableLogging();
-    GoogleTransport transport = authenticate();
-    AlbumFeed feed = showAlbums(transport);
-    Album album = postAlbum(transport, feed);
-    Photo postedPhoto = postPhoto(transport, album);
-    album = getUpdatedAlbum(transport, album);
-    album = updateTitle(transport, album);
-    HttpRequest request =
-        transport.buildGetRequest(album.links.self + "&prettyprint=true");
-    album = request.execute().parseAs(Album.class);
-    deleteAlbum(transport, album);
+    try {
+      GoogleTransport transport = authenticate();
+      AlbumFeed feed = showAlbums(transport);
+      Album album = postAlbum(transport, feed);
+      Photo postedPhoto = postPhoto(transport, album);
+      album = getUpdatedAlbum(transport, album);
+      album = updateTitle(transport, album);
+      HttpRequest request =
+          transport.buildGetRequest(album.links.self + "&prettyprint=true");
+      album = request.execute().parseAs(Album.class);
+      deleteAlbum(transport, album);
+    } catch (HttpResponseException e) {
+      if (e.response.getParser() != null) {
+        System.err.println(e.response.parseAs(Entity.class));
+      } else {
+        System.err.println(e.response.parseAsString());
+      }
+      throw e;
+    }
   }
 
   private static GoogleTransport authenticate() throws IOException {

@@ -1,8 +1,10 @@
 package com.google.api.data.sample.youtube;
 
 import com.google.api.client.DateTime;
+import com.google.api.client.Entity;
 import com.google.api.client.Name;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.googleapis.GoogleTransport;
 import com.google.api.client.http.googleapis.GoogleUriEntity;
 import com.google.api.client.http.json.googleapis.JsonHttpParser;
@@ -65,10 +67,19 @@ public class YouTubeBasicJsoncSample {
     public String defaultUrl;
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) throws IOException {
     // enableLogging();
-    GoogleTransport transport = newTransport();
-    VideoFeed feed = showVideos(transport);
+    try {
+      GoogleTransport transport = newTransport();
+      VideoFeed feed = showVideos(transport);
+    } catch (HttpResponseException e) {
+      if (e.response.getParser() != null) {
+        System.err.println(e.response.parseAs(Entity.class));
+      } else {
+        System.err.println(e.response.parseAsString());
+      }
+      throw e;
+    }
   }
 
   private static GoogleTransport newTransport() {

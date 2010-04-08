@@ -18,6 +18,7 @@ package com.google.api.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -27,10 +28,17 @@ import java.util.Map;
 public class Entities {
 
   /**
-   * Returns the map for the given entity, which is either itself if it is
-   * already a map or {@link ReflectionMap}.
+   * Returns the map to use for the given entity.
+   * 
+   * @param entity any map, POJO, or {@code null}
+   * @return if {@code entity} is a map returns {@code entity}; else if {@code
+   *         entity} is null, returns an empty map; else returns
+   *         {@link ReflectionMap} on the POJO
    */
   public static Map<String, Object> mapOf(Object entity) {
+    if (entity == null) {
+      return Collections.emptyMap();
+    }
     if (entity instanceof Map<?, ?>) {
       @SuppressWarnings("unchecked")
       Map<String, Object> result = (Map<String, Object>) entity;

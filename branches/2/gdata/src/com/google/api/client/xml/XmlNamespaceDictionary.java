@@ -110,27 +110,40 @@ public final class XmlNamespaceDictionary {
   private void serialize(XmlSerializer serializer, String elementNamespaceUri,
       String elementLocalName, Object element, boolean errorOnUnknown)
       throws IOException {
-    startDoc(serializer, element, errorOnUnknown).serialize(serializer,
-        elementNamespaceUri, elementLocalName);
+    startDoc(serializer, element, errorOnUnknown, elementNamespaceUri)
+        .serialize(serializer, elementNamespaceUri, elementLocalName);
     serializer.endDocument();
   }
 
   private void serialize(XmlSerializer serializer, String elementName,
       Object element, boolean errorOnUnknown) throws IOException {
-    startDoc(serializer, element, errorOnUnknown).serialize(serializer,
+    startDoc(serializer, element, errorOnUnknown, null).serialize(serializer,
         elementName);
     serializer.endDocument();
   }
 
   private ElementSerializer startDoc(XmlSerializer serializer, Object element,
-      boolean errorOnUnknown) throws IOException {
+      boolean errorOnUnknown, String extraNamespace) throws IOException {
     serializer.startDocument(null, null);
     SortedSet<String> aliases = new TreeSet<String>();
     computeAliases(element, aliases);
     HashMap<String, String> namespaceAliasToUriMap =
         this.namespaceAliasToUriMap;
+    boolean foundExtra = extraNamespace == null;
     for (String alias : aliases) {
-      serializer.setPrefix(alias, namespaceAliasToUriMap.get(alias));
+      String uri = namespaceAliasToUriMap.get(alias);
+      serializer.setPrefix(alias, uri);
+      if (!foundExtra && uri.equals(extraNamespace)) {
+        foundExtra = true;
+      }
+    }
+    if (!foundExtra) {
+      for (Map.Entry<String, String> entry : namespaceAliasToUriMap.entrySet()) {
+        if (extraNamespace.equals(entry.getValue())) {
+          serializer.setPrefix(entry.getKey(), extraNamespace);
+          break;
+        }
+      }
     }
     return new ElementSerializer(element, errorOnUnknown);
   }
