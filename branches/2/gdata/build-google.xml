@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 
-<project basedir='.' default='apijars' name='apis'>
+<project basedir='.' default='apijars' name='google'>
 
   <import file='build-common.xml'/>
 
@@ -9,7 +9,7 @@
       />
 
   <target name='api-init' depends='compile,dist-init'>
-    <property name='api.dist' value='${dist.dir}/apis' />
+    <property name='api.dist' value='${android.dir}/googleapis' />
     <mkdir dir='${api.dist}' />
   </target>
 

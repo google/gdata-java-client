@@ -296,7 +296,6 @@ public class PicasaBasicAtomSample {
 
   private static AlbumEntry updateTitle(GoogleTransport transport,
       AlbumEntry album) throws IOException {
-    enableLogging();
     AlbumEntry patched = Entities.clone(album);
     patched.title = "My favorite web logos";
     HttpRequest request = transport.buildPatchRequest(album.getEditLink());

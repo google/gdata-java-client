@@ -34,7 +34,7 @@ final class AntBuildFileGenerator implements FileGenerator {
     int size = clients.size();
     out.println("<?xml version='1.0'?>");
     out.println();
-    out.println("<project basedir='.' default='apijars' name='apis'>");
+    out.println("<project basedir='.' default='apijars' name='google'>");
     out.println();
     out.println("  <import file='build-common.xml'/>");
     out.println();
@@ -56,7 +56,7 @@ final class AntBuildFileGenerator implements FileGenerator {
     out.println("' />");
     out.println();
     out.println("  <target name='api-init' depends='compile,dist-init'>");
-    out.println("    <property name='api.dist' value='${dist.dir}/apis' />");
+    out.println("    <property name='api.dist' value='${android.dir}/googleapis' />");
     out.println("    <mkdir dir='${api.dist}' />");
     out.println("  </target>");
     for (Client client : clients) {
@@ -112,7 +112,7 @@ final class AntBuildFileGenerator implements FileGenerator {
   }
 
   public String getOutputFilePath() {
-    return "build-apis.xml";
+    return "build-google.xml";
   }
 
   public boolean isGenerated() {
