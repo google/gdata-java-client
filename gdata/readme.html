@@ -1,0 +1,38 @@
+<html>
+<title>GData Java Client Library version 2.1.0-alpha</title>
+<body>
+<h2>GData Java Client Library version 2.1.0-alpha</h2>
+See:
+<a href="http://code.google.com/p/gdata-java-client/wiki/Version2">http://code.google.com/p/gdata-java-client/wiki/Version2</a>
+<p>This library supports all Java 2 Standard Edition environments, including
+Android and App Engine.</p>
+<h3>Source Code and JavaDoc</h3>
+<p>All source code is included in <code>gdata-2.1.0-alpha-src.zip</code> .
+All Javadoc can be found in the <code>javadoc</code> folder.</p>
+<h3>Android</h3>
+<p>When building an application for Android, you will want to minimize the
+size of your application by only including the jars you need from this library
+in the <code>android</code> folder.</p>
+<ul>
+  <li><code>gdata-core.jar</code>: required</li>
+  <li><code>gdata-xml.jar</code>: needed for user-defined XML data models</li>
+  <li><code>gdata-json.jar</code> and <code>jackson-core-asl-1.5.0.jar</code>:
+  needed for user-defined JSON data models</li>
+</ul>
+<h3>App Engine and all other Java environments</h3>
+<p>When building an application for all other Java environments (other than
+Android), simplify your build process by just using the all-in-one jar.
+Dependent jars are found in the <code>dependencies</code> folder.</p>
+<ul>
+  <li><code>gdata-2.1.0-alpha.jar</code>: required</li>
+  <li><code>jackson-core-asl-1.5.0.jar</code>: needed for user-defined JSON
+  data models</li>
+  <li><code>kxml2-2.3.0.jar</code>: needed for user-defined XML data models</li>
+  <li><code>commons-logging-1.1.1.jar</code>, <code>httpcore-4.0.1.jar</code>,
+  and <code>httpclient-4.0.1.jar</code>: needed only if you prefer to use the
+  Apache HTTP library for the underlying HTTP transport (default is to use the
+  built-in <code>java.net</code> package of the JDK). <b>Warning:</b> Do not use
+  the Apache HTTP library on App Engine because it won't work.</li>
+</ul>
+</body>
+</html>

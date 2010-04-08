@@ -1,0 +1,200 @@
+<?xml version='1.0'?>
+
+<project basedir='.' default='apijars' name='google'>
+
+  <import file='build-common.xml'/>
+
+  <property name='api.packagenames'
+      value='com.google.api.data.analytics.v2,com.google.api.data.analytics.v2.atom,com.google.api.data.blogger.v2,com.google.api.data.blogger.v2.atom,com.google.api.data.books.v1,com.google.api.data.books.v1.atom,com.google.api.data.calendar.v2,com.google.api.data.calendar.v2.atom,com.google.api.data.codesearch.v2,com.google.api.data.codesearch.v2.atom,com.google.api.data.contacts.v3,com.google.api.data.contacts.v3.atom,com.google.api.data.docs.v3,com.google.api.data.docs.v3.atom,com.google.api.data.finance.v2,com.google.api.data.finance.v2.atom,com.google.api.data.gbase.v2,com.google.api.data.gbase.v2.atom,com.google.api.data.health.v2,com.google.api.data.health.v2.atom,com.google.api.data.maps.v2,com.google.api.data.maps.v2.atom,com.google.api.data.migration.v1,com.google.api.data.migration.v1.atom,com.google.api.data.picasa.v2,com.google.api.data.picasa.v2.atom,com.google.api.data.sidewiki.v2,com.google.api.data.sidewiki.v2.atom,com.google.api.data.sites.v1,com.google.api.data.sites.v1.atom,com.google.api.data.spreadsheet.v3,com.google.api.data.spreadsheet.v3.atom,com.google.api.data.webmastertools.v2,com.google.api.data.webmastertools.v2.atom,com.google.api.data.youtube.v2,com.google.api.data.youtube.v2.atom'
+      />
+
+  <target name='api-init' depends='compile,dist-init'>
+    <property name='api.dist' value='${android.dir}/googleapis' />
+    <mkdir dir='${api.dist}' />
+  </target>
+
+  <target name='analytics-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/analytics-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/analytics/v2/*.class' />
+  </target>
+
+  <target name='analytics-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/analytics-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/analytics/v2/atom/*.class' />
+  </target>
+
+  <target name='blogger-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/blogger-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/blogger/v2/*.class' />
+  </target>
+
+  <target name='blogger-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/blogger-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/blogger/v2/atom/*.class' />
+  </target>
+
+  <target name='books-v1-jar' depends='api-init'>
+    <jar destfile='${api.dist}/books-v1.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/books/v1/*.class' />
+  </target>
+
+  <target name='books-v1-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/books-v1-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/books/v1/atom/*.class' />
+  </target>
+
+  <target name='calendar-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/calendar-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/calendar/v2/*.class' />
+  </target>
+
+  <target name='calendar-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/calendar-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/calendar/v2/atom/*.class' />
+  </target>
+
+  <target name='codesearch-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/codesearch-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/codesearch/v2/*.class' />
+  </target>
+
+  <target name='codesearch-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/codesearch-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/codesearch/v2/atom/*.class' />
+  </target>
+
+  <target name='contacts-v3-jar' depends='api-init'>
+    <jar destfile='${api.dist}/contacts-v3.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/contacts/v3/*.class' />
+  </target>
+
+  <target name='contacts-v3-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/contacts-v3-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/contacts/v3/atom/*.class' />
+  </target>
+
+  <target name='docs-v3-jar' depends='api-init'>
+    <jar destfile='${api.dist}/docs-v3.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/docs/v3/*.class' />
+  </target>
+
+  <target name='docs-v3-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/docs-v3-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/docs/v3/atom/*.class' />
+  </target>
+
+  <target name='finance-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/finance-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/finance/v2/*.class' />
+  </target>
+
+  <target name='finance-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/finance-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/finance/v2/atom/*.class' />
+  </target>
+
+  <target name='gbase-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/gbase-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/gbase/v2/*.class' />
+  </target>
+
+  <target name='gbase-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/gbase-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/gbase/v2/atom/*.class' />
+  </target>
+
+  <target name='health-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/health-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/health/v2/*.class' />
+  </target>
+
+  <target name='health-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/health-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/health/v2/atom/*.class' />
+  </target>
+
+  <target name='maps-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/maps-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/maps/v2/*.class' />
+  </target>
+
+  <target name='maps-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/maps-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/maps/v2/atom/*.class' />
+  </target>
+
+  <target name='migration-v1-jar' depends='api-init'>
+    <jar destfile='${api.dist}/migration-v1.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/migration/v1/*.class' />
+  </target>
+
+  <target name='migration-v1-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/migration-v1-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/migration/v1/atom/*.class' />
+  </target>
+
+  <target name='picasa-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/picasa-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/picasa/v2/*.class' />
+  </target>
+
+  <target name='picasa-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/picasa-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/picasa/v2/atom/*.class' />
+  </target>
+
+  <target name='sidewiki-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/sidewiki-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/sidewiki/v2/*.class' />
+  </target>
+
+  <target name='sidewiki-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/sidewiki-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/sidewiki/v2/atom/*.class' />
+  </target>
+
+  <target name='sites-v1-jar' depends='api-init'>
+    <jar destfile='${api.dist}/sites-v1.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/sites/v1/*.class' />
+  </target>
+
+  <target name='sites-v1-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/sites-v1-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/sites/v1/atom/*.class' />
+  </target>
+
+  <target name='spreadsheet-v3-jar' depends='api-init'>
+    <jar destfile='${api.dist}/spreadsheet-v3.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/spreadsheet/v3/*.class' />
+  </target>
+
+  <target name='spreadsheet-v3-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/spreadsheet-v3-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/spreadsheet/v3/atom/*.class' />
+  </target>
+
+  <target name='webmastertools-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/webmastertools-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/webmastertools/v2/*.class' />
+  </target>
+
+  <target name='webmastertools-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/webmastertools-v2-atom.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/data/webmastertools/v2/atom/*.class' />
+  </target>
+
+  <target name='youtube-v2-jar' depends='api-init'>
+    <jar destfile='${api.dist}/youtube-v2.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/youtube/v2/*.class' />
+  </target>
+
+  <target name='youtube-v2-atom-jar' depends='api-init'>
+    <jar destfile='${api.dist}/youtube-v2-atom.jar' basedir='${classes.dir}'
+        includes='com/google/api/data/youtube/v2/atom/*.class' />
+  </target>
+
+  <target name='apijars' description='Compile all API jars'
+      depends='analytics-v2-jar,analytics-v2-atom-jar,blogger-v2-jar,blogger-v2-atom-jar,books-v1-jar,books-v1-atom-jar,calendar-v2-jar,calendar-v2-atom-jar,codesearch-v2-jar,codesearch-v2-atom-jar,contacts-v3-jar,contacts-v3-atom-jar,docs-v3-jar,docs-v3-atom-jar,finance-v2-jar,finance-v2-atom-jar,gbase-v2-jar,gbase-v2-atom-jar,health-v2-jar,health-v2-atom-jar,maps-v2-jar,maps-v2-atom-jar,migration-v1-jar,migration-v1-atom-jar,picasa-v2-jar,picasa-v2-atom-jar,sidewiki-v2-jar,sidewiki-v2-atom-jar,sites-v1-jar,sites-v1-atom-jar,spreadsheet-v3-jar,spreadsheet-v3-atom-jar,webmastertools-v2-jar,webmastertools-v2-atom-jar,youtube-v2-jar,youtube-v2-atom-jar'
+      />
+</project>
