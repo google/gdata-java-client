@@ -8,9 +8,9 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
   * Much better experience on Android: much smaller library, and much more efficient
   * User-defined object models (see details for [UserDefinedObjectModels JSON-C] or [UserDefinedObjectModelsXml XML])
 
-*WARNING:* this is an experimental branch of the library, and as such all API is subject to change.  There are known bugs and missing features, and therefore not for use in high quality applications.  We invite you to experiment with this library and provide us with early feedback.
+*WARNING:* this is an experimental branch of the library, and as such all API's are subject to change.  There are known bugs and missing features, and therefore not for use in high quality applications.  We invite you to experiment with this library and provide us with early feedback.
 
-*WARNING:* this is a complete rewrite compared to version 1 of the library that uses completely different package names as version 1.  While it is not backwards compatible with version 1, it can be used in conjunction with version 1.  We are not yet deprecating version 1, though that is our ultimate goal once version 2 is out of beta.
+*WARNING:* this is a complete rewrite compared to version 1 of the library that uses completely different package names from version 1.  While it is not backwards compatible with version 1, it can be used in conjunction with version 1.  We are not yet deprecating version 1, though that is our ultimate goal once version 2 is out of beta.
 
 
 = Links =
