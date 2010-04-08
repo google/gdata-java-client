@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+
+<!--
+    You must have ANDROID_JAR set to the location of android.jar (minimum 2.0),
+    and JAVA_HOME set to a JDK (minimum 1.5) installation.
+  -->
+<project basedir="." default="compile" name="gdata">
+
+	<import file="build-common.xml" />
+	<import file="build-google.xml" />
+
+	<property name="classes.test.dir" value="${build.dir}/classes-test" />
+
+	<target name="clean" description="Remove generated files.">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="zipsrc" depends="dist-init" description="Zip source.">
+		<zip destfile="${dist.dir}/gdata-${version}-src.zip" basedir="${src.dir}" />
+	</target>
+
+	<target name="gdata-full-jar" depends="compile,dist-init">
+		<jar destfile="${dist.dir}/gdata-${version}.jar" basedir="${classes.dir}" />
+	</target>
+
+	<target name="gdata-android-jar" depends="compile,dist-init">
+		<jar destfile="${android.dir}/gdata-core.jar" basedir="${classes.dir}" includes="com/google/api/client/*.class,com/google/api/client/escape/*.class,com/google/api/client/http/*.class,com/google/api/client/http/android/*.class,com/google/api/client/http/apache/*.class,com/google/api/client/http/googleapis/*.class" />
+	</target>
+
+	<target name="gdata-xml-jar" depends="compile,dist-init">
+		<jar destfile="${android.dir}/gdata-xml.jar" basedir="${classes.dir}" includes="com/google/api/client/http/android/atom/*.class,com/google/api/client/http/xml/atom/*.class,com/google/api/client/http/xml/atom/googleapis/*.class,com/google/api/client/xml/*.class,com/google/api/client/xml/atom/*.class,com/google/api/client/xml/atom/googleapis/*.class" />
+	</target>
+
+	<target name="gdata-json-jar" depends="compile,dist-init">
+		<jar destfile="${android.dir}/gdata-json.jar" basedir="${classes.dir}" includes="com/google/api/client/http/json/googleapis/*.class,com/google/api/client/json/*.class,com/google/api/client/json/googleapis/*.class" />
+	</target>
+
+	<target name="javadoc" description="Generate JavaDoc" depends="dist-init">
+		<property name="javadoc.dir" value="${dist.dir}/javadoc" />
+		<delete dir="${javadoc.dir}" />
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}" use="true" windowtitle="GData Java Library ${version}" doctitle="Google Data API (GData) Java Library version ${version}" packagenames="${api.packagenames},com.google.api.client,com.google.api.client.escape,com.google.api.client.http,com.google.api.client.http.android,com.google.api.client.http.android.atom,com.google.api.client.http.apache,com.google.api.client.http.auth.googleapis,com.google.api.client.http.auth.googleapis.authsub,com.google.api.client.http.auth.googleapis.clientlogin,com.google.api.client.http.auth.googleapis.wrap,com.google.api.client.http.auth.oauth,com.google.api.client.http.auth.wrap,com.google.api.client.http.discovery,com.google.api.client.http.googleapis,com.google.api.client.http.json.googleapis,com.google.api.client.http.net,com.google.api.client.http.xml.atom,com.google.api.client.http.atom.googleapis,com.google.api.client.xml,com.google.api.client.xml.atom,com.google.api.client.xml.atom.googleapis">
+			<classpath>
+				<!--
+          TODO change to this env variable @release time <pathelement
+          location="${env.ANDROID_JAR}" />
+        -->
+				<pathelement location="${lib.dir}/android-2.0.1.jar" />
+				<pathelement location="${lib.dir}/jackson-core-asl-1.5.0.jar" />
+			</classpath>
+			<link href="http://jackson.codehaus.org/1.4.2/javadoc" />
+		</javadoc>
+	</target>
+
+	<target name="jars" description="Compile all jars" depends="gdata-full-jar,gdata-android-jar,gdata-xml-jar,gdata-json-jar,apijars">
+		<mkdir dir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/jackson-core-asl-1.5.0.jar" todir="${android.dir}" />
+		<copy file="${lib.dir}/commons-logging-1.1.1.jar" todir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/httpclient-4.0.1.jar" todir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/httpcore-4.0.1.jar" todir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/jackson-core-asl-1.5.0.jar" todir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/kxml2-2.3.0.jar" todir="${dist.dir}/dependencies" />
+	</target>
+
+	<target name="dist" description="Build the distribution zip file that includes all compiled jar files" depends="jars,zipsrc,javadoc">
+		<copy file="readme.html" todir="${dist.dir}" />
+		<zip destfile="${build.dir}/gdata-java-${version}.zip" basedir="${dist.dir}" />
+	</target>
+
+	<target name="test" depends="gdata-full-jar" description="Execute JUnit tests.">
+		<mkdir dir="${classes.test.dir}" />
+		<javac srcdir="${test.dir}" debug="true" destdir="${classes.test.dir}" source="1.5" target="1.5">
+			<compilerarg value="-Xlint:all" />
+			<classpath>
+				<pathelement location="${dist.dir}/gdata-${version}.jar" />
+				<pathelement location="${lib.dir}/junit.jar" />
+			</classpath>
+		</javac>
+		<java fork="true" classname="junit.textui.TestRunner" failonerror="true" taskname="junit">
+			<classpath>
+				<pathelement location="${classes.test.dir}" />
+				<pathelement location="${dist.dir}/gdata-${version}.jar" />
+				<pathelement location="${lib.dir}/junit.jar" />
+			</classpath>
+			<arg value="com.google.api.client.AllTests" />
+		</java>
+	</target>
+
+	<target name="all" depends="clean,dist,test" description="Clean compile, distribute, and run tests" />
+</project>

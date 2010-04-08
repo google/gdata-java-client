@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/dependencies/httpclient-4.0.1.jar"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/dependencies/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/dependencies/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/dependencies/jackson-core-asl-1.5.0.jar"/>
+	<classpathentry kind="lib" path="/gdata/build-bin/dist/gdata-2.1.0-alpha.jar" sourcepath="/gdata/build-bin/dist/gdata-2.1.0-alpha-src.zip"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
