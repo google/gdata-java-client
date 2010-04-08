@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.api.client.DateTime;
+import com.google.api.client.Entities;
 import com.google.api.client.Name;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.InputStreamHttpSerializer;
@@ -33,7 +34,7 @@ import com.google.api.client.http.googleapis.GoogleTransport;
 import com.google.api.client.http.xml.atom.AtomHttp;
 import com.google.api.client.http.xml.atom.AtomHttpParser;
 import com.google.api.client.http.xml.atom.AtomSerializer;
-import com.google.api.client.xml.XmlEntity;
+import com.google.api.client.http.xml.atom.googleapis.PatchRelativeToOriginalSerializer;
 import com.google.api.client.xml.atom.AtomFeedParser;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
@@ -57,8 +58,8 @@ import java.util.logging.Logger;
  * </p>
  * <p>
  * To enable logging of HTTP requests/responses, run this command: {@code adb
- * shell setprop log.tag.HttpTransport DEBUG}. Then press-and-hold an album,
- * and enable "Logging".
+ * shell setprop log.tag.HttpTransport DEBUG}. Then press-and-hold an album, and
+ * enable "Logging".
  * </p>
  */
 public class PicasaBasicAtomAndroidSample extends ListActivity {
@@ -251,15 +252,13 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     try {
       switch (item.getItemId()) {
         case CONTEXT_EDIT:
-          // must use XmlEntity for PUT
-          request = transport.buildGetRequest(album.getSelfLink());
-          XmlEntity albumToEdit = request.execute().parseAs(XmlEntity.class);
-          albumToEdit.set("title", album.title + " UPDATED "
-              + new DateTime(new Date()));
-          request = transport.buildPutRequest(album.getEditLink());
+          AlbumEntry patchedAlbum = Entities.clone(album);
+          patchedAlbum.title =
+              album.title + " UPDATED " + new DateTime(new Date());
+          request = transport.buildPatchRequest(album.getEditLink());
           request.setIfMatchHeader(album.etag);
-          request.setContent(new AtomSerializer(
-              PicasaAtom.NAMESPACE_DICTIONARY, albumToEdit));
+          request.setContent(new PatchRelativeToOriginalSerializer(
+              PicasaAtom.NAMESPACE_DICTIONARY, patchedAlbum, album));
           request.execute().ignore();
           executeRefreshAlbums();
           return true;

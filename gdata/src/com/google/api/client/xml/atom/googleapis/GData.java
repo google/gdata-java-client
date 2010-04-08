@@ -16,11 +16,14 @@
 
 package com.google.api.client.xml.atom.googleapis;
 
+import com.google.api.client.ArrayMap;
 import com.google.api.client.ClassInfo;
+import com.google.api.client.Entities;
 import com.google.api.client.Entity;
 import com.google.api.client.FieldInfo;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 
 /** Utilities for working with the Atom XML of Google Data API's. */
@@ -31,9 +34,9 @@ public class GData {
    * entity. It cannot be a {@link Map}, {@link Entity} or a {@link Collection}.
    */
   public static String getFieldsFor(Class<?> entity) {
-    StringBuilder buf = new StringBuilder();
-    appendFieldsFor(buf, entity);
-    return buf.toString();
+    StringBuilder fieldsBuf = new StringBuilder();
+    appendFieldsFor(fieldsBuf, entity, new int[1]);
+    return fieldsBuf.toString();
   }
 
   /**
@@ -43,37 +46,35 @@ public class GData {
    * cannot be a {@link Map}, {@link Entity} or a {@link Collection}.
    */
   public static String getFeedFields(Class<?> feedClass, Class<?> entryClass) {
-    StringBuilder buf = new StringBuilder();
-    appendFeedFields(buf, feedClass, entryClass);
-    return buf.toString();
+    StringBuilder fieldsBuf = new StringBuilder();
+    appendFeedFields(fieldsBuf, feedClass, entryClass);
+    return fieldsBuf.toString();
   }
 
-  private static void appendFieldsFor(StringBuilder buf, Class<?> entity) {
+  private static void appendFieldsFor(StringBuilder fieldsBuf, Class<?> entity,
+      int[] numFields) {
     if (Map.class.isAssignableFrom(entity)
         || Collection.class.isAssignableFrom(entity)) {
       throw new IllegalArgumentException(
           "cannot specify field mask for a Map or Collection class: " + entity);
     }
     ClassInfo classInfo = ClassInfo.of(entity);
-    boolean first = true;
     for (String name : classInfo.getFieldNames()) {
       FieldInfo fieldInfo = classInfo.getFieldInfo(name);
       if (fieldInfo.isFinal) {
         continue;
       }
-      if (first) {
-        first = false;
-      } else {
-        buf.append(',');
+      if (++numFields[0] != 1) {
+        fieldsBuf.append(',');
       }
-      buf.append(name);
+      fieldsBuf.append(name);
       // TODO: handle Java arrays?
       Class<?> fieldClass = fieldInfo.type;
       if (Collection.class.isAssignableFrom(fieldClass)) {
         // TODO: handle Java collection of Java collection or Java map?
         fieldClass = ClassInfo.getCollectionParameter(fieldInfo.field);
       }
-      // TODO: implement support for map when server implements support for *
+      // TODO: implement support for map when server implements support for *:*
       if (fieldClass != null) {
         if (fieldInfo.isPrimitive) {
           if (name.charAt(0) != '@' && !name.equals("text()")) {
@@ -82,26 +83,159 @@ public class GData {
           }
         } else if (!Collection.class.isAssignableFrom(fieldClass)
             && !Map.class.isAssignableFrom(fieldClass)) {
-          buf.append('(');
-          appendFieldsFor(buf, fieldClass);
-          buf.append(')');
+          int[] subNumFields = new int[1];
+          int openParenIndex = fieldsBuf.length();
+          fieldsBuf.append('(');
+          appendFieldsFor(fieldsBuf, fieldClass, subNumFields);
+          updateFieldsBasedOnNumFields(fieldsBuf, openParenIndex,
+              subNumFields[0]);
         }
       }
     }
   }
 
-  private static void appendFeedFields(StringBuilder buf, Class<?> feedClass,
-      Class<?> entryClass) {
-    int length = buf.length();
-    appendFieldsFor(buf, feedClass);
-    if (buf.length() > length) {
-      buf.append(",");
+  private static void appendFeedFields(StringBuilder fieldsBuf,
+      Class<?> feedClass, Class<?> entryClass) {
+    int[] numFields = new int[1];
+    appendFieldsFor(fieldsBuf, feedClass, numFields);
+    if (numFields[0] != 0) {
+      fieldsBuf.append(",");
     }
-    buf.append("entry(");
-    appendFieldsFor(buf, entryClass);
-    buf.append(')');
+    fieldsBuf.append("entry(");
+    int openParenIndex = fieldsBuf.length() - 1;
+    numFields[0] = 0;
+    appendFieldsFor(fieldsBuf, entryClass, numFields);
+    updateFieldsBasedOnNumFields(fieldsBuf, openParenIndex, numFields[0]);
   }
 
+  private static void updateFieldsBasedOnNumFields(StringBuilder fieldsBuf,
+      int openParenIndex, int numFields) {
+    switch (numFields) {
+      case 0:
+        fieldsBuf.deleteCharAt(openParenIndex);
+        break;
+      case 1:
+        fieldsBuf.setCharAt(openParenIndex, '/');
+        break;
+      default:
+        fieldsBuf.append(')');
+    }
+  }
+
+  public static ArrayMap<String, Object> computePatch(Object patched,
+      Object original) {
+    FieldsMask fieldsMask = new FieldsMask();
+    ArrayMap<String, Object> result =
+        computePatchInternal(fieldsMask, patched, original);
+    if (fieldsMask.numDifferences != 0) {
+      result.put("@gd:fields", fieldsMask.buf.toString());
+    }
+    return result;
+  }
+
+  public static ArrayMap<String, Object> computePatchInternal(
+      FieldsMask fieldsMask, Object patchedObject, Object originalObject) {
+    ArrayMap<String, Object> result = ArrayMap.create();
+    Map<String, Object> patchedMap = Entities.mapOf(patchedObject);
+    Map<String, Object> originalMap = Entities.mapOf(originalObject);
+    HashSet<String> fieldNames = new HashSet<String>();
+    fieldNames.addAll(patchedMap.keySet());
+    fieldNames.addAll(originalMap.keySet());
+    for (String name : fieldNames) {
+      Object originalValue = originalMap.get(name);
+      Object patchedValue = patchedMap.get(name);
+      if (originalValue == patchedValue) {
+        continue;
+      }
+      Class<?> type =
+          originalValue == null ? patchedValue.getClass() : originalValue
+              .getClass();
+      if (ClassInfo.isPrimitive(type)) {
+        if (originalValue != null && originalValue.equals(patchedValue)) {
+          continue;
+        }
+        fieldsMask.append(name);
+        // TODO: wait for bug fix from server
+        // if (!name.equals("text()") && name.charAt(0) != '@') {
+        // fieldsMask.buf.append("/text()");
+        // }
+        if (patchedValue != null) {
+          result.add(name, patchedValue);
+        }
+      } else if (Collection.class.isAssignableFrom(type)) {
+        if (originalValue != null && patchedValue != null) {
+          @SuppressWarnings("unchecked")
+          Collection<Object> originalCollection =
+              (Collection<Object>) originalValue;
+          @SuppressWarnings("unchecked")
+          Collection<Object> patchedCollection =
+              (Collection<Object>) patchedValue;
+          int size = originalCollection.size();
+          if (size == patchedCollection.size()) {
+            int i;
+            for (i = 0; i < size; i++) {
+              FieldsMask subFieldsMask = new FieldsMask();
+              computePatchInternal(subFieldsMask, patchedValue, originalValue);
+              if (subFieldsMask.numDifferences != 0) {
+                break;
+              }
+            }
+            if (i == size) {
+              continue;
+            }
+          }
+        }
+        // TODO: implement
+        throw new UnsupportedOperationException(
+            "not yet implemented: support for patching collections");
+      } else {
+        if (originalValue == null) { // TODO: test
+          fieldsMask.append(name);
+          result.add(name, Entities.mapOf(patchedValue));
+        } else if (patchedValue == null) { // TODO: test
+          fieldsMask.append(name);
+        } else {
+          FieldsMask subFieldsMask = new FieldsMask();
+          ArrayMap<String, Object> patch =
+              computePatchInternal(subFieldsMask, patchedValue, originalValue);
+          int numDifferences = subFieldsMask.numDifferences;
+          if (numDifferences != 0) {
+            fieldsMask.append(name, subFieldsMask);
+            result.add(name, patch);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  static class FieldsMask {
+    int numDifferences;
+    StringBuilder buf = new StringBuilder();
+
+    void append(String name) {
+      StringBuilder buf = this.buf;
+      if (++this.numDifferences != 1) {
+        buf.append(',');
+      }
+      buf.append(name);
+    }
+
+    void append(String name, FieldsMask subFields) {
+      append(name);
+      StringBuilder buf = this.buf;
+      boolean isSingle = subFields.numDifferences == 1;
+      if (isSingle) {
+        buf.append('/');
+      } else {
+        buf.append('(');
+      }
+      buf.append(subFields.buf);
+      if (!isSingle) {
+        buf.append(')');
+      }
+    }
+  }
 
   private GData() {
   }
