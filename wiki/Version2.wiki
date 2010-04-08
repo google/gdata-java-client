@@ -15,10 +15,10 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
 
 = Links =
 
-  * Download: [http://gdata-java-client.googlecode.com/files/gdata.java-2.1.0-alpha.zip gdata.java-2.1.0-alpha.zip]
+  * Download: [http://gdata-java-client.googlecode.com/files/gdata-java-2.1.0-alpha.zip gdata-java-2.1.0-alpha.zip]
   * [http://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha/javadoc/index.html JavaDoc]
-  * Source: [http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.1.0-alpha/gdata/src/com/google/api GData Client Library Version 2]
   * Samples
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeBasicJsoncSample.java YouTube JSON-C Java 5 Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java Picasa Web Albums Atom XML Android Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/picasa/picasa-atom-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomSample.java Picasa Web Albums Atom XML Java 5 Sample]
+  * Source: [http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.1.0-alpha/gdata/src/com/google/api GData Client Library Version 2]
