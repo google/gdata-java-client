@@ -39,7 +39,7 @@ public class Generate {
   File gdataRootDir;
 
   public static void main(String[] args) throws IOException {
-    System.out.println("GData Generator");
+    System.out.println("GData Client Library Generator for version 2.2.0-alpha");
     if (args.length < 2) {
       System.err
           .println("Expected arguments: dataDirectory gdataLibraryDirectory");
@@ -94,6 +94,8 @@ public class Generate {
       }
     }
     System.out.println();
+    System.out.println();
+    System.out.println("Output root directory: " + generate.gdataRootDir);
     System.out.println();
     if (size != 0) {
       System.out.println(size + " update(s):");
