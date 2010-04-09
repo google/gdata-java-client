@@ -1,18 +1,32 @@
+/*
+ * Copyright (c) 2010 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.google.api.data.sample.youtube;
 
-import com.google.api.client.DateTime;
 import com.google.api.client.Entity;
-import com.google.api.client.Name;
-import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.googleapis.GoogleTransport;
-import com.google.api.client.http.googleapis.GoogleUriEntity;
 import com.google.api.client.http.json.googleapis.JsonHttpParser;
+import com.google.api.data.sample.youtube.model.Video;
+import com.google.api.data.sample.youtube.model.VideoFeed;
+import com.google.api.data.sample.youtube.model.YouTubeUri;
 import com.google.api.data.youtube.v2.YouTube;
 import com.google.api.data.youtube.v2.YouTubePath;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -23,49 +37,6 @@ public class YouTubeBasicJsoncSample {
   private static final String APP_NAME = "google-youtubejsoncsample-1.0";
 
   private static final int MAX_VIDEOS_TO_SHOW = 5;
-
-  public static class YouTubeUri extends GoogleUriEntity {
-
-    public String author;
-
-    @Name("max-results")
-    public Integer maxResults;
-
-    public YouTubeUri(String uri) {
-      super(uri);
-      this.alt = "jsonc";
-    }
-  }
-
-
-  public static class Feed {
-    public int itemsPerPage;
-    public int startIndex;
-    public int totalItems;
-    public DateTime updated;
-  }
-
-  public static class VideoFeed extends Feed {
-    public List<Video> items;
-  }
-
-  public static class Item {
-    public String id;
-    public String title;
-    public DateTime updated;
-  }
-
-  public static class Video extends Item {
-    public String description;
-    public List<String> tags;
-    public Player player;
-  }
-
-  public static class Player {
-    // "default" is a Java keyword, so need to specify the JSON key manually
-    @Name("default")
-    public String defaultUrl;
-  }
 
   public static void main(String[] args) throws IOException {
     // enableLogging();
@@ -97,8 +68,7 @@ public class YouTubeBasicJsoncSample {
     uri.maxResults = MAX_VIDEOS_TO_SHOW;
     uri.author = "searchstories";
     // execute GData request for the feed
-    HttpRequest request = transport.buildGetRequest(uri.build());
-    VideoFeed feed = request.execute().parseAs(VideoFeed.class);
+    VideoFeed feed = VideoFeed.executeGet(transport, uri.build());
     System.out.println("Total number of videos: " + feed.totalItems);
     for (Video video : feed.items) {
       showVideo(video);
