@@ -189,9 +189,6 @@ public final class XmlNamespaceDictionary {
           Object fieldValue = entry.getValue();
           if (fieldValue != null) {
             String fieldName = entry.getKey();
-            if (fieldName.length() == 0) {
-              System.out.println("asdfo");
-            }
             if ("text()".equals(fieldName)) {
               this.textValue = fieldValue;
             } else if (fieldName.charAt(0) == '@') {

@@ -21,6 +21,8 @@ import java.util.Map;
 /** XML utilities. */
 public class Xml {
 
+  public static final String CONTENT_TYPE = "text/xml";
+
   /** XML Parser factory. */
   public static volatile XmlParserFactory parserFactory;
 

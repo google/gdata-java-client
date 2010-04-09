@@ -17,11 +17,16 @@
 package com.google.api.client.xml.atom;
 
 import com.google.api.client.ClassInfo;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.xml.atom.AtomHttp;
 import com.google.api.client.xml.Xml;
+import com.google.api.client.xml.XmlNamespaceDictionary;
 
+import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /** Atom feed parser when the item class is known in advance. */
 public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {
@@ -40,5 +45,28 @@ public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {
     I result = ClassInfo.newInstance(this.entryClass);
     Xml.parseElement(parser, result, this.namespaceDictionary, null);
     return result;
+  }
+
+  public static <T, I> AtomFeedParser<T, I> create(HttpResponse response,
+      XmlNamespaceDictionary namespaceDictionary, Class<T> feedClass,
+      Class<I> entryClass) throws XmlPullParserException, IOException {
+    InputStream content = response.getContent();
+    try {
+      AtomHttp.checkContentType(response.getContentType());
+      XmlPullParser parser = Xml.createParser();
+      parser.setInput(content, null);
+      AtomFeedParser<T, I> result = new AtomFeedParser<T, I>();
+      result.parser = parser;
+      result.inputStream = content;
+      result.feedClass = feedClass;
+      result.entryClass = entryClass;
+      result.namespaceDictionary = namespaceDictionary;
+      content = null;
+      return result;
+    } finally {
+      if (content != null) {
+        content.close();
+      }
+    }
   }
 }

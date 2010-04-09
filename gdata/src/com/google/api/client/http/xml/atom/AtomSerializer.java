@@ -16,9 +16,8 @@
 
 package com.google.api.client.http.xml.atom;
 
-import com.google.api.client.http.HttpSerializer;
+import com.google.api.client.http.xml.XmlHttpSerializer;
 import com.google.api.client.xml.Xml;
-import com.google.api.client.xml.XmlNamespaceDictionary;
 import com.google.api.client.xml.atom.Atom;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -26,23 +25,9 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class AtomSerializer implements HttpSerializer {
+public class AtomSerializer extends XmlHttpSerializer {
 
-  private final XmlNamespaceDictionary namespaceDictionary;
-  private final Object entry;
-
-  public AtomSerializer(XmlNamespaceDictionary namespaceDictionary, Object entry) {
-    this.namespaceDictionary = namespaceDictionary;
-    this.entry = entry;
-  }
-
-  public final long getContentLength() {
-    return -1;
-  }
-
-  public final String getContentEncoding() {
-    return null;
-  }
+  public volatile Object entry;
 
   public String getContentType() {
     return Atom.CONTENT_TYPE;
