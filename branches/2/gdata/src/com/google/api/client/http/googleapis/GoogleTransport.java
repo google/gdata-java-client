@@ -29,7 +29,7 @@ public class GoogleTransport extends HttpTransport {
     if (applicationName != null) {
       userAgent.append(applicationName).append(' ');
     }
-    userAgent.append("Google-API-Java/2.1.0-alpha");
+    userAgent.append("Google-API-Java/2.2.0-alpha");
     if (!DISABLE_GZIP) {
       // user agent trick that enables gzip for Google API's
       userAgent.append("(gzip)");

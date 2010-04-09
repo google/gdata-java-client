@@ -10,15 +10,15 @@ ant all
   <li>Upload to <a
     href="http://code.google.com/p/gdata-java-client/downloads/entry">http://code.google.com/p/gdata-java-client/downloads/entry</a>
   <ul>
-    <li>Summary: Experimental GData Java Client Library Version 2.1.0 Alpha
+    <li>Summary: Experimental GData Java Client Library Version 2.2.0 Alpha
     (not backwards compatible with version 1.X)</li>
-    <li>File: <code>gdata-java-client/gdata/build-bin/gdata-java-2.1.0-alpha.zip</code></li>
+    <li>File: <code>gdata-java-client/gdata/build-bin/gdata-java-2.2.0-alpha.zip</code></li>
     <li>click Submit file</li>
   </ul>
   </li>
-  <li>Create SVN Tag <pre><code>svn cp -m "Tagging 2.1.0-alpha" https://gdata-java-client.googlecode.com/svn/branches/2 https://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha</code></pre>
+  <li>Create SVN Tag <pre><code>svn cp -m "Tagging 2.2.0-alpha" https://gdata-java-client.googlecode.com/svn/branches/2 https://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha</code></pre>
   </li>
-  <li>Upload JavaDoc into Tag <pre><code>svn checkout https://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha /tmp/tag
+  <li>Upload JavaDoc into Tag <pre><code>svn checkout https://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha /tmp/tag
 cd gdata-java-client/gdata
 cp -R build-bin/dist/javadoc /tmp/tag/javadoc
 cd /tmp/tag
@@ -27,7 +27,7 @@ cd javadoc
 find . -name "*.html" -type f -print0 | xargs -0 svn propset svn:mime-type text/html
 find . -name "*.css" -type f -print0 | xargs -0 svn propset svn:mime-type text/css
 cd ..
-svn commit -m "JavaDoc for version 2.1.0-alpha"
+svn commit -m "JavaDoc for version 2.2.0-alpha"
 cd ..
 rm -rf tag
 </pre></code></li>
