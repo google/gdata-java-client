@@ -23,22 +23,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.api.client.DateTime;
-import com.google.api.client.Entities;
-import com.google.api.client.Name;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.InputStreamHttpSerializer;
 import com.google.api.client.http.UriEntity;
 import com.google.api.client.http.android.AndroidGData;
 import com.google.api.client.http.googleapis.GoogleHttp;
 import com.google.api.client.http.googleapis.GoogleTransport;
-import com.google.api.client.http.xml.atom.AtomHttp;
 import com.google.api.client.http.xml.atom.AtomHttpParser;
-import com.google.api.client.http.xml.atom.AtomSerializer;
-import com.google.api.client.http.xml.atom.googleapis.PatchRelativeToOriginalSerializer;
-import com.google.api.client.xml.atom.AtomFeedParser;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
+import com.google.api.data.sample.picasa.model.AlbumEntry;
+import com.google.api.data.sample.picasa.model.UserFeed;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +76,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
 
   private GoogleTransport transport;
 
-  private UserFeed feed;
+  private String postLink;
 
   private List<AlbumEntry> albums = new ArrayList<AlbumEntry>();
 
@@ -215,10 +211,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
         album.access = "private";
         album.title = "Album " + new DateTime(new Date());
         try {
-          HttpRequest request = transport.buildPostRequest(feed.getPostLink());
-          request.setContent(new AtomSerializer(
-              PicasaAtom.NAMESPACE_DICTIONARY, album));
-          request.execute().ignore();
+          AlbumEntry.executeInsert(this.transport, album, this.postLink);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -242,7 +235,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     menu.add(0, CONTEXT_LOGGING, 0, "Logging").setCheckable(true).setChecked(
         logging);
   }
-
+  
   @Override
   public boolean onContextItemSelected(MenuItem item) {
     AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -252,20 +245,14 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     try {
       switch (item.getItemId()) {
         case CONTEXT_EDIT:
-          AlbumEntry patchedAlbum = Entities.clone(album);
+          AlbumEntry patchedAlbum = album.clone();
           patchedAlbum.title =
               album.title + " UPDATED " + new DateTime(new Date());
-          request = transport.buildPatchRequest(album.getEditLink());
-          request.setIfMatchHeader(album.etag);
-          request.setContent(new PatchRelativeToOriginalSerializer(
-              PicasaAtom.NAMESPACE_DICTIONARY, patchedAlbum, album));
-          request.execute().ignore();
+          patchedAlbum.executePatchRelativeToOriginal(this.transport, album);
           executeRefreshAlbums();
           return true;
         case CONTEXT_DELETE:
-          request = transport.buildDeleteRequest(album.getEditLink());
-          request.setIfMatchHeader(album.etag);
-          request.execute().ignore();
+          album.executeDelete(this.transport);
           executeRefreshAlbums();
           return true;
         case CONTEXT_LOGGING:
@@ -282,76 +269,6 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     return false;
   }
 
-
-  public static class Link {
-
-    @Name("@href")
-    public String href;
-
-    @Name("@rel")
-    public String rel;
-  }
-
-  public static String getLink(List<Link> links, String rel) {
-    for (Link link : links) {
-      if (rel.equals(link.rel)) {
-        return link.href;
-      }
-    }
-    return null;
-  }
-
-  public static class UserFeed {
-
-    @Name("link")
-    public List<Link> links;
-
-    String getPostLink() {
-      return getLink(links, "http://schemas.google.com/g/2005#post");
-    }
-  }
-
-  public static class Category {
-
-    @Name("@scheme")
-    public String scheme;
-
-    @Name("@term")
-    public String term;
-  }
-
-  public static Category newKind(String kind) {
-    Category category = new Category();
-    category.scheme = "http://schemas.google.com/g/2005#kind";
-    category.term = "http://schemas.google.com/photos/2007#" + kind;
-    return category;
-  }
-
-  public static class AlbumEntry {
-    static final String KIND = "album";
-
-    public Category category = newKind(KIND);
-
-    @Name("@gd:etag")
-    public String etag;
-
-    @Name("link")
-    public List<Link> links;
-
-    @Name("gphoto:access")
-    public String access;
-
-    public String title;
-
-    public String getEditLink() {
-      return getLink(links, "edit");
-    }
-
-    public String getSelfLink() {
-      return getLink(links, "self");
-    }
-  }
-
   private void executeRefreshAlbums() {
     String[] albumNames;
     List<AlbumEntry> albums = this.albums;
@@ -359,26 +276,27 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     try {
       PicasaPath path = PicasaPath.feed();
       path.user = "default";
-      UriEntity uri = new UriEntity(path.build());
-      uri.set("kinds", AlbumEntry.KIND);
-      HttpRequest request = this.transport.buildGetRequest(uri.build());
-      AtomFeedParser<UserFeed, AlbumEntry> parser =
-          AtomHttp
-              .useFeedParser(request.execute(),
-                  PicasaAtom.NAMESPACE_DICTIONARY, UserFeed.class,
-                  AlbumEntry.class);
-      this.feed = parser.parseFeed();
-      AlbumEntry album;
+      String uri = path.build();
+      // page through results
+      while (true) {
+        UserFeed userFeed = UserFeed.executeGet(this.transport, uri);
+        this.postLink = userFeed.getPostLink();
+        albums.addAll(userFeed.albums);
+        String nextLink = userFeed.getNextLink();
+        if (nextLink == null) {
+          break;
+        }
+      }
       List<String> result = new ArrayList<String>();
-      while ((album = parser.parseNextEntry()) != null) {
-        albums.add(album);
-        result.add(album.title);
+      int numAlbums = albums.size();
+      for (int i = 0; i < numAlbums; i++) {
+        result.add(albums.get(numAlbums).title);
       }
       albumNames = result.toArray(new String[result.size()]);
-
-    } catch (Exception e) {
+    } catch (IOException e) {
       e.printStackTrace();
       albumNames = new String[] {e.getMessage()};
+      albums.clear();
     }
     setListAdapter(new ArrayAdapter<String>(this,
         android.R.layout.simple_list_item_1, albumNames));
