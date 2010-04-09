@@ -28,7 +28,7 @@
 	</target>
 
 	<target name="gdata-xml-jar" depends="compile,dist-init">
-		<jar destfile="${android.dir}/gdata-xml.jar" basedir="${classes.dir}" includes="com/google/api/client/http/android/atom/*.class,com/google/api/client/http/xml/atom/*.class,com/google/api/client/http/xml/atom/googleapis/*.class,com/google/api/client/xml/*.class,com/google/api/client/xml/atom/*.class,com/google/api/client/xml/atom/googleapis/*.class" />
+		<jar destfile="${android.dir}/gdata-xml.jar" basedir="${classes.dir}" includes="com/google/api/client/http/android/atom/*.class,com/google/api/client/http/xml/*.class,com/google/api/client/http/xml/atom/*.class,com/google/api/client/http/xml/atom/googleapis/*.class,com/google/api/client/xml/*.class,com/google/api/client/xml/atom/*.class,com/google/api/client/xml/atom/googleapis/*.class" />
 	</target>
 
 	<target name="gdata-json-jar" depends="compile,dist-init">
@@ -39,7 +39,7 @@
 		<property name="javadoc.dir" value="${dist.dir}/javadoc" />
 		<delete dir="${javadoc.dir}" />
 		<mkdir dir="${javadoc.dir}" />
-		<javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}" use="true" windowtitle="GData Java Library ${version}" doctitle="Google Data API (GData) Java Library version ${version}" packagenames="${api.packagenames},com.google.api.client,com.google.api.client.escape,com.google.api.client.http,com.google.api.client.http.android,com.google.api.client.http.android.atom,com.google.api.client.http.apache,com.google.api.client.http.auth.googleapis,com.google.api.client.http.auth.googleapis.authsub,com.google.api.client.http.auth.googleapis.clientlogin,com.google.api.client.http.auth.googleapis.wrap,com.google.api.client.http.auth.oauth,com.google.api.client.http.auth.wrap,com.google.api.client.http.discovery,com.google.api.client.http.googleapis,com.google.api.client.http.json.googleapis,com.google.api.client.http.net,com.google.api.client.http.xml.atom,com.google.api.client.http.atom.googleapis,com.google.api.client.xml,com.google.api.client.xml.atom,com.google.api.client.xml.atom.googleapis">
+		<javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}" use="true" windowtitle="GData Java Library ${version}" doctitle="Google Data API (GData) Java Library version ${version}" packagenames="${api.packagenames},com.google.api.client,com.google.api.client.escape,com.google.api.client.http,com.google.api.client.http.android,com.google.api.client.http.android.atom,com.google.api.client.http.apache,com.google.api.client.http.auth.googleapis,com.google.api.client.http.auth.googleapis.authsub,com.google.api.client.http.auth.googleapis.clientlogin,com.google.api.client.http.auth.googleapis.wrap,com.google.api.client.http.auth.oauth,com.google.api.client.http.auth.wrap,com.google.api.client.http.discovery,com.google.api.client.http.googleapis,com.google.api.client.http.json.googleapis,com.google.api.client.http.net,com.google.api.client.http.xml,com.google.api.client.http.xml.atom,com.google.api.client.http.xml.atom.googleapis,com.google.api.client.xml,com.google.api.client.xml.atom,com.google.api.client.xml.atom.googleapis">
 			<classpath>
 				<!--
           TODO change to this env variable @release time <pathelement

@@ -17,14 +17,8 @@
 package com.google.api.client.http.xml.atom.googleapis;
 
 import com.google.api.client.http.xml.atom.AtomSerializer;
-import com.google.api.client.xml.XmlNamespaceDictionary;
 
 public final class AtomPatchSerializer extends AtomSerializer {
-
-  public AtomPatchSerializer(XmlNamespaceDictionary namespaceDictionary,
-      Object entry) {
-    super(namespaceDictionary, entry);
-  }
 
   @Override
   public String getContentType() {

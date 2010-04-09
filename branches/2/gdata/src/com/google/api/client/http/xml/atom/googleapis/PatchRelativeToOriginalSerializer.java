@@ -17,9 +17,8 @@
 package com.google.api.client.http.xml.atom.googleapis;
 
 import com.google.api.client.ArrayMap;
-import com.google.api.client.http.HttpSerializer;
+import com.google.api.client.http.xml.XmlHttpSerializer;
 import com.google.api.client.xml.Xml;
-import com.google.api.client.xml.XmlNamespaceDictionary;
 import com.google.api.client.xml.atom.Atom;
 import com.google.api.client.xml.atom.googleapis.GData;
 
@@ -28,30 +27,13 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public final class PatchRelativeToOriginalSerializer implements HttpSerializer {
+public final class PatchRelativeToOriginalSerializer extends XmlHttpSerializer {
 
-  private final XmlNamespaceDictionary namespaceDictionary;
-  private final Object patchedEntry;
-  private final Object originalEntry;
-
-  public PatchRelativeToOriginalSerializer(
-      XmlNamespaceDictionary namespaceDictionary, Object patchedEntry,
-      Object originalEntry) {
-    this.namespaceDictionary = namespaceDictionary;
-    this.patchedEntry = patchedEntry;
-    this.originalEntry = originalEntry;
-  }
+  public volatile Object patchedEntry;
+  public volatile Object originalEntry;
 
   public String getContentType() {
     return "application/xml";
-  }
-
-  public String getContentEncoding() {
-    return null;
-  }
-
-  public long getContentLength() {
-    return -1;
   }
 
   public void writeTo(OutputStream out) throws IOException {

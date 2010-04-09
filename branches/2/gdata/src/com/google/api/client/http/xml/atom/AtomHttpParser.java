@@ -16,31 +16,12 @@
 
 package com.google.api.client.http.xml.atom;
 
-import com.google.api.client.http.HttpParser;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.xml.XmlNamespaceDictionary;
+import com.google.api.client.http.xml.XmlHttpParser;
 import com.google.api.client.xml.atom.Atom;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-
-public final class AtomHttpParser implements HttpParser {
-
-  public XmlNamespaceDictionary namespaceDictionary;
+public final class AtomHttpParser extends XmlHttpParser {
 
   public String getContentType() {
     return Atom.CONTENT_TYPE;
-  }
-
-  public <T> T parse(HttpResponse response, Class<T> entityClass)
-      throws IOException {
-    try {
-      return AtomHttp.parse(response, entityClass, this.namespaceDictionary);
-    } catch (XmlPullParserException e) {
-      IOException exception = new IOException();
-      exception.initCause(e);
-      throw exception;
-    }
   }
 }

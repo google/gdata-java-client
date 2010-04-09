@@ -18,13 +18,17 @@ package com.google.api.client.http.xml.atom.googleapis;
 
 import com.google.api.client.ClassInfo;
 import com.google.api.client.FieldInfo;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.xml.atom.AtomHttp;
 import com.google.api.client.xml.Xml;
+import com.google.api.client.xml.XmlNamespaceDictionary;
 import com.google.api.client.xml.atom.AbstractAtomFeedParser;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
@@ -67,5 +71,25 @@ public final class MultiKindFeedParser<T> extends AbstractAtomFeedParser<T> {
     Object result = ClassInfo.newInstance(entryClass);
     Xml.parseElement(parser, result, this.namespaceDictionary, null);
     return result;
+  }
+
+  public static <T, I> MultiKindFeedParser<T> create(HttpResponse response,
+      XmlNamespaceDictionary namespaceDictionary, Class<T> feedClass,
+      Class<?>... entryClasses) throws XmlPullParserException, IOException {
+    InputStream content = response.getContent();
+    try {
+      AtomHttp.checkContentType(response.getContentType());
+      XmlPullParser parser = Xml.createParser();
+      parser.setInput(content, null);
+      MultiKindFeedParser<T> result = new MultiKindFeedParser<T>();
+      result.parser = parser;
+      result.inputStream = content;
+      result.feedClass = feedClass;
+      result.namespaceDictionary = namespaceDictionary;
+      result.setEntryClasses(entryClasses);
+      return result;
+    } finally {
+      content.close();
+    }
   }
 }
