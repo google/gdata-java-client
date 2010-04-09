@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2010 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.data.sample.picasa.model;
+
+import com.google.api.client.Name;
+import com.google.api.client.http.googleapis.GoogleTransport;
+
+import java.io.IOException;
+
+public class AlbumEntry extends Entry {
+
+  @Name("gphoto:access")
+  public String access;
+
+  public Category category = Category.newKind("album");
+
+  @Name("gphoto:numphotos")
+  public int numPhotos;
+
+  @Override
+  public AlbumEntry clone() {
+    return (AlbumEntry) super.clone();
+  }
+
+  public static AlbumEntry executeGet(GoogleTransport transport, String link)
+      throws IOException {
+    PicasaUri uri = new PicasaUri(link);
+    return (AlbumEntry) Entry.executeGet(transport, uri, AlbumEntry.class);
+  }
+
+  public AlbumEntry executePatchRelativeToOriginal(GoogleTransport transport,
+      AlbumEntry original) throws IOException {
+    return (AlbumEntry) super.executePatchRelativeToOriginal(transport,
+        original);
+  }
+}
