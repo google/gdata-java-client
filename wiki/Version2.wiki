@@ -17,6 +17,7 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
 
   * Download: [http://gdata-java-client.googlecode.com/files/gdata-java-2.1.0-alpha.zip gdata-java-2.1.0-alpha.zip]
   * [http://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha/javadoc/index.html JavaDoc]
+  * Report a Problem: click [http://code.google.com/p/gdata-java-client/issues/list Issues], check if it has already been reported, and if not, click "New Issue"
   * Samples
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeBasicJsoncSample.java YouTube JSON-C Java 5 Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java Picasa Web Albums Atom XML Android Sample]
