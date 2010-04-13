@@ -1,0 +1,41 @@
+<html>
+<title>GData Android Client Library version 2.2.0-alpha</title>
+<body>
+<h2>GData Android Client Library version 2.2.0-alpha</h2>
+See:
+<a href="http://code.google.com/p/gdata-java-client/wiki/Version2">http://code.google.com/p/gdata-java-client/wiki/Version2</a>
+<p>This library in general supports all Java 2 Standard Edition
+environments, including Android and App Engine. These directions cover the
+Android environment. There is a separate larger download for all other Java
+environments available with a readme file customized for those environments.
+<h3>Android</h3>
+<p>When building an application for Android, you will want to minimize the
+size of your application by only including the jars you need from this library.
+Dependent jars are found in the <code>dependencies</code> folder.
+Service-specific Google API jars are found in the <code>googleapis</code>
+folder.</p>
+<ul>
+  <li><code>gdata-core-android-2.2.0-alpha.jar</code>: required</li>
+  <li><code>gdata-xml-android-2.2.0-alpha.jar</code>: needed for
+  user-defined XML data models</li>
+  <li><code>gdata-json-android-2.2.0-alpha.jar</code> and <code>dependencies/jackson-core-asl-1.5.0.jar</code>:
+  needed for user-defined JSON data models</li>
+  <li><code>googleapis-&lt;version&gt;-android-2.2.0-alpha.jar</code>:
+  optional service-specific Google API jars that provides minimal information
+  like the authTokenType to use with AccountManager and the GData version to use
+  with GoogleTransport.setGDataVersion().</li>
+  <li><code>googleapis-&lt;version&gt;-atom-android-2.2.0-alpha.jar</code>:
+  optional service-specific Google API jars that provides the XML namespace
+  information to use for example with AtomHttpParser.namespaceDictionary.</li>
+</ul>
+<h3>Source Code</h3>
+<p>All source code is included in <code>gdata-2.2.0-alpha-src.zip</code> .
+<h3>JavaDoc</h3>
+<p>The JavaDoc can be found at: <a
+  href="http://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha/javadoc/index.html">http://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha/javadoc</a>
+.</p>
+<p>If you want to download the JavaDoc, simply check it out from the
+Subversion repository using: <code>svn checkout
+http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc javadoc</code></p>
+</body>
+</html>

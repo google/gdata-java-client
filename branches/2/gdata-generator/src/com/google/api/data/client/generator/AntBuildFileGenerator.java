@@ -24,6 +24,8 @@ import java.util.SortedSet;
 
 final class AntBuildFileGenerator implements FileGenerator {
 
+  private static final String LIBRARY_VERSION = "2.2.0-alpha";
+
   private final SortedSet<Client> clients;
 
   AntBuildFileGenerator(SortedSet<Client> clients) {
@@ -56,7 +58,8 @@ final class AntBuildFileGenerator implements FileGenerator {
     out.println("' />");
     out.println();
     out.println("  <target name='api-init' depends='compile,dist-init'>");
-    out.println("    <property name='api.dist' value='${android.dir}/googleapis' />");
+    out
+        .println("    <property name='api.dist' value='${android.dir}/googleapis' />");
     out.println("    <mkdir dir='${api.dist}' />");
     out.println("  </target>");
     for (Client client : clients) {
@@ -65,6 +68,7 @@ final class AntBuildFileGenerator implements FileGenerator {
         out.println("  <target name='" + version.getJarName()
             + "-jar' depends='api-init'>");
         out.println("    <jar destfile='${api.dist}/" + version.getJarName()
+            + "-android-" + LIBRARY_VERSION
             + ".jar' basedir='${classes.dir}' includes='"
             + version.getPathRelativeToSrc() + "/*.class' />");
         out.println("  </target>");
@@ -73,7 +77,8 @@ final class AntBuildFileGenerator implements FileGenerator {
           out.println("  <target name='" + version.getJarName()
               + "-atom-jar' depends='api-init'>");
           out.println("    <jar destfile='${api.dist}/" + version.getJarName()
-              + "-atom.jar' basedir='${classes.dir}' includes='"
+              + "-atom-android-" + LIBRARY_VERSION
+              + ".jar' basedir='${classes.dir}' includes='"
               + version.getPathRelativeToSrc() + "/atom/*.class' />");
           out.println("  </target>");
         }

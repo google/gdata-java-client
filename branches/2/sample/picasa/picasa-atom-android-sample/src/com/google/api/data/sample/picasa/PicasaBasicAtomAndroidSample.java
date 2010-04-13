@@ -287,12 +287,11 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
           break;
         }
       }
-      List<String> result = new ArrayList<String>();
       int numAlbums = albums.size();
+      albumNames = new String[numAlbums];
       for (int i = 0; i < numAlbums; i++) {
-        result.add(albums.get(numAlbums).title);
+        albumNames[i] = albums.get(i).title;
       }
-      albumNames = result.toArray(new String[result.size()]);
     } catch (IOException e) {
       e.printStackTrace();
       albumNames = new String[] {e.getMessage()};
