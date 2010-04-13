@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="/gdata/build-bin/android-dist/googleapis/picasa-v2-android-2.2.0-alpha.jar"/>
-	<classpathentry kind="lib" path="/gdata/build-bin/android-dist/googleapis/picasa-v2-atom-android-2.2.0-alpha.jar"/>
-	<classpathentry kind="lib" path="/gdata/build-bin/android-dist/gdata-core-android-2.2.0-alpha.jar"/>
-	<classpathentry kind="lib" path="/gdata/build-bin/android-dist/gdata-xml-android-2.2.0-alpha.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-core-android-2.2.0-alpha.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-xml-android-2.2.0-alpha.jar"/>
+	<classpathentry kind="lib" path="lib/picasa-v2-android-2.2.0-alpha.jar"/>
+	<classpathentry kind="lib" path="lib/picasa-v2-atom-android-2.2.0-alpha.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
