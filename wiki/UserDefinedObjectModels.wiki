@@ -4,7 +4,9 @@
 
 Reference: [http://code.google.com/apis/youtube/2.0/developers_guide_jsonc.html YouTube JSON-C Developer's Guide]
 
-In this library, user-defined object models in JSON-C are similar to [UserDefinedObjectModelsXml user-defined object models in XML].  However, it's more elegant than XML because we don't need to deal with XML namespaces, and the structure of the JSON-C data is more natural to use.  Unfortunately, currently only !YouTube has a JSON-C feed, and it is read-only.
+Code snippets from: [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeBasicJsoncSample.java youtube-jsonc-sample]
+
+In this library, user-defined object models in JSON-C are similar to [UserDefinedObjectModelsXml user-defined object models in XML].  However, it's more elegant than XML because we don't need to deal with XML namespaces, and the structure of the JSON-C data is more natural to use.  Currently only !YouTube has a JSON-C feed, and it is read-only.
 
 Let's take a look at a typical partial JSON-C video feed from the !YouYube Data API (showing only the data our sample application is interested in):
 
@@ -35,8 +37,8 @@ How would you represent that in Java?  Here's one way to represent it for our sa
 
 {{{
 
-import com.google.api.data.client.v2.DateTime;
-import com.google.api.data.client.v2.Name;
+import com.google.api.client.DateTime;
+import com.google.api.client.Name;
 import java.util.List;
 
   public static class VideoFeed {
@@ -66,13 +68,13 @@ import java.util.List;
 Similarly, we can build URI using our own defined object model:
 
 {{{
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpTransport;
-import com.google.api.data.client.v2.GDataUri;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.http.googleapis.GoogleUriEntity;
 import com.google.api.data.youtube.v2.YouTubePath;
 import java.io.IOException;
 
-  public static class YouTubeUri extends GDataUri {
+  public static class YouTubeUri extends GoogleUriEntity {
 
     public String author;
 
@@ -85,7 +87,8 @@ import java.io.IOException;
     }
   }
 
-  private static VideoFeed showVideos(HttpTransport transport) throws IOException {
+  private static VideoFeed showVideos(GoogleTransport transport)
+      throws IOException {
     YouTubePath path = YouTubePath.videos();
     YouTubeUri uri = new YouTubeUri(path.build());
     uri.author = "searchstories";
@@ -96,7 +99,7 @@ Now we execute the request and parse the result:
 
 {{{
     HttpRequest request = transport.buildGetRequest(videosUri);
-    VideoFeed feed = request.execute(VideoFeed.class);
+    VideoFeed feed = request.execute().parseAs(VideoFeed.class);
     System.out.println("Total number of videos: " + feed.totalItems);
     for (Video video : feed.items) {
       showVideo(video);
@@ -104,7 +107,7 @@ Now we execute the request and parse the result:
   }
 }}}
 
-Everything else we don't need just gets dropped, so it potentially uses much less memory than the version 1 client data classes.
+We use memory more efficiently because we only store the data we need, and drop the data we don't need.
 
 NOTE: As you might guess, the library uses reflection to populate the user-defined object model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
 
