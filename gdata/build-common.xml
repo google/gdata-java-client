@@ -11,9 +11,7 @@
   <property name="classes.dir" value="${build.dir}/classes" />
 
   <target name="dist-init">
-    <property name="dist.dir" value="${build.dir}/dist" />
     <mkdir dir="${dist.dir}" />
-    <property name="android.dir" value="${dist.dir}/android" />
     <mkdir dir="${android.dir}" />
   </target>
 
@@ -30,7 +28,7 @@
           location="${env.ANDROID_JAR}" />
         -->
         <pathelement location="${lib.dir}/android-2.0.1.jar" />
-        <pathelement location="${lib.dir}/jackson-core-asl-1.5.0.jar" />
+        <pathelement location="${lib.dir}/${jackson.jar}" />
       </classpath>
     </javac>
   </target>

@@ -14,183 +14,218 @@
   </target>
 
   <target name='analytics-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/analytics-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/analytics-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/analytics/v2/*.class' />
   </target>
 
   <target name='analytics-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/analytics-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/analytics-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/analytics/v2/atom/*.class' />
   </target>
 
   <target name='blogger-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/blogger-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/blogger-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/blogger/v2/*.class' />
   </target>
 
   <target name='blogger-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/blogger-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/blogger-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/blogger/v2/atom/*.class' />
   </target>
 
   <target name='books-v1-jar' depends='api-init'>
-    <jar destfile='${api.dist}/books-v1.jar' basedir='${classes.dir}'
-        includes='com/google/api/data/books/v1/*.class' />
+    <jar destfile='${api.dist}/books-v1-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}' includes='com/google/api/data/books/v1/*.class'
+        />
   </target>
 
   <target name='books-v1-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/books-v1-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/books-v1-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/books/v1/atom/*.class' />
   </target>
 
   <target name='calendar-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/calendar-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/calendar-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/calendar/v2/*.class' />
   </target>
 
   <target name='calendar-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/calendar-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/calendar-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/calendar/v2/atom/*.class' />
   </target>
 
   <target name='codesearch-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/codesearch-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/codesearch-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/codesearch/v2/*.class' />
   </target>
 
   <target name='codesearch-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/codesearch-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/codesearch-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/codesearch/v2/atom/*.class' />
   </target>
 
   <target name='contacts-v3-jar' depends='api-init'>
-    <jar destfile='${api.dist}/contacts-v3.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/contacts-v3-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/contacts/v3/*.class' />
   </target>
 
   <target name='contacts-v3-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/contacts-v3-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/contacts-v3-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/contacts/v3/atom/*.class' />
   </target>
 
   <target name='docs-v3-jar' depends='api-init'>
-    <jar destfile='${api.dist}/docs-v3.jar' basedir='${classes.dir}'
-        includes='com/google/api/data/docs/v3/*.class' />
+    <jar destfile='${api.dist}/docs-v3-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}' includes='com/google/api/data/docs/v3/*.class'
+        />
   </target>
 
   <target name='docs-v3-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/docs-v3-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/docs-v3-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/docs/v3/atom/*.class' />
   </target>
 
   <target name='finance-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/finance-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/finance-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/finance/v2/*.class' />
   </target>
 
   <target name='finance-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/finance-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/finance-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/finance/v2/atom/*.class' />
   </target>
 
   <target name='gbase-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/gbase-v2.jar' basedir='${classes.dir}'
-        includes='com/google/api/data/gbase/v2/*.class' />
+    <jar destfile='${api.dist}/gbase-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}' includes='com/google/api/data/gbase/v2/*.class'
+        />
   </target>
 
   <target name='gbase-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/gbase-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/gbase-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/gbase/v2/atom/*.class' />
   </target>
 
   <target name='health-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/health-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/health-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/health/v2/*.class' />
   </target>
 
   <target name='health-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/health-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/health-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/health/v2/atom/*.class' />
   </target>
 
   <target name='maps-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/maps-v2.jar' basedir='${classes.dir}'
-        includes='com/google/api/data/maps/v2/*.class' />
+    <jar destfile='${api.dist}/maps-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}' includes='com/google/api/data/maps/v2/*.class'
+        />
   </target>
 
   <target name='maps-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/maps-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/maps-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/maps/v2/atom/*.class' />
   </target>
 
   <target name='migration-v1-jar' depends='api-init'>
-    <jar destfile='${api.dist}/migration-v1.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/migration-v1-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/migration/v1/*.class' />
   </target>
 
   <target name='migration-v1-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/migration-v1-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/migration-v1-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/migration/v1/atom/*.class' />
   </target>
 
   <target name='picasa-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/picasa-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/picasa-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/picasa/v2/*.class' />
   </target>
 
   <target name='picasa-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/picasa-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/picasa-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/picasa/v2/atom/*.class' />
   </target>
 
   <target name='sidewiki-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/sidewiki-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/sidewiki-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/sidewiki/v2/*.class' />
   </target>
 
   <target name='sidewiki-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/sidewiki-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/sidewiki-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/sidewiki/v2/atom/*.class' />
   </target>
 
   <target name='sites-v1-jar' depends='api-init'>
-    <jar destfile='${api.dist}/sites-v1.jar' basedir='${classes.dir}'
-        includes='com/google/api/data/sites/v1/*.class' />
+    <jar destfile='${api.dist}/sites-v1-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}' includes='com/google/api/data/sites/v1/*.class'
+        />
   </target>
 
   <target name='sites-v1-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/sites-v1-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/sites-v1-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/sites/v1/atom/*.class' />
   </target>
 
   <target name='spreadsheet-v3-jar' depends='api-init'>
-    <jar destfile='${api.dist}/spreadsheet-v3.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/spreadsheet-v3-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/spreadsheet/v3/*.class' />
   </target>
 
   <target name='spreadsheet-v3-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/spreadsheet-v3-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/spreadsheet-v3-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/spreadsheet/v3/atom/*.class' />
   </target>
 
   <target name='webmastertools-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/webmastertools-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/webmastertools-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/webmastertools/v2/*.class' />
   </target>
 
   <target name='webmastertools-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/webmastertools-v2-atom.jar'
+    <jar destfile='${api.dist}/webmastertools-v2-atom-android-2.2.0-alpha.jar'
         basedir='${classes.dir}'
         includes='com/google/api/data/webmastertools/v2/atom/*.class' />
   </target>
 
   <target name='youtube-v2-jar' depends='api-init'>
-    <jar destfile='${api.dist}/youtube-v2.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/youtube-v2-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/youtube/v2/*.class' />
   </target>
 
   <target name='youtube-v2-atom-jar' depends='api-init'>
-    <jar destfile='${api.dist}/youtube-v2-atom.jar' basedir='${classes.dir}'
+    <jar destfile='${api.dist}/youtube-v2-atom-android-2.2.0-alpha.jar'
+        basedir='${classes.dir}'
         includes='com/google/api/data/youtube/v2/atom/*.class' />
   </target>
 
