@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-    You must have ANDROID_JAR set to the location of android.jar (minimum 2.0),
-    and JAVA_HOME set to a JDK (minimum 1.5) installation.
+    You must have JAVA_HOME set to a JDK (minimum 1.5) installation.
   -->
 <project basedir="." default="compile" name="gdata">
 
@@ -42,11 +41,7 @@
 		<mkdir dir="${javadoc.dir}" />
 		<javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}" use="true" windowtitle="GData Java Library ${version}" doctitle="Google Data API (GData) Java Library version ${version}" packagenames="${api.packagenames},com.google.api.client,com.google.api.client.escape,com.google.api.client.http,com.google.api.client.http.android,com.google.api.client.http.android.atom,com.google.api.client.http.apache,com.google.api.client.http.auth.googleapis,com.google.api.client.http.auth.googleapis.authsub,com.google.api.client.http.auth.googleapis.clientlogin,com.google.api.client.http.auth.googleapis.wrap,com.google.api.client.http.auth.oauth,com.google.api.client.http.auth.wrap,com.google.api.client.http.discovery,com.google.api.client.http.googleapis,com.google.api.client.http.json.googleapis,com.google.api.client.http.net,com.google.api.client.http.xml,com.google.api.client.http.xml.atom,com.google.api.client.http.xml.atom.googleapis,com.google.api.client.xml,com.google.api.client.xml.atom,com.google.api.client.xml.atom.googleapis">
 			<classpath>
-				<!--
-          TODO change to this env variable @release time <pathelement
-          location="${env.ANDROID_JAR}" />
-        -->
-				<pathelement location="${lib.dir}/android-2.0.1.jar" />
+				<pathelement location="${lib.dir}/${android.jar}" />
 				<pathelement location="${lib.dir}/${jackson.jar}" />
 			</classpath>
 			<link href="http://jackson.codehaus.org/1.4.2/javadoc" />
@@ -56,16 +51,19 @@
 	<target name="jars" description="Compile all jars" depends="gdata-full-jar,gdata-core-jar,gdata-xml-jar,gdata-json-jar,apijars">
 		<mkdir dir="${dist.dir}/dependencies" />
 		<copy file="${lib.dir}/${jackson.jar}" todir="${android.dir}/dependencies" />
-		<copy file="${lib.dir}/commons-logging-1.1.1.jar" todir="${dist.dir}/dependencies" />
-		<copy file="${lib.dir}/httpclient-4.0.1.jar" todir="${dist.dir}/dependencies" />
-		<copy file="${lib.dir}/httpcore-4.0.1.jar" todir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/${commons-logging.jar}" todir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/${httpclient.jar}" todir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/${httpcore.jar}" todir="${dist.dir}/dependencies" />
 		<copy file="${lib.dir}/${jackson.jar}" todir="${dist.dir}/dependencies" />
-		<copy file="${lib.dir}/kxml2-2.3.0.jar" todir="${dist.dir}/dependencies" />
+		<copy file="${lib.dir}/${kxml2.jar}" todir="${dist.dir}/dependencies" />
 	</target>
 
-	<target name="dist" description="Build the distribution zip file that includes all compiled jar files" depends="jars,zipsrc">
-		<copy file="dist/readme.html" todir="${dist.dir}" />
-		<copy file="android/readme.html" todir="${android.dir}" />
+  <target name="readme" description="Readme files">
+    <copy file="dist/readme.html" todir="${dist.dir}" />
+    <copy file="android/readme.html" todir="${android.dir}" />
+  </target>
+
+	<target name="dist" description="Build the distribution zip file that includes all compiled jar files" depends="jars,zipsrc,readme">
 		<zip destfile="${build.dir}/gdata-java-${version}.zip" basedir="${dist.dir}" />
 		<zip destfile="${build.dir}/gdata-android-${version}.zip" basedir="${android.dir}" />
 	</target>

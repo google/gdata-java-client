@@ -27,7 +27,7 @@
           TODO change to this env variable @release time <pathelement
           location="${env.ANDROID_JAR}" />
         -->
-        <pathelement location="${lib.dir}/android-2.0.1.jar" />
+        <pathelement location="${lib.dir}/${android.jar}" />
         <pathelement location="${lib.dir}/${jackson.jar}" />
       </classpath>
     </javac>
