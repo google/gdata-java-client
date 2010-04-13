@@ -70,6 +70,8 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
 
   private static final int CONTEXT_LOGGING = 2;
 
+  private static final int REQUEST_AUTHENTICATE = 0;
+
   private static final String PREF = "MyPrefs";
 
   private static final int DIALOG_ACCOUNTS = 0;
@@ -84,21 +86,10 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
-    String accountName = settings.getString("accountName", null);
     setLogging(settings.getBoolean("logging", false));
-    if (accountName != null) {
-      AccountManager manager = AccountManager.get(this);
-      Account[] accounts = AndroidGData.getGoogleAccounts(manager);
-      int size = accounts.length;
-      for (int i = 0; i < size; i++) {
-        Account account = accounts[i];
-        if (accountName.equals(account.name)) {
-          gotAccount(manager, account);
-          return;
-        }
-      }
-    }
-    showDialog(DIALOG_ACCOUNTS);
+    getListView().setTextFilterEnabled(true);
+    registerForContextMenu(getListView());
+    gotAccount();
   }
 
   @Override
@@ -126,6 +117,24 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     }
   }
 
+  private void gotAccount() {
+    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    String accountName = settings.getString("accountName", null);
+    if (accountName != null) {
+      AccountManager manager = AccountManager.get(this);
+      Account[] accounts = AndroidGData.getGoogleAccounts(manager);
+      int size = accounts.length;
+      for (int i = 0; i < size; i++) {
+        Account account = accounts[i];
+        if (accountName.equals(account.name)) {
+          gotAccount(manager, account);
+          return;
+        }
+      }
+    }
+    showDialog(DIALOG_ACCOUNTS);
+  }
+
   private void gotAccount(AccountManager manager, Account account) {
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     SharedPreferences.Editor editor = settings.edit();
@@ -133,14 +142,39 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     editor.commit();
     String authToken;
     try {
-      authToken =
-          manager.blockingGetAuthToken(account, Picasa.AUTH_TOKEN_TYPE, true);
+      Bundle bundle =
+          manager.getAuthToken(account, Picasa.AUTH_TOKEN_TYPE, true, null, null)
+              .getResult();
+      if (bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
+        authenticated(bundle.getString(AccountManager.KEY_AUTHTOKEN));
+      } else if (bundle.containsKey(AccountManager.KEY_INTENT)) {
+        Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
+        int flags = intent.getFlags();
+        flags &= ~Intent.FLAG_ACTIVITY_NEW_TASK;
+        intent.setFlags(flags);
+        startActivityForResult(intent, REQUEST_AUTHENTICATE);
+      }
     } catch (Exception e) {
       e.printStackTrace();
       Toast.makeText(getApplicationContext(), e.getMessage(),
           Toast.LENGTH_SHORT);
       return;
     }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == REQUEST_AUTHENTICATE) {
+      if (resultCode == RESULT_OK) {
+        gotAccount();
+      } else {
+        showDialog(DIALOG_ACCOUNTS);
+      }
+    }
+  }
+
+  private void authenticated(String authToken) {
     GoogleTransport transport =
         this.transport = new GoogleTransport("google-picasaandroidsample-1.0");
     transport.lowLevelHttpTransport = AndroidGData.HTTP_TRANSPORT;
@@ -191,10 +225,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     } else {
       executeRefreshAlbums();
     }
-    getListView().setTextFilterEnabled(true);
-    registerForContextMenu(getListView());
   }
-
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
