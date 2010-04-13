@@ -124,6 +124,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
       AccountManager manager = AccountManager.get(this);
       Account[] accounts = AndroidGData.getGoogleAccounts(manager);
       int size = accounts.length;
+      // TODO: if no Google accounts, use AccountManger.addAccount()
       for (int i = 0; i < size; i++) {
         Account account = accounts[i];
         if (accountName.equals(account.name)) {
