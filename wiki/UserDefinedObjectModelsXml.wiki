@@ -109,15 +109,10 @@ import java.util.List;
   }
 }}}
 
-
 Similarly, we can build URI using our own defined data model:
 
 {{{
-import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.UriEntity;
-import com.google.api.client.http.googleapis.GoogleTransport;
-import com.google.api.data.picasa.v2.PicasaPath;
-import java.io.IOException;
 
   public static class PicasaUri extends UriEntity {
 
@@ -130,6 +125,33 @@ import java.io.IOException;
       super(uri);
     }
   }
+}}}
+
+To work with a Google API, we need to construct a !GoogleTransport (see [Authentication Authentication Guide] for the various authentication methods available):
+
+{{{
+import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.http.xml.atom.AtomHttpParser;
+import com.google.api.data.picasa.v2.Picasa;
+import com.google.api.data.picasa.v2.atom.PicasaAtom;
+import java.io.IOException;
+
+  private static GoogleTransport authenticate() throws IOException {
+    GoogleTransport transport = new GoogleTransport(APP_NAME);
+    // authentication not shown
+    transport.setGDataVersionHeader(Picasa.VERSION);
+    AtomHttpParser parser = new AtomHttpParser();
+    parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
+    transport.setParser(parser);
+    return transport;
+  }
+}}}
+
+Now we execute the request and parse the result:
+
+{{{
+import com.google.api.client.http.HttpRequest;
+import com.google.api.data.picasa.v2.PicasaPath;
 
   private static AlbumFeed showAlbums(GoogleTransport transport) throws IOException {
     // build URI for the default user feed of albums
@@ -137,13 +159,7 @@ import java.io.IOException;
     path.user = "default";
     PicasaUri uri = new PicasaUri(path.build());
     uri.kinds = "album";
-    String albumsUri = uri.build();
-}}}
-
-Now we execute the request and parse the result:
-
-{{{
-    HttpRequest request = transport.buildGetRequest(albumsUri);
+    HttpRequest request = transport.buildGetRequest(uri.build());
     AlbumFeed feed = request.execute().parseAs(AlbumFeed.class);
     System.out.println("User: " + feed.author.name);
     System.out.println("Total number of albums: " + feed.totalResults);
