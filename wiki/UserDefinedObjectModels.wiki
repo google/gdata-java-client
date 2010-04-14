@@ -70,11 +70,7 @@ import java.util.List;
 Similarly, we can build URI using our own defined object model:
 
 {{{
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.googleapis.GoogleTransport;
 import com.google.api.client.http.googleapis.GoogleUriEntity;
-import com.google.api.data.youtube.v2.YouTubePath;
-import java.io.IOException;
 
   public static class YouTubeUri extends GoogleUriEntity {
 
@@ -89,17 +85,35 @@ import java.io.IOException;
     }
   }
 
-  private static VideoFeed showVideos(GoogleTransport transport) throws IOException {
-    YouTubePath path = YouTubePath.videos();
-    YouTubeUri uri = new YouTubeUri(path.build());
-    uri.author = "searchstories";
-    String videosUri = uri.build();
+}}}
+
+To work with a Google API, we need to construct a !GoogleTransport (see [Authentication Authentication Guide] for the various authentication methods available):
+
+{{{
+import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.http.json.googleapis.JsonHttpParser;
+import com.google.api.data.youtube.v2.YouTube;
+
+  private static GoogleTransport newTransport() {
+    GoogleTransport transport = new GoogleTransport(APP_NAME);
+    transport.setGDataVersionHeader(YouTube.VERSION);
+    transport.setParser(new JsonHttpParser());
+    return transport;
+  }
 }}}
 
 Now we execute the request and parse the result:
 
 {{{
-    HttpRequest request = transport.buildGetRequest(videosUri);
+import com.google.api.client.http.HttpRequest;
+import com.google.api.data.youtube.v2.YouTubePath;
+import java.io.IOException;
+
+  private static VideoFeed showVideos(GoogleTransport transport) throws IOException {
+    YouTubePath path = YouTubePath.videos();
+    YouTubeUri uri = new YouTubeUri(path.build());
+    uri.author = "searchstories";
+    HttpRequest request = transport.buildGetRequest(uri.build());
     VideoFeed feed = request.execute().parseAs(VideoFeed.class);
     System.out.println("Total number of videos: " + feed.totalItems);
     for (Video video : feed.items) {
