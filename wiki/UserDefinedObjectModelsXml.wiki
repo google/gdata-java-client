@@ -1,6 +1,6 @@
-#summary Version 2 Feature: User-Defined Data Models in XML.
+#summary Version 2 Feature: User-Defined Partial Data Models in XML.
 
-= [Version2 Version 2] Feature: User-Defined Data Models in XML =
+= [Version2 Version 2] Feature: User-Defined Partial Data Models in XML =
 
 Reference: [http://code.google.com/apis/picasaweb/docs/2.0/developers_guide_protocol.html Picasa Web Albums Atom XML Developer's Guide]
 
