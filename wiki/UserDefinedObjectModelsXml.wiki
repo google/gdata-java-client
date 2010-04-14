@@ -1,12 +1,14 @@
-#summary Version 2 Feature: User-Defined Object Models in XML.
+#summary Version 2 Feature: User-Defined Data Models in XML.
 
-= [Version2 Version 2] Feature: User-Defined Object Models in XML =
+= [Version2 Version 2] Feature: User-Defined Data Models in XML =
 
 Reference: [http://code.google.com/apis/picasaweb/docs/2.0/developers_guide_protocol.html Picasa Web Albums Atom XML Developer's Guide]
 
-In this library, user-defined object models in XML are similar to [UserDefinedObjectModels user-defined object models in JSON-C].  However, it's not quite as elegant as JSON-C because we need to deal with XML namespaces.  Also, the structure of the data is more cumbersome to use.
+Code snippets from: [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/picasa/picasa-atom-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomSample.java picasa-atom-sample]
 
-The primary advantage of XML for Google API's is simply that it has been around much longer, and therefore all Google Data API's support it, but currently only !YouTube supports JSON-C.  Also, JSON-C is currently read-only.
+User-defined data models in XML are similar to [UserDefinedObjectModels user-defined data models in JSON].  The developer provides the data models in the form of Plain Old Java Objects (POJO's) with public fields, and the library takes care of parsing/serialization to XML.
+
+All Google Data API's have an XML feed based on the open standard Atom Publishing Protocol.  However, Atom feeds are not as elegant or easy to use as JSON, because we have to manage XML namespaces.
 
 Let's take a look at a typical Atom XML album feed from the Picasa Web Albums Data API (showing only the data our sample application is interested in):
 
@@ -35,6 +37,9 @@ Let's take a look at a typical Atom XML album feed from the Picasa Web Albums Da
 How would you represent that in Java?  Here's one way to represent it for our sample application:
 
 {{{
+import com.google.api.client.Name;
+import java.util.List;
+
   public static class Link {
 
     @Name("@href")
@@ -105,16 +110,16 @@ How would you represent that in Java?  Here's one way to represent it for our sa
 }}}
 
 
-Similarly, we can build URI using our own defined object model:
+Similarly, we can build URI using our own defined data model:
 
 {{{
-import com.google.api.data.client.http.HttpRequest;
-import com.google.api.data.client.http.HttpTransport;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.UriEntity;
+import com.google.api.client.http.googleapis.GoogleTransport;
 import com.google.api.data.picasa.v2.PicasaPath;
-import com.google.api.data.client.v2.GDataUri;
 import java.io.IOException;
 
-  public static class PicasaUri extends GDataUri {
+  public static class PicasaUri extends UriEntity {
 
     @Name("max-results")
     public Integer maxResults;
@@ -126,7 +131,7 @@ import java.io.IOException;
     }
   }
 
-  private static AlbumFeed showAlbums(HttpTransport transport) throws IOException {
+  private static AlbumFeed showAlbums(GoogleTransport transport) throws IOException {
     // build URI for the default user feed of albums
     PicasaPath path = PicasaPath.feed();
     path.user = "default";
@@ -139,7 +144,7 @@ Now we execute the request and parse the result:
 
 {{{
     HttpRequest request = transport.buildGetRequest(albumsUri);
-    AlbumFeed feed = request.execute(AlbumFeed.class);
+    AlbumFeed feed = request.execute().parseAs(AlbumFeed.class);
     System.out.println("User: " + feed.author.name);
     System.out.println("Total number of albums: " + feed.totalResults);
     for (AlbumEntry album : feed.entries) {
@@ -148,26 +153,77 @@ Now we execute the request and parse the result:
   }
 }}}
 
-Everything else we don't need just gets dropped, so it potentially uses much less memory than the version 1 client data classes.
+We use memory more efficiently because we only store the data we need, and drop the data we don't need.
 
 Now, let's POST a new album to the album feed:
 
 {{{
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
 
-  private static AlbumEntry postAlbum(HttpTransport transport, AlbumFeed feed) throws IOException {
+  private static AlbumEntry postAlbum(GoogleTransport transport, AlbumFeed feed) throws IOException {
     AlbumEntry newAlbum = new AlbumEntry();
     newAlbum.access = "private";
     newAlbum.title = "A new album";
     newAlbum.summary = "My favorite photos";
     HttpRequest request = transport.buildPostRequest(feed.getPostLink());
-    AtomSerializer.setContent(request, PicasaAtom.NAMESPACE_DICTIONARY, newAlbum);
-    AlbumEntry postedAlbum = request.execute(AlbumEntry.class);
+    request.setContent(new AtomSerializer(PicasaAtom.NAMESPACE_DICTIONARY, newAlbum));
+    AlbumEntry album = request.execute().parseAs(AlbumEntry.class);
     showAlbum(transport, postedAlbum);
     return postedAlbum;
   }
 }}}
 
-NOTE: As you might guess, the library uses reflection to populate the user-defined object model. It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
+Now, let's use PATCH to update just the title of the album:
+
+{{{
+import com.google.api.client.Entities;
+
+  private static AlbumEntry updateTitle(GoogleTransport transport, AlbumEntry album) throws IOException {
+    AlbumEntry patched = Entities.clone(album);
+    patched.title = "My favorite web logos";
+    HttpRequest request = transport.buildPatchRequest(album.getEditLink());
+    request.setIfMatchHeader(album.etag);
+    request.setContent(new PatchRelativeToOriginalSerializer(PicasaAtom.NAMESPACE_DICTIONARY, patched, album));
+    album = request.execute().parseAs(AlbumEntry.class);
+    showAlbum(transport, album);
+    return album;
+  }
+}}}
+
+Only the title gets sent over the network because that is the only field changed.
+
+In the past before PATCH was implemented, you had to use PUT to update the whole entry.  Not only was it less efficient over the network, it also forced you to have to get all fields for the entry before you could perform the PUT operation.  The best way to do that is to first do a GET on the entry and store it in a generic !XmlEntry, make the changes to the !XmlEntry, and then PUT using the !XmlEntry.  It is still possible to use PUT with the library, but using PATCH is a lot easier.
+
+Finally, let's clean up and delete the album:
+
+{{{
+  private static void deleteAlbum(GoogleTransport transport, AlbumEntry album) throws IOException {
+    HttpRequest request = transport.buildDeleteRequest(album.getEditLink());
+    request.setIfMatchHeader(album.etag);
+    request.execute().ignore();
+  }
+}}}
+
+Now, how do we handle a normal error response from the server?  The execute() method will throw an !HttpResponseException (which extends IOException) and has an !HttpResponse response field.  If the error response is a structured XML error response, you can use the same user-defined data model technique for parsing the error response:
+
+{{{
+import com.google.api.client.Entity;
+import com.google.api.client.http.HttpResponseException;
+
+    try {
+...
+    } catch (HttpResponseException e) {
+      if (e.response.getParser() != null) {
+        System.err.println(e.response.parseAs(Entity.class));
+      } else {
+        System.err.println(e.response.parseAsString());
+      }
+      throw e;
+    }
+}}}
+
+Note that here we were lazy and used Entity which is a generic entity that processes all fields.  Your application may want to do something more specific.
+
+NOTE: As you might guess, the library uses reflection to populate the user-defined data model. It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
 
 NOTE: If you prefer to write your own XML parsing code instead, that's supported as well. Just call request.execute() and parse the returned byte stream.
