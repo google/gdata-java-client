@@ -1,12 +1,14 @@
-#summary Version 2 Feature: User-Defined Object Models in JSON-C.
+#summary Version 2 Feature: User-Defined Data Models in JSON-C.
 
-= [Version2 Version 2] Feature: User-Defined Object Models in JSON-C =
+= [Version2 Version 2] Feature: User-Defined Data Models in JSON-C =
 
 Reference: [http://code.google.com/apis/youtube/2.0/developers_guide_jsonc.html YouTube JSON-C Developer's Guide]
 
 Code snippets from: [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeBasicJsoncSample.java youtube-jsonc-sample]
 
-In this library, user-defined object models in JSON-C are similar to [UserDefinedObjectModelsXml user-defined object models in XML].  However, it's more elegant than XML because we don't need to deal with XML namespaces, and the structure of the JSON-C data is more natural to use.  Currently only !YouTube has a JSON-C feed, and it is read-only.
+User-defined data models in JSON-C are similar to [UserDefinedObjectModelsXml user-defined object models in XML].  The developer provides the data models in the form of Plain Old Java Objects (POJO's) with public fields, and the library takes care of parsing/serialization to JSON.
+
+Currently only !YouTube has a JSON-C feed, and it is read-only.  The good news is that JSON is generally much easier and more natural to use than XML.
 
 Let's take a look at a typical partial JSON-C video feed from the !YouYube Data API (showing only the data our sample application is interested in):
 
@@ -87,8 +89,7 @@ import java.io.IOException;
     }
   }
 
-  private static VideoFeed showVideos(GoogleTransport transport)
-      throws IOException {
+  private static VideoFeed showVideos(GoogleTransport transport) throws IOException {
     YouTubePath path = YouTubePath.videos();
     YouTubeUri uri = new YouTubeUri(path.build());
     uri.author = "searchstories";
@@ -109,6 +110,26 @@ Now we execute the request and parse the result:
 
 We use memory more efficiently because we only store the data we need, and drop the data we don't need.
 
-NOTE: As you might guess, the library uses reflection to populate the user-defined object model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
+Now, how do we handle a normal error response from the server?  The execute() method will throw an !HttpResponseException (which extends IOException) and has an !HttpResponse response field.  If the error response is a structured JSON error response, you can use the same user-defined data model technique for parsing the error response:
+
+{{{
+import com.google.api.client.Entity;
+import com.google.api.client.http.HttpResponseException;
+
+    try {
+...
+    } catch (HttpResponseException e) {
+      if (e.response.getParser() != null) {
+        System.err.println(e.response.parseAs(Entity.class));
+      } else {
+        System.err.println(e.response.parseAsString());
+      }
+      throw e;
+    }
+}}}
+
+Note that here we were lazy and used Entity which is a generic entity that processes all fields.  Your application may want to do something more specific.
+
+NOTE: As you might guess, the library uses reflection to populate the user-defined data model.  It's not quite as fast as writing the wire format parsing code yourself can potentially be, but it's a lot easier.
 
 NOTE: If you prefer to use your favorite JSON parsing library instead (there are many of them listed for example on http://json.org), that's supported as well.  Just call request.execute() and parse the returned byte stream.
