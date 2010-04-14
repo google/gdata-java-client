@@ -8,6 +8,10 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
   * Much better experience on Android: much smaller library, and much more efficient
   * User-defined object models (see details for [UserDefinedObjectModels JSON-C] or [UserDefinedObjectModelsXml XML])
 
+If you have a problem or want a new feature to be included in the GData Java Client Library, please [http://code.google.com/p/gdata-java-client/issues/entry submit an issue].
+
+For discussions, please find the appropriate Group for the Google API you are trying to access on the right-hand side  of the [http://code.google.com/p/gdata-java-client front page] under "Groups".
+
 *WARNING:* this is an experimental branch of the library, and as such all API's are subject to change.  There are known bugs and missing features, and therefore not for use in high quality applications.  We invite you to experiment with this library and provide us with early feedback.
 
 *WARNING:* this is a complete rewrite compared to version 1 of the library that uses completely different package names from version 1.  While it is not backwards compatible with version 1, it can be used in conjunction with version 1.  We are not yet deprecating version 1, though that is our ultimate goal once version 2 is out of beta.
@@ -17,7 +21,6 @@ We are experimenting with a new version 2 model for the GData Java Client.  It w
 
   * Download: [http://gdata-java-client.googlecode.com/files/gdata-java-2.1.0-alpha.zip gdata-java-2.1.0-alpha.zip]
   * [http://gdata-java-client.googlecode.com/svn/tags/2.1.0-alpha/javadoc/index.html JavaDoc]
-  * Report a Problem: click [http://code.google.com/p/gdata-java-client/issues/list Issues], check if it has already been reported, and if not, click "New Issue"
   * Samples
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeBasicJsoncSample.java YouTube JSON-C Java 5 Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java Picasa Web Albums Atom XML Android Sample]
