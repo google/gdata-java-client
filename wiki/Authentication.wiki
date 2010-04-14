@@ -1,0 +1,20 @@
+#summary Version 2: Authentication.
+
+= [Version2 Version 2]: Authentication =
+
+Let's face it: authentication is a confusing subject.  The technologies are developing fast, and the number of options available to you as a developer are growing.  This reference attempts to document what is considered best practice for accessing Google API's for each use case, and a brief snippet of code from the Java library.
+
+NOTE: this reference guide is incomplete, and will be developed further for the upcoming version 2.2 release.
+
+= Android =
+
+Code snippets from: [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java picasa-atom-android-sample]
+
+Authentication got a lot easier with version 2.0 of the Android SDK.  Use the !AccountManager to get the authentication token, and then pass it to the !GoogleTransport:
+
+{{{
+  GoogleTransport transport = new GoogleTransport("google-picasaandroidsample-1.0");
+  AccountManager manager = AccountManager.get(this);
+  String authToken = manager.blockingGetAuthToken(account, Picasa.AUTH_TOKEN_TYPE, true);
+  transport.setGoogleLoginAuthorizationHeader(authToken);
+}}}
