@@ -22,3 +22,4 @@ Authentication got a lot easier with version 2.0 of the Android SDK.  Use the !A
 = Links =
 
    * [http://arstechnica.com/open-source/guides/2010/01/oauth-and-oauth-wrap-defeating-the-password-anti-pattern.ars OAuth and OAuth WRAP: defeating the password anti-pattern]
+   * [http://radar.oreilly.com/2010/01/whats-going-on-with-oauth.html What's going on with OAuth?]
