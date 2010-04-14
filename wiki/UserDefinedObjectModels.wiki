@@ -1,6 +1,6 @@
-#summary Version 2 Feature: User-Defined Data Models in JSON-C.
+#summary Version 2 Feature: User-Defined Partial Data Models in JSON-C.
 
-= [Version2 Version 2] Feature: User-Defined Data Models in JSON-C =
+= [Version2 Version 2] Feature: User-Defined Partial Data Models in JSON-C =
 
 Reference: [http://code.google.com/apis/youtube/2.0/developers_guide_jsonc.html YouTube JSON-C Developer's Guide]
 
