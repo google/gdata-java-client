@@ -2,11 +2,16 @@
 
 = Introduction =
 
-We are experimenting with a new version 2 model for the GData Java Client.  It will have all of the functionality of version 1 of the client library (including Atom XML), plus these new features:
+We are experimenting with a new version 2 model for the GData Java Client.  It has most of the capability of version 1 of the client library (eventually it will have all of it).  It already has new features that aren't possible in version 1 of the client :
   * _(New in version 2.1!)_ Support for partial response/update
-  * Support for new JSON-C wire format
-  * Much better experience on Android: much smaller library, and much more efficient
-  * User-defined object models (see details for [UserDefinedObjectModels JSON-C] or [UserDefinedObjectModelsXml XML])
+  * User-defined data models
+  * Support for JSON-C wire format
+  * Support for Android: smaller and more efficient library
+
+For details, see these reference guides:
+  * [UserDefinedObjectModelsXml User-Defined Partial Data Models in XML]
+  * [UserDefinedObjectModels User-Defined Partial Data Models in JSON]
+  * [Authentication Authentication]
 
 If you have a problem or want a new feature to be included in the GData Java Client Library, please [http://code.google.com/p/gdata-java-client/issues/entry submit an issue].
 
