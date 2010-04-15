@@ -10,9 +10,7 @@ NOTE: this reference guide is incomplete, and will be developed further in the f
 
 Code snippets from: [http://code.google.com/p/gdata-java-client/source/browse/tags/2.1.0-alpha/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java picasa-atom-android-sample]
 
-Reference: [http://developer.android.com/reference/android/accounts/AccountManager.html AccountManager]
-
-Authentication got a lot easier with version 2.0 of the Android SDK.  Use the !AccountManager to get the authentication token, and then pass it to the !GoogleTransport:
+Authentication got a lot easier with version 2.0 of the Android SDK.  Use the [http://developer.android.com/reference/android/accounts/AccountManager.html AccountManager] to get the authentication token, and then pass it to the !GoogleTransport:
 
 {{{
   GoogleTransport transport = new GoogleTransport("google-picasaandroidsample-1.0");
