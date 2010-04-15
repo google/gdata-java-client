@@ -1,10 +1,10 @@
-#summary Version 2: Authentication.
+#summary Version 2: Authorization.
 
-= [Version2 Version 2]: Authentication =
+= [Version2 Version 2]: Authorization =
 
-Let's face it: authentication is a confusing subject.  The technologies are developing fast, and the number of options available to you as a developer are growing.  This reference attempts to document what is considered best practice for accessing Google API's for each use case, and a brief snippet of code from the Java library.
+This reference guide demonstrates how to use the various authorization methods available to Java applications using this library for each of the supported Java environments.  For details of the authorization methods and recommendations of which to use, please read [http://code.google.com/apis/accounts/docs/GettingStarted.html Getting Started with Account Authorization].
 
-NOTE: this reference guide is incomplete, and will be developed further for the upcoming version 2.2 release.
+NOTE: this reference guide is incomplete, and will be developed further in the future.
 
 = Android =
 
@@ -21,6 +21,5 @@ Authentication got a lot easier with version 2.0 of the Android SDK.  Use the !A
 
 = Links =
 
-   * [http://code.google.com/apis/accounts/docs/GettingStarted.html Getting Started with Account Authorization]
    * [http://arstechnica.com/open-source/guides/2010/01/oauth-and-oauth-wrap-defeating-the-password-anti-pattern.ars OAuth and OAuth WRAP: defeating the password anti-pattern]
    * [http://radar.oreilly.com/2010/01/whats-going-on-with-oauth.html What's going on with OAuth?]
