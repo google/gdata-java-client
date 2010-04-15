@@ -13,10 +13,39 @@ Code snippets from: [http://code.google.com/p/gdata-java-client/source/browse/ta
 Authentication got a lot easier with version 2.0 of the Android SDK.  Use the [http://developer.android.com/reference/android/accounts/AccountManager.html AccountManager] to get the authentication token, and then pass it to the !GoogleTransport:
 
 {{{
-  GoogleTransport transport = new GoogleTransport("google-picasaandroidsample-1.0");
+import android.accounts.AccountManager;
+import com.google.api.client.http.googleapis.GoogleTransport;
+
+  GoogleTransport transport = new GoogleTransport("google-sample-1.0");
   AccountManager manager = AccountManager.get(this);
   String authToken = manager.blockingGetAuthToken(account, Picasa.AUTH_TOKEN_TYPE, true);
   transport.setGoogleLoginAuthorizationHeader(authToken);
+}}}
+
+= !AuthSub for Web Applications =
+
+Reference: [http://code.google.com/apis/accounts/docs/AuthSub.html AuthSub for Web Applications]
+
+Issue a redirect to Google to request a single-use token, exchange it for a session token, and then set the authorization header of the !GoogleTransport:
+
+{{{
+public class PicasaBasicAppEngineSample extends HttpServlet {
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String singleUseToken = request.getParameter("token");
+    if (singleUseToken == null) {
+      AuthSub.RequestUri requestUri = new AuthSub.RequestUri();
+      requestUri.next = request.getRequestURL().toString();
+      requestUri.scope = "http://picasaweb.google.com/data";
+      requestUri.session = 1;
+      response.sendRedirect(requestUri.build());
+    } else {
+      GoogleTransport transport = new GoogleTransport("google-sample-1.0");
+      AuthSub.exchangeForSessionToken(singleUseToken).setAuthorizationHeader(transport);
+    }
+  }
+}
 }}}
 
 = Links =
