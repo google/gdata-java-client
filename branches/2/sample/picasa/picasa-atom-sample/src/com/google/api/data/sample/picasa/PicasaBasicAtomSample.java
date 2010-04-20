@@ -39,8 +39,6 @@ import java.util.logging.Logger;
 
 public class PicasaBasicAtomSample {
 
-  private static final String APP_NAME = "google-picasaatomsample-1.0";
-
   public static void main(String[] args) throws IOException {
     // enableLogging();
     try {
@@ -69,7 +67,8 @@ public class PicasaBasicAtomSample {
     authenticator.username = s.nextLine();
     System.out.println("Password: ");
     authenticator.password = s.nextLine();
-    GoogleTransport transport = new GoogleTransport(APP_NAME);
+    GoogleTransport transport =
+        new GoogleTransport("google-picasaatomsample-1.0");
     authenticator.authenticate().setAuthorizationHeader(transport);
     transport.setGDataVersionHeader(Picasa.VERSION);
     AtomHttpParser parser = new AtomHttpParser();

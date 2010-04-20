@@ -50,4 +50,28 @@ public class ArrayMapTest extends TestCase {
     assertEquals("b", map.getKey(1));
     assertEquals((Integer) 2, map.getValue(1));
   }
+
+  public void testRemove1() {
+    ArrayMap<String, Integer> map = ArrayMap.of("a", 1, "b", 2);
+    map.remove("b");
+    assertEquals(ArrayMap.of("a", 1), map);
+  }
+
+  public void testRemove2() {
+    ArrayMap<String, Integer> map = ArrayMap.of("a", 1, "b", 2);
+    map.remove("a");
+    assertEquals(ArrayMap.of("b", 2), map);
+  }
+
+  public void testRemove3() {
+    ArrayMap<String, Integer> map = ArrayMap.of("a", 1);
+    map.remove("a");
+    assertEquals(ArrayMap.of(), map);
+  }
+
+  public void testRemove4() {
+    ArrayMap<String, Integer> map = ArrayMap.of("a", 1, "b", 2, "c", 3);
+    map.remove("b");
+    assertEquals(ArrayMap.of("a", 1, "c", 3), map);
+  }
 }
