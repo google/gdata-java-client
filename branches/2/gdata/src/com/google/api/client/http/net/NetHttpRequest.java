@@ -83,10 +83,4 @@ final class NetHttpRequest implements LowLevelHttpRequest {
   public void setContent(HttpSerializer serializer) {
     this.serializer = serializer;
   }
-
-  public String getRequestLine() {
-    HttpURLConnection connection = this.connection;
-    return connection.getRequestMethod() + " "
-        + connection.getURL().toExternalForm();
-  }
 }

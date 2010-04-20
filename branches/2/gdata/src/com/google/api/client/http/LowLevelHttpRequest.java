@@ -20,8 +20,6 @@ import java.io.IOException;
 
 public interface LowLevelHttpRequest {
 
-  String getRequestLine();
-
   void addHeader(String name, String value);
 
   void setContent(HttpSerializer serializer);

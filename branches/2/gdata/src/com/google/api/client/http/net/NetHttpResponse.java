@@ -42,9 +42,12 @@ final class NetHttpResponse implements LowLevelHttpResponse {
     List<String> headerValues = this.headerValues;
     for (Map.Entry<String, List<String>> entry : connection.getHeaderFields()
         .entrySet()) {
-      headerNames.add(entry.getKey());
-      List<String> values = entry.getValue();
-      headerValues.add(values.get(values.size() - 1));
+      String key = entry.getKey();
+      if (key != null) {
+        headerNames.add(key);
+        List<String> values = entry.getValue();
+        headerValues.add(values.get(values.size() - 1));
+      }
     }
   }
 

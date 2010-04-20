@@ -34,7 +34,7 @@ public class HttpTransport {
    * default of {@code java.net} transport. See
    * {@link #getLowLevelHttpTransport()}.
    */
-  public LowLevelHttpTransport lowLevelHttpTransport;
+  public volatile LowLevelHttpTransport lowLevelHttpTransport;
 
   /** Returns the low-level HTTP transport to use. */
   public LowLevelHttpTransport getLowLevelHttpTransport() {
@@ -67,6 +67,12 @@ public class HttpTransport {
   private final ArrayMap<String, HttpParser> contentTypeToParserMap =
       ArrayMap.create();
 
+  /**
+   * Authorization header provider to use for all requests or {@code null} for
+   * none.
+   */
+  public volatile AuthorizationHeaderProvider authorizationHeaderProvider;
+
   public final void setParser(HttpParser parser) {
     this.contentTypeToParserMap.put(parser.getContentType(), parser);
   }
@@ -88,44 +94,77 @@ public class HttpTransport {
     }
   }
 
+  /**
+   * Sets the default header for the given name and value or remove the default
+   * header if value is {@code null}.
+   */
+  public void setDefaultHeader(String name, String value) {
+    if (value == null) {
+      this.defaultHeaders.remove(name);
+    } else {
+      this.defaultHeaders.put(name, value);
+    }
+  }
+
+  /**
+   * Sets the {@code "Accept-Encoding"} default header or remove the default
+   * header if value is {@code null}.
+   */
   public void setAcceptEncodingHeader(String value) {
-    this.defaultHeaders.put("Accept-Encoding", value);
+    setDefaultHeader("Accept-Encoding", value);
   }
 
+  /**
+   * Sets the {@code "User-Agent"} default header or remove the default header
+   * if value is {@code null}.
+   */
   public void setUserAgentHeader(String value) {
-    this.defaultHeaders.put("User-Agent", value);
+    setDefaultHeader("User-Agent", value);
   }
 
+  /**
+   * Sets the {@code "Authorization"} default header (without logging value) or
+   * remove the default header if value is {@code null}.
+   */
   public void setAuthorizationHeader(String value) {
-    this.defaultHeadersNoLogging.put("Authorization", value);
+    if (value == null) {
+      this.defaultHeadersNoLogging.remove("Authorization");
+    } else {
+      this.defaultHeadersNoLogging.put("Authorization", value);
+    }
   }
 
+  /** Builds a {@code DELETE} request for the given request URI. */
   public HttpRequest buildDeleteRequest(String uri) throws IOException {
-    return new HttpRequest(this, getLowLevelHttpTransport().buildDeleteRequest(
-        uri));
+    return new HttpRequest(this, "DELETE", uri, getLowLevelHttpTransport()
+        .buildDeleteRequest(uri));
   }
 
+  /** Builds a {@code GET} request for the given request URI. */
   public HttpRequest buildGetRequest(String uri) throws IOException {
-    return new HttpRequest(this, getLowLevelHttpTransport()
+    return new HttpRequest(this, "GET", uri, getLowLevelHttpTransport()
         .buildGetRequest(uri));
   }
 
+  /** Builds a {@code PATCH} request for the given request URI. */
   public HttpRequest buildPatchRequest(String uri) throws IOException {
     LowLevelHttpTransport lowLevelHttpTransport = getLowLevelHttpTransport();
     if (!lowLevelHttpTransport.supportsPatch()) {
       throw new IllegalArgumentException("HTTP transport doesn't support PATCH");
     }
-    return new HttpRequest(this, getLowLevelHttpTransport().buildPatchRequest(
-        uri));
+    return new HttpRequest(this, "PATCH", uri, getLowLevelHttpTransport()
+        .buildPatchRequest(uri));
   }
 
+  /** Builds a {@code POST} request for the given request URI. */
   public HttpRequest buildPostRequest(String uri) throws IOException {
-    return new HttpRequest(this, getLowLevelHttpTransport().buildPostRequest(
-        uri));
+    return new HttpRequest(this, "POST", uri, getLowLevelHttpTransport()
+        .buildPostRequest(uri));
   }
 
+  /** Builds a {@code PUT} request for the given request URI. */
   public HttpRequest buildPutRequest(String uri) throws IOException {
-    return new HttpRequest(this, getLowLevelHttpTransport()
+    return new HttpRequest(this, "PUT", uri, getLowLevelHttpTransport()
         .buildPutRequest(uri));
   }
 }
