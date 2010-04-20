@@ -290,17 +290,18 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Cloneable {
    * the index is out of bounds.
    */
   private V removeFromDataIndexOfKey(int dataIndexOfKey) {
-    int dataSize = this.size << 2;
+    int dataSize = this.size << 1;
     if (dataIndexOfKey < 0 || dataIndexOfKey >= dataSize) {
       return null;
     }
     V result = valueAtDataIndex(dataIndexOfKey + 1);
     Object[] data = this.data;
-    int moved = dataSize - dataIndexOfKey + 2;
+    int moved = dataSize - dataIndexOfKey - 2;
     if (moved != 0) {
       System.arraycopy(data, dataIndexOfKey + 2, data, dataIndexOfKey, moved);
     }
-    setData(dataIndexOfKey, null, null);
+    this.size--;
+    setData(dataSize - 2, null, null);
     return result;
   }
 
