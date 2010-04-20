@@ -17,6 +17,7 @@
 package com.google.api.client.http;
 
 import com.google.api.client.ArrayMap;
+import com.google.api.client.Strings;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,7 +31,7 @@ import java.util.zip.GZIPInputStream;
 public final class HttpResponse {
 
   private final boolean isSuccessStatusCode;
-  private final long contentLength;
+  private long contentLength;
   private final int statusCode;
   private volatile InputStream content;
   private final String contentType;
@@ -49,7 +50,7 @@ public final class HttpResponse {
   HttpResponse(HttpTransport transport, LowLevelHttpResponse response) {
     this.transport = transport;
     this.response = response;
-    long contentLength = this.contentLength = response.getContentLength();
+    this.contentLength = response.getContentLength();
     String contentType = this.contentType = response.getContentType();
     String contentEncoding =
         this.contentEncoding = response.getContentEncoding();
@@ -60,8 +61,19 @@ public final class HttpResponse {
     this.statusMessage = message;
     Logger logger = HttpTransport.LOGGER;
     boolean loggable = logger.isLoggable(Level.CONFIG);
+    StringBuilder logbuf = null;
     if (loggable) {
-      logger.config(response.getStatusLine());
+      logbuf = new StringBuilder();
+      String statusLine = response.getStatusLine();
+      if (statusLine != null) {
+        logbuf.append(statusLine);
+      } else {
+        logbuf.append(code);
+        if (message != null) {
+          logbuf.append(' ').append(message);
+        }
+      }
+      logbuf.append(Strings.LINE_SEPARATOR);
     }
     // headers
     int size = response.getHeaderCount();
@@ -72,8 +84,12 @@ public final class HttpResponse {
       String headerValue = response.getHeaderValue(i);
       headerNameToValueMap.set(i, headerName, headerValue);
       if (loggable) {
-        logger.config(headerName + ": " + headerValue);
+        logbuf.append(headerName + ": " + headerValue).append(
+            Strings.LINE_SEPARATOR);
       }
+    }
+    if (loggable) {
+      logger.config(logbuf.toString());
     }
   }
 
@@ -90,7 +106,9 @@ public final class HttpResponse {
     this.response = null;
     if (content != null) {
       Logger logger = HttpTransport.LOGGER;
-      if (logger.isLoggable(Level.CONFIG)) {
+      boolean loggable =
+          !this.disableContentLogging && logger.isLoggable(Level.CONFIG);
+      if (loggable) {
         byte[] debugContent = readStream(content);
         logger.config("Response size: " + debugContent.length + " bytes");
         content = new ByteArrayInputStream(debugContent);
@@ -99,15 +117,18 @@ public final class HttpResponse {
       String contentEncoding = this.contentEncoding;
       if (contentEncoding != null && contentEncoding.contains("gzip")) {
         content = new GZIPInputStream(content);
+        this.contentLength = -1;
       }
-      if (!this.disableContentLogging && logger.isLoggable(Level.CONFIG)) {
+      if (loggable) {
         // print content using a buffered input stream that can be re-read
         String contentType = this.contentType;
-        if (this.contentLength != 0 && contentType != null
+        if (contentType != null
             && (contentType.startsWith("application/"))
             || contentType.startsWith("text/")) {
           byte[] debugContent = readStream(content);
-          logger.config(new String(debugContent));
+          if (debugContent.length != 0) {
+            logger.config(new String(debugContent));
+          }
           content = new ByteArrayInputStream(debugContent);
         }
       }

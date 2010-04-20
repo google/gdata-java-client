@@ -37,8 +37,8 @@ final class NetHttpTransport implements LowLevelHttpTransport {
     return new NetHttpRequest("GET", uri);
   }
 
-  public NetHttpRequest buildPatchRequest(String uri) throws IOException {
-    return new NetHttpRequest("PATCH", uri);
+  public NetHttpRequest buildPatchRequest(String uri) {
+    throw new UnsupportedOperationException();
   }
 
   public NetHttpRequest buildPostRequest(String uri) throws IOException {

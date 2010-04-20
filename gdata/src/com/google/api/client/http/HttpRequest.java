@@ -17,6 +17,7 @@
 package com.google.api.client.http;
 
 import com.google.api.client.ArrayMap;
+import com.google.api.client.Strings;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -37,19 +38,43 @@ public final class HttpRequest {
   private HttpSerializer content;
   private final HttpTransport transport;
 
-  HttpRequest(HttpTransport transport, LowLevelHttpRequest lowLevelHttpRequest) {
+  public final String method;
+  public final String uri;
+
+  HttpRequest(HttpTransport transport, String method, String uri,
+      LowLevelHttpRequest lowLevelHttpRequest) {
     this.transport = transport;
+    this.method = method;
+    this.uri = uri;
     this.lowLevelHttpRequest = lowLevelHttpRequest;
     this.headers.putAll(transport.defaultHeaders);
     this.headersNoLogging.putAll(transport.defaultHeadersNoLogging);
   }
 
-  /** Sets the {@code "If-Match"} header to the given etag value. */
+  /**
+   * Sets the header for the given name and value or remove the header if value
+   * is {@code null}.
+   */
+  public void setDefaultHeader(String name, String value) {
+    if (value == null) {
+      this.headers.remove(name);
+    } else {
+      this.headers.put(name, value);
+    }
+  }
+
+  /**
+   * Sets the {@code "If-Match"} header to the given etag value or remove the
+   * header if value is {@code null}.
+   */
   public void setIfMatchHeader(String etag) {
     this.headers.put("If-Match", etag);
   }
 
-  /** Sets the {@code "If-None-Match"} header to the given etag value. */
+  /**
+   * Sets the {@code "If-None-Match"} header to the given etag value or remove
+   * the header if value is {@code null}.
+   */
   public void setIfNoneMatchHeader(String etag) {
     this.headers.put("If-None-Match", etag);
   }
@@ -77,28 +102,46 @@ public final class HttpRequest {
     HttpTransport transport = this.transport;
     Logger logger = HttpTransport.LOGGER;
     boolean loggable = logger.isLoggable(Level.CONFIG);
+    StringBuilder logbuf = null;
     // log method and uri
+    String method = this.method;
+    String uri = this.uri;
     if (loggable) {
-      logger.config(lowLevelHttpRequest.getRequestLine());
+      logbuf = new StringBuilder();
+      logbuf.append(method).append(' ').append(uri).append(
+          Strings.LINE_SEPARATOR);
     }
     // headers
-    addHeaders(this.headers, true);
-    addHeaders(this.headersNoLogging, false);
+    addHeaders(this.headers, logbuf, true);
+    addHeaders(this.headersNoLogging, logbuf, false);
+    AuthorizationHeaderProvider authorizationHeaderProvider =
+        transport.authorizationHeaderProvider;
+    if (authorizationHeaderProvider != null) {
+      String authValue =
+          authorizationHeaderProvider.getAuthorizationHeader(method, uri);
+      addHeader("Authorization", authValue, logbuf, false);
+    }
     // content
     HttpSerializer content = this.content;
     if (content != null) {
       if (loggable) {
-        logger.config("Content-Type: " + content.getContentType());
+        logbuf.append("Content-Type: " + content.getContentType()).append(
+            Strings.LINE_SEPARATOR);
         String contentEncoding = content.getContentEncoding();
         if (contentEncoding != null) {
-          logger.config("Content-Encoding: " + contentEncoding);
+          logbuf.append("Content-Encoding: " + contentEncoding).append(
+              Strings.LINE_SEPARATOR);
         }
         long contentLength = content.getContentLength();
         if (contentLength >= 0) {
-          logger.config("Content-Length: " + contentLength);
+          logbuf.append("Content-Length: " + contentLength).append(
+              Strings.LINE_SEPARATOR);
         }
       }
       lowLevelHttpRequest.setContent(content);
+    }
+    if (loggable) {
+      logger.config(logbuf.toString());
     }
     // execute
     HttpResponse response =
@@ -109,22 +152,27 @@ public final class HttpRequest {
     return response;
   }
 
-  private void addHeaders(ArrayMap<String, String> headers, boolean logValues) {
-    Logger logger = HttpTransport.LOGGER;
-    boolean loggable = logger.isLoggable(Level.CONFIG);
+  private void addHeaders(ArrayMap<String, String> headers,
+      StringBuilder logbuf, boolean logValues) {
     LowLevelHttpRequest lowLevelHttpRequest = this.lowLevelHttpRequest;
     int size = headers.size();
     for (int i = 0; i < size; i++) {
-      String name = headers.getKey(i);
-      String value = headers.getValue(i);
-      if (loggable) {
-        if (logValues) {
-          logger.config(name + ": " + value);
+      addHeader(headers.getKey(i), headers.getValue(i), logbuf, logValues);
+    }
+  }
+
+  private void addHeader(String name, String value, StringBuilder logbuf,
+      boolean logValue) {
+    if (value != null) {
+      if (logbuf != null) {
+        if (logValue) {
+          logbuf.append(name + ": " + value);
         } else {
-          logger.config(name + ": <Not Logged>");
+          logbuf.append(name + ": <Not Logged>");
         }
+        logbuf.append(Strings.LINE_SEPARATOR);
       }
-      lowLevelHttpRequest.addHeader(name, value);
+      this.lowLevelHttpRequest.addHeader(name, value);
     }
   }
 }

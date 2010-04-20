@@ -18,16 +18,34 @@ package com.google.api.client.http;
 
 import java.io.IOException;
 
+/**
+ * Low-level HTTP tranport implementation. This allows providing a different
+ * implementation of the HTTP transport is that compatible with the Java
+ * environment used.
+ */
 public interface LowLevelHttpTransport {
+
+  /**
+   * Returns whether this HTTP transport implementation supports the {@code
+   * PATCH} request method.
+   */
   boolean supportsPatch();
 
+  /** Builds a {@code DELETE} request. */
   LowLevelHttpRequest buildDeleteRequest(String uri) throws IOException;
 
+  /** Builds a {@code GET} request. */
   LowLevelHttpRequest buildGetRequest(String uri) throws IOException;
 
+  /**
+   * Builds a {@code PATCH} request. Won't be called if {@link #supportsPatch()}
+   * returns {@code false}.
+   */
   LowLevelHttpRequest buildPatchRequest(String uri) throws IOException;
 
+  /** Builds a {@code POST} request. */
   LowLevelHttpRequest buildPostRequest(String uri) throws IOException;
 
+  /** Builds a {@code PUT} request. */
   LowLevelHttpRequest buildPutRequest(String uri) throws IOException;
 }

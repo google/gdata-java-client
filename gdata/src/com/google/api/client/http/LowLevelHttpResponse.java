@@ -29,6 +29,7 @@ public interface LowLevelHttpResponse {
 
   String getContentType();
 
+  /** Response status line or {@code null} for none. */
   String getStatusLine();
 
   int getStatusCode();

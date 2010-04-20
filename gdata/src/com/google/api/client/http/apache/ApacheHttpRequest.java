@@ -21,7 +21,6 @@ import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.LowLevelHttpResponse;
 
 import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.RequestLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 
@@ -53,10 +52,5 @@ final class ApacheHttpRequest implements LowLevelHttpRequest {
     entity.setContentEncoding(serializer.getContentEncoding());
     entity.setContentType(serializer.getContentType());
     ((HttpEntityEnclosingRequest) this.request).setEntity(entity);
-  }
-
-  public String getRequestLine() {
-    RequestLine requestLine = this.request.getRequestLine();
-    return requestLine == null ? null : requestLine.toString();
   }
 }
