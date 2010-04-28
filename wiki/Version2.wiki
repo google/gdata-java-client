@@ -1,25 +1,30 @@
 #summary Experimental GData Java Client Version 2 Alpha.
+#labels Featured
 
 = Introduction =
 
-We are experimenting with a new version 2 model for the GData Java Client.  It has most of the capability of version 1 of the client library (eventually it will have all of it).  It already has new features that aren't possible in version 1 of the client :
+We are experimenting with version 2 of the GData Java Client that will eventually replace the current version 1.  It features:
   * _(New in version 2.1!)_ Support for partial response/update
   * User-defined data models
-  * Support for JSON-C wire format
-  * Support for Android: smaller and more efficient library
+  * Support for JSON-C wire format _(not supported in version 1 library)_
+  * Support for Android: smaller and more efficient library _(not supported in version 1 library)_
 
 For details, see these reference guides:
   * [UserDefinedObjectModelsXml User-Defined Partial Data Models in XML]
   * [UserDefinedObjectModels User-Defined Partial Data Models in JSON]
   * [Authentication Authentication]
 
-If you have a problem or want a new feature to be included in the GData Java Client Library, please [http://code.google.com/p/gdata-java-client/issues/entry submit an issue].
+There are some features not yet implemented in version 2 that we are working on now that are available in version 1, including:
+  * Support for [http://code.google.com/apis/gdata/docs/auth/oauth.html OAuth 1.0a authorization]
+  * Support for [http://code.google.com/apis/youtube/2.0/developers_guide_protocol_resumable_uploads.html resumable upload]
 
-For discussions, please find the appropriate Group for the Google API you are trying to access on the right-hand side  of the [http://code.google.com/p/gdata-java-client front page] under "Groups".
+If you encounter a problem with this client library or want to request a feature, please [http://code.google.com/p/gdata-java-client/issues/entry submit an issue].
 
-*WARNING:* this is an experimental branch of the library, and as such all API's are subject to change.  There are known bugs and missing features, and therefore not for use in high quality applications.  We invite you to experiment with this library and provide us with early feedback.
+For discussions related to this client library only, please visit [http://groups.google.com/group/gdata-java-client GData Java Client Group].
 
-*WARNING:* this is a complete rewrite compared to version 1 of the library that uses completely different package names from version 1.  While it is not backwards compatible with version 1, it can be used in conjunction with version 1.  We are not yet deprecating version 1, though that is our ultimate goal once version 2 is out of beta.
+*WARNING:* this is an experimental branch of the library, and as such the client library API is subject to change.  There are known bugs, and important features not yet implemented.  We invite you to experiment with this library and provide us with early feedback.
+
+*WARNING:* this is a complete rewrite compared to version 1 of the library that uses completely different package names from version 1.  While it is not backwards compatible with version 1, it can be used in conjunction with version 1.  We are yet deprecating version 1 at this point.
 
 
 = Links =
