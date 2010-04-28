@@ -4,10 +4,10 @@
 = Introduction =
 
 We are experimenting with version 2 of the GData Java Client that will eventually replace the current version 1.  It features:
-  * _(New in version 2.1!)_ Support for partial response/update
-  * User-defined data models
-  * Support for JSON-C wire format _(not supported in version 1 library)_
-  * Support for Android: smaller and more efficient library _(not supported in version 1 library)_
+  * _(New in version 2.1!)_ User-defined data models with partial response/update
+  * _(New in version 2.0)_ Support for JSON-C wire format
+  * _(New in version 2.0)_ Support for Android: smaller and more efficient library
+  * Support for Atom XML wire format
 
 For details, see these reference guides:
   * [UserDefinedObjectModelsXml User-Defined Partial Data Models in XML]
