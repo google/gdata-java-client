@@ -1,7 +1,7 @@
 package com.google.api.client.xml;
 
-import com.google.api.client.Entity;
-import com.google.api.client.Hide;
+import com.google.api.client.util.Entity;
+import com.google.api.client.util.Hide;
 
 /**
  * Represents an XML element and stores its attributes and text content or
