@@ -14,10 +14,8 @@
  * the License.
  */
 
-package com.google.api.client.http.auth.wrap;
+package com.google.api.client.auth.wrap;
 
-import com.google.api.client.Entity;
-import com.google.api.client.Name;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
@@ -25,6 +23,8 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.UriEntity;
 import com.google.api.client.http.UrlEncodedFormHttpParser;
 import com.google.api.client.http.UrlEncodedFormHttpSerializer;
+import com.google.api.client.util.Entity;
+import com.google.api.client.util.Name;
 
 import java.io.IOException;
 
