@@ -16,7 +16,7 @@
 
 package com.google.api.client.xml.atom;
 
-import com.google.api.client.ClassInfo;
+import com.google.api.client.util.ClassInfo;
 import com.google.api.client.xml.Xml;
 import com.google.api.client.xml.XmlNamespaceDictionary;
 
