@@ -16,11 +16,12 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.Entities;
 import com.google.api.client.escape.CharEscapers;
+import com.google.api.client.util.Entities;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -50,7 +51,11 @@ public final class UrlEncodedFormHttpSerializer implements HttpSerializer {
             CharEscapers.escapeUri(value.toString()));
       }
     }
-    this.content = buf.toString().getBytes();
+    try {
+      this.content = buf.toString().getBytes("UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new AssertionError(e);
+    }
   }
 
   public String getContentEncoding() {

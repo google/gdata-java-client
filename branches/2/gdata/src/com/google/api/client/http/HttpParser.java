@@ -30,7 +30,7 @@ public interface HttpParser {
    * <p>
    * How the parsing is performed is not restricted by this interface, and is
    * instead defined by the concrete implementation. Implementations should
-   * check {@link HttpResponse#isSuccessStatusCode()} to know whether they are
+   * check {@link HttpResponse#isSuccessStatusCode} to know whether they are
    * parsing a success or error response.
    */
   <T> T parse(HttpResponse response, Class<T> entityClass) throws IOException;

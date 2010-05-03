@@ -23,29 +23,34 @@ import java.io.IOException;
  * implementation of the HTTP transport is that compatible with the Java
  * environment used.
  */
-public interface LowLevelHttpTransport {
+public abstract class LowLevelHttpTransport {
 
   /**
    * Returns whether this HTTP transport implementation supports the {@code
    * PATCH} request method.
    */
-  boolean supportsPatch();
+  public abstract boolean supportsPatch();
 
   /** Builds a {@code DELETE} request. */
-  LowLevelHttpRequest buildDeleteRequest(String uri) throws IOException;
+  public abstract LowLevelHttpRequest buildDeleteRequest(String uri)
+      throws IOException;
 
   /** Builds a {@code GET} request. */
-  LowLevelHttpRequest buildGetRequest(String uri) throws IOException;
+  public abstract LowLevelHttpRequest buildGetRequest(String uri)
+      throws IOException;
 
   /**
    * Builds a {@code PATCH} request. Won't be called if {@link #supportsPatch()}
    * returns {@code false}.
    */
-  LowLevelHttpRequest buildPatchRequest(String uri) throws IOException;
+  public abstract LowLevelHttpRequest buildPatchRequest(String uri)
+      throws IOException;
 
   /** Builds a {@code POST} request. */
-  LowLevelHttpRequest buildPostRequest(String uri) throws IOException;
+  public abstract LowLevelHttpRequest buildPostRequest(String uri)
+      throws IOException;
 
   /** Builds a {@code PUT} request. */
-  LowLevelHttpRequest buildPutRequest(String uri) throws IOException;
+  public abstract LowLevelHttpRequest buildPutRequest(String uri)
+      throws IOException;
 }

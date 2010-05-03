@@ -7,6 +7,7 @@ public final class MultipartHttpSerializer implements HttpSerializer {
 
   // TODO: test it!
 
+  // TODO: instead of getBytes() use getBytes("UTF-8")?
   private static final byte[] CR_LF = "\r\n".getBytes();
   private static final byte[] HEADER = "Media multipart posting".getBytes();
   private static final byte[] CONTENT_TYPE = "Content-Type: ".getBytes();
@@ -37,7 +38,7 @@ public final class MultipartHttpSerializer implements HttpSerializer {
   }
 
   public void forRequest(HttpRequest request) {
-    request.headers.put("MIME-version", "1.0");
+    request.headers.setMimeVersion("1.0");
     request.setContent(this);
   }
 
