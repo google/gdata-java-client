@@ -16,7 +16,7 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.Name;
+import com.google.api.client.util.Name;
 
 public class MediaContent {
 

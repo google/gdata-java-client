@@ -16,7 +16,7 @@
 
 package com.google.api.data.sample.youtube.model;
 
-import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.GoogleTransport;
 
 import java.io.IOException;
 import java.util.List;
