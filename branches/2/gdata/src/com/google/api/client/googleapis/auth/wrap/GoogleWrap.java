@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.api.client.http.auth.googleapis.wrap;
+package com.google.api.client.googleapis.auth.wrap;
 
 public class GoogleWrap {
 
