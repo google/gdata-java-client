@@ -16,9 +16,9 @@
 
 package com.google.api.client.xml;
 
-import com.google.api.client.ClassInfo;
-import com.google.api.client.DateTime;
-import com.google.api.client.Entities;
+import com.google.api.client.util.ClassInfo;
+import com.google.api.client.util.DateTime;
+import com.google.api.client.util.Entities;
 
 import org.xmlpull.v1.XmlSerializer;
 
