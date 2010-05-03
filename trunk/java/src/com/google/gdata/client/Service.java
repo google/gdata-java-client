@@ -415,8 +415,13 @@ public class Service {
     /**
      * Creates a new GDataRequest instance of the specified RequestType.
      * <p>
-     * Clients should be sure to call {@link GDataRequest#end()} on the
-     * returned request once they have finished using it.
+     * Clients should be sure to call {@link GDataRequest#end()} on the returned
+     * request once they have finished using it.
+     * 
+     * @param type the request type
+     * @param requestUrl the target URL for the request
+     * @param contentType the contentType of the data being provided in the
+     *        request body. May be {@code null} if no data is provided.
      */
     public GDataRequest getRequest(GDataRequest.RequestType type,
         URL requestUrl, ContentType contentType) throws IOException,
@@ -428,8 +433,12 @@ public class Service {
      * serializing them as a URL. Some factory implementations prefer to get
      * access to query parameters in their original form, not as a URL.
      * <p>
-     * Clients should be sure to call {@link GDataRequest#end()} on the
-     * returned request once they have finished using it.
+     * Clients should be sure to call {@link GDataRequest#end()} on the returned
+     * request once they have finished using it.
+     * 
+     * @param query the query associated with the request
+     * @param contentType this parameter is unused but remains for backwards
+     *        compatibility.
      */
     public GDataRequest getRequest(Query query, ContentType contentType)
         throws IOException, ServiceException;
@@ -692,7 +701,12 @@ public class Service {
     getRequestFactory().setPrivateHeader(header, value);
   }
 
-  /** Adds OAuth Proxy-related headers to the request. */
+  /**
+   * Adds OAuth Proxy-related headers to the request.  The OAuth Proxy
+   * simplifies the OAuth dance on when running in App Engine.
+   * @see <a href="http://sites.google.com/site/oauthgoog/Home/gaeoauthproxy">
+   * http://sites.google.com/site/oauthgoog/Home/gaeoauthproxy</a>
+   */
   public void setOAuthProxyHeaders(Map<String, String> headers) {
     for (String key : headers.keySet()) {
       setHeader(key, headers.get(key));
@@ -866,6 +880,25 @@ public class Service {
 
   public void setAltRegistry(AltRegistry altRegistry) {
     this.altRegistry = altRegistry;
+  }
+
+  private boolean strictValidation = true;
+
+  /**
+   * Returns {@code true} if strict validation is enabled for
+   * this service.
+   */
+  public boolean getStrictValidation() {
+    return strictValidation;
+  }
+
+  /**
+   * Enables or disables strict validation. It is enabled by
+   * default. When this flag is enabled, the client library rejects
+   * unknown attributes and validates both input and output data.
+   */
+  public void setStrictValidation(boolean strictValidation) {
+    this.strictValidation = strictValidation;
   }
 
   // Helper method that narrows the scope of unchecked (but safe) class casting.
@@ -1991,7 +2024,7 @@ public class Service {
    * @param source source object to be written
    * @throws IOException
    */
-  protected void writeRequestData(GDataRequest req, Object source)
+  public void writeRequestData(GDataRequest req, Object source)
       throws IOException {
     writeRequestData(req, new ClientOutputProperties(req, source), source);
   }
@@ -2029,14 +2062,16 @@ public class Service {
         (OutputGenerator<Object>) generator;
 
     // If request type is partial, disable strict validation
-    if (outputFormat.equals(AltFormat.APPLICATION_XML)) {
+    boolean disableValidation = !strictValidation
+        || outputFormat.equals(AltFormat.APPLICATION_XML);
+    if (disableValidation) {
       AbstractExtension.disableStrictValidation();
     }
     try {
       typedGenerator.generate(req.getRequestStream(), outProps, source);
     } finally {
       // If request type is partial, renable strict validation
-      if (outputFormat.equals(AltFormat.APPLICATION_XML)) {
+      if (disableValidation) {
         AbstractExtension.enableStrictValidation();
       }
     }
@@ -2056,7 +2091,7 @@ public class Service {
    * @throws IOException
    * @throws ServiceException
    */
-  protected <E> E parseResponseData(GDataRequest req, Class<E> resultType)
+  public <E> E parseResponseData(GDataRequest req, Class<E> resultType)
       throws IOException, ServiceException {
     InputProperties inputProperties =
         new ClientInputProperties(req, resultType);
@@ -2119,7 +2154,9 @@ public class Service {
     // Disable validation for partial request in old data model.
     String fields =
         inputProperties.getQueryParameter(GDataProtocol.Parameter.FIELDS);
-    if (fields != null && !Element.class.isAssignableFrom(resultType)) {
+    boolean disableValidation = !strictValidation
+        || (fields != null && !Element.class.isAssignableFrom(resultType));
+    if (disableValidation) {
       AbstractExtension.disableStrictValidation();
     }
 
@@ -2128,7 +2165,7 @@ public class Service {
       result = typedParser.parse(source, inputProperties, resultType);
     } finally {
       // Re-enable validation.
-      if (fields != null && !Element.class.isAssignableFrom(resultType)) {
+      if (disableValidation) {
         AbstractExtension.enableStrictValidation();
       }
     }

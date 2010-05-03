@@ -30,7 +30,6 @@ import com.google.gdata.model.QName;
 import com.google.gdata.model.ValidationContext;
 import com.google.gdata.model.batch.BatchOperation;
 import com.google.gdata.model.gd.GdAttributes;
-import com.google.gdata.model.gd.Partial;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ServiceException;
@@ -129,10 +128,6 @@ public class Feed extends Source implements IFeed {
 
     // Register superclass metadata.
     Source.registerMetadata(registry);
-      
-    // Register the Partial type so partial feed representations are implicitly
-    // declared.
-    Partial.registerMetadata(registry);
 
     // The builder for this element
     ElementCreator builder = registry.build(KEY);

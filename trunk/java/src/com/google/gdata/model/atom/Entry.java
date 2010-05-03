@@ -37,7 +37,6 @@ import com.google.gdata.model.batch.BatchInterrupted;
 import com.google.gdata.model.batch.BatchOperation;
 import com.google.gdata.model.batch.BatchStatus;
 import com.google.gdata.model.gd.GdAttributes;
-import com.google.gdata.model.gd.Partial;
 import com.google.gdata.util.Namespaces;
 import com.google.gdata.util.NotModifiedException;
 import com.google.gdata.util.ServiceException;
@@ -168,9 +167,6 @@ public class Entry extends Element implements IEntry {
     builder.addElement(BatchOperation.KEY);
     builder.addElement(BatchStatus.KEY);
 
-    // Register the Partial type so partial entry representations are implicitly
-    // declared.
-    Partial.registerMetadata(registry);
 
     // Register adaptations.
     TextContent.registerMetadata(registry);
