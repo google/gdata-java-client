@@ -16,11 +16,11 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.Name;
+import com.google.api.client.googleapis.GoogleHttp;
+import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.InputStreamHttpSerializer;
-import com.google.api.client.http.googleapis.GoogleHttp;
-import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.util.Name;
 
 import java.io.IOException;
 import java.net.URL;

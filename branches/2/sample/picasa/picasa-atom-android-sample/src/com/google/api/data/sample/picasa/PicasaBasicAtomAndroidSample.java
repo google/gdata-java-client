@@ -22,14 +22,14 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.google.api.client.DateTime;
+import com.google.api.client.android.AndroidGData;
+import com.google.api.client.googleapis.GoogleHttp;
+import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.InputStreamHttpSerializer;
 import com.google.api.client.http.UriEntity;
-import com.google.api.client.http.android.AndroidGData;
-import com.google.api.client.http.googleapis.GoogleHttp;
-import com.google.api.client.http.googleapis.GoogleTransport;
-import com.google.api.client.http.xml.atom.AtomHttpParser;
+import com.google.api.client.util.DateTime;
+import com.google.api.client.xml.atom.AtomHttpParser;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
@@ -178,7 +178,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
   private void authenticated(String authToken) {
     GoogleTransport transport =
         this.transport = new GoogleTransport("google-picasaandroidsample-1.0");
-    transport.lowLevelHttpTransport = AndroidGData.HTTP_TRANSPORT;
+    transport.setLowLevelHttpTransport(AndroidGData.HTTP_TRANSPORT);
     transport.setGDataVersionHeader(Picasa.VERSION);
     transport.setGoogleLoginAuthorizationHeader(authToken);
     AtomHttpParser parser = new AtomHttpParser();

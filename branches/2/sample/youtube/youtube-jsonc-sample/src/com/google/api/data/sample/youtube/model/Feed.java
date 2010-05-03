@@ -16,9 +16,9 @@
 
 package com.google.api.data.sample.youtube.model;
 
-import com.google.api.client.DateTime;
+import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.util.DateTime;
 
 import java.io.IOException;
 

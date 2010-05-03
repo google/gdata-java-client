@@ -16,11 +16,18 @@
 
 package com.google.api.data.sample.picasa;
 
-import com.google.api.client.Entity;
+import com.google.api.client.auth.oauth.OAuthAuthorizer;
+import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
+import com.google.api.client.auth.oauth.OAuthHmacSigner;
+import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
+import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTokenRequestUri;
+import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
+import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetRequestToken;
+import com.google.api.client.googleapis.auth.oauth.GoogleOAuthRevokeToken;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.auth.googleapis.clientlogin.ClientLogin;
-import com.google.api.client.http.googleapis.GoogleTransport;
-import com.google.api.client.http.xml.atom.AtomHttpParser;
+import com.google.api.client.util.Entity;
+import com.google.api.client.xml.atom.AtomHttpParser;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
@@ -38,11 +45,13 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class PicasaBasicAtomSample {
+  static OAuthHmacSigner signer;
+  static OAuthCredentialsResponse credentials;
 
   public static void main(String[] args) throws IOException {
-    // enableLogging();
+    enableLogging();
     try {
-      GoogleTransport transport = authenticate();
+      GoogleTransport transport = setUpGoogleTransport();
       UserFeed feed = showAlbums(transport);
       AlbumEntry album = postAlbum(transport, feed);
       PhotoEntry postedPhoto = postPhoto(transport, album);
@@ -56,10 +65,34 @@ public class PicasaBasicAtomSample {
         System.err.println(e.response.parseAsString());
       }
       throw e;
+    } finally {
+      if (credentials != null) {
+        try {
+          GoogleOAuthRevokeToken revokeUri = new GoogleOAuthRevokeToken();
+          revokeUri.signer = signer;
+          revokeUri.consumerKey = "anonymous";
+          revokeUri.accessToken = credentials.token;
+          revokeUri.execute();
+        } catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
+      }
     }
   }
 
-  private static GoogleTransport authenticate() throws IOException {
+  private static GoogleTransport setUpGoogleTransport() throws IOException {
+    GoogleTransport transport =
+        new GoogleTransport("google-picasaatomsample-1.0");
+    transport.setGDataVersionHeader(Picasa.VERSION);
+    AtomHttpParser parser = new AtomHttpParser();
+    parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
+    transport.setParser(parser);
+    authorizeUsingOAuth(transport);
+    return transport;
+  }
+
+  private static void authorizeUsingClientLogin(GoogleTransport transport)
+      throws IOException {
     ClientLogin authenticator = new ClientLogin();
     authenticator.authTokenType = Picasa.AUTH_TOKEN_TYPE;
     Scanner s = new Scanner(System.in);
@@ -67,14 +100,40 @@ public class PicasaBasicAtomSample {
     authenticator.username = s.nextLine();
     System.out.println("Password: ");
     authenticator.password = s.nextLine();
-    GoogleTransport transport =
-        new GoogleTransport("google-picasaatomsample-1.0");
     authenticator.authenticate().setAuthorizationHeader(transport);
-    transport.setGDataVersionHeader(Picasa.VERSION);
-    AtomHttpParser parser = new AtomHttpParser();
-    parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
-    transport.setParser(parser);
-    return transport;
+  }
+
+  private static void authorizeUsingOAuth(GoogleTransport transport)
+      throws IOException {
+    GoogleOAuthGetRequestToken requestToken = new GoogleOAuthGetRequestToken();
+    signer = new OAuthHmacSigner();
+    signer.clientSharedSecret = "anonymous";
+    requestToken.signer = signer;
+    requestToken.consumerKey = "anonymous";
+    requestToken.scope = "http://picasaweb.google.com/data";
+    requestToken.displayName =
+        "Picasa Atom XML Sample for the GData Java client";
+    credentials = requestToken.execute();
+    signer.tokenSharedSecret = credentials.tokenSecret;
+    System.out
+        .println("Please go open this web page in a browser to authorize:");
+    GoogleOAuthAuthorizeTokenRequestUri authorizeUri =
+        new GoogleOAuthAuthorizeTokenRequestUri();
+    authorizeUri.requestToken = credentials.token;
+    System.out.println(authorizeUri.build());
+    System.out.println();
+    System.out.println("Press enter to continue...");
+    new Scanner(System.in).nextLine();
+    GoogleOAuthGetAccessToken accessToken = new GoogleOAuthGetAccessToken();
+    accessToken.requestToken = credentials.token;
+    accessToken.signer = signer;
+    accessToken.consumerKey = "anonymous";
+    accessToken.verifier = "";
+    credentials = accessToken.execute();
+    signer.tokenSharedSecret = credentials.tokenSecret;
+    transport.defaultHeaders.authorizer =
+        OAuthAuthorizer.createFromTokenCredentials(signer, "anonymous",
+            credentials.token, null);
   }
 
   private static UserFeed showAlbums(GoogleTransport transport)

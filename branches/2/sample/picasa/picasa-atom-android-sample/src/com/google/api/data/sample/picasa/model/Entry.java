@@ -16,12 +16,12 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.Entities;
-import com.google.api.client.Name;
+import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.xml.atom.PatchRelativeToOriginalSerializer;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.googleapis.GoogleTransport;
-import com.google.api.client.http.xml.atom.AtomSerializer;
-import com.google.api.client.http.xml.atom.googleapis.PatchRelativeToOriginalSerializer;
+import com.google.api.client.util.Entities;
+import com.google.api.client.util.Name;
+import com.google.api.client.xml.atom.AtomSerializer;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
 
 import java.io.IOException;
@@ -44,14 +44,14 @@ public class Entry implements Cloneable {
 
   public void executeDelete(GoogleTransport transport) throws IOException {
     HttpRequest request = transport.buildDeleteRequest(getEditLink());
-    request.setIfMatchHeader(etag);
+    request.headers.setIfMatch(this.etag);
     request.execute().ignore();
   }
 
   Entry executePatchRelativeToOriginal(GoogleTransport transport, Entry original)
       throws IOException {
     HttpRequest request = transport.buildPatchRequest(getEditLink());
-    request.setIfMatchHeader(etag);
+    request.headers.setIfMatch(this.etag);
     PatchRelativeToOriginalSerializer serializer =
         new PatchRelativeToOriginalSerializer();
     serializer.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;

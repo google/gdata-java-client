@@ -16,7 +16,7 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.http.googleapis.GoogleUriEntity;
+import com.google.api.client.googleapis.GoogleUriEntity;
 
 public class PicasaUri extends GoogleUriEntity {
 

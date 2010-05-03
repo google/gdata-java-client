@@ -16,7 +16,7 @@
 
 package com.google.api.data.sample.youtube.model;
 
-import com.google.api.client.DateTime;
+import com.google.api.client.util.DateTime;
 
 public class Item {
   public String id;
