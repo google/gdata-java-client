@@ -16,23 +16,20 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.ArrayMap;
-import com.google.api.client.Strings;
+import com.google.api.client.auth.Authorizer;
+import com.google.api.client.util.ArrayMap;
+import com.google.api.client.util.Strings;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/** HTTP response. */
 public final class HttpRequest {
 
-  /** Headers mapping from header name to header value. */
-  public final ArrayMap<String, String> headers = ArrayMap.create();
-
-  /**
-   * Headers mapping from header name to header value for headers whose value
-   * must not be logged (for example authentication-related headers).
-   */
-  public final ArrayMap<String, String> headersNoLogging = ArrayMap.create();
+  /** HTTP headers. */
+  public final HttpHeaders headers;
 
   private final LowLevelHttpRequest lowLevelHttpRequest;
   private HttpSerializer content;
@@ -47,36 +44,7 @@ public final class HttpRequest {
     this.method = method;
     this.uri = uri;
     this.lowLevelHttpRequest = lowLevelHttpRequest;
-    this.headers.putAll(transport.defaultHeaders);
-    this.headersNoLogging.putAll(transport.defaultHeadersNoLogging);
-  }
-
-  /**
-   * Sets the header for the given name and value or remove the header if value
-   * is {@code null}.
-   */
-  public void setDefaultHeader(String name, String value) {
-    if (value == null) {
-      this.headers.remove(name);
-    } else {
-      this.headers.put(name, value);
-    }
-  }
-
-  /**
-   * Sets the {@code "If-Match"} header to the given etag value or remove the
-   * header if value is {@code null}.
-   */
-  public void setIfMatchHeader(String etag) {
-    this.headers.put("If-Match", etag);
-  }
-
-  /**
-   * Sets the {@code "If-None-Match"} header to the given etag value or remove
-   * the header if value is {@code null}.
-   */
-  public void setIfNoneMatchHeader(String etag) {
-    this.headers.put("If-None-Match", etag);
+    this.headers = transport.defaultHeaders.clone();
   }
 
   public void setContent(HttpSerializer serializer) {
@@ -95,7 +63,7 @@ public final class HttpRequest {
    * 
    * @return HTTP response for an HTTP success code
    * @throws HttpResponseException for an HTTP error code
-   * @see HttpResponse#isSuccessStatusCode()
+   * @see HttpResponse#isSuccessStatusCode
    */
   public HttpResponse execute() throws IOException {
     LowLevelHttpRequest lowLevelHttpRequest = this.lowLevelHttpRequest;
@@ -112,14 +80,27 @@ public final class HttpRequest {
           Strings.LINE_SEPARATOR);
     }
     // headers
-    addHeaders(this.headers, logbuf, true);
-    addHeaders(this.headersNoLogging, logbuf, false);
-    AuthorizationHeaderProvider authorizationHeaderProvider =
-        transport.authorizationHeaderProvider;
-    if (authorizationHeaderProvider != null) {
-      String authValue =
-          authorizationHeaderProvider.getAuthorizationHeader(method, uri);
-      addHeader("Authorization", authValue, logbuf, false);
+    HttpHeaders headers = this.headers;
+    Authorizer authorizer = headers.authorizer;
+    if (authorizer != null) {
+      String authValue = authorizer.getAuthorizationHeader(method, uri);
+      headers.setAuthorization(authValue);
+    }
+    ArrayMap<String, String> values = headers.values;
+    ArrayList<String> privateNames = headers.privateNames;
+    int size = values.size();
+    for (int i = 0; i < size; i++) {
+      String name = values.getKey(i);
+      String value = values.getValue(i);
+      if (logbuf != null) {
+        if (privateNames.contains(name)) {
+          logbuf.append(name + ": <Not Logged>");
+        } else {
+          logbuf.append(name + ": " + value);
+        }
+        logbuf.append(Strings.LINE_SEPARATOR);
+      }
+      lowLevelHttpRequest.addHeader(name, value);
     }
     // content
     HttpSerializer content = this.content;
@@ -146,33 +127,9 @@ public final class HttpRequest {
     // execute
     HttpResponse response =
         new HttpResponse(transport, lowLevelHttpRequest.execute());
-    if (!response.isSuccessStatusCode()) {
+    if (!response.isSuccessStatusCode) {
       throw new HttpResponseException(response);
     }
     return response;
-  }
-
-  private void addHeaders(ArrayMap<String, String> headers,
-      StringBuilder logbuf, boolean logValues) {
-    LowLevelHttpRequest lowLevelHttpRequest = this.lowLevelHttpRequest;
-    int size = headers.size();
-    for (int i = 0; i < size; i++) {
-      addHeader(headers.getKey(i), headers.getValue(i), logbuf, logValues);
-    }
-  }
-
-  private void addHeader(String name, String value, StringBuilder logbuf,
-      boolean logValue) {
-    if (value != null) {
-      if (logbuf != null) {
-        if (logValue) {
-          logbuf.append(name + ": " + value);
-        } else {
-          logbuf.append(name + ": <Not Logged>");
-        }
-        logbuf.append(Strings.LINE_SEPARATOR);
-      }
-      this.lowLevelHttpRequest.addHeader(name, value);
-    }
   }
 }

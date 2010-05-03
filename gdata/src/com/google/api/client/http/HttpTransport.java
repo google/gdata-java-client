@@ -16,28 +16,47 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.ArrayMap;
-import com.google.api.client.http.net.NetGData;
+import com.google.api.client.javanet.NetGData;
+import com.google.api.client.util.ArrayMap;
 
 import java.io.IOException;
 import java.util.logging.Logger;
 
+/** HTTP transport. */
 public class HttpTransport {
 
   static final Logger LOGGER = Logger.getLogger(HttpTransport.class.getName());
 
+  /**
+   * Whether to disabel GZip compression of request and response content.
+   * Default is {@code false}.
+   */
   public static final boolean DISABLE_GZIP =
       Boolean.getBoolean(HttpTransport.class.getName() + ".DisableGZip");
 
   /**
    * Low level HTTP transport interface to use or {@code null} to use the
-   * default of {@code java.net} transport. See
-   * {@link #getLowLevelHttpTransport()}.
+   * default of {@code java.net} transport.
    */
-  public volatile LowLevelHttpTransport lowLevelHttpTransport;
+  private volatile LowLevelHttpTransport lowLevelHttpTransport;
 
-  /** Returns the low-level HTTP transport to use. */
-  public LowLevelHttpTransport getLowLevelHttpTransport() {
+  /**
+   * Sets to the given low level HTTP transport.
+   * 
+   * @param lowLevelHttpTransport low level HTTP transport or {@code null} to
+   *        use the default of {@code java.net} transport
+   */
+  public void setLowLevelHttpTransport(
+      LowLevelHttpTransport lowLevelHttpTransport) {
+    this.lowLevelHttpTransport = lowLevelHttpTransport;
+  }
+
+  /**
+   * Returns the low-level HTTP transport to use. If
+   * {@link #setLowLevelHttpTransport(LowLevelHttpTransport)} hasn't been
+   * called, it uses the default of {@code java.net} transport.
+   */
+  protected LowLevelHttpTransport useLowLevelHttpTransport() {
     LowLevelHttpTransport lowLevelHttpTransportInterface =
         this.lowLevelHttpTransport;
     if (lowLevelHttpTransportInterface == null) {
@@ -49,29 +68,13 @@ public class HttpTransport {
   }
 
   /**
-   * Default headers mapping from header name to header value. These transport
-   * default headers are put into a request's headers when its build method is
-   * called.
+   * Default HTTP headers. These transport default headers are put into a
+   * request's headers when its build method is called.
    */
-  public final ArrayMap<String, String> defaultHeaders = ArrayMap.create();
-
-  /**
-   * Default headers mapping from header name to header value for headers whose
-   * value must not be logged (for example authentication-related headers).
-   * These transport default headers are put into a request's headers when its
-   * build method is called.
-   */
-  public final ArrayMap<String, String> defaultHeadersNoLogging =
-      ArrayMap.create();
+  public volatile HttpHeaders defaultHeaders = new HttpHeaders();
 
   private final ArrayMap<String, HttpParser> contentTypeToParserMap =
       ArrayMap.create();
-
-  /**
-   * Authorization header provider to use for all requests or {@code null} for
-   * none.
-   */
-  public volatile AuthorizationHeaderProvider authorizationHeaderProvider;
 
   public final void setParser(HttpParser parser) {
     this.contentTypeToParserMap.put(parser.getContentType(), parser);
@@ -90,81 +93,41 @@ public class HttpTransport {
 
   public HttpTransport() {
     if (!DISABLE_GZIP) {
-      setAcceptEncodingHeader("gzip");
-    }
-  }
-
-  /**
-   * Sets the default header for the given name and value or remove the default
-   * header if value is {@code null}.
-   */
-  public void setDefaultHeader(String name, String value) {
-    if (value == null) {
-      this.defaultHeaders.remove(name);
-    } else {
-      this.defaultHeaders.put(name, value);
-    }
-  }
-
-  /**
-   * Sets the {@code "Accept-Encoding"} default header or remove the default
-   * header if value is {@code null}.
-   */
-  public void setAcceptEncodingHeader(String value) {
-    setDefaultHeader("Accept-Encoding", value);
-  }
-
-  /**
-   * Sets the {@code "User-Agent"} default header or remove the default header
-   * if value is {@code null}.
-   */
-  public void setUserAgentHeader(String value) {
-    setDefaultHeader("User-Agent", value);
-  }
-
-  /**
-   * Sets the {@code "Authorization"} default header (without logging value) or
-   * remove the default header if value is {@code null}.
-   */
-  public void setAuthorizationHeader(String value) {
-    if (value == null) {
-      this.defaultHeadersNoLogging.remove("Authorization");
-    } else {
-      this.defaultHeadersNoLogging.put("Authorization", value);
+      defaultHeaders.setAcceptEncoding("gzip");
     }
   }
 
   /** Builds a {@code DELETE} request for the given request URI. */
   public HttpRequest buildDeleteRequest(String uri) throws IOException {
-    return new HttpRequest(this, "DELETE", uri, getLowLevelHttpTransport()
+    return new HttpRequest(this, "DELETE", uri, useLowLevelHttpTransport()
         .buildDeleteRequest(uri));
   }
 
   /** Builds a {@code GET} request for the given request URI. */
   public HttpRequest buildGetRequest(String uri) throws IOException {
-    return new HttpRequest(this, "GET", uri, getLowLevelHttpTransport()
+    return new HttpRequest(this, "GET", uri, useLowLevelHttpTransport()
         .buildGetRequest(uri));
   }
 
   /** Builds a {@code PATCH} request for the given request URI. */
   public HttpRequest buildPatchRequest(String uri) throws IOException {
-    LowLevelHttpTransport lowLevelHttpTransport = getLowLevelHttpTransport();
+    LowLevelHttpTransport lowLevelHttpTransport = useLowLevelHttpTransport();
     if (!lowLevelHttpTransport.supportsPatch()) {
       throw new IllegalArgumentException("HTTP transport doesn't support PATCH");
     }
-    return new HttpRequest(this, "PATCH", uri, getLowLevelHttpTransport()
+    return new HttpRequest(this, "PATCH", uri, useLowLevelHttpTransport()
         .buildPatchRequest(uri));
   }
 
   /** Builds a {@code POST} request for the given request URI. */
   public HttpRequest buildPostRequest(String uri) throws IOException {
-    return new HttpRequest(this, "POST", uri, getLowLevelHttpTransport()
+    return new HttpRequest(this, "POST", uri, useLowLevelHttpTransport()
         .buildPostRequest(uri));
   }
 
   /** Builds a {@code PUT} request for the given request URI. */
   public HttpRequest buildPutRequest(String uri) throws IOException {
-    return new HttpRequest(this, "PUT", uri, getLowLevelHttpTransport()
+    return new HttpRequest(this, "PUT", uri, useLowLevelHttpTransport()
         .buildPutRequest(uri));
   }
 }

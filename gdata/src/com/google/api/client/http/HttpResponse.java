@@ -16,8 +16,8 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.ArrayMap;
-import com.google.api.client.Strings;
+import com.google.api.client.util.ArrayMap;
+import com.google.api.client.util.Strings;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,23 +27,42 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-/** Encapsulates an HTTP response. */
+/** HTTP response. */
 public final class HttpResponse {
 
-  private final boolean isSuccessStatusCode;
-  private long contentLength;
-  private final int statusCode;
   private volatile InputStream content;
-  private final String contentType;
-  private volatile LowLevelHttpResponse response;
-  private final String statusMessage;
-  private final String contentEncoding;
-  private final ArrayMap<String, String> headerNameToValueMap;
-  private final HttpTransport transport;
+
+  /** Content encoding or {@code null}. */
+  public final String contentEncoding;
 
   /**
-   * Disables logging of content, for example if content has sensitive data such
-   * as an authentication token. Defaults to {@code false}.
+   * Content length or less than zero if not known. May be reset by
+   * {@link #getContent()} if response had GZip compression.
+   */
+  public volatile long contentLength;
+
+  /** Content type or {@code null}. */
+  public final String contentType;
+
+  private final ArrayMap<String, String> headerNameToValueMap;
+
+  /** Whether received a successful status code {@code >= 200 && < 300}. */
+  public final boolean isSuccessStatusCode;
+
+  private volatile LowLevelHttpResponse response;
+
+  /** Status code. */
+  public final int statusCode;
+
+  /** Status message or {@code null}. */
+  public final String statusMessage;
+
+  /** HTTP transport. */
+  public final HttpTransport transport;
+
+  /**
+   * Whether to disable response content logging, for example if content has
+   * sensitive data such as an authentication token. Defaults to {@code false}.
    */
   public volatile boolean disableContentLogging;
 
@@ -93,10 +112,6 @@ public final class HttpResponse {
     }
   }
 
-  public boolean isSuccessStatusCode() {
-    return this.isSuccessStatusCode;
-  }
-
   public InputStream getContent() throws IOException {
     LowLevelHttpResponse response = this.response;
     if (response == null) {
@@ -122,8 +137,7 @@ public final class HttpResponse {
       if (loggable) {
         // print content using a buffered input stream that can be re-read
         String contentType = this.contentType;
-        if (contentType != null
-            && (contentType.startsWith("application/"))
+        if (contentType != null && (contentType.startsWith("application/"))
             || contentType.startsWith("text/")) {
           byte[] debugContent = readStream(content);
           if (debugContent.length != 0) {
@@ -188,26 +202,6 @@ public final class HttpResponse {
     } finally {
       content.close();
     }
-  }
-
-  /** Returns the content length or less than zero if not known. */
-  public long getContentLength() {
-    return this.contentLength;
-  }
-
-  /** Returns the status code. */
-  public int getStatusCode() {
-    return this.statusCode;
-  }
-
-  /** Returns the status message. */
-  public String getStatusMessage() {
-    return this.statusMessage;
-  }
-
-  /** Returns the content type. */
-  public String getContentType() {
-    return this.contentType;
   }
 
   /**

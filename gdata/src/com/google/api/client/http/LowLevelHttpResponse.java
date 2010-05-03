@@ -19,26 +19,26 @@ package com.google.api.client.http;
 import java.io.IOException;
 import java.io.InputStream;
 
-public interface LowLevelHttpResponse {
+public abstract class LowLevelHttpResponse {
 
-  InputStream getContent() throws IOException;
+  public abstract InputStream getContent() throws IOException;
 
-  String getContentEncoding();
+  public abstract String getContentEncoding();
 
-  long getContentLength();
+  public abstract long getContentLength();
 
-  String getContentType();
+  public abstract String getContentType();
 
   /** Response status line or {@code null} for none. */
-  String getStatusLine();
+  public abstract String getStatusLine();
 
-  int getStatusCode();
+  public abstract int getStatusCode();
 
-  String getReasonPhrase();
+  public abstract String getReasonPhrase();
 
-  int getHeaderCount();
+  public abstract int getHeaderCount();
 
-  String getHeaderName(int index);
+  public abstract String getHeaderName(int index);
 
-  String getHeaderValue(int index);
+  public abstract String getHeaderValue(int index);
 }

@@ -16,8 +16,8 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.Entity;
 import com.google.api.client.escape.CharEscapers;
+import com.google.api.client.util.Entity;
 
 import java.util.Collection;
 import java.util.Map;
@@ -34,16 +34,19 @@ public class UriEntity extends Entity {
 
   // TODO: cloneable?
 
-  public UriEntity(String uri) {
-    // decode the path/query parts of URI
-    // TODO: URI decoding
-    int query = uri.indexOf('?');
+  /** Constructs from the given encoded URI. */
+  public UriEntity(String encodedUri) {
+    // TODO: encode path: tricky because need to remember which slashes need to
+    // be escaped
+    int query = encodedUri.indexOf('?');
+    String path;
     if (query == -1) {
-      this.path = uri;
+      path = encodedUri;
     } else {
-      this.path = uri.substring(0, query);
-      UrlEncodedFormHttpParser.parse(uri.substring(query + 1), this);
+      path = encodedUri.substring(0, query);
+      UrlEncodedFormHttpParser.parse(encodedUri.substring(query + 1), this);
     }
+    this.path = CharEscapers.decodeUri(path);
   }
 
   public final String getPath() {
@@ -105,6 +108,7 @@ public class UriEntity extends Entity {
               } else {
                 // TODO: need way to specify collection element separator, for
                 // example space char
+                // TODO: actually spaces would be preferred?
                 buf.append(',');
               }
               buf.append(escape(element));

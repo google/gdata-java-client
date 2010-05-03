@@ -18,11 +18,11 @@ package com.google.api.client.http;
 
 import java.io.IOException;
 
-public interface LowLevelHttpRequest {
+public abstract class LowLevelHttpRequest {
 
-  void addHeader(String name, String value);
+  public abstract void addHeader(String name, String value);
 
-  void setContent(HttpSerializer serializer);
+  public abstract void setContent(HttpSerializer serializer);
 
-  LowLevelHttpResponse execute() throws IOException;
+  public abstract LowLevelHttpResponse execute() throws IOException;
 }

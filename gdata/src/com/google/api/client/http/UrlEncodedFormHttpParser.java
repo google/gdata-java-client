@@ -16,9 +16,10 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.ClassInfo;
-import com.google.api.client.Entity;
-import com.google.api.client.FieldInfo;
+import com.google.api.client.escape.CharEscapers;
+import com.google.api.client.util.ClassInfo;
+import com.google.api.client.util.Entity;
+import com.google.api.client.util.FieldInfo;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -33,8 +34,8 @@ import java.util.Map;
 public final class UrlEncodedFormHttpParser implements HttpParser {
 
   /**
-   * Disables logging of content, for example if content has sensitive data such
-   * as an authentication token. Defaults to {@code false}.
+   * Whether to disable response content logging, for example if content has
+   * sensitive data such as an authentication token. Defaults to {@code false}.
    */
   public volatile boolean disableContentLogging;
 
@@ -47,15 +48,15 @@ public final class UrlEncodedFormHttpParser implements HttpParser {
 
   public <T> T parse(HttpResponse response, Class<T> entityClass)
       throws IOException {
-    T newInstance = ClassInfo.newInstance(entityClass);
-    ClassInfo classInfo = ClassInfo.of(entityClass);
-    if (!this.disableContentLogging) {
+    if (this.disableContentLogging) {
       response.disableContentLogging = true;
     }
+    T newInstance = ClassInfo.newInstance(entityClass);
     parse(response.parseAsString(), newInstance);
     return newInstance;
   }
 
+  /** Parses the given content into the given entity object. */
   public static void parse(String content, Object object) {
     Class<?> clazz = object.getClass();
     ClassInfo classInfo = ClassInfo.of(clazz);
@@ -72,12 +73,12 @@ public final class UrlEncodedFormHttpParser implements HttpParser {
         amp = length;
       }
       int equals = content.indexOf('=', cur);
-      if (equals <= cur || equals >= amp - 1) {
+      if (equals <= cur || equals >= amp) {
         throw new IllegalArgumentException("malformed URL encoding: "
             + content.substring(cur, amp));
       }
-      String name = content.substring(cur, equals);
-      String value = content.substring(equals + 1, amp);
+      String name = CharEscapers.decodeUri(content.substring(cur, equals));
+      String value = CharEscapers.decodeUri(content.substring(equals + 1, amp));
       // get the field from the type information
       Field field = classInfo.getField(name);
       if (field != null) {
