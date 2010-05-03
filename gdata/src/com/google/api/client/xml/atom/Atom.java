@@ -35,4 +35,11 @@ public final class Atom {
 
   private Atom() {
   }
+
+  public static void checkContentType(String contentType) {
+    if (contentType == null || !contentType.startsWith(CONTENT_TYPE)) {
+      throw new IllegalArgumentException("Wrong content type: expected <"
+          + CONTENT_TYPE + "> but got <" + contentType + ">");
+    }
+  }
 }

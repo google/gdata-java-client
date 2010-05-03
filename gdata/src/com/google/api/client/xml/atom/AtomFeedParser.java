@@ -16,9 +16,8 @@
 
 package com.google.api.client.xml.atom;
 
-import com.google.api.client.ClassInfo;
 import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.xml.atom.AtomHttp;
+import com.google.api.client.util.ClassInfo;
 import com.google.api.client.xml.Xml;
 import com.google.api.client.xml.XmlNamespaceDictionary;
 
@@ -52,7 +51,7 @@ public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {
       Class<I> entryClass) throws XmlPullParserException, IOException {
     InputStream content = response.getContent();
     try {
-      AtomHttp.checkContentType(response.getContentType());
+      Atom.checkContentType(response.contentType);
       XmlPullParser parser = Xml.createParser();
       parser.setInput(content, null);
       AtomFeedParser<T, I> result = new AtomFeedParser<T, I>();
