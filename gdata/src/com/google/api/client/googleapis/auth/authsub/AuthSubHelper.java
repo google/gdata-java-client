@@ -14,16 +14,16 @@
  * the License.
  */
 
-package com.google.api.client.http.auth.googleapis.authsub;
+package com.google.api.client.googleapis.auth.authsub;
 
-import com.google.api.client.Name;
-import com.google.api.client.auth.googleapis.authsub.AuthSub;
+import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.auth.AuthKeyValueParser;
+import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.auth.googleapis.AuthKeyValueParser;
-import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.util.Name;
 
 import java.io.IOException;
 import java.security.PrivateKey;
@@ -39,16 +39,16 @@ import java.security.PrivateKey;
  * </ul>
  * .
  */
-public class AuthSubToken {
+public final class AuthSubHelper {
 
-  /** Private key for secure AuthSub. */
-  public volatile PrivateKey privateKey;
+  /** Private key for secure AuthSub or {@code null} for non-secure AuthSub. */
+  private volatile PrivateKey privateKey;
 
   /**
    * Google transport whose authorization header to set or {@code null} to
-   * ignore (for example if using an alternative HTTP library.
+   * ignore (for example if using an alternative HTTP library).
    */
-  public volatile GoogleTransport transport;
+  private volatile GoogleTransport transport;
 
   /** HTTP transport for AuthSub requests. */
   private final HttpTransport authSubTransport = new HttpTransport();
@@ -56,7 +56,7 @@ public class AuthSubToken {
   /** Token (may be single use or session). */
   private String token;
 
-  public AuthSubToken() {
+  public AuthSubHelper() {
     AuthKeyValueParser.setAsParserOf(this.authSubTransport);
   }
 
@@ -81,16 +81,44 @@ public class AuthSubToken {
   }
 
   /**
+   * Sets to the given private key for secure AuthSub or {@code null} for
+   * non-secure AuthSub.
+   * <p>
+   * Updates the authorization header of the Google transport (set using
+   * {@link #setTransport(GoogleTransport)}).
+   */
+  public void setPrivateKey(PrivateKey privateKey) {
+    if (privateKey != this.privateKey) {
+      this.privateKey = privateKey;
+      updateAuthorizationHeaders();
+    }
+  }
+
+  /**
+   * Sets to the given Google transport whose authorization header to set or
+   * {@code null} to ignore (for example if using an alternative HTTP library).
+   * <p>
+   * Updates the authorization header of the Google transport.
+   */
+  public void setTransport(GoogleTransport transport) {
+    if (transport != this.transport) {
+      this.transport = transport;
+      updateAuthorizationHeaders();
+    }
+  }
+
+  /**
    * Sets to the given single-use or session token (or resets any existing token
-   * if {@code null}). Sets the authorization header of the Google transport
-   * using the token. Any previous stored single-use or session token will be
-   * forgotten.
+   * if {@code null}).
+   * <p>
+   * Any previous stored single-use or session token will be forgotten. Updates
+   * the authorization header of the Google transport (set using
+   * {@link #setTransport(GoogleTransport)}).
    */
   public void setToken(String token) {
     if (token != this.token) {
       this.token = token;
-      setAuthorizationHeaderOf(this.transport);
-      setAuthorizationHeaderOf(this.authSubTransport);
+      updateAuthorizationHeaders();
     }
   }
 
@@ -164,26 +192,31 @@ public class AuthSubToken {
     return response.parseAs(TokenInfoResponse.class);
   }
 
+  /** Updates the authorization headers. */
+  private void updateAuthorizationHeaders() {
+    setAuthorizationHeaderOf(this.transport);
+    setAuthorizationHeaderOf(this.authSubTransport);
+  }
+
   /**
    * Sets the authorization header for the given HTTP transport based on the
    * current token.
    */
   private void setAuthorizationHeaderOf(HttpTransport httpTransport) {
     if (httpTransport != null) {
+      HttpHeaders headers = httpTransport.defaultHeaders;
       String token = this.token;
       if (token == null) {
-        httpTransport.authorizationHeaderProvider = null;
-        httpTransport.setAuthorizationHeader(null);
+        headers.authorizer = null;
+        headers.setAuthorization(null);
       } else {
         PrivateKey privateKey = this.privateKey;
         if (privateKey == null) {
-          httpTransport.authorizationHeaderProvider = null;
-          httpTransport.setAuthorizationHeader(AuthSub
-              .getAuthorizationHeaderValue(token));
+          headers.authorizer = null;
+          headers.setAuthorization(AuthSub.getAuthorizationHeaderValue(token));
         } else {
-          httpTransport.setAuthorizationHeader(null);
-          httpTransport.authorizationHeaderProvider =
-              new AuthSubAuthoritzationHeaderProvider(token, privateKey);
+          headers.setAuthorization(null);
+          headers.authorizer = new AuthSubAuthorizer(token, privateKey);
         }
       }
     }
