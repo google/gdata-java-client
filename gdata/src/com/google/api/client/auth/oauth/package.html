@@ -1,0 +1,13 @@
+<body>
+OAuth 1.0 authorization as specified in
+<a href="http://tools.ietf.org/html/rfc5849">RFC 5849: The OAuth 1.0
+Protocol</a>
+.
+<p>There are a few features not supported by this implementation:
+<ul>
+  <li>{@code PLAINTEXT} signature algorithm</li>
+  <li>{@code "application/x-www-form-urlencoded"} HTTP request body</li>
+  <li>{@code "oauth_*"} parameters specified in the HTTP request URL
+  (instead assumes they are specified in the {@code Authorization} header</li>
+</ul>
+</body>

@@ -1,7 +1,7 @@
-package com.google.api.client.http.auth.wrap;
+package com.google.api.client.auth.wrap;
 
-import com.google.api.client.Name;
 import com.google.api.client.http.UriEntity;
+import com.google.api.client.util.Name;
 
 /**
  * Implements the Username and Password Profile of OAuth WRAP authorization as

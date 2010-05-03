@@ -16,13 +16,23 @@
 
 package com.google.api.client.escape;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 /**
  * Utility functions for dealing with {@code CharEscaper}s, and some commonly
  * used {@code CharEscaper} instances.
  */
 public final class CharEscapers {
-  private CharEscapers() {
-  }
+
+  private static final Escaper URI_ESCAPER =
+      new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, true);
+
+  private static final Escaper URI_PATH_ESCAPER =
+      new PercentEscaper(PercentEscaper.SAFEPATHCHARS_URLENCODER, false);
+
+  private static final Escaper URI_QUERY_STRING_ESCAPER =
+      new PercentEscaper(PercentEscaper.SAFEQUERYSTRINGCHARS_URLENCODER, false);
 
   /**
    * Escapes the string value so it can be safely included in URIs. For details
@@ -59,6 +69,27 @@ public final class CharEscapers {
    */
   public static String escapeUri(String value) {
     return URI_ESCAPER.escape(value);
+  }
+
+  /**
+   * Percent-decodes a US-ASCII string into a Unicode string. UTF-8 encoding is
+   * used to determine what characters are represented by any consecutive
+   * sequences of the form "%<i>XX</i>".
+   * 
+   * <p>
+   * This replaces each occurrence of '+' with a space, ' '. So this method
+   * should not be used for non application/x-www-form-urlencoded strings such
+   * as host and path.
+   * 
+   * @param uri a percent-encoded US-ASCII string
+   * @return a Unicode string
+   */
+  public static String decodeUri(String uri) {
+    try {
+      return URLDecoder.decode(uri, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new AssertionError(e);
+    }
   }
 
   /**
@@ -137,21 +168,6 @@ public final class CharEscapers {
     return URI_QUERY_STRING_ESCAPER.escape(value);
   }
 
-  public static String escapeSlug(String value) {
-    return SLUG_ESCAPER.escape(value);
+  private CharEscapers() {
   }
-
-  private static final Escaper URI_ESCAPER =
-      new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, true);
-
-  private static final Escaper URI_PATH_ESCAPER =
-      new PercentEscaper(PercentEscaper.SAFEPATHCHARS_URLENCODER, false);
-
-
-  private static final Escaper URI_QUERY_STRING_ESCAPER =
-      new PercentEscaper(PercentEscaper.SAFEQUERYSTRINGCHARS_URLENCODER, false);
-
-
-  private static final PercentEscaper SLUG_ESCAPER =
-      new PercentEscaper(" !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~", false);
 }

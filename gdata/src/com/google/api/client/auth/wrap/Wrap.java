@@ -14,11 +14,11 @@
  * the License.
  */
 
-package com.google.api.client.http.auth.wrap;
+package com.google.api.client.auth.wrap;
 
-import com.google.api.client.Name;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.UriEntity;
+import com.google.api.client.util.Name;
 
 /**
  * Implements OAuth WRAP authorization as specified in <a
@@ -51,8 +51,8 @@ public class Wrap {
    */
   public static void setAuthorizationHeader(HttpTransport httpTransport,
       String accessToken) {
-    httpTransport
-        .setAuthorizationHeader(getAuthorizationHeaderValue(accessToken));
+    httpTransport.defaultHeaders.setAuthorization(
+        getAuthorizationHeaderValue(accessToken));
   }
 
   private Wrap() {
