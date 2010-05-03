@@ -150,6 +150,8 @@ public class YouTubeService extends MediaService {
     profile.addDeclarations(new SubscriptionFeed());
     profile.addDeclarations(new UserProfileFeed());
     profile.addDeclarations(new VideoFeed());
+
+    setStrictValidation(false);
   }
 
   @Override
