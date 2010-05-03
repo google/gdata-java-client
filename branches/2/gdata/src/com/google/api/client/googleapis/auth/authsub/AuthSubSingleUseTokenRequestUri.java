@@ -14,10 +14,10 @@
  * the License.
  */
 
-package com.google.api.client.http.auth.googleapis.authsub;
+package com.google.api.client.googleapis.auth.authsub;
 
-import com.google.api.client.Name;
 import com.google.api.client.http.UriEntity;
+import com.google.api.client.util.Name;
 
 /**
  * URI entity that builds an AuthSub request URI to retrieve a single-use token.
@@ -57,23 +57,24 @@ public final class AuthSubSingleUseTokenRequestUri extends UriEntity {
   public String scope;
 
   /**
-   * (optional) Forces a mobile version of the approval page. The only accepted
-   * value is "mobile".
+   * Optionally use {@code "mobile"} to for a mobile version of the approval
+   * page or {@code null} for normal.
    */
-  public String btmpl;
+  @Name("btmpl")
+  public String template;
 
   /**
-   * (optional) String value identifying a particular Google Apps (hosted)
-   * domain account to be accessed (for example, 'mycollege.edu'). Use "default"
-   * to specify a regular Google account ('username@gmail.com').
+   * Optional value identifying a particular Google Apps (hosted) domain account
+   * to be accessed (for example, 'mycollege.edu') or {@code null} or {@code
+   * "default"} for a regular Google account ('username@gmail.com').
    */
   @Name("hd")
   public String hostedDomain;
 
   /**
-   * (optional) An ISO 639 country code identifying what language the approval
-   * page should be translated in (for example, 'hl=en' for English). The
-   * default is the user's selected language.
+   * Optional ISO 639 country code identifying what language the approval page
+   * should be translated in (for example, 'hl=en' for English) or {@code null}
+   * for the user's selected language.
    */
   @Name("hl")
   public String language;

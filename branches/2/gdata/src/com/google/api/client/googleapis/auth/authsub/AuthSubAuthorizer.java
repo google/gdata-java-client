@@ -14,22 +14,20 @@
  * the License.
  */
 
-package com.google.api.client.http.auth.googleapis.authsub;
+package com.google.api.client.googleapis.auth.authsub;
 
-import com.google.api.client.auth.googleapis.authsub.AuthSub;
-import com.google.api.client.http.AuthorizationHeaderProvider;
+import com.google.api.client.auth.Authorizer;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 
-class AuthSubAuthoritzationHeaderProvider implements
-    AuthorizationHeaderProvider {
+final class AuthSubAuthorizer implements Authorizer {
 
   private final String token;
   private final PrivateKey privateKey;
 
-  AuthSubAuthoritzationHeaderProvider(String token, PrivateKey privateKey) {
+  AuthSubAuthorizer(String token, PrivateKey privateKey) {
     this.token = token;
     this.privateKey = privateKey;
   }
