@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.api.client.http.json.googleapis;
+package com.google.api.client.googleapis.json;
 
 import com.google.api.client.http.HttpSerializer;
 import com.google.api.client.json.Json;

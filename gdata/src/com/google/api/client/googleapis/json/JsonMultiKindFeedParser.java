@@ -14,11 +14,11 @@
  * the License.
  */
 
-package com.google.api.client.json.googleapis;
+package com.google.api.client.googleapis.json;
 
-import com.google.api.client.ClassInfo;
-import com.google.api.client.FieldInfo;
 import com.google.api.client.json.Json;
+import com.google.api.client.util.ClassInfo;
+import com.google.api.client.util.FieldInfo;
 
 import org.codehaus.jackson.JsonParser;
 

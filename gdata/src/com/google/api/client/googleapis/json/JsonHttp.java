@@ -14,12 +14,10 @@
  * the License.
  */
 
-package com.google.api.client.http.json.googleapis;
+package com.google.api.client.googleapis.json;
 
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.Json;
-import com.google.api.client.json.googleapis.JsonFeedParser;
-import com.google.api.client.json.googleapis.JsonMultiKindFeedParser;
 
 import org.codehaus.jackson.JsonParser;
 
@@ -56,7 +54,7 @@ public class JsonHttp {
     InputStream content = response.getContent();
     try {
       // check for JSON content type
-      String contentType = response.getContentType();
+      String contentType = response.contentType;
       if (!contentType.startsWith(Json.CONTENT_TYPE)) {
         throw new IllegalArgumentException("Wrong content type: expected <"
             + Json.CONTENT_TYPE + "> but got <" + contentType + ">");
@@ -64,7 +62,7 @@ public class JsonHttp {
       JsonParser parser = Json.JSON_FACTORY.createJsonParser(content);
       content = null;
       parser.nextToken();
-      Json.skipToKey(parser, response.isSuccessStatusCode() ? "data" : "error");
+      Json.skipToKey(parser, response.isSuccessStatusCode ? "data" : "error");
       return parser;
     } finally {
       if (content != null) {
