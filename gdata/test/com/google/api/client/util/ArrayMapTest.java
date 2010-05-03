@@ -14,7 +14,9 @@
  * the License.
  */
 
-package com.google.api.client;
+package com.google.api.client.util;
+
+import com.google.api.client.util.ArrayMap;
 
 import junit.framework.TestCase;
 

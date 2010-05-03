@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.google.api.client;
+package com.google.api.client.util;
 
-import com.google.api.client.DateTime;
+import com.google.api.client.util.DateTime;
 
 import junit.framework.TestCase;
 
