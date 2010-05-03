@@ -16,10 +16,10 @@
 
 package com.google.api.client.json;
 
-import com.google.api.client.ClassInfo;
-import com.google.api.client.DateTime;
-import com.google.api.client.Entities;
-import com.google.api.client.FieldInfo;
+import com.google.api.client.util.ClassInfo;
+import com.google.api.client.util.DateTime;
+import com.google.api.client.util.Entities;
+import com.google.api.client.util.FieldInfo;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;

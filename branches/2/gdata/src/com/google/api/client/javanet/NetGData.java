@@ -14,24 +14,8 @@
  * the License.
  */
 
-package com.google.api.client.json;
+package com.google.api.client.javanet;
 
-import com.google.api.client.util.Entity;
-
-/**
- * Arbitrary JSON entity object that stores all unknown keys. Subclasses can
- * declare public fields for keys they know, and those keys will be taken into
- * account as well.
- */
-public class JsonEntity extends Entity implements Cloneable {
-
-  @Override
-  public String toString() {
-    return Json.toString(this);
-  }
-
-  @Override
-  public JsonEntity clone() {
-    return (JsonEntity) super.clone();
-  }
+public final class NetGData {
+  public static final NetHttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 }
