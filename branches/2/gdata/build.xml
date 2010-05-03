@@ -26,18 +26,18 @@
   <target name="gdata-core-jar" depends="compile,dist-init">
     <jar destfile="${android.dir}/gdata-core-android-${version}.jar"
       basedir="${classes.dir}"
-      includes="com/google/api/client/*.class,com/google/api/client/escape/*.class,com/google/api/client/http/*.class,com/google/api/client/http/android/*.class,com/google/api/client/http/apache/*.class,com/google/api/client/http/googleapis/*.class" />
+      includes="com/google/api/client/util/*.class,com/google/api/client/escape/*.class,com/google/api/client/googleapis/*.class,com/google/api/client/http/*.class,com/google/api/client/android/*.class,com/google/api/client/apache/*.class" />
   </target>
 
   <target name="gdata-xml-jar" depends="compile,dist-init">
     <jar destfile="${android.dir}/gdata-xml-android-${version}.jar" basedir="${classes.dir}"
-      includes="com/google/api/client/http/android/atom/*.class,com/google/api/client/http/xml/*.class,com/google/api/client/http/xml/atom/*.class,com/google/api/client/http/xml/atom/googleapis/*.class,com/google/api/client/xml/*.class,com/google/api/client/xml/atom/*.class,com/google/api/client/xml/atom/googleapis/*.class" />
+      includes="com/google/api/client/googleapis/xml/atom/*.class,com/google/api/client/android/xml/*.class,com/google/api/client/xml/*.class,com/google/api/client/xml/atom/*.class" />
   </target>
 
   <target name="gdata-json-jar" depends="compile,dist-init">
     <jar destfile="${android.dir}/gdata-json-android-${version}.jar"
       basedir="${classes.dir}"
-      includes="com/google/api/client/http/json/googleapis/*.class,com/google/api/client/json/*.class,com/google/api/client/json/googleapis/*.class" />
+      includes="com/google/api/client/googleapis/json/*.class,com/google/api/client/json/*.class" />
   </target>
 
   <target name="javadoc" description="Generate JavaDoc" depends="dist-init">
@@ -47,7 +47,7 @@
     <javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}"
       use="true" windowtitle="GData Java Library ${version}"
       doctitle="Google Data API (GData) Java Library version ${version}"
-      packagenames="${api.packagenames},com.google.api.client,,com.google.api.client.auth.googleapis.authsub,com.google.api.client.escape,com.google.api.client.http,com.google.api.client.http.android,com.google.api.client.http.android.atom,com.google.api.client.http.apache,com.google.api.client.http.auth.googleapis,com.google.api.client.http.auth.googleapis.authsub,com.google.api.client.http.auth.googleapis.clientlogin,com.google.api.client.http.auth.googleapis.wrap,com.google.api.client.http.auth.oauth,com.google.api.client.http.auth.wrap,com.google.api.client.http.discovery,com.google.api.client.http.googleapis,com.google.api.client.http.json.googleapis,com.google.api.client.http.net,com.google.api.client.http.xml,com.google.api.client.http.xml.atom,com.google.api.client.http.xml.atom.googleapis,com.google.api.client.xml,com.google.api.client.xml.atom,com.google.api.client.xml.atom.googleapis">
+      packagenames="${api.packagenames},com.google.api.client.android,com.google.api.client.android.xml,com.google.api.client.apache,com.google.api.client.auth,com.google.api.client.auth.oauth,com.google.api.client.escape,com.google.api.client.googleapis,com.google.api.client.googleapis.auth,com.google.api.client.googleapis.auth.authsub,com.google.api.client.googlepais.auth.clientlogin,com.google.api.client.googleapis.auth.oauth,com.google.api.client.googleapis.json,com.google.api.client.googleapis.xml.atom,com.google.api.client.http,com.google.api.client.javanet,com.google.api.client.json,com.google.api.client.util,com.google.api.client.xml,com.google.api.client.xml.atom">
       <classpath>
         <pathelement location="${lib.dir}/${android.jar}" />
         <pathelement location="${lib.dir}/${jackson.jar}" />
