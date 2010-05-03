@@ -16,6 +16,9 @@
 
 package com.google.api.client;
 
+import com.google.api.client.util.ArrayMapTest;
+import com.google.api.client.util.DateTimeTest;
+
 import junit.framework.TestSuite;
 
 public class AllTests extends TestSuite {

@@ -5,6 +5,9 @@ import com.google.api.client.escape.CharEscapers;
 /** Builder for the path part of Picasa Web Albums URI's. */
 public final class PicasaPath {
 
+  // TODO: ROOT_URI = "http://picasaweb.google.com" etc for all API's
+  // see http://code.google.com/apis/gdata/faq.html#AuthScopes
+  
   /** Default Picasa Data API server to use. Used primarily for testing. */
   public static final String DEFAULT_SERVER = "picasaweb.google.com";
 
