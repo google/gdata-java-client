@@ -14,15 +14,15 @@
  * the License.
  */
 
-package com.google.api.client.http.auth.googleapis.clientlogin;
+package com.google.api.client.googleapis.auth.clientlogin;
 
-import com.google.api.client.Name;
+import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.auth.AuthKeyValueParser;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.UrlEncodedFormHttpSerializer;
-import com.google.api.client.http.auth.googleapis.AuthKeyValueParser;
-import com.google.api.client.http.googleapis.GoogleTransport;
+import com.google.api.client.util.Name;
 
 import java.io.IOException;
 
