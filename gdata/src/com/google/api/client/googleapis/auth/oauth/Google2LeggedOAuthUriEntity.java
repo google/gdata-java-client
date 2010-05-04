@@ -22,6 +22,8 @@ import com.google.api.client.util.Name;
 /**
  * Google's 2-legged OAuth 1.0a URI's require the {@link #requestorId} to be set
  * on every HTTP request.
+ * 
+ * @since 2.2
  */
 public class Google2LeggedOAuthUriEntity extends GoogleUriEntity {
 

@@ -21,9 +21,9 @@ import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
-import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTokenRequestUri;
+import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUri;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
-import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetRequestToken;
+import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
 import com.google.api.client.googleapis.json.JsonHttpParser;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.util.Entity;
@@ -48,13 +48,9 @@ public class YouTubeBasicJsoncSample {
   static OAuthCredentialsResponse credentials;
 
   public static void main(String[] args) throws IOException {
-    enableLogging();
+    // enableLogging();
     try {
-      GoogleTransport transport =
-          new GoogleTransport("google-youtubejsoncsample-1.0");
-      transport.setGDataVersionHeader(YouTube.VERSION);
-      transport.setParser(new JsonHttpParser());
-      authorizeUsingOAuth(transport);
+      GoogleTransport transport = setUpGoogleTransport();
       VideoFeed feed = showVideos(transport);
     } catch (HttpResponseException e) {
       if (e.response.getParser() != null) {
@@ -63,40 +59,66 @@ public class YouTubeBasicJsoncSample {
         System.err.println(e.response.parseAsString());
       }
       throw e;
+    } finally {
+      if (credentials != null) {
+        try {
+          GoogleOAuthGetAccessToken.revokeAccessToken(createOAuthAuthorizer());
+        } catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
+      }
     }
+  }
+
+  private static GoogleTransport setUpGoogleTransport() throws IOException {
+    GoogleTransport transport =
+        new GoogleTransport("google-youtubejsoncsample-1.0");
+    transport.setGDataVersionHeader(YouTube.VERSION);
+    transport.setParser(new JsonHttpParser());
+    authorizeUsingOAuth(transport);
+    // authorizeUsingClientLogin(transport);
+    return transport;
+  }
+
+
+  private static OAuthAuthorizer createOAuthAuthorizer() {
+    OAuthAuthorizer authorizer = new OAuthAuthorizer();
+    authorizer.consumerKey = "anonymous";
+    authorizer.signer = signer;
+    authorizer.token = credentials.token;
+    return authorizer;
   }
 
   private static void authorizeUsingOAuth(GoogleTransport transport)
       throws IOException {
-    GoogleOAuthGetRequestToken requestToken = new GoogleOAuthGetRequestToken();
+    GoogleOAuthGetTemporaryToken temporaryToken =
+        new GoogleOAuthGetTemporaryToken();
     signer = new OAuthHmacSigner();
     signer.clientSharedSecret = "anonymous";
-    requestToken.signer = signer;
-    requestToken.consumerKey = "anonymous";
-    requestToken.scope = "http://gdata.youtube.com/feeds";
-    requestToken.displayName =
+    temporaryToken.signer = signer;
+    temporaryToken.consumerKey = "anonymous";
+    temporaryToken.scope = "http://gdata.youtube.com/feeds";
+    temporaryToken.displayName =
         "YouTube JSON-C Sample for the GData Java library";
-    credentials = requestToken.execute();
-    signer.tokenSharedSecret = credentials.tokenSecret;
+    OAuthCredentialsResponse tempCredentials = temporaryToken.execute();
+    signer.tokenSharedSecret = tempCredentials.tokenSecret;
     System.out
         .println("Please go open this web page in a browser to authorize:");
-    GoogleOAuthAuthorizeTokenRequestUri authorizeUri =
-        new GoogleOAuthAuthorizeTokenRequestUri();
-    authorizeUri.requestToken = credentials.token;
+    GoogleOAuthAuthorizeTemporaryTokenUri authorizeUri =
+        new GoogleOAuthAuthorizeTemporaryTokenUri();
+    authorizeUri.temporaryToken = tempCredentials.token;
     System.out.println(authorizeUri.build());
     System.out.println();
     System.out.println("Press enter to continue...");
     new Scanner(System.in).nextLine();
     GoogleOAuthGetAccessToken accessToken = new GoogleOAuthGetAccessToken();
-    accessToken.requestToken = credentials.token;
+    accessToken.temporaryToken = tempCredentials.token;
     accessToken.signer = signer;
     accessToken.consumerKey = "anonymous";
     accessToken.verifier = "";
     credentials = accessToken.execute();
     signer.tokenSharedSecret = credentials.tokenSecret;
-    transport.defaultHeaders.authorizer =
-        OAuthAuthorizer.createFromTokenCredentials(signer, "anonymous",
-            credentials.token, null);
+    transport.defaultHeaders.authorizer = createOAuthAuthorizer();
   }
 
   private static void authorizeUsingClientLogin(GoogleTransport transport)

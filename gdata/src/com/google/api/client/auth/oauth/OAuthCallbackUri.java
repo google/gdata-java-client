@@ -19,8 +19,17 @@ package com.google.api.client.auth.oauth;
 import com.google.api.client.http.UriEntity;
 import com.google.api.client.util.Name;
 
-/** URI entity that parses the response to authorize the OAuth request token. */
-public class OAuthAuthorizeTokenResponseUri extends UriEntity {
+/**
+ * URI entity that parses the callback URL after a temporary token has been
+ * authorized by the end user.
+ * <p>
+ * The {@link #verifier} is required in order to exchange the authorized
+ * temporary token for a long-lived access token in
+ * {@link OAuthGetAccessToken#verifier}.
+ * 
+ * @since 2.2
+ */
+public class OAuthCallbackUri extends UriEntity {
 
   /** The temporary credentials identifier received from the client. */
   @Name("oauth_token")
@@ -30,7 +39,7 @@ public class OAuthAuthorizeTokenResponseUri extends UriEntity {
   @Name("oauth_verifier")
   public String verifier;
 
-  public OAuthAuthorizeTokenResponseUri(String encodedUri) {
+  public OAuthCallbackUri(String encodedUri) {
     super(encodedUri);
   }
 }

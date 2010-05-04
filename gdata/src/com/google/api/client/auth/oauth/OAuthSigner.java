@@ -18,17 +18,21 @@ package com.google.api.client.auth.oauth;
 
 import java.security.GeneralSecurityException;
 
-/** OAuth signature method. */
+/**
+ * OAuth signature method.
+ * 
+ * @since 2.2
+ */
 public interface OAuthSigner {
 
   /** Returns the signature method. */
   String getSignatureMethod();
 
   /**
-   * Returns the signature based on the given signature base string.
+   * Returns the signature computed from the given signature base string.
    * 
    * @throws GeneralSecurityException general security exception
    */
-  String getSignature(String signatureBaseString)
+  String computeSignature(String signatureBaseString)
       throws GeneralSecurityException;
 }
