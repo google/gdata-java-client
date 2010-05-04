@@ -42,13 +42,20 @@ import java.util.logging.Logger;
 
 public class YouTubeBasicJsoncSample {
 
+  enum AuthType {
+    OAUTH, CLIENT_LOGIN
+  }
+
+  private static AuthType AUTH_TYPE = AuthType.CLIENT_LOGIN;
   private static final int MAX_VIDEOS_TO_SHOW = 5;
 
   static OAuthHmacSigner signer;
   static OAuthCredentialsResponse credentials;
 
   public static void main(String[] args) throws IOException {
-    // enableLogging();
+    if (YouTubeUri.DEBUG) {
+      enableLogging();
+    }
     try {
       GoogleTransport transport = setUpGoogleTransport();
       VideoFeed feed = showVideos(transport);
@@ -75,8 +82,11 @@ public class YouTubeBasicJsoncSample {
         new GoogleTransport("google-youtubejsoncsample-1.0");
     transport.setGDataVersionHeader(YouTube.VERSION);
     transport.setParser(new JsonHttpParser());
-    authorizeUsingOAuth(transport);
-    // authorizeUsingClientLogin(transport);
+    if (AUTH_TYPE == AuthType.OAUTH) {
+      authorizeUsingOAuth(transport);
+    } else {
+      authorizeUsingClientLogin(transport);
+    }
     return transport;
   }
 

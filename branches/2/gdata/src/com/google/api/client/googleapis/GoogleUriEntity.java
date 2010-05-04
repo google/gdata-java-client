@@ -4,11 +4,18 @@ import com.google.api.client.http.UriEntity;
 
 /**
  * Google URI entity provides for some common query parameters used in Google
- * API's such as the {@code "alt"} and {@code "fields"} parameters.
+ * API's such as the {@link #alt} and {@code "fields"} parameters.
  */
 public class GoogleUriEntity extends UriEntity {
-  public String alt;
-  public String fields;
+
+  /** Whether to pretty print the output. */
+  public volatile boolean prettyprint;
+
+  /** Alternate wire format. */
+  public volatile String alt;
+
+  /** Partial fields mask. */
+  public volatile String fields;
 
   /** Constructs from the given encoded URI. */
   public GoogleUriEntity(String uri) {

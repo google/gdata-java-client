@@ -7,6 +7,8 @@ import com.google.api.client.util.Name;
 
 public class YouTubeUri extends GoogleUriEntity {
 
+  public static boolean DEBUG = false;
+  
   public String author;
 
   @Name("max-results")
@@ -15,5 +17,8 @@ public class YouTubeUri extends GoogleUriEntity {
   public YouTubeUri(String uri) {
     super(uri);
     this.alt = "jsonc";
+    if (DEBUG) {
+      this.prettyprint = true;
+    }
   }
 }

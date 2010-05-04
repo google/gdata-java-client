@@ -33,6 +33,7 @@ import com.google.api.data.picasa.v2.atom.PicasaAtom;
 import com.google.api.data.sample.picasa.model.AlbumEntry;
 import com.google.api.data.sample.picasa.model.AlbumFeed;
 import com.google.api.data.sample.picasa.model.PhotoEntry;
+import com.google.api.data.sample.picasa.model.PicasaUri;
 import com.google.api.data.sample.picasa.model.UserFeed;
 
 import java.io.IOException;
@@ -44,11 +45,19 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class PicasaBasicAtomSample {
+
+  enum AuthType {
+    OAUTH, CLIENT_LOGIN
+  }
+
+  private static AuthType AUTH_TYPE = AuthType.CLIENT_LOGIN;
   static OAuthHmacSigner signer;
   static OAuthCredentialsResponse credentials;
 
   public static void main(String[] args) throws IOException {
-    // enableLogging();
+    if (PicasaUri.DEBUG) {
+      enableLogging();
+    }
     try {
       GoogleTransport transport = setUpGoogleTransport();
       UserFeed feed = showAlbums(transport);
@@ -82,8 +91,11 @@ public class PicasaBasicAtomSample {
     AtomHttpParser parser = new AtomHttpParser();
     parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
     transport.setParser(parser);
-    authorizeUsingOAuth(transport);
-    // authorizeUsingClientLogin(transport);
+    if (AUTH_TYPE == AuthType.OAUTH) {
+      authorizeUsingOAuth(transport);
+    } else {
+      authorizeUsingClientLogin(transport);
+    }
     return transport;
   }
 
