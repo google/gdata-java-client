@@ -16,7 +16,6 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.util.ArrayMap;
 import com.google.api.client.util.Strings;
 
 import java.io.ByteArrayInputStream;
@@ -44,7 +43,11 @@ public final class HttpResponse {
   /** Content type or {@code null}. */
   public final String contentType;
 
-  private final ArrayMap<String, String> headerNameToValueMap;
+  /**
+   * HTTP headers. Note that only if a header name is used for multiple headers,
+   * only the last one is retained.
+   */
+  public final HttpHeaders headers = new HttpHeaders();
 
   /** Whether received a successful status code {@code >= 200 && < 300}. */
   public final boolean isSuccessStatusCode;
@@ -96,12 +99,11 @@ public final class HttpResponse {
     }
     // headers
     int size = response.getHeaderCount();
-    ArrayMap<String, String> headerNameToValueMap =
-        this.headerNameToValueMap = ArrayMap.create(size);
+    HttpHeaders headers = this.headers;
     for (int i = 0; i < size; i++) {
       String headerName = response.getHeaderName(i);
       String headerValue = response.getHeaderValue(i);
-      headerNameToValueMap.set(i, headerName, headerValue);
+      headers.values.set(i, headerName, headerValue);
       if (loggable) {
         logbuf.append(headerName + ": " + headerValue).append(
             Strings.LINE_SEPARATOR);
@@ -202,20 +204,6 @@ public final class HttpResponse {
     } finally {
       content.close();
     }
-  }
-
-  /**
-   * Returns the value of the named header field.
-   * <p>
-   * If called on a connection that sets the same header multiple times with
-   * possibly different values, only the last value is returned.
-   * 
-   * @param name the name of a header field.
-   * @return the value of the named header field, or {@code null} if there is no
-   *         such field in the header.
-   */
-  public String getHeaderValue(String name) {
-    return this.headerNameToValueMap.get(name);
   }
 
   private static byte[] readStream(InputStream content) throws IOException {
