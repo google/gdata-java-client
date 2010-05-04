@@ -76,6 +76,8 @@ public final class HttpRequest {
     String uri = this.uri;
     if (loggable) {
       logbuf = new StringBuilder();
+      logbuf.append("-------------- REQUEST  --------------").append(
+          Strings.LINE_SEPARATOR);
       logbuf.append(method).append(' ').append(uri).append(
           Strings.LINE_SEPARATOR);
     }
