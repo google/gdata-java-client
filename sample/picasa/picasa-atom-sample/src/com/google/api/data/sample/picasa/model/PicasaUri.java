@@ -21,6 +21,8 @@ import com.google.api.client.util.Name;
 
 public class PicasaUri extends GoogleUriEntity {
 
+  public static boolean DEBUG = false;
+
   @Name("max-results")
   public Integer maxResults;
 
@@ -28,5 +30,8 @@ public class PicasaUri extends GoogleUriEntity {
 
   public PicasaUri(String uri) {
     super(uri);
+    if (DEBUG) {
+      this.prettyprint = true;
+    }
   }
 }
