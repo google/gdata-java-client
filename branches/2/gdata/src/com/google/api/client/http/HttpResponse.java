@@ -86,6 +86,8 @@ public final class HttpResponse {
     StringBuilder logbuf = null;
     if (loggable) {
       logbuf = new StringBuilder();
+      logbuf.append("-------------- RESPONSE --------------").append(
+          Strings.LINE_SEPARATOR);
       String statusLine = response.getStatusLine();
       if (statusLine != null) {
         logbuf.append(statusLine);
