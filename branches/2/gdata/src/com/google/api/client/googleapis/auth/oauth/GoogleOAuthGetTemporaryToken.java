@@ -16,26 +16,28 @@
 
 package com.google.api.client.googleapis.auth.oauth;
 
+import com.google.api.client.auth.oauth.OAuthAuthorizeTemporaryTokenUri;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
-import com.google.api.client.auth.oauth.OAuthGetRequestToken;
+import com.google.api.client.auth.oauth.OAuthGetTemporaryToken;
 import com.google.api.client.auth.oauth.OAuthAuthorizer;
 import com.google.api.client.util.Name;
 
 /**
- * Google OAuth 1.0a URI entity to request a temporary credentials token
- * ("request token") that has not yet been authorized from the Google
- * Authorization server.
+ * Google OAuth 1.0a URI entity to request a temporary credentials token (or
+ * "request token") from the Google Authorization server.
  * <p>
  * Use {@link #execute()} to execute the request. Google verifies that the
  * requesting application has been registered with Google or is using an
- * approved signature (in the case of installed applications). The request token
- * acquired with this request is found in {@link OAuthCredentialsResponse#token}
- * . This request token is used in
- * {@link GoogleOAuthAuthorizeTokenRequestUri#requestToken} to direct the user
- * to a Google Accounts web page to allow the end user to authorize the request
- * token.
+ * approved signature (in the case of installed applications). The temporary
+ * token acquired with this request is found in
+ * {@link OAuthCredentialsResponse#token} . This temporary token is used in
+ * {@link GoogleOAuthAuthorizeTemporaryTokenUri#temporaryToken} to direct the
+ * end user to a Google Accounts web page to allow the end user to authorize the
+ * temporary token.
+ * 
+ * @since 2.2
  */
-public final class GoogleOAuthGetRequestToken extends OAuthGetRequestToken {
+public final class GoogleOAuthGetTemporaryToken extends OAuthGetTemporaryToken {
 
   /**
    * Optional string identifying the application or {@code null} for none. This
@@ -59,7 +61,7 @@ public final class GoogleOAuthGetRequestToken extends OAuthGetRequestToken {
    */
   public volatile String scope;
 
-  public GoogleOAuthGetRequestToken() {
+  public GoogleOAuthGetTemporaryToken() {
     super("https://www.google.com/accounts/OAuthGetRequestToken");
   }
 

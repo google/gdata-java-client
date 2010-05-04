@@ -20,29 +20,31 @@ import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.util.Hide;
 
 /**
- * OAuth 1.0a URI entity to request to exchange the request token for a
- * long-lived access token from the authorization server.
+ * OAuth 1.0a URI entity to request to exchange the temporary credentials token
+ * (or "request token") for a long-lived credentials token (or "access token")
+ * from an authorization server.
  * <p>
- * Use {@link #execute()} to execute the request. The access token acquired with
- * this request is found in {@link OAuthCredentialsResponse#token}. This access
- * token must be stored. This access may then be used to authorize HTTP requests
- * to protected resources by setting the {@link OAuthAuthorizer} for
- * {@link HttpHeaders#authorizer}.
+ * Use {@link #execute()} to execute the request. The long-lived access token
+ * acquired with this request is found in {@link OAuthCredentialsResponse#token}
+ * . This token must be stored. It may then be used to authorize HTTP requests
+ * to protected resources by setting the {@link OAuthAuthorizer#token}, and
+ * using the {@link OAuthAuthorizer} for {@link HttpHeaders#authorizer}.
+ * 
+ * @since 2.2
  */
 public class OAuthGetAccessToken extends AbstractOAuthGetToken {
 
   /**
-   * Required request token. It is retrieved from the
+   * Required temporary token. It is retrieved from the
    * {@link OAuthCredentialsResponse#token} returned from
-   * {@link OAuthGetRequestToken#execute()}.
+   * {@link OAuthGetTemporaryToken#execute()}.
    */
   @Hide
-  public volatile String requestToken;
+  public volatile String temporaryToken;
 
   /**
-   * Required verifier code received from the server when the request was
-   * authorized. It is retrieved from
-   * {@link OAuthAuthorizeTokenResponseUri#verifier}.
+   * Required verifier code received from the server when the temporary token
+   * was authorized. It is retrieved from {@link OAuthCallbackUri#verifier}.
    */
   @Hide
   public volatile String verifier;
@@ -57,7 +59,7 @@ public class OAuthGetAccessToken extends AbstractOAuthGetToken {
   @Override
   public OAuthAuthorizer createAuthorizer() {
     OAuthAuthorizer result = super.createAuthorizer();
-    result.token = requestToken;
+    result.token = temporaryToken;
     result.verifier = verifier;
     return result;
   }

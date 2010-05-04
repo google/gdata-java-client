@@ -25,7 +25,11 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-/** OAuth {@code "HMAC-SHA1"} signature method. */
+/**
+ * OAuth {@code "HMAC-SHA1"} signature method.
+ * 
+ * @since 2.2
+ */
 public final class OAuthHmacSigner implements OAuthSigner {
 
   /** Client-shared secret or {@code null} for none. */
@@ -38,14 +42,16 @@ public final class OAuthHmacSigner implements OAuthSigner {
     return "HMAC-SHA1";
   }
 
-  public String getSignature(String signatureBaseString)
+  public String computeSignature(String signatureBaseString)
       throws GeneralSecurityException {
     String clientSharedSecret = this.clientSharedSecret;
     String tokenSharedSecret = this.tokenSharedSecret;
     clientSharedSecret =
-        clientSharedSecret == null ? "" : OAuth.escape(clientSharedSecret);
+        clientSharedSecret == null ? "" : OAuthAuthorizer
+            .escape(clientSharedSecret);
     tokenSharedSecret =
-        tokenSharedSecret == null ? "" : OAuth.escape(tokenSharedSecret);
+        tokenSharedSecret == null ? "" : OAuthAuthorizer
+            .escape(tokenSharedSecret);
     String keyString =
         new StringBuilder().append(clientSharedSecret).append('&').append(
             tokenSharedSecret).toString();

@@ -17,6 +17,7 @@
 package com.google.api.client.auth.oauth;
 
 import com.google.api.client.auth.Authorizer;
+import com.google.api.client.escape.PercentEscaper;
 import com.google.api.client.http.UriEntity;
 import com.google.api.client.util.ArrayMap;
 
@@ -31,13 +32,11 @@ import java.util.TreeMap;
 /**
  * OAuth 1.0a authorizer based on the generic OAuth parameters.
  * <p>
- * There are a few features not supported by this implementation:
- * <ul>
- * <li>{@code PLAINTEXT} signature algorithm</li>
- * <li>{@code "application/x-www-form-urlencoded"} HTTP request body</li>
- * <li>{@code "oauth_*"} parameters specified in the HTTP request URL (instead
- * assumes they are specified in the {@code Authorization} header</li>
- * </ul>
+ * The only required non-computed fields are {@link #signer} and
+ * {@link #consumerKey}. Use {@link #token} to specify token or temporary
+ * credentials.
+ * 
+ * @since 2.2
  */
 public final class OAuthAuthorizer implements Authorizer {
 
@@ -65,12 +64,12 @@ public final class OAuthAuthorizer implements Authorizer {
   /** Realm. */
   public volatile String realm;
 
-  /** Required signature. Should be computed using {@link #computeSignature}. */
+  /** Signature. Required but normally computed using {@link #computeSignature}. */
   public volatile String signature;
 
   /**
-   * Required name of the signature method used by the client to sign the
-   * request. Should be computed using {@link #computeSignature}.
+   * Name of the signature method used by the client to sign the request.
+   * Required, but normally computed using {@link #computeSignature}.
    */
   public volatile String signatureMethod;
 
@@ -95,28 +94,8 @@ public final class OAuthAuthorizer implements Authorizer {
    */
   public volatile String version;
 
-  /**
-   * Constructs the OAuth parameters using the typical parameters used to
-   * authenticate requests to access protected resources using the stored token
-   * credentials.
-   * 
-   * @param signer required OAuth signature algorithm
-   * @param consumerKey required identifier portion of the client credentials
-   *        (equivalent to a username)
-   * @param token optional token value used to associate the request with the
-   *        resource owner or {@code null} if the request is not associated with
-   *        a resource owner
-   * @param realm optional realm or {@code null} for none
-   */
-  public static OAuthAuthorizer createFromTokenCredentials(OAuthSigner signer,
-      String consumerKey, String token, String realm) {
-    OAuthAuthorizer result = new OAuthAuthorizer();
-    result.signer = signer;
-    result.consumerKey = consumerKey;
-    result.token = token;
-    result.realm = realm;
-    return result;
-  }
+  private static final PercentEscaper ESCAPER =
+      new PercentEscaper("-_.~", false);
 
   /**
    * Computes a nonce, setting the value of the {@link #nonce} field.
@@ -208,11 +187,11 @@ public final class OAuthAuthorizer implements Authorizer {
             .append(uri.getRawPath()).toString();
     // signature base string
     StringBuilder buf = new StringBuilder();
-    buf.append(OAuth.escape(requestMethod)).append('&');
-    buf.append(OAuth.escape(normalizedPath)).append('&');
-    buf.append(OAuth.escape(normalizedParameters));
+    buf.append(escape(requestMethod)).append('&');
+    buf.append(escape(normalizedPath)).append('&');
+    buf.append(escape(normalizedParameters));
     String signatureBaseString = buf.toString();
-    this.signature = signer.getSignature(signatureBaseString);
+    this.signature = signer.computeSignature(signatureBaseString);
   }
 
   /**
@@ -251,11 +230,10 @@ public final class OAuthAuthorizer implements Authorizer {
 
   private void putParameter(TreeMap<String, String> parameters, String key,
       String value) {
-    parameters.put(OAuth.escape(key), value == null ? null : OAuth
-        .escape(value));
+    parameters.put(escape(key), value == null ? null : escape(value));
   }
 
-  public String getAuthorizationHeader(String requestMethod, String requestUrl)
+  public String computeHeader(String requestMethod, String requestUrl)
       throws IOException {
     computeNonce();
     computeTimestamp();
@@ -267,5 +245,10 @@ public final class OAuthAuthorizer implements Authorizer {
       throw io;
     }
     return getAuthorizationHeader();
+  }
+
+  /** Returns the escaped form of the given value using OAuth escaping rules. */
+  public static String escape(String value) {
+    return ESCAPER.escape(value);
   }
 }

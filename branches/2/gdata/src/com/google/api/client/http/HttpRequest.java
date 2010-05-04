@@ -83,7 +83,7 @@ public final class HttpRequest {
     HttpHeaders headers = this.headers;
     Authorizer authorizer = headers.authorizer;
     if (authorizer != null) {
-      String authValue = authorizer.getAuthorizationHeader(method, uri);
+      String authValue = authorizer.computeHeader(method, uri);
       headers.setAuthorization(authValue);
     }
     ArrayMap<String, String> values = headers.values;

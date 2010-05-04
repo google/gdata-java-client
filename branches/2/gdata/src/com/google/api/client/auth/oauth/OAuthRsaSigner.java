@@ -24,9 +24,11 @@ import java.security.PrivateKey;
 /**
  * OAuth {@code "RSA-SHA1"} signature method.
  * <p>
- * The private key may be retrieves using the utilities in {@link RsaSha}.
+ * The private key may be retrieved using the utilities in {@link RsaSha}.
+ * 
+ * @since 2.2
  */
-public class OAuthRsaSigner implements OAuthSigner {
+public final class OAuthRsaSigner implements OAuthSigner {
 
   /** Private key. */
   public volatile PrivateKey privateKey;
@@ -35,7 +37,7 @@ public class OAuthRsaSigner implements OAuthSigner {
     return "RSA-SHA1";
   }
 
-  public String getSignature(String signatureBaseString)
+  public String computeSignature(String signatureBaseString)
       throws GeneralSecurityException {
     return RsaSha.sign(this.privateKey, signatureBaseString);
   }

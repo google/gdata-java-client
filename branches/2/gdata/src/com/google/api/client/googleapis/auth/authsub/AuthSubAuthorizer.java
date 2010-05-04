@@ -32,7 +32,7 @@ final class AuthSubAuthorizer implements Authorizer {
     this.privateKey = privateKey;
   }
 
-  public String getAuthorizationHeader(String requestMethod, String requestUrl)
+  public String computeHeader(String requestMethod, String requestUrl)
       throws IOException {
     try {
       return AuthSub.getAuthorizationHeaderValue(this.token, this.privateKey,

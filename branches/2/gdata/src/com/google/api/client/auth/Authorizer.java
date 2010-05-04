@@ -31,6 +31,6 @@ public interface Authorizer {
    * Called for every request right before the request is executed. The
    * authorization header value should not be logged.
    */
-  String getAuthorizationHeader(String requestMethod, String requestUrl)
+  String computeHeader(String requestMethod, String requestUrl)
       throws IOException;
 }

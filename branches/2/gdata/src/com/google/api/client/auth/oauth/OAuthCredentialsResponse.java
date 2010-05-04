@@ -21,6 +21,8 @@ import com.google.api.client.util.Name;
 /**
  * Entity to parse a success response to a request for temporary or token
  * credentials.
+ * 
+ * @since 2.2
  */
 public final class OAuthCredentialsResponse {
 

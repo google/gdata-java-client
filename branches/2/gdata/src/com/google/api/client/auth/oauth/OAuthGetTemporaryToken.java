@@ -19,17 +19,19 @@ package com.google.api.client.auth.oauth;
 import com.google.api.client.util.Hide;
 
 /**
- * OAuth 1.0a URI entity to request a temporary credentials token
- * ("request token") that has not yet been authorized from the authorization
- * server.
+ * OAuth 1.0a URI entity to request a temporary credentials token (or
+ * "request token") from an authorization server.
  * <p>
- * Use {@link #execute()} to execute the request. The request token acquired
+ * Use {@link #execute()} to execute the request. The temporary token acquired
  * with this request is found in {@link OAuthCredentialsResponse#token}. This
- * request token is used in {@link OAuthAuthorizeTokenRequestUri#requestToken}
- * to direct the end user to an authorization page to allow the end user to
- * authorize the request token.
+ * temporary token is used in
+ * {@link OAuthAuthorizeTemporaryTokenUri#temporaryToken} to direct the end user
+ * to an authorization page to allow the end user to authorize the temporary
+ * token.
+ * 
+ * @since 2.2
  */
-public class OAuthGetRequestToken extends AbstractOAuthGetToken {
+public class OAuthGetTemporaryToken extends AbstractOAuthGetToken {
 
   /**
    * Optional absolute URI back to which the server will redirect the resource
@@ -42,7 +44,7 @@ public class OAuthGetRequestToken extends AbstractOAuthGetToken {
   /**
    * @param authorizationServerUri encoded authorization server URI
    */
-  public OAuthGetRequestToken(String authorizationServerUri) {
+  public OAuthGetTemporaryToken(String authorizationServerUri) {
     super(authorizationServerUri);
   }
 

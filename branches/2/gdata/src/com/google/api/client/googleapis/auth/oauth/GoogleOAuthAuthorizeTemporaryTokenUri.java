@@ -16,20 +16,28 @@
 
 package com.google.api.client.googleapis.auth.oauth;
 
-import com.google.api.client.auth.oauth.OAuthAuthorizeTokenRequestUri;
+import com.google.api.client.auth.oauth.OAuthAuthorizeTemporaryTokenUri;
+import com.google.api.client.auth.oauth.OAuthCallbackUri;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
+import com.google.api.client.auth.oauth.OAuthGetTemporaryToken;
 import com.google.api.client.util.Name;
 
 /**
- * Google OAuth 1.0a URI entity builder to build the URL address of a Google
- * Accounts web page to allow the end user to authorize the request token.
+ * Google OAuth 1.0a URL builder for a Google Accounts web page to allow the end
+ * user to authorize the temporary token.
  * <p>
- * The {@link #requestToken} can be set from the
- * {@link OAuthCredentialsResponse#token} returned from
- * {@link GoogleOAuthGetRequestToken#execute()}.
+ * The {@link #temporaryToken} should be set from the
+ * {@link OAuthCredentialsResponse#token} returned by
+ * {@link GoogleOAuthGetTemporaryToken#execute()}. Use {@link #build()} to build
+ * the authorization URL. If a {@link OAuthGetTemporaryToken#callback} was
+ * specified, after the end user grants the authorization, the Google
+ * authorization server will redirect to that callback URL. To parse the
+ * response, use {@link OAuthCallbackUri}.
+ * 
+ * @since 2.2
  */
-public final class GoogleOAuthAuthorizeTokenRequestUri extends
-    OAuthAuthorizeTokenRequestUri {
+public final class GoogleOAuthAuthorizeTemporaryTokenUri extends
+    OAuthAuthorizeTemporaryTokenUri {
 
   /**
    * Optionally use {@code "mobile"} to for a mobile version of the approval
@@ -54,7 +62,7 @@ public final class GoogleOAuthAuthorizeTokenRequestUri extends
   @Name("hl")
   public volatile String language;
 
-  public GoogleOAuthAuthorizeTokenRequestUri() {
+  public GoogleOAuthAuthorizeTemporaryTokenUri() {
     super("https://www.google.com/accounts/OAuthAuthorizeToken");
   }
 }

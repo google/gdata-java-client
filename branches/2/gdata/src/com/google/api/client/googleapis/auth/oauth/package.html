@@ -6,21 +6,21 @@ OAuth API Reference </a>
 <p>Before using this library, you need to set up your application as
 follows:</p>
 <ol>
-  <li>For web applications, you should first register your application at
+  <li>For a web application, you should first register your application at
   the <a
     href="http://code.google.com/apis/accounts/docs/RegistrationForWebAppsAuto.html">registration
   page</a>. You will be provided with two pieces of information you will need:
   <ul>
-    <li>OAuth Consumer Key: use this for the this will be used as the
-    {@code consumerKey} on every OAuth request, for example in {@link
-    com.google.api.client.auth.oauth.AbstractOAuthRequest#consumerKey}.</li>
-    <li>OAuth Consumer Secret: use this for the {@link
+    <li>OAuth Consumer Key: use this as the {@code consumerKey} on every
+    OAuth request, for example in {@link
+    com.google.api.client.auth.oauth.AbstractOAuthGetToken#consumerKey}.</li>
+    <li>OAuth Consumer Secret: use this as the {@link
     com.google.api.client.auth.oauth.OAuthHmacSigner#clientSharedSecret} when
     using the {@code "HMAC-SHA1"} signature method.</li>
   </ul>
   </li>
-  <li>For installed applications, unregistered web applications, or web
-  application running on localhost, you must use the {@code "HMAC-SHA1"}
+  <li>For an installed application, an unregistered web application, or a
+  web application running on localhost, you must use the {@code "HMAC-SHA1"}
   signature method. Use {@code "anonymous"} for the {@code consumerKey} and
   {@code clientSharedSecret}.</li>
   <li>For the {@code "HMAC-SHA1"} signature method, use {@link
@@ -32,24 +32,24 @@ follows:</p>
 </ol>
 <p>After the set up has been completed, the typical application flow is:</p>
 <ol>
-  <li>Request a temporary credentials token ("request token") that has not
-  yet been authorized from the Google Authorization server using {@link
-  com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetRequestToken}. A
-  callback URL must be specified for web applications, but does not need to be
+  <li>Request a temporary credentials token ("request token") from the
+  Google Authorization server using {@link
+  com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken}. A
+  callback URL should be specified for web applications, but does not need to be
   specified for installed applications.</li>
-  <li>Direct the user to a Google Accounts web page to allow the end user
-  to authorize the request token using using {@link
-  com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTokenRequestUri}.</li>
+  <li>Direct the end user to a Google Accounts web page to allow the end
+  user to authorize the temporary token using using {@link
+  com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUri}.</li>
   <li>After the user has granted the authorization:
   <ul>
     <li>For web applications, the user's browser will be redirected to the
     callback URL which may be parsed using {@link
-    com.google.api.client.auth.oauth.OAuthAuthorizeTokenResponseUri}.</li>
-    <li>For installed applications, Google gives the user a verification
-    code which the user must then type into the application.</li>
+    com.google.api.client.auth.oauth.OAuthCallbackUri}.</li>
+    <li>For installed applications, use {@code ""} for the verification
+    code.</li>
   </ul>
   </li>
-  <li>Request to exchange the request token for a long-lived access token
+  <li>Request to exchange the temporary token for a long-lived access token
   from the Google Authorization server using {@link
   com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken}. This
   access token must be stored.</li>
@@ -61,9 +61,161 @@ follows:</p>
   com.google.api.client.googleapis.auth.oauth.Google2LeggedOAuthUriEntity} as
   the URI entity builder to set the requestor ID.</li>
   <li>To revoke an access token, use {@link
-  com.google.api.client.googleapis.auth.oauth.GoogleOAuthRevokeToken}. Users can
-  also manually revoke tokens from Google's <a
+  com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken#revokeAccessToken}.
+  Users can also manually revoke tokens from Google's <a
     href="https://www.google.com/accounts/IssuedAuthSubTokens">change
   authorized websites</a> page.</li>
 </ol>
+For example:
+<pre><code>
+import com.google.api.client.auth.*;
+import com.google.api.client.auth.oauth.*;
+import com.google.api.client.googleapis.*;
+import com.google.api.client.googleapis.auth.oauth.*;
+import com.google.api.client.http.*;
+
+import java.io.*;
+import java.net.*;
+import java.security.*;
+import java.util.*;
+
+import javax.servlet.http.*;
+
+public class PicasaSample extends HttpServlet {
+
+  private static final String CONSUMER_KEY = "...";
+
+  /**
+   * OAuth type. This is only needed for a general-purpose sample. In a real
+   * application, normally only one kind of auth is used.
+   */
+  enum OAuthType {
+    REGISTERED_RSA, REGISTERED_HMAC, UNREGISTERED_HMAC
+  }
+
+  static final OAuthType OAUTH_TYPE = OAuthType.UNREGISTERED_HMAC;
+
+  private static final String CONSUMER_KEY =
+      OAUTH_TYPE == OAuthType.UNREGISTERED_HMAC ? "anonymous" : "...";
+
+  /**
+   * In-memory access token store. But this is bad practice! For example, if the
+   * process dies, all tokens would be lost. Instead, the long-lived access
+   * token credentials should be stored in a long-lived location for example in
+   * a database.
+   */
+  static Map&lt;String , TokenInfo&gt; OAUTH_TOKENS = new HashMap&lt;String, TokenInfo&gt;();
+
+  static final class TokenInfo {
+    final boolean temporary;
+    final String token;
+    final String tokenSecret;
+
+    TokenInfo(OAuthCredentialsResponse response) {
+      this.token = response.token;
+      this.tokenSecret = response.tokenSecret;
+      this.temporary = response.callbackConfirmed != null;
+    }
+
+    OAuthAuthorizer createAuthorizer() throws IOException {
+      OAuthAuthorizer authorizer = new OAuthAuthorizer();
+      authorizer.consumerKey = CONSUMER_KEY;
+      authorizer.signer = createSigner(this);
+      authorizer.token = token;
+      return authorizer;
+    }
+  }
+
+  private static TokenInfo execute(AbstractOAuthGetToken request)
+      throws IOException {
+    OAuthCredentialsResponse response = request.execute(); 
+    TokenInfo result = new TokenInfo(response);
+    OAUTH_TOKENS.put(getCurrentUserId(), result);
+    return result;
+  }
+
+  private static final String SCOPE = "http://picasaweb.google.com/data";
+
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    PrintWriter writer = response.getWriter();
+    GoogleTransport transport = new GoogleTransport("...");
+    transport.setGDataVersionHeader(Picasa.VERSION);
+    try {
+      String thisURL = request.getRequestURI();
+      String userId = getCurrentUserId();
+      TokenInfo tokenInfo = OAUTH_TOKENS.get(userId);
+      StringBuffer fullUrlBuf = request.getRequestURL();
+      if (request.getQueryString() != null) {
+        fullUrlBuf.append('?').append(request.getQueryString());
+      }
+      String fullUrl = fullUrlBuf.toString();
+      OAuthCallbackUri authorizeResponse = new OAuthCallbackUri(fullUrl);
+      if (tokenInfo != null && tokenInfo.temporary
+          && authorizeResponse.verifier == null) {
+        tokenInfo = null;
+      }
+      OAuthSigner signer = createSigner(tokenInfo);
+      if (tokenInfo == null) {
+        GoogleOAuthGetTemporaryToken requestToken =
+            new GoogleOAuthGetTemporaryToken();
+        requestToken.signer = signer;
+        requestToken.consumerKey = CONSUMER_KEY;
+        requestToken.scope = SCOPE;
+        requestToken.callback = request.getRequestURL().toString();
+        tokenInfo = execute(requestToken);
+        GoogleOAuthAuthorizeTemporaryTokenUri authorizeUri =
+            new GoogleOAuthAuthorizeTemporaryTokenUri();
+        authorizeUri.temporaryToken = tokenInfo.token;
+        response.sendRedirect(authorizeUri.build());
+        return;
+      }
+      if (tokenInfo.temporary) {
+        GoogleOAuthGetAccessToken accessToken =
+            new GoogleOAuthGetAccessToken();
+        accessToken.temporaryToken = tokenInfo.token;
+        accessToken.signer = signer;
+        accessToken.consumerKey = CONSUMER_KEY;
+        accessToken.verifier = authorizeResponse.verifier;
+        tokenInfo = execute(accessToken);
+        signer = createSigner(tokenInfo);
+      }
+      transport.defaultHeaders.authorizer = tokenInfo.createAuthorizer();
+      run(writer, transport);
+    } catch (Exception e) {
+      handleException(writer, e);
+    }
+  }
+
+  private static OAuthSigner createSigner(TokenInfo tokenInfo)
+      throws IOException {
+    if (OAUTH_TYPE == OAuthType.REGISTERED_RSA) {
+      OAuthRsaSigner result = new OAuthRsaSigner();
+      result.privateKey = getPrivateKey();
+      return result;
+    }
+    OAuthHmacSigner result = new OAuthHmacSigner();
+    result.clientSharedSecret =
+        OAUTH_TYPE == OAuthType.UNREGISTERED_HMAC ? "anonymous" : "...";
+    if (tokenInfo != null) {
+      result.tokenSharedSecret = tokenInfo.tokenSecret;
+    }
+    return result;
+  }
+
+  private static PrivateKey getPrivateKey() throws IOException {
+    if (privateKey == null) {
+      try {
+        privateKey =
+            RsaSha.getPrivateKeyFromKeystore(new FileInputStream(
+                "WEB-INF/....jks"), "...", "...", "...");
+      } catch (GeneralSecurityException e) {
+        throw new IOException(e);
+      }
+    }
+    return privateKey;
+  }
+}
+</code></pre>
+@since 2.2
 </body>
