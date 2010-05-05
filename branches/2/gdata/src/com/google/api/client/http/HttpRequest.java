@@ -70,6 +70,7 @@ public final class HttpRequest {
     HttpTransport transport = this.transport;
     Logger logger = HttpTransport.LOGGER;
     boolean loggable = logger.isLoggable(Level.CONFIG);
+    boolean logPrivateParameters = logger.isLoggable(Level.ALL);
     StringBuilder logbuf = null;
     // log method and uri
     String method = this.method;
@@ -95,7 +96,7 @@ public final class HttpRequest {
       String name = values.getKey(i);
       String value = values.getValue(i);
       if (logbuf != null) {
-        if (privateNames.contains(name)) {
+        if (privateNames.contains(name) && !logPrivateParameters) {
           logbuf.append(name + ": <Not Logged>");
         } else {
           logbuf.append(name + ": " + value);

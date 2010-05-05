@@ -24,15 +24,10 @@ import com.google.api.client.http.LowLevelHttpTransport;
 
 public class AndroidGData {
 
-  // TODO: take advantage of android.net.Uri?
-
-  // TODO: android.util.Log for logging?
-
   public static final LowLevelHttpTransport HTTP_TRANSPORT =
       ApacheGData.HTTP_TRANSPORT;
 
   public static Account[] getGoogleAccounts(AccountManager manager) {
     return manager.getAccountsByType("com.google");
   }
-
 }
