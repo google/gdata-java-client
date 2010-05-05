@@ -191,7 +191,7 @@ public final class OAuthAuthorizer implements Authorizer {
     buf.append(escape(normalizedPath)).append('&');
     buf.append(escape(normalizedParameters));
     String signatureBaseString = buf.toString();
-    this.signature = signer.computeSignature(signatureBaseString);
+    this.signature = escape(signer.computeSignature(signatureBaseString));
   }
 
   /**

@@ -20,6 +20,7 @@ import com.google.api.client.auth.Authorizer;
 import com.google.api.client.util.ArrayMap;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * Stores HTTP headers used in an HTTP request. {@code null} is not allowed as a
@@ -38,8 +39,8 @@ public final class HttpHeaders implements Cloneable {
   public volatile ArrayMap<String, String> values = ArrayMap.create();
 
   /**
-   * List of private keys whose value must not be logged, for example headers
-   * related to authorization.
+   * List of private keys whose value must not be logged unless the log level is
+   * {@link Level#ALL}, for example headers related to authorization.
    */
   public volatile ArrayList<String> privateNames = new ArrayList<String>(0);
 

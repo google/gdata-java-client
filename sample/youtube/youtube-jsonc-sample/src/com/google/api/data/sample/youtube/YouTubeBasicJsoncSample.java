@@ -46,7 +46,7 @@ public class YouTubeBasicJsoncSample {
     OAUTH, CLIENT_LOGIN
   }
 
-  private static AuthType AUTH_TYPE = AuthType.CLIENT_LOGIN;
+  private static AuthType AUTH_TYPE = AuthType.OAUTH;
   private static final int MAX_VIDEOS_TO_SHOW = 5;
 
   static OAuthHmacSigner signer;
@@ -171,7 +171,7 @@ public class YouTubeBasicJsoncSample {
 
   private static void enableLogging() {
     Logger logger = Logger.getLogger("com.google.api.client");
-    logger.setLevel(Level.ALL);
+    logger.setLevel(Level.CONFIG);
     logger.addHandler(new Handler() {
 
       @Override

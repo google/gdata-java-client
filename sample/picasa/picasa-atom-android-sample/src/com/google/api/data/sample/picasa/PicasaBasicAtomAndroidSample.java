@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import com.google.api.client.android.AndroidGData;
 import com.google.api.client.googleapis.GoogleHttp;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.InputStreamHttpSerializer;
 import com.google.api.client.http.UriEntity;
 import com.google.api.client.util.DateTime;
@@ -60,6 +62,8 @@ import java.util.logging.Logger;
  */
 public class PicasaBasicAtomAndroidSample extends ListActivity {
 
+  private static final String TAG = "PicasaBasicAtomAndroidSample";
+
   private static final int MENU_ADD = 0;
 
   private static final int MENU_ACCOUNTS = 1;
@@ -78,9 +82,11 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
 
   private GoogleTransport transport;
 
+  private String authToken;
+
   private String postLink;
 
-  private List<AlbumEntry> albums = new ArrayList<AlbumEntry>();
+  private final List<AlbumEntry> albums = new ArrayList<AlbumEntry>();
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -89,7 +95,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     setLogging(settings.getBoolean("logging", false));
     getListView().setTextFilterEnabled(true);
     registerForContextMenu(getListView());
-    gotAccount();
+    gotAccount(false);
   }
 
   @Override
@@ -117,7 +123,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     }
   }
 
-  private void gotAccount() {
+  private void gotAccount(boolean tokenExpired) {
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     String accountName = settings.getString("accountName", null);
     if (accountName != null) {
@@ -128,6 +134,9 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
       for (int i = 0; i < size; i++) {
         Account account = accounts[i];
         if (accountName.equals(account.name)) {
+          if (tokenExpired) {
+            manager.invalidateAuthToken("com.google", this.authToken);
+          }
           gotAccount(manager, account);
           return;
         }
@@ -141,11 +150,10 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     SharedPreferences.Editor editor = settings.edit();
     editor.putString("accountName", account.name);
     editor.commit();
-    String authToken;
     try {
       Bundle bundle =
-          manager.getAuthToken(account, Picasa.AUTH_TOKEN_TYPE, true, null, null)
-              .getResult();
+          manager.getAuthToken(account, Picasa.AUTH_TOKEN_TYPE, true, null,
+              null).getResult();
       if (bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
         authenticated(bundle.getString(AccountManager.KEY_AUTHTOKEN));
       } else if (bundle.containsKey(AccountManager.KEY_INTENT)) {
@@ -168,7 +176,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == REQUEST_AUTHENTICATE) {
       if (resultCode == RESULT_OK) {
-        gotAccount();
+        gotAccount(false);
       } else {
         showDialog(DIALOG_ACCOUNTS);
       }
@@ -176,6 +184,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
   }
 
   private void authenticated(String authToken) {
+    this.authToken = authToken;
     GoogleTransport transport =
         this.transport = new GoogleTransport("google-picasaandroidsample-1.0");
     transport.setLowLevelHttpTransport(AndroidGData.HTTP_TRANSPORT);
@@ -216,7 +225,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
             request.execute().ignore();
             success = true;
           } catch (IOException e) {
-            e.printStackTrace();
+            handleException(e);
           }
           setListAdapter(new ArrayAdapter<String>(this,
               android.R.layout.simple_list_item_1, new String[] {success ? "OK"
@@ -245,7 +254,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
         try {
           AlbumEntry.executeInsert(this.transport, album, this.postLink);
         } catch (IOException e) {
-          e.printStackTrace();
+          handleException(e);
         }
         executeRefreshAlbums();
         return true;
@@ -267,7 +276,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     menu.add(0, CONTEXT_LOGGING, 0, "Logging").setCheckable(true).setChecked(
         logging);
   }
-  
+
   @Override
   public boolean onContextItemSelected(MenuItem item) {
     AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -296,7 +305,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
           return super.onContextItemSelected(item);
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      handleException(e);
     }
     return false;
   }
@@ -313,7 +322,9 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
       while (true) {
         UserFeed userFeed = UserFeed.executeGet(this.transport, uri);
         this.postLink = userFeed.getPostLink();
-        albums.addAll(userFeed.albums);
+        if (userFeed.albums != null) {
+          albums.addAll(userFeed.albums);
+        }
         String nextLink = userFeed.getNextLink();
         if (nextLink == null) {
           break;
@@ -325,7 +336,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
         albumNames[i] = albums.get(i).title;
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      handleException(e);
       albumNames = new String[] {e.getMessage()};
       albums.clear();
     }
@@ -342,6 +353,27 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
       SharedPreferences.Editor editor = settings.edit();
       editor.putBoolean("logging", logging);
       editor.commit();
+    }
+  }
+
+  private void handleException(IOException e) {
+    if (e instanceof HttpResponseException) {
+      int statusCode = ((HttpResponseException) e).response.statusCode;
+      if (statusCode == 401 || statusCode == 403) {
+        gotAccount(true);
+      }
+      return;
+    }
+    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    if (settings.getBoolean("logging", false)) {
+      if (e instanceof HttpResponseException) {
+        try {
+          Log.e(TAG, ((HttpResponseException) e).response.parseAsString());
+        } catch (IOException parseException) {
+          parseException.printStackTrace();
+        }
+      }
+      Log.e(TAG, e.getMessage(), e);
     }
   }
 }

@@ -50,7 +50,7 @@ public class PicasaBasicAtomSample {
     OAUTH, CLIENT_LOGIN
   }
 
-  private static AuthType AUTH_TYPE = AuthType.CLIENT_LOGIN;
+  private static AuthType AUTH_TYPE = AuthType.OAUTH;
   static OAuthHmacSigner signer;
   static OAuthCredentialsResponse credentials;
 
@@ -241,7 +241,7 @@ public class PicasaBasicAtomSample {
 
   private static void enableLogging() {
     Logger logger = Logger.getLogger("com.google.api.client");
-    logger.setLevel(Level.ALL);
+    logger.setLevel(Level.CONFIG);
     logger.addHandler(new Handler() {
 
       @Override
