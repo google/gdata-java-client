@@ -18,6 +18,8 @@ package com.google.api.client.util;
 
 /**
  * Exception thrown when encountering an invalid Base64 input character.
+ * 
+ * @since 2.2
  */
 public class Base64DecoderException extends Exception {
   public Base64DecoderException() {

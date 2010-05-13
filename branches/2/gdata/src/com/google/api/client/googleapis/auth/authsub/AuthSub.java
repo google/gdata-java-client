@@ -22,6 +22,10 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
 
+/**
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class AuthSub {
 
   /** Secure random number generator to sign requests. */

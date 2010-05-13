@@ -16,7 +16,11 @@
 
 package com.google.api.data.docs.v3;
 
-/** Constants for the Google Documents List Data API. */
+/**
+ * Constants for the Google Documents List Data API.
+ *
+ * @since 2.2
+ */
 public final class Docs {
 
   /** The authentication token type or service name. */

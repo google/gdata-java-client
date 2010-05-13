@@ -17,10 +17,15 @@
 package com.google.api.data.client.generator;
 
 import com.google.api.client.xml.XmlNamespaceDictionary;
+import com.google.api.data.client.generator.model.Client;
+import com.google.api.data.client.generator.model.Version;
 
 import java.io.PrintWriter;
 import java.util.Map;
 
+/**
+ * @author Yaniv Inbar
+ */
 final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
 
   private final Version version;
@@ -38,8 +43,15 @@ final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
     out.println();
     out.println("import " + Map.class.getName() + ";");
     out.println();
+    out.println("/**");
+    out.println(" * Utilities for the Atom XML format of the "
+        + version.client.name + ".");
+    out.println(" *");
+    out.println(" * @since 2.2");
+    out.println(" */");
     out.println("public final class " + className + " {");
     out.println();
+    out.println(indent(2) + "/** XML namespace dictionary. */");
     out.println(indent(2) + "public static final "
         + useClass(XmlNamespaceDictionary.class)
         + " NAMESPACE_DICTIONARY = new "

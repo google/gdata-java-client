@@ -18,6 +18,8 @@ package com.google.api.data.client.generator.linewrap;
 
 /**
  * Utilities for strings.
+ * 
+ * @author Yaniv Inbar
  */
 public class Strings {
 

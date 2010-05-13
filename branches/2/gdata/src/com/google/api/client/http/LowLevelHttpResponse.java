@@ -19,26 +19,47 @@ package com.google.api.client.http;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Low-level HTTP response.
+ * <p>
+ * This allows providing a different implementation of the HTTP response that is
+ * more compatible with the Java environment used.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public abstract class LowLevelHttpResponse {
 
+  /** Returns the HTTP response content input stream or {@code null} for none. */
   public abstract InputStream getContent() throws IOException;
 
+  /**
+   * Returns the content encoding (for example {@code "gzip"}) or {@code null}
+   * for none.
+   */
   public abstract String getContentEncoding();
 
+  /** Returns the content length or {@code 0} for none. */
   public abstract long getContentLength();
 
+  /** Returns the content type or {@code null} for none. */
   public abstract String getContentType();
 
-  /** Response status line or {@code null} for none. */
+  /** Returns the response status line or {@code null} for none. */
   public abstract String getStatusLine();
 
+  /** Returns the response status code or {@code 0} for none. */
   public abstract int getStatusCode();
 
+  /** Returns the HTTP reason phrase or {@code null} for none. */
   public abstract String getReasonPhrase();
 
+  /** Returns the HTTP response header count. */
   public abstract int getHeaderCount();
 
+  /** Returns the HTTP response header name at the given zero-based index. */
   public abstract String getHeaderName(int index);
 
+  /** Returns the HTTP response header value at the given zero-based index. */
   public abstract String getHeaderValue(int index);
 }

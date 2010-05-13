@@ -17,15 +17,20 @@
 package com.google.api.data.sample.youtube.model;
 
 import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class VideoFeed extends Feed {
+  @Key
   public List<Video> items;
 
-  public static VideoFeed executeGet(GoogleTransport transport, String uri)
+  public static VideoFeed executeGet(GoogleTransport transport, YouTubeUrl url)
       throws IOException {
-    return (VideoFeed) Feed.executeGet(transport, uri, VideoFeed.class);
+    return (VideoFeed) Feed.executeGet(transport, url, VideoFeed.class);
   }
 }

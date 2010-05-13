@@ -32,11 +32,14 @@ import java.util.Set;
  * index (for example {@link #getKey(int)}). However, traditional mapping
  * operations like {@link #get(Object)} and {@link #put(Object, Object)} are
  * slower because they need to look up all key/value pairs in the worst case.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
  */
 public class ArrayMap<K, V> extends AbstractMap<K, V> implements Cloneable {
   private int size;
   private Object[] data;
-  private volatile EntrySet entrySet;
+  private EntrySet entrySet;
 
   /**
    * Returns a new instance of an array map with initial capacity of zero.

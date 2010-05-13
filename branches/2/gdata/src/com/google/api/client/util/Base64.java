@@ -38,6 +38,8 @@ import java.io.UnsupportedEncodingException;
 /**
  * Base64 converter class. This code is not a full-blown MIME encoder;
  * it simply converts binary data to base64 data and back.
+ * 
+ * @since 2.2
  */
 public final class Base64 {
 

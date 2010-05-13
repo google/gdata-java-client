@@ -19,18 +19,27 @@ package com.google.api.data.sample.youtube.model;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.util.DateTime;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class Feed {
+  @Key
   public int itemsPerPage;
+  @Key
   public int startIndex;
+  @Key
   public int totalItems;
+  @Key
   public DateTime updated;
 
-  static Feed executeGet(GoogleTransport transport, String uri,
+  static Feed executeGet(GoogleTransport transport, YouTubeUrl url,
       Class<? extends Feed> feedClass) throws IOException {
-    HttpRequest request = transport.buildGetRequest(uri);
+    HttpRequest request = transport.buildGetRequest();
+    request.url = url;
     return request.execute().parseAs(feedClass);
   }
 }

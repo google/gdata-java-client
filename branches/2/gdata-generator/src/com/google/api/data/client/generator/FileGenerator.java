@@ -22,6 +22,8 @@ import java.io.PrintWriter;
 
 /**
  * Defines a single file generator, which manages a single generated file.
+ * 
+ * @author Yaniv Inbar
  */
 interface FileGenerator {
 

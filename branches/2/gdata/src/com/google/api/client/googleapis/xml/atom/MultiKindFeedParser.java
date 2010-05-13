@@ -32,7 +32,12 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-/** GData Atom feed parser when the entry class can be computed from the kind. */
+/**
+ * GData Atom feed parser when the entry class can be computed from the kind.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class MultiKindFeedParser<T> extends AbstractAtomFeedParser<T> {
 
   private final HashMap<String, Class<?>> kindToEntryClassMap =

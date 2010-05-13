@@ -16,8 +16,14 @@
 
 package com.google.api.data.client.generator;
 
+import com.google.api.data.client.generator.model.Client;
+import com.google.api.data.client.generator.model.Version;
+
 import java.io.PrintWriter;
 
+/**
+ * @author Yaniv Inbar
+ */
 public final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
 
   private final Version version;
@@ -30,7 +36,11 @@ public final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
   public void generate(PrintWriter out) {
     Client client = version.client;
     generateHeader(out);
-    out.println("/** Constants for the " + client.name + ". */");
+    out.println("/**");
+    out.println(" * Constants for the " + client.name + ".");
+    out.println(" *");
+    out.println(" * @since 2.2");
+    out.println(" */");
     out.println("public final class " + className + " {");
     if (client.authTokenType != null) {
       out.println();

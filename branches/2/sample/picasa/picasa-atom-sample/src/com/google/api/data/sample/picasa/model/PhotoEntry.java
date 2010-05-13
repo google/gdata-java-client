@@ -16,28 +16,35 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.googleapis.GoogleHttp;
+import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.InputStreamHttpSerializer;
-import com.google.api.client.util.Name;
+import com.google.api.client.http.InputStreamContent;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class PhotoEntry extends Entry {
 
+  @Key
   public Category category = Category.newKind("photo");
 
-  @Name("media:group")
+  @Key("media:group")
   public MediaGroup mediaGroup;
 
   public static PhotoEntry executeInsert(GoogleTransport transport,
       String feedLink, URL photoUrl, String fileName) throws IOException {
-    HttpRequest request = transport.buildPostRequest(feedLink);
-    GoogleHttp.setSlugHeader(request, fileName);
-    request.setContent(new InputStreamHttpSerializer(photoUrl.openStream(), -1,
-        "image/jpeg", null));
+    HttpRequest request = transport.buildPostRequest();
+    request.setUrl(feedLink);
+    GoogleHeaders.setSlug(request.headers, fileName);
+    InputStreamContent content = new InputStreamContent();
+    content.inputStream = photoUrl.openStream();
+    content.type = "image/jpeg";
+    request.content = content;
     return request.execute().parseAs(PhotoEntry.class);
   }
 }

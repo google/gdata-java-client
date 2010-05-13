@@ -16,7 +16,11 @@
 
 package com.google.api.data.contacts.v3;
 
-/** Constants for the Google Contacts Data API. */
+/**
+ * Constants for the Google Contacts Data API.
+ *
+ * @since 2.2
+ */
 public final class Contacts {
 
   /** The authentication token type or service name. */

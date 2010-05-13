@@ -20,7 +20,16 @@ import com.google.api.client.http.LowLevelHttpTransport;
 
 import java.io.IOException;
 
-final class NetHttpTransport extends LowLevelHttpTransport {
+/**
+ * HTTP low-level transport based on the {@code java.net} package.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
+public final class NetHttpTransport extends LowLevelHttpTransport {
+
+  /** Singleton instance of this transport. */
+  public static final NetHttpTransport INSTANCE = new NetHttpTransport();
 
   NetHttpTransport() {
   }
@@ -31,27 +40,27 @@ final class NetHttpTransport extends LowLevelHttpTransport {
   }
 
   @Override
-  public NetHttpRequest buildDeleteRequest(String uri) throws IOException {
-    return new NetHttpRequest("DELETE", uri);
+  public NetHttpRequest buildDeleteRequest(String url) throws IOException {
+    return new NetHttpRequest("DELETE", url);
   }
 
   @Override
-  public NetHttpRequest buildGetRequest(String uri) throws IOException {
-    return new NetHttpRequest("GET", uri);
+  public NetHttpRequest buildGetRequest(String url) throws IOException {
+    return new NetHttpRequest("GET", url);
   }
 
   @Override
-  public NetHttpRequest buildPatchRequest(String uri) {
+  public NetHttpRequest buildPatchRequest(String url) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public NetHttpRequest buildPostRequest(String uri) throws IOException {
-    return new NetHttpRequest("POST", uri);
+  public NetHttpRequest buildPostRequest(String url) throws IOException {
+    return new NetHttpRequest("POST", url);
   }
 
   @Override
-  public NetHttpRequest buildPutRequest(String uri) throws IOException {
-    return new NetHttpRequest("PUT", uri);
+  public NetHttpRequest buildPutRequest(String url) throws IOException {
+    return new NetHttpRequest("PUT", url);
   }
 }

@@ -19,6 +19,6 @@
         <data android:mimeType="image/*"></data>
       </intent-filter>
     </activity>    
-</application>
-  <uses-sdk android:minSdkVersion="5" />
+  </application>
+  <uses-sdk android:minSdkVersion="5"/>
 </manifest> 

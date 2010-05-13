@@ -16,14 +16,17 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class Category {
 
-  @Name("@scheme")
+  @Key("@scheme")
   public String scheme;
 
-  @Name("@term")
+  @Key("@term")
   public String term;
 
   public static Category newKind(String kind) {

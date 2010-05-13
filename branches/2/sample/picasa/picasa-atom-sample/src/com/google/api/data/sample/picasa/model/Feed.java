@@ -19,39 +19,43 @@ package com.google.api.data.sample.picasa.model;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.xml.atom.GData;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.util.Name;
-import com.google.api.client.xml.atom.AtomSerializer;
+import com.google.api.client.util.Key;
+import com.google.api.client.xml.atom.AtomContent;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class Feed {
 
+  @Key
   public Author author;
 
-  @Name("openSearch:totalResults")
+  @Key("openSearch:totalResults")
   public int totalResults;
 
-  @Name("link")
+  @Key("link")
   public List<Link> links;
 
-
-  static Feed executeGet(GoogleTransport transport, PicasaUri uri,
+  static Feed executeGet(GoogleTransport transport, PicasaUrl url,
       Class<? extends Feed> feedClass) throws IOException {
-    uri.fields = GData.getFieldsFor(feedClass);
-    HttpRequest request = transport.buildGetRequest(uri.build());
+    url.fields = GData.getFieldsFor(feedClass);
+    HttpRequest request = transport.buildGetRequest();
+    request.url = url;
     return request.execute().parseAs(feedClass);
   }
 
   Entry executeInsert(GoogleTransport transport, Entry entry)
       throws IOException {
-    String postLink = Link.find(links, "http://schemas.google.com/g/2005#post");
-    HttpRequest request = transport.buildPostRequest(postLink);
-    AtomSerializer serializer = new AtomSerializer();
-    serializer.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
-    serializer.entry = entry;
-    request.setContent(serializer);
+    HttpRequest request = transport.buildPostRequest();
+    request.setUrl(Link.find(links, "http://schemas.google.com/g/2005#post"));
+    AtomContent content = new AtomContent();
+    content.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
+    content.entry = entry;
+    request.content = content;
     return request.execute().parseAs(entry.getClass());
   }
 }

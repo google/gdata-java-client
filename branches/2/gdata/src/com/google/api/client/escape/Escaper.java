@@ -36,8 +36,11 @@ package com.google.api.client.escape;
  * <p>
  * Several popular escapers are defined as constants in the class
  * {@link CharEscapers}.
+ * 
+ * @since 2.2
  */
 public abstract class Escaper {
+ 
   /**
    * Returns the escaped form of a given literal string.
    * 

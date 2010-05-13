@@ -18,10 +18,9 @@ package com.google.api.client.googleapis.auth;
 
 import com.google.api.client.http.HttpParser;
 import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.ClassInfo;
-import com.google.api.client.util.Entity;
 import com.google.api.client.util.FieldInfo;
+import com.google.api.client.util.GenericData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,22 +29,25 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public class AuthKeyValueParser implements HttpParser {
+/**
+ * HTTP parser for Google response to an Authorization request.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
+public final class AuthKeyValueParser implements HttpParser {
 
-  private static final AuthKeyValueParser INSTANCE = new AuthKeyValueParser();
-
-  public static void setAsParserOf(HttpTransport transport) {
-    transport.setParser(INSTANCE);
-  }
+  /** Singleton instance. */
+  public static final AuthKeyValueParser INSTANCE = new AuthKeyValueParser();
 
   public String getContentType() {
     return "text/plain";
   }
 
-  public <T> T parse(HttpResponse response, Class<T> entityClass)
+  public <T> T parse(HttpResponse response, Class<T> dataClass)
       throws IOException {
-    T newInstance = ClassInfo.newInstance(entityClass);
-    ClassInfo classInfo = ClassInfo.of(entityClass);
+    T newInstance = ClassInfo.newInstance(dataClass);
+    ClassInfo classInfo = ClassInfo.of(dataClass);
     response.disableContentLogging = true;
     InputStream content = response.getContent();
     try {
@@ -70,10 +72,10 @@ public class AuthKeyValueParser implements HttpParser {
             fieldValue = value;
           }
           FieldInfo.setFieldValue(field, newInstance, fieldValue);
-        } else if (Entity.class.isAssignableFrom(entityClass)) {
-          Entity entity = (Entity) newInstance;
-          entity.set(key, value);
-        } else if (Map.class.isAssignableFrom(entityClass)) {
+        } else if (GenericData.class.isAssignableFrom(dataClass)) {
+          GenericData data = (GenericData) newInstance;
+          data.set(key, value);
+        } else if (Map.class.isAssignableFrom(dataClass)) {
           @SuppressWarnings("unchecked")
           Map<Object, Object> map = (Map<Object, Object>) newInstance;
           map.put(key, value);

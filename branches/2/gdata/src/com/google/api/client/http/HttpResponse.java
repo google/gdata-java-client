@@ -16,6 +16,7 @@
 
 package com.google.api.client.http;
 
+import com.google.api.client.util.ArrayMap;
 import com.google.api.client.util.Strings;
 
 import java.io.ByteArrayInputStream;
@@ -26,10 +27,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-/** HTTP response. */
+/**
+ * HTTP response.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class HttpResponse {
 
-  private volatile InputStream content;
+  /** HTTP response content or {@code null} before {@link #getContent()}. */
+  private InputStream content;
 
   /** Content encoding or {@code null}. */
   public final String contentEncoding;
@@ -38,9 +45,9 @@ public final class HttpResponse {
    * Content length or less than zero if not known. May be reset by
    * {@link #getContent()} if response had GZip compression.
    */
-  public volatile long contentLength;
+  private long contentLength;
 
-  /** Content type or {@code null}. */
+  /** Content type or {@code null} for none. */
   public final String contentType;
 
   /**
@@ -52,7 +59,8 @@ public final class HttpResponse {
   /** Whether received a successful status code {@code >= 200 && < 300}. */
   public final boolean isSuccessStatusCode;
 
-  private volatile LowLevelHttpResponse response;
+  /** Low-level HTTP response. */
+  private LowLevelHttpResponse response;
 
   /** Status code. */
   public final int statusCode;
@@ -64,10 +72,11 @@ public final class HttpResponse {
   public final HttpTransport transport;
 
   /**
-   * Whether to disable response content logging, for example if content has
-   * sensitive data such as an authentication token. Defaults to {@code false}.
+   * Whether to disable response content logging during {@link #getContent()},
+   * for example if content has sensitive data such as an authentication token.
+   * Defaults to {@code false}.
    */
-  public volatile boolean disableContentLogging;
+  public boolean disableContentLogging;
 
   HttpResponse(HttpTransport transport, LowLevelHttpResponse response) {
     this.transport = transport;
@@ -101,11 +110,11 @@ public final class HttpResponse {
     }
     // headers
     int size = response.getHeaderCount();
-    HttpHeaders headers = this.headers;
+    ArrayMap<String, Object> headers = this.headers.unknownFields;
     for (int i = 0; i < size; i++) {
       String headerName = response.getHeaderName(i);
       String headerValue = response.getHeaderValue(i);
-      headers.values.set(i, headerName, headerValue);
+      headers.set(i, headerName, headerValue);
       if (loggable) {
         logbuf.append(headerName + ": " + headerValue).append(
             Strings.LINE_SEPARATOR);
@@ -116,6 +125,14 @@ public final class HttpResponse {
     }
   }
 
+  /**
+   * Returns the content of the HTTP response.
+   * <p>
+   * The result is cached, so subsequent calls will be fast.
+   * 
+   * @return input stream content of the HTTP response or {@code null} for none
+   * @throws IOException I/O exception
+   */
   public InputStream getContent() throws IOException {
     LowLevelHttpResponse response = this.response;
     if (response == null) {
@@ -155,15 +172,39 @@ public final class HttpResponse {
     return content;
   }
 
+  /**
+   * Gets the content of the HTTP response from {@link #getContent()} and
+   * ignores the content if there is any.
+   * 
+   * @throws IOException I/O exception
+   */
   public void ignore() throws IOException {
-    getContent().close();
+    InputStream content = getContent();
+    if (content != null) {
+      content.close();
+    }
   }
 
+  /**
+   * Returns the HTTP response content parser to use for the content type of
+   * this HTTP response or {@code null} for none.
+   */
   public HttpParser getParser() {
     return this.transport.getParser(this.contentType);
   }
 
-  public <T> T parseAs(Class<T> entityClass) throws IOException {
+  /**
+   * Parses the content of the HTTP response from {@link #getContent()} and
+   * reads it into a data class of key/value pairs using the parser returned by
+   * {@link #getParser()} .
+   * 
+   * @return parsed data class or {@code null} for no content
+   * @throws IOException I/O exception
+   * @throws IllegalArgumentException if no parser is defined for the given
+   *         content type or if there is no content type defined in the HTTP
+   *         response
+   */
+  public <T> T parseAs(Class<T> dataClass) throws IOException {
     HttpParser parser = getParser();
     if (parser == null) {
       if (this.contentType == null) {
@@ -177,9 +218,16 @@ public final class HttpResponse {
       throw new IllegalArgumentException("No parser defined for Content-Type: "
           + contentType);
     }
-    return parser.parse(this, entityClass);
+    return parser.parse(this, dataClass);
   }
 
+  /**
+   * Parses the content of the HTTP response from {@link #getContent()} and
+   * reads it into a string.
+   * 
+   * @return parsed string or {@code null} for no content
+   * @throws IOException I/O exception
+   */
   public String parseAsString() throws IOException {
     InputStream content = getContent();
     if (content == null) {
@@ -222,6 +270,10 @@ public final class HttpResponse {
     return debugStream.toByteArray();
   }
 
+  /**
+   * Returns whether the given HTTP response status code is a success code
+   * {@code >= 200 and < 300}.
+   */
   public static boolean isSuccessStatusCode(int statusCode) {
     return statusCode >= 200 && statusCode < 300;
   }

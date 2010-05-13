@@ -12,21 +12,21 @@ download is only for the Android environment.</p>
 <p>The download for the samples can be found at: <a
   href="http://gdata-java-client.googlecode.com/files/gdata-samples-2.2.0-alpha.zip">gdata-samples-2.2.0-alpha.zip</a></p>
 <h3>Android</h3>
-<p>When building an application for Android, you will want to minimize the
-size of your application by only including the jars you need from this library.</p>
+<p>While developing an Android application, it is convenient to use
+gdata-2.2.0-alpha.jar. Unfortunately, its large size makes it unwieldy,
+especially since you are likely to only use a relatively small subset of the
+library. If multiple Android applications use this library on an Android device
+with limited application space, the problem grows significantly. Thus, to
+minimize the library size, use the packaged jars When building an application
+for Android. You can figure out the package dependencies by looking at end of
+the package description in the JavaDoc. Note that package dependencies may
+change in future versions, so beware of such changes when upgrading to a newer
+version.</p>
+<p>Note: <code>jackson-core-asl-1.5.2.jar</code> is a third-party library
+needed when working with JSON. It can be downloaded from <a
+  href="http://wiki.fasterxml.com/JacksonDownload">here</a>.</p>
 <ul>
-  <li><code>gdata-core-android-2.2.0-alpha.jar</code>: required</li>
-  <li><code>gdata-xml-android-2.2.0-alpha.jar</code>: needed for
-  user-defined XML data models</li>
-  <li><code>gdata-json-android-2.2.0-alpha.jar</code> and <code>dependencies/jackson-core-asl-1.5.0.jar</code>:
-  needed for user-defined JSON data models</li>
-  <li><code>googleapis/&lt;name&gt;-&lt;version&gt;-android-2.2.0-alpha.jar</code>:
-  optional service-specific Google API jars that provides minimal information
-  like the authTokenType to use with AccountManager and the GData version to use
-  with GoogleTransport.setGDataVersion().</li>
-  <li><code>googleapis/&lt;name&gt;-&lt;version&gt;-atom-android-2.2.0-alpha.jar</code>:
-  optional service-specific Google API jars that provides the XML namespace
-  information to use for example with AtomHttpParser.namespaceDictionary.</li>
+  <li></li>
 </ul>
 <h3>Source Code</h3>
 <p>All source code is included in <code>gdata-2.2.0-alpha-src.zip</code> .</p>

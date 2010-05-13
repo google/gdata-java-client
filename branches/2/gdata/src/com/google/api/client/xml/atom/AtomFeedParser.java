@@ -27,10 +27,15 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.InputStream;
 
-/** Atom feed parser when the item class is known in advance. */
+/**
+ * Atom feed parser when the item class is known in advance.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {
 
-  public volatile Class<I> entryClass;
+  public Class<I> entryClass;
 
   @SuppressWarnings("unchecked")
   @Override

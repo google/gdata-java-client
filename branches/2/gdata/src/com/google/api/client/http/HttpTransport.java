@@ -16,29 +16,30 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.javanet.NetGData;
+import com.google.api.client.javanet.NetHttpTransport;
 import com.google.api.client.util.ArrayMap;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
-/** HTTP transport. */
+/**
+ * HTTP transport.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class HttpTransport {
 
   static final Logger LOGGER = Logger.getLogger(HttpTransport.class.getName());
 
   /**
-   * Whether to disabel GZip compression of request and response content.
-   * Default is {@code false}.
-   */
-  public static final boolean DISABLE_GZIP =
-      Boolean.getBoolean(HttpTransport.class.getName() + ".DisableGZip");
-
-  /**
    * Low level HTTP transport interface to use or {@code null} to use the
    * default of {@code java.net} transport.
    */
-  private volatile LowLevelHttpTransport lowLevelHttpTransport;
+  private static LowLevelHttpTransport lowLevelHttpTransport;
+
+  // TODO: lowLevelHttpTransport: system property or environment variable?
 
   /**
    * Sets to the given low level HTTP transport.
@@ -46,9 +47,9 @@ public class HttpTransport {
    * @param lowLevelHttpTransport low level HTTP transport or {@code null} to
    *        use the default of {@code java.net} transport
    */
-  public void setLowLevelHttpTransport(
+  public static void setLowLevelHttpTransport(
       LowLevelHttpTransport lowLevelHttpTransport) {
-    this.lowLevelHttpTransport = lowLevelHttpTransport;
+    HttpTransport.lowLevelHttpTransport = lowLevelHttpTransport;
   }
 
   /**
@@ -56,13 +57,12 @@ public class HttpTransport {
    * {@link #setLowLevelHttpTransport(LowLevelHttpTransport)} hasn't been
    * called, it uses the default of {@code java.net} transport.
    */
-  protected LowLevelHttpTransport useLowLevelHttpTransport() {
+  public static LowLevelHttpTransport useLowLevelHttpTransport() {
     LowLevelHttpTransport lowLevelHttpTransportInterface =
-        this.lowLevelHttpTransport;
+        HttpTransport.lowLevelHttpTransport;
     if (lowLevelHttpTransportInterface == null) {
-      // TODO: specify this in the metadata of the packaged jar?
-      this.lowLevelHttpTransport =
-          lowLevelHttpTransportInterface = NetGData.HTTP_TRANSPORT;
+      HttpTransport.lowLevelHttpTransport =
+          lowLevelHttpTransportInterface = NetHttpTransport.INSTANCE;
     }
     return lowLevelHttpTransportInterface;
   }
@@ -71,63 +71,77 @@ public class HttpTransport {
    * Default HTTP headers. These transport default headers are put into a
    * request's headers when its build method is called.
    */
-  public volatile HttpHeaders defaultHeaders = new HttpHeaders();
+  public HttpHeaders defaultHeaders = new HttpHeaders();
 
+  /** Map from content type to HTTP parser. */
   private final ArrayMap<String, HttpParser> contentTypeToParserMap =
       ArrayMap.create();
 
-  public final void setParser(HttpParser parser) {
-    this.contentTypeToParserMap.put(parser.getContentType(), parser);
+  /**
+   * HTTP request execute intercepters. The intercepters will be invoked in the
+   * order of the {@link List#iterator()}.
+   */
+  public List<HttpExecuteIntercepter> intercepters =
+      new ArrayList<HttpExecuteIntercepter>(1);
+
+  /**
+   * Adds an HTTP response content parser.
+   * <p>
+   * If there is already a previous parser defined for this new parser (as
+   * defined by {@link #getParser(String)} then the previous parser will be
+   * removed.
+   */
+  public void addParser(HttpParser parser) {
+    String contentType = getNormalizedContentType(parser.getContentType());
+    this.contentTypeToParserMap.put(contentType, parser);
   }
 
-  public final HttpParser getParser(String contentType) {
+  /**
+   * Returns the HTTP response content parser to use for the given content type
+   * or {@code null} if none is defined.
+   * 
+   * @param contentType content type or {@code null} for {@code null} result
+   */
+  public HttpParser getParser(String contentType) {
     if (contentType == null) {
       return null;
     }
-    int semicolon = contentType.indexOf(';');
-    if (semicolon != -1) {
-      contentType = contentType.substring(0, semicolon);
-    }
+    contentType = getNormalizedContentType(contentType);
     return this.contentTypeToParserMap.get(contentType);
   }
 
+  private String getNormalizedContentType(String contentType) {
+    int semicolon = contentType.indexOf(';');
+    return semicolon == -1 ? contentType : contentType.substring(0, semicolon);
+  }
+
   public HttpTransport() {
-    if (!DISABLE_GZIP) {
-      defaultHeaders.setAcceptEncoding("gzip");
-    }
+    // always accept gzip encoding
+    this.defaultHeaders.acceptEncoding = "gzip";
   }
 
-  /** Builds a {@code DELETE} request for the given request URI. */
-  public HttpRequest buildDeleteRequest(String uri) throws IOException {
-    return new HttpRequest(this, "DELETE", uri, useLowLevelHttpTransport()
-        .buildDeleteRequest(uri));
+  /** Builds a {@code DELETE} request. */
+  public HttpRequest buildDeleteRequest() {
+    return new HttpRequest(this, "DELETE");
   }
 
-  /** Builds a {@code GET} request for the given request URI. */
-  public HttpRequest buildGetRequest(String uri) throws IOException {
-    return new HttpRequest(this, "GET", uri, useLowLevelHttpTransport()
-        .buildGetRequest(uri));
+  /** Builds a {@code GET} request. */
+  public HttpRequest buildGetRequest() {
+    return new HttpRequest(this, "GET");
   }
 
-  /** Builds a {@code PATCH} request for the given request URI. */
-  public HttpRequest buildPatchRequest(String uri) throws IOException {
-    LowLevelHttpTransport lowLevelHttpTransport = useLowLevelHttpTransport();
-    if (!lowLevelHttpTransport.supportsPatch()) {
-      throw new IllegalArgumentException("HTTP transport doesn't support PATCH");
-    }
-    return new HttpRequest(this, "PATCH", uri, useLowLevelHttpTransport()
-        .buildPatchRequest(uri));
+  /** Builds a {@code POST} request. */
+  public HttpRequest buildPostRequest() {
+    return new HttpRequest(this, "POST");
   }
 
-  /** Builds a {@code POST} request for the given request URI. */
-  public HttpRequest buildPostRequest(String uri) throws IOException {
-    return new HttpRequest(this, "POST", uri, useLowLevelHttpTransport()
-        .buildPostRequest(uri));
+  /** Builds a {@code PUT} request. */
+  public HttpRequest buildPutRequest() {
+    return new HttpRequest(this, "PUT");
   }
 
-  /** Builds a {@code PUT} request for the given request URI. */
-  public HttpRequest buildPutRequest(String uri) throws IOException {
-    return new HttpRequest(this, "PUT", uri, useLowLevelHttpTransport()
-        .buildPutRequest(uri));
+  /** Builds a {@code PATCH} request. */
+  public HttpRequest buildPatchRequest() {
+    return new HttpRequest(this, "PATCH");
   }
 }

@@ -16,7 +16,11 @@
 
 package com.google.api.data.sites.v1;
 
-/** Constants for the Google Sites Data API. */
+/**
+ * Constants for the Google Sites Data API.
+ *
+ * @since 2.2
+ */
 public final class Sites {
 
   /** The authentication token type or service name. */

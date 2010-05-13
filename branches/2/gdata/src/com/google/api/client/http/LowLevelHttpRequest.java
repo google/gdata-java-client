@@ -18,11 +18,28 @@ package com.google.api.client.http;
 
 import java.io.IOException;
 
+/**
+ * Low-level HTTP request.
+ * <p>
+ * This allows providing a different implementation of the HTTP request that is
+ * more compatible with the Java environment used.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public abstract class LowLevelHttpRequest {
 
+  /**
+   * Adds a header to the HTTP request.
+   * 
+   * @param name header name
+   * @param value header value
+   */
   public abstract void addHeader(String name, String value);
 
-  public abstract void setContent(HttpSerializer serializer);
+  /** Sets the HTTP request content. */
+  public abstract void setContent(HttpContent content);
 
+  /** Executes the request and returns a low-level HTTP response object. */
   public abstract LowLevelHttpResponse execute() throws IOException;
 }

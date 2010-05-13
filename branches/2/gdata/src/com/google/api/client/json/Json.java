@@ -18,7 +18,7 @@ package com.google.api.client.json;
 
 import com.google.api.client.util.ClassInfo;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.Entities;
+import com.google.api.client.util.DataUtil;
 import com.google.api.client.util.FieldInfo;
 
 import org.codehaus.jackson.JsonEncoding;
@@ -37,6 +37,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class Json {
 
   // TODO: investigate an alternative JSON parser, or slimmer Jackson?
@@ -101,7 +105,7 @@ public class Json {
       generator.writeEndArray();
     } else {
       generator.writeStartObject();
-      for (Map.Entry<String, Object> entry : Entities.mapOf(value).entrySet()) {
+      for (Map.Entry<String, Object> entry : DataUtil.mapOf(value).entrySet()) {
         Object fieldValue = entry.getValue();
         if (fieldValue != null) {
           String fieldName = entry.getKey();
@@ -215,8 +219,9 @@ public class Json {
       CustomizeParser customizeParser) throws IOException {
     Class<?> destinationClass = destination.getClass();
     ClassInfo classInfo = ClassInfo.of(destinationClass);
-    boolean isEntity = JsonEntity.class.isAssignableFrom(destinationClass);
-    if (!isEntity && Map.class.isAssignableFrom(destinationClass)) {
+    boolean isGenericJson =
+        GenericJson.class.isAssignableFrom(destinationClass);
+    if (!isGenericJson && Map.class.isAssignableFrom(destinationClass)) {
       @SuppressWarnings("unchecked")
       Map<String, Object> destinationMap = (Map<String, Object>) destination;
       parseMap(parser, destinationMap, null, customizeParser);
@@ -242,9 +247,9 @@ public class Json {
             parseValue(parser, curToken, field, fieldInfo.type, destination,
                 customizeParser);
         FieldInfo.setFieldValue(field, destination, fieldValue);
-      } else if (isEntity) {
-        // store unknown field in entity
-        JsonEntity object = (JsonEntity) destination;
+      } else if (isGenericJson) {
+        // store unknown field in generic JSON
+        GenericJson object = (GenericJson) destination;
         object.set(key, parseValue(parser, curToken, null, null, destination,
             customizeParser));
       } else {

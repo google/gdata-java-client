@@ -20,8 +20,14 @@ import com.google.api.client.xml.XmlNamespaceDictionary;
 
 import java.util.Map;
 
+/**
+ * Utilities for the Atom XML format of the Google Sites Data API.
+ *
+ * @since 2.2
+ */
 public final class SitesAtom {
 
+  /** XML namespace dictionary. */
   public static final XmlNamespaceDictionary NAMESPACE_DICTIONARY = new
       XmlNamespaceDictionary();
   static {

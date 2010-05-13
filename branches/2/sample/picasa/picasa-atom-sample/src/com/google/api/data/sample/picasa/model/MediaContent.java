@@ -16,13 +16,16 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class MediaContent {
 
-  @Name("@type")
+  @Key("@type")
   public String type;
 
-  @Name("@url")
+  @Key("@url")
   public String url;
 }

@@ -20,8 +20,14 @@ import com.google.api.client.xml.XmlNamespaceDictionary;
 
 import java.util.Map;
 
+/**
+ * Utilities for the Atom XML format of the Picasa Web Albums Data API.
+ *
+ * @since 2.2
+ */
 public final class PicasaAtom {
 
+  /** XML namespace dictionary. */
   public static final XmlNamespaceDictionary NAMESPACE_DICTIONARY = new
       XmlNamespaceDictionary();
   static {

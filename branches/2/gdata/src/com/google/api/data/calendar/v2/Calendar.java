@@ -16,7 +16,11 @@
 
 package com.google.api.data.calendar.v2;
 
-/** Constants for the Google Calendar Data API. */
+/**
+ * Constants for the Google Calendar Data API.
+ *
+ * @since 2.2
+ */
 public final class Calendar {
 
   /** The authentication token type or service name. */

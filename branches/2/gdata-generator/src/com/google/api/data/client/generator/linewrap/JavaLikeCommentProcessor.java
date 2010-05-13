@@ -21,6 +21,8 @@ package com.google.api.data.client.generator.linewrap;
  * with {@code "/*"}. The current implementation of this processor is that
  * {@code "/*"} must be at the beginning of the line, and {@code "*\/"} must be
  * at the end of the line.
+ * 
+ * @author Yaniv Inbar
  */
 final class JavaLikeCommentProcessor {
 

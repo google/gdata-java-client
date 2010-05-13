@@ -16,16 +16,19 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
 import java.util.List;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class Link {
 
-  @Name("@href")
+  @Key("@href")
   public String href;
 
-  @Name("@rel")
+  @Key("@rel")
   public String rel;
 
   public static String find(List<Link> links, String rel) {

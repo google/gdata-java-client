@@ -16,14 +16,13 @@
 
 package com.google.api.client.googleapis.auth.oauth;
 
-import com.google.api.client.auth.oauth.OAuthAuthorizeTemporaryTokenUri;
+import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthGetTemporaryToken;
-import com.google.api.client.auth.oauth.OAuthAuthorizer;
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
 /**
- * Google OAuth 1.0a URI entity to request a temporary credentials token (or
+ * Generic Google OAuth 1.0a URL to request a temporary credentials token (or
  * "request token") from the Google Authorization server.
  * <p>
  * Use {@link #execute()} to execute the request. Google verifies that the
@@ -31,11 +30,12 @@ import com.google.api.client.util.Name;
  * approved signature (in the case of installed applications). The temporary
  * token acquired with this request is found in
  * {@link OAuthCredentialsResponse#token} . This temporary token is used in
- * {@link GoogleOAuthAuthorizeTemporaryTokenUri#temporaryToken} to direct the
+ * {@link GoogleOAuthAuthorizeTemporaryTokenUrl#temporaryToken} to direct the
  * end user to a Google Accounts web page to allow the end user to authorize the
  * temporary token.
  * 
  * @since 2.2
+ * @author Yaniv Inbar
  */
 public final class GoogleOAuthGetTemporaryToken extends OAuthGetTemporaryToken {
 
@@ -50,8 +50,8 @@ public final class GoogleOAuthGetTemporaryToken extends OAuthGetTemporaryToken {
    * the application using the URL value of oauth_callback; if neither parameter
    * is set, Google uses the string "anonymous".
    */
-  @Name("xoauth_displayname")
-  public volatile String displayName;
+  @Key("xoauth_displayname")
+  public String displayName;
 
   /**
    * Required URL identifying the service(s) to be accessed. The resulting token
@@ -59,15 +59,16 @@ public final class GoogleOAuthGetTemporaryToken extends OAuthGetTemporaryToken {
    * Google service; see the service's documentation for the correct value. To
    * specify more than one scope, list each one separated with a space.
    */
-  public volatile String scope;
+  @Key
+  public String scope;
 
   public GoogleOAuthGetTemporaryToken() {
     super("https://www.google.com/accounts/OAuthGetRequestToken");
   }
 
   @Override
-  public OAuthAuthorizer createAuthorizer() {
-    OAuthAuthorizer result = super.createAuthorizer();
+  public OAuthParameters createParameters() {
+    OAuthParameters result = super.createParameters();
     result.callback = this.callback;
     return result;
   }

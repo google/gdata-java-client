@@ -18,18 +18,17 @@ package com.google.api.client.googleapis.auth.authsub;
 
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.AuthKeyValueParser;
-import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 import java.security.PrivateKey;
 
 /**
- * Manages the AuthSub tokens for a single user.
+ * AuthSub token manager for a single user.
  * <p>
  * To properly initialize, set:
  * <ul>
@@ -37,18 +36,20 @@ import java.security.PrivateKey;
  * <li>{@link #transport}: Google transport (recommended)</li>
  * <li>{@link #privateKey}: private key for secure AuthSub (recommended)</li>
  * </ul>
- * .
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
  */
 public final class AuthSubHelper {
 
   /** Private key for secure AuthSub or {@code null} for non-secure AuthSub. */
-  private volatile PrivateKey privateKey;
+  private PrivateKey privateKey;
 
   /**
    * Google transport whose authorization header to set or {@code null} to
    * ignore (for example if using an alternative HTTP library).
    */
-  private volatile GoogleTransport transport;
+  private GoogleTransport transport;
 
   /** HTTP transport for AuthSub requests. */
   private final HttpTransport authSubTransport = new HttpTransport();
@@ -57,26 +58,31 @@ public final class AuthSubHelper {
   private String token;
 
   public AuthSubHelper() {
-    AuthKeyValueParser.setAsParserOf(this.authSubTransport);
+    this.authSubTransport.addParser(AuthKeyValueParser.INSTANCE);
   }
 
-  /** Entity to parse a success response for an AuthSubSessionToken request. */
+  /**
+   * Key/value data to parse a success response for an AuthSubSessionToken
+   * request.
+   */
   public static final class SessionTokenResponse {
 
-    @Name("Token")
+    @Key("Token")
     public String sessionToken;
   }
 
-  /** Entity to parse a success response for an AuthSubTokenInfo request. */
+  /**
+   * Key/value data to parse a success response for an AuthSubTokenInfo request.
+   */
   public static final class TokenInfoResponse {
 
-    @Name("Secure")
+    @Key("Secure")
     public boolean secure;
 
-    @Name("Target")
+    @Key("Target")
     public String target;
 
-    @Name("Scope")
+    @Key("Scope")
     public String scope;
   }
 
@@ -139,9 +145,8 @@ public final class AuthSubHelper {
    */
   public String exchangeForSessionToken() throws IOException {
     HttpTransport authSubTransport = this.authSubTransport;
-    HttpRequest request =
-        authSubTransport
-            .buildGetRequest("https://www.google.com/accounts/AuthSubSessionToken");
+    HttpRequest request = authSubTransport.buildGetRequest();
+    request.setUrl("https://www.google.com/accounts/AuthSubSessionToken");
     SessionTokenResponse sessionTokenResponse =
         request.execute().parseAs(SessionTokenResponse.class);
     String sessionToken = sessionTokenResponse.sessionToken;
@@ -164,9 +169,8 @@ public final class AuthSubHelper {
    */
   public void revokeSessionToken() throws IOException {
     HttpTransport authSubTransport = this.authSubTransport;
-    HttpRequest request =
-        authSubTransport
-            .buildGetRequest("https://www.google.com/accounts/AuthSubRevokeToken");
+    HttpRequest request = authSubTransport.buildGetRequest();
+    request.setUrl("https://www.google.com/accounts/AuthSubRevokeToken");
     request.execute().ignore();
     setToken(null);
   }
@@ -182,9 +186,8 @@ public final class AuthSubHelper {
    */
   public TokenInfoResponse requestTokenInfo() throws IOException {
     HttpTransport authSubTransport = this.authSubTransport;
-    HttpRequest request =
-        authSubTransport
-            .buildGetRequest("https://www.google.com/accounts/AuthSubTokenInfo");
+    HttpRequest request = authSubTransport.buildGetRequest();
+    request.setUrl("https://www.google.com/accounts/AuthSubTokenInfo");
     HttpResponse response = request.execute();
     if (response.getParser() == null) {
       throw new IllegalStateException(response.parseAsString());
@@ -194,31 +197,22 @@ public final class AuthSubHelper {
 
   /** Updates the authorization headers. */
   private void updateAuthorizationHeaders() {
-    setAuthorizationHeaderOf(this.transport);
-    setAuthorizationHeaderOf(this.authSubTransport);
+    GoogleTransport transport = this.transport;
+    if (transport != null) {
+      setAuthorizationHeaderOf(transport);
+    }
+    HttpTransport authSubTransport = this.authSubTransport;
+    if (authSubTransport != null) {
+      setAuthorizationHeaderOf(authSubTransport);
+    }
   }
 
   /**
    * Sets the authorization header for the given HTTP transport based on the
    * current token.
    */
-  private void setAuthorizationHeaderOf(HttpTransport httpTransport) {
-    if (httpTransport != null) {
-      HttpHeaders headers = httpTransport.defaultHeaders;
-      String token = this.token;
-      if (token == null) {
-        headers.authorizer = null;
-        headers.setAuthorization(null);
-      } else {
-        PrivateKey privateKey = this.privateKey;
-        if (privateKey == null) {
-          headers.authorizer = null;
-          headers.setAuthorization(AuthSub.getAuthorizationHeaderValue(token));
-        } else {
-          headers.setAuthorization(null);
-          headers.authorizer = new AuthSubAuthorizer(token, privateKey);
-        }
-      }
-    }
+  private void setAuthorizationHeaderOf(HttpTransport transoprt) {
+    transport.intercepters.add(new AuthSubIntercepter(this.token,
+        this.privateKey));
   }
 }

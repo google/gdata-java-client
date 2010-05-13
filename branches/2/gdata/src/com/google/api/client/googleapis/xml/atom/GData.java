@@ -18,32 +18,37 @@ package com.google.api.client.googleapis.xml.atom;
 
 import com.google.api.client.util.ArrayMap;
 import com.google.api.client.util.ClassInfo;
-import com.google.api.client.util.Entities;
-import com.google.api.client.util.Entity;
+import com.google.api.client.util.DataUtil;
+import com.google.api.client.util.GenericData;
 import com.google.api.client.util.FieldInfo;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-/** Utilities for working with the Atom XML of Google Data API's. */
+/**
+ * Utilities for working with the Atom XML of Google Data API's.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class GData {
 
   /**
-   * Returns the fields mask to use for the given reflection-based object
-   * entity. It cannot be a {@link Map}, {@link Entity} or a {@link Collection}.
+   * Returns the fields mask to use for the given data class of key/value pairs.
+   * It cannot be a {@link Map}, {@link GenericData} or a {@link Collection}.
    */
-  public static String getFieldsFor(Class<?> entity) {
+  public static String getFieldsFor(Class<?> dataClass) {
     StringBuilder fieldsBuf = new StringBuilder();
-    appendFieldsFor(fieldsBuf, entity, new int[1]);
+    appendFieldsFor(fieldsBuf, dataClass, new int[1]);
     return fieldsBuf.toString();
   }
 
   /**
-   * Returns the fields mask to use for the given reflection-based object entity
+   * Returns the fields mask to use for the given data class of key/value pairs
    * for the feed class and for the entry class. This should only be used if the
-   * feed class does not contain the entry class as a field. The object entities
-   * cannot be a {@link Map}, {@link Entity} or a {@link Collection}.
+   * feed class does not contain the entry class as a field. The data classes
+   * cannot be a {@link Map}, {@link GenericData} or a {@link Collection}.
    */
   public static String getFeedFields(Class<?> feedClass, Class<?> entryClass) {
     StringBuilder fieldsBuf = new StringBuilder();
@@ -51,15 +56,16 @@ public class GData {
     return fieldsBuf.toString();
   }
 
-  private static void appendFieldsFor(StringBuilder fieldsBuf, Class<?> entity,
-      int[] numFields) {
-    if (Map.class.isAssignableFrom(entity)
-        || Collection.class.isAssignableFrom(entity)) {
+  private static void appendFieldsFor(StringBuilder fieldsBuf,
+      Class<?> dataClass, int[] numFields) {
+    if (Map.class.isAssignableFrom(dataClass)
+        || Collection.class.isAssignableFrom(dataClass)) {
       throw new IllegalArgumentException(
-          "cannot specify field mask for a Map or Collection class: " + entity);
+          "cannot specify field mask for a Map or Collection class: "
+              + dataClass);
     }
-    ClassInfo classInfo = ClassInfo.of(entity);
-    for (String name : classInfo.getFieldNames()) {
+    ClassInfo classInfo = ClassInfo.of(dataClass);
+    for (String name : classInfo.getKeyNames()) {
       FieldInfo fieldInfo = classInfo.getFieldInfo(name);
       if (fieldInfo.isFinal) {
         continue;
@@ -136,8 +142,8 @@ public class GData {
   public static ArrayMap<String, Object> computePatchInternal(
       FieldsMask fieldsMask, Object patchedObject, Object originalObject) {
     ArrayMap<String, Object> result = ArrayMap.create();
-    Map<String, Object> patchedMap = Entities.mapOf(patchedObject);
-    Map<String, Object> originalMap = Entities.mapOf(originalObject);
+    Map<String, Object> patchedMap = DataUtil.mapOf(patchedObject);
+    Map<String, Object> originalMap = DataUtil.mapOf(originalObject);
     HashSet<String> fieldNames = new HashSet<String>();
     fieldNames.addAll(patchedMap.keySet());
     fieldNames.addAll(originalMap.keySet());
@@ -150,7 +156,7 @@ public class GData {
       Class<?> type =
           originalValue == null ? patchedValue.getClass() : originalValue
               .getClass();
-      if (ClassInfo.isPrimitive(type)) {
+      if (FieldInfo.isPrimitive(type)) {
         if (originalValue != null && originalValue.equals(patchedValue)) {
           continue;
         }
@@ -191,7 +197,7 @@ public class GData {
       } else {
         if (originalValue == null) { // TODO: test
           fieldsMask.append(name);
-          result.add(name, Entities.mapOf(patchedValue));
+          result.add(name, DataUtil.mapOf(patchedValue));
         } else if (patchedValue == null) { // TODO: test
           fieldsMask.append(name);
         } else {

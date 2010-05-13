@@ -18,7 +18,12 @@ package com.google.api.data.youtube.v2;
 
 import com.google.api.client.escape.CharEscapers;
 
-/** URI builder for YouTube feeds. */
+/**
+ * URL builder for YouTube feeds, not including the query parameters. 
+ *
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class YouTubePath {
 
   public static final byte TYPE_VIDEOS = 0;

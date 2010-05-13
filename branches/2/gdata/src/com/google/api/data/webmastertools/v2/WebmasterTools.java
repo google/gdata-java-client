@@ -16,7 +16,11 @@
 
 package com.google.api.data.webmastertools.v2;
 
-/** Constants for the Google Webmaster Tools Data API. */
+/**
+ * Constants for the Google Webmaster Tools Data API.
+ *
+ * @since 2.2
+ */
 public final class WebmasterTools {
 
   /** The authentication token type or service name. */

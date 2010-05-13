@@ -29,14 +29,17 @@ import java.io.InputStream;
 /**
  * Abstract base class for an Atom feed parser when the feed type is known in
  * advance.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
  */
 public abstract class AbstractAtomFeedParser<T> {
 
   private boolean feedParsed;
-  public volatile XmlPullParser parser;
-  public volatile InputStream inputStream;
-  public volatile Class<T> feedClass;
-  public volatile XmlNamespaceDictionary namespaceDictionary;
+  public XmlPullParser parser;
+  public InputStream inputStream;
+  public Class<T> feedClass;
+  public XmlNamespaceDictionary namespaceDictionary;
 
   /**
    * Parse the feed and return a new parsed instance of the feed type. This

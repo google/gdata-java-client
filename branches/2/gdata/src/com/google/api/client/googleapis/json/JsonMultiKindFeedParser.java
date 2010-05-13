@@ -26,7 +26,12 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-/** Google JSON-C feed parser when the item class can be computed from the kind. */
+/**
+ * Google JSON-C feed parser when the item class can be computed from the kind.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class JsonMultiKindFeedParser<T> extends AbstractJsonFeedParser<T> {
 
   private final HashMap<String, Class<?>> kindToItemClassMap =

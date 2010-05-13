@@ -18,20 +18,25 @@ package com.google.api.client.http;
 
 import java.io.IOException;
 
-/** Parses an HTTP response into an entity object. */
+/**
+ * Parses HTTP response content into an data class of key/value pairs.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public interface HttpParser {
 
   /** Returns the content type. */
   String getContentType();
 
   /**
-   * Parses the given HTTP response into a new instance of the the given entity
-   * class.
+   * Parses the given HTTP response into a new instance of the the given data
+   * class of key/value pairs.
    * <p>
    * How the parsing is performed is not restricted by this interface, and is
    * instead defined by the concrete implementation. Implementations should
    * check {@link HttpResponse#isSuccessStatusCode} to know whether they are
    * parsing a success or error response.
    */
-  <T> T parse(HttpResponse response, Class<T> entityClass) throws IOException;
+  <T> T parse(HttpResponse response, Class<T> dataClass) throws IOException;
 }

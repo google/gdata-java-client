@@ -16,7 +16,11 @@
 
 package com.google.api.data.gbase.v2;
 
-/** Constants for the Google Base Data API. */
+/**
+ * Constants for the Google Base Data API.
+ *
+ * @since 2.2
+ */
 public final class GoogleBase {
 
   /** The authentication token type or service name. */

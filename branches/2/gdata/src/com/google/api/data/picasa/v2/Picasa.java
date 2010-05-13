@@ -16,7 +16,11 @@
 
 package com.google.api.data.picasa.v2;
 
-/** Constants for the Picasa Web Albums Data API. */
+/**
+ * Constants for the Picasa Web Albums Data API.
+ *
+ * @since 2.2
+ */
 public final class Picasa {
 
   /** The authentication token type or service name. */

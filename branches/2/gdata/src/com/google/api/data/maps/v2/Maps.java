@@ -16,7 +16,11 @@
 
 package com.google.api.data.maps.v2;
 
-/** Constants for the Google Maps Data API. */
+/**
+ * Constants for the Google Maps Data API.
+ *
+ * @since 2.2
+ */
 public final class Maps {
 
   /** The authentication token type or service name. */

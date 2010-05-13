@@ -16,7 +16,11 @@
 
 package com.google.api.data.migration.v1;
 
-/** Constants for the Google Apps Email Migration API. */
+/**
+ * Constants for the Google Apps Email Migration API.
+ *
+ * @since 2.2
+ */
 public final class Migration {
 
   /** The authentication token type or service name. */

@@ -16,9 +16,9 @@
 
 package com.google.api.client.xml;
 
-import com.google.api.client.util.ClassInfo;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.Entities;
+import com.google.api.client.util.DataUtil;
+import com.google.api.client.util.FieldInfo;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -31,6 +31,10 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class XmlNamespaceDictionary {
 
   public final HashMap<String, String> namespaceAliasToUriMap =
@@ -59,9 +63,10 @@ public final class XmlNamespaceDictionary {
   }
 
   /**
-   * Shows a debug string representation of an item entity.
+   * Shows a debug string representation of an element data object of key/value
+   * pairs.
    * 
-   * @param element element entity ({@link XmlEntity}, {@link Map}, or any
+   * @param element element data object ({@link GenericXml}, {@link Map}, or any
    *        object with public fields)
    * @param elementName optional XML element local name prefixed by its
    *        namespace alias -- for example {@code "atom:entry"} -- or {@code
@@ -80,9 +85,10 @@ public final class XmlNamespaceDictionary {
   }
 
   /**
-   * Shows a debug string representation of an item entity.
+   * Shows a debug string representation of an element data object of key/value
+   * pairs.
    * 
-   * @param element element entity ({@link XmlEntity}, {@link Map}, or any
+   * @param element element data object ({@link GenericXml}, {@link Map}, or any
    *        object with public fields)
    * @param elementNamespaceUri XML namespace URI or {@code null} for no
    *        namespace
@@ -95,9 +101,10 @@ public final class XmlNamespaceDictionary {
   }
 
   /**
-   * Shows a debug string representation of an item entity.
+   * Shows a debug string representation of an element data object of key/value
+   * pairs.
    * 
-   * @param element element entity ({@link XmlEntity}, {@link Map}, or any
+   * @param element element data object ({@link GenericXml}, {@link Map}, or any
    *        object with public fields)
    * @param elementName XML element local name prefixed by its namespace alias
    * @throws IOException I/O exception
@@ -149,7 +156,7 @@ public final class XmlNamespaceDictionary {
   }
 
   private void computeAliases(Object element, SortedSet<String> aliases) {
-    for (Map.Entry<String, Object> entry : Entities.mapOf(element).entrySet()) {
+    for (Map.Entry<String, Object> entry : DataUtil.mapOf(element).entrySet()) {
       Object value = entry.getValue();
       if (value != null) {
         String name = entry.getKey();
@@ -162,7 +169,7 @@ public final class XmlNamespaceDictionary {
                     name.charAt(0) == '@' ? 1 : 0, colon);
             aliases.add(alias);
           }
-          if (!isAttribute && !ClassInfo.isPrimitive(value)) {
+          if (!isAttribute && !FieldInfo.isPrimitive(value)) {
             computeAliases(value, aliases);
           }
         }
@@ -181,10 +188,10 @@ public final class XmlNamespaceDictionary {
     ElementSerializer(Object elementValue, boolean errorOnUnknown) {
       this.errorOnUnknown = errorOnUnknown;
       Class<?> valueClass = elementValue.getClass();
-      if (ClassInfo.isPrimitive(valueClass)) {
+      if (FieldInfo.isPrimitive(valueClass)) {
         this.textValue = elementValue;
       } else {
-        for (Map.Entry<String, Object> entry : Entities.mapOf(elementValue)
+        for (Map.Entry<String, Object> entry : DataUtil.mapOf(elementValue)
             .entrySet()) {
           Object fieldValue = entry.getValue();
           if (fieldValue != null) {
