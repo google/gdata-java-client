@@ -19,14 +19,17 @@ package com.google.api.data.sample.picasa.model;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.xml.atom.GData;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class Feed {
 
-  @Name("link")
+  @Key("link")
   public List<Link> links;
 
   public String getPostLink() {
@@ -37,10 +40,11 @@ public class Feed {
     return Link.find(links, "next");
   }
 
-  static Feed executeGet(GoogleTransport transport, PicasaUri uri,
+  static Feed executeGet(GoogleTransport transport, PicasaUrl url,
       Class<? extends Feed> feedClass) throws IOException {
-    uri.fields = GData.getFieldsFor(feedClass);
-    HttpRequest request = transport.buildGetRequest(uri.build());
+    url.fields = GData.getFieldsFor(feedClass);
+    HttpRequest request = transport.buildGetRequest();
+    request.url = url;
     return request.execute().parseAs(feedClass);
   }
 }

@@ -16,21 +16,23 @@
 
 package com.google.api.client.auth.oauth;
 
-import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.util.Hide;
+import com.google.api.client.http.HttpTransport;
+
 
 /**
- * OAuth 1.0a URI entity to request to exchange the temporary credentials token
+ * Generic OAuth 1.0a URL to request to exchange the temporary credentials token
  * (or "request token") for a long-lived credentials token (or "access token")
  * from an authorization server.
  * <p>
  * Use {@link #execute()} to execute the request. The long-lived access token
  * acquired with this request is found in {@link OAuthCredentialsResponse#token}
  * . This token must be stored. It may then be used to authorize HTTP requests
- * to protected resources by setting the {@link OAuthAuthorizer#token}, and
- * using the {@link OAuthAuthorizer} for {@link HttpHeaders#authorizer}.
+ * to protected resources by setting the {@link OAuthParameters#token}, and
+ * invoking
+ * {@link OAuthParameters#signRequestsUsingAuthorizationHeader(HttpTransport)}.
  * 
  * @since 2.2
+ * @author Yaniv Inbar
  */
 public class OAuthGetAccessToken extends AbstractOAuthGetToken {
 
@@ -39,26 +41,24 @@ public class OAuthGetAccessToken extends AbstractOAuthGetToken {
    * {@link OAuthCredentialsResponse#token} returned from
    * {@link OAuthGetTemporaryToken#execute()}.
    */
-  @Hide
-  public volatile String temporaryToken;
+  public String temporaryToken;
 
   /**
    * Required verifier code received from the server when the temporary token
-   * was authorized. It is retrieved from {@link OAuthCallbackUri#verifier}.
+   * was authorized. It is retrieved from {@link OAuthCallbackUrl#verifier}.
    */
-  @Hide
-  public volatile String verifier;
+  public String verifier;
 
   /**
-   * @param authorizationServerUri encoded authorization server URI
+   * @param authorizationServerUrl encoded authorization server URL
    */
-  public OAuthGetAccessToken(String authorizationServerUri) {
-    super(authorizationServerUri);
+  public OAuthGetAccessToken(String authorizationServerUrl) {
+    super(authorizationServerUrl);
   }
 
   @Override
-  public OAuthAuthorizer createAuthorizer() {
-    OAuthAuthorizer result = super.createAuthorizer();
+  public OAuthParameters createParameters() {
+    OAuthParameters result = super.createParameters();
     result.token = temporaryToken;
     result.verifier = verifier;
     return result;

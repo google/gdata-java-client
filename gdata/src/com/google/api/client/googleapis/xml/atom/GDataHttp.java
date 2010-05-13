@@ -16,6 +16,10 @@
 
 package com.google.api.client.googleapis.xml.atom;
 
+/**
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class GDataHttp {
   public static final String GD_NAMESPACE = "http://schemas.google.com/g/2005";
 

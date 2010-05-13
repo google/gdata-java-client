@@ -16,6 +16,12 @@
 
 package com.google.api.client.util;
 
+/**
+ * Utilities for strings.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class Strings {
 
   /**

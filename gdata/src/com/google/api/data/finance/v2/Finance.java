@@ -16,7 +16,11 @@
 
 package com.google.api.data.finance.v2;
 
-/** Constants for the Google Finance Portfolio Data API. */
+/**
+ * Constants for the Google Finance Portfolio Data API.
+ *
+ * @since 2.2
+ */
 public final class Finance {
 
   /** The authentication token type or service name. */

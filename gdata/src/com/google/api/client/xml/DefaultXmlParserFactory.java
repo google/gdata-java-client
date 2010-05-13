@@ -1,6 +1,5 @@
 package com.google.api.client.xml;
 
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -9,6 +8,9 @@ import org.xmlpull.v1.XmlSerializer;
 /**
  * Default XML parser factory that uses the default specified in
  * {@link XmlPullParserFactory}.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
  */
 public final class DefaultXmlParserFactory implements XmlParserFactory {
 

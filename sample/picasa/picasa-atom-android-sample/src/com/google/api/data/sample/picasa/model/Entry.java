@@ -17,57 +17,64 @@
 package com.google.api.data.sample.picasa.model;
 
 import com.google.api.client.googleapis.GoogleTransport;
-import com.google.api.client.googleapis.xml.atom.PatchRelativeToOriginalSerializer;
+import com.google.api.client.googleapis.xml.atom.PatchRelativeToOriginalContent;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.util.Entities;
-import com.google.api.client.util.Name;
-import com.google.api.client.xml.atom.AtomSerializer;
+import com.google.api.client.util.DataUtil;
+import com.google.api.client.util.Key;
+import com.google.api.client.xml.atom.AtomContent;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class Entry implements Cloneable {
 
-  @Name("@gd:etag")
+  @Key("@gd:etag")
   public String etag;
 
-  @Name("link")
+  @Key("link")
   public List<Link> links;
 
+  @Key
   public String title;
 
   @Override
   protected Entry clone() {
-    return Entities.clone(this);
+    return DataUtil.clone(this);
   }
 
   public void executeDelete(GoogleTransport transport) throws IOException {
-    HttpRequest request = transport.buildDeleteRequest(getEditLink());
-    request.headers.setIfMatch(this.etag);
+    HttpRequest request = transport.buildDeleteRequest();
+    request.setUrl(getEditLink());
+    request.headers.ifMatch = this.etag;
     request.execute().ignore();
   }
 
   Entry executePatchRelativeToOriginal(GoogleTransport transport, Entry original)
       throws IOException {
-    HttpRequest request = transport.buildPatchRequest(getEditLink());
-    request.headers.setIfMatch(this.etag);
-    PatchRelativeToOriginalSerializer serializer =
-        new PatchRelativeToOriginalSerializer();
+    HttpRequest request = transport.buildPatchRequest();
+    request.setUrl(getEditLink());
+    request.headers.ifMatch = this.etag;
+    PatchRelativeToOriginalContent serializer =
+        new PatchRelativeToOriginalContent();
     serializer.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
     serializer.originalEntry = original;
     serializer.patchedEntry = this;
-    request.setContent(serializer);
+    request.content = serializer;
     return request.execute().parseAs(getClass());
   }
 
   static Entry executeInsert(GoogleTransport transport, Entry entry,
       String postLink) throws IOException {
-    HttpRequest request = transport.buildPostRequest(postLink);
-    AtomSerializer serializer = new AtomSerializer();
-    serializer.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
-    serializer.entry = entry;
-    request.setContent(serializer);
+    HttpRequest request = transport.buildPostRequest();
+    request.setUrl(postLink);
+    AtomContent content = new AtomContent();
+    content.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
+    content.entry = entry;
+    request.content = content;
     return request.execute().parseAs(entry.getClass());
   }
 

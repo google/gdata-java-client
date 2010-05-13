@@ -29,14 +29,15 @@ import javax.crypto.spec.SecretKeySpec;
  * OAuth {@code "HMAC-SHA1"} signature method.
  * 
  * @since 2.2
+ * @author Yaniv Inbar
  */
 public final class OAuthHmacSigner implements OAuthSigner {
 
   /** Client-shared secret or {@code null} for none. */
-  public volatile String clientSharedSecret;
+  public String clientSharedSecret;
 
   /** Token-shared secret or {@code null} for none. */
-  public volatile String tokenSharedSecret;
+  public String tokenSharedSecret;
 
   public String getSignatureMethod() {
     return "HMAC-SHA1";
@@ -47,10 +48,10 @@ public final class OAuthHmacSigner implements OAuthSigner {
     String clientSharedSecret = this.clientSharedSecret;
     String tokenSharedSecret = this.tokenSharedSecret;
     clientSharedSecret =
-        clientSharedSecret == null ? "" : OAuthAuthorizer
+        clientSharedSecret == null ? "" : OAuthParameters
             .escape(clientSharedSecret);
     tokenSharedSecret =
-        tokenSharedSecret == null ? "" : OAuthAuthorizer
+        tokenSharedSecret == null ? "" : OAuthParameters
             .escape(tokenSharedSecret);
     String keyString =
         new StringBuilder().append(clientSharedSecret).append('&').append(

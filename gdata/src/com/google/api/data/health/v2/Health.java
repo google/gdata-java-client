@@ -16,7 +16,11 @@
 
 package com.google.api.data.health.v2;
 
-/** Constants for the Google Health Data API. */
+/**
+ * Constants for the Google Health Data API.
+ *
+ * @since 2.2
+ */
 public final class Health {
 
   /** Version name. */

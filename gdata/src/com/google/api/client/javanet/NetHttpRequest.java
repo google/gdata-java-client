@@ -16,7 +16,7 @@
 
 package com.google.api.client.javanet;
 
-import com.google.api.client.http.HttpSerializer;
+import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.LowLevelHttpResponse;
 
@@ -24,14 +24,17 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * @author Yaniv Inbar
+ */
 final class NetHttpRequest extends LowLevelHttpRequest {
 
   private final HttpURLConnection connection;
-  private HttpSerializer serializer;
+  private HttpContent content;
 
-  NetHttpRequest(String requestMethod, String uri) throws IOException {
+  NetHttpRequest(String requestMethod, String url) throws IOException {
     HttpURLConnection connection =
-        this.connection = (HttpURLConnection) new URL(uri).openConnection();
+        this.connection = (HttpURLConnection) new URL(url).openConnection();
     connection.setRequestMethod(requestMethod);
     connection.setUseCaches(false);
   }
@@ -45,19 +48,19 @@ final class NetHttpRequest extends LowLevelHttpRequest {
   public LowLevelHttpResponse execute() throws IOException {
     HttpURLConnection connection = this.connection;
     // write content
-    HttpSerializer serializer = this.serializer;
-    if (serializer != null) {
+    HttpContent content = this.content;
+    if (content != null) {
       connection.setDoOutput(true);
-      addHeader("Content-Type", serializer.getContentType());
-      String contentEncoding = serializer.getContentEncoding();
+      addHeader("Content-Type", content.getType());
+      String contentEncoding = content.getEncoding();
       if (contentEncoding != null) {
         addHeader("Content-Encoding", contentEncoding);
       }
-      long contentLength = serializer.getContentLength();
+      long contentLength = content.getLength();
       if (contentLength >= 0) {
         addHeader("Content-Length", Long.toString(contentLength));
       }
-      serializer.writeTo(connection.getOutputStream());
+      content.writeTo(connection.getOutputStream());
     }
     // Set the http.strictPostRedirect property to prevent redirected
     // POST/PUT/DELETE from being mapped to a GET. This
@@ -84,7 +87,7 @@ final class NetHttpRequest extends LowLevelHttpRequest {
   }
 
   @Override
-  public void setContent(HttpSerializer serializer) {
-    this.serializer = serializer;
+  public void setContent(HttpContent content) {
+    this.content = content;
   }
 }

@@ -18,6 +18,8 @@ package com.google.api.data.client.generator.linewrap;
 
 /**
  * Line wrapper for XML files.
+ * 
+ * @author Yaniv Inbar
  */
 public class XmlLineWrapper extends AbstractLineWrapper {
 

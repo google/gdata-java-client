@@ -20,8 +20,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,22 +30,38 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
 
+/**
+ * Parses class information to determine data key name/value pairs associated
+ * with the class.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class ClassInfo {
   private static final ThreadLocal<WeakHashMap<Class<?>, ClassInfo>> CACHE =
       new ThreadLocal<WeakHashMap<Class<?>, ClassInfo>>() {
         @Override
-        public WeakHashMap<Class<?>, ClassInfo> get() {
+        protected WeakHashMap<Class<?>, ClassInfo> initialValue() {
           return new WeakHashMap<Class<?>, ClassInfo>();
         }
       };
 
+  /** Class. */
   public final Class<?> clazz;
-  private final IdentityHashMap<String, FieldInfo> nameToFieldInfoMap =
-      new IdentityHashMap<String, FieldInfo>();
-  private final IdentityHashMap<Field, FieldInfo> fieldToFieldInfoMap =
-      new IdentityHashMap<Field, FieldInfo>();
 
+  /** Map from data key name to its field information. */
+  private final Map<String, FieldInfo> keyNameToFieldInfoMap;
+
+  /**
+   * Returns the class information for the given class.
+   * 
+   * @param clazz class or {@code null} for {@code null} result
+   * @return class information or {@code null} for {@code null} input
+   */
   public static ClassInfo of(Class<?> clazz) {
+    if (clazz == null) {
+      return null;
+    }
     WeakHashMap<Class<?>, ClassInfo> cache = CACHE.get();
     ClassInfo classInfo = cache.get(clazz);
     if (classInfo == null) {
@@ -57,33 +71,35 @@ public final class ClassInfo {
     return classInfo;
   }
 
-  public FieldInfo getFieldInfo(String fieldName) {
-    return fieldName == null ? null : this.nameToFieldInfoMap.get(fieldName
+  /**
+   * Returns the information for the given data key name or {@code null} for
+   * none.
+   */
+  public FieldInfo getFieldInfo(String keyName) {
+    return keyName == null ? null : this.keyNameToFieldInfoMap.get(keyName
         .intern());
   }
 
-  public FieldInfo getFieldInfo(Field field) {
-    return this.fieldToFieldInfoMap.get(field);
-  }
-
-  public String getFieldName(Field field) {
-    FieldInfo fieldInfo = getFieldInfo(field);
-    return fieldInfo == null ? null : fieldInfo.name;
-  }
-
-  public Field getField(String fieldName) {
-    FieldInfo fieldInfo = getFieldInfo(fieldName);
+  /** Returns the field for the given data key name or {@code null} for none. */
+  public Field getField(String keyName) {
+    FieldInfo fieldInfo = getFieldInfo(keyName);
     return fieldInfo == null ? null : fieldInfo.field;
   }
 
-  public int getFieldCount() {
-    return this.nameToFieldInfoMap.size();
+  /**
+   * Returns the number of data key name/value pairs associated with this data
+   * class.
+   */
+  public int getKeyCount() {
+    return this.keyNameToFieldInfoMap.size();
   }
 
-  public Iterable<String> getFieldNames() {
-    return Collections.unmodifiableSet(this.nameToFieldInfoMap.keySet());
+  /** Returns the data key names associated with this data class. */
+  public Iterable<String> getKeyNames() {
+    return Collections.unmodifiableSet(this.keyNameToFieldInfoMap.keySet());
   }
 
+  /** Creates a new instance of the given class using reflection. */
   public static <T> T newInstance(Class<T> clazz) {
     T newInstance;
     try {
@@ -121,27 +137,7 @@ public final class ClassInfo {
     throw new IllegalArgumentException(buf.toString(), e);
   }
 
-  /**
-   * Returns whether the given class is one of the supported primitive types
-   * like number and date/time.
-   */
-  public static boolean isPrimitive(Class<?> clazz) {
-    return clazz.isPrimitive() || clazz == Character.class
-        || clazz == String.class || clazz == Integer.class
-        || clazz == Long.class || clazz == Short.class || clazz == Byte.class
-        || clazz == Float.class || clazz == Double.class
-        || clazz == BigInteger.class || clazz == BigDecimal.class
-        || clazz == DateTime.class || clazz == Boolean.class;
-  }
-
-  /**
-   * Returns whether to given value is {@code null} or its class is primitive as
-   * defined by {@link #isPrimitive(Class)}.
-   */
-  public static boolean isPrimitive(Object value) {
-    return value == null || isPrimitive(value.getClass());
-  }
-
+  /** Returns a new instance of the given collection class. */
   public static Collection<Object> newCollectionInstance(
       Class<?> collectionClass) {
     if (collectionClass != null
@@ -166,6 +162,7 @@ public final class ClassInfo {
             + collectionClass.getName());
   }
 
+  /** Returns a new instance of the given map class. */
   public static Map<String, Object> newMapInstance(Class<?> mapClass) {
     if (mapClass != null
         && 0 == (mapClass.getModifiers() & (Modifier.ABSTRACT | Modifier.INTERFACE))) {
@@ -184,6 +181,10 @@ public final class ClassInfo {
         "no default map class defined for class: " + mapClass.getName());
   }
 
+  /**
+   * Returns the type parameter for the given field assuming it is of type
+   * collection.
+   */
   public static Class<?> getCollectionParameter(Field field) {
     if (field != null) {
       Type genericType = field.getGenericType();
@@ -198,6 +199,9 @@ public final class ClassInfo {
     return null;
   }
 
+  /**
+   * Returns the type parameter for the given field assuming it is of type map.
+   */
   public static Class<?> getMapValueParameter(Field field) {
     if (field != null) {
       Type genericType = field.getGenericType();
@@ -214,29 +218,35 @@ public final class ClassInfo {
 
   private ClassInfo(Class<?> clazz) {
     this.clazz = clazz;
-    Field[] fields = clazz.getFields();
+    // clone map from super class
+    Class<?> superClass = clazz.getSuperclass();
+    IdentityHashMap<String, FieldInfo> keyNameToFieldInfoMap =
+        new IdentityHashMap<String, FieldInfo>();
+    if (superClass != null) {
+      ClassInfo superClassInfo = ClassInfo.of(superClass);
+      keyNameToFieldInfoMap.putAll(superClassInfo.keyNameToFieldInfoMap);
+    }
+    Field[] fields = clazz.getDeclaredFields();
     int fieldsSize = fields.length;
-    IdentityHashMap<String, FieldInfo> nameToFieldInfoMap =
-        this.nameToFieldInfoMap;
-    IdentityHashMap<Field, FieldInfo> fieldToFieldInfoMap =
-        this.fieldToFieldInfoMap;
     for (int fieldsIndex = 0; fieldsIndex < fieldsSize; fieldsIndex++) {
       Field field = fields[fieldsIndex];
-      String fieldName;
-      Hide hide = field.getAnnotation(Hide.class);
-      if (hide != null) {
+      FieldInfo fieldInfo = FieldInfo.of(field);
+      if (fieldInfo == null) {
         continue;
       }
-      Name name = field.getAnnotation(Name.class);
-      if (name == null) {
-        fieldName = field.getName();
-      } else {
-        fieldName = name.value();
+      String fieldName = fieldInfo.name;
+      FieldInfo conflictingFieldInfo = keyNameToFieldInfoMap.get(fieldName);
+      if (conflictingFieldInfo != null) {
+        throw new IllegalArgumentException(
+            "two fields have the same data key name: " + field + " and "
+                + conflictingFieldInfo.field);
       }
-      fieldName = fieldName.intern();
-      FieldInfo fieldInfo = new FieldInfo(field, fieldName);
-      nameToFieldInfoMap.put(fieldName, fieldInfo);
-      fieldToFieldInfoMap.put(field, fieldInfo);
+      keyNameToFieldInfoMap.put(fieldName, fieldInfo);
+    }
+    if (keyNameToFieldInfoMap.isEmpty()) {
+      this.keyNameToFieldInfoMap = Collections.emptyMap();
+    } else {
+      this.keyNameToFieldInfoMap = keyNameToFieldInfoMap;
     }
   }
 }

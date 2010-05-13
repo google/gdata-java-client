@@ -16,7 +16,11 @@
 
 package com.google.api.data.analytics.v2;
 
-/** Constants for the Google Analytics Data Export API. */
+/**
+ * Constants for the Google Analytics Data Export API.
+ *
+ * @since 2.2
+ */
 public final class Analytics {
 
   /** The authentication token type or service name. */

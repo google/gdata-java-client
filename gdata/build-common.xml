@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
 
-  <!--
-    You must have ANDROID_JAR set to the location of android.jar (minimum 2.0),
-    and JAVA_HOME set to a JDK (minimum 1.5) installation.
-  -->
 <project basedir="." default="compile" name="common">
 
   <property environment="env" />
@@ -21,12 +17,6 @@
       <compilerarg value="-Xlint:all" />
       <src path="${src.dir}" />
       <classpath>
-        <!-- TODO Remove once request layer is using generic jsonEntity -->
-        <pathelement location="${lib.dir}/json.jar" />
-        <!--
-          TODO change to this env variable @release time <pathelement
-          location="${env.ANDROID_JAR}" />
-        -->
         <pathelement location="${lib.dir}/${android.jar}" />
         <pathelement location="${lib.dir}/${jackson.jar}" />
       </classpath>

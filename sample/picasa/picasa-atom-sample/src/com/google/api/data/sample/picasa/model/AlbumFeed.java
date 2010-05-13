@@ -17,21 +17,24 @@
 package com.google.api.data.sample.picasa.model;
 
 import com.google.api.client.googleapis.GoogleTransport;
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class AlbumFeed extends Feed {
 
-  @Name("entry")
+  @Key("entry")
   public List<PhotoEntry> photos;
 
   public static AlbumFeed executeGet(GoogleTransport transport, String link)
       throws IOException {
-    PicasaUri uri = new PicasaUri(link);
-    uri.kinds = "photo";
-    uri.maxResults = 5;
-    return (AlbumFeed) Feed.executeGet(transport, uri, AlbumFeed.class);
+    PicasaUrl url = new PicasaUrl(link);
+    url.kinds = "photo";
+    url.maxResults = 5;
+    return (AlbumFeed) Feed.executeGet(transport, url, AlbumFeed.class);
   }
 }

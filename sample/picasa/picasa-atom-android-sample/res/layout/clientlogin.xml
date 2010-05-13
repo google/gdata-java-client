@@ -1,0 +1,15 @@
+<LinearLayout android:id="@+id/LinearLayout01"
+  android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical">
+  <TextView android:layout_width="wrap_content"
+    android:layout_height="wrap_content" android:text="Email:"></TextView>
+  <EditText android:text="" android:layout_width="fill_parent"
+    android:layout_height="wrap_content" android:id="@+id/Email"></EditText>
+  <TextView android:text="Password:"
+    android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+  <EditText android:text="" android:layout_width="fill_parent"
+    android:layout_height="wrap_content" android:id="@+id/Password"></EditText>
+  <Button android:id="@+id/SignIn" android:layout_width="wrap_content"
+    android:layout_height="wrap_content" android:text="Sign in"></Button>
+</LinearLayout>

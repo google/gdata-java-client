@@ -16,7 +16,7 @@
 
 package com.google.api.client.apache;
 
-import com.google.api.client.http.HttpSerializer;
+import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.LowLevelHttpResponse;
 
@@ -26,6 +26,9 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.IOException;
 
+/**
+ * @author Yaniv Inbar
+ */
 final class ApacheHttpRequest extends LowLevelHttpRequest {
   private final HttpClient httpClient;
 
@@ -49,11 +52,10 @@ final class ApacheHttpRequest extends LowLevelHttpRequest {
   }
 
   @Override
-  public void setContent(HttpSerializer serializer) {
-    GDataEntity entity =
-        new GDataEntity(serializer.getContentLength(), serializer);
-    entity.setContentEncoding(serializer.getContentEncoding());
-    entity.setContentType(serializer.getContentType());
+  public void setContent(HttpContent content) {
+    ContentEntity entity = new ContentEntity(content.getLength(), content);
+    entity.setContentEncoding(content.getEncoding());
+    entity.setContentType(content.getType());
     ((HttpEntityEnclosingRequest) this.request).setEntity(entity);
   }
 }

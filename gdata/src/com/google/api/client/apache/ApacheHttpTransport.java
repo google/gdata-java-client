@@ -28,9 +28,19 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-final class ApacheHttpTransport extends LowLevelHttpTransport {
+/**
+ * HTTP low-level transport based on the Apache HTTP Client library.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
+public final class ApacheHttpTransport extends LowLevelHttpTransport {
 
+  /** Apache HTTP client. */
   private final HttpClient httpClient;
+
+  /** Singleton instance of this transport. */
+  public static final ApacheHttpTransport INSTANCE = new ApacheHttpTransport();
 
   ApacheHttpTransport() {
     // Turn off stale checking. Our connections break all the time anyway,
@@ -50,27 +60,27 @@ final class ApacheHttpTransport extends LowLevelHttpTransport {
   }
 
   @Override
-  public ApacheHttpRequest buildDeleteRequest(String uri) {
-    return new ApacheHttpRequest(this.httpClient, new HttpDelete(uri));
+  public ApacheHttpRequest buildDeleteRequest(String url) {
+    return new ApacheHttpRequest(this.httpClient, new HttpDelete(url));
   }
 
   @Override
-  public ApacheHttpRequest buildGetRequest(String uri) {
-    return new ApacheHttpRequest(this.httpClient, new HttpGet(uri));
+  public ApacheHttpRequest buildGetRequest(String url) {
+    return new ApacheHttpRequest(this.httpClient, new HttpGet(url));
   }
 
   @Override
-  public ApacheHttpRequest buildPatchRequest(String uri) {
-    return new ApacheHttpRequest(this.httpClient, new HttpPatch(uri));
+  public ApacheHttpRequest buildPatchRequest(String url) {
+    return new ApacheHttpRequest(this.httpClient, new HttpPatch(url));
   }
 
   @Override
-  public ApacheHttpRequest buildPostRequest(String uri) {
-    return new ApacheHttpRequest(this.httpClient, new HttpPost(uri));
+  public ApacheHttpRequest buildPostRequest(String url) {
+    return new ApacheHttpRequest(this.httpClient, new HttpPost(url));
   }
 
   @Override
-  public ApacheHttpRequest buildPutRequest(String uri) {
-    return new ApacheHttpRequest(this.httpClient, new HttpPut(uri));
+  public ApacheHttpRequest buildPutRequest(String url) {
+    return new ApacheHttpRequest(this.httpClient, new HttpPut(url));
   }
 }

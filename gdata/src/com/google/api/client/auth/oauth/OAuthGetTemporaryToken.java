@@ -16,20 +16,20 @@
 
 package com.google.api.client.auth.oauth;
 
-import com.google.api.client.util.Hide;
 
 /**
- * OAuth 1.0a URI entity to request a temporary credentials token (or
+ * Generic OAuth 1.0a URL to request a temporary credentials token (or
  * "request token") from an authorization server.
  * <p>
  * Use {@link #execute()} to execute the request. The temporary token acquired
  * with this request is found in {@link OAuthCredentialsResponse#token}. This
  * temporary token is used in
- * {@link OAuthAuthorizeTemporaryTokenUri#temporaryToken} to direct the end user
+ * {@link OAuthAuthorizeTemporaryTokenUrl#temporaryToken} to direct the end user
  * to an authorization page to allow the end user to authorize the temporary
  * token.
  * 
  * @since 2.2
+ * @author Yaniv Inbar
  */
 public class OAuthGetTemporaryToken extends AbstractOAuthGetToken {
 
@@ -38,19 +38,18 @@ public class OAuthGetTemporaryToken extends AbstractOAuthGetToken {
    * owner when the Resource Owner Authorization step is completed or {@code
    * null} for none.
    */
-  @Hide
-  public volatile String callback;
+  public String callback;
 
   /**
-   * @param authorizationServerUri encoded authorization server URI
+   * @param authorizationServerUrl encoded authorization server URL
    */
-  public OAuthGetTemporaryToken(String authorizationServerUri) {
-    super(authorizationServerUri);
+  public OAuthGetTemporaryToken(String authorizationServerUrl) {
+    super(authorizationServerUrl);
   }
 
   @Override
-  public OAuthAuthorizer createAuthorizer() {
-    OAuthAuthorizer result = super.createAuthorizer();
+  public OAuthParameters createParameters() {
+    OAuthParameters result = super.createParameters();
     result.callback = this.callback;
     return result;
   }

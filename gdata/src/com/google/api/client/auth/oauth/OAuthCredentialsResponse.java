@@ -16,32 +16,33 @@
 
 package com.google.api.client.auth.oauth;
 
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
 /**
- * Entity to parse a success response to a request for temporary or token
+ * Data to parse a success response to a request for temporary or token
  * credentials.
  * 
  * @since 2.2
+ * @author Yaniv Inbar
  */
 public final class OAuthCredentialsResponse {
 
   /** Credentials token. */
-  @Name("oauth_token")
-  public volatile String token;
+  @Key("oauth_token")
+  public String token;
 
   /**
    * Credentials shared-secret for use with {@code "HMAC-SHA1"} signature
    * algorithm. Used for {@link OAuthHmacSigner#tokenSharedSecret}.
    */
-  @Name("oauth_token_secret")
-  public volatile String tokenSecret;
+  @Key("oauth_token_secret")
+  public String tokenSecret;
 
   /**
    * {@code "true"} for temporary credentials request or {@code null} for a
    * token credentials request. The parameter is used to differentiate from
    * previous versions of the protocol.
    */
-  @Name("oauth_callback_confirmed")
-  public volatile Boolean callbackConfirmed;
+  @Key("oauth_callback_confirmed")
+  public Boolean callbackConfirmed;
 }

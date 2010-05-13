@@ -23,11 +23,12 @@ import org.codehaus.jackson.JsonParser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Logger;
 
+/**
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class JsonHttp {
-
-  static final Logger LOGGER = Logger.getLogger(JsonHttp.class.getName());
 
   public static <T, I> JsonFeedParser<T, I> useFeedParser(
       HttpResponse response, Class<T> feedClass, Class<I> itemClass)

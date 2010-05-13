@@ -44,12 +44,12 @@ follows:</p>
   specified for installed applications.</li>
   <li>Direct the end user to an authorization web page to allow the end
   user to authorize the temporary token using using {@link
-  com.google.api.client.auth.oauth.OAuthAuthorizeTemporaryTokenUri}.</li>
+  com.google.api.client.auth.oauth.OAuthAuthorizeTemporaryTokenUrl}.</li>
   <li>After the user has granted the authorization:
   <ul>
     <li>For web applications, the user's browser will be redirected to the
     callback URL which may be parsed using {@link
-    com.google.api.client.auth.oauth.OAuthCallbackUri}.</li>
+    com.google.api.client.auth.oauth.OAuthCallbackUrl}.</li>
     <li>For installed applications, see the authorization server's
     documentation for figuring out the verification code.</li>
   </ul>
@@ -60,8 +60,18 @@ follows:</p>
   be stored.</li>
   <li>Use the stored access token to authorize HTTP requests to protected
   resources by setting the {@link
-  com.google.api.client.auth.oauth.OAuthAuthorizer} for {@link
-  com.google.api.client.http.HttpHeaders#authorizer}.</li>
+  com.google.api.client.auth.oauth.OAuthParameters#token} and invoking
+  {@link
+  com.google.api.client.auth.oauth.OAuthParameters#signRequestsUsingAuthorizationHeader}.</li>
 </ol>
+
+<p>This package depends on the {@link com.google.api.client.auth}, {@link
+com.google.api.client.escape}, {@link com.google.api.client.http}, and {@link
+com.google.api.client.util} packages.</p>
+
+<p><b>Warning: this package is experimental, and its content may be
+changed in incompatible ways or possibly entirely removed in a future version of
+the library</b></p>
+
 @since 2.2
 </body>

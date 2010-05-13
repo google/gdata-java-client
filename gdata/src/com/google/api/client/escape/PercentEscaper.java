@@ -57,13 +57,15 @@ package com.google.api.client.escape;
  * href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>:<br>
  * <i>"URI producers and normalizers should use uppercase hexadecimal digits for
  * all percent-encodings."</i>
+ * 
+ * @since 2.2
  */
 public class PercentEscaper extends UnicodeEscaper {
   /**
    * A string of safe characters that mimics the behavior of
    * {@link java.net.URLEncoder}.
    * 
-   * TODO(dbeaumont): Fix escapers to be compliant with RFC 3986
+   * TODO: Fix escapers to be compliant with RFC 3986
    */
   public static final String SAFECHARS_URLENCODER = "-_.*";
 
@@ -85,7 +87,6 @@ public class PercentEscaper extends UnicodeEscaper {
   // In some uri escapers spaces are escaped to '+'
   private static final char[] URI_ESCAPED_SPACE = {'+'};
 
-  // TODO(dbeaumont): Remove this once UriEscaper uses lower case
   private static final char[] UPPER_HEX_DIGITS =
       "0123456789ABCDEF".toCharArray();
 

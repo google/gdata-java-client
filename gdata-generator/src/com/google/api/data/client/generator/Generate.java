@@ -18,6 +18,8 @@ package com.google.api.data.client.generator;
 
 import com.google.api.client.json.Json;
 import com.google.api.data.client.generator.linewrap.LineWrapper;
+import com.google.api.data.client.generator.model.Client;
+import com.google.api.data.client.generator.model.Version;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
@@ -34,12 +36,16 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class Generate {
 
   File gdataRootDir;
 
   public static void main(String[] args) throws IOException {
-    System.out.println("GData Client Library Generator for version 2.2.0-alpha");
+    System.out
+        .println("GData Client Library Generator for version 2.2.0-alpha");
     if (args.length < 2) {
       System.err
           .println("Expected arguments: dataDirectory gdataLibraryDirectory");
@@ -69,7 +75,8 @@ public class Generate {
     }
     // compute file generators
     List<FileGenerator> fileGenerators = new ArrayList<FileGenerator>();
-    fileGenerators.add(new AntBuildFileGenerator(clients));
+    fileGenerators.add(new ClientJarsAntBuildFileGenerator());
+    fileGenerators.add(new DataJarsAntBuildFileGenerator(clients));
     for (Client client : clients) {
       for (Version version : client.versions.values()) {
         fileGenerators.add(new MainJavaFileGenerator(version));

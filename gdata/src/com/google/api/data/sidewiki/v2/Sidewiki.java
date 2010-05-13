@@ -16,7 +16,11 @@
 
 package com.google.api.data.sidewiki.v2;
 
-/** Constants for the Google Sidewiki Data API. */
+/**
+ * Constants for the Google Sidewiki Data API.
+ *
+ * @since 2.2
+ */
 public final class Sidewiki {
 
   /** Version name. */

@@ -18,6 +18,8 @@ package com.google.api.data.client.generator.linewrap;
 
 /**
  * Abstract super class for all language-specific line wrappers.
+ * 
+ * @author Yaniv Inbar
  */
 abstract class AbstractLineWrapper implements LineWrapper {
 
@@ -29,7 +31,7 @@ abstract class AbstractLineWrapper implements LineWrapper {
 
 
   /**
-   * Computation state interface used for storing arbitraty data during the line
+   * Computation state interface used for storing arbitrary data during the line
    * wrapping computation that can be shared across all lines.
    */
   interface ComputationState {

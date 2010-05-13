@@ -39,12 +39,12 @@ follows:</p>
   specified for installed applications.</li>
   <li>Direct the end user to a Google Accounts web page to allow the end
   user to authorize the temporary token using using {@link
-  com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUri}.</li>
+  com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUrl}.</li>
   <li>After the user has granted the authorization:
   <ul>
     <li>For web applications, the user's browser will be redirected to the
     callback URL which may be parsed using {@link
-    com.google.api.client.auth.oauth.OAuthCallbackUri}.</li>
+    com.google.api.client.auth.oauth.OAuthCallbackUrl}.</li>
     <li>For installed applications, use {@code ""} for the verification
     code.</li>
   </ul>
@@ -55,11 +55,15 @@ follows:</p>
   access token must be stored.</li>
   <li>Use the stored access token to authorize HTTP requests to protected
   resources in Google services by setting the {@link
-  com.google.api.client.auth.oauth.OAuthAuthorizer} for {@link
-  com.google.api.client.http.HttpHeaders#authorizer}.</li>
+  com.google.api.client.auth.oauth.OAuthParameters#token} and invoking
+  {@link
+  com.google.api.client.auth.oauth.OAuthParameters#signRequestsUsingAuthorizationHeader}.</li>
   <li>For 2-legged OAuth, use {@link
-  com.google.api.client.googleapis.auth.oauth.Google2LeggedOAuthUriEntity} as
-  the URI entity builder to set the requestor ID.</li>
+  com.google.api.client.googleapis.auth.oauth.GoogleOAuthDomainWideDelegation}
+  as a request execute intercepter to set the e-mail address of the user on
+  every HTTP request, or {@link
+  com.google.api.client.googleapis.auth.oauth.GoogleOAuthDomainWideDelegation.Url}
+  as a generic URL builder with the requestor ID parameter.</li>
   <li>To revoke an access token, use {@link
   com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken#revokeAccessToken}.
   Users can also manually revoke tokens from Google's <a
@@ -93,7 +97,7 @@ public class PicasaSample extends HttpServlet {
     REGISTERED_RSA, REGISTERED_HMAC, UNREGISTERED_HMAC
   }
 
-  static final OAuthType OAUTH_TYPE = OAuthType.UNREGISTERED_HMAC;
+  static final OAuthType OAUTH_TYPE = OAuthType.REGISTERED_RSA;
 
   private static final String CONSUMER_KEY =
       OAUTH_TYPE == OAuthType.UNREGISTERED_HMAC ? "anonymous" : "...";
@@ -117,12 +121,12 @@ public class PicasaSample extends HttpServlet {
       this.temporary = response.callbackConfirmed != null;
     }
 
-    OAuthAuthorizer createAuthorizer() throws IOException {
-      OAuthAuthorizer authorizer = new OAuthAuthorizer();
-      authorizer.consumerKey = CONSUMER_KEY;
-      authorizer.signer = createSigner(this);
-      authorizer.token = token;
-      return authorizer;
+    OAuthParameters createParameters() throws IOException {
+      OAuthParameters result = new OAuthParameters();
+      result.consumerKey = CONSUMER_KEY;
+      result.signer = createSigner(this);
+      result.token = token;
+      return result;
     }
   }
 
@@ -140,7 +144,7 @@ public class PicasaSample extends HttpServlet {
       throws IOException {
     PrintWriter writer = response.getWriter();
     GoogleTransport transport = new GoogleTransport("...");
-    transport.setGDataVersionHeader(Picasa.VERSION);
+    transport.setVersionHeader(Picasa.VERSION);
     try {
       String thisURL = request.getRequestURI();
       String userId = getCurrentUserId();
@@ -150,7 +154,7 @@ public class PicasaSample extends HttpServlet {
         fullUrlBuf.append('?').append(request.getQueryString());
       }
       String fullUrl = fullUrlBuf.toString();
-      OAuthCallbackUri authorizeResponse = new OAuthCallbackUri(fullUrl);
+      OAuthCallbackUrl authorizeResponse = new OAuthCallbackUrl(fullUrl);
       if (tokenInfo != null && tokenInfo.temporary
           && authorizeResponse.verifier == null) {
         tokenInfo = null;
@@ -164,10 +168,10 @@ public class PicasaSample extends HttpServlet {
         requestToken.scope = SCOPE;
         requestToken.callback = request.getRequestURL().toString();
         tokenInfo = execute(requestToken);
-        GoogleOAuthAuthorizeTemporaryTokenUri authorizeUri =
-            new GoogleOAuthAuthorizeTemporaryTokenUri();
-        authorizeUri.temporaryToken = tokenInfo.token;
-        response.sendRedirect(authorizeUri.build());
+        GoogleOAuthAuthorizeTemporaryTokenUrl authorizeUrl =
+            new GoogleOAuthAuthorizeTemporaryTokenUrl();
+        authorizeUrl.temporaryToken = tokenInfo.token;
+        response.sendRedirect(authorizeUrl.build());
         return;
       }
       if (tokenInfo.temporary) {
@@ -180,7 +184,8 @@ public class PicasaSample extends HttpServlet {
         tokenInfo = execute(accessToken);
         signer = createSigner(tokenInfo);
       }
-      transport.defaultHeaders.authorizer = tokenInfo.createAuthorizer();
+      tokenInfo.createParameters().signRequestsUsingAuthorizationHeader(
+          transport);
       run(writer, transport);
     } catch (Exception e) {
       handleException(writer, e);
@@ -217,5 +222,30 @@ public class PicasaSample extends HttpServlet {
   }
 }
 </code></pre>
+To later revoke the token:
+<pre><code>
+    for (Map.Entry&lt;String, TokenInfo&gt; entry : OAUTH_TOKENS.entrySet()) {
+      TokenInfo tokenInfo = entry.getValue();
+      if (!tokenInfo.temporary) {
+        String user = entry.getKey();
+        try {
+          OAuthParameters parameters = tokenInfo.createParameters();
+          GoogleOAuthGetAccessToken.revokeAccessToken(parameters);
+        } catch (Exception e) {
+          handleException(writer, e);
+        }
+      }
+    }
+    OAUTH_TOKENS.clear();
+</code></pre>
+
+<p>This package depends on the {@link com.google.api.client.auth.oauth},
+{@link com.google.api.client.googleapis}, {@link com.google.api.client.http},
+and {@link com.google.api.client.util} packages.</p>
+
+<p><b>Warning: this package is experimental, and its content may be
+changed in incompatible ways or possibly entirely removed in a future version of
+the library</b></p>
+
 @since 2.2
 </body>

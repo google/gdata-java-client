@@ -16,7 +16,11 @@
 
 package com.google.api.data.codesearch.v2;
 
-/** Constants for the Google Code Search Data API. */
+/**
+ * Constants for the Google Code Search Data API.
+ *
+ * @since 2.2
+ */
 public final class CodeSearch {
 
   /** Version name. */

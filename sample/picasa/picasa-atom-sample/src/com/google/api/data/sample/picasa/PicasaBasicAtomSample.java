@@ -16,24 +16,23 @@
 
 package com.google.api.data.sample.picasa;
 
-import com.google.api.client.auth.oauth.OAuthAuthorizer;
+import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
-import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUri;
+import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUrl;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.util.Entity;
-import com.google.api.client.xml.atom.AtomHttpParser;
+import com.google.api.client.xml.atom.AtomParser;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
 import com.google.api.data.sample.picasa.model.AlbumEntry;
 import com.google.api.data.sample.picasa.model.AlbumFeed;
+import com.google.api.data.sample.picasa.model.Debug;
 import com.google.api.data.sample.picasa.model.PhotoEntry;
-import com.google.api.data.sample.picasa.model.PicasaUri;
 import com.google.api.data.sample.picasa.model.UserFeed;
 
 import java.io.IOException;
@@ -44,6 +43,9 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class PicasaBasicAtomSample {
 
   enum AuthType {
@@ -55,7 +57,7 @@ public class PicasaBasicAtomSample {
   static OAuthCredentialsResponse credentials;
 
   public static void main(String[] args) throws IOException {
-    if (PicasaUri.DEBUG) {
+    if (Debug.ENABLED) {
       enableLogging();
     }
     try {
@@ -67,16 +69,13 @@ public class PicasaBasicAtomSample {
       album = updateTitle(transport, album);
       deleteAlbum(transport, album);
     } catch (HttpResponseException e) {
-      if (e.response.getParser() != null) {
-        System.err.println(e.response.parseAs(Entity.class));
-      } else {
-        System.err.println(e.response.parseAsString());
-      }
+      System.err.println(e.response.parseAsString());
       throw e;
     } finally {
       if (credentials != null) {
         try {
-          GoogleOAuthGetAccessToken.revokeAccessToken(createOAuthAuthorizer());
+          GoogleOAuthGetAccessToken
+              .revokeAccessToken(createOAuthParameters());
         } catch (Exception e) {
           e.printStackTrace(System.err);
         }
@@ -87,10 +86,10 @@ public class PicasaBasicAtomSample {
   private static GoogleTransport setUpGoogleTransport() throws IOException {
     GoogleTransport transport =
         new GoogleTransport("google-picasaatomsample-1.0");
-    transport.setGDataVersionHeader(Picasa.VERSION);
-    AtomHttpParser parser = new AtomHttpParser();
+    transport.setVersionHeader(Picasa.VERSION);
+    AtomParser parser = new AtomParser();
     parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
-    transport.setParser(parser);
+    transport.addParser(parser);
     if (AUTH_TYPE == AuthType.OAUTH) {
       authorizeUsingOAuth(transport);
     } else {
@@ -99,8 +98,8 @@ public class PicasaBasicAtomSample {
     return transport;
   }
 
-  private static OAuthAuthorizer createOAuthAuthorizer() {
-    OAuthAuthorizer authorizer = new OAuthAuthorizer();
+  private static OAuthParameters createOAuthParameters() {
+    OAuthParameters authorizer = new OAuthParameters();
     authorizer.consumerKey = "anonymous";
     authorizer.signer = signer;
     authorizer.token = credentials.token;
@@ -122,10 +121,10 @@ public class PicasaBasicAtomSample {
     signer.tokenSharedSecret = tempCredentials.tokenSecret;
     System.out
         .println("Please go open this web page in a browser to authorize:");
-    GoogleOAuthAuthorizeTemporaryTokenUri authorizeUri =
-        new GoogleOAuthAuthorizeTemporaryTokenUri();
-    authorizeUri.temporaryToken = tempCredentials.token;
-    System.out.println(authorizeUri.build());
+    GoogleOAuthAuthorizeTemporaryTokenUrl authorizeUrl =
+        new GoogleOAuthAuthorizeTemporaryTokenUrl();
+    authorizeUrl.temporaryToken = tempCredentials.token;
+    System.out.println(authorizeUrl.build());
     System.out.println();
     System.out.println("Press enter to continue...");
     new Scanner(System.in).nextLine();
@@ -136,7 +135,7 @@ public class PicasaBasicAtomSample {
     accessToken.verifier = "";
     credentials = accessToken.execute();
     signer.tokenSharedSecret = credentials.tokenSecret;
-    transport.defaultHeaders.authorizer = createOAuthAuthorizer();
+    createOAuthParameters().signRequestsUsingAuthorizationHeader(transport);
   }
 
   private static void authorizeUsingClientLogin(GoogleTransport transport)
@@ -153,7 +152,7 @@ public class PicasaBasicAtomSample {
 
   private static UserFeed showAlbums(GoogleTransport transport)
       throws IOException {
-    // build URI for the default user feed of albums
+    // build URL for the default user feed of albums
     PicasaPath path = PicasaPath.feed();
     path.user = "default";
     // execute GData request for the feed

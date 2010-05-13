@@ -27,11 +27,12 @@ import java.security.PrivateKey;
  * The private key may be retrieved using the utilities in {@link RsaSha}.
  * 
  * @since 2.2
+ * @author Yaniv Inbar
  */
 public final class OAuthRsaSigner implements OAuthSigner {
 
   /** Private key. */
-  public volatile PrivateKey privateKey;
+  public PrivateKey privateKey;
 
   public String getSignatureMethod() {
     return "RSA-SHA1";

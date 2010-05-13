@@ -16,10 +16,18 @@
 
 package com.google.api.data.sample.youtube.model;
 
+import com.google.api.client.util.Key;
+
 import java.util.List;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class Video extends Item {
+  @Key
   public String description;
+  @Key
   public List<String> tags;
+  @Key
   public Player player;
 }

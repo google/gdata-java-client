@@ -16,8 +16,13 @@
 
 package com.google.api.data.client.generator;
 
+import com.google.api.data.client.generator.model.Version;
+
 import java.io.PrintWriter;
 
+/**
+ * @author Yaniv Inbar
+ */
 public final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
 
   private final Version version;
@@ -28,8 +33,17 @@ public final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
 
   public void generate(PrintWriter out) {
     out.println("<body>");
-    out.println("Small optional Java library for the Atom XML format for "
+    out.println("Small optional Java library for the Atom XML " + "format for "
         + version.client.name + " version " + version.id + ".");
+    out.println("");
+    out.println("<p>This package depends on the "
+        + "{@link com.google.api.client.xml} package.</p>");
+    out.println("");
+    out.println("<p><b>Warning: this package is experimental, and its content "
+        + "may be changed in incompatible ways or possibly entirely removed "
+        + "in a future version of the library</b></p>");
+    out.println("");
+    out.println("@since 2.2");
     out.println("</body>");
     out.close();
   }

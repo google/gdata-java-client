@@ -16,9 +16,12 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class MediaGroup {
-  @Name("media:content")
+  @Key("media:content")
   public MediaContent content;
 }

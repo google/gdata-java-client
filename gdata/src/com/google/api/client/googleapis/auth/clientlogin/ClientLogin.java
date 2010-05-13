@@ -21,44 +21,47 @@ import com.google.api.client.googleapis.auth.AuthKeyValueParser;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.UrlEncodedFormHttpSerializer;
-import com.google.api.client.util.Name;
+import com.google.api.client.http.UrlEncodedContent;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 
 /**
- * Client login authentication method as described in <a
+ * Client Login authentication method as described in <a
  * href="http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html"
  * >ClientLogin for Installed Applications</a>.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
  */
 public final class ClientLogin {
 
-  @Name("source")
+  @Key("source")
   public String applicationName;
 
-  @Name("service")
+  @Key("service")
   public String authTokenType;
 
-  @Name("Email")
+  @Key("Email")
   public String username;
 
-  @Name("Passwd")
+  @Key("Passwd")
   public String password;
 
-  @Name("logintoken")
+  @Key("logintoken")
   public String captchaToken;
 
-  @Name("logincaptcha")
+  @Key("logincaptcha")
   public String captchaAnswer;
 
-  /** Entity to parse a success response. */
+  /** Key/value data to parse a success response. */
   public static final class Response {
 
-    @Name("Auth")
+    @Key("Auth")
     public String auth;
 
     public String getAuthorizationHeaderValue() {
-      return GoogleTransport.getGoogleLoginAuthorizationHeaderValue(this.auth);
+      return GoogleTransport.getClientLoginHeaderValue(this.auth);
     }
 
     /**
@@ -66,23 +69,23 @@ public final class ClientLogin {
      * authentication token.
      */
     public void setAuthorizationHeader(GoogleTransport googleTransport) {
-      googleTransport.setGoogleLoginAuthorizationHeader(this.auth);
+      googleTransport.setClientLoginToken(this.auth);
     }
   }
 
-  /** Entity to parse an error response. */
+  /** Key/value data to parse an error response. */
   public static final class ErrorInfo {
 
-    @Name("Error")
+    @Key("Error")
     public String error;
 
-    @Name("Url")
+    @Key("Url")
     public String url;
 
-    @Name("CaptchaToken")
+    @Key("CaptchaToken")
     public String captchaToken;
 
-    @Name("CaptchaUrl")
+    @Key("CaptchaUrl")
     public String captchaUrl;
   }
 
@@ -97,11 +100,13 @@ public final class ClientLogin {
    */
   public Response authenticate() throws HttpResponseException, IOException {
     HttpTransport transport = new HttpTransport();
-    AuthKeyValueParser.setAsParserOf(transport);
-    HttpRequest request =
-        transport
-            .buildPostRequest("https://www.google.com/accounts/ClientLogin");
-    request.setContentNoLogging(new UrlEncodedFormHttpSerializer(this));
+    transport.addParser(AuthKeyValueParser.INSTANCE);
+    HttpRequest request = transport.buildPostRequest();
+    request.setUrl("https://www.google.com/accounts/ClientLogin");
+    UrlEncodedContent content = new UrlEncodedContent();
+    content.setData(this);
+    request.disableContentLogging = true;
+    request.content = content;
     return request.execute().parseAs(Response.class);
   }
 }

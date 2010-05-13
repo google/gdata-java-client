@@ -22,17 +22,23 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Map that uses {@link ClassInfo} to parse the key/value pairs into a map.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class ReflectionMap extends AbstractMap<String, Object> {
 
   private final int size;
-  private volatile EntrySet entrySet;
+  private EntrySet entrySet;
   private final ClassInfo classInfo;
   private final Object object;
 
   public ReflectionMap(Object object) {
     this.object = object;
     ClassInfo classInfo = this.classInfo = ClassInfo.of(object.getClass());
-    this.size = classInfo.getFieldCount();
+    this.size = classInfo.getKeyCount();
   }
 
   // TODO: implement more methods for faster implementation!
@@ -65,7 +71,7 @@ public final class ReflectionMap extends AbstractMap<String, Object> {
 
     EntryIterator() {
       this.fieldNamesIterator =
-          ReflectionMap.this.classInfo.getFieldNames().iterator();
+          ReflectionMap.this.classInfo.getKeyNames().iterator();
     }
 
     public boolean hasNext() {
@@ -82,7 +88,7 @@ public final class ReflectionMap extends AbstractMap<String, Object> {
     }
   }
 
-  public static final class Entry implements Map.Entry<String, Object> {
+  static final class Entry implements Map.Entry<String, Object> {
 
     private boolean isFieldValueComputed;
 

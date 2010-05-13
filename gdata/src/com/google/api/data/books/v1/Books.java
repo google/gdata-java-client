@@ -16,7 +16,11 @@
 
 package com.google.api.data.books.v1;
 
-/** Constants for the Google Book Search Data API. */
+/**
+ * Constants for the Google Book Search Data API.
+ *
+ * @since 2.2
+ */
 public final class Books {
 
   /** The authentication token type or service name. */

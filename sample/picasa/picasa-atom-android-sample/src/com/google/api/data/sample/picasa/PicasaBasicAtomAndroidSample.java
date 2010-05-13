@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -21,17 +22,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.EditText;
 
-import com.google.api.client.android.AndroidGData;
-import com.google.api.client.googleapis.GoogleHttp;
+import com.google.api.client.apache.ApacheHttpTransport;
+import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
+import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.InputStreamHttpSerializer;
-import com.google.api.client.http.UriEntity;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.xml.atom.AtomHttpParser;
+import com.google.api.client.xml.atom.AtomParser;
 import com.google.api.data.picasa.v2.Picasa;
 import com.google.api.data.picasa.v2.PicasaPath;
 import com.google.api.data.picasa.v2.atom.PicasaAtom;
@@ -39,7 +43,6 @@ import com.google.api.data.sample.picasa.model.AlbumEntry;
 import com.google.api.data.sample.picasa.model.UserFeed;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,8 +62,17 @@ import java.util.logging.Logger;
  * shell setprop log.tag.HttpTransport DEBUG}. Then press-and-hold an album, and
  * enable "Logging".
  * </p>
+ * 
+ * @author Yaniv Inbar
  */
 public class PicasaBasicAtomAndroidSample extends ListActivity {
+
+
+  enum AuthType {
+    ACCOUNT_MANAGER, CLIENT_LOGIN
+  }
+
+  private static AuthType AUTH_TYPE = AuthType.ACCOUNT_MANAGER;
 
   private static final String TAG = "PicasaBasicAtomAndroidSample";
 
@@ -76,11 +88,14 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
+  private static final int REQUEST_ADD_ACCOUNT = 1;
+
   private static final String PREF = "MyPrefs";
 
   private static final int DIALOG_ACCOUNTS = 0;
 
-  private GoogleTransport transport;
+  private GoogleTransport transport =
+      new GoogleTransport("google-picasaandroidsample-1.0");
 
   private String authToken;
 
@@ -88,9 +103,18 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
 
   private final List<AlbumEntry> albums = new ArrayList<AlbumEntry>();
 
+  public PicasaBasicAtomAndroidSample() {
+    GoogleTransport transport = this.transport;
+    transport.setVersionHeader(Picasa.VERSION);
+    AtomParser parser = new AtomParser();
+    parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
+    transport.addParser(parser);
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    HttpTransport.setLowLevelHttpTransport(ApacheHttpTransport.INSTANCE);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     setLogging(settings.getBoolean("logging", false));
     getListView().setTextFilterEnabled(true);
@@ -102,47 +126,118 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
   protected Dialog onCreateDialog(int id) {
     switch (id) {
       case DIALOG_ACCOUNTS:
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select a Google account");
-        final AccountManager manager = AccountManager.get(this);
-        final Account[] accounts = AndroidGData.getGoogleAccounts(manager);
-        int size = accounts.length;
-        String[] names = new String[size];
-        for (int i = 0; i < size; i++) {
-          names[i] = accounts[i].name;
+        switch (AUTH_TYPE) {
+          case ACCOUNT_MANAGER:
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Select a Google account");
+            final AccountManager manager = AccountManager.get(this);
+            final Account[] accounts = manager.getAccountsByType("com.google");
+            final int size = accounts.length;
+            String[] names = new String[size + 1];
+            for (int i = 0; i < size; i++) {
+              names[i] = accounts[i].name;
+            }
+            names[size] = "New Account";
+            builder.setItems(names, new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                if (which == size) {
+                  addAccount(manager);
+                } else {
+                  gotAccount(manager, accounts[which]);
+                }
+              }
+            });
+            return builder.create();
+          case CLIENT_LOGIN:
+            final Dialog clientLoginDialog = new Dialog(this);
+            clientLoginDialog.setContentView(R.layout.clientlogin);
+            clientLoginDialog.setTitle("Sign in with your Google Account");
+            Button signInButton =
+                (Button) clientLoginDialog.findViewById(R.id.SignIn);
+            final EditText password =
+                (EditText) clientLoginDialog.findViewById(R.id.Password);
+            password.setTransformationMethod(PasswordTransformationMethod
+                .getInstance());
+            signInButton.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                clientLoginDialog.dismiss();
+                ClientLogin authenticator = new ClientLogin();
+                authenticator.authTokenType = Picasa.AUTH_TOKEN_TYPE;
+                EditText username =
+                    (EditText) clientLoginDialog.findViewById(R.id.Email);
+                authenticator.username = username.getText().toString();
+                authenticator.password = password.getText().toString();
+                try {
+                  authenticator.authenticate().setAuthorizationHeader(
+                      PicasaBasicAtomAndroidSample.this.transport);
+                  authenticated();
+                } catch (IOException e) {
+                  handleException(e);
+                }
+              }
+            });
+            return clientLoginDialog;
         }
-        builder.setItems(names, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            gotAccount(manager, accounts[which]);
-          }
-        });
-        return builder.create();
-      default:
-        return null;
     }
+    return null;
   }
 
   private void gotAccount(boolean tokenExpired) {
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
-    String accountName = settings.getString("accountName", null);
-    if (accountName != null) {
-      AccountManager manager = AccountManager.get(this);
-      Account[] accounts = AndroidGData.getGoogleAccounts(manager);
-      int size = accounts.length;
-      // TODO: if no Google accounts, use AccountManger.addAccount()
-      for (int i = 0; i < size; i++) {
-        Account account = accounts[i];
-        if (accountName.equals(account.name)) {
-          if (tokenExpired) {
-            manager.invalidateAuthToken("com.google", this.authToken);
+    switch (AUTH_TYPE) {
+      case ACCOUNT_MANAGER:
+        SharedPreferences settings = getSharedPreferences(PREF, 0);
+        String accountName = settings.getString("accountName", null);
+        if (accountName != null) {
+          AccountManager manager = AccountManager.get(this);
+          Account[] accounts = manager.getAccountsByType("com.google");
+          int size = accounts.length;
+          for (int i = 0; i < size; i++) {
+            Account account = accounts[i];
+            if (accountName.equals(account.name)) {
+              if (tokenExpired) {
+                manager.invalidateAuthToken("com.google", this.authToken);
+              }
+              gotAccount(manager, account);
+              return;
+            }
           }
-          gotAccount(manager, account);
-          return;
         }
-      }
+        break;
     }
     showDialog(DIALOG_ACCOUNTS);
+  }
+
+  private void addAccount(AccountManager manager) {
+    // TODO: test!
+    try {
+      Bundle bundle =
+          manager.addAccount("google.com", Picasa.AUTH_TOKEN_TYPE, null, null,
+              this, null, null).getResult();
+      if (bundle.containsKey(AccountManager.KEY_INTENT)) {
+        Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
+        int flags = intent.getFlags();
+        flags &= ~Intent.FLAG_ACTIVITY_NEW_TASK;
+        intent.setFlags(flags);
+        startActivityForResult(intent, REQUEST_ADD_ACCOUNT);
+      } else {
+        addAccountResult(bundle);
+      }
+    } catch (Exception e) {
+      handleException(e);
+    }
+  }
+
+  private void addAccountResult(Bundle bundle) {
+    // TODO: test!
+    String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+    String accountName = bundle.getString(AccountManager.KEY_ACCOUNT_NAME);
+    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    SharedPreferences.Editor editor = settings.edit();
+    editor.putString("accountName", accountName);
+    editor.commit();
+    authenticatedClientLogin(authToken);
   }
 
   private void gotAccount(AccountManager manager, Account account) {
@@ -154,19 +249,17 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
       Bundle bundle =
           manager.getAuthToken(account, Picasa.AUTH_TOKEN_TYPE, true, null,
               null).getResult();
-      if (bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
-        authenticated(bundle.getString(AccountManager.KEY_AUTHTOKEN));
-      } else if (bundle.containsKey(AccountManager.KEY_INTENT)) {
+      if (bundle.containsKey(AccountManager.KEY_INTENT)) {
         Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
         int flags = intent.getFlags();
         flags &= ~Intent.FLAG_ACTIVITY_NEW_TASK;
         intent.setFlags(flags);
         startActivityForResult(intent, REQUEST_AUTHENTICATE);
+      } else if (bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
+        authenticatedClientLogin(bundle.getString(AccountManager.KEY_AUTHTOKEN));
       }
     } catch (Exception e) {
-      e.printStackTrace();
-      Toast.makeText(getApplicationContext(), e.getMessage(),
-          Toast.LENGTH_SHORT);
+      handleException(e);
       return;
     }
   }
@@ -174,25 +267,31 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == REQUEST_AUTHENTICATE) {
-      if (resultCode == RESULT_OK) {
-        gotAccount(false);
-      } else {
-        showDialog(DIALOG_ACCOUNTS);
-      }
+    switch (requestCode) {
+      case REQUEST_AUTHENTICATE:
+        if (resultCode == RESULT_OK) {
+          gotAccount(false);
+        } else {
+          showDialog(DIALOG_ACCOUNTS);
+        }
+        break;
+      case REQUEST_ADD_ACCOUNT:
+        // TODO: test!
+        if (resultCode == RESULT_OK) {
+          addAccountResult(data.getExtras());
+        } else {
+          showDialog(DIALOG_ACCOUNTS);
+        }
     }
   }
 
-  private void authenticated(String authToken) {
+  private void authenticatedClientLogin(String authToken) {
     this.authToken = authToken;
-    GoogleTransport transport =
-        this.transport = new GoogleTransport("google-picasaandroidsample-1.0");
-    transport.setLowLevelHttpTransport(AndroidGData.HTTP_TRANSPORT);
-    transport.setGDataVersionHeader(Picasa.VERSION);
-    transport.setGoogleLoginAuthorizationHeader(authToken);
-    AtomHttpParser parser = new AtomHttpParser();
-    parser.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
-    transport.setParser(parser);
+    this.transport.setClientLoginToken(authToken);
+    authenticated();
+  }
+
+  private void authenticated() {
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       Bundle extras = intent.getExtras();
@@ -200,7 +299,6 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
         Uri uri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
         String scheme = uri.getScheme();
         if (scheme.equals("content")) {
-          String mimeType = intent.getType();
           ContentResolver contentResolver = getContentResolver();
           Cursor cursor = contentResolver.query(uri, null, null, null, null);
           cursor.moveToFirst();
@@ -209,19 +307,21 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
           String fileName =
               cursor.getString(cursor
                   .getColumnIndexOrThrow(Images.Media.DISPLAY_NAME));
-          long fileSize =
-              cursor.getLong(cursor.getColumnIndexOrThrow(Images.Media.SIZE));
           PicasaPath path = PicasaPath.feed();
           path.user = "default";
           path.albumId = "default";
-          UriEntity feedUri = new UriEntity(path.build());
+          GenericUrl feedUrl = new GenericUrl(path.build());
           boolean success = false;
           try {
-            InputStream stream = contentResolver.openInputStream(uri);
-            HttpRequest request = transport.buildPostRequest(feedUri.build());
-            GoogleHttp.setSlugHeader(request, fileName);
-            request.setContent(new InputStreamHttpSerializer(stream, fileSize,
-                mimeType, null));
+            HttpRequest request = this.transport.buildPostRequest();
+            request.url = feedUrl;
+            GoogleHeaders.setSlug(request.headers, fileName);
+            InputStreamContent content = new InputStreamContent();
+            content.inputStream = contentResolver.openInputStream(uri);
+            content.type = intent.getType();
+            content.length =
+                cursor.getLong(cursor.getColumnIndexOrThrow(Images.Media.SIZE));
+            request.content = content;
             request.execute().ignore();
             success = true;
           } catch (IOException e) {
@@ -317,10 +417,10 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     try {
       PicasaPath path = PicasaPath.feed();
       path.user = "default";
-      String uri = path.build();
+      String url = path.build();
       // page through results
       while (true) {
-        UserFeed userFeed = UserFeed.executeGet(this.transport, uri);
+        UserFeed userFeed = UserFeed.executeGet(this.transport, url);
         this.postLink = userFeed.getPostLink();
         if (userFeed.albums != null) {
           albums.addAll(userFeed.albums);
@@ -346,7 +446,7 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
 
   private void setLogging(boolean logging) {
     Logger.getLogger("com.google.api.client").setLevel(
-        logging ? Level.ALL : Level.OFF);
+        logging ? Level.CONFIG : Level.OFF);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     boolean currentSetting = settings.getBoolean("logging", false);
     if (currentSetting != logging) {
@@ -356,7 +456,8 @@ public class PicasaBasicAtomAndroidSample extends ListActivity {
     }
   }
 
-  private void handleException(IOException e) {
+  private void handleException(Exception e) {
+    e.printStackTrace();
     if (e instanceof HttpResponseException) {
       int statusCode = ((HttpResponseException) e).response.statusCode;
       if (statusCode == 401 || statusCode == 403) {

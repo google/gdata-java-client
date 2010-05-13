@@ -18,6 +18,10 @@ package com.google.api.client.xml.atom;
 
 import com.google.api.client.xml.Xml;
 
+/**
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class Atom {
 
   public static final String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";

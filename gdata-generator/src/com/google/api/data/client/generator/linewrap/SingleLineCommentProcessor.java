@@ -18,6 +18,8 @@ package com.google.api.data.client.generator.linewrap;
 
 /**
  * Processes any single-line comments in the line.
+ * 
+ * @author Yaniv Inbar
  */
 final class SingleLineCommentProcessor {
 

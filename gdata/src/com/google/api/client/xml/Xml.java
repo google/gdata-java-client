@@ -18,11 +18,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/** XML utilities. */
+/**
+ * XML utilities.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class Xml {
 
   /** XML Parser factory. */
-  public static volatile XmlParserFactory parserFactory;
+  public static XmlParserFactory parserFactory;
 
   /** Returns the parser factory. */
   private static XmlParserFactory getParserFactory()
@@ -48,7 +53,7 @@ public class Xml {
     }
   }
 
-  /** Returns a new XML pullparser. */
+  /** Returns a new XML pull parser. */
   public static XmlPullParser createParser() throws XmlPullParserException {
     XmlPullParser result = getParserFactory().createParser();
     if (!result.getFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES)) {
@@ -60,32 +65,33 @@ public class Xml {
   }
 
   /**
-   * Shows a debug string representation of an item entity.
+   * Shows a debug string representation of an element data object of key/value
+   * pairs.
    * <p>
    * It will make up something for the element name and XML namespaces. If those
    * are known, it is better to use
    * {@link XmlNamespaceDictionary#toStringOf(String, Object)}.
    * 
-   * @param element element entity ({@link XmlEntity}, {@link Map}, or any
-   *        object with public fields)
+   * @param element element data object of key/value pairs ({@link GenericXml},
+   *        {@link Map}, or any object with public fields)
    */
   public static String toStringOf(Object element) {
     return new XmlNamespaceDictionary().toStringOf(null, element);
   }
 
   private static void parseValue(String stringValue, Field field,
-      Object destination, XmlEntity entity, Map<String, Object> destinationMap,
-      String name) {
+      Object destination, GenericXml genericXml,
+      Map<String, Object> destinationMap, String name) {
     if (field == null) {
-      if (entity != null) {
-        entity.set(name, parseValue(stringValue, null));
+      if (genericXml != null) {
+        genericXml.set(name, parseValue(stringValue, null));
       } else if (destinationMap != null) {
         destinationMap.put(name, parseValue(stringValue, null));
       }
     } else {
       Class<?> fieldClass = field.getType();
       if (Modifier.isFinal(field.getModifiers())
-          && !ClassInfo.isPrimitive(fieldClass)) {
+          && !FieldInfo.isPrimitive(fieldClass)) {
         throw new IllegalArgumentException(
             "final sub-element fields are not supported");
       }
@@ -163,9 +169,9 @@ public class Xml {
       XmlPullParserException {
     Class<?> destinationClass =
         destination == null ? null : destination.getClass();
-    XmlEntity entity =
-        destination instanceof XmlEntity ? (XmlEntity) destination : null;
-    boolean isMap = entity == null && destination instanceof Map<?, ?>;
+    GenericXml genericXml =
+        destination instanceof GenericXml ? (GenericXml) destination : null;
+    boolean isMap = genericXml == null && destination instanceof Map<?, ?>;
     @SuppressWarnings("unchecked")
     Map<String, Object> destinationMap =
         isMap ? (Map<String, Object>) destination : null;
@@ -178,15 +184,15 @@ public class Xml {
     if (eventType != XmlPullParser.START_TAG) {
       throw new IllegalArgumentException("wrong event type: " + eventType);
     }
-    // entity
+    // generic XML
     String prefix = parser.getPrefix();
     String alias = prefix == null ? "" : prefix;
     namespaceDictionary.addNamespace(alias, parser.getNamespace());
     // TODO: can instead just look at the xmlns attributes?
-    if (entity != null) {
-      entity.namespaceDictionary = namespaceDictionary;
+    if (genericXml != null) {
+      genericXml.namespaceDictionary = namespaceDictionary;
       String name = parser.getName();
-      entity.name = prefix == null ? name : prefix + ":" + name;
+      genericXml.name = prefix == null ? name : prefix + ":" + name;
     }
     // attributes
     if (destination != null) {
@@ -202,7 +208,7 @@ public class Xml {
             getFieldName(true, attributePrefix, attributeNamespace,
                 attributeName);
         Field field = isMap ? null : classInfo.getField(fieldName);
-        parseValue(parser.getAttributeValue(i), field, destination, entity,
+        parseValue(parser.getAttributeValue(i), field, destination, genericXml,
             destinationMap, fieldName);
       }
     }
@@ -221,7 +227,7 @@ public class Xml {
           if (destination != null) {
             String textFieldName = "text()";
             field = isMap ? null : classInfo.getField(textFieldName);
-            parseValue(parser.getText(), field, destination, entity,
+            parseValue(parser.getText(), field, destination, genericXml,
                 destinationMap, textFieldName);
           }
           break;
@@ -254,8 +260,8 @@ public class Xml {
           field = isMap ? null : classInfo.getField(fieldName);
           Class<?> fieldClass = field == null ? null : field.getType();
           boolean isStopped = false;
-          if (field == null && !isMap && entity == null || field != null
-              && ClassInfo.isPrimitive(fieldClass)) {
+          if (field == null && !isMap && genericXml == null || field != null
+              && FieldInfo.isPrimitive(fieldClass)) {
             int level = 1;
             while (level != 0) {
               switch (parser.next()) {
@@ -269,7 +275,7 @@ public class Xml {
                   break;
                 case XmlPullParser.TEXT:
                   if (level == 1) {
-                    parseValue(parser.getText(), field, destination, entity,
+                    parseValue(parser.getText(), field, destination, genericXml,
                         destinationMap, fieldName);
                   }
                   break;
@@ -292,7 +298,7 @@ public class Xml {
             } else if (field != null) {
               FieldInfo.setFieldValue(field, destination, mapValue);
             } else {
-              XmlEntity atom = (XmlEntity) destination;
+              GenericXml atom = (GenericXml) destination;
               @SuppressWarnings("unchecked")
               List<Object> list = (List<Object>) atom.get(fieldName);
               if (list == null) {
@@ -314,7 +320,7 @@ public class Xml {
             // TODO: what about Collection<Object> or Collection<?> or
             // Collection<? extends X>?
             Class<?> subFieldClass = ClassInfo.getCollectionParameter(field);
-            if (subFieldClass == null || ClassInfo.isPrimitive(subFieldClass)) {
+            if (subFieldClass == null || FieldInfo.isPrimitive(subFieldClass)) {
               int level = 1;
               while (level != 0) {
                 switch (parser.next()) {

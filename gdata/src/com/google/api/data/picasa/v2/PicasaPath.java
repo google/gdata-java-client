@@ -2,16 +2,21 @@ package com.google.api.data.picasa.v2;
 
 import com.google.api.client.escape.CharEscapers;
 
-/** Builder for the path part of Picasa Web Albums URI's. */
+/**
+ * URL builder for the Picasa Web Albums Data API, without the query parameters.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class PicasaPath {
 
-  // TODO: ROOT_URI = "http://picasaweb.google.com" etc for all API's
+  // TODO: ROOT_URL = "http://picasaweb.google.com" etc for all API's
   // see http://code.google.com/apis/gdata/faq.html#AuthScopes
-  
+
   /** Default Picasa Data API server to use. Used primarily for testing. */
   public static final String DEFAULT_SERVER = "picasaweb.google.com";
 
-  /** Type of URI: "feed", "entry", or "media". */
+  /** Type of URL: "feed", "entry", or "media". */
   public String type;
 
   /** Album ID. */

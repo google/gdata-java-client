@@ -20,6 +20,8 @@ package com.google.api.data.client.generator.linewrap;
  * Computes line wrapping on a section of text by inserting line separators and
  * updating the indentation as necessary. Implementations of this interface are
  * thread-safe.
+ * 
+ * @author Yaniv Inbar
  */
 public interface LineWrapper {
 

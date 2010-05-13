@@ -17,18 +17,22 @@
 package com.google.api.data.sample.picasa.model;
 
 import com.google.api.client.googleapis.GoogleTransport;
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class AlbumEntry extends Entry {
 
-  @Name("gphoto:access")
+  @Key("gphoto:access")
   public String access;
 
+  @Key
   public Category category = Category.newKind("album");
 
-  @Name("gphoto:numphotos")
+  @Key("gphoto:numphotos")
   public int numPhotos;
 
   @Override
@@ -38,8 +42,8 @@ public class AlbumEntry extends Entry {
 
   public static AlbumEntry executeGet(GoogleTransport transport, String link)
       throws IOException {
-    PicasaUri uri = new PicasaUri(link);
-    return (AlbumEntry) Entry.executeGet(transport, uri, AlbumEntry.class);
+    PicasaUrl url = new PicasaUrl(link);
+    return (AlbumEntry) Entry.executeGet(transport, url, AlbumEntry.class);
   }
 
   public AlbumEntry executePatchRelativeToOriginal(GoogleTransport transport,

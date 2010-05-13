@@ -1,9 +1,8 @@
 /*
- * Copyright (c) 2010 Google Inc.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Copyright (c) 2010 Google Inc. Licensed under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -34,7 +33,12 @@ import java.security.Signature;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 
-/** Utility methods for {@code "RSA-SHA1"} signing method. */
+/**
+ * Utility methods for {@code "RSA-SHA1"} signing method.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public class RsaSha {
 
   private static final String BEGIN = "-----BEGIN PRIVATE KEY-----";
@@ -44,14 +48,14 @@ public class RsaSha {
   }
 
   /**
-   * Retrieves the private key from the specified keystore.
+   * Retrieves the private key from the specified key store.
    * 
-   * @param keyStream input stream to the keystore file
-   * @param storePass password protecting the keystore file
+   * @param keyStream input stream to the key store file
+   * @param storePass password protecting the key store file
    * @param alias alias under which the private key is stored
    * @param keyPass password protecting the private key
-   * @return the private key from the specified keystore
-   * @throws GeneralSecurityException if the keystore cannot be loaded
+   * @return the private key from the specified key store
+   * @throws GeneralSecurityException if the key store cannot be loaded
    * @throws IOException if the file cannot be accessed
    */
   public static PrivateKey getPrivateKeyFromKeystore(InputStream keyStream,

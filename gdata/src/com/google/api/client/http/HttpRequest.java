@@ -16,43 +16,56 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.auth.Authorizer;
-import com.google.api.client.util.ArrayMap;
 import com.google.api.client.util.Strings;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** HTTP response. */
+/**
+ * HTTP request.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class HttpRequest {
 
-  /** HTTP headers. */
-  public final HttpHeaders headers;
+  /** HTTP request headers. */
+  public HttpHeaders headers;
 
-  private final LowLevelHttpRequest lowLevelHttpRequest;
-  private HttpSerializer content;
+  /**
+   * Whether to disable request content logging during {@link #execute()}, for
+   * example if content has sensitive data such as an authentication
+   * information. Defaults to {@code false}.
+   */
+  public boolean disableContentLogging;
+
+  /** HTTP request content or {@code null} for none. */
+  public HttpContent content;
+
+  /** HTTP transport. */
   private final HttpTransport transport;
 
+  /** HTTP request method. */
   public final String method;
-  public final String uri;
 
-  HttpRequest(HttpTransport transport, String method, String uri,
-      LowLevelHttpRequest lowLevelHttpRequest) {
+  /** HTTP request URL. */
+  public GenericUrl url;
+
+  /**
+   * @param transport HTTP transport
+   * @param method HTTP request method
+   */
+  HttpRequest(HttpTransport transport, String method) {
     this.transport = transport;
-    this.method = method;
-    this.uri = uri;
-    this.lowLevelHttpRequest = lowLevelHttpRequest;
     this.headers = transport.defaultHeaders.clone();
+    this.method = method;
   }
 
-  public void setContent(HttpSerializer serializer) {
-    setContentNoLogging(new LogHttpSerializer(serializer));
-  }
-
-  public void setContentNoLogging(HttpSerializer serializer) {
-    this.content = new GZipHttpSerializer(serializer);
+  /** Sets the {@link #url} based on the given encoded URL string. */
+  public void setUrl(String encodedUrl) {
+    this.url = new GenericUrl(encodedUrl);
   }
 
   /**
@@ -60,63 +73,89 @@ public final class HttpRequest {
    * <p>
    * Note that regardless of the returned status code, the HTTP response content
    * has not been parsed yet, and must be parsed by the calling code.
+   * <p>
+   * Almost all details of the request and response are logged if
+   * {@link Level#CONFIG} is loggable. The only exception is the value of the
+   * {@code Authorization} header which is only logged if {@link Level#ALL} is
+   * loggable.
    * 
    * @return HTTP response for an HTTP success code
    * @throws HttpResponseException for an HTTP error code
    * @see HttpResponse#isSuccessStatusCode
    */
   public HttpResponse execute() throws IOException {
-    LowLevelHttpRequest lowLevelHttpRequest = this.lowLevelHttpRequest;
     HttpTransport transport = this.transport;
+    // first run the execute intercepters
+    for (HttpExecuteIntercepter intercepter : transport.intercepters) {
+      intercepter.intercept(this);
+    }
+    // build low-level HTTP request
+    LowLevelHttpTransport lowLevelHttpTransport =
+        HttpTransport.useLowLevelHttpTransport();
+    String method = this.method;
+    GenericUrl url = this.url;
+    String urlString = url.build();
+    LowLevelHttpRequest lowLevelHttpRequest;
+    if (method.equals("DELETE")) {
+      lowLevelHttpRequest = lowLevelHttpTransport.buildDeleteRequest(urlString);
+    } else if (method.equals("GET")) {
+      lowLevelHttpRequest = lowLevelHttpTransport.buildGetRequest(urlString);
+    } else if (method.equals("PATCH")) {
+      if (!lowLevelHttpTransport.supportsPatch()) {
+        throw new IllegalArgumentException(
+            "HTTP transport doesn't support PATCH");
+      }
+      lowLevelHttpRequest = lowLevelHttpTransport.buildPatchRequest(urlString);
+    } else if (method.equals("POST")) {
+      lowLevelHttpRequest = lowLevelHttpTransport.buildPostRequest(urlString);
+    } else if (method.equals("PUT")) {
+      lowLevelHttpRequest = lowLevelHttpTransport.buildPutRequest(urlString);
+    } else {
+      throw new IllegalArgumentException("illegal method: " + method);
+    }
     Logger logger = HttpTransport.LOGGER;
     boolean loggable = logger.isLoggable(Level.CONFIG);
-    boolean logPrivateParameters = logger.isLoggable(Level.ALL);
     StringBuilder logbuf = null;
-    // log method and uri
-    String method = this.method;
-    String uri = this.uri;
+    // log method and URL
     if (loggable) {
       logbuf = new StringBuilder();
       logbuf.append("-------------- REQUEST  --------------").append(
           Strings.LINE_SEPARATOR);
-      logbuf.append(method).append(' ').append(uri).append(
+      logbuf.append(method).append(' ').append(urlString).append(
           Strings.LINE_SEPARATOR);
     }
-    // headers
-    HttpHeaders headers = this.headers;
-    Authorizer authorizer = headers.authorizer;
-    if (authorizer != null) {
-      String authValue = authorizer.computeHeader(method, uri);
-      headers.setAuthorization(authValue);
-    }
-    ArrayMap<String, String> values = headers.values;
-    ArrayList<String> privateNames = headers.privateNames;
-    int size = values.size();
-    for (int i = 0; i < size; i++) {
-      String name = values.getKey(i);
-      String value = values.getValue(i);
-      if (logbuf != null) {
-        if (privateNames.contains(name) && !logPrivateParameters) {
-          logbuf.append(name + ": <Not Logged>");
-        } else {
-          logbuf.append(name + ": " + value);
+    for (Map.Entry<String, Object> headerEntry : this.headers.entrySet()) {
+      String value = (String) headerEntry.getValue();
+      if (value != null) {
+        String name = headerEntry.getKey();
+        if (logbuf != null) {
+          logbuf.append(name).append(": ");
+          if ("Authorization".equals(name) && !logger.isLoggable(Level.ALL)) {
+            logbuf.append("<Not Logged>");
+          } else {
+            logbuf.append(value);
+          }
+          logbuf.append(Strings.LINE_SEPARATOR);
         }
-        logbuf.append(Strings.LINE_SEPARATOR);
+        lowLevelHttpRequest.addHeader(name, value);
       }
-      lowLevelHttpRequest.addHeader(name, value);
     }
     // content
-    HttpSerializer content = this.content;
+    HttpContent content = this.content;
     if (content != null) {
+      if (loggable && !this.disableContentLogging) {
+        content = new LogContent(content);
+      }
+      content = new GZipContent(content);
       if (loggable) {
-        logbuf.append("Content-Type: " + content.getContentType()).append(
+        logbuf.append("Content-Type: " + content.getType()).append(
             Strings.LINE_SEPARATOR);
-        String contentEncoding = content.getContentEncoding();
+        String contentEncoding = content.getEncoding();
         if (contentEncoding != null) {
           logbuf.append("Content-Encoding: " + contentEncoding).append(
               Strings.LINE_SEPARATOR);
         }
-        long contentLength = content.getContentLength();
+        long contentLength = content.getLength();
         if (contentLength >= 0) {
           logbuf.append("Content-Length: " + contentLength).append(
               Strings.LINE_SEPARATOR);

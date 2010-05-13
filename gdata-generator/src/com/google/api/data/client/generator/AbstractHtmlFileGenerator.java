@@ -19,6 +19,9 @@ package com.google.api.data.client.generator;
 import com.google.api.data.client.generator.linewrap.HtmlLineWrapper;
 import com.google.api.data.client.generator.linewrap.LineWrapper;
 
+/**
+ * @author Yaniv Inbar
+ */
 abstract class AbstractHtmlFileGenerator implements FileGenerator {
 
   public final LineWrapper getLineWrapper() {

@@ -18,7 +18,12 @@ package com.google.api.client.http;
 
 import java.io.IOException;
 
-/** Exception thrown when an error status code is detected in an HTTP response. */
+/**
+ * Exception thrown when an error status code is detected in an HTTP response.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class HttpResponseException extends IOException {
 
   static final long serialVersionUID = 1;
@@ -34,7 +39,8 @@ public final class HttpResponseException extends IOException {
     this.response = response;
   }
 
-  private static String computeMessage(HttpResponse response) {
+  /** Returns an exception message to use for the given HTTP response. */
+  public static String computeMessage(HttpResponse response) {
     String statusMessage = response.statusMessage;
     int statusCode = response.statusCode;
     if (statusMessage == null) {

@@ -21,6 +21,9 @@ import com.google.api.data.client.generator.linewrap.LineWrapper;
 
 import java.io.PrintWriter;
 
+/**
+ * @author Yaniv Inbar
+ */
 abstract class AbstractJavaFileGenerator implements FileGenerator {
 
   final String packageName;

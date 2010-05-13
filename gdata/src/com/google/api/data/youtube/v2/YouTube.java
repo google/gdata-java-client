@@ -16,7 +16,11 @@
 
 package com.google.api.data.youtube.v2;
 
-/** Constants for the YouTube Data API. */
+/**
+ * Constants for the YouTube Data API.
+ *
+ * @since 2.2
+ */
 public final class YouTube {
 
   /** The authentication token type or service name. */

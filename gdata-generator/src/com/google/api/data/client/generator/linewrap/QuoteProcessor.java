@@ -19,6 +19,8 @@ package com.google.api.data.client.generator.linewrap;
 /**
  * Processes quotes in a line. Used to detect if there are any quotes. Both
  * {@code '"'} and {@code '\''} are valid quote characters.
+ * 
+ * @author Yaniv Inbar
  */
 final class QuoteProcessor {
 

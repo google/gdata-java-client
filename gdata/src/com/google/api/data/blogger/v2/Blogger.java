@@ -16,7 +16,11 @@
 
 package com.google.api.data.blogger.v2;
 
-/** Constants for the Blogger Data API. */
+/**
+ * Constants for the Blogger Data API.
+ *
+ * @since 2.2
+ */
 public final class Blogger {
 
   /** The authentication token type or service name. */

@@ -16,20 +16,20 @@
 
 package com.google.api.data.sample.youtube;
 
-import com.google.api.client.auth.oauth.OAuthAuthorizer;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
+import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
-import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUri;
+import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUrl;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
-import com.google.api.client.googleapis.json.JsonHttpParser;
+import com.google.api.client.googleapis.json.JsonParser;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.util.Entity;
+import com.google.api.data.sample.youtube.model.Debug;
 import com.google.api.data.sample.youtube.model.Video;
 import com.google.api.data.sample.youtube.model.VideoFeed;
-import com.google.api.data.sample.youtube.model.YouTubeUri;
+import com.google.api.data.sample.youtube.model.YouTubeUrl;
 import com.google.api.data.youtube.v2.YouTube;
 import com.google.api.data.youtube.v2.YouTubePath;
 
@@ -40,6 +40,9 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class YouTubeBasicJsoncSample {
 
   enum AuthType {
@@ -53,23 +56,19 @@ public class YouTubeBasicJsoncSample {
   static OAuthCredentialsResponse credentials;
 
   public static void main(String[] args) throws IOException {
-    if (YouTubeUri.DEBUG) {
+    if (Debug.ENABLED) {
       enableLogging();
     }
     try {
       GoogleTransport transport = setUpGoogleTransport();
       VideoFeed feed = showVideos(transport);
     } catch (HttpResponseException e) {
-      if (e.response.getParser() != null) {
-        System.err.println(e.response.parseAs(Entity.class));
-      } else {
-        System.err.println(e.response.parseAsString());
-      }
+      System.err.println(e.response.parseAsString());
       throw e;
     } finally {
       if (credentials != null) {
         try {
-          GoogleOAuthGetAccessToken.revokeAccessToken(createOAuthAuthorizer());
+          GoogleOAuthGetAccessToken.revokeAccessToken(createOAuthParameters());
         } catch (Exception e) {
           e.printStackTrace(System.err);
         }
@@ -80,8 +79,8 @@ public class YouTubeBasicJsoncSample {
   private static GoogleTransport setUpGoogleTransport() throws IOException {
     GoogleTransport transport =
         new GoogleTransport("google-youtubejsoncsample-1.0");
-    transport.setGDataVersionHeader(YouTube.VERSION);
-    transport.setParser(new JsonHttpParser());
+    transport.setVersionHeader(YouTube.VERSION);
+    transport.addParser(new JsonParser());
     if (AUTH_TYPE == AuthType.OAUTH) {
       authorizeUsingOAuth(transport);
     } else {
@@ -91,8 +90,8 @@ public class YouTubeBasicJsoncSample {
   }
 
 
-  private static OAuthAuthorizer createOAuthAuthorizer() {
-    OAuthAuthorizer authorizer = new OAuthAuthorizer();
+  private static OAuthParameters createOAuthParameters() {
+    OAuthParameters authorizer = new OAuthParameters();
     authorizer.consumerKey = "anonymous";
     authorizer.signer = signer;
     authorizer.token = credentials.token;
@@ -114,10 +113,10 @@ public class YouTubeBasicJsoncSample {
     signer.tokenSharedSecret = tempCredentials.tokenSecret;
     System.out
         .println("Please go open this web page in a browser to authorize:");
-    GoogleOAuthAuthorizeTemporaryTokenUri authorizeUri =
-        new GoogleOAuthAuthorizeTemporaryTokenUri();
-    authorizeUri.temporaryToken = tempCredentials.token;
-    System.out.println(authorizeUri.build());
+    GoogleOAuthAuthorizeTemporaryTokenUrl authorizeUrl =
+        new GoogleOAuthAuthorizeTemporaryTokenUrl();
+    authorizeUrl.temporaryToken = tempCredentials.token;
+    System.out.println(authorizeUrl.build());
     System.out.println();
     System.out.println("Press enter to continue...");
     new Scanner(System.in).nextLine();
@@ -128,7 +127,7 @@ public class YouTubeBasicJsoncSample {
     accessToken.verifier = "";
     credentials = accessToken.execute();
     signer.tokenSharedSecret = credentials.tokenSecret;
-    transport.defaultHeaders.authorizer = createOAuthAuthorizer();
+    createOAuthParameters().signRequestsUsingAuthorizationHeader(transport);
   }
 
   private static void authorizeUsingClientLogin(GoogleTransport transport)
@@ -145,13 +144,13 @@ public class YouTubeBasicJsoncSample {
 
   private static VideoFeed showVideos(GoogleTransport transport)
       throws IOException {
-    // build URI for the video feed for "searchstories"
+    // build URL for the video feed for "search stories"
     YouTubePath path = YouTubePath.videos();
-    YouTubeUri uri = new YouTubeUri(path.build());
-    uri.maxResults = MAX_VIDEOS_TO_SHOW;
-    uri.author = "searchstories";
+    YouTubeUrl url = new YouTubeUrl(path.build());
+    url.maxResults = MAX_VIDEOS_TO_SHOW;
+    url.author = "searchstories";
     // execute GData request for the feed
-    VideoFeed feed = VideoFeed.executeGet(transport, uri.build());
+    VideoFeed feed = VideoFeed.executeGet(transport, url);
     System.out.println("Total number of videos: " + feed.totalItems);
     for (Video video : feed.items) {
       showVideo(video);
@@ -171,7 +170,7 @@ public class YouTubeBasicJsoncSample {
 
   private static void enableLogging() {
     Logger logger = Logger.getLogger("com.google.api.client");
-    logger.setLevel(Level.CONFIG);
+    logger.setLevel(Level.ALL);
     logger.addHandler(new Handler() {
 
       @Override

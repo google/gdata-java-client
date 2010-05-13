@@ -22,7 +22,12 @@ import org.codehaus.jackson.JsonParser;
 
 import java.io.IOException;
 
-/** Google JSON-C feed parser when the item class is known in advance. */
+/**
+ * Google JSON-C feed parser when the item class is known in advance.
+ * 
+ * @since 2.2
+ * @author Yaniv Inbar
+ */
 public final class JsonFeedParser<T, I> extends AbstractJsonFeedParser<T> {
 
   private final Class<I> itemClass;

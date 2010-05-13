@@ -17,15 +17,19 @@
 package com.google.api.data.sample.picasa.model;
 
 import com.google.api.client.googleapis.GoogleTransport;
-import com.google.api.client.util.Name;
+import com.google.api.client.util.Key;
 
 import java.io.IOException;
 
+/**
+ * @author Yaniv Inbar
+ */
 public class AlbumEntry extends Entry {
 
-  @Name("gphoto:access")
+  @Key("gphoto:access")
   public String access;
 
+  @Key
   public Category category = Category.newKind("album");
 
   @Override

@@ -42,6 +42,8 @@ package com.google.api.client.escape;
  * Several popular escapers are defined as constants in the class
  * {@link CharEscapers}. To create your own escapers extend this class and
  * implement the {@link #escape(int)} method.
+ * 
+ * @since 2.2
  */
 public abstract class UnicodeEscaper extends Escaper {
   /** The amount of padding (chars) to use when growing the escape buffer. */

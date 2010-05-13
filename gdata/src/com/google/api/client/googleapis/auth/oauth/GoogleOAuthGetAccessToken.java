@@ -16,30 +16,30 @@
 
 package com.google.api.client.googleapis.auth.oauth;
 
+import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthGetAccessToken;
-import com.google.api.client.auth.oauth.OAuthAuthorizer;
-import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 
 import java.io.IOException;
 
 /**
- * Google OAuth 1.0a URI entity to request to exchange the temporary credentials
- * token (or "request token") for a long-lived credentials token (or
+ * Generic Google OAuth 1.0a URL to request to exchange the temporary
+ * credentials token (or "request token") for a long-lived credentials token (or
  * "access token") from the Google Authorization server.
  * <p>
  * Use {@link #execute()} to execute the request. The long-lived access token
  * acquired with this request is found in {@link OAuthCredentialsResponse#token}
  * . This token must be stored. It may then be used to authorize HTTP requests
  * to protected resources in Google services by setting the
- * {@link OAuthAuthorizer#token}, and using the {@link OAuthAuthorizer} for
- * {@link HttpHeaders#authorizer}.
+ * {@link OAuthParameters#token}, and invoking
+ * {@link OAuthParameters#signRequestsUsingAuthorizationHeader(HttpTransport)}.
  * <p>
  * To revoke the stored access token, use {@link #revokeAccessToken}.
  * 
  * @since 2.2
+ * @author Yaniv Inbar
  */
 public final class GoogleOAuthGetAccessToken extends OAuthGetAccessToken {
 
@@ -50,16 +50,15 @@ public final class GoogleOAuthGetAccessToken extends OAuthGetAccessToken {
   /**
    * Revokes the long-lived access token.
    * 
-   * @param authorizer OAuth authorizer used for authorizing requests using the
-   *        access token
+   * @param parameters OAuth parameters
    * @throws IOException I/O exception
    */
-  public static void revokeAccessToken(OAuthAuthorizer authorizer)
+  public static void revokeAccessToken(OAuthParameters parameters)
       throws IOException {
-    HttpRequest request =
-        new HttpTransport()
-            .buildGetRequest("https://www.google.com/accounts/AuthSubRevokeToken");
-    request.headers.authorizer = authorizer;
+    HttpTransport transport = new HttpTransport();
+    parameters.signRequestsUsingAuthorizationHeader(transport);
+    HttpRequest request = transport.buildGetRequest();
+    request.setUrl("https://www.google.com/accounts/AuthSubRevokeToken");
     request.execute().ignore();
   }
 }

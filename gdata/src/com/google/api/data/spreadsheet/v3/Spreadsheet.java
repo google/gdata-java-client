@@ -16,7 +16,11 @@
 
 package com.google.api.data.spreadsheet.v3;
 
-/** Constants for the Google Spreadsheets Data API. */
+/**
+ * Constants for the Google Spreadsheets Data API.
+ *
+ * @since 2.2
+ */
 public final class Spreadsheet {
 
   /** The authentication token type or service name. */
