@@ -204,13 +204,21 @@ public final class ClassInfo {
    */
   public static Class<?> getMapValueParameter(Field field) {
     if (field != null) {
-      Type genericType = field.getGenericType();
-      if (genericType instanceof ParameterizedType) {
-        Type[] typeArgs =
-            ((ParameterizedType) genericType).getActualTypeArguments();
-        if (typeArgs.length == 2 && typeArgs[1] instanceof Class<?>) {
-          return (Class<?>) typeArgs[1];
-        }
+      return getMapValueParameter(field.getGenericType());
+    }
+    return null;
+  }
+
+  /**
+   * Returns the type parameter for the given genericType assuming it is of
+   * type map.
+   */
+  public static Class<?> getMapValueParameter(Type genericType) {
+    if (genericType instanceof ParameterizedType) {
+      Type[] typeArgs =
+          ((ParameterizedType) genericType).getActualTypeArguments();
+      if (typeArgs.length == 2 && typeArgs[1] instanceof Class<?>) {
+        return (Class<?>) typeArgs[1];
       }
     }
     return null;

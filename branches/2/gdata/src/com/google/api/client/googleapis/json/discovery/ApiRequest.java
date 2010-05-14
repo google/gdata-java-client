@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2010 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.google.api.client.googleapis.json.discovery;
 
 import com.google.api.client.util.DataUtil;
@@ -8,44 +24,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class for making requests.
+ * Makes API requests based on Google API service discovery.
  *
- * Requests are futures, and get() returns the actual value.
- * get() is aliased to execute(), both for compatiblity with client libs
- * and also because our Apiary APIs already have a get(), and calling
- * get().get() is just weird.
+ * Requests provide interface to specify uri, query, header, content parameters.
+ * The parameters can be set in a few different ways:
+ *    .with(GenericData) - params are in an entity
+ *    .with(Object) - params will be converted from public fields on Object
+ *    .with(key, value) - adds parameters, can chain
  *
- * Currently requests execute individually. Once requests are batched
- * (not supported yet), the batch will be responsible for setting the
- * response values.
- *
- * Requests can have parameters set in a few different ways:
- * .with(String) - params are string encoded in JSON
- * .with(Entity) - params are in an entity
- * .with(Object) - params will be converted from public fields on Object
- * .with(key, value) - adds parameters, can chain
- *
- * Currently you have to choose between .with(params) or .with(key, value)
- * but it would be easy to support both.
- *
- * Responses normally come back as an Entity, but you can set the
+ * Responses normally come back as GenericData, but you can set the
  * response class via:
- * .returning(Class) - return an instance of Class
- * .returningList(Class) - return a List of Class
- *
- * Setting will set public fields on all of the objects.
- *
- * Objects used in requests and responses can be hand-coded or generated
- * from Apiary services. Hand-coded classes can be useful if you only need
- * a small subset of data.
- * For example, class Person {public String name; public String email)
- * can be passed in to get names & emails if that's all you need.
+ *   .returning(Class) - return an instance of Class
  *
  * @since 2.2
+ * @author vbarathan@google.com (Prakash Barathan)
  */
 public class ApiRequest<T> {
   
+  /** Request type */
+  public static enum RequestType {
+    REST,
+    RPC
+  }
+  
+  /** Default wireformat content type */
   private static final String DEFAULT_CONTENT_TYPE = "application/json";
+
+  /** Request type for this request */
+  private ApiRequest.RequestType requestType =
+      ApiRequest.RequestType.REST;
   
   /** Parameter map for use with .with(key, value) */
   private GenericData paramMap = new GenericData();
@@ -64,32 +71,25 @@ public class ApiRequest<T> {
   
   private final Discovery discovery;
   
-  private final String resourceHandle;
-  
-  ApiRequest(Discovery discovery, String method, GenericData defaultParams) {
-    this(discovery, null, method, defaultParams);
-  }
-  
   /**
    * Create a request
    *
-   * @param handle resource endpoint
    * @param method The method
    * @param defaultParams default parameters to use in request
    */
-  ApiRequest(Discovery discovery, String handle, String method,
-      GenericData defaultParams) {
+  ApiRequest(Discovery discovery, String method, GenericData defaultParams) {
     this.discovery = discovery;
     this.fullyQualifiedMethod = method;
     this.paramMap.putAll(defaultParams);
-    this.resourceHandle = handle;
+  }
+  
+  public ApiRequest<T> rpcRequest() {
+    requestType = ApiRequest.RequestType.RPC;
+    return this;
   }
     
   /**
    * Execute the request.
-   * If .returning() or .returningList() functions was called,
-   * returns an object of the appropriate type. Otherwise, returns
-   * a {@link GenericData}.
    */
   @SuppressWarnings("unchecked")
   public T execute() {
@@ -97,8 +97,12 @@ public class ApiRequest<T> {
       return (T)result;
     }
     try {
-      return (T) discovery.doRestRequest(
-          resourceHandle, fullyQualifiedMethod, paramMap, responseClass);
+      if (requestType == RequestType.REST) {
+        return (T) discovery.doRestRequest(
+            fullyQualifiedMethod, paramMap, responseClass);
+      } else {
+        throw new IllegalStateException("TODO Handle RPC request");
+      }
     } catch(IOException e) {
       throw new RuntimeException(e);
     }
@@ -106,13 +110,13 @@ public class ApiRequest<T> {
   
   /**
    * Set the parameters to send with the request.
-   * Params can either be an Entity or an aribtrary Object.
+   * Params can either be an GenericData or an aribtrary Object.
    *
    * If the params are an arbitrary object, then the values are
    * taken from public object fields.
    *
    * @param params The request parameters
-   * @return The request
+   * @return the request
    */
   public ApiRequest<T> with(Object params) {
     if (params instanceof String) {
@@ -173,7 +177,7 @@ public class ApiRequest<T> {
    * Tell the request to return an instance of a specific class.
    *
    * @param cls The class type to return
-   * @return The request.
+   * @return the request
    */
   @SuppressWarnings("unchecked")
   public <R> ApiRequest<R> returning(Class<? extends R> cls) {
