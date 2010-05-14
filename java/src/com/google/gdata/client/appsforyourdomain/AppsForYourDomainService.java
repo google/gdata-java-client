@@ -26,6 +26,9 @@ import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The AppsForYourDomainService class extends the basic {@link GoogleService}
@@ -266,5 +269,42 @@ public abstract class AppsForYourDomainService extends GoogleService {
           = AppsForYourDomainException.narrow(se);
       throw (ae != null) ? ae : se;
     }
+  }
+
+  /**
+   * Executes a GData query against the target service and returns a
+   * List containing all the {@link IEntry} that match the query result. 
+   * This method will page through the feed and return all matching records 
+   * to the client. Should be only used by services that have paged resultsets.
+   * <p>Please note that this method may take a very long time to execute for 
+   * feeds with thousands of entries.</p>
+   * 
+   * @param feedUrl resource URL of the feed
+   * @param feedClass class used to represent service entries 
+   * @return List of {@link IEntry}
+   * @throws IOException error communicating with the GData service
+   * @throws com.google.gdata.util.ServiceForbiddenException feed does not 
+   *         support the query.
+   * @throws com.google.gdata.util.ParseException error parsing the returned 
+   *         feed data.
+   * @throws ServiceException query request failed.
+   */
+  @SuppressWarnings("unchecked")
+  protected <E extends IEntry, F extends IFeed> List<E> getAllPages(
+      URL feedUrl, Class<F> feedClass) 
+      throws IOException, ServiceException {
+    List<E> allEntries = new ArrayList<E>();
+    try {
+      do {
+        IFeed feed = getFeed(feedUrl, feedClass);
+        allEntries.addAll((Collection<E>) feed.getEntries());
+        feedUrl = (feed.getNextLink() == null)
+          ? null : new URL(feed.getNextLink().getHref());
+      } while (feedUrl != null); 
+    } catch (ServiceException se) {
+      AppsForYourDomainException ae = AppsForYourDomainException.narrow(se);
+      throw (ae != null) ? ae : se;
+    }
+    return allEntries;
   }
 }

@@ -19,7 +19,7 @@ package com.google.gdata.data.projecthosting;
 import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
- * Namespace definitions related to Project Hosting Issue Tracker Data API.
+ * Namespace definitions related to Project Hosting GData API.
  *
  * 
  */
@@ -40,6 +40,20 @@ public class ProjectHostingNamespace {
   /** XML writer namespace for ProjectHostingIssues (ISSUES) */
   public static final XmlNamespace ISSUES_NS = new XmlNamespace(ISSUES_ALIAS,
       ISSUES);
+
+  /** ProjectHostingProjects (PROJECTS) namespace */
+  public static final String PROJECTS =
+      "http://schemas.google.com/projecthosting/projects/2010";
+
+  /** ProjectHostingProjects (PROJECTS) namespace prefix */
+  public static final String PROJECTS_PREFIX = PROJECTS + "#";
+
+  /** ProjectHostingProjects (PROJECTS) namespace alias */
+  public static final String PROJECTS_ALIAS = "projects";
+
+  /** XML writer namespace for ProjectHostingProjects (PROJECTS) */
+  public static final XmlNamespace PROJECTS_NS = new
+      XmlNamespace(PROJECTS_ALIAS, PROJECTS);
 
 }
 

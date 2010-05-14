@@ -33,7 +33,7 @@ public class IssuesQuery extends Query {
   /** Issue ID. */
   private Integer id;
 
-  /** Issue label. */
+  /** Label. */
   private String label;
 
   /** Issue owner. */
@@ -103,20 +103,19 @@ public class IssuesQuery extends Query {
   }
 
   /**
-   * Returns the issue label.
+   * Returns the label.
    *
-   * @return issue label or <code>null</code> to indicate that the parameter is
-   *     not set.
+   * @return label or <code>null</code> to indicate that the parameter is not
+   *     set.
    */
   public String getLabel() {
     return label;
   }
 
   /**
-   * Sets the issue label.
+   * Sets the label.
    *
-   * @param label issue label or <code>null</code> to remove this parameter if
-   *     set.
+   * @param label label or <code>null</code> to remove this parameter if set.
    */
   public void setLabel(String label) {
     // check if setting to existing value

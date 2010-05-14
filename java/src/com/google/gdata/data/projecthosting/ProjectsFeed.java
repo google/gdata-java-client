@@ -18,20 +18,20 @@ package com.google.gdata.data.projecthosting;
 
 import com.google.gdata.data.BaseFeed;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
 
 /**
- * Describes an issue comments feed.
+ * Google Code Projects Feed.
  *
  * 
  */
-public class IssueCommentsFeed extends BaseFeed<IssueCommentsFeed,
-    IssueCommentsEntry> {
+public class ProjectsFeed extends BaseFeed<ProjectsFeed, ProjectSummaryEntry> {
 
   /**
    * Default mutable constructor.
    */
-  public IssueCommentsFeed() {
-    super(IssueCommentsEntry.class);
+  public ProjectsFeed() {
+    super(ProjectSummaryEntry.class);
   }
 
   /**
@@ -40,23 +40,35 @@ public class IssueCommentsFeed extends BaseFeed<IssueCommentsFeed,
    *
    * @param sourceFeed source feed
    */
-  public IssueCommentsFeed(BaseFeed<?, ?> sourceFeed) {
-    super(IssueCommentsEntry.class, sourceFeed);
+  public ProjectsFeed(BaseFeed<?, ?> sourceFeed) {
+    super(ProjectSummaryEntry.class, sourceFeed);
   }
 
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
-    if (extProfile.isDeclared(IssueCommentsFeed.class)) {
+    if (extProfile.isDeclared(ProjectsFeed.class)) {
       return;
     }
     super.declareExtensions(extProfile);
-    extProfile.declare(IssueCommentsFeed.class,
+    extProfile.declare(ProjectsFeed.class,
         IssuesLink.getDefaultDescription(true, true));
+  }
+
+  /**
+   * Returns the link that provides the URI of the full feed (without any query
+   * parameters).
+   *
+   * @return Link that provides the URI of the full feed (without any query
+   *     parameters) or {@code null} for none.
+   */
+  public Link getFeedLink() {
+    return getLink(Link.Rel.FEED, Link.Type.ATOM);
   }
 
   @Override
   public String toString() {
-    return "{IssueCommentsFeed " + super.toString() + "}";
+    return "{ProjectsFeed " + super.toString() + "}";
   }
 
 }
+

@@ -50,8 +50,8 @@ public class IssuesFeed extends BaseFeed<IssuesFeed, IssuesEntry> {
       return;
     }
     super.declareExtensions(extProfile);
-    extProfile.declare(IssuesFeed.class, IssuesLink.getDefaultDescription(true,
-        true));
+    extProfile.declare(IssuesFeed.class,
+        IssuesLink.getDefaultDescription(true, true));
   }
 
   /**
@@ -71,4 +71,3 @@ public class IssuesFeed extends BaseFeed<IssuesFeed, IssuesEntry> {
   }
 
 }
-

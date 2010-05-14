@@ -27,6 +27,7 @@ import com.google.gdata.util.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Service class specializing AppsPropertyService for groups management
@@ -59,8 +60,24 @@ public class AppsGroupsService extends AppsPropertyService {
    */
   public AppsGroupsService(String adminUser, String adminPassword,
       String domain, String applicationName) throws AuthenticationException {
-    super(applicationName);
+    this(domain, applicationName);
     setUserCredentials(adminUser, adminPassword);
+  }
+
+  /**
+   * Parameterized constructor to setup a Service object which can be used to
+   * initialize the service without obtaining a token. The user should
+   * explicitly authorize the service by calling either
+   * {@code setUserCredentials} or {@code setUserToken} when using this
+   * constructor.
+   *
+   * @param domain Domain being configured
+   * @param applicationName Application name consuming the API
+   * @throws AuthenticationException If an authentication error occurs
+   */
+  public AppsGroupsService(String domain, String applicationName)
+      throws AuthenticationException {
+    super(applicationName);
     baseDomainUrl = BASE_URL + domain + "/";
   }
 
@@ -336,7 +353,8 @@ public class AppsGroupsService extends AppsPropertyService {
   }
 
   /**
-   * Retrieves all groups in a domain as a GenericFeed.
+   * Retrieves all groups in a domain as a GenericFeed. The client should
+   * follow the next feed link to retrieve subsequent pages.
    * 
    * @throws AppsForYourDomainException If a Provisioning API error occurs
    * @throws MalformedURLException If a URL related error occurs
@@ -395,5 +413,19 @@ public class AppsGroupsService extends AppsPropertyService {
       ServiceException {
     return getFeed(new URL(baseDomainUrl + groupId + "/owner"),
         GenericFeed.class);
+  }
+
+  /**
+   * Retrieves all the pages of the groups feed. This method can be used by
+   * clients to retrieve a List of entries from all the pages of group feed.
+   * 
+   * @return List of GenericEntry instances 
+   * @throws MalformedURLException If a URL related error occurs
+   * @throws IOException If a network I/O related error occurs
+   * @throws ServiceException If the API service fails
+   */
+  public List<GenericEntry> retrieveAllPagesOfGroups() 
+      throws MalformedURLException, IOException, ServiceException {
+    return getAllPages(new URL(baseDomainUrl), GenericFeed.class);
   }
 }
