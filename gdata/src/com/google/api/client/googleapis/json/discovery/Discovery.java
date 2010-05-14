@@ -1,7 +1,25 @@
+/*
+ * Copyright (c) 2010 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.google.api.client.googleapis.json.discovery;
 
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.GoogleUrl;
+import com.google.api.client.googleapis.json.discovery.ServiceDocument.Parameter;
+import com.google.api.client.googleapis.json.discovery.ServiceDocument.ServiceDefinition;
 import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
@@ -10,6 +28,7 @@ import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.MultipartContent;
 import com.google.api.client.util.GenericData;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -17,32 +36,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @since 2.2
+ * @author vbarathan@google.com (Prakash Barathan)
  */
 public class Discovery {
 
-  private final ConcurrentHashMap<String, Class<? extends HttpContent>> contentTypeToSerializerMap =
+  private final ConcurrentHashMap<String, Class<? extends HttpContent>>
+      contentTypeToSerializerMap =
       new ConcurrentHashMap<String, Class<? extends HttpContent>>();
   private final GoogleTransport transport;
 
-  private final ServiceDocument serviceDoc;
-  @SuppressWarnings("unused")
-  private final String resource;
+  private final ServiceDefinition serviceDefinition;
 
-  Discovery(ServiceDocument serviceDoc, GoogleTransport transport) {
+  Discovery(ServiceDefinition serviceDefinition, GoogleTransport transport) {
     this.transport = transport;
-    this.serviceDoc = serviceDoc;
-    this.resource = null;
-  }
-
-  Discovery(String resource, GoogleTransport transport) {
-    this.transport = transport;
-    this.resource = resource;
-    this.serviceDoc = null;
+    this.serviceDefinition = serviceDefinition;
   }
 
   public <T extends HttpContent> void setSerializer(String contentType,
@@ -51,7 +61,8 @@ public class Discovery {
   }
 
   boolean isRestHeader(String parameter) {
-    if ("content-type".equals(parameter) || "content-length".equals(parameter)) {
+    if ("content-type".equals(parameter)
+        || "content-length".equals(parameter)) {
       return true;
     }
     return false;
@@ -62,8 +73,8 @@ public class Discovery {
         || "delete".equals(method);
   }
 
-  HttpRequest buildRpcRequest(String resource, String method,
-      GenericData params) {
+  HttpRequest buildRpcRequest(
+      String resource, String method, GenericData params) {
     Map<String, String> headers = new HashMap<String, String>();
     String auth = null;
     GenericData body = new GenericData();
@@ -77,7 +88,7 @@ public class Discovery {
       }
       bodyParam.set(param.getKey(), param.getValue());
     }
-    body.set("parm", bodyParam);
+    body.set("param", bodyParam);
     // Create transport request
     HttpRequest request = transport.buildPostRequest();
     request.setUrl(resource);
@@ -85,12 +96,11 @@ public class Discovery {
     return request;
   }
 
-  HttpRequest buildRestRequest(String resource, String method,
-      GenericData params) {
-    GoogleUrl uriEntity = new GoogleUrl(getUrl(resource, method, params));
+  HttpRequest buildRestRequest(String methodName, GenericData params) {
+    ServiceDocument.Method method =
+      serviceDefinition.getResourceMethod(methodName);
+    GoogleUrl uriEntity = getRestUrl(method, params);
 
-    // separate headers, query parameters and content body
-    // TODO(vbarathan): determine this from discovery doc. for now hardcoded.
     Map<String, String> headersMap = new HashMap<String, String>();
     Object body = null;
     String auth = null;
@@ -115,23 +125,24 @@ public class Discovery {
     }
     // build HTTP request
     HttpRequest request;
-    if ("query".equals(method)) {
+    String uri = uriEntity.build();
+    String restMethod = method.httpMethod;
+    
+    if ("GET".equalsIgnoreCase(restMethod)) {
       request = transport.buildGetRequest();
-    } else if ("insert".equals(method)) {
+    } else if ("POST".equalsIgnoreCase(restMethod)) {
       request = transport.buildPostRequest();
-    } else if ("update".equals(method)) {
+    } else if ("PUT".equalsIgnoreCase(restMethod)) {
       request = transport.buildPutRequest();
-    } else if ("patch".equals(method)) {
-      request = transport.buildPatchRequest();
-    } else if ("delete".equals(method)) {
+    } else if ("DELETE".equalsIgnoreCase(restMethod)) {
       request = transport.buildDeleteRequest();
     } else {
-      throw new RuntimeException("Unknown REST method: " + method);
+      throw new RuntimeException("Unknown REST method: " + restMethod);
     }
-    request.url = uriEntity;
+    request.setUrl(uri);
     // HTTP headers
     HttpHeaders headers = request.headers;
-    if (etag != null && isItemRequest(method)) {
+    if (etag != null) {
       headers.ifMatch = etag;
     }
     if (auth != null) {
@@ -167,63 +178,101 @@ public class Discovery {
     return request;
   }
 
-  HttpResponse doRestRequest(String resource, String method, GenericData params)
+  HttpResponse doRestRequest(String method, GenericData params)
       throws IOException {
-    return buildRestRequest(resource, method, params).execute();
+    return buildRestRequest(method, params.clone()).execute();
   }
 
-  <T> T doRestRequest(String resource, String method, GenericData params,
+  <T> T doRestRequest(String method, GenericData params,
       Class<T> resultType) throws IOException {
     if (resultType == null) {
-      buildRestRequest(resource, method, params).execute();
+      buildRestRequest(method, params).execute();
       return null;
     }
-    return buildRestRequest(resource, method, params).execute().parseAs(
+    return buildRestRequest(method, params).execute().parseAs(
         resultType);
   }
-
-  <T> T doRequest(String resource, String method, GenericData params,
-      Class<T> resultType) throws IOException {
-    // determine REST versus RPC request
-    // if rest request
-    return doRestRequest(resource, method, params, resultType);
-
-    // TODO(vbarathan): RPC request
-  }
-
-  public String getUrl(String resource, String method, GenericData params) {
-    String url;
-    if (resource.startsWith("http")) {
-      url = resource;
-    } else if (serviceDoc != null) {
-      if (isItemRequest(method)) {
-        url = serviceDoc.getResourceItemUrl(resource);
-      } else {
-        url = serviceDoc.getResourceUrl(resource);
-      }
-    } else {
+  
+  public String getRpcUrl(String methodName, GenericData paramValues) {
+    if (serviceDefinition == null) {
       throw new RuntimeException("cannot determine request uri");
     }
 
-    Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
-    Matcher matcher = pattern.matcher(url);
-    System.out.println(url);
-    while (matcher.find()) {
-      String var = matcher.group(1);
-      if (params.get(var) == null) {
-        throw new RuntimeException("Required parameter '" + var
-            + "' is not defined.");
+    ServiceDocument.Method method =
+        serviceDefinition.getResourceMethod(methodName);
+    String url = serviceDefinition.baseUrl + "rpc?method=" + method.rpcName;
+    
+    for(Map.Entry<String, Parameter> param : method.parameters.entrySet()) {
+      String paramName = param.getKey();
+      String paramType = param.getValue().parameterType;
+      if ("path".equals(paramType)) {
+        url += "&" + paramName + "=" + paramValues.get(paramName);
+        paramValues.remove(paramName);
+      } else if ("query".equals(paramName)
+          && paramValues.containsKey(paramName)) {
+        url += "&" + paramName + "=" + paramValues.get(paramName);
+        paramValues.remove(paramName);
       }
-      System.out.println(var);
-      url = url.replace("{" + var + "}", (String) params.get(var));
-      params.set(var, null);
     }
     return url;
+  }
+
+  public GoogleUrl getRestUrl(
+      ServiceDocument.Method method, GenericData paramValues) {
+    if (serviceDefinition == null) {
+      throw new RuntimeException("cannot determine request uri");
+    }
+
+    String url = serviceDefinition.baseUrl + method.pathUrl;
+    for(Map.Entry<String, Parameter> param : method.parameters.entrySet()) {
+      String paramName = param.getKey();
+      String paramType = param.getValue().parameterType;
+      if ("path".equals(paramType)) {
+        if (!paramValues.containsKey(paramName)) {
+          throw new IllegalStateException(
+              "Required path parameter '" + paramName + "' not specified");
+        }
+        url = url.replace("{" + paramName + "}",
+            (String) paramValues.get(paramName));
+        paramValues.remove(paramName);
+      }
+    }
+    GoogleUrl uri = new GoogleUrl(url);
+    for(Map.Entry<String, Parameter> param : method.parameters.entrySet()) {
+      String paramName = param.getKey();
+      String paramType = param.getValue().parameterType;
+      if ("query".equals(paramType)
+          && paramValues.containsKey(paramName)) {
+        uri.put(paramName, paramValues.get(paramName));
+        paramValues.remove(paramName);
+      }
+    }
+    
+    // Handle user specified query parameters
+    for (String paramName : paramValues.unknownFields.keySet()) {
+      if (!(paramValues.get(paramName) instanceof String)) {
+        // skip complex types
+        continue;
+      }
+      if (method.parameters.containsKey(paramName)
+          && "query".equals(method.parameters.get(paramName).parameterType)) {
+        uri.put(paramName, paramValues.get(paramName));
+        paramValues.remove(paramName);
+      } else if (paramName.startsWith("q:")) {
+        uri.put(paramName.substring(2), paramValues.get(paramName));
+        paramValues.remove(paramName);
+      }
+    }
+    
+    return uri;
   }
 
   public HttpContent getSerializer(String contentType, Object content) {
     if (contentType == null) {
       return null;
+    }
+    if (content instanceof String) {
+      content = new ByteArrayInputStream(((String) content).getBytes());
     }
     if (content instanceof InputStream) {
       InputStreamContent streamContent = new InputStreamContent();

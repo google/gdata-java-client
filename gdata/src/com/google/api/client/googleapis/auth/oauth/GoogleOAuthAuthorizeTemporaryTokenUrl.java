@@ -40,6 +40,9 @@ import com.google.api.client.util.Key;
 public final class GoogleOAuthAuthorizeTemporaryTokenUrl extends
     OAuthAuthorizeTemporaryTokenUrl {
 
+  public static String GOOGLE_OAUTH_AUTHORIZE_URL =
+      "https://www.google.com/accounts/OAuthAuthorizeToken";
+
   /**
    * Optionally use {@code "mobile"} to for a mobile version of the approval
    * page or {@code null} for normal.
@@ -64,6 +67,6 @@ public final class GoogleOAuthAuthorizeTemporaryTokenUrl extends
   public String language;
 
   public GoogleOAuthAuthorizeTemporaryTokenUrl() {
-    super("https://www.google.com/accounts/OAuthAuthorizeToken");
+    super(GOOGLE_OAUTH_AUTHORIZE_URL);
   }
 }

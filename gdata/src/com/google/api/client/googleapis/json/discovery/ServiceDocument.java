@@ -16,57 +16,115 @@
 
 package com.google.api.client.googleapis.json.discovery;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.api.client.util.GenericData;
+import com.google.api.client.util.ArrayMap;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.Json;
+import com.google.api.client.util.Key;
+
+import org.codehaus.jackson.JsonParser;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
- * Envelope for service discovery document.
- * 
+ * Class representing a Google API Service description document.
+ *
  * @since 2.2
+ * @author vbarathan@google.com (Prakash Barathan)
  */
 public class ServiceDocument {
 
-  private JSONObject document;
+  public static class ServiceDefinitions extends ArrayMap<String, Versions> {
+  }
+  
+  public static class Versions extends ArrayMap<String, ServiceDefinition> {
+  }
 
-  public ServiceDocument(String json) {
+  ServiceDefinitions serviceDefinitions =
+      new ServiceDefinitions();
+
+  public static class ServiceDefinition {
+    @Key public String baseUrl;
+    @Key public Map<String, Resource> resources;
+
+    public Method getResourceMethod(String methodName) {
+      String collection = methodName.substring(0, methodName.indexOf("."));
+      String method = methodName.substring(methodName.indexOf(".") + 1);
+
+      Resource resource = resources.get(collection);
+      return resource.methods.get(method);
+    }
+
+    public String getResourceUrl(String resourceName) {
+      return getResourceMethod(resourceName).pathUrl;
+    }
+  }
+
+  public static class Resource {
+    @Key public Map<String, Method> methods;
+  }
+
+  public static class Parameter extends GenericData {
+    @Key public String parameterType;
+  }
+
+  public static class Method {
+    @Key public String pathUrl;
+    @Key public String rpcName;
+    @Key public String httpMethod;
+    @Key public String methodType;
+    @Key public Map<String, Parameter> parameters;
+  }
+
+  public ServiceDocument(String resource) {
     try {
-      document = new JSONObject(json);
-    } catch (JSONException e) {
+      if (resource.startsWith("http")) { 
+        HttpTransport transport = new HttpTransport();
+        HttpRequest request = transport.buildGetRequest();
+        request.setUrl(resource);
+        Json.parseAndClose(
+            processAsInputStream(request.execute().parseAsString()),
+            serviceDefinitions, null);
+      } else {
+        Json.parseAndClose(
+            processAsInputStream(resource), serviceDefinitions, null);
+      }
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
   public boolean hasService(String name) {
-    return document.has(name);
+    return serviceDefinitions.containsKey(name);
   }
 
-  private String getResourceUrl(String resource, boolean isItem) {
-
-    String service = resource.substring(0, resource.indexOf("."));
-    String collection = resource.substring(resource.indexOf(".") + 1);
-    try {
-      JSONObject serviceDocument = document.getJSONObject(service);
-      String baseUrl = serviceDocument.getString("urlBase");
-      JSONObject resourceDefinition =
-          serviceDocument.getJSONObject("resources").getJSONObject(collection);
-      if (resourceDefinition.has("urlTemplate")) {
-        baseUrl += resourceDefinition.getString("urlTemplate");
-      }
-      if (isItem && resourceDefinition.has("itemTemplate")) {
-        baseUrl += resourceDefinition.getString("itemTemplate");
-      }
-      return baseUrl;
-    } catch (JSONException e) {
-      throw new RuntimeException(e);
+  public ServiceDefinition getServiceDefinition(
+      String serviceName, String version) {
+    Versions serviceVersions = serviceDefinitions.get(serviceName);
+    if (version ==  null) {
+      return serviceVersions.getValue(serviceVersions.size() - 1);
     }
+    return serviceVersions.get(version);
   }
 
-  public String getResourceUrl(String resource) {
-    return getResourceUrl(resource, false);
-  }
-
-  public String getResourceItemUrl(String resource) {
-    return getResourceUrl(resource, true);
+  public static JsonParser processAsInputStream(String jsonString)
+      throws IOException {
+    InputStream content = new ByteArrayInputStream(jsonString.getBytes());
+    try {
+      JsonParser parser = Json.JSON_FACTORY.createJsonParser(content);
+      content = null;
+      parser.nextToken();
+      Json.skipToKey(parser, "data");
+      return parser;
+    } finally {
+      if (content != null) {
+        content.close();
+      }
+    }
   }
 
 }

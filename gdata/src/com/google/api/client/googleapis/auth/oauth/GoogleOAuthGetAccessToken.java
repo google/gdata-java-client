@@ -43,8 +43,11 @@ import java.io.IOException;
  */
 public final class GoogleOAuthGetAccessToken extends OAuthGetAccessToken {
 
+  public static String GOOGLE_OAUTH_ACCESS_TOKEN_URL =
+      "https://www.google.com/accounts/OAuthGetAccessToken";
+
   public GoogleOAuthGetAccessToken() {
-    super("https://www.google.com/accounts/OAuthGetAccessToken");
+    super(GOOGLE_OAUTH_ACCESS_TOKEN_URL);
   }
 
   /**

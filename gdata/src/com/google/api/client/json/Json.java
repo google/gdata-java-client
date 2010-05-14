@@ -224,7 +224,9 @@ public class Json {
     if (!isGenericJson && Map.class.isAssignableFrom(destinationClass)) {
       @SuppressWarnings("unchecked")
       Map<String, Object> destinationMap = (Map<String, Object>) destination;
-      parseMap(parser, destinationMap, null, customizeParser);
+      Class<?> valueClass = ClassInfo.getMapValueParameter(
+          destinationClass.getGenericSuperclass());
+      parseMap(parser, destinationMap, valueClass, customizeParser);
       return;
     }
     while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -322,7 +324,13 @@ public class Json {
           }
         }
         if (isMap && fieldClass != null) {
-          Class<?> valueClass = ClassInfo.getMapValueParameter(field);
+          Class<?> valueClass;
+          if (field != null) {
+            valueClass = ClassInfo.getMapValueParameter(field);
+          } else {
+            valueClass = ClassInfo.getMapValueParameter(
+                fieldClass.getGenericSuperclass());
+          }
           if (valueClass != null) {
             @SuppressWarnings("unchecked")
             Map<String, Object> destinationMap =

@@ -24,9 +24,10 @@ import com.google.api.client.http.LowLevelHttpTransport;
 import com.google.api.client.util.GenericData;
 
 /**
- * Creates requests with default set of parameters.
+ * Creates requests with default parameters for specified service.
  *
  * @since 2.2
+ * @author vbarathan@google.com (Parakash Barathan)
  */
 public class ApiRequestFactory {
 
@@ -35,6 +36,8 @@ public class ApiRequestFactory {
     private String appName;
     private String resource;
     private ServiceDocument serviceDoc = null;
+    private String serviceName;
+    private String serviceVersion;
 
     private LowLevelHttpTransport lowLevelTransport;
     private GoogleTransport transport;
@@ -43,18 +46,35 @@ public class ApiRequestFactory {
 
     public Builder() {
     }
-    
+
     public Builder application(String appName) {
       this.appName = appName;
       return this;
     }
 
-    public Builder rpcService(String rpcServiceUri) {
-      this.resource = rpcServiceUri;
+    public Builder discoveryDocument(String discoveryUri) {
+      this.resource = discoveryUri;
       return this;
     }
 
-    public Builder restService(ServiceDocument doc) {
+    public Builder discoveryDocument(ServiceDocument doc) {
+      this.serviceDoc = doc;
+      return this;
+    }
+
+    public Builder forService(String service) {
+      this.serviceName = service;
+      this.serviceVersion = null;
+      return this;
+    }
+
+    public Builder forService(String service, String version) {
+      this.serviceName = service;
+      this.serviceVersion = version;
+      return this;
+    }
+
+    public Builder serviceDocument(ServiceDocument doc) {
       this.serviceDoc = doc;
       return this;
     }
@@ -63,17 +83,17 @@ public class ApiRequestFactory {
       this.lowLevelTransport = lowLevelTransport;
       return this;
     }
-    
+
     public Builder transport(GoogleTransport transport) {
       this.transport = transport;
       return this;
     }
 
-    public Builder with(String key, String value) {
+    public Builder with(String key, Object value) {
       paramMap.set(key, value);
       return this;
     }
-    
+
     public ApiRequestFactory build() {
       GoogleTransport newTransport;
       if (transport == null) {
@@ -84,34 +104,25 @@ public class ApiRequestFactory {
       } else {
         newTransport = transport;
       }
-      Discovery discovery = null;
-      if (serviceDoc != null) {
-        discovery = new Discovery(serviceDoc, newTransport);
-      } else {
-        discovery = new Discovery(resource, newTransport);
+      if (serviceDoc == null && resource != null) {
+        serviceDoc = new ServiceDocument(resource);
+      } else if (serviceDoc == null) {
+        throw new IllegalStateException("No discovery document specified");
       }
+      Discovery discovery = null;
+      discovery = new Discovery(serviceDoc.getServiceDefinition(
+          serviceName, serviceVersion), newTransport);
       discovery.setSerializer("application/json", JsonContent.class);
       return new ApiRequestFactory(discovery, paramMap);
     }
   }
 
-  private String resource = null;
-  private ServiceDocument serviceDoc = null;
   private GenericData paramMap = new GenericData();
   private Discovery discovery;
-  
+
   private ApiRequestFactory(Discovery discovery, GenericData params) {
     this.discovery = discovery;
     this.paramMap = params;
-  }
-
-  private String getRequestUri(String method) {
-    if (method.startsWith("http")) {
-      return method;
-    } else if (serviceDoc != null) {
-      return serviceDoc.getResourceUrl(method);
-    }
-    return resource;
   }
 
   public ApiRequest<GenericData> request(String method) {
@@ -120,7 +131,7 @@ public class ApiRequestFactory {
   }
 
   public ApiRequest<GenericData> request(String resource, String method) {
-    return new ApiRequest<GenericData>(discovery, resource, method, paramMap);
+    return new ApiRequest<GenericData>(discovery, resource + "." + method, paramMap);
   }
 
   public ApiRequest<GenericData> query(String resource) {

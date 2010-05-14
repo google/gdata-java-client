@@ -207,8 +207,8 @@ public final class HttpResponse {
   public <T> T parseAs(Class<T> dataClass) throws IOException {
     HttpParser parser = getParser();
     if (parser == null) {
+      InputStream content = getContent();
       if (this.contentType == null) {
-        InputStream content = getContent();
         if (content != null) {
           throw new IllegalArgumentException(
               "Missing Content-Type header in response: " + parseAsString());
