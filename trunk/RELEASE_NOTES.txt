@@ -1,4 +1,7 @@
 Google Data API - Release Notes
+Notes for v1.41.3
+-----------------
+o Updated Apps Audit API 
 
 Notes for v1.41.2
 -----------------

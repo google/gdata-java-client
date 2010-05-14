@@ -53,7 +53,7 @@ public class IssuesLink extends Link {
   /** Link relation type. */
   public static final class Rel {
 
-    /** Replies Project Hosting Issue Tracker Link class. */
+    /** Replies Project Hosting Link class. */
     public static final String REPLIES = "replies";
 
   }

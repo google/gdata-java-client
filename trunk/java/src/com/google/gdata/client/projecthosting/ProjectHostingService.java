@@ -21,21 +21,21 @@ import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Service;
 import com.google.gdata.data.projecthosting.IssueCommentsFeed;
 import com.google.gdata.data.projecthosting.IssuesFeed;
+import com.google.gdata.data.projecthosting.ProjectsFeed;
 import com.google.gdata.util.Version;
 import com.google.gdata.util.VersionRegistry;
 
 /**
  * Extends the basic {@link GoogleService} abstraction to define a service that
- * is preconfigured for access to the Project Hosting Issue Tracker Data API.
+ * is preconfigured for access to the Project Hosting GData API.
  *
  * 
  */
 public class ProjectHostingService extends GoogleService {
 
   /**
-   * The abbreviated name of Project Hosting Issue Tracker Data API recognized
-   * by Google.  The service name is used when requesting an authentication
-   * token.
+   * The abbreviated name of Project Hosting GData API recognized by Google.
+   * The service name is used when requesting an authentication token.
    */
   public static final String PROJECTHOSTING_SERVICE = "code";
 
@@ -46,7 +46,7 @@ public class ProjectHostingService extends GoogleService {
       "GProjectHosting-Java/" +
       ProjectHostingService.class.getPackage().getImplementationVersion();
 
-  /** GData versions supported by the Project Hosting Issue Tracker Data API. */
+  /** GData versions supported by the Project Hosting GData API. */
   public static final class Versions {
 
     /** Version 1. */
@@ -57,14 +57,14 @@ public class ProjectHostingService extends GoogleService {
   }
 
   /**
-   * Default GData version used by the Project Hosting Issue Tracker Data API.
+   * Default GData version used by the Project Hosting GData API.
    */
   public static final Version DEFAULT_VERSION =
       Service.initServiceVersion(ProjectHostingService.class, Versions.V1);
 
   /**
-   * Constructs an instance connecting to the Project Hosting Issue Tracker Data
-   * API for an application with the name {@code applicationName}.
+   * Constructs an instance connecting to the Project Hosting GData API for an
+   * application with the name {@code applicationName}.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -77,10 +77,10 @@ public class ProjectHostingService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Project Hosting Issue Tracker Data
-   * API for an application with the name {@code applicationName} and the given
-   * {@code GDataRequestFactory} and {@code AuthTokenFactory}. Use this
-   * constructor to override the default factories.
+   * Constructs an instance connecting to the Project Hosting GData API for an
+   * application with the name {@code applicationName} and the given {@code
+   * GDataRequestFactory} and {@code AuthTokenFactory}. Use this constructor to
+   * override the default factories.
    *
    * @param applicationName the name of the client application accessing the
    *     service. Application names should preferably have the format
@@ -98,8 +98,8 @@ public class ProjectHostingService extends GoogleService {
   }
 
   /**
-   * Constructs an instance connecting to the Project Hosting Issue Tracker Data
-   * API with name {@code serviceName} for an application with the name {@code
+   * Constructs an instance connecting to the Project Hosting GData API with
+   * name {@code serviceName} for an application with the name {@code
    * applicationName}.  The service will authenticate at the provided {@code
    * domainName}.
    *
@@ -123,20 +123,19 @@ public class ProjectHostingService extends GoogleService {
   }
 
   /**
-   * Returns the current GData version used by the Project Hosting Issue Tracker
-   * Data API.
+   * Returns the current GData version used by the Project Hosting GData API.
    */
   public static Version getVersion() {
     return VersionRegistry.get().getVersion(ProjectHostingService.class);
   }
 
   /**
-   * Declare the extensions of the feeds for the Project Hosting Issue Tracker
-   * Data API.
+   * Declare the extensions of the feeds for the Project Hosting GData API.
    */
   private void declareExtensions() {
     new IssueCommentsFeed().declareExtensions(extProfile);
     new IssuesFeed().declareExtensions(extProfile);
+    new ProjectsFeed().declareExtensions(extProfile);
   }
 
 }

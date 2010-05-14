@@ -120,10 +120,9 @@ public class IssueCommentsEntry extends BaseEntry<IssueCommentsEntry> {
   }
 
   /**
-   * Returns the replies Project Hosting Issue Tracker Link class.
+   * Returns the replies Project Hosting Link class.
    *
-   * @return Replies Project Hosting Issue Tracker Link class or {@code null}
-   *     for none.
+   * @return Replies Project Hosting Link class or {@code null} for none.
    */
   public Link getAtomRepliesLink() {
     return getLink(IssuesLink.Rel.REPLIES, Link.Type.ATOM);
