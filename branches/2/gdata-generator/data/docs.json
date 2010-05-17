@@ -1,10 +1,11 @@
 {
   "id" : "docs",
   "name" : "Google Documents List Data API",
-  "className" : "Docs",
+  "className" : "GoogleDocumentsList",
   "authTokenType" : "writely",
   "versions" : {
     "3" : {
+      "rootUrl" : "https://docs.google.com/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",

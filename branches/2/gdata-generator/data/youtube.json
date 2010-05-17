@@ -5,6 +5,7 @@
   "authTokenType" : "youtube",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://gdata.youtube.com/feeds/api/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",

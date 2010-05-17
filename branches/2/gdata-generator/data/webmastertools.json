@@ -1,10 +1,11 @@
 {
   "id" : "webmastertools",
   "name" : "Google Webmaster Tools Data API",
-  "className" : "WebmasterTools",
+  "className" : "GoogleWebmasterTools",
   "authTokenType" : "sitemaps",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://www.google.com/webmasters/tools/feeds/",
       "atom" : {
         "namespaces" : {
           "" : "http://www.w3.org/2005/Atom",

@@ -18,6 +18,7 @@ package com.google.api.data.sample.picasa.model;
 
 import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.util.Key;
+import com.google.api.data.picasa.v2.PicasaWebAlbums;
 
 /**
  * @author Yaniv Inbar
@@ -27,7 +28,13 @@ public class PicasaUrl extends GoogleUrl {
   @Key
   public String kinds;
 
-  public PicasaUrl(String url) {
-    super(url);
+  public PicasaUrl(String encodedUrl) {
+    super(encodedUrl);
+  }
+
+  public static PicasaUrl fromRelativePath(String relativePath) {
+    PicasaUrl result = new PicasaUrl(PicasaWebAlbums.ROOT_URL);
+    result.path += relativePath;
+    return result;
   }
 }

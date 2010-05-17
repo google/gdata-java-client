@@ -21,7 +21,9 @@ import com.google.api.client.util.ArrayMap;
 import junit.framework.TestCase;
 
 /**
- * Test case for {@link ArrayMap}.
+ * Tests {@link ArrayMap}.
+ * 
+ * @author Yaniv Inbar
  */
 public class ArrayMapTest extends TestCase {
 

@@ -12,11 +12,7 @@ import java.security.GeneralSecurityException;
 final class OAuthAuthorizationHeaderIntercepter implements
     HttpExecuteIntercepter {
 
-  private final OAuthParameters oauthParameters;
-
-  OAuthAuthorizationHeaderIntercepter(OAuthParameters oauthParameters) {
-    this.oauthParameters = oauthParameters;
-  }
+  OAuthParameters oauthParameters;
 
   public void intercept(HttpRequest request) throws IOException {
     oauthParameters.computeNonce();

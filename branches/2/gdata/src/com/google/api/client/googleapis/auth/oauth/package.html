@@ -143,8 +143,9 @@ public class PicasaSample extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     PrintWriter writer = response.getWriter();
-    GoogleTransport transport = new GoogleTransport("...");
-    transport.setVersionHeader(Picasa.VERSION);
+    GoogleTransport transport = new GoogleTransport();
+    transport.applicationName = "...";
+    transport.setVersionHeader(PicasaWebAlbums.VERSION);
     try {
       String thisURL = request.getRequestURI();
       String userId = getCurrentUserId();

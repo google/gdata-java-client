@@ -28,6 +28,9 @@ public final class Version {
   public String id;
 
   @Key
+  public String rootUrl;
+  
+  @Key
   public AtomInfo atom;
 
   public String getJarName() {

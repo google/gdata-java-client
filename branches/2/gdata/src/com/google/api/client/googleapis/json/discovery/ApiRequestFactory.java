@@ -97,8 +97,8 @@ public class ApiRequestFactory {
     public ApiRequestFactory build() {
       GoogleTransport newTransport;
       if (transport == null) {
-        newTransport = new GoogleTransport(
-            appName != null ? appName : "Apiary_Java");
+        newTransport = new GoogleTransport();
+        newTransport.applicationName = appName;
         HttpTransport.setLowLevelHttpTransport(lowLevelTransport);
         newTransport.addParser(new JsonParser());
       } else {

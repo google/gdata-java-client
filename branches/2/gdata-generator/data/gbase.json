@@ -5,6 +5,7 @@
   "authTokenType" : "gbase",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://www.google.com/base/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",

@@ -24,7 +24,7 @@
 	</target>
 
 	<target name="run" description="Runs the sample." depends="compile">
-		<java classname="com.google.api.data.sample.youtube.YouTubeBasicJsoncSample">
+		<java classname="com.google.api.data.sample.youtube.YouTubeJsoncSample">
 			<classpath refid="classpath" />
 			<classpath>
 				<pathelement location="${classes.dir}" />

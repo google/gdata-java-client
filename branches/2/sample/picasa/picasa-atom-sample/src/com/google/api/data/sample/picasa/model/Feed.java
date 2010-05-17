@@ -21,7 +21,7 @@ import com.google.api.client.googleapis.xml.atom.GData;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.util.Key;
 import com.google.api.client.xml.atom.AtomContent;
-import com.google.api.data.picasa.v2.atom.PicasaAtom;
+import com.google.api.data.picasa.v2.atom.PicasaWebAlbumsAtom;
 
 import java.io.IOException;
 import java.util.List;
@@ -53,7 +53,7 @@ public class Feed {
     HttpRequest request = transport.buildPostRequest();
     request.setUrl(Link.find(links, "http://schemas.google.com/g/2005#post"));
     AtomContent content = new AtomContent();
-    content.namespaceDictionary = PicasaAtom.NAMESPACE_DICTIONARY;
+    content.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
     content.entry = entry;
     request.content = content;
     return request.execute().parseAs(entry.getClass());

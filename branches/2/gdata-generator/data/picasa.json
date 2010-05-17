@@ -1,10 +1,11 @@
 {
   "id" : "picasa",
   "name" : "Picasa Web Albums Data API",
-  "className" : "Picasa",
+  "className" : "PicasaWebAlbums",
   "authTokenType" : "lh2",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://picasaweb.google.com/data/",
       "atom" : {
         "namespaces" : {
           "" : "http://www.w3.org/2005/Atom",

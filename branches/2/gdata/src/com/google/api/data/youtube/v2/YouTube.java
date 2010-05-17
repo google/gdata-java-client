@@ -23,11 +23,14 @@ package com.google.api.data.youtube.v2;
  */
 public final class YouTube {
 
-  /** The authentication token type or service name. */
-  public static final String AUTH_TOKEN_TYPE = "youtube";
-
   /** Version name. */
   public static final String VERSION = "2";
+
+  /** Root URL. */
+  public static final String ROOT_URL = "http://gdata.youtube.com/feeds/api/";
+
+  /** The authentication token type used for Client Login. */
+  public static final String AUTH_TOKEN_TYPE = "youtube";
 
   private YouTube() {
   }

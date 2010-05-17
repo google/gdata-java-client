@@ -23,11 +23,14 @@ package com.google.api.data.blogger.v2;
  */
 public final class Blogger {
 
-  /** The authentication token type or service name. */
-  public static final String AUTH_TOKEN_TYPE = "blogger";
-
   /** Version name. */
   public static final String VERSION = "2";
+
+  /** Root URL. */
+  public static final String ROOT_URL = "http://www.blogger.com/feeds/";
+
+  /** The authentication token type used for Client Login. */
+  public static final String AUTH_TOKEN_TYPE = "blogger";
 
   private Blogger() {
   }

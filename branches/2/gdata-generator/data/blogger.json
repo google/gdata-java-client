@@ -5,6 +5,7 @@
   "authTokenType" : "blogger",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://www.blogger.com/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",

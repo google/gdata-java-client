@@ -1,10 +1,11 @@
 {
   "id" : "analytics",
   "name" : "Google Analytics Data Export API",
-  "className" : "Analytics",
+  "className" : "GoogleAnalytics",
   "authTokenType" : "analytics",
   "versions" : {
     "2" : {
+      "rootUrl" : "https://www.google.com/analytics/feeds/",
       "atom" : {
         "namespaces" : {
           "" : "http://www.w3.org/2005/Atom",

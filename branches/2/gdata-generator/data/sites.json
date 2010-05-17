@@ -1,10 +1,11 @@
 {
   "id" : "sites",
   "name" : "Google Sites Data API",
-  "className" : "Sites",
+  "className" : "GoogleSites",
   "authTokenType" : "jotspot",
   "versions" : {
     "1" : {
+      "rootUrl" : "https://sites.google.com/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",
