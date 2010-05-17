@@ -26,17 +26,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
+ * Serializes JSON content based on the data key/value mapping object for an
+ * item.
+ * 
  * @since 2.2
  * @author Yaniv Inbar
  */
-public class JsonContent implements HttpContent {
+public final class JsonContent implements HttpContent {
   // TODO: ability to annotate fields as only needed for POST?
 
-  protected final Object item;
-
-  public JsonContent(Object item) {
-    this.item = item;
-  }
+  public Object item;
 
   public final long getLength() {
     // TODO
@@ -56,12 +55,8 @@ public class JsonContent implements HttpContent {
         Json.JSON_FACTORY.createJsonGenerator(out, JsonEncoding.UTF8);
     generator.writeStartObject();
     generator.writeFieldName("data");
-    serializeData(generator);
+    Json.serialize(generator, this.item);
     generator.writeEndObject();
     generator.close();
-  }
-
-  protected void serializeData(JsonGenerator generator) throws IOException {
-    Json.serialize(generator, this.item);
   }
 }

@@ -18,6 +18,7 @@ package com.google.api.client.auth.oauth;
 
 import com.google.api.client.escape.PercentEscaper;
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpExecuteIntercepter;
 import com.google.api.client.http.HttpTransport;
 
 import java.security.GeneralSecurityException;
@@ -225,6 +226,16 @@ public final class OAuthParameters {
    * the final HTTP request execute intercepter for the given HTTP transport.
    */
   public void signRequestsUsingAuthorizationHeader(HttpTransport transport) {
-    transport.intercepters.add(new OAuthAuthorizationHeaderIntercepter(this));
+    for (HttpExecuteIntercepter intercepter : transport.intercepters) {
+      if (intercepter.getClass() == OAuthAuthorizationHeaderIntercepter.class) {
+        ((OAuthAuthorizationHeaderIntercepter) intercepter).oauthParameters =
+            this;
+        return;
+      }
+    }
+    OAuthAuthorizationHeaderIntercepter newIntercepter =
+        new OAuthAuthorizationHeaderIntercepter();
+    newIntercepter.oauthParameters = this;
+    transport.intercepters.add(newIntercepter);
   }
 }

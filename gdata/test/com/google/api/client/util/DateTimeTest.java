@@ -23,7 +23,9 @@ import junit.framework.TestCase;
 import java.util.Date;
 
 /**
- * Test case for {@link DateTime}.
+ * Tests {@link DateTime}.
+ * 
+ * @author Yaniv Inbar
  */
 public class DateTimeTest extends TestCase {
 

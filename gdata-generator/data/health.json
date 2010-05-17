@@ -1,9 +1,10 @@
 {
   "id" : "health",
   "name" : "Google Health Data API",
-  "className" : "Health",
+  "className" : "GoogleHealth",
   "versions" : {
     "2" : {
+      "rootUrl" : "https://www.google.com/health/feeds/",
       "atom" : {
         "namespaces" : {
           "" : "http://www.w3.org/2005/Atom",

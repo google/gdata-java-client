@@ -23,6 +23,8 @@ import com.google.api.client.util.Key;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * URL builder in which the query parameters are specified as generic data
@@ -41,6 +43,7 @@ import java.util.Map;
  * <ul>
  * <li>Repeated query parameters</li>
  * <li>User-information or fragment components.</li>
+ * <li>Encoded slash character ('/') in the path</li>
  * </ul>
  * 
  * @since 2.2
@@ -59,7 +62,7 @@ public class GenericUrl extends GenericData {
 
   /**
    * Path component or {@code null} for none, for example {@code
-   * "m8/feeds/contacts/default/full"}.
+   * "/m8/feeds/contacts/default/full"}.
    */
   public String path;
 
@@ -67,6 +70,12 @@ public class GenericUrl extends GenericData {
   }
 
   /**
+   * Constructs from an encoded URL.
+   * <p>
+   * Any known query parameters with pre-defined fields as data keys will be
+   * parsed based on their data type. Any unrecognized query parameter will
+   * always be parsed as a string.
+   * 
    * @param encodedUrl encoded URL, including any existing query parameters that
    *        should be parsed
    * @throws IllegalArgumentException if URL has a syntax error
@@ -84,15 +93,13 @@ public class GenericUrl extends GenericData {
     // parse the pre-query part
     URI uri;
     try {
-      uri = new URI(CharEscapers.decodeUri(preQuery));
+      uri = new URI(preQuery);
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException(e);
     }
     this.scheme = uri.getScheme().toLowerCase();
     this.host = uri.getHost();
     this.port = uri.getPort();
-    // TODO: encode path: tricky because need to remember which slashes need to
-    // be escaped
     this.path = uri.getPath();
   }
 
@@ -137,6 +144,7 @@ public class GenericUrl extends GenericData {
    * generic URL.
    */
   public final String build() {
+    // scheme, host, port, and path
     StringBuilder buf = new StringBuilder();
     buf.append(this.scheme).append("://").append(this.host);
     int port = this.port;
@@ -144,21 +152,38 @@ public class GenericUrl extends GenericData {
       buf.append(':').append(port);
     }
     String path = this.path;
-    if (path != null) {
-      buf.append(path);
+    if (path != null && path.length() != 0) {
+      int cur = 0;
+      boolean notDone = true;
+      while (notDone) {
+        int slash = path.indexOf('/', cur);
+        notDone = slash != -1;
+        String sub = notDone ? path.substring(cur, slash) : path.substring(cur);
+        buf.append(CharEscapers.escapeUriPath(sub));
+        if (notDone) {
+          buf.append('/');
+        }
+        cur = slash + 1;
+      }
     }
-    boolean startedQuery = false;
+    // compute parameters in sorted order
+    SortedMap<String, String> params = new TreeMap<String, String>();
     for (Map.Entry<String, Object> fieldEntry : entrySet()) {
       Object value = fieldEntry.getValue();
       if (value != null) {
-        if (startedQuery) {
-          buf.append("&");
-        } else {
-          buf.append("?");
-          startedQuery = true;
-        }
-        buf.append(fieldEntry.getKey()).append('=').append(escape(value));
+        params.put(escape(fieldEntry.getKey()), escape(value));
       }
+    }
+    // now add parameters to URL
+    boolean startedQuery = false;
+    for (Map.Entry<String, String> entry : params.entrySet()) {
+      if (startedQuery) {
+        buf.append("&");
+      } else {
+        buf.append("?");
+        startedQuery = true;
+      }
+      buf.append(entry.getKey()).append('=').append(entry.getValue());
     }
     return buf.toString();
   }

@@ -24,7 +24,7 @@
 	</target>
 
 	<target name="run" description="Runs the sample." depends="compile">
-		<java classname="com.google.api.data.sample.picasa.PicasaBasicAtomSample">
+		<java classname="com.google.api.data.sample.picasa.PicasaAtomSample">
 			<classpath refid="classpath" />
 			<classpath>
 				<pathelement location="${classes.dir}" />

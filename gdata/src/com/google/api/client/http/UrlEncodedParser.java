@@ -18,8 +18,9 @@ package com.google.api.client.http;
 
 import com.google.api.client.escape.CharEscapers;
 import com.google.api.client.util.ClassInfo;
-import com.google.api.client.util.GenericData;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.FieldInfo;
+import com.google.api.client.util.GenericData;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -82,13 +83,7 @@ public final class UrlEncodedParser implements HttpParser {
       // get the field from the type information
       Field field = classInfo.getField(name);
       if (field != null) {
-        Class<?> fieldClass = field.getType();
-        Object fieldValue;
-        if (fieldClass == boolean.class || fieldClass == Boolean.class) {
-          fieldValue = Boolean.valueOf(value);
-        } else {
-          fieldValue = value;
-        }
+        Object fieldValue = parseValue(value, field.getType());
         FieldInfo.setFieldValue(field, data, fieldValue);
       } else if (genericData != null) {
         genericData.set(name, value);
@@ -97,5 +92,43 @@ public final class UrlEncodedParser implements HttpParser {
       }
       cur = amp + 1;
     }
+  }
+
+  private static Object parseValue(String stringValue, Class<?> fieldClass) {
+    if (fieldClass == null || fieldClass == String.class) {
+      return stringValue;
+    }
+    if (fieldClass == Integer.class || fieldClass == int.class) {
+      return new Integer(stringValue);
+    }
+    if (fieldClass == Short.class || fieldClass == short.class) {
+      return new Short(stringValue);
+    }
+    if (fieldClass == Byte.class || fieldClass == byte.class) {
+      return new Byte(stringValue);
+    }
+    if (fieldClass == Long.class || fieldClass == long.class) {
+      return new Long(stringValue);
+    }
+    if (fieldClass == Double.class || fieldClass == double.class) {
+      return new Double(stringValue);
+    }
+    if (fieldClass == Character.class || fieldClass == char.class) {
+      if (stringValue.length() != 1) {
+        throw new IllegalArgumentException(
+            "expected type Character/char but got " + fieldClass);
+      }
+      return stringValue.charAt(0);
+    }
+    if (fieldClass == DateTime.class) {
+      return DateTime.parseRfc3339(stringValue);
+    }
+    if (fieldClass == Boolean.class || fieldClass == boolean.class) {
+      return "true".equals(stringValue) ? Boolean.TRUE : Boolean.FALSE;
+    }
+    if (fieldClass == Float.class || fieldClass == float.class) {
+      return Float.valueOf(stringValue);
+    }
+    throw new IllegalArgumentException("unexpected type: " + fieldClass);
   }
 }

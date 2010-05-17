@@ -28,21 +28,27 @@ import com.google.api.client.util.Key;
  */
 public class HttpHeaders extends GenericData {
 
+  /** {@code "Accept-Encoding"} header. */
   @Key("Accept-Encoding")
   public String acceptEncoding;
 
+  /** {@code "User-Agent"} header. */
   @Key("User-Agent")
   public String userAgent;
 
+  /** {@code "Authorization"} header. */
   @Key("Authorization")
   public String authorization;
 
+  /** {@code "If-Match"} header. */
   @Key("If-Match")
   public String ifMatch;
 
+  /** {@code "If-None-Match"} header. */
   @Key("If-None-Match")
   public String ifNoneMatch;
 
+  /** {@code "MIME-Version"} header. */
   @Key("MIME-Version")
   public String mimeVersion;
 

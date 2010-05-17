@@ -1,10 +1,11 @@
 {
   "id" : "spreadsheet",
   "name" : "Google Spreadsheets Data API",
-  "className" : "Spreadsheet",
+  "className" : "GoogleSpreadsheets",
   "authTokenType" : "wise",
   "versions" : {
     "3" : {
+      "rootUrl" : "https://spreadsheets.google.com/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",

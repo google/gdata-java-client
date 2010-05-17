@@ -1,9 +1,10 @@
 {
   "id" : "codesearch",
   "name" : "Google Code Search Data API",
-  "className" : "CodeSearch",
+  "className" : "GoogleCodeSearch",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://www.google.com/codesearch/feeds/",
       "atom" : {
         "namespaces" : {
           "" : "http://www.w3.org/2005/Atom",

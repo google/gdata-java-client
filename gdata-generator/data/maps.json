@@ -1,10 +1,11 @@
 {
   "id" : "maps",
   "name" : "Google Maps Data API",
-  "className" : "Maps",
+  "className" : "GoogleMaps",
   "authTokenType" : "local",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://maps.google.com/maps/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",

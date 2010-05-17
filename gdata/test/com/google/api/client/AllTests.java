@@ -16,17 +16,24 @@
 
 package com.google.api.client;
 
+import com.google.api.client.http.GenericUrlTest;
 import com.google.api.client.util.ArrayMapTest;
 import com.google.api.client.util.DateTimeTest;
 
 import junit.framework.TestSuite;
 
+/**
+ * All tests.
+ * 
+ * @author Yaniv Inbar
+ */
 public class AllTests extends TestSuite {
 
   public static TestSuite suite() {
     TestSuite result = new TestSuite();
     result.addTestSuite(ArrayMapTest.class);
     result.addTestSuite(DateTimeTest.class);
+    result.addTestSuite(GenericUrlTest.class);
     return result;
   }
 }

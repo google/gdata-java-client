@@ -1,9 +1,10 @@
 {
   "id" : "sidewiki",
   "name" : "Google Sidewiki Data API",
-  "className" : "Sidewiki",
+  "className" : "GoogleSidewiki",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://www.google.com/sidewiki/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",

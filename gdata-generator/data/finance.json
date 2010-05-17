@@ -1,10 +1,11 @@
 {
   "id" : "finance",
   "name" : "Google Finance Portfolio Data API",
-  "className" : "Finance",
+  "className" : "GoogleFinance",
   "authTokenType" : "finance",
   "versions" : {
     "2" : {
+      "rootUrl" : "http://finance.google.com/finance/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",

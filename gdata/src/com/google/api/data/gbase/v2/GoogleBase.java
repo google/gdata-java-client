@@ -23,11 +23,14 @@ package com.google.api.data.gbase.v2;
  */
 public final class GoogleBase {
 
-  /** The authentication token type or service name. */
-  public static final String AUTH_TOKEN_TYPE = "gbase";
-
   /** Version name. */
   public static final String VERSION = "2";
+
+  /** Root URL. */
+  public static final String ROOT_URL = "http://www.google.com/base/feeds/";
+
+  /** The authentication token type used for Client Login. */
+  public static final String AUTH_TOKEN_TYPE = "gbase";
 
   private GoogleBase() {
   }

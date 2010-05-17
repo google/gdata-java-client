@@ -40,6 +40,9 @@ public class GoogleUrl extends GenericUrl {
   @Key
   public String fields;
 
+  public GoogleUrl() {
+  }
+
   /**
    * @param encodedUrl encoded URL, including any existing query parameters that
    *        should be parsed

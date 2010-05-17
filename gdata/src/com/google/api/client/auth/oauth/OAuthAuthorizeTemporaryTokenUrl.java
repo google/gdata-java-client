@@ -45,7 +45,10 @@ public class OAuthAuthorizeTemporaryTokenUrl extends GenericUrl {
   @Key("oauth_token")
   public String temporaryToken;
 
-  public OAuthAuthorizeTemporaryTokenUrl(String encodedUrl) {
-    super(encodedUrl);
+  /**
+   * @param encodedUserAuthorizationUrl encoded user authorization URL
+   */
+  public OAuthAuthorizeTemporaryTokenUrl(String encodedUserAuthorizationUrl) {
+    super(encodedUserAuthorizationUrl);
   }
 }

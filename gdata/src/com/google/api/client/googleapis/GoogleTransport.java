@@ -16,6 +16,7 @@
 
 package com.google.api.client.googleapis;
 
+import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 
@@ -37,17 +38,10 @@ public class GoogleTransport extends HttpTransport {
   public static boolean ENABLE_METHOD_OVERRIDE = false;
 
   /**
-   * @param applicationName application name of the format {@code
-   *        "[company-id]-[app-name]-[app-version]"}.
+   * Required application name of the format {@code
+   * "[company-id]-[app-name]-[app-version]"}.
    */
-  public GoogleTransport(String applicationName) {
-    StringBuilder userAgent = new StringBuilder();
-    if (applicationName != null) {
-      userAgent.append(applicationName).append(' ');
-    }
-    userAgent.append("Google-API-Java/2.2.0-alpha(gzip)");
-    this.defaultHeaders.userAgent = userAgent.toString();
-  }
+  public String applicationName;
 
   /**
    * Sets the {@code "GData-Version"} header required by Google Data API's.
@@ -78,8 +72,21 @@ public class GoogleTransport extends HttpTransport {
   }
 
   @Override
+  public HttpRequest buildGetRequest() {
+    checkApplicationName();
+    return super.buildGetRequest();
+  }
+
+  @Override
+  public HttpRequest buildPostRequest() {
+    checkApplicationName();
+    return super.buildPostRequest();
+  }
+
+  @Override
   public HttpRequest buildDeleteRequest() {
     if (!ENABLE_METHOD_OVERRIDE) {
+      checkApplicationName();
       return super.buildDeleteRequest();
     }
     return buildMethodOverride("DELETE");
@@ -88,6 +95,7 @@ public class GoogleTransport extends HttpTransport {
   @Override
   public HttpRequest buildPatchRequest() {
     if (!ENABLE_METHOD_OVERRIDE && useLowLevelHttpTransport().supportsPatch()) {
+      checkApplicationName();
       return super.buildPatchRequest();
     }
     return buildMethodOverride("PATCH");
@@ -96,6 +104,7 @@ public class GoogleTransport extends HttpTransport {
   @Override
   public HttpRequest buildPutRequest() {
     if (!ENABLE_METHOD_OVERRIDE) {
+      checkApplicationName();
       return super.buildPutRequest();
     }
     return buildMethodOverride("PUT");
@@ -105,5 +114,17 @@ public class GoogleTransport extends HttpTransport {
     HttpRequest request = buildPostRequest();
     request.headers.set("X-HTTP-Method-Override", method);
     return request;
+  }
+
+  private void checkApplicationName() {
+    String applicationName = this.applicationName;
+    if (applicationName == null) {
+      throw new IllegalArgumentException("applicationName not specified");
+    }
+    HttpHeaders defaultHeaders = this.defaultHeaders;
+    if (defaultHeaders.userAgent == null) {
+      defaultHeaders.userAgent =
+          applicationName + " Google-API-Java/2.2.0-alpha(gzip)";
+    }
   }
 }

@@ -1,10 +1,11 @@
 {
   "id" : "migration",
   "name" : "Google Apps Email Migration API",
-  "className" : "Migration",
+  "className" : "GoogleAppsEmailMigration",
   "authTokenType" : "migration",
   "versions" : {
     "1" : {
+      "rootUrl" : "https://apps-apis.google.com/a/feeds/",
       "atom" : {
         "namespaces" : {
           "apps" : "http://schemas.google.com/apps/2006",

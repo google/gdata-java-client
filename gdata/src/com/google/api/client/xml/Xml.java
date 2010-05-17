@@ -375,23 +375,23 @@ public class Xml {
     return buf.append(name).toString();
   }
 
-  private static Object parseValue(String stringValue, Class<?> fieldType) {
-    if (fieldType == null || fieldType == String.class) {
+  private static Object parseValue(String stringValue, Class<?> fieldClass) {
+    if (fieldClass == null || fieldClass == String.class) {
       return stringValue;
     }
-    if (fieldType == Integer.class || fieldType == int.class) {
+    if (fieldClass == Integer.class || fieldClass == int.class) {
       return new Integer(stringValue);
     }
-    if (fieldType == Short.class || fieldType == short.class) {
+    if (fieldClass == Short.class || fieldClass == short.class) {
       return new Short(stringValue);
     }
-    if (fieldType == Byte.class || fieldType == byte.class) {
+    if (fieldClass == Byte.class || fieldClass == byte.class) {
       return new Byte(stringValue);
     }
-    if (fieldType == Long.class || fieldType == long.class) {
+    if (fieldClass == Long.class || fieldClass == long.class) {
       return new Long(stringValue);
     }
-    if (fieldType == Double.class || fieldType == double.class) {
+    if (fieldClass == Double.class || fieldClass == double.class) {
       if (stringValue.equals("INF")) {
         return new Double(Double.POSITIVE_INFINITY);
       }
@@ -400,26 +400,26 @@ public class Xml {
       }
       return new Double(stringValue);
     }
-    if (fieldType == Character.class || fieldType == char.class) {
+    if (fieldClass == Character.class || fieldClass == char.class) {
       if (stringValue.length() != 1) {
         throw new IllegalArgumentException(
-            "expected type Character/char but got " + fieldType);
+            "expected type Character/char but got " + fieldClass);
       }
       return stringValue.charAt(0);
     }
-    if (fieldType == BigInteger.class) {
+    if (fieldClass == BigInteger.class) {
       return new BigInteger(stringValue);
     }
-    if (fieldType == BigDecimal.class) {
+    if (fieldClass == BigDecimal.class) {
       return new BigDecimal(stringValue);
     }
-    if (fieldType == DateTime.class) {
+    if (fieldClass == DateTime.class) {
       return DateTime.parseRfc3339(stringValue);
     }
-    if (fieldType == Boolean.class || fieldType == boolean.class) {
+    if (fieldClass == Boolean.class || fieldClass == boolean.class) {
       return "true".equals(stringValue) ? Boolean.TRUE : Boolean.FALSE;
     }
-    if (fieldType == Float.class || fieldType == float.class) {
+    if (fieldClass == Float.class || fieldClass == float.class) {
       if (stringValue.equals("INF")) {
         return Float.POSITIVE_INFINITY;
       }
@@ -428,7 +428,7 @@ public class Xml {
       }
       return Float.valueOf(stringValue);
     }
-    throw new IllegalArgumentException("unexpected type: " + fieldType);
+    throw new IllegalArgumentException("unexpected type: " + fieldClass);
   }
 
   private Xml() {

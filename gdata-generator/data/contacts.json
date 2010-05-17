@@ -1,10 +1,11 @@
 {
   "id" : "contacts",
   "name" : "Google Contacts Data API",
-  "className" : "Contacts",
+  "className" : "GoogleContacts",
   "authTokenType" : "cp",
   "versions" : {
     "3" : {
+      "rootUrl" : "https://www.google.com/m8/feeds/",
       "atom" : {
         "namespaces" : {
           "app" : "http://www.w3.org/2007/app",
