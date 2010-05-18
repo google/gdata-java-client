@@ -243,14 +243,6 @@ public class DiscoveryDocument {
     return createRequest(fullyQualifiedMethodName, requestParametersData);
   }
   
-  public static GenericData getData(String json) throws IOException {
-    return 
-      Json.parse(
-          createJsonParser(new ByteArrayInputStream(
-              json.getBytes()), null),
-          GenericJson.class, null);    
-  }
-  
   /**
    * Creates a {@link HttpRequest} for specified api method with specified
    * method parameters.
@@ -300,6 +292,14 @@ public class DiscoveryDocument {
     appendQueryParameters(method, allParameters, request.url);
     addHeaders(method, allParameters, request);
     return request;
+  }
+  
+  /** Parses given json string to GenericJson instnace */
+  public static GenericJson parseFromJsonString(String json, String skipToKey)
+      throws IOException {
+    return Json.parse(
+        createJsonParser(new ByteArrayInputStream(json.getBytes()), null),
+        GenericJson.class, null);
   }
   
   private GenericUrl getRestRequestUrl(
@@ -361,7 +361,6 @@ public class DiscoveryDocument {
       }
     }
   }
-    
 
   private static JsonParser createJsonParser(
       InputStream content, String skipToKey)
