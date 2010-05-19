@@ -92,9 +92,6 @@ public class GenericData extends AbstractMap<String, Object> implements
 
   @Override
   public final void putAll(Map<? extends String, ?> map) {
-    if (map instanceof GenericData) {
-      map = DataUtil.mapOf(map);
-    }
     for (Map.Entry<? extends String, ?> entry : map.entrySet()) {
       set(entry.getKey(), entry.getValue());
     }
