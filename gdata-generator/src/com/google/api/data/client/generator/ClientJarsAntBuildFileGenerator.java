@@ -37,7 +37,6 @@ final class ClientJarsAntBuildFileGenerator implements FileGenerator {
     "com.google.api.client.googleapis.auth",
     "com.google.api.client.googleapis.auth.clientlogin",
     "com.google.api.client.googleapis.auth.oauth",
-    "com.google.api.client.googleapis.discovery",
     "com.google.api.client.googleapis.json",
     "com.google.api.client.googleapis.xml.atom",
     "com.google.api.client.http",

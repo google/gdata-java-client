@@ -16,7 +16,6 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.javanet.NetHttpTransport;
 import com.google.api.client.util.ArrayMap;
 
 import java.util.ArrayList;
@@ -61,8 +60,15 @@ public class HttpTransport {
     LowLevelHttpTransport lowLevelHttpTransportInterface =
         HttpTransport.lowLevelHttpTransport;
     if (lowLevelHttpTransportInterface == null) {
-      HttpTransport.lowLevelHttpTransport =
-          lowLevelHttpTransportInterface = NetHttpTransport.INSTANCE;
+      try {
+        HttpTransport.lowLevelHttpTransport =
+            lowLevelHttpTransportInterface =
+                (LowLevelHttpTransport) Class.forName(
+                    "com.google.api.client.javanet.NetHttpTransport").getField(
+                    "INSTANCE").get(null);
+      } catch (Exception e) {
+        throw new IllegalStateException("unable to load NetHttpTrasnport");
+      }
     }
     return lowLevelHttpTransportInterface;
   }
