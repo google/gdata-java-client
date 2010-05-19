@@ -16,368 +16,203 @@
 
 package com.google.api.client.googleapis.json;
 
-import com.google.api.client.googleapis.GoogleUrl;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.GenericJson;
-import com.google.api.client.json.Json;
-import com.google.api.client.util.ArrayMap;
-import com.google.api.client.util.DataUtil;
-import com.google.api.client.util.GenericData;
-import com.google.api.client.util.Key;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.codehaus.jackson.JsonParser;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.json.JsonHttp;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.Json;
+import com.google.api.client.util.DataUtil;
+import com.google.api.client.util.Key;
 
 /**
- * Class representing a Google API Service description document.  This is java
- * representation of Google API Service discovery from JSON format.
- *
+ * Manages a Google API discovery document based on the JSON format.
+ * 
  * @since 2.2
  * @author vbarathan@google.com (Prakash Barathan)
+ * @author Yaniv Inbar
  */
-public class DiscoveryDocument {
-  
-  /** API discovery url */
-  public static final String DEFAULT_DISCOVERY_URL =
-    "http://www.googleapis.com/discovery/0.1/describe";
-  
-  /** Service name query parameter for discovery request */
-  public static final String API_QUERY_PARAMETER = "api";
-  
-  /** Service version query parameter for discovery request */
-  public static final String API_VERSION_QUERY_PARAMETER = "apiVersion";
-  
-  /** List of standard query parameters supported by all services */
-  public static final List<String> STANDARD_QUERY_PARAMETERS =
-      Arrays.asList("alt", "prettyprint");
-  
-  /** List of standard header parameters supported by all services */
-  public static final List<String> STANDARD_HEADER_PARAMETERS =
-      Arrays.asList("Etag");
-  
-  /**
-   * Map of Service name to supported Service Version definitions
-   */
-  public static class ServiceDefinitions extends ArrayMap<String, Versions> {
-  }
-  
-  /**
-   * Map of Service Version to Service Version definition 
-   */
-  public static class Versions extends ArrayMap<String, ServiceDefinition> {
-  }
+public final class DiscoveryDocument {
 
-  /**
-   *  Version specific Service Definition for a service
-   */
-  public static class ServiceDefinition {
-    /** Base url for service endpoint */
-    @Key
-    public String baseUrl;
-    
-    /** List of supported resources */
-    @Key
-    public Map<String, Resource> resources;
+  /** Container for the discovery document model. */
+  static final class Model {
 
     /**
-     * Returns {@link Method} definition for given method name.
-     * Method identifier is of format "resourceName.methodName" */
-    public Method getResourceMethod(String methodIdentifier) {
-      String resourceName = methodIdentifier.substring(
-          0, methodIdentifier.indexOf("."));
-      String methodName = methodIdentifier.substring(
-          methodIdentifier.indexOf(".") + 1);
+     * Version specific Service Definition for a service
+     */
+    public static final class ServiceDefinition {
+      /** Base url for service endpoint */
+      @Key
+      String baseUrl;
 
-      Resource resource = resources.get(resourceName);
-      return resource.methods.get(methodName);
-    }
+      /** List of supported resources */
+      @Key
+      Map<String, Resource> resources;
 
-    /**
-     * Returns url for requested method.
-     * Method identifier is of format "resourceName.methodName" */
-    public String getResourceUrl(String methodIdentifier) {
-      return baseUrl + getResourceMethod(methodIdentifier).pathUrl;
-    }
-  }
-
-  /**
-   * Defines an available resource in a service.
-   */
-  public static class Resource {
-    @Key
-    public Map<String, Method> methods;
-  }
-  
-  /**
-   * Defines a {key, value} map of parameters.
-   */
-  public static class Parameter extends GenericData {
-    @Key
-    public String parameterType;
-  }
-
-  /**
-   * Defines an available method for a service. 
-   */
-  public static class Method {
-    /** Method parth url relative to base url */
-    @Key
-    public String pathUrl;
-    
-    /** Method's rpc name */
-    @Key 
-    public String rpcName;
-    
-    /** Method's Http verb name */
-    @Key
-    public String httpMethod;
-    
-    /** Method type. One of http or rpc */
-    @Key
-    public String methodType;
-    
-    /** Parameters supported by the method */
-    @Key
-    public Map<String, Parameter> parameters;
-  }
-  
-  /** API service definition parsed from discovery document */
-  private final ServiceDefinition serviceDefinition;
-  
-  /** Default {@link HttpTransport} to use for API requests */
-  public HttpTransport transport;
-  
-  /** Default request parameters to include in all requests */
-  public GenericData defaultRequestParameters = new GenericData();
-  
-  /**
-   * Creates a {@link DiscoveryDocument} for requested service version.
-   * 
-   * @param api name of api service.  not {@code null}
-   */
-  public DiscoveryDocument(String api) {
-    this(api, null);
-  }
-  /**
-   * Creates a {@link DiscoveryDocument} for requested service version.
-   * 
-   * @param api name of api service. not {@code null}
-   * @param apiVersion api version. {@code null} to select latest version
-   */
-  public DiscoveryDocument(String api, String apiVersion) {
-    try {
-      GenericUrl discoveryUrl = new GenericUrl(DEFAULT_DISCOVERY_URL);
-      discoveryUrl.put(API_QUERY_PARAMETER, api);
-      discoveryUrl.put(API_VERSION_QUERY_PARAMETER, apiVersion);
-      
-      HttpTransport transport = new HttpTransport();
-      HttpRequest request = transport.buildGetRequest();
-      request.url = discoveryUrl;
-      ServiceDefinitions definitions = new ServiceDefinitions();
-      Json.parseAndClose(
-          createJsonParser(request.execute().getContent(), "data"),
-          definitions, null);
-      Versions versions = definitions.get(api);
-      if (apiVersion  == null) {
-        apiVersion = versions.getKey(versions.size() - 1);
+      /**
+       * Returns {@link Method} definition for given method name. Method
+       * identifier is of format "resourceName.methodName"
+       */
+      Method getResourceMethod(String methodIdentifier) {
+        int dot = methodIdentifier.indexOf('.');
+        String resourceName = methodIdentifier.substring(0, dot);
+        String methodName = methodIdentifier.substring(dot + 1);
+        Resource resource = this.resources.get(resourceName);
+        return resource == null ? null : resource.methods.get(methodName);
       }
-      serviceDefinition = definitions.get(api).get(apiVersion);
-    } catch (IOException ie) {
-      throw new RuntimeException(ie);
+
+      /**
+       * Returns url for requested method. Method identifier is of format
+       * "resourceName.methodName"
+       */
+      public String getResourceUrl(String methodIdentifier) {
+        return baseUrl + getResourceMethod(methodIdentifier).pathUrl;
+      }
+    }
+
+    /**
+     * Defines an available resource in a service.
+     */
+    public static final class Resource {
+      @Key
+      Map<String, Method> methods;
+    }
+
+    /**
+     * Defines an available method for a service.
+     */
+    public static final class Method {
+      /** Method path url relative to base url */
+      @Key
+      String pathUrl;
+
+      /** Method's Http verb name */
+      @Key
+      String httpMethod;
+
+      /** Method type. */
+      @Key
+      final String methodType = "rest";
     }
   }
 
-  /** 
-   * Creates a {@link DiscoveryDocument} from JSON discovery document string.
-   * discoveryDocument is expected to have exactly one service definition and
-   * one version.
-   * 
-   * @param discoveryDocument full discovery document json string
+  /** API service definition parsed from discovery document */
+  private final Model.ServiceDefinition serviceDefinition;
+
+  /**
+   * Google transport required by {@link #buildRequest}.
    */
-  public DiscoveryDocument(InputStream discoveryDocument) {
-    try {
-      ServiceDefinitions definitions = new ServiceDefinitions();
-      Json.parseAndClose(
-          createJsonParser(discoveryDocument, "data"), definitions, null);
-      serviceDefinition = definitions.getValue(0).getValue(0);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+  public GoogleTransport transport;
+
+  DiscoveryDocument(Model.ServiceDefinition serviceDefinition) {
+    this.serviceDefinition = serviceDefinition;
+  }
+
+  public static final class Builder {
+    /** Required API name of the service. */
+    public String api;
+
+    /** Required API version of the service. */
+    public String apiVersion;
+
+    public DiscoveryDocument build() throws IOException {
+      String api = this.api;
+      String apiVersion = this.apiVersion;
+      if (api == null || apiVersion == null) {
+        throw new NullPointerException("missing api or apiVersion");
+      }
+      GenericUrl discoveryUrl =
+          new GenericUrl("http://www.googleapis.com/discovery/0.1/describe");
+      discoveryUrl.put("api", api);
+      discoveryUrl.put("apiVersion", apiVersion);
+      HttpRequest request = new HttpTransport().buildGetRequest();
+      request.url = discoveryUrl;
+      JsonParser parser = JsonHttp.processAsJsonParser(request.execute());
+      Json.skipToKey(parser, api);
+      Json.skipToKey(parser, apiVersion);
+      Model.ServiceDefinition serviceDefinition = new Model.ServiceDefinition();
+      Json.parseAndClose(parser, serviceDefinition, null);
+      return new DiscoveryDocument(serviceDefinition);
     }
   }
-  
+
   /**
-   * Creates a {@link HttpRequest} for an api method.
+   * Creates an HTTP request based on the given method name and parameters.
    * 
-   * @param fullyQualifiedMethodName name of method as defined in discovery
-   *            document of format "resourceName.methodName"
-   * @return {@link HttpRequest}
+   * @param fullyQualifiedMethodName name of method as defined in Discovery
+   *        document of format "resourceName.methodName"
+   * @param parameters user defined key / value data mapping
+   * @return HTTP request
+   * @throws IOException I/O exception reading
    */
-  public HttpRequest createRequest(String fullyQualifiedMethodName) {
-    return createRequest(fullyQualifiedMethodName, (GenericData) null);
-  }
-  
-  /**
-   * Creates a {@link HttpRequest} for an api method with method parameters
-   * specified as JSON string.
-   * 
-   * @param fullyQualifiedMethodName name of method as defined in discovery
-   *           document of format "resourceName.methodName"
-   * @param requestParameters user defined key, value parameters in JSON format
-   * @return {@link HttpRequest}
-   */
-  public HttpRequest createRequest(String fullyQualifiedMethodName,
-      String requestParameters) throws IOException {
-    GenericData requestParametersData = 
-      Json.parse(
-          createJsonParser(new ByteArrayInputStream(
-              requestParameters.getBytes()), null),
-          GenericJson.class, null);
-    return createRequest(fullyQualifiedMethodName, requestParametersData);
-  }
-  
-  /**
-   * Creates a {@link HttpRequest} for specified api method with specified
-   * method parameters.
-   * 
-   * @param fullyQualifiedMethodName name of method as defined in
-   *           Discovery document of format "resourceName.methodName" 
-   * @param requestParameters user defined key, value parameters to populate the
-   *           request. not {@code null}.
-   * @return {@link HttpRequest}
-   */
-  public HttpRequest createRequest(String fullyQualifiedMethodName,
-      GenericData requestParameters) {
-    // Preconditions
+  public HttpRequest buildRequest(String fullyQualifiedMethodName,
+      Object parameters) throws IOException {
+    GoogleTransport transport = this.transport;
     if (transport == null) {
-      throw new IllegalStateException("Transport is not specified.");
+      throw new IllegalArgumentException("missing transport");
     }
-    
-    // Merge request specific parameters with default parameters
-    GenericData allParameters = defaultRequestParameters.clone();
-    if (requestParameters != null) {
-      allParameters.putAll(DataUtil.mapOf(requestParameters));
-    }
-    
     // Create request for specified method
-    Method method = serviceDefinition.getResourceMethod(
-        fullyQualifiedMethodName);
-    if (!"rest".equals(method.methodType)) {
-      throw new IllegalStateException("Attempt to build REST request for a"
-          + " non-rest method '" + fullyQualifiedMethodName + "'");
+    Model.ServiceDefinition serviceDefinition = this.serviceDefinition;
+    Model.Method method =
+        serviceDefinition.getResourceMethod(fullyQualifiedMethodName);
+    if (method == null) {
+      throw new IllegalArgumentException("unrecognized method: "
+          + fullyQualifiedMethodName);
     }
-    
     HttpRequest request;
     String restMethod = method.httpMethod;
-    if ("GET".equalsIgnoreCase(restMethod)) {
+    if ("GET".equals(restMethod)) {
       request = transport.buildGetRequest();
-    } else if ("POST".equalsIgnoreCase(restMethod)) {
+    } else if ("POST".equals(restMethod)) {
       request = transport.buildPostRequest();
-    } else if ("PUT".equalsIgnoreCase(restMethod)) {
+    } else if ("PUT".equals(restMethod)) {
       request = transport.buildPutRequest();
-    } else if ("DELETE".equalsIgnoreCase(restMethod)) {
+    } else if ("DELETE".equals(restMethod)) {
       request = transport.buildDeleteRequest();
     } else {
-      throw new RuntimeException("Unknown REST method: " + restMethod);
+      request = transport.buildPatchRequest();
     }
-    
-    request.url = getRestRequestUrl(method, allParameters);
-    appendQueryParameters(method, allParameters, request.url);
-    addHeaders(method, allParameters, request);
+    HashMap<String, String> requestMap = new HashMap<String, String>();
+    for (Map.Entry<String, Object> entry : DataUtil.mapOf(parameters)
+        .entrySet()) {
+      Object value = entry.getValue();
+      if (value != null) {
+        requestMap.put(entry.getKey(), value.toString());
+      }
+    }
+    GenericUrl url = new GenericUrl(serviceDefinition.baseUrl);
+    // parse path URL
+    String pathUrl = method.pathUrl;
+    StringBuilder pathBuf = new StringBuilder();
+    int cur = 0;
+    int length = pathUrl.length();
+    while (cur < length) {
+      int next = pathUrl.indexOf('{', cur);
+      if (next == -1) {
+        pathBuf.append(pathUrl.substring(cur));
+        break;
+      }
+      pathBuf.append(pathUrl.substring(cur, next));
+      int close = pathUrl.indexOf('}', next + 2);
+      String varName = pathUrl.substring(next + 1, close);
+      cur = close + 1;
+      String value = requestMap.remove(varName);
+      if (value == null) {
+        throw new IllegalArgumentException("missing required path parameter: "
+            + varName);
+      }
+      pathBuf.append(value);
+    }
+    url.path += pathBuf.toString();
+    // all other parameters are assumed to be query parameters
+    url.putAll(requestMap);
+    request.url = url;
     return request;
   }
-  
-  /** Parses given json string to GenericJson instnace */
-  public static GenericJson parseFromJsonString(String json, String skipToKey)
-      throws IOException {
-    return Json.parse(
-        createJsonParser(new ByteArrayInputStream(json.getBytes()), null),
-        GenericJson.class, null);
-  }
-  
-  private GenericUrl getRestRequestUrl(
-      Method method, GenericData requestParameters) {
-    String methodUrl = serviceDefinition.baseUrl + method.pathUrl;
-    for (Map.Entry<String, Parameter> param: method.parameters.entrySet()) {
-      String paramName = param.getKey();
-      String paramType = param.getValue().parameterType;
-      if ("path".equals(paramType)) {
-        if (requestParameters == null
-            || !requestParameters.containsKey(paramName)) {
-          throw new IllegalStateException(
-              "Required path parameter '" + paramName + "' not specified");
-        }
-        methodUrl = methodUrl.replace("{" + paramName + "}",
-            (String) requestParameters.get(paramName));
-      }      
-    }
-    return new GoogleUrl(methodUrl);
-  }
-  
-  private void appendQueryParameters(
-      Method method, GenericData requestParameters, GenericUrl baseUrl) {
-    // map query parameters from discovery document
-    for (Map.Entry<String, Parameter> param: method.parameters.entrySet()) {
-      String paramName = param.getKey();
-      String paramType = param.getValue().parameterType;
-      if ("query".equals(paramType)) {
-        if (requestParameters.containsKey(paramName)) {
-          baseUrl.put(paramName, requestParameters.get(paramName));
-          continue;
-        }
-      }
-    }
-    // map standard query parameters
-    for (String param: STANDARD_QUERY_PARAMETERS) {
-      if (requestParameters.containsKey(param)) {
-        baseUrl.put(param, requestParameters.get(param));
-      }
-    }
-  }
-  
-  private void addHeaders(
-      Method method, GenericData requestParameters, HttpRequest request) {
-    // map headers from discovery document
-    for (Map.Entry<String, Parameter> param: method.parameters.entrySet()) {
-      String paramName = param.getKey();
-      String paramType = param.getValue().parameterType;
-      if ("header".equals(paramType)) {
-        if (requestParameters.containsKey(paramName)) {
-          request.headers.put(paramName, requestParameters.get(paramName));
-        }
-      }      
-    }
-    // map standard header parameters
-    for (String param: STANDARD_HEADER_PARAMETERS) {
-      if (requestParameters.containsKey(param)) {
-        request.headers.put(param, requestParameters.get(param));
-      }
-    }
-  }
-
-  private static JsonParser createJsonParser(
-      InputStream content, String skipToKey)
-      throws IOException {
-    try {
-      JsonParser parser = Json.JSON_FACTORY.createJsonParser(content);
-      content = null;
-      parser.nextToken();
-      if (skipToKey != null) {
-        Json.skipToKey(parser, skipToKey);
-      }
-      return parser;
-    } finally {
-      if (content != null) {
-        content.close();
-      }
-    }
-  }
-
 }
