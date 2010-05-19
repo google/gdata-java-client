@@ -36,7 +36,8 @@ import java.util.Set;
  * @since 2.2
  * @author Yaniv Inbar
  */
-public class ArrayMap<K, V> extends AbstractMap<K, V> implements Cloneable {
+public final class ArrayMap<K, V> extends AbstractMap<K, V> implements
+    Cloneable {
   private int size;
   private Object[] data;
   private EntrySet entrySet;
@@ -372,11 +373,11 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Cloneable {
     private boolean removed;
     private int nextIndex;
 
-    public final boolean hasNext() {
+    public boolean hasNext() {
       return this.nextIndex < ArrayMap.this.size;
     }
 
-    public final Map.Entry<K, V> next() {
+    public Map.Entry<K, V> next() {
       int index = this.nextIndex;
       if (index == ArrayMap.this.size) {
         throw new NoSuchElementException();
@@ -385,7 +386,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Cloneable {
       return new Entry(index);
     }
 
-    public final void remove() {
+    public void remove() {
       int index = this.nextIndex - 1;
       if (this.removed || index < 0) {
         throw new IllegalArgumentException();
