@@ -114,32 +114,28 @@ public final class DiscoveryDocument {
     this.serviceDefinition = serviceDefinition;
   }
 
-  public static final class Builder {
-    /** Required API name of the service. */
-    public String api;
-
-    /** Required API version of the service. */
-    public String apiVersion;
-
-    public DiscoveryDocument build() throws IOException {
-      String api = this.api;
-      String apiVersion = this.apiVersion;
-      if (api == null || apiVersion == null) {
-        throw new NullPointerException("missing api or apiVersion");
-      }
-      GenericUrl discoveryUrl =
-          new GenericUrl("http://www.googleapis.com/discovery/0.1/describe");
-      discoveryUrl.put("api", api);
-      discoveryUrl.put("apiVersion", apiVersion);
-      HttpRequest request = new HttpTransport().buildGetRequest();
-      request.url = discoveryUrl;
-      JsonParser parser = JsonHttp.processAsJsonParser(request.execute());
-      Json.skipToKey(parser, api);
-      Json.skipToKey(parser, apiVersion);
-      Model.ServiceDefinition serviceDefinition = new Model.ServiceDefinition();
-      Json.parseAndClose(parser, serviceDefinition, null);
-      return new DiscoveryDocument(serviceDefinition);
-    }
+  /**
+   * Executes a request for the JSON-formatted discovery document.
+   * 
+   * @param api API name
+   * @param apiVersion API version
+   * @return discovery document
+   * @throws IOException I/O exception executing request
+   */
+  public static DiscoveryDocument execute(String api, String apiVersion)
+      throws IOException {
+    GenericUrl discoveryUrl =
+        new GenericUrl("http://www.googleapis.com/discovery/0.1/describe");
+    discoveryUrl.put("api", api);
+    discoveryUrl.put("apiVersion", apiVersion);
+    HttpRequest request = new HttpTransport().buildGetRequest();
+    request.url = discoveryUrl;
+    JsonParser parser = JsonHttp.processAsJsonParser(request.execute());
+    Json.skipToKey(parser, api);
+    Json.skipToKey(parser, apiVersion);
+    Model.ServiceDefinition serviceDefinition = new Model.ServiceDefinition();
+    Json.parseAndClose(parser, serviceDefinition, null);
+    return new DiscoveryDocument(serviceDefinition);
   }
 
   /**
