@@ -138,6 +138,18 @@ public class Json {
     return newInstance;
   }
 
+  /**
+   * Skips the values of all keys in the current object until it finds the given
+   * key.
+   * <p>
+   * The current token will either be the {@link JsonToken#END_OBJECT} of the
+   * current object if the key is not found, or the value of the key that was
+   * found.
+   * 
+   * @param parser JSON parser
+   * @param keyToFind key to find
+   * @throws IOException I/O exception
+   */
   public static void skipToKey(JsonParser parser, String keyToFind)
       throws IOException {
     while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -224,8 +236,9 @@ public class Json {
     if (!isGenericJson && Map.class.isAssignableFrom(destinationClass)) {
       @SuppressWarnings("unchecked")
       Map<String, Object> destinationMap = (Map<String, Object>) destination;
-      Class<?> valueClass = ClassInfo.getMapValueParameter(
-          destinationClass.getGenericSuperclass());
+      Class<?> valueClass =
+          ClassInfo.getMapValueParameter(destinationClass
+              .getGenericSuperclass());
       parseMap(parser, destinationMap, valueClass, customizeParser);
       return;
     }
@@ -328,8 +341,9 @@ public class Json {
           if (field != null) {
             valueClass = ClassInfo.getMapValueParameter(field);
           } else {
-            valueClass = ClassInfo.getMapValueParameter(
-                fieldClass.getGenericSuperclass());
+            valueClass =
+                ClassInfo.getMapValueParameter(fieldClass
+                    .getGenericSuperclass());
           }
           if (valueClass != null) {
             @SuppressWarnings("unchecked")
