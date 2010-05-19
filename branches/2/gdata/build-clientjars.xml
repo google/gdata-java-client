@@ -6,7 +6,7 @@
   <import file='build-common.xml'/>
 
   <property name='client.packagenames'
-      value='com.google.api.client.android.xml,com.google.api.client.apache,com.google.api.client.auth,com.google.api.client.auth.oauth,com.google.api.client.escape,com.google.api.client.googleapis,com.google.api.client.googleapis.auth,com.google.api.client.googleapis.auth.clientlogin,com.google.api.client.googleapis.auth.oauth,com.google.api.client.googleapis.discovery,com.google.api.client.googleapis.json,com.google.api.client.googleapis.xml.atom,com.google.api.client.http,com.google.api.client.json,com.google.api.client.util,com.google.api.client.xml,com.google.api.client.xml.atom'
+      value='com.google.api.client.android.xml,com.google.api.client.apache,com.google.api.client.auth,com.google.api.client.auth.oauth,com.google.api.client.escape,com.google.api.client.googleapis,com.google.api.client.googleapis.auth,com.google.api.client.googleapis.auth.clientlogin,com.google.api.client.googleapis.auth.oauth,com.google.api.client.googleapis.json,com.google.api.client.googleapis.xml.atom,com.google.api.client.http,com.google.api.client.json,com.google.api.client.util,com.google.api.client.xml,com.google.api.client.xml.atom'
       />
 
   <target name='client-android-xml-jar'>
@@ -65,13 +65,6 @@
         includes='com/google/api/client/googleapis/auth/oauth/*.class' />
   </target>
 
-  <target name='client-googleapis-discovery-jar'>
-    <jar
-        destfile='${android.dir}/gdata-${version}-client-googleapis-discovery.jar'
-        basedir='${classes.dir}'
-        includes='com/google/api/client/googleapis/discovery/*.class' />
-  </target>
-
   <target name='client-googleapis-json-jar'>
     <jar destfile='${android.dir}/gdata-${version}-client-googleapis-json.jar'
         basedir='${classes.dir}'
@@ -115,6 +108,6 @@
   </target>
 
   <target name='clientjars' description='Compile all Client package jars'
-      depends='client-android-xml-jar,client-apache-jar,client-auth-jar,client-auth-oauth-jar,client-escape-jar,client-googleapis-jar,client-googleapis-auth-jar,client-googleapis-auth-clientlogin-jar,client-googleapis-auth-oauth-jar,client-googleapis-discovery-jar,client-googleapis-json-jar,client-googleapis-xml-atom-jar,client-http-jar,client-json-jar,client-util-jar,client-xml-jar,client-xml-atom-jar'
+      depends='client-android-xml-jar,client-apache-jar,client-auth-jar,client-auth-oauth-jar,client-escape-jar,client-googleapis-jar,client-googleapis-auth-jar,client-googleapis-auth-clientlogin-jar,client-googleapis-auth-oauth-jar,client-googleapis-json-jar,client-googleapis-xml-atom-jar,client-http-jar,client-json-jar,client-util-jar,client-xml-jar,client-xml-atom-jar'
       />
 </project>
