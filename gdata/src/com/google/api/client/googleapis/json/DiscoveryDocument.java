@@ -118,21 +118,19 @@ public final class DiscoveryDocument {
    * Executes a request for the JSON-formatted discovery document.
    * 
    * @param api API name
-   * @param apiVersion API version
    * @return discovery document
    * @throws IOException I/O exception executing request
    */
-  public static DiscoveryDocument execute(String api, String apiVersion)
+  public static DiscoveryDocument execute(String api)
       throws IOException {
     GenericUrl discoveryUrl =
         new GenericUrl("http://www.googleapis.com/discovery/0.1/describe");
     discoveryUrl.put("api", api);
-    discoveryUrl.put("apiVersion", apiVersion);
     HttpRequest request = new HttpTransport().buildGetRequest();
     request.url = discoveryUrl;
     JsonParser parser = JsonHttp.processAsJsonParser(request.execute());
     Json.skipToKey(parser, api);
-    Json.skipToKey(parser, apiVersion);
+    Json.skipToKey(parser, "1.0");
     Model.ServiceDefinition serviceDefinition = new Model.ServiceDefinition();
     Json.parseAndClose(parser, serviceDefinition, null);
     return new DiscoveryDocument(serviceDefinition);

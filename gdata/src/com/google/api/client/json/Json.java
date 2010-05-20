@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * JSON utilities.
+ * 
  * @since 2.2
  * @author Yaniv Inbar
  */
@@ -51,13 +53,22 @@ public class Json {
 
   // TODO: turn off INTERN_FIELD_NAMES???
 
+  /** JSON factory. */
   public static final JsonFactory JSON_FACTORY =
       new JsonFactory().configure(
           JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true).configure(
           JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
 
+  /** JSON content type. */
   public static final String CONTENT_TYPE = "application/json";
 
+  /**
+   * Returns a debug JSON string representation for the given item intended for
+   * use in {@link Object#toString()}.
+   * 
+   * @param item data key/value pairs
+   * @return debug JSON string representation
+   */
   public static String toString(Object item) {
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
     try {
@@ -74,6 +85,7 @@ public class Json {
     return byteStream.toString();
   }
 
+  /** Serializes the given JSON value object using the given JSON generator. */
   public static void serialize(JsonGenerator generator, Object value)
       throws IOException {
     if (value == null) {
@@ -131,7 +143,7 @@ public class Json {
    * @throws IOException I/O exception
    */
   public static <T> T parseAndClose(JsonParser parser,
-      Class<T> destinationClass, CustomizeParser customizeParser)
+      Class<T> destinationClass, CustomizeJsonParser customizeParser)
       throws IOException {
     T newInstance = ClassInfo.newInstance(destinationClass);
     parseAndClose(parser, newInstance, customizeParser);
@@ -173,29 +185,11 @@ public class Json {
    * @throws IOException I/O exception
    */
   public static void parseAndClose(JsonParser parser, Object destination,
-      CustomizeParser customizeParser) throws IOException {
+      CustomizeJsonParser customizeParser) throws IOException {
     try {
       parse(parser, destination, customizeParser);
     } finally {
       parser.close();
-    }
-  }
-
-  public static class CustomizeParser {
-
-    public boolean stopAt(Object context, String key) {
-      return false;
-    }
-
-    public void handleUnrecognizedKey(Object context, String key) {
-    }
-
-    public Collection<Object> newInstanceForArray(Object context, Field field) {
-      return null;
-    }
-
-    public Object newInstanceForObject(Object context, Class<?> fieldClass) {
-      return null;
     }
   }
 
@@ -212,7 +206,7 @@ public class Json {
    * @throws IOException I/O exception
    */
   public static <T> T parse(JsonParser parser, Class<T> destinationClass,
-      CustomizeParser customizeParser) throws IOException {
+      CustomizeJsonParser customizeParser) throws IOException {
     T newInstance = ClassInfo.newInstance(destinationClass);
     parse(parser, newInstance, customizeParser);
     return newInstance;
@@ -228,7 +222,7 @@ public class Json {
    * @throws IOException I/O exception
    */
   public static void parse(JsonParser parser, Object destination,
-      CustomizeParser customizeParser) throws IOException {
+      CustomizeJsonParser customizeParser) throws IOException {
     Class<?> destinationClass = destination.getClass();
     ClassInfo classInfo = ClassInfo.of(destinationClass);
     boolean isGenericJson =
@@ -279,7 +273,7 @@ public class Json {
 
   private static void parseMap(JsonParser parser,
       Map<String, Object> destinationMap, Class<?> valueClass,
-      CustomizeParser customizeParser) throws IOException {
+      CustomizeJsonParser customizeParser) throws IOException {
     while (parser.nextToken() != JsonToken.END_OBJECT) {
       String key = parser.getCurrentName();
       JsonToken curToken = parser.nextToken();
@@ -297,7 +291,7 @@ public class Json {
 
   private static Object parseValue(JsonParser parser, JsonToken token,
       Field field, Class<?> fieldClass, Object destination,
-      CustomizeParser customizeParser) throws IOException {
+      CustomizeJsonParser customizeParser) throws IOException {
     switch (token) {
       case START_ARRAY:
         if (fieldClass == null || Collection.class.isAssignableFrom(fieldClass)) {

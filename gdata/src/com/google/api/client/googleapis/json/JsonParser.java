@@ -23,6 +23,8 @@ import com.google.api.client.json.Json;
 import java.io.IOException;
 
 /**
+ * Parses HTTP JSON response content into an data class of key/value pairs.
+ * 
  * @since 2.2
  * @author Yaniv Inbar
  */
