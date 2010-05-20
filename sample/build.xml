@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<project basedir="." default="dist" name="sample">
+
+	<property file="build.properties" />
+
+	<target name="clean" description="Remove generated files.">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="dist" description="Distribute zipped samples.">
+		<property name="dist.dir" value="${build.dir}/dist" />
+		<mkdir dir="${dist.dir}" />
+		<copy file="picasa/picasa-atom-sample/build-bin/picasa-atom-sample.zip" todir="${dist.dir}" />
+		<copy file="picasa/picasa-atom-android-sample/build-bin/picasa-atom-android-sample.zip" todir="${dist.dir}" />
+		<copy file="youtube/youtube-jsonc-sample/build-bin/youtube-jsonc-sample.zip" todir="${dist.dir}" />
+		<zip destfile="${build.dir}/gdata-samples-${version}.zip" basedir="${dist.dir}" />
+	</target>
+
+</project>

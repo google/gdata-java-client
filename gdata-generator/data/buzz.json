@@ -1,0 +1,20 @@
+{
+  "id" : "buzz",
+  "name" : "Buzz Data API",
+  "className" : "Buzz",
+  "authTokenType" : "buzz",
+  "versions" : {
+    "1" : {
+      "rootUrl" : "https://www.googleapis.com/buzz/v1/",
+      "atom" : {
+        "namespaces" : {
+          "" : "http://www.w3.org/2005/Atom",
+          "activity" : "http://activitystrea.ms/spec/1.0/",
+          "georss" : "http://www.georss.org/georss",
+          "media" : "http://search.yahoo.com/mrss/",
+          "thr" : "http://purl.org/syndication/thread/1.0"
+        }
+      }
+    }
+  }
+}

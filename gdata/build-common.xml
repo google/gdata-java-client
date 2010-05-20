@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<project basedir="." default="compile" name="common">
+
+  <property environment="env" />
+  <property file="build.properties" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+
+  <target name="dist-init">
+    <mkdir dir="${dist.dir}" />
+    <mkdir dir="${android.dir}" />
+  </target>
+
+  <target name="compile" description="Compile">
+    <mkdir dir="${classes.dir}" />
+    <javac debug="true" destdir="${classes.dir}" source="1.5" target="1.5">
+      <compilerarg value="-Xlint:all" />
+      <src path="${src.dir}" />
+      <classpath>
+        <pathelement location="${lib.dir}/${android.jar}" />
+        <pathelement location="${lib.dir}/${jackson.jar}" />
+      </classpath>
+    </javac>
+  </target>
+</project>

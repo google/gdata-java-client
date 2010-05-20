@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-xml.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-data-picasa-v2-atom.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-data-picasa-v2.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-http.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-util.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-xml-atom.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-android-xml.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-googleapis-xml-atom.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-googleapis.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-googleapis-auth-clientlogin.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-googleapis-auth-oauth.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-googleapis-auth.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-apache.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-auth-oauth.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-auth.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.2.0-alpha-client-escape.jar" sourcepath="lib/gdata-2.2.0-alpha-src.zip"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
