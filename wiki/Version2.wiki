@@ -1,7 +1,7 @@
 #summary Experimental Java Client for Google API's Version 2.2.0 Alpha.
 #labels Featured
 
-Version 2 is re-written from scratch from version 1 of the client library to provide a whole new set of functionality that wasn't available in version 1 of the client library.  It is still in "alpha" mode to provide a preview of the upcoming functionality to allow developers like you to experiment with it and to provide feedback so we can improve it.
+Version 2 is re-written from scratch from version 1 of the client library to provide a whole new set of functionality that wasn't available in version 1 of the client library.  It is still in "alpha" mode to provide a preview of the upcoming functionality to allow developers like you to experiment with it and to provide feedback so we can improve it.  This [http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.2.0-alpha/gdata/src/com/google/api open source] library is written and provided by Google.
 
 *Features*
   * _(New in version 2.2!)_ OAuth 1.0a authentication (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc/com/google/api/client/googleapis/auth/oauth/package-summary.html JavaDoc])
@@ -23,8 +23,6 @@ For discussions related to this client library only, please visit [http://groups
     * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeJsoncSample.java YouTube JSON-C Java 5 Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.2.0-alpha/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java Picasa Web Albums Atom XML Android Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.2.0-alpha/sample/picasa/picasa-atom-sample/src/com/google/api/data/sample/picasa/PicasaAtomSample.java Picasa Web Albums Atom XML Java 5 Sample]
-
-*[http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.2.0-alpha/gdata/src/com/google/api Open Source]*
 
 *WARNING:* this is an experimental branch of the library, and as such the client library API is subject to change.  There are known bugs, and important features not yet implemented.  We invite you to experiment with this library and provide us with early feedback.
 
