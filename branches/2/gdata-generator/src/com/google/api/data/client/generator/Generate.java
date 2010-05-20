@@ -16,6 +16,7 @@
 
 package com.google.api.data.client.generator;
 
+import com.google.api.client.json.CustomizeJsonParser;
 import com.google.api.client.json.Json;
 import com.google.api.data.client.generator.linewrap.LineWrapper;
 import com.google.api.data.client.generator.model.Client;
@@ -171,7 +172,7 @@ public class Generate {
   private Generate() {
   }
 
-  static final class Custom extends Json.CustomizeParser {
+  static final class Custom extends CustomizeJsonParser {
 
     @Override
     public void handleUnrecognizedKey(Object context, String key) {

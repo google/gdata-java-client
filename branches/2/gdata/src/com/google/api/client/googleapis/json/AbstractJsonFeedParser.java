@@ -16,6 +16,7 @@
 
 package com.google.api.client.googleapis.json;
 
+import com.google.api.client.json.CustomizeJsonParser;
 import com.google.api.client.json.Json;
 
 import org.codehaus.jackson.JsonParser;
@@ -59,7 +60,7 @@ public abstract class AbstractJsonFeedParser<T> {
     }
   }
 
-  final class StopAtItems extends Json.CustomizeParser {
+  final class StopAtItems extends CustomizeJsonParser {
     @Override
     public boolean stopAt(Object context, String key) {
       return "items".equals(key)
