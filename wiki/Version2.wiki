@@ -16,7 +16,7 @@ If you encounter a problem with this client library or want to request a feature
 
 For discussions related to this client library only, please visit [http://groups.google.com/group/gdata-java-client GData Java Client Group].
 
-*Download:* [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.0-alpha.zip gdata-java-2.2.0-alpha.zip] and [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.0-alpha.zip gdata-android-2.2.0-alpha.zip]
+*Download:* [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.0-alpha.zip gdata-java-2.2.0-alpha.zip] or [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.0-alpha.zip gdata-android-2.2.0-alpha.zip] (same library but packaged differently)
 
 *Samples*
     * _(New in version 2.2!)_ [http://code.google.com/p/io2010-buzzjava Buzz JSON Android Sample]
