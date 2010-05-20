@@ -1,13 +1,13 @@
 #summary Experimental Java Client for Google API's Version 2.2.0 Alpha.
 #labels Featured
 
-= Introduction =
+Version 2 is re-written from scratch from version 1 of the client library to provide a whole new set of functionality that wasn't available in version 1 of the client library.  It is still in "alpha" mode to provide a preview of the upcoming functionality to allow developers like you to experiment with it and to provide feedback so we can improve it.
 
-Experimental version 2 of the Java client for Google API's is intended to eventually replace the current version 1 client.  It features:
+*Features*
   * _(New in version 2.2!)_ OAuth 1.0a authentication (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc/com/google/api/client/googleapis/auth/oauth/package-summary.html JavaDoc])
-  * _(New in version 2.1)_ User-defined data models with partial response/update 
-  * _(New in version 2.0)_ Support for JSON-C wire format (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc/com/google/api/client/googleapis/json/package-summary.html JavaDoc])
-  * _(New in version 2.0)_ Support for Android: smaller and more efficient library
+  * _(Version 2 only)_ User-defined data models with partial response/update 
+  * _(Version 2 only)_ Support for JSON-C wire format (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc/com/google/api/client/googleapis/json/package-summary.html JavaDoc])
+  * _(Version 2 only)_ Support for Android: smaller and more efficient library
   * Support for Atom XML wire format
 
 For more details, see the [http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc/index.html JavaDoc].
@@ -16,16 +16,16 @@ If you encounter a problem with this client library or want to request a feature
 
 For discussions related to this client library only, please visit [http://groups.google.com/group/gdata-java-client GData Java Client Group].
 
-*WARNING:* this is an experimental branch of the library, and as such the client library API is subject to change.  There are known bugs, and important features not yet implemented.  We invite you to experiment with this library and provide us with early feedback.
+*Download:* [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.0-alpha.zip gdata-java-2.2.0-alpha.zip] and [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.0-alpha.zip gdata-android-2.2.0-alpha.zip]
 
-*WARNING:* this is a complete rewrite compared to version 1 of the library that uses completely different package names from version 1.  While it is not backwards compatible with version 1, it can be used in conjunction with version 1.  We are yet deprecating version 1 at this point.
-
-
-= Links =
-
-  * Download: [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.0-alpha.zip gdata-java-2.2.0-alpha.zip] and [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.0-alpha.zip gdata-android-2.2.0-alpha.zip]
-  * Samples
+*Samples*
+    * _(New in version 2.2!)_ [http://code.google.com/p/io2010-buzzjava Buzz JSON Android Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeJsoncSample.java YouTube JSON-C Java 5 Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.2.0-alpha/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java Picasa Web Albums Atom XML Android Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.2.0-alpha/sample/picasa/picasa-atom-sample/src/com/google/api/data/sample/picasa/PicasaAtomSample.java Picasa Web Albums Atom XML Java 5 Sample]
-  * [http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.2.0-alpha/gdata/src/com/google/api Source]
+
+*[http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.2.0-alpha/gdata/src/com/google/api Open Source]*
+
+*WARNING:* this is an experimental branch of the library, and as such the client library API is subject to change.  There are known bugs, and important features not yet implemented.  We invite you to experiment with this library and provide us with early feedback.
+
+*WARNING:* this is a complete rewrite compared to version 1 of the library that uses completely different package names from version 1.  While it is not backwards compatible with version 1, it can be used in conjunction with version 1.  We are yet deprecating version 1 at this point.
