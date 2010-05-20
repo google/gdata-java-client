@@ -1,0 +1,11 @@
+{
+  "id" : "moderator",
+  "name" : "Google Moderator API",
+  "className" : "GoogleModerator",
+  "authTokenType" : "moderator",
+  "versions" : {
+    "1" : {
+      "rootUrl" : "https://www.googleapis.com/moderator/v1/"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<project basedir="." default="compile" name="picasa-atom-sample">
+
+	<property file="build.properties" />
+
+	<target name="clean" description="Remove generated files.">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<path id="classpath">
+		<pathelement location="${lib.dir}/${gdata.jar}" />
+		<pathelement location="${lib.dir}/${kxml2.jar}" />
+	</path>
+
+	<target name="compile" description="Compile">
+		<property name="classes.dir" value="${build.dir}/classes" />
+		<mkdir dir="${classes.dir}" />
+		<javac debug="true" destdir="${classes.dir}" source="1.5" target="1.5">
+			<compilerarg value="-Xlint:all" />
+			<src path="${src.dir}" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="run" description="Runs the sample." depends="compile">
+		<java classname="com.google.api.data.sample.picasa.PicasaAtomSample">
+			<classpath refid="classpath" />
+			<classpath>
+				<pathelement location="${classes.dir}" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="dist" description="Distribute zipped sample." depends="compile">
+		<property name="dist.dir" value="${build.dir}/dist" />
+		<mkdir dir="${dist.dir}/${ant.project.name}" />
+		<copy todir="${dist.dir}/${ant.project.name}">
+			<fileset dir=".">
+				<include name=".classpath" />
+				<include name=".project" />
+				<include name=".settings/" />
+				<include name="build.*" />
+				<include name="${lib.dir}/" />
+				<include name="src/" />
+			</fileset>
+		</copy>
+		<zip destfile="${build.dir}/${ant.project.name}.zip" basedir="${dist.dir}" />
+	</target>
+
+</project>
