@@ -1,6 +1,6 @@
 {
   "id" : "buzz",
-  "name" : "Buzz Data API",
+  "name" : "Google Buzz API",
   "className" : "Buzz",
   "authTokenType" : "buzz",
   "versions" : {
