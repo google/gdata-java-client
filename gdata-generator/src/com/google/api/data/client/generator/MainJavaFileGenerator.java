@@ -20,11 +20,21 @@ import com.google.api.data.client.generator.model.Client;
 import com.google.api.data.client.generator.model.Version;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Yaniv Inbar
  */
-public final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
+final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
+
+  private static final Set<String> GENERATE_VERSION_NAME =
+      new HashSet<String>(Arrays.asList(new String[] {"analytics", "blogger",
+          "books", "buzz", "calendar", "codesearch", "contacts", "docs",
+          "finance", "gbase", "health", "maps", "migration", "moderator",
+          "picasa", "sidewiki", "sites", "spreadsheet", "webmastertools",
+          "youtube"}));
 
   private final Version version;
 
@@ -33,6 +43,18 @@ public final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
     this.version = version;
   }
 
+  @Override
+  public boolean isGenerated() {
+    return isGenerated(version);
+  }
+
+  static boolean isGenerated(Version version) {
+    Client client = version.client;
+    return GENERATE_VERSION_NAME.contains(client.id) || version.rootUrl != null
+        || client.authTokenType != null;
+  }
+
+  @Override
   public void generate(PrintWriter out) {
     Client client = version.client;
     generateHeader(out);
@@ -43,14 +65,18 @@ public final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
     out.println(" */");
     out.println("public final class " + className + " {");
     out.println();
-    out.println(indent(2) + "/** Version name. */");
-    out.println(indent(2) + "public static final String VERSION = \""
-        + version.id + "\";");
-    out.println();
-    out.println(indent(2) + "/** Root URL. */");
-    out.println(indent(2) + "public static final String ROOT_URL = \""
-        + version.rootUrl + "\";");
-    out.println();
+    if (GENERATE_VERSION_NAME.contains(client.id)) {
+      out.println(indent(2) + "/** Version name. */");
+      out.println(indent(2) + "public static final String VERSION = \""
+          + version.id + "\";");
+      out.println();
+    }
+    if (version.rootUrl != null) {
+      out.println(indent(2) + "/** Root URL. */");
+      out.println(indent(2) + "public static final String ROOT_URL = \""
+          + version.rootUrl + "\";");
+      out.println();
+    }
     if (client.authTokenType != null) {
       out.println(indent(2)
           + "/** The authentication token type used for Client Login. */");

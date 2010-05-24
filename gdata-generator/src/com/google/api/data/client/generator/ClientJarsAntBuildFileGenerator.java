@@ -16,15 +16,12 @@
 
 package com.google.api.data.client.generator;
 
-import com.google.api.data.client.generator.linewrap.LineWrapper;
-import com.google.api.data.client.generator.linewrap.XmlLineWrapper;
-
 import java.io.PrintWriter;
 
 /**
  * @author Yaniv Inbar
  */
-final class ClientJarsAntBuildFileGenerator implements FileGenerator {
+final class ClientJarsAntBuildFileGenerator extends AbstractXmlFileGenerator {
 
   /** Names of packages needed for Android. */ 
   private static final String[] PACKAGE_NAMES = {
@@ -49,6 +46,7 @@ final class ClientJarsAntBuildFileGenerator implements FileGenerator {
   ClientJarsAntBuildFileGenerator() {
   }
 
+  @Override
   public void generate(PrintWriter out) {
     out.println("<?xml version='1.0'?>");
     out.println();
@@ -97,15 +95,8 @@ final class ClientJarsAntBuildFileGenerator implements FileGenerator {
     out.close();
   }
 
-  public LineWrapper getLineWrapper() {
-    return XmlLineWrapper.get();
-  }
-
+  @Override
   public String getOutputFilePath() {
     return "build-clientjars.xml";
-  }
-
-  public boolean isGenerated() {
-    return true;
   }
 }

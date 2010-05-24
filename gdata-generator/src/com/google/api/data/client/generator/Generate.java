@@ -75,7 +75,7 @@ public class Generate {
       System.out.println();
     }
     // compute file generators
-    List<FileGenerator> fileGenerators = new ArrayList<FileGenerator>();
+    List<AbstractFileGenerator> fileGenerators = new ArrayList<AbstractFileGenerator>();
     fileGenerators.add(new ClientJarsAntBuildFileGenerator());
     fileGenerators.add(new DataJarsAntBuildFileGenerator(clients));
     for (Client client : clients) {
@@ -92,7 +92,7 @@ public class Generate {
     List<FileComputer> fileComputers = new ArrayList<FileComputer>();
     System.out.println();
     System.out.println("Computing " + fileGenerators.size() + " file(s):");
-    for (FileGenerator fileGenerator : fileGenerators) {
+    for (AbstractFileGenerator fileGenerator : fileGenerators) {
       FileComputer fileComputer = generate.new FileComputer(fileGenerator);
       fileComputers.add(fileComputer);
       fileComputer.compute();
@@ -125,11 +125,11 @@ public class Generate {
   }
 
   class FileComputer {
-    private final FileGenerator fileGenerator;
+    private final AbstractFileGenerator fileGenerator;
     FileStatus status = FileStatus.UNCHANGED;
     final String outputFilePath;
 
-    FileComputer(FileGenerator fileGenerator) {
+    FileComputer(AbstractFileGenerator fileGenerator) {
       this.fileGenerator = fileGenerator;
       outputFilePath = fileGenerator.getOutputFilePath();
     }

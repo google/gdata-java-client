@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 /**
  * @author Yaniv Inbar
  */
-public final class MainPackageFileGenerator extends AbstractHtmlFileGenerator {
+final class MainPackageFileGenerator extends AbstractHtmlFileGenerator {
 
   private final Version version;
 
@@ -31,6 +31,12 @@ public final class MainPackageFileGenerator extends AbstractHtmlFileGenerator {
     this.version = version;
   }
 
+  @Override
+  boolean isGenerated() {
+    return MainJavaFileGenerator.isGenerated(version);
+  }
+
+  @Override
   public void generate(PrintWriter out) {
     out.println("<body>");
     out.println("Small optional Java library for " + version.client.name
@@ -45,6 +51,7 @@ public final class MainPackageFileGenerator extends AbstractHtmlFileGenerator {
     out.close();
   }
 
+  @Override
   public String getOutputFilePath() {
     return "src/" + version.getPathRelativeToSrc() + "/package.html";
   }

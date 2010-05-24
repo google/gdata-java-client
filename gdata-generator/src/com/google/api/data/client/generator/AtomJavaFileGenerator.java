@@ -35,6 +35,7 @@ final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
     this.version = version;
   }
 
+  @Override
   public void generate(PrintWriter out) {
     Client client = version.client;
     String className = client.className + "Atom";

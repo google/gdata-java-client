@@ -16,16 +16,35 @@
 
 package com.google.api.data.client.generator;
 
-import com.google.api.data.client.generator.linewrap.HtmlLineWrapper;
 import com.google.api.data.client.generator.linewrap.LineWrapper;
 
+import java.io.PrintWriter;
+
 /**
+ * Defines a single file generator, which manages a single generated file.
+ * 
  * @author Yaniv Inbar
  */
-abstract class AbstractHtmlFileGenerator extends AbstractFileGenerator {
+abstract class AbstractFileGenerator {
 
-  @Override
-  public final LineWrapper getLineWrapper() {
-    return HtmlLineWrapper.get();
+  /** Whether to generate this file. Default is to return {@code true}. */
+  boolean isGenerated() {
+    return true;
+  }
+
+  /** Generates the content of the file into the given print writer. */
+  abstract void generate(PrintWriter out);
+
+  /**
+   * Returns the output file path relative to the root gdata output directory.
+   */
+  abstract String getOutputFilePath();
+
+  /**
+   * Returns the line wrapper to use or {@code null} for none. Default is to
+   * return {@code null}.
+   */
+  LineWrapper getLineWrapper() {
+    return null;
   }
 }
