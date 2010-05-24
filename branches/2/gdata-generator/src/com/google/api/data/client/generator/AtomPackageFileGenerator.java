@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 /**
  * @author Yaniv Inbar
  */
-public final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
+final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
 
   private final Version version;
 
@@ -31,6 +31,7 @@ public final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
     this.version = version;
   }
 
+  @Override
   public void generate(PrintWriter out) {
     out.println("<body>");
     out.println("Small optional Java library for the Atom XML " + "format for "
@@ -48,6 +49,7 @@ public final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
     out.close();
   }
 
+  @Override
   public String getOutputFilePath() {
     return "src/" + version.getPathRelativeToSrc() + "/atom/package.html";
   }

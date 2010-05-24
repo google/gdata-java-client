@@ -16,8 +16,6 @@
 
 package com.google.api.data.client.generator;
 
-import com.google.api.data.client.generator.linewrap.LineWrapper;
-import com.google.api.data.client.generator.linewrap.XmlLineWrapper;
 import com.google.api.data.client.generator.model.Client;
 import com.google.api.data.client.generator.model.Version;
 
@@ -27,7 +25,7 @@ import java.util.SortedSet;
 /**
  * @author Yaniv Inbar
  */
-final class DataJarsAntBuildFileGenerator implements FileGenerator {
+final class DataJarsAntBuildFileGenerator extends AbstractXmlFileGenerator {
 
   private final SortedSet<Client> clients;
 
@@ -35,6 +33,7 @@ final class DataJarsAntBuildFileGenerator implements FileGenerator {
     this.clients = clients;
   }
 
+  @Override
   public void generate(PrintWriter out) {
     int size = clients.size();
     out.println("<?xml version='1.0'?>");
@@ -110,15 +109,8 @@ final class DataJarsAntBuildFileGenerator implements FileGenerator {
     out.close();
   }
 
-  public LineWrapper getLineWrapper() {
-    return XmlLineWrapper.get();
-  }
-
+  @Override
   public String getOutputFilePath() {
     return "build-datajars.xml";
-  }
-
-  public boolean isGenerated() {
-    return true;
   }
 }

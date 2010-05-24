@@ -24,7 +24,7 @@ import java.io.PrintWriter;
 /**
  * @author Yaniv Inbar
  */
-abstract class AbstractJavaFileGenerator implements FileGenerator {
+abstract class AbstractJavaFileGenerator extends AbstractFileGenerator {
 
   final String packageName;
   final String className;
@@ -34,14 +34,12 @@ abstract class AbstractJavaFileGenerator implements FileGenerator {
     this.className = className;
   }
 
+  @Override
   public final LineWrapper getLineWrapper() {
     return JavaLineWrapper.get();
   }
 
-  public boolean isGenerated() {
-    return true;
-  }
-
+  @Override
   public final String getOutputFilePath() {
     return "src/" + packageName.replace('.', '/') + "/" + className + ".java";
   }
