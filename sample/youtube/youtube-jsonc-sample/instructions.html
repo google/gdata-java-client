@@ -1,0 +1,71 @@
+<html>
+<title>Setup Instructions for the YouTube Data API Sample (JSON-C)</title>
+<body>
+<h2>Setup Instructions for the YouTube Data API Sample (JSON-C)</h2>
+
+<h3>Browse Online</h3>
+
+<ul>
+  <li><a
+    href="http://code.google.com/p/gdata-java-client/source/browse/tags/2.2.1-alpha/sample/youtube/youtube-jsonc-sample/">Browse
+  Source</a>, or main file <a
+    href="http://code.google.com/p/gdata-java-client/source/browse/tags/2.2.1-alpha/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeJsoncSample.java">YouTubeJsoncSample.java</a></li>
+</ul>
+
+<h3>Eclipse 3.5 Instructions</h3>
+
+<p>You will need to first install <a
+  href="http://www.eclipse.org/downloads/">Eclipse 3.5</a>, and the <a
+  href="http://www.eclipse.org/subversive/downloads.php">Subversion plugin</a>.</p>
+
+<p>Google engineers only: if you need commit access, you first need to be
+added as a <a href="http://code.google.com/p/gdata-java-client/people/list">Committer</a>.</p>
+
+<ul>
+  <li>File &gt; Import...</li>
+  <li>SVN &gt; Project from SVN</li>
+  <li>Next</li>
+  <li>URL:
+  <ul>
+    <li>Read only: <code>http://gdata-java-client.googlecode.com/svn</code></li>
+    <li>Commit access: <code>https://gdata-java-client.googlecode.com/svn</code></li>
+  </ul>
+  </li>
+  <li>Next</li>
+  <li>URL:
+  <ul>
+    <li>Read only: <code>http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/sample/youtube/youtube-jsonc-sample</code></li>
+    <li>Commit access: <code>https://gdata-java-client.googlecode.com/svn/branches/2/sample/youtube/youtube-jsonc-sample</code></li>
+  </ul>
+  </li>
+  <li>Click on Head revision</li>
+  <li>Finish</li>
+  <li>Finish</li>
+</ul>
+
+<h3>Command-Line Instructions</h3>
+
+<p>You will need to first install <a
+  href="http://subversion.apache.org/packages.html">Subversion</a>.</p>
+
+<p>Google engineers only: if you need commit access, you first need to be
+added as a <a href="http://code.google.com/p/gdata-java-client/people/list">Committer</a>.</p>
+
+<ul>
+  <li>SVN checkout
+  <ul>
+    <li>Read only: <code>svn checkout
+    http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/sample/youtube/youtube-jsonc-sample
+    <i>&lt;some path&gt;</i>/youtube-jsonc-sample</code></li>
+    <li>Commit access: <code>svn checkout
+    https://gdata-java-client.googlecode.com/svn/branches/2/sample/youtube/youtube-jsonc-sample
+    <i>&lt;some path&gt;</i>/youtube-jsonc-sample</code></li>
+  </ul>
+  </li>
+  <li><code>cd <i>&lt;some path&gt;</i>/youtube-jsonc-sample</code></li>
+  <li>Compile: <code>ant</code></li>
+  <li>Run: <code>ant run</code></li>
+</ul>
+
+</body>
+</html>
