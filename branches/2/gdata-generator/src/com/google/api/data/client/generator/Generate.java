@@ -46,7 +46,7 @@ public class Generate {
 
   public static void main(String[] args) throws IOException {
     System.out
-        .println("GData Client Library Generator for version 2.2.0-alpha");
+        .println("GData Client Library Generator for version 2.2.1-alpha");
     if (args.length < 2) {
       System.err
           .println("Expected arguments: dataDirectory gdataLibraryDirectory");

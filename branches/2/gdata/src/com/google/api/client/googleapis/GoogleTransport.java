@@ -124,7 +124,7 @@ public class GoogleTransport extends HttpTransport {
     HttpHeaders defaultHeaders = this.defaultHeaders;
     if (defaultHeaders.userAgent == null) {
       defaultHeaders.userAgent =
-          applicationName + " Google-API-Java/2.2.0-alpha(gzip)";
+          applicationName + " Google-API-Java/2.2.1-alpha(gzip)";
     }
   }
 }

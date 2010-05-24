@@ -51,7 +51,7 @@ import java.util.List;
     &#64;Key public int startIndex;
     &#64;Key public int totalItems;
     &#64;Key public DateTime updated;
-    &#64;Key public List<Video> items;
+    &#64;Key public List&lt;Video&gt; items;
   }
 
   public static final class Video {
@@ -59,7 +59,7 @@ import java.util.List;
     &#64;Key public String title;
     &#64;Key public DateTime updated;
     &#64;Key public String description;
-    &#64;Key public List<String> tags;
+    &#64;Key public List&lt;String&gt; tags;
     &#64;Key public Player player;
   }
 

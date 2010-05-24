@@ -14,18 +14,18 @@
  * the License.
  */
 
-package com.google.api.data.buzz.v1.atom;
+package com.google.api.data.latitude.v1.atom;
 
 import com.google.api.client.xml.XmlNamespaceDictionary;
 
 import java.util.Map;
 
 /**
- * Utilities for the Atom XML format of the Google Buzz API.
+ * Utilities for the Atom XML format of the Google Latitude API.
  *
  * @since 2.2
  */
-public final class BuzzAtom {
+public final class GoogleLatitudeAtom {
 
   /** XML namespace dictionary. */
   public static final XmlNamespaceDictionary NAMESPACE_DICTIONARY = new
@@ -33,12 +33,10 @@ public final class BuzzAtom {
   static {
     Map<String, String> map = NAMESPACE_DICTIONARY.namespaceAliasToUriMap;
     map.put("", "http://www.w3.org/2005/Atom");
-    map.put("activity", "http://activitystrea.ms/spec/1.0/");
-    map.put("georss", "http://www.georss.org/georss");
-    map.put("media", "http://search.yahoo.com/mrss/");
-    map.put("thr", "http://purl.org/syndication/thread/1.0");
+    map.put("gd", "http://schemas.google.com/g/2005");
+    map.put("latitude", "http://schemas.google.com/latitude/2010");
   }
 
-  private BuzzAtom() {
+  private GoogleLatitudeAtom() {
   }
 }
