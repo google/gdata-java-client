@@ -1,29 +1,26 @@
-#summary Experimental Java Client for Google API's Version 2.2.0 Alpha.
+#summary Experimental Java Client for Google API's Version 2.2.1 Alpha.
 #labels Featured
 
-Version 2 is re-written from scratch from version 1 of the client library to provide a whole new set of functionality that wasn't available in version 1 of the client library.  It is still in "alpha" mode to provide a preview of the upcoming functionality to allow developers like you to experiment with it and to provide feedback so we can improve it.  This [http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.2.0-alpha/gdata/src/com/google/api open source] library is written and provided by Google.
+Version 2 is re-written from scratch from version 1 of the client library to provide a whole new set of functionality that wasn't available in version 1 of the client library.  It is still in "alpha" mode to provide a preview of the upcoming functionality to allow developers like you to experiment with it and to provide feedback so we can improve it.  This [http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.2.1-alpha/gdata/src/com/google/api open source] library is written and provided by Google.
 
 *Features*
-  * _(New in version 2.2!)_ OAuth 1.0a authentication (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc/com/google/api/client/googleapis/auth/oauth/package-summary.html JavaDoc])
+  * _(New in version 2.2!)_ OAuth 1.0a authentication (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/javadoc/com/google/api/client/googleapis/auth/oauth/package-summary.html JavaDoc])
   * _(Version 2 only)_ User-defined data models with partial response/update 
-  * _(Version 2 only)_ Support for JSON-C wire format (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc/com/google/api/client/googleapis/json/package-summary.html JavaDoc])
+  * _(Version 2 only)_ Support for JSON-C wire format (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/javadoc/com/google/api/client/googleapis/json/package-summary.html JavaDoc])
   * _(Version 2 only)_ Support for Android: smaller and more efficient library
   * Support for Atom XML wire format
 
-*Download*
-  * [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.0-alpha.zip gdata-java-2.2.0-alpha.zip], or
-  * [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.0-alpha.zip gdata-android-2.2.0-alpha.zip] (same library, different packaging)
+*Download Library and Samples*
+
+This library is packaged in two different ways.  See the readme.html for more details and for instructions for downloading samples:
+  * [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.1-alpha.zip gdata-java-2.2.1-alpha.zip] (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/dist/readme.html readme.html]), or
+  * [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.1-alpha.zip gdata-android-2.2.1-alpha.zip] (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/android/readme.html readme.html])
 
 *News*
+  * _(5/25/2010)_ Version 2.2.1-alpha released with support for Google Latitude API and a critical bug fix for OAuth 1.0a.  It is completely backwards compatible with 2.2.0-alpha.
   * _(5/20/2010)_ Version 2.2.0-alpha released with support for OAuth 1.0a, Google Buzz API, and Google Moderator API.  This is not strictly backwards compatible with version 2.1.0-alpha, so expect some small code changes when upgrading from version 2.1.0-alpha.
 
-*Samples*
-    * _(New in version 2.2!)_ [http://code.google.com/p/io2010-buzzjava Buzz JSON Android Sample]
-    * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeJsoncSample.java YouTube JSON-C Java 5 Sample]
-    * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.2.0-alpha/sample/picasa/picasa-atom-android-sample/src/com/google/api/data/sample/picasa/PicasaBasicAtomAndroidSample.java Picasa Web Albums Atom XML Android Sample]
-    * [http://code.google.com/p/gdata-java-client/source/browse/tags/2.2.0-alpha/sample/picasa/picasa-atom-sample/src/com/google/api/data/sample/picasa/PicasaAtomSample.java Picasa Web Albums Atom XML Java 5 Sample]
-
-For more details, see the [http://gdata-java-client.googlecode.com/svn/tags/2.2.0-alpha/javadoc/index.html JavaDoc].
+For more details, see the [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/javadoc/index.html JavaDoc].
 
 If you encounter a problem with this client library or want to request a feature, please [http://code.google.com/p/gdata-java-client/issues/entry submit an issue].
 
