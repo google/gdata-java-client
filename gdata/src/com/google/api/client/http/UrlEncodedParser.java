@@ -25,6 +25,7 @@ import com.google.api.client.util.GenericData;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Implements support for HTTP form content encoding parsing of type {@code
@@ -38,8 +39,11 @@ import java.util.Map;
 public final class UrlEncodedParser implements HttpParser {
 
   /**
-   * Whether to disable response content logging, for example if content has
-   * sensitive data such as an authentication token. Defaults to {@code false}.
+   * Whether to disable response content logging (unless {@link Level#ALL} is
+   * loggable which forces all logging).
+   * <p>
+   * Useful for example if content has sensitive data such as an authentication
+   * token. Defaults to {@code false}.
    */
   public boolean disableContentLogging;
 

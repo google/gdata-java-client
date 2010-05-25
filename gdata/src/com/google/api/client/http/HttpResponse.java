@@ -72,9 +72,11 @@ public final class HttpResponse {
   public final HttpTransport transport;
 
   /**
-   * Whether to disable response content logging during {@link #getContent()},
-   * for example if content has sensitive data such as an authentication token.
-   * Defaults to {@code false}.
+   * Whether to disable response content logging during {@link #getContent()}
+   * (unless {@link Level#ALL} is loggable which forces all logging).
+   * <p>
+   * Useful for example if content has sensitive data such as an authentication
+   * token. Defaults to {@code false}.
    */
   public boolean disableContentLogging;
 
@@ -143,7 +145,8 @@ public final class HttpResponse {
     if (content != null) {
       Logger logger = HttpTransport.LOGGER;
       boolean loggable =
-          !this.disableContentLogging && logger.isLoggable(Level.CONFIG);
+          !this.disableContentLogging && logger.isLoggable(Level.CONFIG)
+              || logger.isLoggable(Level.ALL);
       if (loggable) {
         byte[] debugContent = readStream(content);
         logger.config("Response size: " + debugContent.length + " bytes");

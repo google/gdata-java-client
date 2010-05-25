@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Wraps another source of HTTP content without modifying the content, but also
@@ -41,27 +40,20 @@ final class LogContent implements HttpContent {
   /**
    * @param httpContent another source of HTTP content
    */
-  public LogContent(HttpContent httpContent) {
+  LogContent(HttpContent httpContent, String contentType,
+      String contentEncoding, long contentLength) {
     this.httpContent = httpContent;
-    this.contentType = httpContent.getType();
-    this.contentLength = httpContent.getLength();
-    this.contentEncoding = httpContent.getEncoding();
+    this.contentType = contentType;
+    this.contentLength = contentLength;
+    this.contentEncoding = contentEncoding;
   }
 
   public void writeTo(OutputStream out) throws IOException {
-    Logger logger = HttpTransport.LOGGER;
-    HttpContent httpSerializer = this.httpContent;
-    if (logger.isLoggable(Level.CONFIG) && this.contentLength != 0
-        && this.contentEncoding == null
-        && isTextualContentType(this.contentType)) {
-      ByteArrayOutputStream debugStream = new ByteArrayOutputStream();
-      httpSerializer.writeTo(debugStream);
-      byte[] debugContent = debugStream.toByteArray();
-      logger.config(new String(debugContent));
-      out.write(debugContent);
-    } else {
-      httpSerializer.writeTo(out);
-    }
+    ByteArrayOutputStream debugStream = new ByteArrayOutputStream();
+    this.httpContent.writeTo(debugStream);
+    byte[] debugContent = debugStream.toByteArray();
+    HttpTransport.LOGGER.config(new String(debugContent));
+    out.write(debugContent);
   }
 
   public String getEncoding() {
@@ -74,10 +66,5 @@ final class LogContent implements HttpContent {
 
   public String getType() {
     return this.contentType;
-  }
-
-  static boolean isTextualContentType(String contentType) {
-    return contentType != null && (contentType.startsWith("application/"))
-        || contentType.startsWith("text/");
   }
 }
