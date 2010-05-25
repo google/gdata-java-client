@@ -87,7 +87,7 @@ import java.util.logging.Logger;
  * 
  * @author Yaniv Inbar
  */
-public final class PicasaBasicAtomAndroidSample extends ListActivity {
+public final class PicasaAtomAndroidSample extends ListActivity {
 
   enum AuthType {
     OAUTH, ACCOUNT_MANAGER, CLIENT_LOGIN
@@ -127,7 +127,7 @@ public final class PicasaBasicAtomAndroidSample extends ListActivity {
 
   private final List<AlbumEntry> albums = new ArrayList<AlbumEntry>();
 
-  public PicasaBasicAtomAndroidSample() {
+  public PicasaAtomAndroidSample() {
     transport.setVersionHeader(PicasaWebAlbums.VERSION);
     AtomParser parser = new AtomParser();
     parser.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
