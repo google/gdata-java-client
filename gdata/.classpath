@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/android-1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.5.2.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
