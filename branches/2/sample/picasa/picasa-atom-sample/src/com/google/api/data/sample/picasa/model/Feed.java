@@ -40,6 +40,10 @@ public class Feed {
   @Key("link")
   public List<Link> links;
 
+  private String getPostLink() {
+    return Link.find(links, "http://schemas.google.com/g/2005#post");
+  }
+
   static Feed executeGet(GoogleTransport transport, PicasaUrl url,
       Class<? extends Feed> feedClass) throws IOException {
     url.fields = GData.getFieldsFor(feedClass);
@@ -51,7 +55,7 @@ public class Feed {
   Entry executeInsert(GoogleTransport transport, Entry entry)
       throws IOException {
     HttpRequest request = transport.buildPostRequest();
-    request.setUrl(Link.find(links, "http://schemas.google.com/g/2005#post"));
+    request.setUrl(getPostLink());
     AtomContent content = new AtomContent();
     content.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
     content.entry = entry;

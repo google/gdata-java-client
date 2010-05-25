@@ -158,8 +158,10 @@ public class PicasaAtomSample {
     System.out.println("User: " + feed.author.name);
     System.out.println("Total number of albums: " + feed.totalResults);
     // show albums
-    for (AlbumEntry album : feed.albums) {
-      showAlbum(transport, album);
+    if (feed.albums != null) {
+      for (AlbumEntry album : feed.albums) {
+        showAlbum(transport, album);
+      }
     }
     return feed;
   }
@@ -176,7 +178,8 @@ public class PicasaAtomSample {
     }
     if (album.numPhotos != 0) {
       System.out.println("Total number of photos: " + album.numPhotos);
-      AlbumFeed feed = AlbumFeed.executeGet(transport, album.getFeedLink());
+      PicasaUrl url = new PicasaUrl(album.getFeedLink());
+      AlbumFeed feed = AlbumFeed.executeGet(transport, url);
       for (PhotoEntry photo : feed.photos) {
         System.out.println();
         System.out.println("Photo title: " + photo.title);
