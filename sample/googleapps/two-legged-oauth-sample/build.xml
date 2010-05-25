@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<project basedir="." default="compile" name="two-legged-oauth-sample">
+
+	<property file="build.properties" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="main-class" value="com.google.api.data.sample.googleapps.TwoLeggedOauthSample" />
+
+	<target name="clean" description="Remove generated files.">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<path id="classpath">
+		<pathelement location="${lib.dir}/${gdata.jar}" />
+		<pathelement location="${lib.dir}/${kxml2.jar}" />
+		<pathelement location="${lib.dir}/${cli.jar}" />
+	</path>
+
+	<!-- convert classpath to flat list for use in manifest task -->
+	<pathconvert property="mf.classpath" pathsep=" ">
+		<path refid="classpath" />
+		<flattenmapper />
+	</pathconvert>
+
+	<target name="compile" description="Compile">
+		<mkdir dir="${classes.dir}" />
+		<javac debug="true" destdir="${classes.dir}" source="1.5" target="1.5">
+			<compilerarg value="-Xlint:all" />
+			<src path="${src.dir}" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}" />
+				<attribute name="Class-Path" value="${mf.classpath}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- use $ant run -Dargs" -comsumer_key=bla.com ...etc"  -->
+	<target name="run" description="Runs the sample." depends="jar">
+		<java fork="true" classname="${main-class}">
+			<arg line="${args}" />
+			<classpath>
+				<path refid="classpath" />
+				<path location="${jar.dir}/${ant.project.name}.jar" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="dist" description="Distribute zipped sample." depends="compile">
+		<property name="dist.dir" value="${build.dir}/dist" />
+		<mkdir dir="${dist.dir}/${ant.project.name}" />
+		<copy todir="${dist.dir}/${ant.project.name}">
+			<fileset dir=".">
+				<include name=".classpath" />
+				<include name=".project" />
+				<include name=".settings/" />
+				<include name="build.*" />
+				<include name="${lib.dir}/" />
+				<include name="src/" />
+			</fileset>
+		</copy>
+		<zip destfile="${build.dir}/${ant.project.name}.zip" basedir="${dist.dir}" />
+	</target>
+
+</project>
