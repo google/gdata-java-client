@@ -14,6 +14,9 @@ Version 2 is re-written from scratch from version 1 of the client library to pro
   * [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.0-alpha.zip gdata-java-2.2.0-alpha.zip], or
   * [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.0-alpha.zip gdata-android-2.2.0-alpha.zip] (same library, different packaging)
 
+*News*
+  * _(5/20/2010)_ Version 2.2.0-alpha released with support for OAuth 1.0a, Google Buzz API, and Google Moderator API.  This is not strictly backwards compatible with version 2.1.0-alpha, so expect some small code changes when upgrading from version 2.1.0-alpha.
+
 *Samples*
     * _(New in version 2.2!)_ [http://code.google.com/p/io2010-buzzjava Buzz JSON Android Sample]
     * [http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/youtube/youtube-jsonc-sample/src/com/google/api/data/sample/youtube/YouTubeJsoncSample.java YouTube JSON-C Java 5 Sample]
