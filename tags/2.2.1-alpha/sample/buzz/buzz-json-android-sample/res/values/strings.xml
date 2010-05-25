@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Google Buzz Sample</string>
+    <string name="post">Post</string>
+    <string name="delete">Delete</string>
+    <string name="no_activities">No Buzz activities.</string>
+</resources>

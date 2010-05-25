@@ -1,0 +1,17 @@
+{
+  "id" : "latitude",
+  "name" : "Google Latitude API",
+  "className" : "GoogleLatitude",
+  "versions" : {
+    "1" : {
+      "rootUrl" : "https://www.googleapis.com/latitude/v1/",
+      "atom" : {
+        "namespaces" : {
+          "" : "http://www.w3.org/2005/Atom",
+          "gd" : "http://schemas.google.com/g/2005",
+          "latitude" : "http://schemas.google.com/latitude/2010"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+<html>
+<title>Java Client Library for Google API's version 2.2.1-alpha</title>
+<body>
+<h2>Java Client Library for Google API's version 2.2.1-alpha</h2>
+
+<p>This <a href="http://code.google.com/p/gdata-java-client/wiki/Version2">version
+2 library</a> is packaged in two different ways:
+<ul>
+  <li>Android (<a
+    href="http://gdata-java-client.googlecode.com/files/gdata-android-2.2.1-alpha.zip">gdata-android-2.2.1-alpha.zip</a>)</li>
+  <li><b><i>(this download)</i></b> All other Java 5 environments,
+  including App Engine (<a
+    href="http://gdata-java-client.googlecode.com/files/gdata-java-2.2.1-alpha.zip">gdata-java-2.2.1-alpha.zip</a>)</li>
+</ul>
+
+<p>See also the <a
+  href="http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/javadoc/index.html">JavaDoc</a>.</p>
+
+<p>If you encounter a problem with this client library or want to request a
+feature, please <a
+  href="http://code.google.com/p/gdata-java-client/issues/entry">submit an
+issue</a>.</p>
+
+<p>For discussions related to this client library only, please visit <a
+  href="http://groups.google.com/group/gdata-java-client">GData Java Client
+Group</a>.</p>
+
+<p><b>WARNING:</b> this is an experimental branch of the library, and as
+such the client library API is subject to change. There are known bugs, and
+important features not yet implemented. We invite you to experiment with this
+library and provide us with early feedback.</p>
+
+<h3>Samples</h3>
+
+<ul>
+  <li><a
+    href="http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/sample/youtube/youtube-jsonc-sample/instructions.html">YouTube
+  Data API Sample (JSON-C)</a></li>
+  <li><a
+    href="http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/sample/picasa/picasa-atom-sample/instructions.html">Picasa
+  Web Albums Data API (Atom XML)</a></li>
+</ul>
+
+<h3>Library Jars</h3>
+
+<p>When building an application for all Java environments other than
+Android, simplify your build process by just using the all-in-one jar.</p>
+
+<ul>
+  <li><code>gdata-2.2.1-alpha.jar</code>: required</li>
+  <li><code>dependencies/jackson-core-asl-1.5.0.jar</code>: needed for
+  user-defined JSON data models</li>
+  <li><code>dependencies/kxml2-2.3.0.jar</code>: needed for user-defined
+  XML data models</li>
+  <li><code>dependencies/commons-logging-1.1.1.jar</code>, <code>dependencies/httpcore-4.0.1.jar</code>,
+  and <code>dependencies/httpclient-4.0.1.jar</code>: needed only if you prefer
+  to use the Apache HTTP library for the underlying HTTP transport (default is
+  to use the built-in <code>java.net</code> package of the JDK). <b>Warning:</b>
+  Do not use the Apache HTTP library on App Engine because it won't work. It
+  tries to open its own sockets which is not allowed on App Engine.</li>
+</ul>
+
+<h3>Source Code</h3>
+
+<p>The source code for this library is included in this download as <code>gdata-2.2.1-alpha-src.zip</code>.
+See also the <a
+  href="http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/instructions.html">instructions
+for checking out the source code from the open-source Subversion repository</a>.</p>
+
+</body>
+</html>

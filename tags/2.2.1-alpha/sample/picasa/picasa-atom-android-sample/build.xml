@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<project basedir="." default="dist" name="picasa-atom-android-sample">
+
+  <property file="build.properties" />
+
+  <target name="clean" description="Remove generated files.">
+    <delete dir="${build.dir}" />
+  </target>
+
+  <target name="dist" description="Distribute zipped sample.">
+    <property name="dist.dir" value="${build.dir}/dist" />
+    <mkdir dir="${dist.dir}/${ant.project.name}" />
+    <copy todir="${dist.dir}/${ant.project.name}">
+      <fileset dir=".">
+        <include name=".classpath" />
+        <include name=".project" />
+        <include name="AndroidManifest.xml" />
+        <include name="default.properties" />
+        <include name="lib/" />
+        <include name="res/" />
+        <include name="src/" />
+      </fileset>
+    </copy>
+    <zip destfile="${build.dir}/${ant.project.name}.zip" basedir="${dist.dir}" />
+  </target>
+
+</project>
