@@ -30,9 +30,8 @@ public class AlbumFeed extends Feed {
   @Key("entry")
   public List<PhotoEntry> photos;
 
-  public static AlbumFeed executeGet(GoogleTransport transport, String link)
+  public static AlbumFeed executeGet(GoogleTransport transport, PicasaUrl url)
       throws IOException {
-    PicasaUrl url = new PicasaUrl(link);
     url.kinds = "photo";
     url.maxResults = 5;
     return (AlbumFeed) Feed.executeGet(transport, url, AlbumFeed.class);

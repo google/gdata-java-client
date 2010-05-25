@@ -40,13 +40,14 @@ Data API:</p>
  }
 </code></pre>
 
-<p>Here's one possible way to design the Java data classes for this:</p>
+<p>Here's one possible way to design the Java data classes for this (each
+class in its own Java file):</p>
 
 <pre><code>
 import com.google.api.client.util.*;
 import java.util.List;
 
-  public static final class VideoFeed {
+  public class VideoFeed {
     &#64;Key public int itemsPerPage;
     &#64;Key public int startIndex;
     &#64;Key public int totalItems;
@@ -54,7 +55,7 @@ import java.util.List;
     &#64;Key public List&lt;Video&gt; items;
   }
 
-  public static final class Video {
+  public class Video {
     &#64;Key public String id;
     &#64;Key public String title;
     &#64;Key public DateTime updated;
@@ -63,7 +64,7 @@ import java.util.List;
     &#64;Key public Player player;
   }
 
-  public static final class Player {
+  public class Player {
     // "default" is a Java keyword, so need to specify the JSON key manually
     &#64;Key("default")
     public String defaultUrl;
@@ -97,13 +98,13 @@ com.google.api.client.googleapis.GoogleTransport}. For example:</p>
     transport.applicationName = "google-youtubejsoncsample-1.0";
     transport.setVersionHeader(YouTube.VERSION);
     transport.addParser(new JsonParser());
-    // authenticate
+    // insert authentication code...
     return transport;
   }
 </code></pre>
 
-<p>Finally, an example to execute a request to the YouTube API and parse the
-result:</p>
+<p>Now that we have a transport, we can execute a request to the YouTube API
+and parse the result:</p>
 
 <pre><code>
   public static VideoFeed list(GoogleTransport transport, YouTubeUrl url)
@@ -135,18 +136,19 @@ as a success response inside of a catch block. For example:</p>
     }
 </code></pre>
 
-<p>This package depends on the {@link com.google.api.client.http}, {@link
-com.google.api.client.json}, {@link com.google.api.client.util}, and {@link
-org.codehaus.jackson} packages.</p>
-
 <p>NOTE: As you might guess, the library uses reflection to populate the
 user-defined data model. It's not quite as fast as writing the wire format
 parsing code yourself can potentially be, but it's a lot easier.</p>
 
 <p>NOTE: If you prefer to use your favorite JSON parsing library instead
 (there are many of them listed for example on <a href="http://json.org">json.org</a>),
-that's supported as well. Just call request.execute() and parse the returned
-byte stream.</p>
+that's supported as well. Just call {@link
+com.google.api.client.http.HttpRequest#execute()} and parse the returned byte
+stream.</p>
+
+<p>This package depends on the {@link com.google.api.client.http}, {@link
+com.google.api.client.json}, {@link com.google.api.client.util}, and {@link
+org.codehaus.jackson} packages.</p>
 
 <p><b>Warning: this package is experimental, and its content may be
 changed in incompatible ways or possibly entirely removed in a future version of
