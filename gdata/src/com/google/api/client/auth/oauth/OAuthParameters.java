@@ -175,7 +175,7 @@ public final class OAuthParameters {
     buf.append(escape(normalizedPath)).append('&');
     buf.append(escape(normalizedParameters));
     String signatureBaseString = buf.toString();
-    this.signature = escape(signer.computeSignature(signatureBaseString));
+    this.signature = signer.computeSignature(signatureBaseString);
   }
 
   /**
@@ -200,7 +200,8 @@ public final class OAuthParameters {
 
   private void appendParameter(StringBuilder buf, String name, String value) {
     if (value != null) {
-      buf.append(' ').append(name).append("=\"").append(value).append("\",");
+      buf.append(' ').append(escape(name)).append("=\"").append(escape(value))
+          .append("\",");
     }
   }
 

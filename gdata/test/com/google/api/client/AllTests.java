@@ -16,6 +16,7 @@
 
 package com.google.api.client;
 
+import com.google.api.client.auth.oauth.OAuthParametersTest;
 import com.google.api.client.http.GenericUrlTest;
 import com.google.api.client.util.ArrayMapTest;
 import com.google.api.client.util.DateTimeTest;
@@ -34,6 +35,7 @@ public class AllTests extends TestSuite {
     result.addTestSuite(ArrayMapTest.class);
     result.addTestSuite(DateTimeTest.class);
     result.addTestSuite(GenericUrlTest.class);
+    result.addTestSuite(OAuthParametersTest.class);
     return result;
   }
 }
