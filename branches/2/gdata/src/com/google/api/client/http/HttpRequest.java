@@ -35,8 +35,10 @@ public final class HttpRequest {
   public HttpHeaders headers;
 
   /**
-   * Whether to disable request content logging during {@link #execute()}, for
-   * example if content has sensitive data such as an authentication
+   * Whether to disable request content logging during {@link #execute()}
+   * (unless {@link Level#ALL} is loggable which forces all logging).
+   * <p>
+   * Useful for example if content has sensitive data such as an authentication
    * information. Defaults to {@code false}.
    */
   public boolean disableContentLogging;
@@ -143,19 +145,35 @@ public final class HttpRequest {
     // content
     HttpContent content = this.content;
     if (content != null) {
-      if (loggable && !this.disableContentLogging) {
-        content = new LogContent(content);
+      // check if possible to log content or gzip content
+      String contentEncoding = content.getEncoding();
+      long contentLength = content.getLength();
+      String contentType = content.getType();
+      if (contentLength != 0 && contentEncoding == null && contentType != null
+          && (contentType.startsWith("application/"))
+          || contentType.startsWith("text/")) {
+        // log content?
+        if (loggable && !this.disableContentLogging
+            || logger.isLoggable(Level.ALL)) {
+          content =
+              new LogContent(content, contentType, contentEncoding,
+                  contentLength);
+        }
+        // gzip?
+        if (contentLength >= 256) {
+          content = new GZipContent(content, contentType);
+          contentEncoding = content.getEncoding();
+          contentLength = content.getLength();
+        }
       }
-      content = new GZipContent(content);
+      // append content headers to log buffer
       if (loggable) {
-        logbuf.append("Content-Type: " + content.getType()).append(
+        logbuf.append("Content-Type: " + contentType).append(
             Strings.LINE_SEPARATOR);
-        String contentEncoding = content.getEncoding();
         if (contentEncoding != null) {
           logbuf.append("Content-Encoding: " + contentEncoding).append(
               Strings.LINE_SEPARATOR);
         }
-        long contentLength = content.getLength();
         if (contentLength >= 0) {
           logbuf.append("Content-Length: " + contentLength).append(
               Strings.LINE_SEPARATOR);

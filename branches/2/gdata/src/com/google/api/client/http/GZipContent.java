@@ -27,53 +27,30 @@ import java.util.zip.GZIPOutputStream;
  */
 final class GZipContent implements HttpContent {
 
-  private static final long MIN_GZIP_BYTES = 256;
-
   private final HttpContent httpContent;
 
-  private final boolean isGZiped;
-
-  private final String contentEncoding;
-
   private final String contentType;
-
-  private final long contentLength;
 
   /**
    * @param httpContent another source of HTTP content
    */
-  public GZipContent(HttpContent httpContent) {
+  GZipContent(HttpContent httpContent, String contentType) {
     this.httpContent = httpContent;
-    String contentEncoding = httpContent.getEncoding();
-    long contentLength = this.contentLength = httpContent.getLength();
-    String contentType = this.contentType = httpContent.getType();
-    boolean isGZiped =
-        this.isGZiped =
-            contentLength >= MIN_GZIP_BYTES && contentEncoding == null
-                && LogContent.isTextualContentType(contentType);
-    if (isGZiped) {
-      contentEncoding = "gzip";
-    }
-    this.contentEncoding = contentEncoding;
+    this.contentType = contentType;
   }
 
   public void writeTo(OutputStream out) throws IOException {
-    HttpContent httpSerializer = this.httpContent;
-    if (this.isGZiped) {
-      GZIPOutputStream zipper = new GZIPOutputStream(out);
-      httpSerializer.writeTo(zipper);
-      zipper.finish();
-    } else {
-      httpSerializer.writeTo(out);
-    }
+    GZIPOutputStream zipper = new GZIPOutputStream(out);
+    this.httpContent.writeTo(zipper);
+    zipper.finish();
   }
 
   public String getEncoding() {
-    return this.contentEncoding;
+    return "gzip";
   }
 
   public long getLength() {
-    return this.contentLength;
+    return -1;
   }
 
   public String getType() {
