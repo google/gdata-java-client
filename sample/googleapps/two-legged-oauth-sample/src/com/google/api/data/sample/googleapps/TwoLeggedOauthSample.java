@@ -57,17 +57,19 @@ import java.util.logging.Logger;
  * ant run -Dargs=" \ --consumer_key=myapp.com \
  * --consumer_secret=***************** \
  * --url=http://www.google.com/m8/feeds/contacts/default/full \
- * --user=user@somedomain.com \ --method=GET "
+ * --user=user@somedomain.com \
+ * --verbose"
  *
  * Alternatively, create a self-contained executable jar, then execute:
  *
  * java -jar 2locurl.jar \ --consumer_key=myapp.com \
  * --consumer_secret=***************** \
  * --url=http://www.google.com/m8/feeds/contacts/default/full \
- * --user=user@somedomain.com \ --method=GET
+ * --user=user@somedomain.com \
+ * --verbose
  *
- * To POST, change method=POST and add this example POST body for contacts API
- * to add a contact:
+ * The default HTTP method is GET. To POST, specify --method=POST and add this
+ * example POST body for contacts API to add a contact:
  *
  * body = "<atom:entry xmlns:atom='http://www.w3.org/2005/Atom' " +
  * "xmlns:gd='http://schemas.google.com/g/2005'> " +
@@ -76,19 +78,22 @@ import java.util.logging.Logger;
  * "<atom:title type='text'>Elizabeth Bennet</atom:title> " +
  * "<gd:email rel='http://schemas.google.com/g/2005#home' " +
  * "address='liz@example.org' /> " + "</atom:entry>";
+ *
+ * If POSTing JSON, specify --content_type=application/json
  */
 public class TwoLeggedOauthSample {
 
-  private static final String CONTENT_TYPE = "application/atom+xml";
+  private static final String DEFAULT_CONTENT_TYPE = "application/atom+xml";
+  private static final HttpMethod DEFAULT_METHOD = HttpMethod.GET;
   private static final String APP_NAME = "google-two-legged-oauth-sample-1.0";
   private static String consumer_key;
   private static String consumer_secret;
   private static String url;
   private static String user;
   private static HttpMethod method;
+  private static String content_type;
   private static String body = "";
   private static boolean verbose = false;
-
 
   /** Available HTTP method types */
   public enum HttpMethod {
@@ -162,7 +167,7 @@ public class TwoLeggedOauthSample {
   private static HttpRequest setRequestContent(HttpRequest req, String body) {
     if (body != null && body.length() > 0) {
       InputStreamContent content = new InputStreamContent();
-      content.type = CONTENT_TYPE;
+      content.type = content_type;
       content.length = body.length();
       content.inputStream = new ByteArrayInputStream(body.getBytes());
       req.content = content;
@@ -174,7 +179,7 @@ public class TwoLeggedOauthSample {
   private static void parseArgs(String[] args) {
     Options options = new Options();
 
-    options.addOption("v", "verbose", false, "be extra verbose");
+    options.addOption("v", "verbose", false, "Print request and response");
     options.addOption(OptionBuilder.withArgName("c")
                                    .withLongOpt("consumer_key")
                                    .withDescription("Consumer key")
@@ -205,10 +210,9 @@ public class TwoLeggedOauthSample {
                                    .create());
     options.addOption(OptionBuilder.withArgName("m")
                                    .withLongOpt("method")
-                                   .withDescription("HTTP Method")
+                                   .withDescription("HTTP Method, default=GET")
                                    .withType(String.class)
                                    .hasArg()
-                                   .isRequired()
                                    .create());
     options.addOption(OptionBuilder.withArgName("b")
                                    .withLongOpt("body")
@@ -216,6 +220,14 @@ public class TwoLeggedOauthSample {
                                    .withType(String.class)
                                    .hasArg()
                                    .create());
+    options.addOption(OptionBuilder.withArgName("t")
+                                   .withLongOpt("mimetype")
+                                   .withDescription("Content mime type, " +
+                                   		"default=application/atom+xml")
+                                   .withType(String.class)
+                                   .hasArg()
+                                   .create());
+
     // create the parser
     CommandLineParser parser = new GnuParser();
     try {
@@ -227,8 +239,11 @@ public class TwoLeggedOauthSample {
       url = (String) cmdLine.getParsedOptionValue("url");
       user = (String) cmdLine.getParsedOptionValue("user");
       String strMethod = (String) cmdLine.getParsedOptionValue("method");
-      method = HttpMethod.valueOf(strMethod.toUpperCase());
+      method = (strMethod != null) ? HttpMethod.valueOf(strMethod.toUpperCase())
+              : DEFAULT_METHOD;
       body = (String) cmdLine.getParsedOptionValue("body");
+      content_type = cmdLine.hasOption("mimetype") ? (String) cmdLine
+          .getParsedOptionValue("mimetype") : DEFAULT_CONTENT_TYPE;
       verbose = cmdLine.hasOption("verbose");
     } catch (ParseException exp) {
       // oops, something went wrong
@@ -241,6 +256,7 @@ public class TwoLeggedOauthSample {
 
   private static void enableLogging() {
     Logger logger = Logger.getLogger("com.google.api.client");
+    // We set level "all" so that the Authorization Header is displayed
     logger.setLevel(Level.ALL);
     logger.addHandler(new Handler() {
 
