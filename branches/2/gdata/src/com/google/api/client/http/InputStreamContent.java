@@ -16,6 +16,7 @@
 
 package com.google.api.client.http;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,9 +27,9 @@ import java.io.OutputStream;
 /**
  * Serializes HTTP request content from an input stream into an output stream.
  * <p>
- * The {@code contentType} is required. The {@link #inputStream} and
- * {@link #length} are also required to specify the input stream to use and its
- * content length. For a file input stream, they should be specified using
+ * The {@link #type} is required. The {@link #inputStream} and {@link #length}
+ * are also required to specify the input stream to use and its content length.
+ * For a file input stream, they should be specified using
  * {@link #setFileInput(File)}.
  * 
  * @since 2.2
@@ -59,6 +60,19 @@ public final class InputStreamContent implements HttpContent {
   public void setFileInput(File file) throws FileNotFoundException {
     this.inputStream = new FileInputStream(file);
     this.length = file.length();
+  }
+
+  /**
+   * Sets the {@link #inputStream} and {@link #length} from the given byte
+   * array.
+   * <p>
+   * For string input, call the appropriate {@link String#getBytes} method.
+   * 
+   * @since 2.3
+   */
+  public void setByteArrayInput(byte[] content) {
+    this.inputStream = new ByteArrayInputStream(content);
+    this.length = content.length;
   }
 
   public void writeTo(OutputStream out) throws IOException {
