@@ -53,20 +53,4 @@
 		</java>
 	</target>
 
-	<target name="dist" description="Distribute zipped sample." depends="compile">
-		<property name="dist.dir" value="${build.dir}/dist" />
-		<mkdir dir="${dist.dir}/${ant.project.name}" />
-		<copy todir="${dist.dir}/${ant.project.name}">
-			<fileset dir=".">
-				<include name=".classpath" />
-				<include name=".project" />
-				<include name=".settings/" />
-				<include name="build.*" />
-				<include name="${lib.dir}/" />
-				<include name="src/" />
-			</fileset>
-		</copy>
-		<zip destfile="${build.dir}/${ant.project.name}.zip" basedir="${dist.dir}" />
-	</target>
-
 </project>
