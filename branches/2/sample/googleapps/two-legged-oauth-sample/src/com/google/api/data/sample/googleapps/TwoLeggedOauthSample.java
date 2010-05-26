@@ -25,11 +25,11 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.InputStreamContent;
-import com.google.api.client.util.Entity;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -123,19 +123,20 @@ public class TwoLeggedOauthSample {
     HttpRequest request = getHttpRequest(transport, method, body);
     request.url = requestUrl;
     try {
-      response = request.execute();
+      printResponse(request.execute());
     } catch (HttpResponseException e) {
       printResponse(e.response);
-      throw e;
+      System.out.println("-------------- ERROR --------------");
+      System.out.println(e.getMessage());
     }
-    printResponse(response);
   }
 
   private static void printResponse(HttpResponse response) throws IOException {
-    if (response.getParser() != null) {
-      response.parseAs(Entity.class);
-    } else {
-      response.parseAsString();
+    // Just parsing will print the response if verbose is on
+    String res = response.parseAsString();
+    // Always print the response, even when not verbose.
+    if (!verbose) {
+      System.out.println(res);
     }
   }
 
@@ -168,7 +169,7 @@ public class TwoLeggedOauthSample {
     if (body != null && body.length() > 0) {
       InputStreamContent content = new InputStreamContent();
       content.type = content_type;
-      content.length = body.length();
+      content.length = body.getBytes().length;
       content.inputStream = new ByteArrayInputStream(body.getBytes());
       req.content = content;
     }
@@ -180,6 +181,10 @@ public class TwoLeggedOauthSample {
     Options options = new Options();
 
     options.addOption("v", "verbose", false, "Print request and response");
+    options.addOption(OptionBuilder.withArgName("h")
+                                   .withLongOpt("help")
+                                   .withDescription("Print this message")
+                                   .create());
     options.addOption(OptionBuilder.withArgName("c")
                                    .withLongOpt("consumer_key")
                                    .withDescription("Consumer key")
@@ -194,7 +199,7 @@ public class TwoLeggedOauthSample {
                                    .hasArg()
                                    .isRequired()
                                    .create());
-    options.addOption(OptionBuilder.withArgName("o")
+    options.addOption(OptionBuilder.withArgName("u")
                                    .withLongOpt("user")
                                    .withDescription("User")
                                    .withType(String.class)
@@ -203,7 +208,8 @@ public class TwoLeggedOauthSample {
                                    .create());
     options.addOption(OptionBuilder.withArgName("u")
                                    .withLongOpt("url")
-                                   .withDescription("Url of the Resource")
+                                   .withDescription(
+                                       "Url of the Resource, must be escaped")
                                    .withType(String.class)
                                    .hasArg()
                                    .isRequired()
@@ -230,6 +236,7 @@ public class TwoLeggedOauthSample {
 
     // create the parser
     CommandLineParser parser = new GnuParser();
+    HelpFormatter formatter = new HelpFormatter();
     try {
       // parse the command line arguments
       CommandLine cmdLine = parser.parse(options, args);
@@ -248,6 +255,8 @@ public class TwoLeggedOauthSample {
     } catch (ParseException exp) {
       // oops, something went wrong
       System.err.println("Parsing failed.  Reason: " + exp.getMessage());
+      formatter.printHelp( "help", options );
+      System.exit(0);
     } catch (IllegalArgumentException exp) {
       System.err.println("Parsing failed.  Reason: Unexpected HTTP method "
           + method);
