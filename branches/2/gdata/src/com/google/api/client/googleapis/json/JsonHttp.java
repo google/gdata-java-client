@@ -17,6 +17,7 @@
 package com.google.api.client.googleapis.json;
 
 import com.google.api.client.http.HttpResponse;
+import com.google.api.client.json.CustomizeJsonParser;
 import com.google.api.client.json.Json;
 
 import org.codehaus.jackson.JsonParser;
@@ -27,16 +28,28 @@ import java.io.InputStream;
 /**
  * @since 2.2
  * @author Yaniv Inbar
+ * @deprecated (scheduled to be removed in version 2.4)
  */
+@Deprecated
 public class JsonHttp {
 
+  /**
+   * @deprecated Use {@link JsonFeedParser#use(HttpResponse, Class, Class)}
+   *             (scheduled to be removed in version 2.4)
+   */
+  @Deprecated
   public static <T, I> JsonFeedParser<T, I> useFeedParser(
       HttpResponse response, Class<T> feedClass, Class<I> itemClass)
       throws IOException {
-    JsonParser parser = JsonHttp.processAsJsonParser(response);
+    JsonParser parser = JsonCParser.parserForResponse(response);
     return new JsonFeedParser<T, I>(parser, feedClass, itemClass);
   }
 
+  /**
+   * @deprecated Use {@link JsonFeedParser#use(HttpResponse, Class, Class)}
+   *             (scheduled to be removed in version 2.4)
+   */
+  @Deprecated
   public static <T, I> JsonMultiKindFeedParser<T> useMultiKindFeedParser(
       HttpResponse response, Class<T> feedClass, Class<?>... itemClasses)
       throws IOException {
@@ -44,12 +57,24 @@ public class JsonHttp {
         .processAsJsonParser(response), feedClass, itemClasses);
   }
 
+  /**
+   * @deprecated Use {@link JsonCParser#parserForResponse(HttpResponse)} and
+   *             then
+   *             {@link Json#parseAndClose(JsonParser, Class, CustomizeJsonParser)}
+   *             (scheduled to be removed in version 2.4)
+   */
+  @Deprecated
   public static <T> T parse(HttpResponse response,
       Class<T> classToInstantiateAndParse) throws IOException {
     JsonParser parser = processAsJsonParser(response);
     return Json.parseAndClose(parser, classToInstantiateAndParse, null);
   }
 
+  /**
+   * @deprecated Use {@link JsonCParser#parserForResponse(HttpResponse)}
+   *             (scheduled to be removed in version 2.4)
+   */
+  @Deprecated
   public static JsonParser processAsJsonParser(HttpResponse response)
       throws IOException {
     InputStream content = response.getContent();

@@ -16,6 +16,7 @@
 
 package com.google.api.client.googleapis.json;
 
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.Json;
 import com.google.api.client.util.ClassInfo;
 import com.google.api.client.util.FieldInfo;
@@ -74,5 +75,14 @@ public final class JsonMultiKindFeedParser<T> extends AbstractJsonFeedParser<T> 
       throw new IllegalArgumentException("unrecognized kind: " + kind);
     }
     return Json.parse(parser, itemClass, null);
+  }
+
+  /**
+   * @since 2.3
+   */
+  public static <T, I> JsonMultiKindFeedParser<T> use(HttpResponse response,
+      Class<T> feedClass, Class<?>... itemClasses) throws IOException {
+    return new JsonMultiKindFeedParser<T>(JsonCParser
+        .parserForResponse(response), feedClass, itemClasses);
   }
 }

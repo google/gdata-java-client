@@ -23,11 +23,13 @@ import com.google.api.client.json.Json;
 import java.io.IOException;
 
 /**
- * Parses HTTP JSON response content into an data class of key/value pairs.
+ * Parses HTTP JSON-C response content into an data class of key/value pairs.
  * 
  * @since 2.2
  * @author Yaniv Inbar
+ * @deprecated Use {@link JsonCParser} (scheduled to be removed in version 2.4)
  */
+@Deprecated
 public final class JsonParser implements HttpParser {
 
   public String getContentType() {

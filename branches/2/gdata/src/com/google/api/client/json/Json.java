@@ -17,8 +17,8 @@
 package com.google.api.client.json;
 
 import com.google.api.client.util.ClassInfo;
-import com.google.api.client.util.DateTime;
 import com.google.api.client.util.DataUtil;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.FieldInfo;
 
 import org.codehaus.jackson.JsonEncoding;
@@ -59,7 +59,7 @@ public class Json {
           JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true).configure(
           JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
 
-  /** JSON content type. */
+  /** {@code "application/json"} content type. */
   public static final String CONTENT_TYPE = "application/json";
 
   /**
