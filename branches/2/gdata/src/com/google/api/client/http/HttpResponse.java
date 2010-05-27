@@ -143,31 +143,38 @@ public final class HttpResponse {
     InputStream content = this.response.getContent();
     this.response = null;
     if (content != null) {
+      byte[] debugContentByteArray = null;
       Logger logger = HttpTransport.LOGGER;
       boolean loggable =
           !this.disableContentLogging && logger.isLoggable(Level.CONFIG)
               || logger.isLoggable(Level.ALL);
       if (loggable) {
-        byte[] debugContent = readStream(content);
-        logger.config("Response size: " + debugContent.length + " bytes");
-        content = new ByteArrayInputStream(debugContent);
+        ByteArrayOutputStream debugStream = new ByteArrayOutputStream();
+        InputStreamContent.copy(content, debugStream);
+        debugContentByteArray = debugStream.toByteArray();
+        content = new ByteArrayInputStream(debugContentByteArray);
+        logger.config("Response size: " + debugContentByteArray.length
+            + " bytes");
       }
       // gzip encoding
       String contentEncoding = this.contentEncoding;
       if (contentEncoding != null && contentEncoding.contains("gzip")) {
         content = new GZIPInputStream(content);
         this.contentLength = -1;
+        if (loggable) {
+          ByteArrayOutputStream debugStream = new ByteArrayOutputStream();
+          InputStreamContent.copy(content, debugStream);
+          debugContentByteArray = debugStream.toByteArray();
+          content = new ByteArrayInputStream(debugContentByteArray);
+        }
       }
       if (loggable) {
         // print content using a buffered input stream that can be re-read
         String contentType = this.contentType;
-        if (contentType != null && (contentType.startsWith("application/"))
+        if (debugContentByteArray.length != 0 && contentType != null
+            && (contentType.startsWith("application/"))
             || contentType.startsWith("text/")) {
-          byte[] debugContent = readStream(content);
-          if (debugContent.length != 0) {
-            logger.config(new String(debugContent));
-          }
-          content = new ByteArrayInputStream(debugContent);
+          logger.config(new String(debugContentByteArray));
         }
       }
       this.content = content;
@@ -257,20 +264,6 @@ public final class HttpResponse {
     } finally {
       content.close();
     }
-  }
-
-  private static byte[] readStream(InputStream content) throws IOException {
-    ByteArrayOutputStream debugStream = new ByteArrayOutputStream();
-    try {
-      byte[] tmp = new byte[4096];
-      int bytesRead;
-      while ((bytesRead = content.read(tmp)) != -1) {
-        debugStream.write(tmp, 0, bytesRead);
-      }
-    } finally {
-      content.close();
-    }
-    return debugStream.toByteArray();
   }
 
   /**
