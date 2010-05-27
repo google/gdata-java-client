@@ -2,6 +2,12 @@
   "id" : "latitude",
   "name" : "Google Latitude API",
   "className" : "GoogleLatitude",
+  "OAuth": {
+    "authorizationUrl" : "https://www.google.com/latitude/apps/OAuthAuthorizeToken",
+    "scopes" : {
+      "" : "https://www.googleapis.com/auth/latitude"
+    }
+  },
   "versions" : {
     "1" : {
       "rootUrl" : "https://www.googleapis.com/latitude/v1/",

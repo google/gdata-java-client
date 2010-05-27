@@ -33,6 +33,12 @@ public final class GoogleModerator {
   /** The authentication token type used for Client Login. */
   public static final String AUTH_TOKEN_TYPE = "moderator";
 
+  /**
+   * @since 2.3
+   */
+  public static final String OAUTH_SCOPE =
+      "https://www.googleapis.com/auth/moderator";
+
   private GoogleModerator() {
   }
 }

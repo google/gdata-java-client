@@ -17,11 +17,13 @@
 package com.google.api.data.client.generator;
 
 import com.google.api.data.client.generator.model.Client;
+import com.google.api.data.client.generator.model.OAuthInfo;
 import com.google.api.data.client.generator.model.Version;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -83,6 +85,32 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
       out.println(indent(2) + "public static final String AUTH_TOKEN_TYPE = \""
           + client.authTokenType + "\";");
       out.println();
+    }
+    if (client.oauth != null) {
+      OAuthInfo oauth = client.oauth;
+      if (oauth.authorizationUrl != null) {
+        out.println(indent(2) + "/**");
+        out.println(indent(2) + " * OAuth authorization service endpoint.");
+        out.println(indent(2) + " *");
+        out.println(indent(2) + " * @since 2.3");
+        out.println(indent(2) + " */");
+        out.println(indent(2)
+            + "public static final String OAUTH_AUTHORIZATION_URL = \""
+            + oauth.authorizationUrl + "\";");
+        out.println();
+      }
+      if (oauth.scopes != null) {
+        for (Map.Entry<String, String> entry : oauth.scopes.entrySet()) {
+          out.println(indent(2) + "/**");
+          out.println(indent(2) + " * @since 2.3");
+          out.println(indent(2) + " */");
+          String suffix =
+              entry.getKey().length() == 0 ? "" : "_" + entry.getKey();
+          out.println(indent(2) + "public static final String OAUTH_SCOPE"
+              + suffix + " = \"" + entry.getValue() + "\";");
+          out.println();
+        }
+      }
     }
     out.println(indent(2) + "private " + className + "() {");
     out.println(indent(2) + "}");
