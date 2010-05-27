@@ -51,7 +51,9 @@
     <copy file="${lib.dir}/${kxml2.jar}" todir="${dist.dir}/dependencies" />
   </target>
 
-  <target name="readme" description="Readme files">
+  <target name="readme" description="Readme and other included files">
+    <copy file="dist/LICENSE" todir="${dist.dir}" />
+    <copy file="dist/LICENSE" todir="${android.dir}" />
     <copy file="dist/readme.html" todir="${dist.dir}" />
     <copy file="android/readme.html" todir="${android.dir}" />
   </target>
