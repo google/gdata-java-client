@@ -16,20 +16,19 @@
 
 package com.google.api.client.googleapis.json;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.codehaus.jackson.JsonParser;
-
 import com.google.api.client.googleapis.GoogleTransport;
-import com.google.api.client.googleapis.json.JsonHttp;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.Json;
 import com.google.api.client.util.DataUtil;
 import com.google.api.client.util.Key;
+
+import org.codehaus.jackson.JsonParser;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manages a Google API discovery document based on the JSON format.
@@ -128,7 +127,7 @@ public final class DiscoveryDocument {
     discoveryUrl.put("api", api);
     HttpRequest request = new HttpTransport().buildGetRequest();
     request.url = discoveryUrl;
-    JsonParser parser = JsonHttp.processAsJsonParser(request.execute());
+    JsonParser parser = JsonCParser.parserForResponse(request.execute());
     Json.skipToKey(parser, api);
     Json.skipToKey(parser, "1.0");
     Model.ServiceDefinition serviceDefinition = new Model.ServiceDefinition();

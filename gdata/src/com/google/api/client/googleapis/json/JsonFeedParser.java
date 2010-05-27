@@ -16,6 +16,7 @@
 
 package com.google.api.client.googleapis.json;
 
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.Json;
 
 import org.codehaus.jackson.JsonParser;
@@ -47,5 +48,14 @@ public final class JsonFeedParser<T, I> extends AbstractJsonFeedParser<T> {
   @Override
   Object parseItemInternal() throws IOException {
     return Json.parse(parser, itemClass, null);
+  }
+
+  /**
+   * @since 2.3
+   */
+  public static <T, I> JsonFeedParser<T, I> use(HttpResponse response,
+      Class<T> feedClass, Class<I> itemClass) throws IOException {
+    JsonParser parser = JsonCParser.parserForResponse(response);
+    return new JsonFeedParser<T, I>(parser, feedClass, itemClass);
   }
 }

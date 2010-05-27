@@ -31,7 +31,9 @@ import java.io.OutputStream;
  * 
  * @since 2.2
  * @author Yaniv Inbar
+ * @deprecated Use {@link JsonCContent} (scheduled to be removed in version 2.4)
  */
+@Deprecated
 public final class JsonContent implements HttpContent {
   // TODO: ability to annotate fields as only needed for POST?
 
