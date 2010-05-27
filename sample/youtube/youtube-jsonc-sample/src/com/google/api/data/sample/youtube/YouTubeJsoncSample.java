@@ -24,7 +24,7 @@ import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUrl;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
-import com.google.api.client.googleapis.json.JsonParser;
+import com.google.api.client.googleapis.json.JsonCParser;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.data.sample.youtube.model.Debug;
 import com.google.api.data.sample.youtube.model.Video;
@@ -79,7 +79,7 @@ public class YouTubeJsoncSample {
     GoogleTransport transport = new GoogleTransport();
     transport.applicationName = "google-youtubejsoncsample-1.0";
     transport.setVersionHeader(YouTube.VERSION);
-    transport.addParser(new JsonParser());
+    transport.addParser(new JsonCParser());
     if (AUTH_TYPE == AuthType.OAUTH) {
       authorizeUsingOAuth(transport);
     } else {
