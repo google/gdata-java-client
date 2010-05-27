@@ -3,18 +3,22 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-auth-oauth.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-googleapis-auth-oauth.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-googleapis.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-http.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-util.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-data-buzz-v1.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-googleapis-json.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-json.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-apache.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-auth.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-escape.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.2.1-alpha-client-googleapis-auth.jar" sourcepath="gdata-2.2.1-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/jackson-core-asl-1.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-auth-oauth.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-googleapis-auth-oauth.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-googleapis.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-http.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-util.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-data-buzz-v1.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-googleapis-json.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-json.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-apache.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-auth.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-escape.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-googleapis-auth.jar" sourcepath="lib/gdata-2.3.0-alpha-src.zip"/>
+  <classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.5.2.jar" sourcepath="lib/jackson-src-1.5.2.zip">
+    <attributes>
+      <attribute name="javadoc_location" value="http://jackson.codehaus.org/1.5.2/javadoc"/>
+    </attributes>
+  </classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
