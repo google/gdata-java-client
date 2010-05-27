@@ -17,7 +17,7 @@
 package com.google.api.data.sample.buzz.model;
 
 import com.google.api.client.googleapis.GoogleTransport;
-import com.google.api.client.googleapis.json.JsonContent;
+import com.google.api.client.googleapis.json.JsonCContent;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.util.Key;
 
@@ -62,7 +62,7 @@ public final class BuzzActivity {
   public BuzzActivity post(GoogleTransport transport) throws IOException {
     HttpRequest request = transport.buildPostRequest();
     request.url = BuzzUrl.fromRelativePath("activities/@me/@self");
-    JsonContent content = new JsonContent();
+    JsonCContent content = new JsonCContent();
     content.item = this;
     request.content = content;
     return request.execute().parseAs(BuzzActivity.class);

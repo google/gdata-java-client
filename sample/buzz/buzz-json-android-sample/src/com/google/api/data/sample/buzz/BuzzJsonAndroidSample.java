@@ -40,8 +40,9 @@ import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
-import com.google.api.client.googleapis.json.JsonParser;
+import com.google.api.client.googleapis.json.JsonCParser;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.data.buzz.v1.Buzz;
 import com.google.api.data.sample.buzz.model.BuzzActivity;
 import com.google.api.data.sample.buzz.model.BuzzActivityFeed;
 import com.google.api.data.sample.buzz.model.BuzzObject;
@@ -66,8 +67,6 @@ import java.util.logging.Logger;
  * @author Yaniv Inbar
  */
 public class BuzzJsonAndroidSample extends Activity {
-
-  private static final String SCOPE = "https://www.googleapis.com/auth/buzz";
 
   private static final String APP_NAME = "buzzsample";
 
@@ -114,15 +113,14 @@ public class BuzzJsonAndroidSample extends Activity {
             new GoogleOAuthGetTemporaryToken();
         temporaryToken.signer = createOAuthSigner();
         temporaryToken.consumerKey = "anonymous";
-        temporaryToken.scope = SCOPE;
+        temporaryToken.scope = Buzz.OAUTH_SCOPE;
         temporaryToken.displayName = APP_NAME;
         temporaryToken.callback = "buzz-sample:///";
         isTemporary = true;
         credentials = temporaryToken.execute();
         OAuthAuthorizeTemporaryTokenUrl authorizeUrl =
-            new OAuthAuthorizeTemporaryTokenUrl(
-                "https://www.google.com/buzz/api/auth/OAuthAuthorizeToken");
-        authorizeUrl.set("scope", SCOPE);
+            new OAuthAuthorizeTemporaryTokenUrl(Buzz.OAUTH_AUTHORIZATION_URL);
+        authorizeUrl.set("scope", Buzz.OAUTH_SCOPE);
         authorizeUrl.set("domain", "anonymous");
         authorizeUrl.set("xoauth_displayname", APP_NAME);
         authorizeUrl.temporaryToken = credentials.token;
@@ -178,7 +176,7 @@ public class BuzzJsonAndroidSample extends Activity {
 
   private void authenticated() {
     // set up transport
-    transport.addParser(new JsonParser());
+    transport.addParser(new JsonCParser());
     // set up view
     setContentView(R.layout.main);
     Button postButton = (Button) findViewById(R.id.postButton);
