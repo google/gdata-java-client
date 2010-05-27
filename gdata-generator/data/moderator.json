@@ -3,6 +3,11 @@
   "name" : "Google Moderator API",
   "className" : "GoogleModerator",
   "authTokenType" : "moderator",
+  "OAuth": {
+    "scopes" : {
+      "" : "https://www.googleapis.com/auth/moderator"
+    }
+  },
   "versions" : {
     "1" : {
       "rootUrl" : "https://www.googleapis.com/moderator/v1/"

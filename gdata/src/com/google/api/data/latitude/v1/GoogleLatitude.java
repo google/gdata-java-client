@@ -27,6 +27,20 @@ public final class GoogleLatitude {
   public static final String ROOT_URL =
       "https://www.googleapis.com/latitude/v1/";
 
+  /**
+   * OAuth authorization service endpoint.
+   *
+   * @since 2.3
+   */
+  public static final String OAUTH_AUTHORIZATION_URL =
+      "https://www.google.com/latitude/apps/OAuthAuthorizeToken";
+
+  /**
+   * @since 2.3
+   */
+  public static final String OAUTH_SCOPE =
+      "https://www.googleapis.com/auth/latitude";
+
   private GoogleLatitude() {
   }
 }

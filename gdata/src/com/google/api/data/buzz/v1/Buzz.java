@@ -32,6 +32,26 @@ public final class Buzz {
   /** The authentication token type used for Client Login. */
   public static final String AUTH_TOKEN_TYPE = "buzz";
 
+  /**
+   * OAuth authorization service endpoint.
+   *
+   * @since 2.3
+   */
+  public static final String OAUTH_AUTHORIZATION_URL =
+      "https://www.google.com/buzz/api/auth/OAuthAuthorizeToken";
+
+  /**
+   * @since 2.3
+   */
+  public static final String OAUTH_SCOPE =
+      "https://www.googleapis.com/auth/buzz";
+
+  /**
+   * @since 2.3
+   */
+  public static final String OAUTH_SCOPE_READ_ONLY =
+      "https://www.googleapis.com/auth/buzz.readonly";
+
   private Buzz() {
   }
 }

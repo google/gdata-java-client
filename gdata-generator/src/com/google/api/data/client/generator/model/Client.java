@@ -28,14 +28,23 @@ public final class Client implements Comparable<Client> {
 
   @Key
   public String id;
+  
   @Key
   public String name;
+  
   @Key
   public String className;
+  
   @Key
   public SortedMap<String, Version> versions;
+  
+  /** Client Login token type or {@code null}. */
   @Key
   public String authTokenType;
+
+  /** OAuth information or {@code null}. */
+  @Key("OAuth")
+  public OAuthInfo oauth;
 
   public int compareTo(Client client) {
     if (client == this) {

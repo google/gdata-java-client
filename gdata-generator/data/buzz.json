@@ -3,6 +3,13 @@
   "name" : "Google Buzz API",
   "className" : "Buzz",
   "authTokenType" : "buzz",
+  "OAuth": {
+    "authorizationUrl" : "https://www.google.com/buzz/api/auth/OAuthAuthorizeToken",
+    "scopes" : {
+      "READ_ONLY" : "https://www.googleapis.com/auth/buzz.readonly",
+      "" : "https://www.googleapis.com/auth/buzz"
+    }
+  },
   "versions" : {
     "1" : {
       "rootUrl" : "https://www.googleapis.com/buzz/v1/",
