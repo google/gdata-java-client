@@ -14,22 +14,30 @@
  * the License.
  */
 
-package com.google.api.client;
+package com.google.api.client.http;
 
-import junit.framework.TestSuite;
+import junit.framework.TestCase;
+
+import java.io.IOException;
 
 /**
- * All tests.
+ * Tests {@link HttpResponse}.
  * 
  * @author Yaniv Inbar
  */
-public class AllTests extends TestSuite {
+public class HttpResponseTest extends TestCase {
 
-  public static TestSuite suite() {
-    TestSuite result = new TestSuite();
-    result.addTest(com.google.api.client.auth.oauth.AllTests.suite());
-    result.addTest(com.google.api.client.http.AllTests.suite());
-    result.addTest(com.google.api.client.util.AllTests.suite());
-    return result;
+  public HttpResponseTest() {
+  }
+
+  public HttpResponseTest(String name) {
+    super(name);
+  }
+
+  public void testParseAsString_none() throws IOException {
+    HttpTransport transport = new HttpTransport();
+    LowLevelHttpResponse lowResponse = new MockLowLevelHttpResponse();
+    HttpResponse response = new HttpResponse(transport, lowResponse);
+    assertEquals("", response.parseAsString());
   }
 }
