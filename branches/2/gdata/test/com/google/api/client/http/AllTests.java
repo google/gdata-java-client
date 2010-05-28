@@ -14,22 +14,21 @@
  * the License.
  */
 
-package com.google.api.client;
+package com.google.api.client.http;
 
 import junit.framework.TestSuite;
 
 /**
- * All tests.
+ * All tests for {@link com.google.api.client.http}.
  * 
  * @author Yaniv Inbar
  */
 public class AllTests extends TestSuite {
 
   public static TestSuite suite() {
-    TestSuite result = new TestSuite();
-    result.addTest(com.google.api.client.auth.oauth.AllTests.suite());
-    result.addTest(com.google.api.client.http.AllTests.suite());
-    result.addTest(com.google.api.client.util.AllTests.suite());
+    TestSuite result = new TestSuite(AllTests.class.getPackage().getName());
+    result.addTestSuite(GenericUrlTest.class);
+    result.addTestSuite(HttpResponseTest.class);
     return result;
   }
 }

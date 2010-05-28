@@ -234,14 +234,19 @@ public final class HttpResponse {
   /**
    * Parses the content of the HTTP response from {@link #getContent()} and
    * reads it into a string.
+   * <p>
+   * Upgrade warning: in version 2.2 of the library, this method returned
+   * {@code null} for no content, but as of version 2.3 it now returns {@code
+   * ""}. To check for no content, check if {@link #getContent()} is {@code
+   * null}.
    * 
-   * @return parsed string or {@code null} for no content
+   * @return parsed string or {@code ""} for no content
    * @throws IOException I/O exception
    */
   public String parseAsString() throws IOException {
     InputStream content = getContent();
     if (content == null) {
-      return null;
+      return "";
     }
     try {
       long contentLength = this.contentLength;
