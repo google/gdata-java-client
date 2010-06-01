@@ -31,26 +31,39 @@ final class DocBuilder {
 
   DocBuilder container;
 
+  boolean isDeprecated;
+
+  int removedMinor;
+
   void generate(PrintWriter out) {
     boolean showComment = comment != null;
     boolean showSince =
         sinceMinor > (container == null ? 0 : container.sinceMinor);
-    if (showComment || showSince) {
-      if (showComment && !showSince && indentNumSpaces + comment.length() <= 72) {
+    if (showComment || showSince || isDeprecated) {
+      if (showComment && !showSince && !isDeprecated
+          && indentNumSpaces + comment.length() <= 72) {
         out.println(indent() + "/** " + comment + " */");
       } else {
         out.println(indent() + "/**");
         if (comment != null) {
           out.println(indent() + " * " + comment);
-        }
-        if (showSince) {
-          if (comment != null) {
+          if (showSince || isDeprecated) {
             out.println(indent() + " *");
           }
+        }
+        if (showSince) {
           out.println(indent() + " * @since 2." + sinceMinor);
+        }
+        if (isDeprecated) {
+          out.println(indent()
+              + " * @deprecated (scheduled to be removed in version 2."
+              + removedMinor + ")");
         }
         out.println(indent() + " */");
       }
+    }
+    if (isDeprecated) {
+      out.println(indent() + "@Deprecated");
     }
   }
 
