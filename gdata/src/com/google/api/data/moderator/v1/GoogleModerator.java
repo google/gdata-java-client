@@ -23,14 +23,22 @@ package com.google.api.data.moderator.v1;
  */
 public final class GoogleModerator {
 
-  /** Version name. */
+  /**
+   * @deprecated (scheduled to be removed in version 2.4)
+   */
+  @Deprecated
   public static final String VERSION = "1";
 
   /** Root URL. */
   public static final String ROOT_URL =
       "https://www.googleapis.com/moderator/v1/";
 
-  /** The authentication token type used for Client Login. */
+  /**
+   * The authentication token type used for Client Login.
+   *
+   * @deprecated (scheduled to be removed in version 2.4)
+   */
+  @Deprecated
   public static final String AUTH_TOKEN_TYPE = "moderator";
 
   /**

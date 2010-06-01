@@ -21,10 +21,7 @@ import com.google.api.data.client.generator.model.OAuthInfo;
 import com.google.api.data.client.generator.model.Version;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Yaniv Inbar
@@ -59,7 +56,16 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
     classDocBuilder.generate(out);
     out.println("public final class " + className + " {");
     out.println();
-    if (client.isOldGDataStyle) {
+    if ("moderator".equals(client.id)) {
+      DocBuilder docBuilder = new DocBuilder();
+      docBuilder.container = classDocBuilder;
+      docBuilder.indentNumSpaces = 2;
+      docBuilder.isDeprecated = true;
+      docBuilder.removedMinor = 4;
+      docBuilder.generate(out);
+      out.println(indent(2) + "public static final String VERSION = \"1\";");
+      out.println();
+    } else if (client.isOldGDataStyle) {
       DocBuilder.generateComment(out, 2, "Version name.");
       out.println(indent(2) + "public static final String VERSION = \""
           + version.id + "\";");
@@ -72,8 +78,19 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
       out.println();
     }
     if (client.authTokenType != null) {
-      DocBuilder.generateComment(out, 2,
-          "The authentication token type used for Client Login.");
+      if ("moderator".equals(client.id)) {
+        DocBuilder docBuilder = new DocBuilder();
+        docBuilder.container = classDocBuilder;
+        docBuilder.comment =
+            "The authentication token type used for Client Login.";
+        docBuilder.indentNumSpaces = 2;
+        docBuilder.isDeprecated = true;
+        docBuilder.removedMinor = 4;
+        docBuilder.generate(out);
+      } else {
+        DocBuilder.generateComment(out, 2,
+            "The authentication token type used for Client Login.");
+      }
       out.println(indent(2) + "public static final String AUTH_TOKEN_TYPE = \""
           + client.authTokenType + "\";");
       out.println();
