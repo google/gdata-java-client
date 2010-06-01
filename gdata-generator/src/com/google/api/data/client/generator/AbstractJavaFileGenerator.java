@@ -77,7 +77,7 @@ abstract class AbstractJavaFileGenerator extends AbstractFileGenerator {
     return fullName.substring(lastDot + 1).replace('$', '.');
   }
 
-  String indent(int numSpaces) {
+  static String indent(int numSpaces) {
     return "                    ".substring(0, numSpaces);
   }
 }

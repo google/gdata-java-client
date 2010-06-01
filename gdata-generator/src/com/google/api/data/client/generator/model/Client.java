@@ -18,7 +18,10 @@ package com.google.api.data.client.generator.model;
 
 import com.google.api.client.util.Key;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 
 /**
@@ -26,18 +29,26 @@ import java.util.SortedMap;
  */
 public final class Client implements Comparable<Client> {
 
+  private static final Set<String> OLD_GDATA_STYLE_IDS =
+      new HashSet<String>(Arrays.asList(new String[] {"analytics", "blogger",
+          "books", "calendar", "codesearch", "contacts", "docs", "finance",
+          "gbase", "health", "maps", "migration", "moderator", "picasa",
+          "sidewiki", "sites", "spreadsheet", "webmastertools", "youtube"}));
+
+  public boolean isOldGDataStyle;
+
   @Key
   public String id;
-  
+
   @Key
   public String name;
-  
+
   @Key
   public String className;
-  
+
   @Key
   public SortedMap<String, Version> versions;
-  
+
   /** Client Login token type or {@code null}. */
   @Key
   public String authTokenType;
@@ -83,5 +94,6 @@ public final class Client implements Comparable<Client> {
     if (className == null) {
       className = Character.toUpperCase(id.charAt(0)) + id.substring(1);
     }
+    isOldGDataStyle = OLD_GDATA_STYLE_IDS.contains(id);
   }
 }

@@ -9,7 +9,7 @@
     }
   },
   "versions" : {
-    "1" : {
+    "v1" : {
       "rootUrl" : "https://www.googleapis.com/moderator/v1/"
     }
   }

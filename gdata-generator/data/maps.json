@@ -4,6 +4,22 @@
   "className" : "GoogleMaps",
   "authTokenType" : "local",
   "versions" : {
+    "1" : {
+      "sinceMinor" : 3,
+      "rootUrl" : "http://maps.google.com/maps/feeds/",
+      "atom" : {
+        "namespaces" : {
+          "app" : "http://purl.org/atom/app#",
+          "" : "http://www.w3.org/2005/Atom",
+          "atom" : "http://www.w3.org/2005/Atom",
+          "batch" : "http://schemas.google.com/gdata/batch",
+          "gAcl" : "http://schemas.google.com/acl/2007",
+          "gd" : "http://schemas.google.com/g/2005",
+          "openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
+          "xml" : "http://www.w3.org/XML/1998/namespace"
+        }
+      }
+    },
     "2" : {
       "rootUrl" : "http://maps.google.com/maps/feeds/",
       "atom" : {

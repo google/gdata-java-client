@@ -19,7 +19,7 @@ package com.google.api.data.webmastertools.v2;
 /**
  * Constants for the Google Webmaster Tools Data API.
  *
- * @since 2.2
+ * @since 2.3
  */
 public final class GoogleWebmasterTools {
 

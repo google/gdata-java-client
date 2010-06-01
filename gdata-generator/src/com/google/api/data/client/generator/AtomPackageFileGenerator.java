@@ -34,8 +34,11 @@ final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
   @Override
   public void generate(PrintWriter out) {
     out.println("<body>");
-    out.println("Small optional Java library for the Atom XML " + "format for "
-        + version.client.name + " version " + version.id + ".");
+    out
+        .println("Small optional Java library for the Atom XML "
+            + "format for " + version.client.name + " "
+            + (version.client.isOldGDataStyle ? "version " : "") + version.id
+            + ".");
     out.println("");
     out.println("<p>This package depends on the "
         + "{@link com.google.api.client.xml} package.</p>");
@@ -44,7 +47,9 @@ final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
         + "may be changed in incompatible ways or possibly entirely removed "
         + "in a future version of the library</b></p>");
     out.println("");
-    out.println("@since 2.2");
+    out.println("@since 2."
+        + ("v1".equals(version.id) && "buzz".equals(version.client.id) ? 2
+            : version.sinceMinor));
     out.println("</body>");
     out.close();
   }
