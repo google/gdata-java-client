@@ -29,20 +29,24 @@ public final class Version {
 
   @Key
   public String rootUrl;
-  
+
   @Key
   public AtomInfo atom;
+
+  @Key
+  public int sinceMinor;
 
   public String getJarName() {
     return "data-" + client.id + "-v" + id;
   }
 
   public String getPathRelativeToSrc() {
-    return "com/google/api/data/" + client.id + "/v" + id;
+    return "com/google/api/data/" + client.id + "/"
+        + (client.isOldGDataStyle ? "v" : "") + id;
   }
 
   public String getPackageName() {
-    return "com.google.api.data." + client.id + ".v" + id;
+    return getPathRelativeToSrc().replace('/', '.');
   }
 
   void validate(String id, Client client) {
@@ -50,6 +54,9 @@ public final class Version {
     this.client = client;
     if (atom != null) {
       atom.validate();
+    }
+    if (sinceMinor == 0) {
+      sinceMinor = 2;
     }
   }
 }

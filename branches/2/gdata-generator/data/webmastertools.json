@@ -4,7 +4,20 @@
   "className" : "GoogleWebmasterTools",
   "authTokenType" : "sitemaps",
   "versions" : {
+    "1" : {
+      "sinceMinor" : 3,
+      "rootUrl" : "http://www.google.com/webmasters/tools/feeds/",
+      "atom" : {
+        "namespaces" : {
+          "" : "http://www.w3.org/2005/Atom",
+          "atom" : "http://www.w3.org/2005/Atom",
+          "wt" : "http://schemas.google.com/webmaster/tools/2007",
+          "xml" : "http://www.w3.org/XML/1998/namespace"
+        }
+      }
+    },
     "2" : {
+      "sinceMinor" : 3,
       "rootUrl" : "http://www.google.com/webmasters/tools/feeds/",
       "atom" : {
         "namespaces" : {

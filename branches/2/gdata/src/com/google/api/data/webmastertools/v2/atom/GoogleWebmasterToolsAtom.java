@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Utilities for the Atom XML format of the Google Webmaster Tools Data API.
  *
- * @since 2.2
+ * @since 2.3
  */
 public final class GoogleWebmasterToolsAtom {
 

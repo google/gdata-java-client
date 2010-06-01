@@ -31,13 +31,6 @@ import java.util.Set;
  */
 final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
 
-  private static final Set<String> GENERATE_VERSION_NAME =
-      new HashSet<String>(Arrays.asList(new String[] {"analytics", "blogger",
-          "books", "buzz", "calendar", "codesearch", "contacts", "docs",
-          "finance", "gbase", "health", "maps", "migration", "moderator",
-          "picasa", "sidewiki", "sites", "spreadsheet", "webmastertools",
-          "youtube"}));
-
   private final Version version;
 
   MainJavaFileGenerator(Version version) {
@@ -52,7 +45,7 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
 
   static boolean isGenerated(Version version) {
     Client client = version.client;
-    return GENERATE_VERSION_NAME.contains(client.id) || version.rootUrl != null
+    return client.isOldGDataStyle || version.rootUrl != null
         || client.authTokenType != null;
   }
 
@@ -60,28 +53,27 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
   public void generate(PrintWriter out) {
     Client client = version.client;
     generateHeader(out);
-    out.println("/**");
-    out.println(" * Constants for the " + client.name + ".");
-    out.println(" *");
-    out.println(" * @since 2.2");
-    out.println(" */");
+    DocBuilder classDocBuilder = new DocBuilder();
+    classDocBuilder.comment = "Constants for the " + client.name + ".";
+    classDocBuilder.sinceMinor = version.sinceMinor;
+    classDocBuilder.generate(out);
     out.println("public final class " + className + " {");
     out.println();
-    if (GENERATE_VERSION_NAME.contains(client.id)) {
-      out.println(indent(2) + "/** Version name. */");
+    if (client.isOldGDataStyle) {
+      DocBuilder.generateComment(out, 2, "Version name.");
       out.println(indent(2) + "public static final String VERSION = \""
           + version.id + "\";");
       out.println();
     }
     if (version.rootUrl != null) {
-      out.println(indent(2) + "/** Root URL. */");
+      DocBuilder.generateComment(out, 2, "Root URL.");
       out.println(indent(2) + "public static final String ROOT_URL = \""
           + version.rootUrl + "\";");
       out.println();
     }
     if (client.authTokenType != null) {
-      out.println(indent(2)
-          + "/** The authentication token type used for Client Login. */");
+      DocBuilder.generateComment(out, 2,
+          "The authentication token type used for Client Login.");
       out.println(indent(2) + "public static final String AUTH_TOKEN_TYPE = \""
           + client.authTokenType + "\";");
       out.println();
@@ -89,11 +81,12 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
     if (client.oauth != null) {
       OAuthInfo oauth = client.oauth;
       if (oauth.authorizationUrl != null) {
-        out.println(indent(2) + "/**");
-        out.println(indent(2) + " * OAuth authorization service endpoint.");
-        out.println(indent(2) + " *");
-        out.println(indent(2) + " * @since 2.3");
-        out.println(indent(2) + " */");
+        DocBuilder docBuilder = new DocBuilder();
+        docBuilder.comment = "OAuth authorization service endpoint.";
+        docBuilder.container = classDocBuilder;
+        docBuilder.sinceMinor = Math.max(3, version.sinceMinor);
+        docBuilder.indentNumSpaces = 2;
+        docBuilder.generate(out);
         out.println(indent(2)
             + "public static final String OAUTH_AUTHORIZATION_URL = \""
             + oauth.authorizationUrl + "\";");
@@ -101,9 +94,11 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
       }
       if (oauth.scopes != null) {
         for (Map.Entry<String, String> entry : oauth.scopes.entrySet()) {
-          out.println(indent(2) + "/**");
-          out.println(indent(2) + " * @since 2.3");
-          out.println(indent(2) + " */");
+          DocBuilder docBuilder = new DocBuilder();
+          docBuilder.container = classDocBuilder;
+          docBuilder.sinceMinor = Math.max(3, version.sinceMinor);
+          docBuilder.indentNumSpaces = 2;
+          docBuilder.generate(out);
           String suffix =
               entry.getKey().length() == 0 ? "" : "_" + entry.getKey();
           out.println(indent(2) + "public static final String OAUTH_SCOPE"

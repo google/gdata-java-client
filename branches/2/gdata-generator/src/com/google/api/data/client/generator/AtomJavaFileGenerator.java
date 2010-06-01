@@ -44,15 +44,14 @@ final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
     out.println();
     out.println("import " + Map.class.getName() + ";");
     out.println();
-    out.println("/**");
-    out.println(" * Utilities for the Atom XML format of the "
-        + version.client.name + ".");
-    out.println(" *");
-    out.println(" * @since 2.2");
-    out.println(" */");
+    DocBuilder docBuilder = new DocBuilder();
+    docBuilder.comment =
+        "Utilities for the Atom XML format of the " + version.client.name + ".";
+    docBuilder.sinceMinor = version.sinceMinor;
+    docBuilder.generate(out);
     out.println("public final class " + className + " {");
     out.println();
-    out.println(indent(2) + "/** XML namespace dictionary. */");
+    DocBuilder.generateComment(out, 2, "XML namespace dictionary.");
     out.println(indent(2) + "public static final "
         + useClass(XmlNamespaceDictionary.class)
         + " NAMESPACE_DICTIONARY = new "
