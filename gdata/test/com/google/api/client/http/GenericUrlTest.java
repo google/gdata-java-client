@@ -118,20 +118,23 @@ public class GenericUrlTest extends TestCase {
   }
 
   private static String FULL =
-      "https://www.google.com:223/m8/feeds/contacts/someone%20%3F@gmail.com/"
-          + "full?" + "alt=json&" + "foo=bar&" + "max-results=3&"
-          + "prettyprint=true&" + "q=Go%26%20?%3Co%3Egle";
+      "https://www.google.com:223/m8/feeds/contacts/someone=%23%25&%20%3F%3Co%3E@gmail.com/"
+          + "full?"
+          + "alt=json&"
+          + "foo=bar&"
+          + "max-results=3&"
+          + "prettyprint=true&" + "q=Go%3D%23/%25%26%20?%3Co%3Egle";
 
   public void testFull_build() {
     TestUrl url = new TestUrl();
     url.scheme = "https";
     url.host = "www.google.com";
     url.port = 223;
-    url.path = "/m8/feeds/contacts/someone ?@gmail.com/full";
+    url.path = "/m8/feeds/contacts/someone=#%& ?<o>@gmail.com/full";
     url.set("alt", "json");
     url.set("max-results", 3);
     url.set("prettyprint", true);
-    url.set("q", "Go& ?<o>gle");
+    url.set("q", "Go=#/%& ?<o>gle");
     url.foo = "bar";
     url.hidden = "invisible";
     assertEquals(FULL, url.build());
@@ -143,14 +146,13 @@ public class GenericUrlTest extends TestCase {
     assertEquals("https", url.scheme);
     assertEquals("www.google.com", url.host);
     assertEquals(223, url.port);
-    assertEquals("/m8/feeds/contacts/someone ?@gmail.com/full", url.path);
+    assertEquals("/m8/feeds/contacts/someone=#%& ?<o>@gmail.com/full", url.path);
     assertEquals("json", url.get("alt"));
     assertEquals("3", url.get("max-results"));
     assertEquals("true", url.get("prettyprint"));
-    assertEquals("Go& ?<o>gle", url.get("q"));
+    assertEquals("Go=#/%& ?<o>gle", url.get("q"));
     assertNull(url.hidden);
     assertEquals("bar", url.foo);
-    assertEquals(FULL, url.build());
   }
 
   public static class FieldTypesUrl extends GenericUrl {
@@ -220,4 +222,44 @@ public class GenericUrlTest extends TestCase {
     assertEquals("a", url.s);
   }
 
+  private static String FRAGMENT1 =
+      "foo://bar/path/to/resource#fragme=%23/%25&%20?%3Co%3Ent";
+
+  public void testFragment1_build() {
+    GenericUrl url = new GenericUrl();
+    url.scheme = "foo";
+    url.host = "bar";
+    url.path = "/path/to/resource";
+    url.fragment = "fragme=#/%& ?<o>nt";
+    assertEquals(FRAGMENT1, url.build());
+  }
+
+  public void testFragment1_parse() {
+    GenericUrl url = new GenericUrl(FRAGMENT1);
+    assertEquals("foo", url.scheme);
+    assertEquals("bar", url.host);
+    assertEquals("/path/to/resource", url.path);
+    assertEquals("fragme=#/%& ?<o>nt", url.fragment);
+  }
+
+  private static String FRAGMENT2 = "foo://bar/path/to/resource?a=b#fragment";
+
+  public void testFragment2_build() {
+    GenericUrl url = new GenericUrl();
+    url.scheme = "foo";
+    url.host = "bar";
+    url.path = "/path/to/resource";
+    url.set("a", "b");
+    url.fragment = "fragment";
+    assertEquals(FRAGMENT2, url.build());
+  }
+
+  public void testFragment2_parse() {
+    GenericUrl url = new GenericUrl(FRAGMENT2);
+    assertEquals("foo", url.scheme);
+    assertEquals("bar", url.host);
+    assertEquals("/path/to/resource", url.path);
+    assertEquals("b", url.get("a"));
+    assertEquals("fragment", url.fragment);
+  }
 }
