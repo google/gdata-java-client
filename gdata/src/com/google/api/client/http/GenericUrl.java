@@ -17,6 +17,8 @@
 package com.google.api.client.http;
 
 import com.google.api.client.escape.CharEscapers;
+import com.google.api.client.escape.Escaper;
+import com.google.api.client.escape.PercentEscaper;
 import com.google.api.client.util.GenericData;
 import com.google.api.client.util.Key;
 
@@ -42,14 +44,22 @@ import java.util.TreeMap;
  * The following features are not supported:
  * <ul>
  * <li>Repeated query parameters</li>
- * <li>User-information or fragment components.</li>
+ * <li>User-information component.</li>
  * <li>Encoded slash character ('/') in the path</li>
  * </ul>
+ * See <a href="http://tools.ietf.org/html/rfc3986">RFC 3986: Uniform Resource
+ * Identifier (URI)</a>
  * 
  * @since 2.2
  * @author Yaniv Inbar
  */
 public class GenericUrl extends GenericData {
+
+  private static final Escaper URI_FRAGMENT_ESCAPER =
+    new PercentEscaper("=&-_.!~*'()@:$,;/?:", false);
+
+  // TODO: support for repeated query parameters, e.g. "q" parameter for Google
+  // Latitude API
 
   /** Scheme (lowercase), for example {@code "https"}. */
   public String scheme;
@@ -66,6 +76,13 @@ public class GenericUrl extends GenericData {
    */
   public String path;
 
+  /**
+   * Fragment component or {@code null} for none.
+   * 
+   * @since 2.3
+   */
+  public String fragment;
+
   public GenericUrl() {
   }
 
@@ -81,19 +98,9 @@ public class GenericUrl extends GenericData {
    * @throws IllegalArgumentException if URL has a syntax error
    */
   public GenericUrl(String encodedUrl) {
-    // figure out the pre-query/query components
-    int query = encodedUrl.indexOf('?');
-    String preQuery;
-    if (query == -1) {
-      preQuery = encodedUrl;
-    } else {
-      preQuery = encodedUrl.substring(0, query);
-      UrlEncodedParser.parse(encodedUrl.substring(query + 1), this);
-    }
-    // parse the pre-query part
     URI uri;
     try {
-      uri = new URI(preQuery);
+      uri = new URI(encodedUrl);
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException(e);
     }
@@ -101,6 +108,11 @@ public class GenericUrl extends GenericData {
     this.host = uri.getHost();
     this.port = uri.getPort();
     this.path = uri.getPath();
+    this.fragment = uri.getFragment();
+    String query = uri.getRawQuery();
+    if (query != null) {
+      UrlEncodedParser.parse(query, this);
+    }
   }
 
   @Override
@@ -109,6 +121,7 @@ public class GenericUrl extends GenericData {
     result = result * 31 + this.host.hashCode();
     result = result * 31 + this.port;
     result = result * 31 + (this.path == null ? 0 : path.hashCode());
+    result = result * 31 + (this.fragment == null ? 0 : fragment.hashCode());
     return result;
   }
 
@@ -184,6 +197,11 @@ public class GenericUrl extends GenericData {
         startedQuery = true;
       }
       buf.append(entry.getKey()).append('=').append(entry.getValue());
+    }
+    // URL fragment
+    String fragment = this.fragment;
+    if (fragment != null) {
+      buf.append('#').append(URI_FRAGMENT_ESCAPER.escape(fragment));
     }
     return buf.toString();
   }
