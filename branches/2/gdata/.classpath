@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.8.2.jar" sourcepath="lib/junit-4.8.2-src.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/android-1.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.5.2.jar" sourcepath="lib/jackson-src-1.5.2.zip">
 		<attributes>

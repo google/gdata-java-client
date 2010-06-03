@@ -71,7 +71,7 @@
       <compilerarg value="-Xlint:all" />
       <classpath>
         <pathelement location="${dist.dir}/gdata-${version}.jar" />
-        <pathelement location="${lib.dir}/junit.jar" />
+        <pathelement location="${lib.dir}/${junit.jar}" />
       </classpath>
     </javac>
     <java fork="true" classname="junit.textui.TestRunner" failonerror="true"
@@ -79,7 +79,7 @@
       <classpath>
         <pathelement location="${classes.test.dir}" />
         <pathelement location="${dist.dir}/gdata-${version}.jar" />
-        <pathelement location="${lib.dir}/junit.jar" />
+        <pathelement location="${lib.dir}/${junit.jar}" />
       </classpath>
       <arg value="com.google.api.client.AllTests" />
     </java>
