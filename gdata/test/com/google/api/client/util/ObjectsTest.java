@@ -16,20 +16,29 @@
 
 package com.google.api.client.util;
 
-import junit.framework.TestSuite;
+import com.google.api.client.util.Objects;
+
+import junit.framework.TestCase;
 
 /**
- * All tests for {@link com.google.api.client.util}.
+ * Tests {@link Objects}.
  * 
  * @author Yaniv Inbar
  */
-public class AllTests extends TestSuite {
+public class ObjectsTest extends TestCase {
 
-  public static TestSuite suite() {
-    TestSuite result = new TestSuite(AllTests.class.getPackage().getName());
-    result.addTestSuite(ArrayMapTest.class);
-    result.addTestSuite(DateTimeTest.class);
-    result.addTestSuite(ObjectsTest.class);
-    return result;
+  public ObjectsTest() {
+  }
+
+  public ObjectsTest(String testName) {
+    super(testName);
+  }
+
+  public void testEqual() {
+    assertTrue(Objects.equal(null, null));
+    assertTrue(Objects.equal("a", "a"));
+    assertFalse(Objects.equal(null, "a"));
+    assertFalse(Objects.equal("a", null));
+    assertFalse(Objects.equal("a", "b"));
   }
 }
