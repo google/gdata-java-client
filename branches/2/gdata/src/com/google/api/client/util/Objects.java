@@ -16,20 +16,28 @@
 
 package com.google.api.client.util;
 
-import junit.framework.TestSuite;
-
 /**
- * All tests for {@link com.google.api.client.util}.
+ * Utilities for objects.
  * 
+ * @since 2.3
  * @author Yaniv Inbar
  */
-public class AllTests extends TestSuite {
+public class Objects {
 
-  public static TestSuite suite() {
-    TestSuite result = new TestSuite(AllTests.class.getPackage().getName());
-    result.addTestSuite(ArrayMapTest.class);
-    result.addTestSuite(DateTimeTest.class);
-    result.addTestSuite(ObjectsTest.class);
-    return result;
+  /**
+   * Determines whether two possibly-null objects are equal. Returns:
+   *
+   * <ul>
+   * <li>{@code true} if {@code a} and {@code b} are both null.
+   * <li>{@code true} if {@code a} and {@code b} are both non-null and they are
+   *     equal according to {@link Object#equals(Object)}.
+   * <li>{@code false} in all other situations.
+   * </ul>
+   *
+   * <p>This assumes that any non-null objects passed to this function conform
+   * to the {@code equals()} contract.
+   */
+  public static boolean equal(Object a, Object b) {
+    return a == b || a != null && a.equals(b);
   }
 }
