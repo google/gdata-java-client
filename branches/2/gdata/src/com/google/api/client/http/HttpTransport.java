@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * @author Yaniv Inbar
  */
 public class HttpTransport {
-
+  // TODO: HttpTransport should be final (in version 2.4)!
   static final Logger LOGGER = Logger.getLogger(HttpTransport.class.getName());
 
   /**
@@ -126,6 +126,8 @@ public class HttpTransport {
     this.defaultHeaders.acceptEncoding = "gzip";
   }
 
+  // TODO: buildRequest()!
+  
   /** Builds a {@code DELETE} request. */
   public HttpRequest buildDeleteRequest() {
     return new HttpRequest(this, "DELETE");

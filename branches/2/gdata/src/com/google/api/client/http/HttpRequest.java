@@ -19,6 +19,7 @@ package com.google.api.client.http;
 import com.google.api.client.util.Strings;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +31,9 @@ import java.util.logging.Logger;
  * @author Yaniv Inbar
  */
 public final class HttpRequest {
+
+  /** User agent suffix for all requests. */
+  private static final String USER_AGENT_SUFFIX = "Google-API-Java/2.3.0-alpha";
 
   /** HTTP request headers. */
   public HttpHeaders headers;
@@ -51,6 +55,8 @@ public final class HttpRequest {
 
   /** HTTP request method. */
   public final String method;
+  // TODO: allow request method to be modified freely!
+  // TODO: greatly extend the number of HTTP methods allowed!
 
   /** HTTP request URL. */
   public GenericUrl url;
@@ -126,10 +132,25 @@ public final class HttpRequest {
       logbuf.append(method).append(' ').append(urlString).append(
           Strings.LINE_SEPARATOR);
     }
+    // add to user agent
+    HttpHeaders headers = this.headers;
+    if (headers.userAgent == null) {
+      headers.userAgent = USER_AGENT_SUFFIX;
+    } else {
+      headers.userAgent += " " + USER_AGENT_SUFFIX;
+    }
+    // log headers
+    HashSet<String> headerNames = new HashSet<String>();
     for (Map.Entry<String, Object> headerEntry : this.headers.entrySet()) {
+      String name = headerEntry.getKey();
+      String lowerCase = name.toLowerCase();
+      if (!headerNames.add(lowerCase)) {
+        throw new IllegalArgumentException(
+            "multiple headers of the same name (headers are case insensitive): "
+                + lowerCase);
+      }
       String value = (String) headerEntry.getValue();
       if (value != null) {
-        String name = headerEntry.getKey();
         if (logbuf != null) {
           logbuf.append(name).append(": ");
           if ("Authorization".equals(name) && !logger.isLoggable(Level.ALL)) {
@@ -181,6 +202,7 @@ public final class HttpRequest {
       }
       lowLevelHttpRequest.setContent(content);
     }
+    // log from buffer
     if (loggable) {
       logger.config(logbuf.toString());
     }
