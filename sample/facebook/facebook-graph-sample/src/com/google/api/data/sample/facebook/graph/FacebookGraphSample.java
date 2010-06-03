@@ -28,7 +28,6 @@ import com.google.api.data.sample.facebook.graph.model.User;
 import com.google.api.data.sample.facebook.graph.model.UserData;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Scanner;
 
 /**
@@ -41,19 +40,14 @@ import java.util.Scanner;
  */
 public class FacebookGraphSample {
 
-  public static void main(String[] args) throws IOException, URISyntaxException {
+  public static void main(String[] args) throws IOException {
     Debug.enableLogging();
     HttpTransport transport = new HttpTransport();
-    transport.addParser(new JsonHttpParser("text/javascript"));
     authenticate(transport);
-    getPage(transport);
-    getUser(transport);
-    getMe(transport);
-    getMyFriends(transport);
+    run(transport);
   }
 
-  private static void authenticate(HttpTransport transport)
-      throws URISyntaxException {
+  private static void authenticate(HttpTransport transport) {
     System.out
         .println("Please go open this web page in a browser to authorize:");
     AuthorizationUrl authorizeUrl =
@@ -67,12 +61,20 @@ public class FacebookGraphSample {
     System.out
         .println("Copy/Paste the URL that the web browser has directed you to: ");
     String entered = new Scanner(System.in).nextLine();
-    final AuthorizationResponse response = new AuthorizationResponse(entered);
+    AuthorizationResponse response = new AuthorizationResponse(entered);
     if (response.error != null) {
       System.err.println("Authorization denied.");
       System.exit(1);
     }
     response.authorize(transport);
+  }
+
+  private static void run(HttpTransport transport) throws IOException {
+    transport.addParser(new JsonHttpParser("text/javascript"));
+    getPage(transport);
+    getUser(transport);
+    getMe(transport);
+    getMyFriends(transport);
   }
 
   private static void getPage(HttpTransport transport) throws IOException {
@@ -109,6 +111,6 @@ public class FacebookGraphSample {
 
   private static void header(String name) {
     System.out.println();
-    System.out.println("----------- " + name + " -----------");
+    System.out.println("============== " + name + " ==============");
   }
 }
