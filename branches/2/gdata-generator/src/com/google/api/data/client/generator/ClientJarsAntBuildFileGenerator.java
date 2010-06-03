@@ -29,6 +29,7 @@ final class ClientJarsAntBuildFileGenerator extends AbstractXmlFileGenerator {
     "com.google.api.client.apache",
     "com.google.api.client.auth",
     "com.google.api.client.auth.oauth",
+    "com.google.api.client.auth.oauth2",
     "com.google.api.client.escape",
     "com.google.api.client.googleapis",
     "com.google.api.client.googleapis.auth",

@@ -19,6 +19,7 @@ package com.google.api.client.http;
 import com.google.api.client.util.ArrayMap;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -127,7 +128,7 @@ public class HttpTransport {
   }
 
   // TODO: buildRequest()!
-  
+
   /** Builds a {@code DELETE} request. */
   public HttpRequest buildDeleteRequest() {
     return new HttpRequest(this, "DELETE");
@@ -151,5 +152,21 @@ public class HttpTransport {
   /** Builds a {@code PATCH} request. */
   public HttpRequest buildPatchRequest() {
     return new HttpRequest(this, "PATCH");
+  }
+
+  /**
+   * Removes HTTP request execute intercepters of the given class or subclasses.
+   * 
+   * @param intercepterClass intercepter class
+   * @since 2.3
+   */
+  public void removeIntercepters(Class<?> intercepterClass) {
+    Iterator<HttpExecuteIntercepter> iterable = this.intercepters.iterator();
+    while (iterable.hasNext()) {
+      HttpExecuteIntercepter intercepter = iterable.next();
+      if (intercepterClass.isAssignableFrom(intercepter.getClass())) {
+        iterable.remove();
+      }
+    }
   }
 }
