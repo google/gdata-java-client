@@ -31,7 +31,7 @@ import java.io.OutputStream;
  * 
  * @since 2.2
  * @author Yaniv Inbar
- * @deprecated Use {@link JsonCContent} (scheduled to be removed in version 2.4)
+ * @deprecated (scheduled to be removed in version 2.4) Use {@link JsonCContent}
  */
 @Deprecated
 public final class JsonContent implements HttpContent {

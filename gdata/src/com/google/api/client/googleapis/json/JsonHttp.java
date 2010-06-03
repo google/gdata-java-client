@@ -34,8 +34,8 @@ import java.io.InputStream;
 public class JsonHttp {
 
   /**
-   * @deprecated Use {@link JsonFeedParser#use(HttpResponse, Class, Class)}
-   *             (scheduled to be removed in version 2.4)
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link JsonFeedParser#use(HttpResponse, Class, Class)}
    */
   @Deprecated
   public static <T, I> JsonFeedParser<T, I> useFeedParser(
@@ -46,8 +46,8 @@ public class JsonHttp {
   }
 
   /**
-   * @deprecated Use {@link JsonFeedParser#use(HttpResponse, Class, Class)}
-   *             (scheduled to be removed in version 2.4)
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link JsonFeedParser#use(HttpResponse, Class, Class)}
    */
   @Deprecated
   public static <T, I> JsonMultiKindFeedParser<T> useMultiKindFeedParser(
@@ -58,10 +58,9 @@ public class JsonHttp {
   }
 
   /**
-   * @deprecated Use {@link JsonCParser#parserForResponse(HttpResponse)} and
-   *             then
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link JsonCParser#parserForResponse(HttpResponse)} and then
    *             {@link Json#parseAndClose(JsonParser, Class, CustomizeJsonParser)}
-   *             (scheduled to be removed in version 2.4)
    */
   @Deprecated
   public static <T> T parse(HttpResponse response,
@@ -71,8 +70,8 @@ public class JsonHttp {
   }
 
   /**
-   * @deprecated Use {@link JsonCParser#parserForResponse(HttpResponse)}
-   *             (scheduled to be removed in version 2.4)
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link JsonCParser#parserForResponse(HttpResponse)}
    */
   @Deprecated
   public static JsonParser processAsJsonParser(HttpResponse response)
