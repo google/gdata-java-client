@@ -88,12 +88,12 @@ public final class Client implements Comparable<Client> {
     if (versions == null || versions.size() < 1) {
       throw new NullPointerException("at least one version required");
     }
-    for (Map.Entry<String, Version> entry : versions.entrySet()) {
-      entry.getValue().validate(entry.getKey(), this);
-    }
     if (className == null) {
       className = Character.toUpperCase(id.charAt(0)) + id.substring(1);
     }
     isOldGDataStyle = OLD_GDATA_STYLE_IDS.contains(id);
+    for (Map.Entry<String, Version> entry : versions.entrySet()) {
+      entry.getValue().validate(entry.getKey(), this);
+    }
   }
 }

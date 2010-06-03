@@ -68,7 +68,7 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
     } else if (client.isOldGDataStyle) {
       DocBuilder.generateComment(out, 2, "Version name.");
       out.println(indent(2) + "public static final String VERSION = \""
-          + version.id + "\";");
+          + version.id.substring(1) + "\";");
       out.println();
     }
     if (version.rootUrl != null) {

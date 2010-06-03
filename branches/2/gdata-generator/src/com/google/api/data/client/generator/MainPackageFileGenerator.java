@@ -39,10 +39,11 @@ final class MainPackageFileGenerator extends AbstractHtmlFileGenerator {
   @Override
   public void generate(PrintWriter out) {
     out.println("<body>");
-    out
-        .println("Small optional Java library for " + version.client.name + " "
-            + (version.client.isOldGDataStyle ? "version " : "") + version.id
-            + ".");
+    out.println("Small optional Java library for "
+        + version.client.name
+        + " "
+        + (version.client.isOldGDataStyle ? "version "
+            + version.id.substring(1) : version.id) + ".");
     out.println("");
     out.println("<p><b>Warning: this package is experimental, and its content "
         + "may be changed in incompatible ways or possibly entirely removed "

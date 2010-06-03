@@ -37,12 +37,11 @@ public final class Version {
   public int sinceMinor;
 
   public String getJarName() {
-    return "data-" + client.id + "-v" + id;
+    return "data-" + client.id + "-" + id;
   }
 
   public String getPathRelativeToSrc() {
-    return "com/google/api/data/" + client.id + "/"
-        + (client.isOldGDataStyle ? "v" : "") + id;
+    return "com/google/api/data/" + client.id + "/" + id;
   }
 
   public String getPackageName() {
@@ -50,7 +49,7 @@ public final class Version {
   }
 
   void validate(String id, Client client) {
-    this.id = id;
+    this.id = (client.isOldGDataStyle ? "v" : "") + id;
     this.client = client;
     if (atom != null) {
       atom.validate();

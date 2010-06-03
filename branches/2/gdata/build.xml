@@ -40,8 +40,7 @@
     </javadoc>
   </target>
 
-  <target name="jars" description="Compile all jars"
-    depends="gdata-full-jar,datajars,clientjars">
+  <target name="jars" description="Compile all jars" depends="gdata-full-jar,datajars,clientjars">
     <mkdir dir="${dist.dir}/dependencies" />
     <copy file="${lib.dir}/${jackson.jar}" todir="${android.dir}" />
     <copy file="${lib.dir}/${commons-logging.jar}" todir="${dist.dir}/dependencies" />
