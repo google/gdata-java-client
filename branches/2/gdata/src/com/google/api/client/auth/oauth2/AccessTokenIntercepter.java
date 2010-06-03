@@ -23,6 +23,17 @@ import com.google.api.client.http.HttpTransport;
 /**
  * Authorizes HTTP requests by setting the {@code "access_token"} query
  * parameter every time an HTTP request is executed.
+ * <p>
+ * Sample usage:
+ * 
+ * <pre>
+ * <code>static void authenticate(HttpTransport transport, String accessToken) {
+ *   AccessTokenIntercepter intercepter = new AccessTokenIntercepter();
+ *   intercepter.accessToken = accessToken;
+ *   intercepter.authorize(transport);
+ * }
+ * </code>
+ * </pre>
  * 
  * @author Yaniv Inbar
  * @since 2.3

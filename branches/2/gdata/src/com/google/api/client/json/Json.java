@@ -417,7 +417,7 @@ public class Json {
         return null;
       default:
         throw new IllegalArgumentException(parser.getCurrentName()
-            + ": unexpected JSON node type");
+            + ": unexpected JSON node type: " + token);
     }
   }
 }
