@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<project basedir="." default="compile" name="facebook-graph-sample">
+
+	<property file="build.properties" />
+
+	<target name="clean" description="Remove generated files.">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<path id="classpath">
+		<pathelement location="${lib.dir}/${gdata.jar}" />
+		<pathelement location="${lib.dir}/${jackson.jar}" />
+	</path>
+
+	<target name="compile" description="Compile">
+		<property name="classes.dir" value="${build.dir}/classes" />
+		<mkdir dir="${classes.dir}" />
+		<javac debug="true" destdir="${classes.dir}" source="1.5" target="1.5">
+			<compilerarg value="-Xlint:all" />
+			<src path="${src.dir}" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="run" description="Runs the sample." depends="compile">
+		<java classname="com.google.api.data.sample.facebook.graph.FacebookGraphSample">
+			<classpath refid="classpath" />
+			<classpath>
+				<pathelement location="${classes.dir}" />
+			</classpath>
+		</java>
+	</target>
+
+</project>
