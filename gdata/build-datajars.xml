@@ -6,7 +6,7 @@
   <import file='build-common.xml'/>
 
   <property name='data.packagenames'
-      value='com.google.api.data.analytics.v1,com.google.api.data.analytics.v1.atom,com.google.api.data.analytics.v2,com.google.api.data.analytics.v2.atom,com.google.api.data.blogger.v1,com.google.api.data.blogger.v1.atom,com.google.api.data.blogger.v2,com.google.api.data.blogger.v2.atom,com.google.api.data.books.v1,com.google.api.data.books.v1.atom,com.google.api.data.buzz.v1,com.google.api.data.buzz.v1.atom,com.google.api.data.calendar.v1,com.google.api.data.calendar.v1.atom,com.google.api.data.calendar.v2,com.google.api.data.calendar.v2.atom,com.google.api.data.codesearch.v1,com.google.api.data.codesearch.v1.atom,com.google.api.data.codesearch.v2,com.google.api.data.codesearch.v2.atom,com.google.api.data.contacts.v1,com.google.api.data.contacts.v1.atom,com.google.api.data.contacts.v2,com.google.api.data.contacts.v2.atom,com.google.api.data.contacts.v3,com.google.api.data.contacts.v3.atom,com.google.api.data.docs.v1,com.google.api.data.docs.v1.atom,com.google.api.data.docs.v2,com.google.api.data.docs.v2.atom,com.google.api.data.docs.v3,com.google.api.data.docs.v3.atom,com.google.api.data.finance.v1,com.google.api.data.finance.v1.atom,com.google.api.data.finance.v2,com.google.api.data.finance.v2.atom,com.google.api.data.gbase.v1,com.google.api.data.gbase.v1.atom,com.google.api.data.gbase.v2,com.google.api.data.gbase.v2.atom,com.google.api.data.health.v1,com.google.api.data.health.v1.atom,com.google.api.data.health.v2,com.google.api.data.health.v2.atom,com.google.api.data.latitude.v1,com.google.api.data.latitude.v1.atom,com.google.api.data.maps.v1,com.google.api.data.maps.v1.atom,com.google.api.data.maps.v2,com.google.api.data.maps.v2.atom,com.google.api.data.migration.v1,com.google.api.data.migration.v1.atom,com.google.api.data.moderator.vv1,com.google.api.data.picasa.v1,com.google.api.data.picasa.v1.atom,com.google.api.data.picasa.v2,com.google.api.data.picasa.v2.atom,com.google.api.data.sidewiki.v2,com.google.api.data.sidewiki.v2.atom,com.google.api.data.sites.v1,com.google.api.data.sites.v1.atom,com.google.api.data.spreadsheet.v1,com.google.api.data.spreadsheet.v1.atom,com.google.api.data.spreadsheet.v2,com.google.api.data.spreadsheet.v2.atom,com.google.api.data.spreadsheet.v3,com.google.api.data.spreadsheet.v3.atom,com.google.api.data.webmastertools.v1,com.google.api.data.webmastertools.v1.atom,com.google.api.data.webmastertools.v2,com.google.api.data.webmastertools.v2.atom,com.google.api.data.youtube.v1,com.google.api.data.youtube.v1.atom,com.google.api.data.youtube.v2,com.google.api.data.youtube.v2.atom'
+      value='com.google.api.data.analytics.v1,com.google.api.data.analytics.v1.atom,com.google.api.data.analytics.v2,com.google.api.data.analytics.v2.atom,com.google.api.data.blogger.v1,com.google.api.data.blogger.v1.atom,com.google.api.data.blogger.v2,com.google.api.data.blogger.v2.atom,com.google.api.data.books.v1,com.google.api.data.books.v1.atom,com.google.api.data.buzz.v1,com.google.api.data.buzz.v1.atom,com.google.api.data.calendar.v1,com.google.api.data.calendar.v1.atom,com.google.api.data.calendar.v2,com.google.api.data.calendar.v2.atom,com.google.api.data.codesearch.v1,com.google.api.data.codesearch.v1.atom,com.google.api.data.codesearch.v2,com.google.api.data.codesearch.v2.atom,com.google.api.data.contacts.v1,com.google.api.data.contacts.v1.atom,com.google.api.data.contacts.v2,com.google.api.data.contacts.v2.atom,com.google.api.data.contacts.v3,com.google.api.data.contacts.v3.atom,com.google.api.data.docs.v1,com.google.api.data.docs.v1.atom,com.google.api.data.docs.v2,com.google.api.data.docs.v2.atom,com.google.api.data.docs.v3,com.google.api.data.docs.v3.atom,com.google.api.data.finance.v1,com.google.api.data.finance.v1.atom,com.google.api.data.finance.v2,com.google.api.data.finance.v2.atom,com.google.api.data.gbase.v1,com.google.api.data.gbase.v1.atom,com.google.api.data.gbase.v2,com.google.api.data.gbase.v2.atom,com.google.api.data.health.v1,com.google.api.data.health.v1.atom,com.google.api.data.health.v2,com.google.api.data.health.v2.atom,com.google.api.data.latitude.v1,com.google.api.data.latitude.v1.atom,com.google.api.data.maps.v1,com.google.api.data.maps.v1.atom,com.google.api.data.maps.v2,com.google.api.data.maps.v2.atom,com.google.api.data.migration.v1,com.google.api.data.migration.v1.atom,com.google.api.data.moderator.v1,com.google.api.data.picasa.v1,com.google.api.data.picasa.v1.atom,com.google.api.data.picasa.v2,com.google.api.data.picasa.v2.atom,com.google.api.data.sidewiki.v2,com.google.api.data.sidewiki.v2.atom,com.google.api.data.sites.v1,com.google.api.data.sites.v1.atom,com.google.api.data.spreadsheet.v1,com.google.api.data.spreadsheet.v1.atom,com.google.api.data.spreadsheet.v2,com.google.api.data.spreadsheet.v2.atom,com.google.api.data.spreadsheet.v3,com.google.api.data.spreadsheet.v3.atom,com.google.api.data.webmastertools.v1,com.google.api.data.webmastertools.v1.atom,com.google.api.data.webmastertools.v2,com.google.api.data.webmastertools.v2.atom,com.google.api.data.youtube.v1,com.google.api.data.youtube.v1.atom,com.google.api.data.youtube.v2,com.google.api.data.youtube.v2.atom'
       />
 
   <target name='data-analytics-v1-jar'>
@@ -69,14 +69,14 @@
         includes='com/google/api/data/books/v1/atom/*.class' />
   </target>
 
-  <target name='data-buzz-vv1-jar'>
-    <jar destfile='${android.dir}/gdata-${version}-data-buzz-vv1.jar'
+  <target name='data-buzz-v1-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-data-buzz-v1.jar'
         basedir='${classes.dir}' includes='com/google/api/data/buzz/v1/*.class'
         />
   </target>
 
-  <target name='data-buzz-vv1-atom-jar'>
-    <jar destfile='${android.dir}/gdata-${version}-data-buzz-vv1-atom.jar'
+  <target name='data-buzz-v1-atom-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-data-buzz-v1-atom.jar'
         basedir='${classes.dir}'
         includes='com/google/api/data/buzz/v1/atom/*.class' />
   </target>
@@ -273,14 +273,14 @@
         includes='com/google/api/data/health/v2/atom/*.class' />
   </target>
 
-  <target name='data-latitude-vv1-jar'>
-    <jar destfile='${android.dir}/gdata-${version}-data-latitude-vv1.jar'
+  <target name='data-latitude-v1-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-data-latitude-v1.jar'
         basedir='${classes.dir}'
         includes='com/google/api/data/latitude/v1/*.class' />
   </target>
 
-  <target name='data-latitude-vv1-atom-jar'>
-    <jar destfile='${android.dir}/gdata-${version}-data-latitude-vv1-atom.jar'
+  <target name='data-latitude-v1-atom-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-data-latitude-v1-atom.jar'
         basedir='${classes.dir}'
         includes='com/google/api/data/latitude/v1/atom/*.class' />
   </target>
@@ -321,10 +321,10 @@
         includes='com/google/api/data/migration/v1/atom/*.class' />
   </target>
 
-  <target name='data-moderator-vv1-jar'>
-    <jar destfile='${android.dir}/gdata-${version}-data-moderator-vv1.jar'
+  <target name='data-moderator-v1-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-data-moderator-v1.jar'
         basedir='${classes.dir}'
-        includes='com/google/api/data/moderator/vv1/*.class' />
+        includes='com/google/api/data/moderator/v1/*.class' />
   </target>
 
   <target name='data-picasa-v1-jar'>
@@ -462,6 +462,6 @@
   </target>
 
   <target name='datajars' description='Compile all Data package jars'
-      depends='data-analytics-v1-jar,data-analytics-v1-atom-jar,data-analytics-v2-jar,data-analytics-v2-atom-jar,data-blogger-v1-jar,data-blogger-v1-atom-jar,data-blogger-v2-jar,data-blogger-v2-atom-jar,data-books-v1-jar,data-books-v1-atom-jar,data-buzz-vv1-jar,data-buzz-vv1-atom-jar,data-calendar-v1-jar,data-calendar-v1-atom-jar,data-calendar-v2-jar,data-calendar-v2-atom-jar,data-codesearch-v1-jar,data-codesearch-v1-atom-jar,data-codesearch-v2-jar,data-codesearch-v2-atom-jar,data-contacts-v1-jar,data-contacts-v1-atom-jar,data-contacts-v2-jar,data-contacts-v2-atom-jar,data-contacts-v3-jar,data-contacts-v3-atom-jar,data-docs-v1-jar,data-docs-v1-atom-jar,data-docs-v2-jar,data-docs-v2-atom-jar,data-docs-v3-jar,data-docs-v3-atom-jar,data-finance-v1-jar,data-finance-v1-atom-jar,data-finance-v2-jar,data-finance-v2-atom-jar,data-gbase-v1-jar,data-gbase-v1-atom-jar,data-gbase-v2-jar,data-gbase-v2-atom-jar,data-health-v1-jar,data-health-v1-atom-jar,data-health-v2-jar,data-health-v2-atom-jar,data-latitude-vv1-jar,data-latitude-vv1-atom-jar,data-maps-v1-jar,data-maps-v1-atom-jar,data-maps-v2-jar,data-maps-v2-atom-jar,data-migration-v1-jar,data-migration-v1-atom-jar,data-moderator-vv1-jar,data-picasa-v1-jar,data-picasa-v1-atom-jar,data-picasa-v2-jar,data-picasa-v2-atom-jar,data-sidewiki-v2-jar,data-sidewiki-v2-atom-jar,data-sites-v1-jar,data-sites-v1-atom-jar,data-spreadsheet-v1-jar,data-spreadsheet-v1-atom-jar,data-spreadsheet-v2-jar,data-spreadsheet-v2-atom-jar,data-spreadsheet-v3-jar,data-spreadsheet-v3-atom-jar,data-webmastertools-v1-jar,data-webmastertools-v1-atom-jar,data-webmastertools-v2-jar,data-webmastertools-v2-atom-jar,data-youtube-v1-jar,data-youtube-v1-atom-jar,data-youtube-v2-jar,data-youtube-v2-atom-jar'
+      depends='data-analytics-v1-jar,data-analytics-v1-atom-jar,data-analytics-v2-jar,data-analytics-v2-atom-jar,data-blogger-v1-jar,data-blogger-v1-atom-jar,data-blogger-v2-jar,data-blogger-v2-atom-jar,data-books-v1-jar,data-books-v1-atom-jar,data-buzz-v1-jar,data-buzz-v1-atom-jar,data-calendar-v1-jar,data-calendar-v1-atom-jar,data-calendar-v2-jar,data-calendar-v2-atom-jar,data-codesearch-v1-jar,data-codesearch-v1-atom-jar,data-codesearch-v2-jar,data-codesearch-v2-atom-jar,data-contacts-v1-jar,data-contacts-v1-atom-jar,data-contacts-v2-jar,data-contacts-v2-atom-jar,data-contacts-v3-jar,data-contacts-v3-atom-jar,data-docs-v1-jar,data-docs-v1-atom-jar,data-docs-v2-jar,data-docs-v2-atom-jar,data-docs-v3-jar,data-docs-v3-atom-jar,data-finance-v1-jar,data-finance-v1-atom-jar,data-finance-v2-jar,data-finance-v2-atom-jar,data-gbase-v1-jar,data-gbase-v1-atom-jar,data-gbase-v2-jar,data-gbase-v2-atom-jar,data-health-v1-jar,data-health-v1-atom-jar,data-health-v2-jar,data-health-v2-atom-jar,data-latitude-v1-jar,data-latitude-v1-atom-jar,data-maps-v1-jar,data-maps-v1-atom-jar,data-maps-v2-jar,data-maps-v2-atom-jar,data-migration-v1-jar,data-migration-v1-atom-jar,data-moderator-v1-jar,data-picasa-v1-jar,data-picasa-v1-atom-jar,data-picasa-v2-jar,data-picasa-v2-atom-jar,data-sidewiki-v2-jar,data-sidewiki-v2-atom-jar,data-sites-v1-jar,data-sites-v1-atom-jar,data-spreadsheet-v1-jar,data-spreadsheet-v1-atom-jar,data-spreadsheet-v2-jar,data-spreadsheet-v2-atom-jar,data-spreadsheet-v3-jar,data-spreadsheet-v3-atom-jar,data-webmastertools-v1-jar,data-webmastertools-v1-atom-jar,data-webmastertools-v2-jar,data-webmastertools-v2-atom-jar,data-youtube-v1-jar,data-youtube-v1-atom-jar,data-youtube-v2-jar,data-youtube-v2-atom-jar'
       />
 </project>
