@@ -21,9 +21,12 @@ import com.google.api.client.escape.Escaper;
 import com.google.api.client.escape.PercentEscaper;
 import com.google.api.client.util.GenericData;
 import com.google.api.client.util.Key;
+import com.google.api.client.util.Objects;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -56,7 +59,7 @@ import java.util.TreeMap;
 public class GenericUrl extends GenericData {
 
   private static final Escaper URI_FRAGMENT_ESCAPER =
-    new PercentEscaper("=&-_.!~*'()@:$,;/?:", false);
+      new PercentEscaper("=&-_.!~*'()@:$,;/?:", false);
 
   // TODO: support for repeated query parameters, e.g. "q" parameter for Google
   // Latitude API
@@ -73,8 +76,27 @@ public class GenericUrl extends GenericData {
   /**
    * Path component or {@code null} for none, for example {@code
    * "/m8/feeds/contacts/default/full"}.
+   * <p>
+   * This field is ignored if {@link #pathParts} is not {@code null}.
+   * 
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link #getRawPath()} and {@link #setRawPath(String rawPath)}
    */
+  @Deprecated
   public String path;
+
+  /**
+   * Decoded path component by parts with each part separated by a {@code '/'}
+   * or {@code null} for none, for example {@code
+   * "/m8/feeds/contacts/default/full"} is represented by {@code "", "m8",
+   * "feeds", "contacts", "default", "full"}.
+   * <p>
+   * Use {@link #appendPath(String)} to append to the path, which ensures that
+   * no extra slash is added.
+   * 
+   * @since 2.3
+   */
+  public List<String> pathParts;
 
   /**
    * Fragment component or {@code null} for none.
@@ -108,6 +130,7 @@ public class GenericUrl extends GenericData {
     this.host = uri.getHost();
     this.port = uri.getPort();
     this.path = uri.getPath();
+    this.pathParts = toPathParts(uri.getRawPath());
     this.fragment = uri.getFragment();
     String query = uri.getRawQuery();
     if (query != null) {
@@ -121,6 +144,7 @@ public class GenericUrl extends GenericData {
     result = result * 31 + this.host.hashCode();
     result = result * 31 + this.port;
     result = result * 31 + (this.path == null ? 0 : path.hashCode());
+    result = result * 31 + (this.pathParts == null ? 0 : pathParts.hashCode());
     result = result * 31 + (this.fragment == null ? 0 : fragment.hashCode());
     return result;
   }
@@ -134,11 +158,11 @@ public class GenericUrl extends GenericData {
       return false;
     }
     GenericUrl other = (GenericUrl) obj;
-    String path = this.path;
-    String otherPath = other.path;
     return this.scheme.equals(other.scheme) && this.host.equals(other.host)
         && this.port == other.port
-        && (path == null ? otherPath == null : path.equals(otherPath));
+        && Objects.equal(this.fragment, other.fragment)
+        && Objects.equal(this.path, other.path)
+        && Objects.equal(this.pathParts, other.pathParts);
   }
 
   @Override
@@ -148,7 +172,9 @@ public class GenericUrl extends GenericData {
 
   @Override
   public GenericUrl clone() {
-    return (GenericUrl) super.clone();
+    GenericUrl result = (GenericUrl) super.clone();
+    result.pathParts = new ArrayList<String>(this.pathParts);
+    return result;
   }
 
   /**
@@ -164,19 +190,25 @@ public class GenericUrl extends GenericData {
     if (port != -1) {
       buf.append(':').append(port);
     }
-    String path = this.path;
-    if (path != null && path.length() != 0) {
-      int cur = 0;
-      boolean notDone = true;
-      while (notDone) {
-        int slash = path.indexOf('/', cur);
-        notDone = slash != -1;
-        String sub = notDone ? path.substring(cur, slash) : path.substring(cur);
-        buf.append(CharEscapers.escapeUriPath(sub));
-        if (notDone) {
-          buf.append('/');
+    List<String> pathParts = this.pathParts;
+    if (pathParts != null) {
+      appendRawPath(buf);
+    } else {
+      String path = this.path;
+      if (path != null && path.length() != 0) {
+        int cur = 0;
+        boolean notDone = true;
+        while (notDone) {
+          int slash = path.indexOf('/', cur);
+          notDone = slash != -1;
+          String sub =
+              notDone ? path.substring(cur, slash) : path.substring(cur);
+          buf.append(CharEscapers.escapeUriPath(sub));
+          if (notDone) {
+            buf.append('/');
+          }
+          cur = slash + 1;
         }
-        cur = slash + 1;
       }
     }
     // compute parameters in sorted order
@@ -206,11 +238,115 @@ public class GenericUrl extends GenericData {
     return buf.toString();
   }
 
+
+  /**
+   * Returns the raw encoded path computed from the {@link #pathParts}.
+   * 
+   * @return raw encoded path computed from the {@link #pathParts} or {@code
+   *         null} if {@link #pathParts} is {@code null}
+   * @since 2.3
+   */
+  public String getRawPath() {
+    List<String> pathParts = this.pathParts;
+    if (pathParts == null) {
+      return null;
+    }
+    StringBuilder buf = new StringBuilder();
+    appendRawPath(buf);
+    return buf.toString();
+  }
+
+  /**
+   * Sets the {@link #pathParts} from the given raw encoded path.
+   * 
+   * @param encodedPath raw encoded path or {@code null} to set
+   *        {@link #pathParts} to {@code null}
+   * @since 2.3
+   */
+  public void setRawPath(String encodedPath) {
+    this.pathParts = toPathParts(encodedPath);
+  }
+
+  /**
+   * Appends the given raw encoded path to the current {@link #pathParts},
+   * setting field only if it is {@code null} or empty.
+   * <p>
+   * The last part of the {@link #pathParts} is merged with the first part of
+   * the path parts computed from the given encoded path. Thus, if the current
+   * raw encoded path is {@code "a"}, and the given encoded path is {@code "b"},
+   * then the resulting raw encoded path is {@code "ab"}.
+   * 
+   * @param encodedPath raw encoded path or {@code null} to ignore
+   * @since 2.3
+   */
+  public void appendPath(String encodedPath) {
+    if (encodedPath != null && encodedPath.length() != 0) {
+      List<String> pathParts = this.pathParts;
+      List<String> appendedPathParts = toPathParts(encodedPath);
+      if (pathParts == null || pathParts.isEmpty()) {
+        this.pathParts = appendedPathParts;
+      } else {
+        int size = pathParts.size();
+        pathParts.set(size - 1, pathParts.get(size - 1)
+            + appendedPathParts.get(0));
+        pathParts
+            .addAll(appendedPathParts.subList(1, appendedPathParts.size()));
+      }
+    }
+  }
+
+  /**
+   * Returns the decoded path parts for the given encoded path.
+   * 
+   * @param encodedPath slash-prefixed encoded path, for example {@code
+   *        "/m8/feeds/contacts/default/full"}
+   * @return decoded path parts, with each part assumed to be preceded by a
+   *         {@code '/'}, for example {@code "", "m8", "feeds", "contacts",
+   *         "default", "full"}, or {@code null} for {@code null} or {@code ""}
+   *         input
+   * @since 2.3
+   */
+  public static List<String> toPathParts(String encodedPath) {
+    if (encodedPath == null || encodedPath.length() == 0) {
+      return null;
+    }
+    List<String> result = new ArrayList<String>();
+    int cur = 0;
+    boolean notDone = true;
+    while (notDone) {
+      int slash = encodedPath.indexOf('/', cur);
+      notDone = slash != -1;
+      String sub;
+      if (notDone) {
+        sub = encodedPath.substring(cur, slash);
+      } else {
+        sub = encodedPath.substring(cur);
+      }
+      result.add(CharEscapers.decodeUri(sub));
+      cur = slash + 1;
+    }
+    return result;
+  }
+
   private static String escape(Object value) {
     String string = value.toString();
     if (value instanceof Number) {
       return string;
     }
     return CharEscapers.escapeUriQuery(string);
+  }
+
+  private void appendRawPath(StringBuilder buf) {
+    List<String> pathParts = this.pathParts;
+    int size = pathParts.size();
+    for (int i = 0; i < size; i++) {
+      String pathPart = pathParts.get(i);
+      if (i != 0) {
+        buf.append('/');
+      }
+      if (pathPart.length() != 0) {
+        buf.append(CharEscapers.escapeUriPath(pathPart));
+      }
+    }
   }
 }

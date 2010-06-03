@@ -19,6 +19,7 @@ package com.google.api.data.sample.picasa;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.auth.oauth.OAuthParameters;
+import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUrl;
@@ -84,8 +85,10 @@ public class PicasaAtomSample {
 
   private static GoogleTransport setUpGoogleTransport() throws IOException {
     GoogleTransport transport = new GoogleTransport();
-    transport.applicationName = "google-picasaatomsample-1.0";
-    transport.setVersionHeader(PicasaWebAlbums.VERSION);
+    GoogleHeaders.setUserAgent(transport.defaultHeaders,
+        "google-picasaatomsample-1.0");
+    GoogleHeaders.setGDataVersion(transport.defaultHeaders,
+        PicasaWebAlbums.VERSION);
     AtomParser parser = new AtomParser();
     parser.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
     transport.addParser(parser);
