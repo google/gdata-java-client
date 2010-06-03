@@ -24,8 +24,8 @@ import java.util.Map;
  * Utilities for the Atom XML format of the Google Buzz API.
  * 
  * @since 2.2
- * @deprecated Use {@link GoogleBuzzAtom} (scheduled to be removed in version
- *             2.4)
+ * @deprecated (scheduled to be removed in version 2.4) Use
+ *             {@link GoogleBuzzAtom}
  */
 @Deprecated
 public final class BuzzAtom {

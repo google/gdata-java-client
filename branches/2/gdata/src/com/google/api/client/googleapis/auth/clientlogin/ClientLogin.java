@@ -16,6 +16,7 @@
 
 package com.google.api.client.googleapis.auth.clientlogin;
 
+import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.AuthKeyValueParser;
 import com.google.api.client.http.HttpRequest;
@@ -61,7 +62,7 @@ public final class ClientLogin {
     public String auth;
 
     public String getAuthorizationHeaderValue() {
-      return GoogleTransport.getClientLoginHeaderValue(this.auth);
+      return GoogleHeaders.getGoogleLoginValue(this.auth);
     }
 
     /**
@@ -69,7 +70,7 @@ public final class ClientLogin {
      * authentication token.
      */
     public void setAuthorizationHeader(GoogleTransport googleTransport) {
-      googleTransport.setClientLoginToken(this.auth);
+      GoogleHeaders.setGoogleLogin(googleTransport.defaultHeaders, this.auth);
     }
   }
 

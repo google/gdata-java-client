@@ -27,7 +27,7 @@ import java.io.IOException;
  * 
  * @since 2.2
  * @author Yaniv Inbar
- * @deprecated Use {@link JsonCParser} (scheduled to be removed in version 2.4)
+ * @deprecated (scheduled to be removed in version 2.4) Use {@link JsonCParser}
  */
 @Deprecated
 public final class JsonParser implements HttpParser {

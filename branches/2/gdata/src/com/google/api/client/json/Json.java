@@ -314,7 +314,7 @@ public class Json {
         }
         throw new IllegalArgumentException(
             "expected field type that implements Collection but got "
-                + fieldClass);
+                + fieldClass + " for field " + field);
       case START_OBJECT:
         Object newInstance = null;
         boolean isMap =
@@ -354,14 +354,16 @@ public class Json {
         if (fieldClass != null && fieldClass != Boolean.class
             && fieldClass != boolean.class) {
           throw new IllegalArgumentException(parser.getCurrentName()
-              + ": expected type Boolean or boolean but got " + fieldClass);
+              + ": expected type Boolean or boolean but got " + fieldClass
+              + " for field " + field);
         }
         return token == JsonToken.VALUE_TRUE ? Boolean.TRUE : Boolean.FALSE;
       case VALUE_NUMBER_FLOAT:
         if (fieldClass != null && fieldClass != Float.class
             && fieldClass != float.class) {
           throw new IllegalArgumentException(parser.getCurrentName()
-              + ": expected type Float or float but got " + fieldClass);
+              + ": expected type Float or float but got " + fieldClass
+              + " for field " + field);
         }
         return parser.getFloatValue();
       case VALUE_NUMBER_INT:
@@ -377,7 +379,7 @@ public class Json {
         }
         throw new IllegalArgumentException(parser.getCurrentName()
             + ": expected type Integer/int/Short/short/Byte/byte but got "
-            + fieldClass);
+            + fieldClass + " for field " + field);
       case VALUE_STRING:
         String stringValue = parser.getText();
         if (fieldClass == null || fieldClass == String.class) {
@@ -393,7 +395,8 @@ public class Json {
         if (fieldClass == Character.class || fieldClass == char.class) {
           if (stringValue.length() != 1) {
             throw new IllegalArgumentException(parser.getCurrentName()
-                + ": expected type Character/char but got " + fieldClass);
+                + ": expected type Character/char but got " + fieldClass
+                + " for field " + field);
           }
           return stringValue.charAt(0);
         }
@@ -409,7 +412,7 @@ public class Json {
         throw new IllegalArgumentException(
             parser.getCurrentName()
                 + ": expected type String/Long/long/Double/double/Character/char/BigInteger/BigDecimal/DateTime but got "
-                + fieldClass);
+                + fieldClass + " for field " + field);
       case VALUE_NULL:
         return null;
       default:

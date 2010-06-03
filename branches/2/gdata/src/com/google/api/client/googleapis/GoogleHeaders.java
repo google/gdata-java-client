@@ -31,10 +31,83 @@ public class GoogleHeaders {
       new PercentEscaper(" !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~", false);
 
   /**
-   * Sets the {@code Slug} header for given file name into the given HTTP
-   * headers, properly escaping the header value.
+   * Sets the {@code "Slug"} header for the given file name into the given HTTP
+   * headers, properly escaping the header value. See <a
+   * href="http://tools.ietf.org/html/rfc5023#section-9.7">The Slug Header</a>.
    */
   public static void setSlug(HttpHeaders headers, String fileName) {
     headers.set("Slug", SLUG_ESCAPER.escape(fileName));
+  }
+
+  /**
+   * Sets the {@code "User-Agent"} header for the given application name of the
+   * form {@code "[company-id]-[app-name]-[app-version]"} into the given HTTP
+   * headers.
+   * 
+   * @since 2.3
+   */
+  public static void setUserAgent(HttpHeaders headers, String applicationName) {
+    headers.userAgent = applicationName;
+  }
+
+  /**
+   * Sets the {@code "GData-Version"} header for the given version into the
+   * given HTTP headers.
+   * 
+   * @since 2.3
+   */
+  public static void setGDataVersion(HttpHeaders headers, String version) {
+    headers.set("GData-Version", version);
+  }
+
+  /**
+   * Sets the {@code "GData-Key"} header for the given developer ID into the
+   * given HTTP headers.
+   * 
+   * @since 2.3
+   */
+  public static void setGDataKey(HttpHeaders headers, String developerId) {
+    headers.set("X-GData-Key", "key=" + developerId);
+  }
+
+  /**
+   * Sets the {@code "GData-Version"} header for the given application name of
+   * the form {@code "[company-id]-[app-name]-[app-version]"} into the given
+   * HTTP headers.
+   * 
+   * @since 2.3
+   */
+  public static void setGDataClient(HttpHeaders headers, String applicationName) {
+    headers.set("X-GData-Client", applicationName);
+  }
+
+  /**
+   * Sets the Google Login {@code "Authorization"} header for the given
+   * authentication token into the given HTTP headers.
+   * 
+   * @since 2.3
+   */
+  public static void setGoogleLogin(HttpHeaders headers, String authToken) {
+    headers.authorization = getGoogleLoginValue(authToken);
+  }
+
+  /**
+   * Returns Google Login {@code "Authorization"} header value based on the
+   * given authentication token.
+   * 
+   * @since 2.3
+   */
+  public static String getGoogleLoginValue(String authToken) {
+    return "GoogleLogin auth=" + authToken;
+  }
+
+  /**
+   * Sets the {@code "X-HTTP-Method-Override"} header for the given HTTP method
+   * into the given HTTP headers.
+   * 
+   * @since 2.3
+   */
+  public static void setMethodOverride(HttpHeaders headers, String method) {
+    headers.set("X-HTTP-Method-Override", method);
   }
 }

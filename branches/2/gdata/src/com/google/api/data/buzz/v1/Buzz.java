@@ -21,7 +21,7 @@ package com.google.api.data.buzz.v1;
  * Constants for the Google Buzz API.
  * 
  * @since 2.2
- * @deprecated Use {@link GoogleBuzz} (scheduled to be removed in version 2.4)
+ * @deprecated (scheduled to be removed in version 2.4) Use {@link GoogleBuzz}
  */
 @Deprecated
 public final class Buzz {

@@ -21,12 +21,16 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 
 /**
- * HTTP transport for Google API's.
+ * HTTP transport for Google API's. It's only purpose is to allow for method
+ * overriding when the firewall does not accept DELETE, PATCH or PUT methods.
  * 
  * @since 2.2
  * @author Yaniv Inbar
  */
 public class GoogleTransport extends HttpTransport {
+
+  // TODO: deprecate GoogleTransport!
+  // TODO: instead use an HttpExecuteIntercepter to override the request method!
 
   /**
    * If {@code true}, the GData HTTP client library will use POST to send data
@@ -40,7 +44,12 @@ public class GoogleTransport extends HttpTransport {
   /**
    * Required application name of the format {@code
    * "[company-id]-[app-name]-[app-version]"}.
+   * 
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link GoogleHeaders#setUserAgent(HttpHeaders, String)}
+   *             on {@link #defaultHeaders}
    */
+  @Deprecated
   public String applicationName;
 
   /**
@@ -48,9 +57,13 @@ public class GoogleTransport extends HttpTransport {
    * 
    * @param version version of the Google Data API being access, for example
    *        {@code "2"}.
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link GoogleHeaders#setGDataVersion(HttpHeaders, String)} on
+   *             {@link #defaultHeaders}
    */
+  @Deprecated
   public void setVersionHeader(String version) {
-    this.defaultHeaders.set("GData-Version", version);
+    GoogleHeaders.setGDataVersion(this.defaultHeaders, version);
   }
 
   /**
@@ -58,7 +71,11 @@ public class GoogleTransport extends HttpTransport {
    * Authorization} header) based on the given authentication token. This is
    * primarily intended for use in the Android environment after retrieving the
    * authentication token from the AccountManager.
+   * 
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link GoogleHeaders#setGoogleLogin(HttpHeaders, String)}
    */
+  @Deprecated
   public void setClientLoginToken(String authToken) {
     this.defaultHeaders.authorization = getClientLoginHeaderValue(authToken);
   }
@@ -66,27 +83,18 @@ public class GoogleTransport extends HttpTransport {
   /**
    * Returns Client Login authentication header value based on the given
    * authentication token.
+   * 
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link GoogleHeaders#getGoogleLoginValue(String)}
    */
+  @Deprecated
   public static String getClientLoginHeaderValue(String authToken) {
     return "GoogleLogin auth=" + authToken;
   }
 
   @Override
-  public HttpRequest buildGetRequest() {
-    checkApplicationName();
-    return super.buildGetRequest();
-  }
-
-  @Override
-  public HttpRequest buildPostRequest() {
-    checkApplicationName();
-    return super.buildPostRequest();
-  }
-
-  @Override
   public HttpRequest buildDeleteRequest() {
     if (!ENABLE_METHOD_OVERRIDE) {
-      checkApplicationName();
       return super.buildDeleteRequest();
     }
     return buildMethodOverride("DELETE");
@@ -95,7 +103,6 @@ public class GoogleTransport extends HttpTransport {
   @Override
   public HttpRequest buildPatchRequest() {
     if (!ENABLE_METHOD_OVERRIDE && useLowLevelHttpTransport().supportsPatch()) {
-      checkApplicationName();
       return super.buildPatchRequest();
     }
     return buildMethodOverride("PATCH");
@@ -104,7 +111,6 @@ public class GoogleTransport extends HttpTransport {
   @Override
   public HttpRequest buildPutRequest() {
     if (!ENABLE_METHOD_OVERRIDE) {
-      checkApplicationName();
       return super.buildPutRequest();
     }
     return buildMethodOverride("PUT");
@@ -112,19 +118,7 @@ public class GoogleTransport extends HttpTransport {
 
   private HttpRequest buildMethodOverride(String method) {
     HttpRequest request = buildPostRequest();
-    request.headers.set("X-HTTP-Method-Override", method);
+    GoogleHeaders.setMethodOverride(request.headers, method);
     return request;
-  }
-
-  private void checkApplicationName() {
-    String applicationName = this.applicationName;
-    if (applicationName == null) {
-      throw new IllegalArgumentException("applicationName not specified");
-    }
-    HttpHeaders defaultHeaders = this.defaultHeaders;
-    if (defaultHeaders.userAgent == null) {
-      defaultHeaders.userAgent =
-          applicationName + " Google-API-Java/2.3.0-alpha(gzip)";
-    }
   }
 }
