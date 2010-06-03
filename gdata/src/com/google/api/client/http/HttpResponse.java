@@ -16,7 +16,6 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.util.ArrayMap;
 import com.google.api.client.util.Strings;
 
 import java.io.ByteArrayInputStream;
@@ -112,11 +111,11 @@ public final class HttpResponse {
     }
     // headers
     int size = response.getHeaderCount();
-    ArrayMap<String, Object> headers = this.headers.unknownFields;
+    HttpHeaders headers = this.headers;
     for (int i = 0; i < size; i++) {
       String headerName = response.getHeaderName(i);
       String headerValue = response.getHeaderValue(i);
-      headers.set(i, headerName, headerValue);
+      headers.set(HttpHeaders.getCaseInsensitiveName(headerName), headerValue);
       if (loggable) {
         logbuf.append(headerName + ": " + headerValue).append(
             Strings.LINE_SEPARATOR);
