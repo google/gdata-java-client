@@ -30,10 +30,6 @@ import com.google.api.data.sample.facebook.graph.model.UserData;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Scanner;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 /**
  * See <a href="http://developers.facebook.com/docs/reference/api">Graph API
@@ -46,9 +42,7 @@ import java.util.logging.Logger;
 public class FacebookGraphSample {
 
   public static void main(String[] args) throws IOException, URISyntaxException {
-    if (Debug.ENABLED) {
-      enableLogging();
-    }
+    Debug.enableLogging();
     HttpTransport transport = new HttpTransport();
     transport.addParser(new JsonHttpParser("text/javascript"));
     authenticate(transport);
@@ -111,29 +105,6 @@ public class FacebookGraphSample {
     request.setUrl("https://graph.facebook.com/me/friends");
     UserData node = request.execute().parseAs(UserData.class);
     System.out.println(Json.toString(node));
-  }
-
-  private static void enableLogging() {
-    Logger logger = Logger.getLogger("com.google.api.client");
-    logger.setLevel(Level.ALL);
-    logger.addHandler(new Handler() {
-
-      @Override
-      public void close() throws SecurityException {
-      }
-
-      @Override
-      public void flush() {
-      }
-
-      @Override
-      public void publish(LogRecord record) {
-        // default ConsoleHandler will take care of >= INFO
-        if (record.getLevel().intValue() < Level.INFO.intValue()) {
-          System.out.println(record.getMessage());
-        }
-      }
-    });
   }
 
   private static void header(String name) {

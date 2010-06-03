@@ -39,10 +39,6 @@ import com.google.api.data.sample.picasa.model.UserFeed;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Scanner;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 /**
  * @author Yaniv Inbar
@@ -58,9 +54,7 @@ public class PicasaAtomSample {
   static OAuthCredentialsResponse credentials;
 
   public static void main(String[] args) throws IOException {
-    if (Debug.ENABLED) {
-      enableLogging();
-    }
+    Debug.enableLogging();
     try {
       GoogleTransport transport = setUpGoogleTransport();
       UserFeed feed = showAlbums(transport);
@@ -240,28 +234,5 @@ public class PicasaAtomSample {
     album.executeDelete(transport);
     System.out.println();
     System.out.println("Album deleted.");
-  }
-
-  private static void enableLogging() {
-    Logger logger = Logger.getLogger("com.google.api.client");
-    logger.setLevel(Level.CONFIG);
-    logger.addHandler(new Handler() {
-
-      @Override
-      public void close() throws SecurityException {
-      }
-
-      @Override
-      public void flush() {
-      }
-
-      @Override
-      public void publish(LogRecord record) {
-        // default ConsoleHandler will take care of >= INFO
-        if (record.getLevel().intValue() < Level.INFO.intValue()) {
-          System.out.println(record.getMessage());
-        }
-      }
-    });
   }
 }
