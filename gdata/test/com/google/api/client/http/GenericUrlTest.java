@@ -20,11 +20,15 @@ import com.google.api.client.util.Key;
 
 import junit.framework.TestCase;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Tests {@link GenericUrl}.
  * 
  * @author Yaniv Inbar
  */
+@SuppressWarnings("deprecation")
 public class GenericUrlTest extends TestCase {
 
   public GenericUrlTest() {
@@ -141,7 +145,6 @@ public class GenericUrlTest extends TestCase {
   }
 
   public void testFull_parse() {
-    System.out.println(FULL.charAt(52));
     TestUrl url = new TestUrl(FULL);
     assertEquals("https", url.scheme);
     assertEquals("www.google.com", url.host);
@@ -261,5 +264,77 @@ public class GenericUrlTest extends TestCase {
     assertEquals("/path/to/resource", url.path);
     assertEquals("b", url.get("a"));
     assertEquals("fragment", url.fragment);
+  }
+
+  private static final String PATH_WITH_SLASH =
+      "http://www.google.com/m8/feeds/contacts/someone%2Fis%2F@gmail.com/full/";
+
+  private static final List<String> PATH_WITH_SLASH_PARTS =
+      Arrays.asList(new String[] {"", "m8", "feeds", "contacts",
+          "someone/is/@gmail.com", "full", ""});
+
+  public void testPathWithSlash_build() {
+    GenericUrl url = new GenericUrl();
+    url.scheme = "http";
+    url.host = "www.google.com";
+    url.pathParts = PATH_WITH_SLASH_PARTS;
+    assertEquals(PATH_WITH_SLASH, url.build());
+  }
+
+  public void testPathWithSlash_parse() {
+    GenericUrl url = new GenericUrl(PATH_WITH_SLASH);
+    assertEquals("http", url.scheme);
+    assertEquals("www.google.com", url.host);
+    assertEquals(PATH_WITH_SLASH_PARTS, url.pathParts);
+  }
+
+  public void testToPathParts() {
+    subtestToPathParts(null, (String[]) null);
+    subtestToPathParts(null, "");
+    subtestToPathParts("/", "", "");
+    subtestToPathParts("a", "a");
+    subtestToPathParts("/a", "", "a");
+    subtestToPathParts("/a/", "", "a", "");
+    subtestToPathParts("path/to/resource", "path", "to", "resource");
+    subtestToPathParts("/path/to/resource", "", "path", "to", "resource");
+    subtestToPathParts("/path/to/resource/", "", "path", "to", "resource", "");
+    subtestToPathParts("/Go%3D%23%2F%25%26%20?%3Co%3Egle/2nd", "",
+        "Go=#/%& ?<o>gle", "2nd");
+  }
+
+  private void subtestToPathParts(String encodedPath,
+      String... expectedDecodedParts) {
+    List<String> result = GenericUrl.toPathParts(encodedPath);
+    if (encodedPath == null) {
+      assertNull(result);
+    } else {
+      assertEquals(Arrays.asList(expectedDecodedParts), result);
+    }
+  }
+
+  public void testAppendPath() {
+    GenericUrl url = new GenericUrl("http://google.com");
+    assertNull(url.pathParts);
+    url.appendPath(null);
+    assertNull(url.pathParts);
+    url.appendPath("");
+    assertNull(url.pathParts);
+    url.appendPath("/");
+    assertEquals(Arrays.asList(new String[] {"", ""}), url.pathParts);
+    url.appendPath("/");
+    assertEquals(Arrays.asList(new String[] {"", "", ""}), url.pathParts);
+    url.appendPath("/a");
+    assertEquals(Arrays.asList(new String[] {"", "", "", "a"}), url.pathParts);
+    url.appendPath("b");
+    assertEquals(Arrays.asList(new String[] {"", "", "", "ab"}), url.pathParts);
+    url.appendPath("c/d");
+    assertEquals(Arrays.asList(new String[] {"", "", "", "abc", "d"}),
+        url.pathParts);
+    url.appendPath("/e");
+    assertEquals(Arrays.asList(new String[] {"", "", "", "abc", "d", "e"}),
+        url.pathParts);
+    url.appendPath("/");
+    assertEquals(Arrays.asList(new String[] {"", "", "", "abc", "d", "e", ""}),
+        url.pathParts);
   }
 }

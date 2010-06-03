@@ -19,6 +19,7 @@ package com.google.api.data.sample.youtube;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.auth.oauth.OAuthParameters;
+import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUrl;
@@ -43,6 +44,9 @@ import java.util.logging.Logger;
  * @author Yaniv Inbar
  */
 public class YouTubeJsoncSample {
+
+  // TODO: sample of starting a web browser and listening to callback using
+  // local server
 
   enum AuthType {
     OAUTH, CLIENT_LOGIN
@@ -77,8 +81,9 @@ public class YouTubeJsoncSample {
 
   private static GoogleTransport setUpGoogleTransport() throws IOException {
     GoogleTransport transport = new GoogleTransport();
-    transport.applicationName = "google-youtubejsoncsample-1.0";
-    transport.setVersionHeader(YouTube.VERSION);
+    GoogleHeaders.setUserAgent(transport.defaultHeaders,
+        "google-youtubejsoncsample-1.0");
+    GoogleHeaders.setGDataVersion(transport.defaultHeaders, YouTube.VERSION);
     transport.addParser(new JsonCParser());
     if (AUTH_TYPE == AuthType.OAUTH) {
       authorizeUsingOAuth(transport);

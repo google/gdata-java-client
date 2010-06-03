@@ -161,7 +161,7 @@ public final class OAuthParameters {
     GenericUrl normalized = new GenericUrl();
     String scheme = normalized.scheme = requestUrl.scheme;
     String host = normalized.host = requestUrl.host;
-    normalized.path = requestUrl.path;
+    normalized.pathParts = requestUrl.pathParts;
     int port = requestUrl.port;
     if ("http".equals(scheme) && port == 80 || "https".equals(scheme)
         && port == 443) {

@@ -16,6 +16,7 @@
 
 package com.google.api.client.googleapis.json;
 
+import com.google.api.client.escape.CharEscapers;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
@@ -200,9 +201,9 @@ public final class DiscoveryDocument {
         throw new IllegalArgumentException("missing required path parameter: "
             + varName);
       }
-      pathBuf.append(value);
+      pathBuf.append(CharEscapers.escapeUriPath(value));
     }
-    url.path += pathBuf.toString();
+    url.appendPath(pathBuf.toString());
     // all other parameters are assumed to be query parameters
     url.putAll(requestMap);
     request.url = url;
