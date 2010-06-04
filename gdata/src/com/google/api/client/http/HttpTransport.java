@@ -25,12 +25,15 @@ import java.util.logging.Logger;
 
 /**
  * HTTP transport.
+ * <p>
+ * Warning: this class must not be sub-classed. It is scheduled to be made final
+ * in version 2.4.
  * 
  * @since 2.2
  * @author Yaniv Inbar
  */
 public class HttpTransport {
-  // TODO: HttpTransport should be final (in version 2.4)!
+
   static final Logger LOGGER = Logger.getLogger(HttpTransport.class.getName());
 
   /**
@@ -43,6 +46,9 @@ public class HttpTransport {
 
   /**
    * Sets to the given low level HTTP transport.
+   * <p>
+   * Must be set before the first HTTP transport is constructed or else the
+   * default will be used as specified in {@link #useLowLevelHttpTransport()}.
    * 
    * @param lowLevelHttpTransport low level HTTP transport or {@code null} to
    *        use the default of {@code java.net} transport
@@ -125,9 +131,17 @@ public class HttpTransport {
   public HttpTransport() {
     // always accept gzip encoding
     this.defaultHeaders.acceptEncoding = "gzip";
+    useLowLevelHttpTransport();
   }
 
-  // TODO: buildRequest()!
+  /**
+   * Builds a request without specifying the HTTP method.
+   * 
+   * @since 2.3
+   */
+  public HttpRequest buildRequest() {
+    return new HttpRequest(this, null);
+  }
 
   /** Builds a {@code DELETE} request. */
   public HttpRequest buildDeleteRequest() {

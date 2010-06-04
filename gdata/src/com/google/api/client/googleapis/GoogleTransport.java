@@ -26,11 +26,11 @@ import com.google.api.client.http.HttpTransport;
  * 
  * @since 2.2
  * @author Yaniv Inbar
+ * @deprecated (scheduled to be removed in version 2.4) Use
+ *             {@link GoogleHeaders#setUp(HttpTransport)}
  */
+@Deprecated
 public class GoogleTransport extends HttpTransport {
-
-  // TODO: deprecate GoogleTransport!
-  // TODO: instead use an HttpExecuteIntercepter to override the request method!
 
   /**
    * If {@code true}, the GData HTTP client library will use POST to send data
@@ -38,7 +38,11 @@ public class GoogleTransport extends HttpTransport {
    * the method override HTTP header. This can be used as a workaround for HTTP
    * proxies or gateways that do not handle PUT, PATCH, or DELETE HTTP methods
    * properly. If {@code false}, the regular verbs will be used.
+   * 
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link GoogleHeaders#setUp(HttpTransport)}
    */
+  @Deprecated
   public static boolean ENABLE_METHOD_OVERRIDE = false;
 
   /**
@@ -46,8 +50,8 @@ public class GoogleTransport extends HttpTransport {
    * "[company-id]-[app-name]-[app-version]"}.
    * 
    * @deprecated (scheduled to be removed in version 2.4) Use
-   *             {@link GoogleHeaders#setUserAgent(HttpHeaders, String)}
-   *             on {@link #defaultHeaders}
+   *             {@link GoogleHeaders#setUserAgent(HttpHeaders, String)} on
+   *             {@link #defaultHeaders}
    */
   @Deprecated
   public String applicationName;

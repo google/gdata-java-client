@@ -133,6 +133,8 @@ public class FieldInfo {
         || fieldClass == BigDecimal.class || fieldClass == DateTime.class
         || fieldClass == Boolean.class;
   }
+  
+  // TODO: support java.net.URI as primitive type?
 
   /**
    * Returns whether to given value is {@code null} or its class is primitive as
