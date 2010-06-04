@@ -16,7 +16,6 @@
 
 package com.google.api.client.googleapis.auth.authsub;
 
-import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.AuthKeyValueParser;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
@@ -49,7 +48,7 @@ public final class AuthSubHelper {
    * Google transport whose authorization header to set or {@code null} to
    * ignore (for example if using an alternative HTTP library).
    */
-  private GoogleTransport transport;
+  private HttpTransport transport;
 
   /** HTTP transport for AuthSub requests. */
   private final HttpTransport authSubTransport = new HttpTransport();
@@ -91,7 +90,7 @@ public final class AuthSubHelper {
    * non-secure AuthSub.
    * <p>
    * Updates the authorization header of the Google transport (set using
-   * {@link #setTransport(GoogleTransport)}).
+   * {@link #setTransport(HttpTransport)}).
    */
   public void setPrivateKey(PrivateKey privateKey) {
     if (privateKey != this.privateKey) {
@@ -106,7 +105,7 @@ public final class AuthSubHelper {
    * <p>
    * Updates the authorization header of the Google transport.
    */
-  public void setTransport(GoogleTransport transport) {
+  public void setTransport(HttpTransport transport) {
     if (transport != this.transport) {
       this.transport = transport;
       updateAuthorizationHeaders();
@@ -119,7 +118,7 @@ public final class AuthSubHelper {
    * <p>
    * Any previous stored single-use or session token will be forgotten. Updates
    * the authorization header of the Google transport (set using
-   * {@link #setTransport(GoogleTransport)}).
+   * {@link #setTransport(HttpTransport)}).
    */
   public void setToken(String token) {
     if (token != this.token) {
@@ -197,7 +196,7 @@ public final class AuthSubHelper {
 
   /** Updates the authorization headers. */
   private void updateAuthorizationHeaders() {
-    GoogleTransport transport = this.transport;
+    HttpTransport transport = this.transport;
     if (transport != null) {
       setAuthorizationHeaderOf(transport);
     }

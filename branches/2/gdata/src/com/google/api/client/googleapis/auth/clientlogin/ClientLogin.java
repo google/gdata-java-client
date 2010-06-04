@@ -17,7 +17,6 @@
 package com.google.api.client.googleapis.auth.clientlogin;
 
 import com.google.api.client.googleapis.GoogleHeaders;
-import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.AuthKeyValueParser;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponseException;
@@ -69,7 +68,7 @@ public final class ClientLogin {
      * Sets the authorization header for the given Google transport using the
      * authentication token.
      */
-    public void setAuthorizationHeader(GoogleTransport googleTransport) {
+    public void setAuthorizationHeader(HttpTransport googleTransport) {
       GoogleHeaders.setGoogleLogin(googleTransport.defaultHeaders, this.auth);
     }
   }

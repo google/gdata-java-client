@@ -17,7 +17,7 @@
 package com.google.api.client.googleapis.json;
 
 import com.google.api.client.escape.CharEscapers;
-import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
@@ -108,7 +108,7 @@ public final class DiscoveryDocument {
   /**
    * Google transport required by {@link #buildRequest}.
    */
-  public GoogleTransport transport;
+  public HttpTransport transport;
 
   DiscoveryDocument(Model.ServiceDefinition serviceDefinition) {
     this.serviceDefinition = serviceDefinition;
@@ -121,12 +121,13 @@ public final class DiscoveryDocument {
    * @return discovery document
    * @throws IOException I/O exception executing request
    */
-  public static DiscoveryDocument execute(String api)
-      throws IOException {
+  public static DiscoveryDocument execute(String api) throws IOException {
     GenericUrl discoveryUrl =
         new GenericUrl("http://www.googleapis.com/discovery/0.1/describe");
     discoveryUrl.put("api", api);
-    HttpRequest request = new HttpTransport().buildGetRequest();
+    HttpTransport transport = new HttpTransport();
+    GoogleHeaders.setUp(transport);
+    HttpRequest request = transport.buildGetRequest();
     request.url = discoveryUrl;
     JsonParser parser = JsonCParser.parserForResponse(request.execute());
     Json.skipToKey(parser, api);
@@ -147,7 +148,7 @@ public final class DiscoveryDocument {
    */
   public HttpRequest buildRequest(String fullyQualifiedMethodName,
       Object parameters) throws IOException {
-    GoogleTransport transport = this.transport;
+    HttpTransport transport = this.transport;
     if (transport == null) {
       throw new IllegalArgumentException("missing transport");
     }
@@ -159,19 +160,8 @@ public final class DiscoveryDocument {
       throw new IllegalArgumentException("unrecognized method: "
           + fullyQualifiedMethodName);
     }
-    HttpRequest request;
-    String restMethod = method.httpMethod;
-    if ("GET".equals(restMethod)) {
-      request = transport.buildGetRequest();
-    } else if ("POST".equals(restMethod)) {
-      request = transport.buildPostRequest();
-    } else if ("PUT".equals(restMethod)) {
-      request = transport.buildPutRequest();
-    } else if ("DELETE".equals(restMethod)) {
-      request = transport.buildDeleteRequest();
-    } else {
-      request = transport.buildPatchRequest();
-    }
+    HttpRequest request = transport.buildRequest();
+    request.method = method.httpMethod;
     HashMap<String, String> requestMap = new HashMap<String, String>();
     for (Map.Entry<String, Object> entry : DataUtil.mapOf(parameters)
         .entrySet()) {

@@ -18,6 +18,7 @@ package com.google.api.client.googleapis;
 
 import com.google.api.client.escape.PercentEscaper;
 import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpTransport;
 
 /**
  * HTTP headers for Google API's.
@@ -29,6 +30,17 @@ public class GoogleHeaders {
 
   private static final PercentEscaper SLUG_ESCAPER =
       new PercentEscaper(" !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~", false);
+
+  /**
+   * Sets up the given HTTP transport with basic default behaviors for working
+   * with Google API's.
+   * 
+   * @param transport HTTP transport
+   * @since 2.3
+   */
+  public static void setUp(HttpTransport transport) {
+    MethodOverrideIntercepter.setFor(transport);
+  }
 
   /**
    * Sets the {@code "Slug"} header for the given file name into the given HTTP

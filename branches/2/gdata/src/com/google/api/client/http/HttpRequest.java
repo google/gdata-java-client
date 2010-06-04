@@ -54,8 +54,8 @@ public final class HttpRequest {
   private final HttpTransport transport;
 
   /** HTTP request method. */
-  public final String method;
-  // TODO: allow request method to be modified freely!
+  public String method;
+
   // TODO: greatly extend the number of HTTP methods allowed!
 
   /** HTTP request URL. */
@@ -63,7 +63,7 @@ public final class HttpRequest {
 
   /**
    * @param transport HTTP transport
-   * @param method HTTP request method
+   * @param method HTTP request method (may be {@code null}
    */
   HttpRequest(HttpTransport transport, String method) {
     this.transport = transport;

@@ -33,9 +33,9 @@ import java.io.OutputStream;
  * 
  * <pre>
  * <code>
- * static void setContent(HttpRequest request, Object item) {
+ * static void setContent(HttpRequest request, Object data) {
  *     JsonCContent content = new JsonCContent();
- *     content.item = item;
+ *     content.data = data;
  *     request.content = content;
  * }
  * </code>

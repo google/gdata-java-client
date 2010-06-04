@@ -122,7 +122,7 @@ public class GenericUrlTest extends TestCase {
   }
 
   private static String FULL =
-      "https://www.google.com:223/m8/feeds/contacts/someone=%23%25&%20%3F%3Co%3E@gmail.com/"
+      "https://www.google.com:223/m8/feeds/contacts/someone=%23%25&%20%3F%3Co%3E%7B%7D@gmail.com/"
           + "full?"
           + "alt=json&"
           + "foo=bar&"
@@ -134,7 +134,7 @@ public class GenericUrlTest extends TestCase {
     url.scheme = "https";
     url.host = "www.google.com";
     url.port = 223;
-    url.path = "/m8/feeds/contacts/someone=#%& ?<o>@gmail.com/full";
+    url.path = "/m8/feeds/contacts/someone=#%& ?<o>{}@gmail.com/full";
     url.set("alt", "json");
     url.set("max-results", 3);
     url.set("prettyprint", true);
@@ -149,7 +149,7 @@ public class GenericUrlTest extends TestCase {
     assertEquals("https", url.scheme);
     assertEquals("www.google.com", url.host);
     assertEquals(223, url.port);
-    assertEquals("/m8/feeds/contacts/someone=#%& ?<o>@gmail.com/full", url.path);
+    assertEquals("/m8/feeds/contacts/someone=#%& ?<o>{}@gmail.com/full", url.path);
     assertEquals("json", url.get("alt"));
     assertEquals("3", url.get("max-results"));
     assertEquals("true", url.get("prettyprint"));
