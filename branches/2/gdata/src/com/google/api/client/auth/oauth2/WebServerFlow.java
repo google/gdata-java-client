@@ -17,7 +17,9 @@
 package com.google.api.client.auth.oauth2;
 
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpParser;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.UrlEncodedContent;
 import com.google.api.client.http.UrlEncodedParser;
@@ -30,6 +32,9 @@ import java.io.IOException;
  * OAuth 2.0 Web Server flow as specified in <a
  * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-05#section-3.6">Web
  * Server Flow</a>.
+ * <p>
+ * The Web Server flow starts with redirecting the web browser to the
+ * authorization web page. Use {@link AuthorizationUrl} to construct that URL.
  * 
  * @since 2.3
  * @author Yaniv Inbar
@@ -40,14 +45,22 @@ public class WebServerFlow {
    * URL builder for an authorization web page to allow the end user to
    * authorize the application to access their protected resources.
    * <p>
+   * The most commonly-set fields are {@link #clientId} and {@link #redirectUri}
+   * , and possibly {@link #scope}. After the end-user grants or denies the
+   * request, they will be redirected to the {@link #redirectUri} with query
+   * parameters set by the authorization server. Use
+   * {@link AuthorizationResponseUrl} to parse the redirect URL.
+   * 
+   * <p>
    * Sample usage:
    * 
    * <pre>
    * <code>static String getAuthorizationUrl(String authorizationServer,
-   *     String clientId, String redirectUri) {
+   *     String clientId, String redirectUri, String scope) {
    *   AuthorizationUrl result = new AuthorizationUrl(authorizationServer);
    *   result.clientId = clientId;
    *   result.redirectUri = redirectUri;
+   *   result.scope = scope;
    *   return result.build();
    * }
    * </code>
@@ -119,6 +132,11 @@ public class WebServerFlow {
 
   /**
    * Parses the redirect URL after end user grants or denies authorization.
+   * <p>
+   * To check if the end user grants authorization, check if {@link #error} is
+   * {@code null}. If the end user grants authorization, the next step is to
+   * request an access token using {@link AccessTokenRequest}. Use the
+   * {@link #code} in {@link AccessTokenRequest#code}.
    */
   public static class AuthorizationResponseUrl extends GenericUrl {
 
@@ -151,7 +169,13 @@ public class WebServerFlow {
     }
   }
 
-  /** Request an access token. */
+  /**
+   * Request an access token.
+   * <p>
+   * The most commonly set fields are {@link #clientId}, {@link #clientSecret},
+   * {@link #code}, and {@link #redirectUri}. Call {@link #execute()} to execute
+   * the request.
+   */
   public static class AccessTokenRequest {
 
     /** (REQUIRED) The parameter value MUST be set to "web_server". */
@@ -180,7 +204,7 @@ public class WebServerFlow {
     public String redirectUri;
 
     /**
-     * (OPTIONAL). The access token secret type as described by Section 5.3. If
+     * (OPTIONAL) The access token secret type as described by Section 5.3. If
      * omitted, the authorization server will issue a bearer token (an access
      * token without a matching secret) as described by Section 5.2.
      */
@@ -188,11 +212,12 @@ public class WebServerFlow {
     public String secretType;
 
     /**
-     * (OPTIONAL). The response format requested by the client whose value is
+     * (OPTIONAL) The response format requested by the client. Value MUST be one
+     * of "json", "xml", or "form" or {@code null } for "json". Default value is
      * {@code "form"}.
      */
     @Key
-    public final String format = "form";
+    public String format = "form";
 
     /**
      * {@code true} for an HTTP GET request or the default {@code false} for an
@@ -200,19 +225,35 @@ public class WebServerFlow {
      */
     public boolean useHttpGetRequest;
 
-    /** (REQUIRED) Encoded authorization server URL. */
-    public String encodedAuthorizationServerUrl;
+    /** Encoded authorization server URL. */
+    public final String encodedAuthorizationServerUrl;
+
+    /**
+     * HTTP parser used to parse the response from the server. Default value is
+     * to construct {@link UrlEncodedParser}.
+     */
+    public HttpParser parser = new UrlEncodedParser();
+
+    /**
+     * @param encodedAuthorizationServerUrl encoded authorization server URL
+     */
+    public AccessTokenRequest(String encodedAuthorizationServerUrl) {
+      this.encodedAuthorizationServerUrl = encodedAuthorizationServerUrl;
+    }
 
     /**
      * Executes request for an access token, and returns the parsed access token
-     * response
+     * response.
      * 
      * @return parsed access token response
+     * @throws HttpResponseException for an HTTP error response; use
+     *         {@link AccessTokenErrorResponse} to parse
+     *         {@link HttpResponseException#response}
      * @throws IOException I/O exception
      */
     public AccessTokenResponse execute() throws IOException {
       HttpTransport transport = new HttpTransport();
-      transport.addParser(new UrlEncodedParser());
+      transport.addParser(this.parser);
       boolean useHttpGetRequest = this.useHttpGetRequest;
       HttpRequest request;
       if (useHttpGetRequest) {
@@ -228,6 +269,7 @@ public class WebServerFlow {
         content.setData(this);
         request.content = content;
       }
+      request.url = url;
       return request.execute().parseAs(AccessTokenResponse.class);
     }
   }
