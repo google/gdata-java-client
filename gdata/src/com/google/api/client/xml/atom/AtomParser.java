@@ -16,15 +16,15 @@
 
 package com.google.api.client.xml.atom;
 
-import com.google.api.client.xml.XmlParser;
+import com.google.api.client.xml.XmlHttpParser;
 
 /**
  * @since 2.2
  * @author Yaniv Inbar
  */
-public final class AtomParser extends XmlParser {
+public final class AtomParser extends XmlHttpParser {
 
-  public String getContentType() {
-    return Atom.CONTENT_TYPE;
+  public AtomParser() {
+    this.contentType = Atom.CONTENT_TYPE;
   }
 }

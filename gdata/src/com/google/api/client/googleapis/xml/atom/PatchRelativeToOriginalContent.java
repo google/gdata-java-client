@@ -29,7 +29,10 @@ import java.io.OutputStream;
 /**
  * @since 2.2
  * @author Yaniv Inbar
+ * @deprecated (scheduled to be removed in version 2.4) Use
+ *             {@link AtomPatchRelativeToOriginalContent}
  */
+@Deprecated
 public final class PatchRelativeToOriginalContent extends XmlContent {
 
   public Object patchedEntry;

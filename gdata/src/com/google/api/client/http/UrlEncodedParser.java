@@ -32,11 +32,28 @@ import java.util.logging.Level;
  * application/x-www-form-urlencoded} as specified in the <a href=
  * "http://www.w3.org/TR/1998/REC-html40-19980424/interact/forms.html#h-17.13.4.1"
  * >HTML 4.0 Specification</a>.
+ * <p>
+ * Sample usage:
+ * 
+ * <pre>
+ * <code>
+ * static void setParser(HttpTransport transport) {
+ *   transport.addParser(new UrlEncodedParser());
+ * }
+ * </code>
+ * </pre>
  * 
  * @since 2.2
  * @author Yaniv Inbar
  */
 public final class UrlEncodedParser implements HttpParser {
+
+  /**
+   * {@code "application/x-www-form-urlencoded"} content type.
+   * 
+   * @since 2.3
+   */
+  public static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
 
   /**
    * Whether to disable response content logging (unless {@link Level#ALL} is
@@ -47,8 +64,15 @@ public final class UrlEncodedParser implements HttpParser {
    */
   public boolean disableContentLogging;
 
+  /**
+   * Content type. Default value is {@link #CONTENT_TYPE}.
+   * 
+   * @since 2.3
+   */
+  public String contentType = CONTENT_TYPE;
+
   public String getContentType() {
-    return "application/x-www-form-urlencoded";
+    return this.contentType;
   }
 
   public <T> T parse(HttpResponse response, Class<T> dataClass)

@@ -17,6 +17,7 @@
 package com.google.api.client.googleapis.json;
 
 import com.google.api.client.json.Json;
+import com.google.api.client.json.JsonHttpContent;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
@@ -43,12 +44,7 @@ import java.io.OutputStream;
  * @since 2.3
  * @author Yaniv Inbar
  */
-public final class JsonCContent extends
-    com.google.api.client.json.JsonHttpContent {
-
-  public JsonCContent() {
-    super(Json.CONTENT_TYPE);
-  }
+public final class JsonCContent extends JsonHttpContent {
 
   @Override
   public void writeTo(OutputStream out) throws IOException {
@@ -56,7 +52,7 @@ public final class JsonCContent extends
         Json.JSON_FACTORY.createJsonGenerator(out, JsonEncoding.UTF8);
     generator.writeStartObject();
     generator.writeFieldName("data");
-    Json.serialize(generator, this.item);
+    Json.serialize(generator, this.data);
     generator.writeEndObject();
     generator.close();
   }

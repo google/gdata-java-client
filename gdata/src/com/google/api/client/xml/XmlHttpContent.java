@@ -14,49 +14,48 @@
  * the License.
  */
 
-package com.google.api.client.xml.atom;
-
-import com.google.api.client.xml.AbstractXmlHttpContent;
+package com.google.api.client.xml;
 
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 
 /**
- * Serializes Atom XML HTTP content based on the data key/value mapping object
- * for an Atom entry.
- * <p>
- * Default value for {@link #contentType} is {@link Atom#CONTENT_TYPE}.
+ * Serializes XML HTTP content based on the data key/value mapping object for an
+ * item.
  * <p>
  * Sample usage:
  * 
  * <pre>
  * <code>
  * static void setContent(HttpRequest request,
- *     XmlNamespaceDictionary namespaceDictionary, Object entry) {
- *   AtomContent content = new AtomContent();
+ *     XmlNamespaceDictionary namespaceDictionary, String elementName,
+ *     Object data) {
+ *   XmlHttpContent content = new XmlHttpContent();
  *   content.namespaceDictionary = namespaceDictionary;
- *   content.entry = entry;
+ *   content.elementName = elementName;
+ *   content.data = data;
  *   request.content = content;
  * }
  * </code>
  * </pre>
  * 
- * @since 2.2
+ * @since 2.3
  * @author Yaniv Inbar
  */
-public class AtomContent extends AbstractXmlHttpContent {
+public class XmlHttpContent extends AbstractXmlHttpContent {
 
-  /** Key/value pair data for the Atom entry. */
-  public Object entry;
+  /**
+   * XML element local name, optionally prefixed by its namespace alias, for
+   * example {@code "atom:entry"}.
+   */
+  public String elementName;
 
-  public AtomContent() {
-    this.contentType = Atom.CONTENT_TYPE;
-  }
+  /** Key/value pair data. */
+  public Object data;
 
   @Override
   public final void writeTo(XmlSerializer serializer) throws IOException {
-    this.namespaceDictionary.serialize(serializer, Atom.ATOM_NAMESPACE,
-        "entry", this.entry);
+    this.namespaceDictionary.serialize(serializer, this.elementName, this.data);
   }
 }

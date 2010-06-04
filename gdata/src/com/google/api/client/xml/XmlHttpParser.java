@@ -29,16 +29,23 @@ import java.io.InputStream;
 /**
  * Abstract XML HTTP parser into an data class of key/value pairs.
  * 
- * @since 2.2
+ * @since 2.3
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4) Use
- *             {@link XmlHttpParser}
  */
-@Deprecated
-public abstract class XmlParser implements HttpParser {
+public class XmlHttpParser implements HttpParser {
+
+  /** {@code "application/xml"} content type. */
+  public static final String CONTENT_TYPE = "application/xml";
+
+  /** Content type. Default value is {@link #CONTENT_TYPE}. */
+  public String contentType = CONTENT_TYPE;
 
   /** XML namespace dictionary. */
   public XmlNamespaceDictionary namespaceDictionary;
+
+  public final String getContentType() {
+    return this.contentType;
+  }
 
   /**
    * Default implementation parses the content of the response into the data

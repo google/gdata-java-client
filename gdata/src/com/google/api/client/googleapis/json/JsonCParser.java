@@ -43,10 +43,6 @@ import java.io.IOException;
  */
 public final class JsonCParser extends JsonHttpParser {
 
-  public JsonCParser() {
-    super(Json.CONTENT_TYPE);
-  }
-
   @Override
   public <T> T parse(HttpResponse response, Class<T> dataClass)
       throws IOException {

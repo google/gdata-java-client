@@ -16,16 +16,35 @@
 
 package com.google.api.client.googleapis.xml.atom;
 
+import com.google.api.client.xml.XmlHttpParser;
 import com.google.api.client.xml.atom.AtomContent;
 
 /**
+ * Serializes Atom XML PATCH HTTP content based on the data key/value mapping
+ * object for an Atom entry.
+ * <p>
+ * Default value for {@link #contentType} is {@link XmlHttpParser#CONTENT_TYPE}.
+ * <p>
+ * Sample usage:
+ * 
+ * <pre>
+ * <code>
+ * static void setContent(HttpRequest request,
+ *     XmlNamespaceDictionary namespaceDictionary, Object entry) {
+ *   AtomPatchContent content = new AtomPatchContent();
+ *   content.namespaceDictionary = namespaceDictionary;
+ *   content.entry = entry;
+ *   request.content = content;
+ * }
+ * </code>
+ * </pre>
+ * 
  * @since 2.2
  * @author Yaniv Inbar
  */
 public final class AtomPatchContent extends AtomContent {
 
-  @Override
-  public String getType() {
-    return "application/xml";
+  public AtomPatchContent() {
+    this.contentType = XmlHttpParser.CONTENT_TYPE;
   }
 }
