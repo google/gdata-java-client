@@ -18,16 +18,25 @@ package com.google.api.client.xml;
 
 import com.google.api.client.http.HttpContent;
 
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
- * Abstract XML HTTP serializer.
+ * Abstract serializer for XML HTTP content based on the data key/value mapping
+ * object for an item.
  * 
- * @since 2.2
+ * @since 2.3
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4) Use
- *             {@link XmlHttpContent}
  */
-@Deprecated
-public abstract class XmlContent implements HttpContent {
+public abstract class AbstractXmlHttpContent implements HttpContent {
+
+  /**
+   * Content type. Default value is {@link XmlHttpParser#CONTENT_TYPE}, though
+   * subclasses may define a different default value.
+   */
+  public String contentType = XmlHttpParser.CONTENT_TYPE;
 
   /** XML namespace dictionary. */
   public XmlNamespaceDictionary namespaceDictionary;
@@ -41,4 +50,16 @@ public abstract class XmlContent implements HttpContent {
   public long getLength() {
     return -1;
   }
+
+  public final String getType() {
+    return this.contentType;
+  }
+
+  public final void writeTo(OutputStream out) throws IOException {
+    XmlSerializer serializer = Xml.createSerializer();
+    serializer.setOutput(out, "UTF-8");
+    writeTo(serializer);
+  }
+
+  protected abstract void writeTo(XmlSerializer serializer) throws IOException;
 }

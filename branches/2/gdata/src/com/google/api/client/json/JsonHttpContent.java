@@ -25,17 +25,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Serializes JSON content based on the data key/value mapping object for an
- * item.
+ * Serializes JSON HTTP content based on the data key/value mapping object for
+ * an item.
  * <p>
  * Sample usage:
  * 
  * <pre>
  * <code>
- * static void setContent(HttpRequest request, Object item) {
- *     JsonHttpContent content = new JsonHttpContent(Json.CONTENT_TYPE);
- *     content.item = item;
- *     request.content = content;
+ * static void setContent(HttpRequest request, Object data) {
+ *   JsonHttpContent content = new JsonHttpContent();
+ *   content.data = data;
+ *   request.content = content;
  * }
  * </code>
  * </pre>
@@ -46,17 +46,11 @@ import java.io.OutputStream;
 public class JsonHttpContent implements HttpContent {
   // TODO: ability to annotate fields as only needed for POST?
 
-  /** Content type, for example {@link Json#CONTENT_TYPE}. */
-  public final String contentType;
+  /** Content type. Default value is {@link Json#CONTENT_TYPE}. */
+  public String contentType = Json.CONTENT_TYPE;
 
-  /**
-   * @param contentType Content type, for example {@link Json#CONTENT_TYPE}
-   */
-  public JsonHttpContent(String contentType) {
-    this.contentType = contentType;
-  }
-
-  public Object item;
+  /** Key/value pair data. */
+  public Object data;
 
   public long getLength() {
     // TODO
@@ -74,7 +68,7 @@ public class JsonHttpContent implements HttpContent {
   public void writeTo(OutputStream out) throws IOException {
     JsonGenerator generator =
         Json.JSON_FACTORY.createJsonGenerator(out, JsonEncoding.UTF8);
-    Json.serialize(generator, this.item);
+    Json.serialize(generator, this.data);
     generator.close();
   }
 }

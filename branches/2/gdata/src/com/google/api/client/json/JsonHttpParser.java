@@ -32,7 +32,7 @@ import java.io.InputStream;
  * <pre>
  * <code>
  * static void setParser(HttpTransport transport) {
- *   transport.addParser(new JsonHttpParser(Json.CONTENT_TYPE));
+ *   transport.addParser(new JsonHttpParser());
  * }
  * </code>
  * </pre>
@@ -42,18 +42,11 @@ import java.io.InputStream;
  */
 public class JsonHttpParser implements HttpParser {
 
-  /** Content type, for example {@link Json#CONTENT_TYPE}. */
-  public final String contentType;
-
-  /**
-   * @param contentType Content type, for example {@link Json#CONTENT_TYPE}
-   */
-  public JsonHttpParser(String contentType) {
-    this.contentType = contentType;
-  }
+  /** Content type.  Default value is {@link Json#CONTENT_TYPE}. */
+  public String contentType = Json.CONTENT_TYPE;
 
   public final String getContentType() {
-    return contentType;
+    return this.contentType;
   }
 
   public <T> T parse(HttpResponse response, Class<T> dataClass)

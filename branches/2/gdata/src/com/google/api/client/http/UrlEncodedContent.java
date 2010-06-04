@@ -29,15 +29,38 @@ import java.util.Map;
  * {@code application/x-www-form-urlencoded} as specified in the <a href=
  * "http://www.w3.org/TR/1998/REC-html40-19980424/interact/forms.html#h-17.13.4.1"
  * >HTML 4.0 Specification</a>.
+ * <p>
+ * Sample usage:
+ * 
+ * <pre>
+ * <code>
+ * static void setContent(HttpRequest request, Object item) {
+ *   UrlEncodedContent content = new UrlEncodedContent();
+ *   content.setData(item);
+ *   request.content = content;
+ * }
+ * </code>
+ * </pre>
  * 
  * @since 2.2
  * @author Yaniv Inbar
  */
 public final class UrlEncodedContent implements HttpContent {
 
+  /**
+   * Content type. Default value is {@link UrlEncodedParser#CONTENT_TYPE}.
+   * 
+   * @since 2.3
+   */
+  public String contentType = UrlEncodedParser.CONTENT_TYPE;
+
   private byte[] content;
 
-  /** Sets the content input from the given key/value data. */
+  /**
+   * Sets the content input from the given key/value data.
+   * 
+   * @param data key/value data (may be {@code null})
+   */
   public void setData(Object data) {
     StringBuilder buf = new StringBuilder();
     boolean first = true;
@@ -71,7 +94,7 @@ public final class UrlEncodedContent implements HttpContent {
   }
 
   public String getType() {
-    return "application/x-www-form-urlencoded";
+    return this.contentType;
   }
 
   public void writeTo(OutputStream out) throws IOException {
