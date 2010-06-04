@@ -195,9 +195,7 @@ public class UserAgentFlow {
      * setting the {@code "access_token"} query parameter.
      */
     public final void authorize(HttpTransport transport) {
-      AccessTokenIntercepter newIntercepter = new AccessTokenIntercepter();
-      newIntercepter.accessToken = this.accessToken;
-      newIntercepter.authorize(transport);
+      AccessTokenIntercepter.authorize(transport, this.accessToken);
     }
   }
 
