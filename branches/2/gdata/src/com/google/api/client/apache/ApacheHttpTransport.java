@@ -21,6 +21,7 @@ import com.google.api.client.http.LowLevelHttpTransport;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -55,6 +56,11 @@ public final class ApacheHttpTransport extends LowLevelHttpTransport {
   }
 
   @Override
+  public boolean supportsHead() {
+    return true;
+  }
+
+  @Override
   public boolean supportsPatch() {
     return true;
   }
@@ -67,6 +73,11 @@ public final class ApacheHttpTransport extends LowLevelHttpTransport {
   @Override
   public ApacheHttpRequest buildGetRequest(String url) {
     return new ApacheHttpRequest(this.httpClient, new HttpGet(url));
+  }
+
+  @Override
+  public ApacheHttpRequest buildHeadRequest(String url) {
+    return new ApacheHttpRequest(this.httpClient, new HttpHead(url));
   }
 
   @Override

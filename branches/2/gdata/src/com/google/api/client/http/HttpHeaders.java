@@ -44,6 +44,14 @@ public class HttpHeaders extends GenericData {
   public String authorization;
 
   /**
+   * {@code "Cache-Control"} header.
+   * 
+   * @since 2.3
+   */
+  @Key("Cache-Control")
+  public String cacheControl;
+
+  /**
    * {@code "Content-Encoding"} header.
    * 
    * @since 2.3
@@ -60,12 +68,12 @@ public class HttpHeaders extends GenericData {
   public String contentLength;
 
   /**
-   * {@code "Content-Type"} header.
+   * {@code "Content-MD5"} header.
    * 
    * @since 2.3
    */
-  @Key("Content-Type")
-  public String contentType;
+  @Key("Content-MD5")
+  public String contentMD5;
 
   /**
    * {@code "Content-Range"} header.
@@ -74,6 +82,22 @@ public class HttpHeaders extends GenericData {
    */
   @Key("Content-Range")
   public String contentRange;
+
+  /**
+   * {@code "Content-Type"} header.
+   * 
+   * @since 2.3
+   */
+  @Key("Content-Type")
+  public String contentType;
+
+  /**
+   * {@code "Date"} header.
+   * 
+   * @since 2.3
+   */
+  @Key("Date")
+  public String date;
 
   /**
    * {@code "ETag"} header.
@@ -114,6 +138,14 @@ public class HttpHeaders extends GenericData {
    */
   @Key("If-Unmodified-Since")
   public String ifUnmodifiedSince;
+
+  /**
+   * {@code "Last-Modified"} header.
+   * 
+   * @since 2.3
+   */
+  @Key("Last-Modified")
+  public String lastModified;
 
   /**
    * {@code "Location"} header.

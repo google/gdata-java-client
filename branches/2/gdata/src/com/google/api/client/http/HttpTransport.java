@@ -169,6 +169,15 @@ public class HttpTransport {
   }
 
   /**
+   * Builds a {@code HEAD} request.
+   * 
+   * @since 2.3
+   */
+  public HttpRequest buildHeadRequest() {
+    return new HttpRequest(this, "HEAD");
+  }
+
+  /**
    * Removes HTTP request execute intercepters of the given class or subclasses.
    * 
    * @param intercepterClass intercepter class

@@ -31,30 +31,86 @@ public abstract class LowLevelHttpTransport {
 
   /**
    * Returns whether this HTTP transport implementation supports the {@code
-   * PATCH} request method.
+   * HEAD} request method.
+   * <p>
+   * Default implementation returns {@code false}.
    */
-  public abstract boolean supportsPatch();
+  public boolean supportsHead() {
+    return false;
+  }
 
-  /** Builds a {@code DELETE} request. */
+  /**
+   * Returns whether this HTTP transport implementation supports the {@code
+   * PATCH} request method.
+   * <p>
+   * Default implementation returns {@code false}.
+   */
+  public boolean supportsPatch() {
+    return false;
+  }
+
+  /**
+   * Builds a {@code DELETE} request.
+   * 
+   * @param url URL
+   * @throws IOException I/O exception
+   */
   public abstract LowLevelHttpRequest buildDeleteRequest(String url)
       throws IOException;
 
-  /** Builds a {@code GET} request. */
+  /**
+   * Builds a {@code GET} request.
+   * 
+   * @param url URL
+   * @throws IOException I/O exception
+   */
   public abstract LowLevelHttpRequest buildGetRequest(String url)
       throws IOException;
 
   /**
+   * Builds a {@code HEAD} request. Won't be called if {@link #supportsHead()}
+   * returns {@code false}.
+   * <p>
+   * Default implementation throws an {@link UnsupportedOperationException}.
+   * 
+   * @param url URL
+   * @throws IOException I/O exception
+   * @since 2.3
+   */
+  @SuppressWarnings("unused")
+  public LowLevelHttpRequest buildHeadRequest(String url) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
    * Builds a {@code PATCH} request. Won't be called if {@link #supportsPatch()}
    * returns {@code false}.
+   * <p>
+   * Default implementation throws an {@link UnsupportedOperationException}.
+   * 
+   * @param url URL
+   * @throws IOException I/O exception
    */
-  public abstract LowLevelHttpRequest buildPatchRequest(String url)
-      throws IOException;
+  @SuppressWarnings("unused")
+  public LowLevelHttpRequest buildPatchRequest(String url) throws IOException {
+    throw new UnsupportedOperationException();
+  }
 
-  /** Builds a {@code POST} request. */
+  /**
+   * Builds a {@code POST} request.
+   * 
+   * @param url URL
+   * @throws IOException I/O exception
+   */
   public abstract LowLevelHttpRequest buildPostRequest(String url)
       throws IOException;
 
-  /** Builds a {@code PUT} request. */
+  /**
+   * Builds a {@code PUT} request.
+   * 
+   * @param url URL
+   * @throws IOException I/O exception
+   */
   public abstract LowLevelHttpRequest buildPutRequest(String url)
       throws IOException;
 }
