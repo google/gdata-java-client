@@ -35,8 +35,8 @@ public final class NetHttpTransport extends LowLevelHttpTransport {
   }
 
   @Override
-  public boolean supportsPatch() {
-    return false;
+  public boolean supportsHead() {
+    return true;
   }
 
   @Override
@@ -50,8 +50,8 @@ public final class NetHttpTransport extends LowLevelHttpTransport {
   }
 
   @Override
-  public NetHttpRequest buildPatchRequest(String url) {
-    throw new UnsupportedOperationException();
+  public NetHttpRequest buildHeadRequest(String url) throws IOException {
+    return new NetHttpRequest("HEAD", url);
   }
 
   @Override

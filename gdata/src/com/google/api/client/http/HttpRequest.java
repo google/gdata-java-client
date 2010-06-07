@@ -56,7 +56,7 @@ public final class HttpRequest {
   /** HTTP request method. */
   public String method;
 
-  // TODO: greatly extend the number of HTTP methods allowed!
+  // TODO: support more HTTP methods?
 
   /** HTTP request URL. */
   public GenericUrl url;
