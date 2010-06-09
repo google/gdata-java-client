@@ -17,7 +17,7 @@
 package com.google.api.client.googleapis.json;
 
 import com.google.api.client.escape.CharEscapers;
-import com.google.api.client.googleapis.GoogleHeaders;
+import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
@@ -125,8 +125,7 @@ public final class DiscoveryDocument {
     GenericUrl discoveryUrl =
         new GenericUrl("http://www.googleapis.com/discovery/0.1/describe");
     discoveryUrl.put("api", api);
-    HttpTransport transport = new HttpTransport();
-    GoogleHeaders.setUp(transport);
+    HttpTransport transport = GoogleTransport.create();
     HttpRequest request = transport.buildGetRequest();
     request.url = discoveryUrl;
     JsonParser parser = JsonCParser.parserForResponse(request.execute());

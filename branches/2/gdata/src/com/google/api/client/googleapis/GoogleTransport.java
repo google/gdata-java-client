@@ -16,21 +16,61 @@
 
 package com.google.api.client.googleapis;
 
-import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 
 /**
  * HTTP transport for Google API's. It's only purpose is to allow for method
  * overriding when the firewall does not accept DELETE, PATCH or PUT methods.
+ * <p>
+ * Warning: scheduled in version 2.4 to no longer extend HttpTransport
  * 
  * @since 2.2
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4) Use
- *             {@link GoogleHeaders#setUp(HttpTransport)}
  */
-@Deprecated
 public class GoogleTransport extends HttpTransport {
+
+  /**
+   * Creates and returns a new HTTP transport with basic default behaviors for
+   * working with Google API's.
+   * <p>
+   * Includes:
+   * <ul>
+   * <li>Setting the {@link HttpTransport#defaultHeaders} to a new instance of
+   * {@link GoogleHeaders}.</li>
+   * <li>Adding a {@link MethodOverrideIntercepter} as the first HTTP execute
+   * intercepter to use HTTP method override for unsupported HTTP methods (calls
+   * {@link MethodOverrideIntercepter#setAsFirstFor(HttpTransport)}.</li>
+   * </ul>
+   * <p>
+   * Sample usage:
+   * 
+   * <pre>
+   * <code>static HttpTransport createTransport() {
+   *   HttpTransport transport = GoogleHeaders.create();
+   *   GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
+   *   headers.setApplicationName("acme-rocket-2");
+   *   headers.gdataVersion = "2";
+   * }
+   * </code>
+   * </pre>
+   * 
+   * @return HTTP transport
+   * @since 2.3
+   */
+  public static HttpTransport create() {
+    HttpTransport transport = new HttpTransport();
+    MethodOverrideIntercepter.setAsFirstFor(transport);
+    transport.defaultHeaders = new GoogleHeaders();
+    return transport;
+  }
+
+  /**
+   * @deprecated (scheduled to be removed in version 2.4) Use {@link #create()}
+   */
+  @Deprecated
+  public GoogleTransport() {
+  }
 
   /**
    * If {@code true}, the GData HTTP client library will use POST to send data
@@ -39,8 +79,7 @@ public class GoogleTransport extends HttpTransport {
    * proxies or gateways that do not handle PUT, PATCH, or DELETE HTTP methods
    * properly. If {@code false}, the regular verbs will be used.
    * 
-   * @deprecated (scheduled to be removed in version 2.4) Use
-   *             {@link GoogleHeaders#setUp(HttpTransport)}
+   * @deprecated (scheduled to be removed in version 2.4) Use {@link #create()}
    */
   @Deprecated
   public static boolean ENABLE_METHOD_OVERRIDE = false;
@@ -50,7 +89,7 @@ public class GoogleTransport extends HttpTransport {
    * "[company-id]-[app-name]-[app-version]"}.
    * 
    * @deprecated (scheduled to be removed in version 2.4) Use
-   *             {@link GoogleHeaders#setUserAgent(HttpHeaders, String)} on
+   *             {@link GoogleHeaders#setApplicationName(String)} on
    *             {@link #defaultHeaders}
    */
   @Deprecated
@@ -62,12 +101,11 @@ public class GoogleTransport extends HttpTransport {
    * @param version version of the Google Data API being access, for example
    *        {@code "2"}.
    * @deprecated (scheduled to be removed in version 2.4) Use
-   *             {@link GoogleHeaders#setGDataVersion(HttpHeaders, String)} on
-   *             {@link #defaultHeaders}
+   *             {@link GoogleHeaders#gdataVersion} on {@link #defaultHeaders}
    */
   @Deprecated
   public void setVersionHeader(String version) {
-    GoogleHeaders.setGDataVersion(this.defaultHeaders, version);
+    this.defaultHeaders.set("GData-Version", version);
   }
 
   /**
@@ -77,7 +115,7 @@ public class GoogleTransport extends HttpTransport {
    * authentication token from the AccountManager.
    * 
    * @deprecated (scheduled to be removed in version 2.4) Use
-   *             {@link GoogleHeaders#setGoogleLogin(HttpHeaders, String)}
+   *             {@link GoogleHeaders#setGoogleLogin(String)}
    */
   @Deprecated
   public void setClientLoginToken(String authToken) {
@@ -122,7 +160,7 @@ public class GoogleTransport extends HttpTransport {
 
   private HttpRequest buildMethodOverride(String method) {
     HttpRequest request = buildPostRequest();
-    GoogleHeaders.setMethodOverride(request.headers, method);
+    request.headers.set("X-HTTP-Method-Override", method);
     return request;
   }
 }

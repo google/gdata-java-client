@@ -18,7 +18,7 @@ package com.google.api.client.googleapis;
 
 import com.google.api.client.escape.PercentEscaper;
 import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.http.HttpTransport;
+import com.google.api.client.util.Key;
 
 /**
  * HTTP headers for Google API's.
@@ -26,29 +26,82 @@ import com.google.api.client.http.HttpTransport;
  * @since 2.2
  * @author Yaniv Inbar
  */
-public class GoogleHeaders {
+public class GoogleHeaders extends HttpHeaders {
 
-  private static final PercentEscaper SLUG_ESCAPER =
+  /**
+   * Escaper for the {@link #slug} header.
+   * 
+   * @since 2.3
+   */
+  public static final PercentEscaper SLUG_ESCAPER =
       new PercentEscaper(" !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~", false);
 
   /**
-   * Sets up the given HTTP transport with basic default behaviors for working
-   * with Google API's.
+   * {@code "GData-Version"} header.
    * 
-   * @param transport HTTP transport
    * @since 2.3
    */
-  public static void setUp(HttpTransport transport) {
-    MethodOverrideIntercepter.setFor(transport);
-  }
+  @Key("GData-Version")
+  public String gdataVersion;
+
+  /**
+   * Escaped {@code "Slug"} header value, which must be escaped using
+   * {@link #SLUG_ESCAPER}.
+   * 
+   * @see #setSlugFromFileName(String)
+   * @since 2.3
+   */
+  @Key("Slug")
+  public String slug;
+
+  /**
+   * {@code "X-GData-Client"} header.
+   * 
+   * @since 2.3
+   */
+  @Key("X-GData-Client")
+  public String gdataClient;
+
+  /**
+   * {@code "X-GData-Key"} header, which must be of the form {@code
+   * "key=[developerId]"}.
+   * 
+   * @see #setDeveloperId(String)
+   * @since 2.3
+   */
+  @Key("X-GData-Key")
+  public String gdataKey;
+
+  /**
+   * {@code "X-HTTP-Method-Override"} header.
+   * 
+   * @since 2.3
+   */
+  @Key("X-HTTP-Method-Override")
+  public String methodOverride;
 
   /**
    * Sets the {@code "Slug"} header for the given file name into the given HTTP
    * headers, properly escaping the header value. See <a
    * href="http://tools.ietf.org/html/rfc5023#section-9.7">The Slug Header</a>.
+   * 
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link #setSlugFromFileName(String)}
    */
+  @Deprecated
   public static void setSlug(HttpHeaders headers, String fileName) {
     headers.set("Slug", SLUG_ESCAPER.escape(fileName));
+  }
+
+  /**
+   * Sets the {@code "Slug"} header for the given file name, properly escaping
+   * the header value. See <a
+   * href="http://tools.ietf.org/html/rfc5023#section-9.7">The Slug Header</a>.
+   * 
+   * @since 2.3
+   */
+  public void setSlugFromFileName(String fileName) {
+    this.slug = SLUG_ESCAPER.escape(fileName);
   }
 
   /**
@@ -58,39 +111,17 @@ public class GoogleHeaders {
    * 
    * @since 2.3
    */
-  public static void setUserAgent(HttpHeaders headers, String applicationName) {
-    headers.userAgent = applicationName;
+  public void setApplicationName(String applicationName) {
+    this.userAgent = applicationName;
   }
 
   /**
-   * Sets the {@code "GData-Version"} header for the given version into the
-   * given HTTP headers.
+   * Sets the {@link #gdataKey} header using the given developer ID.
    * 
    * @since 2.3
    */
-  public static void setGDataVersion(HttpHeaders headers, String version) {
-    headers.set("GData-Version", version);
-  }
-
-  /**
-   * Sets the {@code "GData-Key"} header for the given developer ID into the
-   * given HTTP headers.
-   * 
-   * @since 2.3
-   */
-  public static void setGDataKey(HttpHeaders headers, String developerId) {
-    headers.set("X-GData-Key", "key=" + developerId);
-  }
-
-  /**
-   * Sets the {@code "GData-Version"} header for the given application name of
-   * the form {@code "[company-id]-[app-name]-[app-version]"} into the given
-   * HTTP headers.
-   * 
-   * @since 2.3
-   */
-  public static void setGDataClient(HttpHeaders headers, String applicationName) {
-    headers.set("X-GData-Client", applicationName);
+  public void setDeveloperId(String developerId) {
+    this.gdataKey = "key=" + developerId;
   }
 
   /**
@@ -99,8 +130,8 @@ public class GoogleHeaders {
    * 
    * @since 2.3
    */
-  public static void setGoogleLogin(HttpHeaders headers, String authToken) {
-    headers.authorization = getGoogleLoginValue(authToken);
+  public void setGoogleLogin(String authToken) {
+    this.authorization = getGoogleLoginValue(authToken);
   }
 
   /**
@@ -111,15 +142,5 @@ public class GoogleHeaders {
    */
   public static String getGoogleLoginValue(String authToken) {
     return "GoogleLogin auth=" + authToken;
-  }
-
-  /**
-   * Sets the {@code "X-HTTP-Method-Override"} header for the given HTTP method
-   * into the given HTTP headers.
-   * 
-   * @since 2.3
-   */
-  public static void setMethodOverride(HttpHeaders headers, String method) {
-    headers.set("X-HTTP-Method-Override", method);
   }
 }

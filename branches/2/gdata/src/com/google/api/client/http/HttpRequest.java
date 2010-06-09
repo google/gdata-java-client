@@ -35,7 +35,13 @@ public final class HttpRequest {
   /** User agent suffix for all requests. */
   private static final String USER_AGENT_SUFFIX = "Google-API-Java/2.3.0-alpha";
 
-  /** HTTP request headers. */
+  /**
+   * HTTP request headers.
+   * <p>
+   * Its value is initialized by calling {@code clone()} on the
+   * {@link HttpTransport#defaultHeaders}. Therefore, it is initialized to be of
+   * the same Java class, i.e. of the same {@link Object#getClass()}.
+   */
   public HttpHeaders headers;
 
   /**
