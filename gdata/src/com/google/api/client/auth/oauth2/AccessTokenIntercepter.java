@@ -43,7 +43,7 @@ public final class AccessTokenIntercepter implements HttpExecuteIntercepter {
   public void authorize(HttpTransport transport) {
     transport.removeIntercepters(AccessTokenIntercepter.class);
     AccessTokenIntercepter newIntercepter = new AccessTokenIntercepter();
-    transport.intercepters.add(0, newIntercepter);
+    transport.intercepters.add(newIntercepter);
     newIntercepter.accessToken = this.accessToken;
   }
 

@@ -54,7 +54,7 @@ public class MethodOverrideIntercepter implements HttpExecuteIntercepter {
     String method = request.method;
     if (overriddenMethods.contains(method)) {
       request.method = "POST";
-      GoogleHeaders.setMethodOverride(request.headers, method);
+      request.headers.set("X-HTTP-Method-Override", method);
     }
   }
 
@@ -62,7 +62,7 @@ public class MethodOverrideIntercepter implements HttpExecuteIntercepter {
    * Sets this as the first HTTP request execute intercepter for the given HTTP
    * transport.
    */
-  public static void setFor(HttpTransport transport) {
+  public static void setAsFirstFor(HttpTransport transport) {
     transport.removeIntercepters(MethodOverrideIntercepter.class);
     transport.intercepters.add(0, new MethodOverrideIntercepter());
   }

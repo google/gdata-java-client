@@ -16,6 +16,7 @@
 
 package com.google.api.client.http;
 
+import com.google.api.client.util.ClassInfo;
 import com.google.api.client.util.Strings;
 
 import java.io.ByteArrayInputStream;
@@ -50,10 +51,15 @@ public final class HttpResponse {
   public final String contentType;
 
   /**
-   * HTTP headers. Note that only if a header name is used for multiple headers,
-   * only the last one is retained.
+   * HTTP headers.
+   * <p>
+   * If a header name is used for multiple headers, only the last one is
+   * retained.
+   * <p>
+   * This field's value is instantiated using the same class as that of the
+   * {@link HttpTransport#defaultHeaders}.
    */
-  public final HttpHeaders headers = new HttpHeaders();
+  public final HttpHeaders headers;
 
   /** Whether received a successful status code {@code >= 200 && < 300}. */
   public final boolean isSuccessStatusCode;
@@ -111,7 +117,9 @@ public final class HttpResponse {
     }
     // headers
     int size = response.getHeaderCount();
-    HttpHeaders headers = this.headers;
+    HttpHeaders headers =
+        this.headers =
+            ClassInfo.newInstance(transport.defaultHeaders.getClass());
     for (int i = 0; i < size; i++) {
       String headerName = response.getHeaderName(i);
       String headerValue = response.getHeaderValue(i);

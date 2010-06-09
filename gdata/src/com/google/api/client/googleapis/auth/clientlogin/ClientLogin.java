@@ -69,7 +69,8 @@ public final class ClientLogin {
      * authentication token.
      */
     public void setAuthorizationHeader(HttpTransport googleTransport) {
-      GoogleHeaders.setGoogleLogin(googleTransport.defaultHeaders, this.auth);
+      googleTransport.defaultHeaders.authorization =
+          GoogleHeaders.getGoogleLoginValue(this.auth);
     }
   }
 
