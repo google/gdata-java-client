@@ -105,7 +105,7 @@ public final class ClientLogin {
     HttpRequest request = transport.buildPostRequest();
     request.setUrl("https://www.google.com/accounts/ClientLogin");
     UrlEncodedContent content = new UrlEncodedContent();
-    content.setData(this);
+    content.data = this;
     request.disableContentLogging = true;
     request.content = content;
     return request.execute().parseAs(Response.class);

@@ -16,21 +16,21 @@
 
 package com.google.api.client.auth.oauth2;
 
-import com.google.api.client.http.HttpTransport;
+import com.google.api.client.util.GenericData;
 import com.google.api.client.util.Key;
 
 /**
  * OAuth 2.0 access token success response as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-05#section-3.3.2.1"
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-06#section-2.3.2.1"
  * >Access Token Response</a>.
  * <p>
- * Use {@link #authorize(HttpTransport)} to authorize HTTP requests based on the
- * {@link #accessToken}.
+ * Use {@link AccessProtectedResource} to authorize executed HTTP requests based
+ * on the {@link #accessToken}.
  * 
  * @since 2.3
  * @author Yaniv Inbar
  */
-public class AccessTokenResponse {
+public class AccessTokenResponse extends GenericData {
 
   /** (REQUIRED) The access token issued by the authorization server. */
   @Key("access_token")
@@ -44,20 +44,13 @@ public class AccessTokenResponse {
 
   /**
    * (OPTIONAL) The refresh token used to obtain new access tokens using the
-   * same end-user access grant as described in Section 4.
+   * same end-user access grant.
    */
   @Key("refresh_token")
   public String refreshToken;
 
   /**
-   * (REQUIRED if requested by the client) The corresponding access token secret
-   * as requested by the client.
-   */
-  @Key("access_token_secret")
-  public String accessTokenSecret;
-
-  /**
-   * (OPTIONAL) The scope of the access token as a list of space- delimited
+   * (OPTIONAL) The scope of the access token as a list of space-delimited
    * strings. The value of the "scope" parameter is defined by the authorization
    * server. If the value contains multiple space-delimited strings, their order
    * does not matter, and each string adds an additional access range to the
@@ -65,12 +58,4 @@ public class AccessTokenResponse {
    */
   @Key
   public String scope;
-
-  /**
-   * Uses the value of the {@link #accessToken} to authorize HTTP requests by
-   * setting the {@code "access_token"} query parameter.
-   */
-  public final void authorize(HttpTransport transport) {
-    AccessTokenIntercepter.authorize(transport, this.accessToken);
-  }
 }

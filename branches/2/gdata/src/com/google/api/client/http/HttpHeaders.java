@@ -35,6 +35,14 @@ import java.util.HashMap;
  */
 public class HttpHeaders extends GenericData {
 
+  /**
+   * {@code "Accept"} header.
+   * 
+   * @since 2.3
+   */
+  @Key("Accept")
+  public String accept;
+
   /** {@code "Accept-Encoding"} header. */
   @Key("Accept-Encoding")
   public String acceptEncoding;

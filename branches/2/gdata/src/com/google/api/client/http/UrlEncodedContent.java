@@ -21,7 +21,6 @@ import com.google.api.client.util.DataUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -54,35 +53,24 @@ public final class UrlEncodedContent implements HttpContent {
    */
   public String contentType = UrlEncodedParser.CONTENT_TYPE;
 
+  /**
+   * Key/value data or {@code null} for none.
+   * 
+   * @since 2.3
+   */
+  public Object data;
+
   private byte[] content;
 
   /**
    * Sets the content input from the given key/value data.
    * 
    * @param data key/value data (may be {@code null})
+   * @deprecated (scheduled to be removed in version 2.4) Use {@link #data}
    */
+  @Deprecated
   public void setData(Object data) {
-    StringBuilder buf = new StringBuilder();
-    boolean first = true;
-    for (Map.Entry<String, Object> nameValueEntry : DataUtil.mapOf(data)
-        .entrySet()) {
-      Object value = nameValueEntry.getValue();
-      if (value != null) {
-        if (first) {
-          first = false;
-        } else {
-          buf.append('&');
-        }
-        String name = nameValueEntry.getKey();
-        buf.append(CharEscapers.escapeUri(name)).append('=').append(
-            CharEscapers.escapeUri(value.toString()));
-      }
-    }
-    try {
-      this.content = buf.toString().getBytes("UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      throw new AssertionError(e);
-    }
+    this.data = data;
   }
 
   public String getEncoding() {
@@ -98,6 +86,22 @@ public final class UrlEncodedContent implements HttpContent {
   }
 
   public void writeTo(OutputStream out) throws IOException {
-    out.write(this.content);
+    StringBuilder buf = new StringBuilder();
+    boolean first = true;
+    for (Map.Entry<String, Object> nameValueEntry : DataUtil.mapOf(this.data)
+        .entrySet()) {
+      Object value = nameValueEntry.getValue();
+      if (value != null) {
+        if (first) {
+          first = false;
+        } else {
+          buf.append('&');
+        }
+        String name = nameValueEntry.getKey();
+        buf.append(CharEscapers.escapeUri(name)).append('=').append(
+            CharEscapers.escapeUri(value.toString()));
+      }
+    }
+    out.write(buf.toString().getBytes("UTF-8"));
   }
 }

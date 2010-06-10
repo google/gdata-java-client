@@ -17,7 +17,6 @@
 package com.google.api.client.auth.oauth2;
 
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.UrlEncodedParser;
 import com.google.api.client.util.GenericData;
 import com.google.api.client.util.Key;
@@ -27,7 +26,7 @@ import java.net.URISyntaxException;
 
 /**
  * OAuth 2.0 User Agent flow as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-05#section-3.5"
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-06#section-2.6"
  * >User-Agent Flow</a>.
  * 
  * @since 2.3
@@ -65,7 +64,7 @@ public class UserAgentFlow {
     @Key
     public final String type = "user_agent";
 
-    /** (REQUIRED) The client identifier as described in Section 3.1. */
+    /** (REQUIRED) The client identifier. */
     @Key("client_id")
     public String clientId;
 
@@ -113,18 +112,13 @@ public class UserAgentFlow {
      */
     @Key
     public Boolean immediate;
-
-    /**
-     * (OPTIONAL) The access token secret type as described by Section 5.3. If
-     * omitted, the authorization server will issue a bearer token (an access
-     * token without a matching secret) as described by Section 5.2.
-     */
-    @Key("secret_type")
-    public String secretType;
   }
 
   /**
    * Parses the redirect URL after end user grants or denies authorization.
+   * <p>
+   * Use {@link AccessProtectedResource} to authorize executed HTTP requests
+   * based on the {@link #accessToken}.
    * <p>
    * Sample usage:
    * 
@@ -135,7 +129,8 @@ public class UserAgentFlow {
    *   if (response.error != null) {
    *     throw new RuntimeException("Authorization denied");
    *   }
-   *   response.authorize(transport);
+   *   AccessProtectedResource.usingAuthorizationHeader(transport,
+   *       response.accessToken);
    * }
    * </code>
    * </pre>
@@ -171,13 +166,6 @@ public class UserAgentFlow {
     public String state;
 
     /**
-     * (REQUIRED if requested by the client) The corresponding access token
-     * secret as requested by the client.
-     */
-    @Key("access_token_secret")
-    public String accessTokenSecret;
-
-    /**
      * @param encodedRedirectUrl encoded redirect URL
      * @throws IllegalArgumentException URI syntax exception
      */
@@ -188,14 +176,6 @@ public class UserAgentFlow {
       } catch (URISyntaxException e) {
         throw new IllegalArgumentException(e);
       }
-    }
-
-    /**
-     * Uses the value of the {@link #accessToken} to authorize HTTP requests by
-     * setting the {@code "access_token"} query parameter.
-     */
-    public final void authorize(HttpTransport transport) {
-      AccessTokenIntercepter.authorize(transport, this.accessToken);
     }
   }
 
