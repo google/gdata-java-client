@@ -20,7 +20,7 @@ import com.google.api.client.util.Key;
 
 /**
  * OAuth 2.0 access token error response as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-05#section-3.3.2.2"
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-06#section-2.3.2.2"
  * >Error Response</a>.
  * 
  * @since 2.3

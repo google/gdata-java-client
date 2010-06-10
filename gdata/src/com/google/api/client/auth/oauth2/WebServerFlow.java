@@ -17,29 +17,60 @@
 package com.google.api.client.auth.oauth2;
 
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpParser;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.UrlEncodedContent;
-import com.google.api.client.http.UrlEncodedParser;
-import com.google.api.client.util.DataUtil;
 import com.google.api.client.util.Key;
-
-import java.io.IOException;
 
 /**
  * OAuth 2.0 Web Server flow as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-05#section-3.6">Web
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-06#section-2.5">Web
  * Server Flow</a>.
  * <p>
- * The Web Server flow starts with redirecting the web browser to the
- * authorization web page. Use {@link AuthorizationUrl} to construct that URL.
+ * Sample usage:
+ * 
+ * <pre>
+ * <code>@Override
+ * public void doGet(HttpServletRequest request, HttpServletResponse response)
+ *     throws IOException {
+ *   PrintWriter writer = response.getWriter();
+ *   HttpTransport transport = new HttpTransport();
+ *   StringBuffer fullUrlBuf = request.getRequestURL();
+ *   if (request.getQueryString() != null) {
+ *     fullUrlBuf.append('?').append(request.getQueryString());
+ *   }
+ *   String fullUrl = fullUrlBuf.toString();
+ *   AuthorizationResponseUrl responseUrl =
+ *       new AuthorizationResponseUrl(fullUrl);
+ *   // check for user-denied error
+ *   if (responseUrl.error != null) {
+ *     writer.println("Authorization denied.");
+ *     return;
+ *   }
+ *   // if no user-granted code yet, then redirect to user auth page
+ *   if (responseUrl.code == null) {
+ *     AuthorizationUrl authorizeUrl = new AuthorizationUrl(AUTHORIZE_URL);
+ *     authorizeUrl.clientId = CLIENT_ID;
+ *     authorizeUrl.redirectUri = request.getRequestURL().toString();
+ *     authorizeUrl.scope = SCOPE;
+ *     response.sendRedirect(authorizeUrl.build());
+ *     return;
+ *   }
+ *   // have user-granted code, so request access token
+ *   AccessTokenRequest tokenRequest =
+ *       new AccessTokenRequest(ACCESS_TOKEN_URL);
+ *   tokenRequest.clientId = CLIENT_ID;
+ *   tokenRequest.redirectUri = request.getRequestURL().toString();
+ *   tokenRequest.clientSecret = CLIENT_SECRET;
+ *   tokenRequest.code = responseUrl.code;
+ *   AccessTokenResponse tokenResponse = tokenRequest.execute();
+ *   tokenResponse.authorize(transport);
+ *   // ... run HTTP code using transport ...
+ * }
+ * </code>
+ * </pre>
  * 
  * @since 2.3
  * @author Yaniv Inbar
  */
-public class WebServerFlow {
+public final class WebServerFlow {
 
   /**
    * URL builder for an authorization web page to allow the end user to
@@ -50,21 +81,6 @@ public class WebServerFlow {
    * request, they will be redirected to the {@link #redirectUri} with query
    * parameters set by the authorization server. Use
    * {@link AuthorizationResponseUrl} to parse the redirect URL.
-   * 
-   * <p>
-   * Sample usage:
-   * 
-   * <pre>
-   * <code>static String getAuthorizationUrl(String authorizationServer,
-   *     String clientId, String redirectUri, String scope) {
-   *   AuthorizationUrl result = new AuthorizationUrl(authorizationServer);
-   *   result.clientId = clientId;
-   *   result.redirectUri = redirectUri;
-   *   result.scope = scope;
-   *   return result.build();
-   * }
-   * </code>
-   * </pre>
    */
   public static class AuthorizationUrl extends GenericUrl {
 
@@ -79,7 +95,7 @@ public class WebServerFlow {
     @Key
     public final String type = "web_server";
 
-    /** (REQUIRED) The client identifier as described in Section 3.1. */
+    /** (REQUIRED) The client identifier. */
     @Key("client_id")
     public String clientId;
 
@@ -129,7 +145,6 @@ public class WebServerFlow {
     public Boolean immediate;
   }
 
-
   /**
    * Parses the redirect URL after end user grants or denies authorization.
    * <p>
@@ -176,22 +191,7 @@ public class WebServerFlow {
    * {@link #code}, and {@link #redirectUri}. Call {@link #execute()} to execute
    * the request.
    */
-  public static class AccessTokenRequest {
-
-    /** (REQUIRED) The parameter value MUST be set to "web_server". */
-    @Key
-    public final String type = "web_server";
-
-    /** (REQUIRED) The client identifier as described in Section 3.1. */
-    @Key("client_id")
-    public String clientId;
-
-    /**
-     * (REQUIRED if the client identifier has a matching secret) The client
-     * secret as described in Section 3.1.
-     */
-    @Key("client_secret")
-    public String clientSecret;
+  public static class AccessTokenRequest extends AbstractAccessTokenRequest {
 
     /**
      * (REQUIRED) The verification code received from the authorization server.
@@ -204,73 +204,10 @@ public class WebServerFlow {
     public String redirectUri;
 
     /**
-     * (OPTIONAL) The access token secret type as described by Section 5.3. If
-     * omitted, the authorization server will issue a bearer token (an access
-     * token without a matching secret) as described by Section 5.2.
-     */
-    @Key("secret_type")
-    public String secretType;
-
-    /**
-     * (OPTIONAL) The response format requested by the client. Value MUST be one
-     * of "json", "xml", or "form" or {@code null } for "json". Default value is
-     * {@code "form"}.
-     */
-    @Key
-    public String format = "form";
-
-    /**
-     * {@code true} for an HTTP GET request or the default {@code false} for an
-     * HTTP POST request.
-     */
-    public boolean useHttpGetRequest;
-
-    /** Encoded authorization server URL. */
-    public final String encodedAuthorizationServerUrl;
-
-    /**
-     * HTTP parser used to parse the response from the server. Default value is
-     * to construct {@link UrlEncodedParser}.
-     */
-    public HttpParser parser = new UrlEncodedParser();
-
-    /**
      * @param encodedAuthorizationServerUrl encoded authorization server URL
      */
     public AccessTokenRequest(String encodedAuthorizationServerUrl) {
-      this.encodedAuthorizationServerUrl = encodedAuthorizationServerUrl;
-    }
-
-    /**
-     * Executes request for an access token, and returns the parsed access token
-     * response.
-     * 
-     * @return parsed access token response
-     * @throws HttpResponseException for an HTTP error response; use
-     *         {@link AccessTokenErrorResponse} to parse
-     *         {@link HttpResponseException#response}
-     * @throws IOException I/O exception
-     */
-    public AccessTokenResponse execute() throws IOException {
-      HttpTransport transport = new HttpTransport();
-      transport.addParser(this.parser);
-      boolean useHttpGetRequest = this.useHttpGetRequest;
-      HttpRequest request;
-      if (useHttpGetRequest) {
-        request = transport.buildGetRequest();
-      } else {
-        request = transport.buildPostRequest();
-      }
-      GenericUrl url = new GenericUrl(this.encodedAuthorizationServerUrl);
-      if (useHttpGetRequest) {
-        url.putAll(DataUtil.mapOf(this));
-      } else {
-        UrlEncodedContent content = new UrlEncodedContent();
-        content.setData(this);
-        request.content = content;
-      }
-      request.url = url;
-      return request.execute().parseAs(AccessTokenResponse.class);
+      super(encodedAuthorizationServerUrl, "web_server");
     }
   }
 
