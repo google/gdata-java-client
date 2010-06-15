@@ -52,7 +52,7 @@ final class ApacheHttpRequest extends LowLevelHttpRequest {
   }
 
   @Override
-  public void setContent(HttpContent content) {
+  public void setContent(HttpContent content) throws IOException {
     ContentEntity entity = new ContentEntity(content.getLength(), content);
     entity.setContentEncoding(content.getEncoding());
     entity.setContentType(content.getType());

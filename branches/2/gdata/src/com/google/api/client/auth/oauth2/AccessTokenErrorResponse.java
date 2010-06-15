@@ -20,18 +20,15 @@ import com.google.api.client.util.Key;
 
 /**
  * OAuth 2.0 access token error response as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-06#section-2.3.2.2"
- * >Error Response</a>.
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.6" >Error
+ * Response</a>.
  * 
  * @since 2.3
  * @author Yaniv Inbar
  */
 public class AccessTokenErrorResponse {
 
-  /**
-   * (REQUIRED) The parameter value MUST be set to one of the values specified
-   * by each flow.
-   */
+  /** (REQUIRED) The error code. */
   @Key
   public String error;
 }
