@@ -19,22 +19,27 @@ package com.google.api.client.auth.oauth2;
 import com.google.api.client.util.Key;
 
 /**
- * OAuth 2.0 request to refresh an access token as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.4"
- * >Refreshing an Access Token</a>.
+ * OAuth 2.0 Web Server Flow: request an access token based on a verification
+ * code as specified in <a
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.1"
+ * >Verification Code</a>.
  * <p>
- * The {@link #clientId}, {@link #clientSecret}, and {@link #refreshToken}
- * fields are required. Call {@link #execute()} to execute the request.
+ * The {@link #clientId}, {@link #clientSecret}, {@link #code}, and
+ * {@link #redirectUri} fields are required. Call {@link #execute()} to execute
+ * the request.
  * <p>
  * Sample usage:
  * 
  * <pre>
- * <code>static void requestAccessToken(String refreshToken) throws IOException {
+ * <code>static void requestAccessToken(String code, String redirectUrl)
+ *     throws IOException {
  *   try {
- *     RefreshAccessTokenRequest request = new RefreshAccessTokenRequest();
+ *     VerificationCodeAccessTokenRequest request
+ *         = new VerificationCodeAccessTokenRequest();
  *     request.clientId = CLIENT_ID;
  *     request.clientSecret = CLIENT_SECRET;
- *     request.refreshToken = refreshToken;
+ *     request.code = code;
+ *     request.redirectUri = redirectUrl;
  *     AccessTokenResponse response =
  *         request.execute().parseAs(AccessTokenResponse.class);
  *     System.out.println("Access token: " + response.accessToken);
@@ -49,19 +54,22 @@ import com.google.api.client.util.Key;
  * @since 2.3
  * @author Yaniv Inbar
  */
-public class RefreshAccessTokenRequest extends AccessTokenRequest {
+public class VerificationCodeAccessTokenRequest extends AccessTokenRequest {
 
   /**
-   * (REQUIRED) The refresh token associated with the access token to be
-   * refreshed.
+   * (REQUIRED) The verification code received from the authorization server.
    */
-  @Key("refresh_token")
-  public String refreshToken;
+  @Key
+  public String code;
+
+  /** (REQUIRED) The redirection URI used in the initial request. */
+  @Key("redirect_uri")
+  public String redirectUri;
 
   /**
    * @param encodedAuthorizationServerUrl encoded authorization server URL
    */
-  public RefreshAccessTokenRequest(String encodedAuthorizationServerUrl) {
+  public VerificationCodeAccessTokenRequest(String encodedAuthorizationServerUrl) {
     super(encodedAuthorizationServerUrl);
   }
 }

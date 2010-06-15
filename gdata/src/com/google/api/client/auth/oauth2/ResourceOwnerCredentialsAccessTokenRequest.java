@@ -19,22 +19,27 @@ package com.google.api.client.auth.oauth2;
 import com.google.api.client.util.Key;
 
 /**
- * OAuth 2.0 request to refresh an access token as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.4"
- * >Refreshing an Access Token</a>.
+ * OAuth 2.0 Username and Password Flow: request an access token based on
+ * resource owner credentials used in the as specified in <a
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.2"
+ * >Resource Owner Credentials</a>.
  * <p>
- * The {@link #clientId}, {@link #clientSecret}, and {@link #refreshToken}
- * fields are required. Call {@link #execute()} to execute the request.
+ * The {@link #clientId}, {@link #clientSecret}, {@link #username}, and
+ * {@link #password} fields are required. Call {@link #execute()} to execute the
+ * request.
  * <p>
  * Sample usage:
  * 
  * <pre>
- * <code>static void requestAccessToken(String refreshToken) throws IOException {
+ * <code>static void requestAccessToken(String username, String password)
+ *     throws IOException {
  *   try {
- *     RefreshAccessTokenRequest request = new RefreshAccessTokenRequest();
+ *     ResourceOwnerCredentialsAccessTokenRequest request
+ *         = new ResourceOwnerCredentialsAccessTokenRequest();
  *     request.clientId = CLIENT_ID;
  *     request.clientSecret = CLIENT_SECRET;
- *     request.refreshToken = refreshToken;
+ *     request.username = username;
+ *     request.password = password;
  *     AccessTokenResponse response =
  *         request.execute().parseAs(AccessTokenResponse.class);
  *     System.out.println("Access token: " + response.accessToken);
@@ -49,19 +54,30 @@ import com.google.api.client.util.Key;
  * @since 2.3
  * @author Yaniv Inbar
  */
-public class RefreshAccessTokenRequest extends AccessTokenRequest {
+public class ResourceOwnerCredentialsAccessTokenRequest extends
+    AccessTokenRequest {
+
+  /** (REQUIRED) The end-user's username. */
+  @Key
+  public String username;
+
+  /** (REQUIRED) The end-user's password. */
+  public String password;
 
   /**
-   * (REQUIRED) The refresh token associated with the access token to be
-   * refreshed.
+   * (OPTIONAL) The scope of the access request expressed as a list of
+   * space-delimited strings. The value of the "scope" parameter is defined by
+   * the authorization server. If the value contains multiple space-delimited
+   * strings, their order does not matter, and each string adds an additional
+   * access range to the requested scope.
    */
-  @Key("refresh_token")
-  public String refreshToken;
+  public String scope;
 
   /**
    * @param encodedAuthorizationServerUrl encoded authorization server URL
    */
-  public RefreshAccessTokenRequest(String encodedAuthorizationServerUrl) {
+  public ResourceOwnerCredentialsAccessTokenRequest(
+      String encodedAuthorizationServerUrl) {
     super(encodedAuthorizationServerUrl);
   }
 }

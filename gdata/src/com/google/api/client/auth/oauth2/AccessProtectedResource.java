@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * OAuth 2.0 methods for specifying the access token parameter as specified in
- * <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-06#section-4">
+ * <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-6">
  * Accessing a Protected Resource</a>.
  * 
  * @author Yaniv Inbar

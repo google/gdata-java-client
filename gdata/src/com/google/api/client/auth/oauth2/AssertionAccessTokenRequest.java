@@ -19,22 +19,26 @@ package com.google.api.client.auth.oauth2;
 import com.google.api.client.util.Key;
 
 /**
- * OAuth 2.0 request to refresh an access token as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.4"
- * >Refreshing an Access Token</a>.
+ * OAuth 2.0 Assertion Flow: request an access token based on as assertion as
+ * specified in <a
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.3"
+ * >Assertion</a>.
  * <p>
- * The {@link #clientId}, {@link #clientSecret}, and {@link #refreshToken}
- * fields are required. Call {@link #execute()} to execute the request.
+ * The {@link #clientId}, {@link #clientSecret}, {@link #assertionType}, and
+ * {@link #assertion} fields are required. Call {@link #execute()} to execute
+ * the request.
  * <p>
  * Sample usage:
  * 
  * <pre>
- * <code>static void requestAccessToken(String refreshToken) throws IOException {
+ * <code>static void requestAccessToken(String assertion) throws IOException {
  *   try {
- *     RefreshAccessTokenRequest request = new RefreshAccessTokenRequest();
+ *     AssertionAccessTokenRequest request
+ *         = new AssertionAccessTokenRequest();
  *     request.clientId = CLIENT_ID;
  *     request.clientSecret = CLIENT_SECRET;
- *     request.refreshToken = refreshToken;
+ *     request.assertionType = ASSERTION_TYPE;
+ *     request.assertion = assertion;
  *     AccessTokenResponse response =
  *         request.execute().parseAs(AccessTokenResponse.class);
  *     System.out.println("Access token: " + response.accessToken);
@@ -49,19 +53,32 @@ import com.google.api.client.util.Key;
  * @since 2.3
  * @author Yaniv Inbar
  */
-public class RefreshAccessTokenRequest extends AccessTokenRequest {
+public class AssertionAccessTokenRequest extends AccessTokenRequest {
 
   /**
-   * (REQUIRED) The refresh token associated with the access token to be
-   * refreshed.
+   * (REQUIRED) The format of the assertion as defined by the authorization
+   * server. The value MUST be an absolute URI.
    */
-  @Key("refresh_token")
-  public String refreshToken;
+  @Key("assertion_type")
+  public String assertionType;
+
+  /** (REQUIRED) The assertion. */
+  @Key
+  public String assertion;
+
+  /**
+   * (OPTIONAL) The scope of the access request expressed as a list of
+   * space-delimited strings. The value of the "scope" parameter is defined by
+   * the authorization server. If the value contains multiple space-delimited
+   * strings, their order does not matter, and each string adds an additional
+   * access range to the requested scope.
+   */
+  public String scope;
 
   /**
    * @param encodedAuthorizationServerUrl encoded authorization server URL
    */
-  public RefreshAccessTokenRequest(String encodedAuthorizationServerUrl) {
+  public AssertionAccessTokenRequest(String encodedAuthorizationServerUrl) {
     super(encodedAuthorizationServerUrl);
   }
 }

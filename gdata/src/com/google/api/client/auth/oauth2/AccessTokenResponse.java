@@ -20,12 +20,14 @@ import com.google.api.client.util.GenericData;
 import com.google.api.client.util.Key;
 
 /**
- * OAuth 2.0 access token success response as specified in <a
- * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-06#section-2.3.2.1"
+ * OAuth 2.0 access token success response content as specified in <a
+ * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.5"
  * >Access Token Response</a>.
  * <p>
  * Use {@link AccessProtectedResource} to authorize executed HTTP requests based
- * on the {@link #accessToken}.
+ * on the {@link #accessToken}, for example {@code
+ * AccessProtectedResource.usingAuthorizationHeader(transport,
+ * response.accessToken)}.
  * 
  * @since 2.3
  * @author Yaniv Inbar
