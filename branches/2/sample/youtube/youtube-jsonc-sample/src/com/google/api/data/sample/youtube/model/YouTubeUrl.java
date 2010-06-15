@@ -48,7 +48,7 @@ public class YouTubeUrl extends GoogleUrl {
    */
   public static YouTubeUrl fromRelativePath(String relativePath) {
     YouTubeUrl result = new YouTubeUrl(YouTube.ROOT_URL);
-    result.appendPath(relativePath);
+    result.appendRawPath(relativePath);
     return result;
   }
 }

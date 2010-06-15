@@ -16,8 +16,8 @@
 
 package com.google.api.data.sample.youtube.model;
 
-import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.Key;
 
@@ -36,7 +36,7 @@ public class Feed {
   @Key
   public DateTime updated;
 
-  static Feed executeGet(GoogleTransport transport, YouTubeUrl url,
+  static Feed executeGet(HttpTransport transport, YouTubeUrl url,
       Class<? extends Feed> feedClass) throws IOException {
     HttpRequest request = transport.buildGetRequest();
     request.url = url;

@@ -26,6 +26,7 @@ import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporary
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
 import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.xml.atom.AtomParser;
 import com.google.api.data.picasa.v2.PicasaWebAlbums;
 import com.google.api.data.picasa.v2.atom.PicasaWebAlbumsAtom;
@@ -56,7 +57,7 @@ public class PicasaAtomSample {
   public static void main(String[] args) throws IOException {
     Debug.enableLogging();
     try {
-      GoogleTransport transport = setUpGoogleTransport();
+      HttpTransport transport = setUpTransport();
       UserFeed feed = showAlbums(transport);
       AlbumEntry album = postAlbum(transport, feed);
       PhotoEntry postedPhoto = postPhoto(transport, album);
@@ -77,12 +78,11 @@ public class PicasaAtomSample {
     }
   }
 
-  private static GoogleTransport setUpGoogleTransport() throws IOException {
-    GoogleTransport transport = new GoogleTransport();
-    GoogleHeaders.setUserAgent(transport.defaultHeaders,
-        "google-picasaatomsample-1.0");
-    GoogleHeaders.setGDataVersion(transport.defaultHeaders,
-        PicasaWebAlbums.VERSION);
+  private static HttpTransport setUpTransport() throws IOException {
+    HttpTransport transport = GoogleTransport.create();
+    GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
+    headers.setApplicationName("google-picasaatomsample-1.0");
+    headers.gdataVersion = PicasaWebAlbums.VERSION;
     AtomParser parser = new AtomParser();
     parser.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
     transport.addParser(parser);
@@ -102,7 +102,7 @@ public class PicasaAtomSample {
     return authorizer;
   }
 
-  private static void authorizeUsingOAuth(GoogleTransport transport)
+  private static void authorizeUsingOAuth(HttpTransport transport)
       throws IOException {
     GoogleOAuthGetTemporaryToken temporaryToken =
         new GoogleOAuthGetTemporaryToken();
@@ -134,7 +134,7 @@ public class PicasaAtomSample {
     createOAuthParameters().signRequestsUsingAuthorizationHeader(transport);
   }
 
-  private static void authorizeUsingClientLogin(GoogleTransport transport)
+  private static void authorizeUsingClientLogin(HttpTransport transport)
       throws IOException {
     ClientLogin authenticator = new ClientLogin();
     authenticator.authTokenType = PicasaWebAlbums.AUTH_TOKEN_TYPE;
@@ -146,7 +146,7 @@ public class PicasaAtomSample {
     authenticator.authenticate().setAuthorizationHeader(transport);
   }
 
-  private static UserFeed showAlbums(GoogleTransport transport)
+  private static UserFeed showAlbums(HttpTransport transport)
       throws IOException {
     // build URL for the default user feed of albums
     PicasaUrl url = PicasaUrl.fromRelativePath("feed/api/user/default");
@@ -163,7 +163,7 @@ public class PicasaAtomSample {
     return feed;
   }
 
-  private static void showAlbum(GoogleTransport transport, AlbumEntry album)
+  private static void showAlbum(HttpTransport transport, AlbumEntry album)
       throws IOException {
     System.out.println();
     System.out.println("-----------------------------------------------");
@@ -189,7 +189,7 @@ public class PicasaAtomSample {
     }
   }
 
-  private static AlbumEntry postAlbum(GoogleTransport transport, UserFeed feed)
+  private static AlbumEntry postAlbum(HttpTransport transport, UserFeed feed)
       throws IOException {
     System.out.println();
     AlbumEntry newAlbum = new AlbumEntry();
@@ -201,8 +201,8 @@ public class PicasaAtomSample {
     return album;
   }
 
-  private static PhotoEntry postPhoto(GoogleTransport transport,
-      AlbumEntry album) throws IOException {
+  private static PhotoEntry postPhoto(HttpTransport transport, AlbumEntry album)
+      throws IOException {
     String fileName = "picasaweblogo-en_US.gif";
     String photoUrlString = "http://www.google.com/accounts/lh2/" + fileName;
     URL photoUrl = new URL(photoUrlString);
@@ -213,14 +213,14 @@ public class PicasaAtomSample {
     return photo;
   }
 
-  private static AlbumEntry getUpdatedAlbum(GoogleTransport transport,
+  private static AlbumEntry getUpdatedAlbum(HttpTransport transport,
       AlbumEntry album) throws IOException {
     album = AlbumEntry.executeGet(transport, album.getSelfLink());
     showAlbum(transport, album);
     return album;
   }
 
-  private static AlbumEntry updateTitle(GoogleTransport transport,
+  private static AlbumEntry updateTitle(HttpTransport transport,
       AlbumEntry album) throws IOException {
     AlbumEntry patched = album.clone();
     patched.title = "My favorite web logos";
@@ -229,7 +229,7 @@ public class PicasaAtomSample {
     return album;
   }
 
-  private static void deleteAlbum(GoogleTransport transport, AlbumEntry album)
+  private static void deleteAlbum(HttpTransport transport, AlbumEntry album)
       throws IOException {
     album.executeDelete(transport);
     System.out.println();

@@ -27,6 +27,7 @@ import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
 import com.google.api.client.googleapis.json.JsonCParser;
 import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.data.sample.youtube.model.Debug;
 import com.google.api.data.sample.youtube.model.Video;
 import com.google.api.data.sample.youtube.model.VideoFeed;
@@ -57,7 +58,7 @@ public class YouTubeJsoncSample {
   public static void main(String[] args) throws IOException {
     Debug.enableLogging();
     try {
-      GoogleTransport transport = setUpGoogleTransport();
+      HttpTransport transport = setUpTransport();
       VideoFeed feed = showVideos(transport);
     } catch (HttpResponseException e) {
       System.err.println(e.response.parseAsString());
@@ -73,11 +74,11 @@ public class YouTubeJsoncSample {
     }
   }
 
-  private static GoogleTransport setUpGoogleTransport() throws IOException {
-    GoogleTransport transport = new GoogleTransport();
-    GoogleHeaders.setUserAgent(transport.defaultHeaders,
-        "google-youtubejsoncsample-1.0");
-    GoogleHeaders.setGDataVersion(transport.defaultHeaders, YouTube.VERSION);
+  private static HttpTransport setUpTransport() throws IOException {
+    HttpTransport transport = GoogleTransport.create();
+    GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
+    headers.setApplicationName("google-youtubejsoncsample-1.0");
+    headers.gdataVersion = YouTube.VERSION;
     transport.addParser(new JsonCParser());
     if (AUTH_TYPE == AuthType.OAUTH) {
       authorizeUsingOAuth(transport);
@@ -87,7 +88,6 @@ public class YouTubeJsoncSample {
     return transport;
   }
 
-
   private static OAuthParameters createOAuthParameters() {
     OAuthParameters authorizer = new OAuthParameters();
     authorizer.consumerKey = "anonymous";
@@ -96,7 +96,7 @@ public class YouTubeJsoncSample {
     return authorizer;
   }
 
-  private static void authorizeUsingOAuth(GoogleTransport transport)
+  private static void authorizeUsingOAuth(HttpTransport transport)
       throws IOException {
     GoogleOAuthGetTemporaryToken temporaryToken =
         new GoogleOAuthGetTemporaryToken();
@@ -128,7 +128,7 @@ public class YouTubeJsoncSample {
     createOAuthParameters().signRequestsUsingAuthorizationHeader(transport);
   }
 
-  private static void authorizeUsingClientLogin(GoogleTransport transport)
+  private static void authorizeUsingClientLogin(HttpTransport transport)
       throws IOException {
     ClientLogin authenticator = new ClientLogin();
     authenticator.authTokenType = YouTube.AUTH_TOKEN_TYPE;
@@ -140,7 +140,7 @@ public class YouTubeJsoncSample {
     authenticator.authenticate().setAuthorizationHeader(transport);
   }
 
-  private static VideoFeed showVideos(GoogleTransport transport)
+  private static VideoFeed showVideos(HttpTransport transport)
       throws IOException {
     // build URL for the video feed for "search stories"
     YouTubeUrl url = YouTubeUrl.fromRelativePath("videos");

@@ -17,8 +17,8 @@
 package com.google.api.data.sample.picasa.model;
 
 import com.google.api.client.googleapis.GoogleHeaders;
-import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.util.Key;
 
@@ -36,11 +36,12 @@ public class PhotoEntry extends Entry {
   @Key("media:group")
   public MediaGroup mediaGroup;
 
-  public static PhotoEntry executeInsert(GoogleTransport transport,
+  public static PhotoEntry executeInsert(HttpTransport transport,
       String feedLink, URL photoUrl, String fileName) throws IOException {
     HttpRequest request = transport.buildPostRequest();
     request.setUrl(feedLink);
-    GoogleHeaders.setSlug(request.headers, fileName);
+    GoogleHeaders headers = (GoogleHeaders) request.headers;
+    headers.setSlugFromFileName(fileName);
     InputStreamContent content = new InputStreamContent();
     content.inputStream = photoUrl.openStream();
     content.type = "image/jpeg";
