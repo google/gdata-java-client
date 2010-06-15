@@ -39,6 +39,28 @@ import java.io.IOException;
  * <p>
  * The {@link #clientId} and {@link #clientSecret} fields are required. Call
  * {@link #execute()} to execute the request.
+ * <p>
+ * Sample usage for Client Credentials flow:
+ * 
+ * <pre>
+ * <code>static void requestAccessToken() throws IOException {
+ *   try {
+ *     AccessTokenRequest request = new AccessTokenRequest();
+ *     request.clientId = CLIENT_ID;
+ *     request.clientSecret = CLIENT_SECRET;
+ *     AccessTokenResponse response =
+ *         request.execute().parseAs(AccessTokenResponse.class);
+ *     System.out.println("Access token: " + response.accessToken);
+ *   } catch (HttpResponseException e) {
+ *     AccessTokenErrorResponse response =
+ *         e.response.parseAs(AccessTokenErrorResponse.class);
+ *     System.out.println("Error: " + response.error);
+ *   }
+ * }</code>
+ * </pre>
+ * 
+ * Other flows follow the same general approach, but instantiating a different
+ * class customized for that flow with additional custom parameters.
  * 
  * @since 2.3
  * @author Yaniv Inbar
@@ -65,28 +87,6 @@ public class AccessTokenRequest extends GenericData {
 
   /**
    * Executes request for an access token, and returns the HTTP response.
-   * <p>
-   * Sample usage for Client Credentials flow:
-   * 
-   * <pre>
-   * <code>static void requestAccessToken() throws IOException {
-   *   try {
-   *     AccessTokenRequest request = new AccessTokenRequest();
-   *     request.clientId = CLIENT_ID;
-   *     request.clientSecret = CLIENT_SECRET;
-   *     AccessTokenResponse response =
-   *         request.execute().parseAs(AccessTokenResponse.class);
-   *     System.out.println("Access token: " + response.accessToken);
-   *   } catch (HttpResponseException e) {
-   *     AccessTokenErrorResponse response =
-   *         e.response.parseAs(AccessTokenErrorResponse.class);
-   *     System.out.println("Error: " + response.error);
-   *   }
-   * }</code>
-   * </pre>
-   * 
-   * Other flows follow the same general approach, but instantiating a different
-   * class customized for that flow with additional custom parameters.
    * 
    * @return HTTP response, which can then be parsed using
    *         {@link HttpResponse#parseAs(Class)} with
