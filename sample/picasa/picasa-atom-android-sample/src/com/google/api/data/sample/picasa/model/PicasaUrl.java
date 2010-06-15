@@ -34,7 +34,7 @@ public class PicasaUrl extends GoogleUrl {
 
   public static PicasaUrl fromRelativePath(String relativePath) {
     PicasaUrl result = new PicasaUrl(PicasaWebAlbums.ROOT_URL);
-    result.path += relativePath;
+    result.appendRawPath(relativePath);
     return result;
   }
 }

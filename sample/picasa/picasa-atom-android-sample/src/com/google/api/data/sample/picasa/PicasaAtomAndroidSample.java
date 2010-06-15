@@ -93,7 +93,7 @@ public final class PicasaAtomAndroidSample extends ListActivity {
     OAUTH, ACCOUNT_MANAGER, CLIENT_LOGIN
   }
 
-  private static AuthType AUTH_TYPE = AuthType.OAUTH;
+  private static AuthType AUTH_TYPE = AuthType.ACCOUNT_MANAGER;
 
   private static final String TAG = "PicasaBasicAtomAndroidSample";
 
@@ -115,20 +115,24 @@ public final class PicasaAtomAndroidSample extends ListActivity {
 
   private static final int DIALOG_ACCOUNTS = 0;
 
-  private static final GoogleTransport transport =
-      new GoogleTransport();
+  private static HttpTransport transport;
 
   private String authToken;
 
   private String postLink;
 
   private static boolean isTemporary;
+
   private static OAuthCredentialsResponse credentials;
 
   private final List<AlbumEntry> albums = new ArrayList<AlbumEntry>();
 
   public PicasaAtomAndroidSample() {
-    transport.setVersionHeader(PicasaWebAlbums.VERSION);
+    HttpTransport.setLowLevelHttpTransport(ApacheHttpTransport.INSTANCE);
+    transport = GoogleTransport.create();
+    GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
+    headers.setApplicationName("google-picasaandroidsample-1.0");
+    headers.gdataVersion = PicasaWebAlbums.VERSION;
     AtomParser parser = new AtomParser();
     parser.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
     transport.addParser(parser);
@@ -137,8 +141,6 @@ public final class PicasaAtomAndroidSample extends ListActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    transport.applicationName = "google-picasaandroidsample-1.0";
-    HttpTransport.setLowLevelHttpTransport(ApacheHttpTransport.INSTANCE);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     setLogging(settings.getBoolean("logging", false));
     getListView().setTextFilterEnabled(true);
@@ -164,10 +166,11 @@ public final class PicasaAtomAndroidSample extends ListActivity {
             final Account[] accounts = manager.getAccountsByType("com.google");
             final int size = accounts.length;
             String[] names = new String[size];
+//            String[] names = new String[size + 1];
+//          names[size] = "New Account";
             for (int i = 0; i < size; i++) {
               names[i] = accounts[i].name;
             }
-            // names[size] = "New Account";
             builder.setItems(names, new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialog, int which) {
@@ -383,7 +386,7 @@ public final class PicasaAtomAndroidSample extends ListActivity {
 
   private void authenticatedClientLogin(String authToken) {
     this.authToken = authToken;
-    transport.setClientLoginToken(authToken);
+    ((GoogleHeaders) transport.defaultHeaders).setGoogleLogin(authToken);
     authenticated();
   }
 
@@ -425,7 +428,8 @@ public final class PicasaAtomAndroidSample extends ListActivity {
             request.url =
                 PicasaUrl
                     .fromRelativePath("feed/api/user/default/albumid/default");
-            GoogleHeaders.setSlug(request.headers, sendData.fileName);
+            ((GoogleHeaders) request.headers)
+                .setSlugFromFileName(sendData.fileName);
             InputStreamContent content = new InputStreamContent();
             content.inputStream =
                 getContentResolver().openInputStream(sendData.uri);
