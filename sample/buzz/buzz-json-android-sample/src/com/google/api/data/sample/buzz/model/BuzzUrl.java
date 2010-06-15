@@ -17,7 +17,7 @@
 package com.google.api.data.sample.buzz.model;
 
 import com.google.api.client.googleapis.GoogleUrl;
-import com.google.api.data.buzz.v1.Buzz;
+import com.google.api.data.buzz.v1.GoogleBuzz;
 
 /**
  * Buzz URL builder.
@@ -41,13 +41,13 @@ public final class BuzzUrl extends GoogleUrl {
   /**
    * Constructs a new Buzz URL based on the given relative path.
    * 
-   * @param relativePath unencoded path relative to the {@link Buzz#ROOT_URL},
-   *        but not containing any query parameters
+   * @param relativePath unencoded path relative to the
+   *        {@link GoogleBuzz#ROOT_URL}, but not containing any query parameters
    * @return new Buzz URL
    */
   public static BuzzUrl fromRelativePath(String relativePath) {
-    BuzzUrl result = new BuzzUrl(Buzz.ROOT_URL);
-    result.path += relativePath;
+    BuzzUrl result = new BuzzUrl(GoogleBuzz.ROOT_URL);
+    result.appendRawPath(relativePath);
     return result;
   }
 }

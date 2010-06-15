@@ -16,8 +16,8 @@
 
 package com.google.api.data.sample.buzz.model;
 
-import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
 import java.io.IOException;
@@ -63,7 +63,7 @@ public final class BuzzActivityFeed {
    * @return Buzz activities feed response from the Buzz server
    * @throws IOException any I/O exception
    */
-  public static BuzzActivityFeed list(GoogleTransport transport)
+  public static BuzzActivityFeed list(HttpTransport transport)
       throws IOException {
     HttpRequest request = transport.buildGetRequest();
     request.url = BuzzUrl.fromRelativePath("activities/@me/@self");
