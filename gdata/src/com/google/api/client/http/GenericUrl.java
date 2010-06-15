@@ -80,7 +80,9 @@ public class GenericUrl extends GenericData {
    * This field is ignored if {@link #pathParts} is not {@code null}.
    * 
    * @deprecated (scheduled to be removed in version 2.4) Use
-   *             {@link #getRawPath()} and {@link #setRawPath(String rawPath)}
+   *             {@link #getRawPath()}, {@link #setRawPath(String rawPath)}, or
+   *             {@link #appendRawPath(String)}
+
    */
   @Deprecated
   public String path;
@@ -91,8 +93,8 @@ public class GenericUrl extends GenericData {
    * "/m8/feeds/contacts/default/full"} is represented by {@code "", "m8",
    * "feeds", "contacts", "default", "full"}.
    * <p>
-   * Use {@link #appendPath(String)} to append to the path, which ensures that
-   * no extra slash is added.
+   * Use {@link #appendRawPath(String)} to append to the path, which ensures
+   * that no extra slash is added.
    * 
    * @since 2.3
    */
@@ -192,7 +194,7 @@ public class GenericUrl extends GenericData {
     }
     List<String> pathParts = this.pathParts;
     if (pathParts != null) {
-      appendRawPath(buf);
+      appendRawPathFromParts(buf);
     } else {
       String path = this.path;
       if (path != null && path.length() != 0) {
@@ -252,7 +254,7 @@ public class GenericUrl extends GenericData {
       return null;
     }
     StringBuilder buf = new StringBuilder();
-    appendRawPath(buf);
+    appendRawPathFromParts(buf);
     return buf.toString();
   }
 
@@ -279,7 +281,7 @@ public class GenericUrl extends GenericData {
    * @param encodedPath raw encoded path or {@code null} to ignore
    * @since 2.3
    */
-  public void appendPath(String encodedPath) {
+  public void appendRawPath(String encodedPath) {
     if (encodedPath != null && encodedPath.length() != 0) {
       List<String> pathParts = this.pathParts;
       List<String> appendedPathParts = toPathParts(encodedPath);
@@ -336,7 +338,7 @@ public class GenericUrl extends GenericData {
     return CharEscapers.escapeUriQuery(string);
   }
 
-  private void appendRawPath(StringBuilder buf) {
+  private void appendRawPathFromParts(StringBuilder buf) {
     List<String> pathParts = this.pathParts;
     int size = pathParts.size();
     for (int i = 0; i < size; i++) {
