@@ -16,9 +16,9 @@
 
 package com.google.api.data.sample.buzz.model;
 
-import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.json.JsonCContent;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
 import java.io.IOException;
@@ -59,11 +59,11 @@ public final class BuzzActivity {
    * @return posted Buzz Activity response from the Buzz server
    * @throws IOException any I/O exception
    */
-  public BuzzActivity post(GoogleTransport transport) throws IOException {
+  public BuzzActivity post(HttpTransport transport) throws IOException {
     HttpRequest request = transport.buildPostRequest();
     request.url = BuzzUrl.fromRelativePath("activities/@me/@self");
     JsonCContent content = new JsonCContent();
-    content.item = this;
+    content.data = this;
     request.content = content;
     return request.execute().parseAs(BuzzActivity.class);
   }
@@ -74,7 +74,7 @@ public final class BuzzActivity {
    * @param transport Google transport
    * @throws IOException any I/O exception
    */
-  public void delete(GoogleTransport transport) throws IOException {
+  public void delete(HttpTransport transport) throws IOException {
     HttpRequest request = transport.buildDeleteRequest();
     request.url = BuzzUrl.fromRelativePath("activities/@me/@self/" + this.id);
     request.execute().ignore();
