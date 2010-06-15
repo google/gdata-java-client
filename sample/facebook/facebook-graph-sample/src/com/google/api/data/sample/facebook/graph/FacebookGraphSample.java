@@ -16,8 +16,10 @@
 
 package com.google.api.data.sample.facebook.graph;
 
-import com.google.api.client.auth.oauth2.UserAgentFlow.AuthorizationResponse;
-import com.google.api.client.auth.oauth2.UserAgentFlow.AuthorizationUrl;
+import com.google.api.client.auth.oauth2.AccessProtectedResource;
+import com.google.api.client.auth.oauth2.UserAgentAuthorizationRequestUrl;
+import com.google.api.client.auth.oauth2.UserAgentAuthorizationResponse;
+import com.google.api.client.http.HttpExecuteIntercepter;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.Json;
@@ -40,37 +42,60 @@ import java.util.Scanner;
  */
 public class FacebookGraphSample {
 
+  static final String CLIENT_ID = "102073869841647";
+  static final String BASE_AUTHORIZATION_URL =
+      "https://graph.facebook.com/oauth/authorize";
+  static final String REDIRECT_URL =
+      "http://www.facebook.com/connect/login_success.html";
+
   public static void main(String[] args) throws IOException {
     Debug.enableLogging();
     HttpTransport transport = new HttpTransport();
-    authenticate(transport);
+    authorize(transport);
     run(transport);
   }
 
-  private static void authenticate(HttpTransport transport) {
+  private static void authorize(HttpTransport transport) {
     System.out
         .println("Please go open this web page in a browser to authorize:");
-    AuthorizationUrl authorizeUrl =
-        new AuthorizationUrl("https://graph.facebook.com/oauth/authorize");
-    authorizeUrl.clientId = "122046651166114";
-    authorizeUrl.redirectUri =
-        "http://www.facebook.com/connect/login_success.html";
-    authorizeUrl.set("display", "popup");
-    System.out.println(authorizeUrl.build());
+    UserAgentAuthorizationRequestUrl builder =
+        new UserAgentAuthorizationRequestUrl(BASE_AUTHORIZATION_URL);
+    builder.clientId = CLIENT_ID;
+    builder.redirectUri = REDIRECT_URL;
+    builder.set("display", "popup");
+    System.out.println(builder.build());
     System.out.println();
     System.out
         .println("Copy/Paste the URL that the web browser has directed you to: ");
     String entered = new Scanner(System.in).nextLine();
-    AuthorizationResponse response = new AuthorizationResponse(entered);
+    UserAgentAuthorizationResponse response =
+        new UserAgentAuthorizationResponse(entered);
     if (response.error != null) {
       System.err.println("Authorization denied.");
       System.exit(1);
     }
-    response.authorize(transport);
+    accessProtectedResource(transport, response.accessToken);
+  }
+
+  /**
+   * Facebook Graph API doesn't conform to latest draft of the OAuth 2.0
+   * specification so we cannot use {@link AccessProtectedResource} and instead
+   * need to write this ourselves.
+   */
+  private static void accessProtectedResource(HttpTransport transport,
+      final String accessToken) {
+    transport.intercepters.add(new HttpExecuteIntercepter() {
+
+      public void intercept(HttpRequest request) {
+        request.url.set("access_token", accessToken);
+      }
+    });
   }
 
   private static void run(HttpTransport transport) throws IOException {
-    transport.addParser(new JsonHttpParser("text/javascript"));
+    JsonHttpParser parser = new JsonHttpParser();
+    parser.contentType = "text/javascript";
+    transport.addParser(parser);
     getPage(transport);
     getUser(transport);
     getMe(transport);

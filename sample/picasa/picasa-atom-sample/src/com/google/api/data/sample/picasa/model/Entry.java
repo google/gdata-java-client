@@ -16,10 +16,10 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.googleapis.xml.atom.AtomPatchRelativeToOriginalContent;
 import com.google.api.client.googleapis.xml.atom.GData;
-import com.google.api.client.googleapis.xml.atom.PatchRelativeToOriginalContent;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.DataUtil;
 import com.google.api.client.util.Key;
 import com.google.api.data.picasa.v2.atom.PicasaWebAlbumsAtom;
@@ -60,14 +60,14 @@ public class Entry implements Cloneable {
     return DataUtil.clone(this);
   }
 
-  public void executeDelete(GoogleTransport transport) throws IOException {
+  public void executeDelete(HttpTransport transport) throws IOException {
     HttpRequest request = transport.buildDeleteRequest();
     request.setUrl(getEditLink());
     request.headers.ifMatch = etag;
     request.execute().ignore();
   }
 
-  static Entry executeGet(GoogleTransport transport, PicasaUrl url,
+  static Entry executeGet(HttpTransport transport, PicasaUrl url,
       Class<? extends Entry> entryClass) throws IOException {
     url.fields = GData.getFieldsFor(entryClass);
     HttpRequest request = transport.buildGetRequest();
@@ -75,13 +75,13 @@ public class Entry implements Cloneable {
     return request.execute().parseAs(entryClass);
   }
 
-  Entry executePatchRelativeToOriginal(GoogleTransport transport, Entry original)
+  Entry executePatchRelativeToOriginal(HttpTransport transport, Entry original)
       throws IOException {
     HttpRequest request = transport.buildPatchRequest();
     request.setUrl(getEditLink());
     request.headers.ifMatch = etag;
-    PatchRelativeToOriginalContent content =
-        new PatchRelativeToOriginalContent();
+    AtomPatchRelativeToOriginalContent content =
+        new AtomPatchRelativeToOriginalContent();
     content.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
     content.originalEntry = original;
     content.patchedEntry = this;

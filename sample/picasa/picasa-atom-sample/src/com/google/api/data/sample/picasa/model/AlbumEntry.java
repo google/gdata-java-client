@@ -16,7 +16,7 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
 import java.io.IOException;
@@ -40,13 +40,13 @@ public class AlbumEntry extends Entry {
     return (AlbumEntry) super.clone();
   }
 
-  public static AlbumEntry executeGet(GoogleTransport transport, String link)
+  public static AlbumEntry executeGet(HttpTransport transport, String link)
       throws IOException {
     PicasaUrl url = new PicasaUrl(link);
     return (AlbumEntry) Entry.executeGet(transport, url, AlbumEntry.class);
   }
 
-  public AlbumEntry executePatchRelativeToOriginal(GoogleTransport transport,
+  public AlbumEntry executePatchRelativeToOriginal(HttpTransport transport,
       AlbumEntry original) throws IOException {
     return (AlbumEntry) super.executePatchRelativeToOriginal(transport,
         original);

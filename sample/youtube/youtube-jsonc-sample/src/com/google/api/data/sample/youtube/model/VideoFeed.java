@@ -16,7 +16,7 @@
 
 package com.google.api.data.sample.youtube.model;
 
-import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class VideoFeed extends Feed {
   @Key
   public List<Video> items;
 
-  public static VideoFeed executeGet(GoogleTransport transport, YouTubeUrl url)
+  public static VideoFeed executeGet(HttpTransport transport, YouTubeUrl url)
       throws IOException {
     return (VideoFeed) Feed.executeGet(transport, url, VideoFeed.class);
   }
