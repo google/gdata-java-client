@@ -315,25 +315,25 @@ public class GenericUrlTest extends TestCase {
   public void testAppendPath() {
     GenericUrl url = new GenericUrl("http://google.com");
     assertNull(url.pathParts);
-    url.appendPath(null);
+    url.appendRawPath(null);
     assertNull(url.pathParts);
-    url.appendPath("");
+    url.appendRawPath("");
     assertNull(url.pathParts);
-    url.appendPath("/");
+    url.appendRawPath("/");
     assertEquals(Arrays.asList(new String[] {"", ""}), url.pathParts);
-    url.appendPath("/");
+    url.appendRawPath("/");
     assertEquals(Arrays.asList(new String[] {"", "", ""}), url.pathParts);
-    url.appendPath("/a");
+    url.appendRawPath("/a");
     assertEquals(Arrays.asList(new String[] {"", "", "", "a"}), url.pathParts);
-    url.appendPath("b");
+    url.appendRawPath("b");
     assertEquals(Arrays.asList(new String[] {"", "", "", "ab"}), url.pathParts);
-    url.appendPath("c/d");
+    url.appendRawPath("c/d");
     assertEquals(Arrays.asList(new String[] {"", "", "", "abc", "d"}),
         url.pathParts);
-    url.appendPath("/e");
+    url.appendRawPath("/e");
     assertEquals(Arrays.asList(new String[] {"", "", "", "abc", "d", "e"}),
         url.pathParts);
-    url.appendPath("/");
+    url.appendRawPath("/");
     assertEquals(Arrays.asList(new String[] {"", "", "", "abc", "d", "e", ""}),
         url.pathParts);
   }

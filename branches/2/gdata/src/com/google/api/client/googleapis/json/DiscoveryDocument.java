@@ -192,7 +192,7 @@ public final class DiscoveryDocument {
       }
       pathBuf.append(CharEscapers.escapeUriPath(value));
     }
-    url.appendPath(pathBuf.toString());
+    url.appendRawPath(pathBuf.toString());
     // all other parameters are assumed to be query parameters
     url.putAll(requestMap);
     request.url = url;
