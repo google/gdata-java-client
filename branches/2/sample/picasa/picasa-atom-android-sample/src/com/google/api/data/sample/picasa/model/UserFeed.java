@@ -16,7 +16,7 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class UserFeed extends Feed {
   @Key("entry")
   public List<AlbumEntry> albums;
 
-  public static UserFeed executeGet(GoogleTransport transport, PicasaUrl url)
+  public static UserFeed executeGet(HttpTransport transport, PicasaUrl url)
       throws IOException {
     url.kinds = "album";
     return (UserFeed) Feed.executeGet(transport, url, UserFeed.class);

@@ -16,9 +16,9 @@
 
 package com.google.api.data.sample.picasa.model;
 
-import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.xml.atom.GData;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class Feed {
     return Link.find(links, "next");
   }
 
-  static Feed executeGet(GoogleTransport transport, PicasaUrl url,
+  static Feed executeGet(HttpTransport transport, PicasaUrl url,
       Class<? extends Feed> feedClass) throws IOException {
     url.fields = GData.getFieldsFor(feedClass);
     HttpRequest request = transport.buildGetRequest();
