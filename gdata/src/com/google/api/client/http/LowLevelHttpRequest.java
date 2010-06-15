@@ -37,9 +37,17 @@ public abstract class LowLevelHttpRequest {
    */
   public abstract void addHeader(String name, String value);
 
-  /** Sets the HTTP request content. */
-  public abstract void setContent(HttpContent content);
+  /**
+   * Sets the HTTP request content.
+   * 
+   * @throws IOException
+   */
+  public abstract void setContent(HttpContent content) throws IOException;
 
-  /** Executes the request and returns a low-level HTTP response object. */
+  /**
+   * Executes the request and returns a low-level HTTP response object.
+   * 
+   * @throws IOException
+   */
   public abstract LowLevelHttpResponse execute() throws IOException;
 }

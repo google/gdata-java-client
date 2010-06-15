@@ -28,7 +28,8 @@ public final class MultipartContent implements HttpContent {
   private final HttpContent content;
   private final long length;
 
-  public MultipartContent(HttpContent metadata, HttpContent content) {
+  public MultipartContent(HttpContent metadata, HttpContent content)
+      throws IOException {
     byte[] metadataContentTypeBytes = metadata.getType().getBytes();
     byte[] mediaTypeBytes = metadata.getType().getBytes();
     long metadataLength = metadata.getLength();

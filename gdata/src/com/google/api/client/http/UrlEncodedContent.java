@@ -21,6 +21,7 @@ import com.google.api.client.util.DataUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -77,8 +78,8 @@ public final class UrlEncodedContent implements HttpContent {
     return null;
   }
 
-  public long getLength() {
-    return this.content.length;
+  public long getLength() throws UnsupportedEncodingException {
+    return computeContent().length;
   }
 
   public String getType() {
@@ -86,22 +87,29 @@ public final class UrlEncodedContent implements HttpContent {
   }
 
   public void writeTo(OutputStream out) throws IOException {
-    StringBuilder buf = new StringBuilder();
-    boolean first = true;
-    for (Map.Entry<String, Object> nameValueEntry : DataUtil.mapOf(this.data)
-        .entrySet()) {
-      Object value = nameValueEntry.getValue();
-      if (value != null) {
-        if (first) {
-          first = false;
-        } else {
-          buf.append('&');
+    out.write(computeContent());
+  }
+
+  private byte[] computeContent() throws UnsupportedEncodingException {
+    if (this.content == null) {
+      StringBuilder buf = new StringBuilder();
+      boolean first = true;
+      for (Map.Entry<String, Object> nameValueEntry : DataUtil.mapOf(this.data)
+          .entrySet()) {
+        Object value = nameValueEntry.getValue();
+        if (value != null) {
+          if (first) {
+            first = false;
+          } else {
+            buf.append('&');
+          }
+          String name = nameValueEntry.getKey();
+          buf.append(CharEscapers.escapeUri(name)).append('=').append(
+              CharEscapers.escapeUri(value.toString()));
         }
-        String name = nameValueEntry.getKey();
-        buf.append(CharEscapers.escapeUri(name)).append('=').append(
-            CharEscapers.escapeUri(value.toString()));
       }
+      this.content = buf.toString().getBytes("UTF-8");
     }
-    out.write(buf.toString().getBytes("UTF-8"));
+    return this.content;
   }
 }
