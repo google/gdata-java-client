@@ -31,14 +31,16 @@ final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
   private final Version version;
 
   AtomJavaFileGenerator(Version version) {
-    super(version.getPackageName() + ".atom", version.client.className + "Atom");
+    super(version.getPackageName() + "." + version.client.getXmlFormatId(),
+        version.client.className + version.client.getXmlFormatCapitalId());
     this.version = version;
   }
 
   @Override
   public void generate(PrintWriter out) {
     Client client = version.client;
-    String className = client.className + "Atom";
+    String className =
+        client.className + version.client.getXmlFormatCapitalId();
     generateHeader(out);
     out.println("import " + XmlNamespaceDictionary.class.getName() + ";");
     out.println();
@@ -46,7 +48,8 @@ final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
     out.println();
     DocBuilder docBuilder = new DocBuilder();
     docBuilder.comment =
-        "Utilities for the Atom XML format of the " + version.client.name + ".";
+        "Utilities for the " + version.client.getXmlFormatName()
+            + " format of the " + version.client.name + ".";
     docBuilder.sinceMinor = version.sinceMinor;
     docBuilder.generate(out);
     out.println("public final class " + className + " {");

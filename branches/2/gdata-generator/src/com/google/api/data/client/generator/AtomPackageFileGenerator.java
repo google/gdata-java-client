@@ -34,8 +34,9 @@ final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
   @Override
   public void generate(PrintWriter out) {
     out.println("<body>");
-    out.println("Small optional Java library for the Atom XML "
-        + "format for "
+    out.println("Small optional Java library for the "
+        + version.client.getXmlFormatName()
+        + " format for "
         + version.client.name
         + " "
         + (version.client.isOldGDataStyle ? "version "
@@ -57,7 +58,8 @@ final class AtomPackageFileGenerator extends AbstractHtmlFileGenerator {
 
   @Override
   public String getOutputFilePath() {
-    return "src/" + version.getPathRelativeToSrc() + "/atom/package.html";
+    return "src/" + version.getPathRelativeToSrc() + "/"
+        + version.client.getXmlFormatId() + "/package.html";
   }
 
   @Override
