@@ -43,7 +43,7 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
   static boolean isGenerated(Version version) {
     Client client = version.client;
     return client.isOldGDataStyle || version.rootUrl != null
-        || client.authTokenType != null;
+        || client.authTokenType != null || client.oauth != null;
   }
 
   @Override

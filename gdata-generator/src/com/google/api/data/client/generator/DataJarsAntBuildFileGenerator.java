@@ -54,7 +54,8 @@ final class DataJarsAntBuildFileGenerator extends AbstractXmlFileGenerator {
         }
         out.print(version.getPackageName());
         if (version.atom != null) {
-          out.print("," + version.getPackageName() + ".atom");
+          out.print("," + version.getPackageName() + "."
+              + client.getXmlFormatId());
         }
       }
     }
@@ -70,13 +71,13 @@ final class DataJarsAntBuildFileGenerator extends AbstractXmlFileGenerator {
         out.println("  </target>");
         if (version.atom != null) {
           out.println();
-          out
-              .println("  <target name='" + version.getJarName()
-                  + "-atom-jar'>");
+          out.println("  <target name='" + version.getJarName() + "-"
+              + client.getXmlFormatId() + "-jar'>");
           out.println("    <jar destfile='${android.dir}/gdata-${version}-"
-              + version.getJarName()
-              + "-atom.jar' basedir='${classes.dir}' includes='"
-              + version.getPathRelativeToSrc() + "/atom/*.class' />");
+              + version.getJarName() + "-" + client.getXmlFormatId()
+              + ".jar' basedir='${classes.dir}' includes='"
+              + version.getPathRelativeToSrc() + "/" + client.getXmlFormatId()
+              + "/*.class' />");
           out.println("  </target>");
         }
       }
@@ -100,7 +101,8 @@ final class DataJarsAntBuildFileGenerator extends AbstractXmlFileGenerator {
         }
         out.print(version.getJarName() + "-jar");
         if (version.atom != null) {
-          out.print("," + version.getJarName() + "-atom-jar");
+          out.print("," + version.getJarName() + "-" + client.getXmlFormatId()
+              + "-jar");
         }
       }
     }

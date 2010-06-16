@@ -96,4 +96,16 @@ public final class Client implements Comparable<Client> {
       entry.getValue().validate(entry.getKey(), this);
     }
   }
+  
+  public String getXmlFormatId() {
+    return "storage".equals(id) ? "xml" : "atom";
+  }
+  
+  public String getXmlFormatCapitalId() {
+    return "storage".equals(id) ? "Xml" : "Atom";
+  }
+  
+  public String getXmlFormatName() {
+    return "storage".equals(id) ? "XML" : "Atom XML";
+  }
 }
