@@ -1,4 +1,3 @@
 #summary Experimental Java Client for Google API's Version 2 Alpha
-#labels Featured
 
 This page has been merged into the [http://code.google.com/p/gdata-java-client main page].
