@@ -13,8 +13,8 @@ Version 2 is re-written from scratch from version 1 of the client library to pro
 *Download Library and Samples*
 
 This library is packaged in two different ways.  See the readme.html for more details and for instructions for downloading samples:
-  * [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.1-alpha.zip gdata-java-2.2.1-alpha.zip] (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/dist/readme.html readme.html]), or
-  * [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.1-alpha.zip gdata-android-2.2.1-alpha.zip] (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/android/readme.html readme.html])
+  * [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.1-alpha.zip gdata-java-2.2.1-alpha.zip] (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/dist/readme.html Samples]), or
+  * [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.1-alpha.zip gdata-android-2.2.1-alpha.zip] (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/android/readme.html Samples])
 
 *News*
   * _(5/25/2010)_ Version 2.2.1-alpha released with support for Google Latitude API and a critical bug fix for OAuth 1.0a.  It is completely backwards compatible with 2.2.0-alpha.
