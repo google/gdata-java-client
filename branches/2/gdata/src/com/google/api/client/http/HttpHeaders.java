@@ -201,33 +201,15 @@ public class HttpHeaders extends GenericData {
   }
 
   /**
-   * Map from lower-case field name to field name used to allow for case
-   * insensitive HTTP headers.
-   */
-  private static HashMap<String, String> fieldNameMap;
-
-  /**
    * Returns the map from lower-case field name to field name used to allow for
-   * case insensitive HTTP headers.
+   * case insensitive HTTP headers for the given HTTP headers class.
    */
-  private static HashMap<String, String> getFieldNameMap() {
-    HashMap<String, String> fieldNameMap = HttpHeaders.fieldNameMap;
-    if (fieldNameMap == null) {
-      HttpHeaders.fieldNameMap = fieldNameMap = new HashMap<String, String>();
-      for (String keyName : ClassInfo.of(HttpHeaders.class).getKeyNames()) {
-        fieldNameMap.put(keyName.toLowerCase(), keyName);
-      }
+  static HashMap<String, String> getFieldNameMap(
+      Class<? extends HttpHeaders> headersClass) {
+    HashMap<String, String> fieldNameMap = new HashMap<String, String>();
+    for (String keyName : ClassInfo.of(headersClass).getKeyNames()) {
+      fieldNameMap.put(keyName.toLowerCase(), keyName);
     }
     return fieldNameMap;
-  }
-
-  /**
-   * Returns the field name to use when setting HTTP header fields for the given
-   * header name, based on a case-insensitive search for that header name in the
-   * pre-defined fields.
-   */
-  static String getCaseInsensitiveName(String headerName) {
-    String fieldName = getFieldNameMap().get(headerName.toLowerCase());
-    return fieldName == null ? headerName : fieldName;
   }
 }
