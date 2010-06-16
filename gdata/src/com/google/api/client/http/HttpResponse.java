@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -117,13 +118,19 @@ public final class HttpResponse {
     }
     // headers
     int size = response.getHeaderCount();
-    HttpHeaders headers =
-        this.headers =
-            ClassInfo.newInstance(transport.defaultHeaders.getClass());
+    Class<? extends HttpHeaders> headersClass =
+        transport.defaultHeaders.getClass();
+    HttpHeaders headers = this.headers = ClassInfo.newInstance(headersClass);
+    HashMap<String, String> fieldNameMap =
+        HttpHeaders.getFieldNameMap(headersClass);
     for (int i = 0; i < size; i++) {
       String headerName = response.getHeaderName(i);
       String headerValue = response.getHeaderValue(i);
-      headers.set(HttpHeaders.getCaseInsensitiveName(headerName), headerValue);
+      String fieldName = fieldNameMap.get(headerName);
+      if (fieldName == null) {
+        fieldName = headerName;
+      }
+      headers.set(fieldName, headerValue);
       if (loggable) {
         logbuf.append(headerName + ": " + headerValue).append(
             Strings.LINE_SEPARATOR);

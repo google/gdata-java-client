@@ -16,6 +16,8 @@
 
 package com.google.api.client.http;
 
+import com.google.api.client.util.Key;
+
 import junit.framework.TestCase;
 
 import java.io.IOException;
@@ -39,5 +41,23 @@ public class HttpResponseTest extends TestCase {
     LowLevelHttpResponse lowResponse = new MockLowLevelHttpResponse();
     HttpResponse response = new HttpResponse(transport, lowResponse);
     assertEquals("", response.parseAsString());
+  }
+
+  public static class MyHeaders extends HttpHeaders {
+    @Key
+    public String foo;
+  }
+
+  public void testHeaderParsing() {
+    HttpTransport transport = new HttpTransport();
+    transport.defaultHeaders = new MyHeaders();
+    MockLowLevelHttpResponse lowResponse = new MockLowLevelHttpResponse();
+    lowResponse.headers.add("accept", "value");
+    lowResponse.headers.add("foo", "bar");
+    lowResponse.headers.add("goo", "car");
+    HttpResponse response = new HttpResponse(transport, lowResponse);
+    assertEquals("value", response.headers.accept);
+    assertEquals("bar", ((MyHeaders) response.headers).foo);
+    assertEquals("car", response.headers.get("goo"));
   }
 }
