@@ -32,11 +32,32 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
+ * XML namespace dictionary that maps namespace aliases to URI.
+ * <p>
+ * Sample usage:
+ * 
+ * <pre>
+ * <code>static final XmlNamespaceDictionary NAMESPACE_DICTIONARY = new
+ *       XmlNamespaceDictionary();
+ *   static {
+ *     Map<String, String> map = NAMESPACE_DICTIONARY.namespaceAliasToUriMap;
+ *     map.put("", "http://www.w3.org/2005/Atom");
+ *     map.put("activity", "http://activitystrea.ms/spec/1.0/");
+ *     map.put("georss", "http://www.georss.org/georss");
+ *     map.put("media", "http://search.yahoo.com/mrss/");
+ *     map.put("thr", "http://purl.org/syndication/thread/1.0");
+ *   }</code>
+ * </pre>
+ * 
  * @since 2.2
  * @author Yaniv Inbar
  */
 public final class XmlNamespaceDictionary {
 
+  /**
+   * Map from XML namespace alias (or {@code ""} for the default namespace) to
+   * XML namespace URI.
+   */
   public final HashMap<String, String> namespaceAliasToUriMap =
       new HashMap<String, String>();
 

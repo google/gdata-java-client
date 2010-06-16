@@ -19,6 +19,22 @@ package com.google.api.client.xml.atom;
 import com.google.api.client.xml.XmlHttpParser;
 
 /**
+ * Atom XML HTTP parser into an data class of key/value pairs.
+ * <p>
+ * It overrides the {@link #contentType} to {@link Atom#CONTENT_TYPE}.
+ * <p>
+ * Sample usage:
+ * 
+ * <pre>
+ * <code>
+ * static void setParser(HttpTransport transport) {
+ *   AtomParser parser = new AtomParser();
+ *   parser.namespaceDictionary = NAMESPACE_DICTIONARY;
+ *   transport.addParser(parser);
+ * }
+ * </code>
+ * </pre>
+ * 
  * @since 2.2
  * @author Yaniv Inbar
  */

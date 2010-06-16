@@ -27,7 +27,19 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Abstract XML HTTP parser into an data class of key/value pairs.
+ * XML HTTP parser into an data class of key/value pairs.
+ * <p>
+ * Sample usage:
+ * 
+ * <pre>
+ * <code>
+ * static void setParser(HttpTransport transport) {
+ *   XmlHttpParser parser = new XmlHttpParser();
+ *   parser.namespaceDictionary = NAMESPACE_DICTIONARY;
+ *   transport.addParser(parser);
+ * }
+ * </code>
+ * </pre>
  * 
  * @since 2.3
  * @author Yaniv Inbar
