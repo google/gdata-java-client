@@ -1,32 +1,4 @@
-#summary Experimental Java Client for Google API's Version 2.2.1 Alpha.
+#summary Experimental Java Client for Google API's Version 2 Alpha
 #labels Featured
 
-Version 2 is re-written from scratch from version 1 of the client library to provide a whole new set of functionality that wasn't available in version 1 of the client library.  It is still in "alpha" mode to provide a preview of the upcoming functionality to allow developers like you to experiment with it and to provide feedback so we can improve it.  This [http://code.google.com/p/gdata-java-client/source/browse/#svn/tags/2.2.1-alpha/gdata/src/com/google/api open source] library is written and provided by Google.
-
-*Features*
-  * _(New in version 2.2!)_ OAuth 1.0a authentication (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/javadoc/com/google/api/client/googleapis/auth/oauth/package-summary.html JavaDoc])
-  * _(Version 2 only)_ User-defined XML data models with partial response/update (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/javadoc/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc])
-  * _(Version 2 only)_ User-defined JSON data models (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/javadoc/com/google/api/client/googleapis/json/package-summary.html JavaDoc])
-  * _(Version 2 only)_ Android support (minimum 1.5 SDK): smaller and more efficient library
-  * Support for Atom XML wire format
-
-*Download Library and Samples*
-
-This library is packaged in two different ways.  See the readme.html for more details and for instructions for downloading samples:
-  * [http://gdata-java-client.googlecode.com/files/gdata-java-2.2.1-alpha.zip gdata-java-2.2.1-alpha.zip] (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/dist/readme.html Samples]), or
-  * [http://gdata-java-client.googlecode.com/files/gdata-android-2.2.1-alpha.zip gdata-android-2.2.1-alpha.zip] (see [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/gdata/android/readme.html Samples])
-
-*News*
-  * _(5/25/2010)_ Version 2.2.1-alpha released with support for Google Latitude API and a critical bug fix for OAuth 1.0a.  It is completely backwards compatible with 2.2.0-alpha.
-  * _(5/20/2010)_ Version 2.2.0-alpha released with support for OAuth 1.0a, Google Buzz API, and Google Moderator API.  This is not strictly backwards compatible with version 2.1.0-alpha, so expect some small code changes when upgrading from version 2.1.0-alpha.
-
-For more details, see the [http://gdata-java-client.googlecode.com/svn/tags/2.2.1-alpha/javadoc/index.html JavaDoc].
-
-If you encounter a problem with this client library or want to request a feature, please [http://code.google.com/p/gdata-java-client/issues/entry submit an issue].
-
-For discussions related to this client library only, please visit [http://groups.google.com/group/gdata-java-client GData Java Client Group].
-
-
-*WARNING:* this is an experimental branch of the library, and as such the client library API is subject to change.  There are known bugs, and important features not yet implemented.  We invite you to experiment with this library and provide us with early feedback.
-
-*WARNING:* this is a complete rewrite compared to version 1 of the library that uses completely different package names from version 1.  While it is not backwards compatible with version 1, it can be used in conjunction with version 1.  We are yet deprecating version 1 at this point.
+This page has been merged into the [http://code.google.com/p/gdata-java-client main page].
