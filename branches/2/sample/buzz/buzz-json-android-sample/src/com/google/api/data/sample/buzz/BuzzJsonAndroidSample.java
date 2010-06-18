@@ -43,7 +43,6 @@ import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
 import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
 import com.google.api.client.googleapis.json.JsonCParser;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.data.buzz.v1.GoogleBuzz;
 import com.google.api.data.sample.buzz.model.BuzzActivity;
 import com.google.api.data.sample.buzz.model.BuzzActivityFeed;
 import com.google.api.data.sample.buzz.model.BuzzObject;
@@ -68,6 +67,9 @@ import java.util.logging.Logger;
  * @author Yaniv Inbar
  */
 public class BuzzJsonAndroidSample extends Activity {
+
+  /** Buzz OAuth scope with write permissions. */
+  private static final String SCOPE = "https://www.googleapis.com/auth/buzz";
 
   private static final String APP_NAME = "buzzsample";
 
@@ -119,15 +121,15 @@ public class BuzzJsonAndroidSample extends Activity {
             new GoogleOAuthGetTemporaryToken();
         temporaryToken.signer = createOAuthSigner();
         temporaryToken.consumerKey = "anonymous";
-        temporaryToken.scope = GoogleBuzz.OAUTH_SCOPE;
+        temporaryToken.scope = SCOPE;
         temporaryToken.displayName = APP_NAME;
         temporaryToken.callback = "buzz-sample:///";
         isTemporary = true;
         credentials = temporaryToken.execute();
         OAuthAuthorizeTemporaryTokenUrl authorizeUrl =
             new OAuthAuthorizeTemporaryTokenUrl(
-                GoogleBuzz.OAUTH_AUTHORIZATION_URL);
-        authorizeUrl.set("scope", GoogleBuzz.OAUTH_SCOPE);
+                "https://www.google.com/buzz/api/auth/OAuthAuthorizeToken");
+        authorizeUrl.set("scope", SCOPE);
         authorizeUrl.set("domain", "anonymous");
         authorizeUrl.set("xoauth_displayname", APP_NAME);
         authorizeUrl.temporaryToken = credentials.token;
