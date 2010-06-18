@@ -16,7 +16,6 @@
 package com.google.api.client.auth;
 
 import com.google.api.client.util.Base64;
-import com.google.api.client.util.Base64DecoderException;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -73,11 +72,10 @@ public class RsaSha {
   /**
    * Reads a {@code PKCS#8} format private key from a given file.
    * 
-   * @throws Base64DecoderException
    * @throws NoSuchAlgorithmException
    */
   public static PrivateKey getPrivateKeyFromPk8(File file) throws IOException,
-      GeneralSecurityException, Base64DecoderException {
+      GeneralSecurityException {
     byte[] privKeyBytes = new byte[(int) file.length()];
     DataInputStream inputStream =
         new DataInputStream(new FileInputStream(file));
@@ -107,9 +105,9 @@ public class RsaSha {
     signature.initSign(privateKey);
     try {
       signature.update(data.getBytes("UTF-8"));
+      return new String(Base64.encode(signature.sign()), "UTF-8");
     } catch (UnsupportedEncodingException e) {
       throw new AssertionError(e);
     }
-    return Base64.encode(signature.sign());
   }
 }

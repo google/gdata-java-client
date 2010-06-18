@@ -61,7 +61,9 @@ public final class OAuthHmacSigner implements OAuthSigner {
           new SecretKeySpec(keyString.getBytes("UTF-8"), "HmacSHA1");
       Mac mac = Mac.getInstance("HmacSHA1");
       mac.init(key);
-      return Base64.encode(mac.doFinal(signatureBaseString.getBytes("UTF-8")));
+      byte[] encoded = Base64.encode(mac.doFinal(signatureBaseString
+          .getBytes("UTF-8")));
+      return new String(encoded, "UTF-8");
     } catch (UnsupportedEncodingException e) {
       throw new AssertionError(e);
     }
