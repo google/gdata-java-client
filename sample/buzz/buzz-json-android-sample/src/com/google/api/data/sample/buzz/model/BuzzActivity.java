@@ -61,7 +61,7 @@ public final class BuzzActivity {
    */
   public BuzzActivity post(HttpTransport transport) throws IOException {
     HttpRequest request = transport.buildPostRequest();
-    request.url = BuzzUrl.fromRelativePath("activities/@me/@self");
+    request.url = BuzzUrl.relativeToRoot("activities/@me/@self");
     JsonCContent content = new JsonCContent();
     content.data = this;
     request.content = content;
@@ -76,7 +76,7 @@ public final class BuzzActivity {
    */
   public void delete(HttpTransport transport) throws IOException {
     HttpRequest request = transport.buildDeleteRequest();
-    request.url = BuzzUrl.fromRelativePath("activities/@me/@self/" + this.id);
+    request.url = BuzzUrl.relativeToRoot("activities/@me/@self/" + this.id);
     request.execute().ignore();
   }
 }

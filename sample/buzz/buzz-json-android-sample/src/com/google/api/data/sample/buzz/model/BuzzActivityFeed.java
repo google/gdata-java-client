@@ -66,7 +66,7 @@ public final class BuzzActivityFeed {
   public static BuzzActivityFeed list(HttpTransport transport)
       throws IOException {
     HttpRequest request = transport.buildGetRequest();
-    request.url = BuzzUrl.fromRelativePath("activities/@me/@self");
+    request.url = BuzzUrl.relativeToRoot("activities/@me/@self");
     return request.execute().parseAs(BuzzActivityFeed.class);
   }
 }
