@@ -17,11 +17,9 @@
 package com.google.api.data.client.generator;
 
 import com.google.api.data.client.generator.model.Client;
-import com.google.api.data.client.generator.model.OAuthInfo;
 import com.google.api.data.client.generator.model.Version;
 
 import java.io.PrintWriter;
-import java.util.Map;
 
 /**
  * @author Yaniv Inbar
@@ -60,19 +58,24 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
       DocBuilder docBuilder = new DocBuilder();
       docBuilder.container = classDocBuilder;
       docBuilder.indentNumSpaces = 2;
-      docBuilder.isDeprecated = true;
       docBuilder.removedMinor = 4;
       docBuilder.generate(out);
       out.println(indent(2) + "public static final String VERSION = \"1\";");
       out.println();
     } else if (client.isOldGDataStyle) {
-      DocBuilder.generateComment(out, 2, "Version name.");
+      DocBuilder docBuilder = new DocBuilder();
+      docBuilder.indentNumSpaces = 2;
+      docBuilder.comment = "Version name.";
+      docBuilder.generate(out);
       out.println(indent(2) + "public static final String VERSION = \""
           + version.id.substring(1) + "\";");
       out.println();
     }
     if (version.rootUrl != null) {
-      DocBuilder.generateComment(out, 2, "Root URL.");
+      DocBuilder docBuilder = new DocBuilder();
+      docBuilder.indentNumSpaces = 2;
+      docBuilder.comment = "Root URL.";
+      docBuilder.generate(out);
       out.println(indent(2) + "public static final String ROOT_URL = \""
           + version.rootUrl + "\";");
       out.println();
@@ -84,45 +87,18 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
         docBuilder.comment =
             "The authentication token type used for Client Login.";
         docBuilder.indentNumSpaces = 2;
-        docBuilder.isDeprecated = true;
         docBuilder.removedMinor = 4;
         docBuilder.generate(out);
       } else {
-        DocBuilder.generateComment(out, 2,
-            "The authentication token type used for Client Login.");
+        DocBuilder docBuilder = new DocBuilder();
+        docBuilder.indentNumSpaces = 2;
+        docBuilder.comment =
+            "The authentication token type used for Client Login.";
+        docBuilder.generate(out);
       }
       out.println(indent(2) + "public static final String AUTH_TOKEN_TYPE = \""
           + client.authTokenType + "\";");
       out.println();
-    }
-    if (client.oauth != null) {
-      OAuthInfo oauth = client.oauth;
-      if (oauth.authorizationUrl != null) {
-        DocBuilder docBuilder = new DocBuilder();
-        docBuilder.comment = "OAuth authorization service endpoint.";
-        docBuilder.container = classDocBuilder;
-        docBuilder.sinceMinor = Math.max(3, version.sinceMinor);
-        docBuilder.indentNumSpaces = 2;
-        docBuilder.generate(out);
-        out.println(indent(2)
-            + "public static final String OAUTH_AUTHORIZATION_URL = \""
-            + oauth.authorizationUrl + "\";");
-        out.println();
-      }
-      if (oauth.scopes != null) {
-        for (Map.Entry<String, String> entry : oauth.scopes.entrySet()) {
-          DocBuilder docBuilder = new DocBuilder();
-          docBuilder.container = classDocBuilder;
-          docBuilder.sinceMinor = Math.max(3, version.sinceMinor);
-          docBuilder.indentNumSpaces = 2;
-          docBuilder.generate(out);
-          String suffix =
-              entry.getKey().length() == 0 ? "" : "_" + entry.getKey();
-          out.println(indent(2) + "public static final String OAUTH_SCOPE"
-              + suffix + " = \"" + entry.getValue() + "\";");
-          out.println();
-        }
-      }
     }
     out.println(indent(2) + "private " + className + "() {");
     out.println(indent(2) + "}");

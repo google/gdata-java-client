@@ -20,16 +20,37 @@ package com.google.api.data.picasa.v2;
  * Constants for the Picasa Web Albums Data API.
  *
  * @since 2.2
+ * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * application
  */
+@Deprecated
 public final class PicasaWebAlbums {
 
-  /** Version name. */
+  /**
+   * Version name.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String VERSION = "2";
 
-  /** Root URL. */
+  /**
+   * Root URL.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String ROOT_URL = "http://picasaweb.google.com/data/";
 
-  /** The authentication token type used for Client Login. */
+  /**
+   * The authentication token type used for Client Login.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String AUTH_TOKEN_TYPE = "lh2";
 
   private PicasaWebAlbums() {

@@ -54,7 +54,10 @@ final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
     docBuilder.generate(out);
     out.println("public final class " + className + " {");
     out.println();
-    DocBuilder.generateComment(out, 2, "XML namespace dictionary.");
+    docBuilder = new DocBuilder();
+    docBuilder.indentNumSpaces = 2;
+    docBuilder.comment = "XML namespace dictionary.";
+    docBuilder.generate(out);
     out.println(indent(2) + "public static final "
         + useClass(XmlNamespaceDictionary.class)
         + " NAMESPACE_DICTIONARY = new "

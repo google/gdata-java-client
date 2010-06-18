@@ -20,13 +20,28 @@ package com.google.api.data.sidewiki.v2;
  * Constants for the Google Sidewiki Data API.
  *
  * @since 2.2
+ * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * application
  */
+@Deprecated
 public final class GoogleSidewiki {
 
-  /** Version name. */
+  /**
+   * Version name.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String VERSION = "2";
 
-  /** Root URL. */
+  /**
+   * Root URL.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String ROOT_URL = "http://www.google.com/sidewiki/feeds/";
 
   private GoogleSidewiki() {

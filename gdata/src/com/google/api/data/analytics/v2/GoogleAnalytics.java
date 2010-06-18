@@ -20,17 +20,38 @@ package com.google.api.data.analytics.v2;
  * Constants for the Google Analytics Data Export API.
  *
  * @since 2.2
+ * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * application
  */
+@Deprecated
 public final class GoogleAnalytics {
 
-  /** Version name. */
+  /**
+   * Version name.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String VERSION = "2";
 
-  /** Root URL. */
+  /**
+   * Root URL.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String ROOT_URL =
       "https://www.google.com/analytics/feeds/";
 
-  /** The authentication token type used for Client Login. */
+  /**
+   * The authentication token type used for Client Login.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String AUTH_TOKEN_TYPE = "analytics";
 
   private GoogleAnalytics() {
