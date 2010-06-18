@@ -20,26 +20,21 @@ package com.google.api.data.latitude.v1;
  * Constants for the Google Latitude API.
  *
  * @since 2.2
+ * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * application
  */
+@Deprecated
 public final class GoogleLatitude {
 
-  /** Root URL. */
+  /**
+   * Root URL.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String ROOT_URL =
       "https://www.googleapis.com/latitude/v1/";
-
-  /**
-   * OAuth authorization service endpoint.
-   *
-   * @since 2.3
-   */
-  public static final String OAUTH_AUTHORIZATION_URL =
-      "https://www.google.com/latitude/apps/OAuthAuthorizeToken";
-
-  /**
-   * @since 2.3
-   */
-  public static final String OAUTH_SCOPE =
-      "https://www.googleapis.com/auth/latitude";
 
   private GoogleLatitude() {
   }

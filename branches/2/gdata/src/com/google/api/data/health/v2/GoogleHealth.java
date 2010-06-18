@@ -20,13 +20,28 @@ package com.google.api.data.health.v2;
  * Constants for the Google Health Data API.
  *
  * @since 2.2
+ * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * application
  */
+@Deprecated
 public final class GoogleHealth {
 
-  /** Version name. */
+  /**
+   * Version name.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String VERSION = "2";
 
-  /** Root URL. */
+  /**
+   * Root URL.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final String ROOT_URL = "https://www.google.com/health/feeds/";
 
   private GoogleHealth() {

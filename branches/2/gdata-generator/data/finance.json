@@ -4,21 +4,6 @@
   "className" : "GoogleFinance",
   "authTokenType" : "finance",
   "versions" : {
-    "1" : {
-      "sinceMinor" : 3,
-      "rootUrl" : "http://finance.google.com/finance/feeds/",
-      "atom" : {
-        "namespaces" : {
-          "app" : "http://purl.org/atom/app#",
-          "" : "http://www.w3.org/2005/Atom",
-          "atom" : "http://www.w3.org/2005/Atom",
-          "gd" : "http://schemas.google.com/g/2005",
-          "gf" : "http://schemas.google.com/finance/2007",
-          "openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
-          "xml" : "http://www.w3.org/XML/1998/namespace"
-        }
-      }
-    },
     "2" : {
       "rootUrl" : "http://finance.google.com/finance/feeds/",
       "atom" : {

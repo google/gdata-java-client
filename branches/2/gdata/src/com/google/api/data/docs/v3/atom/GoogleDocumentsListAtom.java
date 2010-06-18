@@ -24,10 +24,19 @@ import java.util.Map;
  * Utilities for the Atom XML format of the Google Documents List Data API.
  *
  * @since 2.2
+ * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * application
  */
+@Deprecated
 public final class GoogleDocumentsListAtom {
 
-  /** XML namespace dictionary. */
+  /**
+   * XML namespace dictionary.
+   *
+   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * application
+   */
+  @Deprecated
   public static final XmlNamespaceDictionary NAMESPACE_DICTIONARY = new
       XmlNamespaceDictionary();
   static {

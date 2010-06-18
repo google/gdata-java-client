@@ -3,77 +3,117 @@
 <!-- This is a generated file.  Do not modify by hand. -->
 <project basedir='.' default='clientjars' name='clientjars'>
 
-	<import file='build-common.xml' />
+  <import file='build-common.xml'/>
 
-	<property name='client.packagenames' value='com.google.api.client.android.xml,com.google.api.client.apache,com.google.api.client.auth,com.google.api.client.auth.oauth,com.google.api.client.auth.oauth2,com.google.api.client.escape,com.google.api.client.googleapis,com.google.api.client.googleapis.auth,com.google.api.client.googleapis.auth.clientlogin,com.google.api.client.googleapis.auth.oauth,com.google.api.client.googleapis.json,com.google.api.client.googleapis.xml.atom,com.google.api.client.http,com.google.api.client.json,com.google.api.client.util,com.google.api.client.xml,com.google.api.client.xml.atom' />
+  <property name='client.packagenames'
+      value='com.google.api.client.android.xml,com.google.api.client.apache,com.google.api.client.auth,com.google.api.client.auth.oauth,com.google.api.client.auth.oauth2,com.google.api.client.escape,com.google.api.client.googleapis,com.google.api.client.googleapis.auth,com.google.api.client.googleapis.auth.clientlogin,com.google.api.client.googleapis.auth.oauth,com.google.api.client.googleapis.json,com.google.api.client.googleapis.xml.atom,com.google.api.client.http,com.google.api.client.json,com.google.api.client.util,com.google.api.client.xml,com.google.api.client.xml.atom'
+      />
 
-	<target name='client-android-xml-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-android-xml.jar' basedir='${classes.dir}' includes='com/google/api/client/android/xml/*.class' />
-	</target>
+  <target name='client-android-xml-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-android-xml.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/android/xml/*.class' />
+  </target>
 
-	<target name='client-apache-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-apache.jar' basedir='${classes.dir}' includes='com/google/api/client/apache/*.class' />
-	</target>
+  <target name='client-apache-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-apache.jar'
+        basedir='${classes.dir}' includes='com/google/api/client/apache/*.class'
+        />
+  </target>
 
-	<target name='client-auth-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-auth.jar' basedir='${classes.dir}' includes='com/google/api/client/auth/*.class' />
-	</target>
+  <target name='client-auth-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-auth.jar'
+        basedir='${classes.dir}' includes='com/google/api/client/auth/*.class'
+        />
+  </target>
 
-	<target name='client-auth-oauth-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-auth-oauth.jar' basedir='${classes.dir}' includes='com/google/api/client/auth/oauth/*.class' />
-	</target>
+  <target name='client-auth-oauth-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-auth-oauth.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/auth/oauth/*.class' />
+  </target>
 
-	<target name='client-auth-oauth2-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-auth-oauth2.jar' basedir='${classes.dir}' includes='com/google/api/client/auth/oauth2/*.class' />
-	</target>
+  <target name='client-auth-oauth2-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-auth-oauth2.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/auth/oauth2/*.class' />
+  </target>
 
-	<target name='client-escape-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-escape.jar' basedir='${classes.dir}' includes='com/google/api/client/escape/*.class' />
-	</target>
+  <target name='client-escape-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-escape.jar'
+        basedir='${classes.dir}' includes='com/google/api/client/escape/*.class'
+        />
+  </target>
 
-	<target name='client-googleapis-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-googleapis.jar' basedir='${classes.dir}' includes='com/google/api/client/googleapis/*.class' />
-	</target>
+  <target name='client-googleapis-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-googleapis.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/googleapis/*.class' />
+  </target>
 
-	<target name='client-googleapis-auth-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-googleapis-auth.jar' basedir='${classes.dir}' includes='com/google/api/client/googleapis/auth/*.class' />
-	</target>
+  <target name='client-googleapis-auth-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-googleapis-auth.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/googleapis/auth/*.class' />
+  </target>
 
-	<target name='client-googleapis-auth-clientlogin-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-googleapis-auth-clientlogin.jar' basedir='${classes.dir}' includes='com/google/api/client/googleapis/auth/clientlogin/*.class' />
-	</target>
+  <target name='client-googleapis-auth-clientlogin-jar'>
+    <jar
+        destfile='${android.dir}/gdata-${version}-client-googleapis-auth-clientlogin.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/googleapis/auth/clientlogin/*.class' />
+  </target>
 
-	<target name='client-googleapis-auth-oauth-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-googleapis-auth-oauth.jar' basedir='${classes.dir}' includes='com/google/api/client/googleapis/auth/oauth/*.class' />
-	</target>
+  <target name='client-googleapis-auth-oauth-jar'>
+    <jar
+        destfile='${android.dir}/gdata-${version}-client-googleapis-auth-oauth.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/googleapis/auth/oauth/*.class' />
+  </target>
 
-	<target name='client-googleapis-json-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-googleapis-json.jar' basedir='${classes.dir}' includes='com/google/api/client/googleapis/json/*.class' />
-	</target>
+  <target name='client-googleapis-json-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-googleapis-json.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/googleapis/json/*.class' />
+  </target>
 
-	<target name='client-googleapis-xml-atom-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-googleapis-xml-atom.jar' basedir='${classes.dir}' includes='com/google/api/client/googleapis/xml/atom/*.class' />
-	</target>
+  <target name='client-googleapis-xml-atom-jar'>
+    <jar
+        destfile='${android.dir}/gdata-${version}-client-googleapis-xml-atom.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/googleapis/xml/atom/*.class' />
+  </target>
 
-	<target name='client-http-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-http.jar' basedir='${classes.dir}' includes='com/google/api/client/http/*.class' />
-	</target>
+  <target name='client-http-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-http.jar'
+        basedir='${classes.dir}' includes='com/google/api/client/http/*.class'
+        />
+  </target>
 
-	<target name='client-json-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-json.jar' basedir='${classes.dir}' includes='com/google/api/client/json/*.class' />
-	</target>
+  <target name='client-json-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-json.jar'
+        basedir='${classes.dir}' includes='com/google/api/client/json/*.class'
+        />
+  </target>
 
-	<target name='client-util-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-util.jar' basedir='${classes.dir}' includes='com/google/api/client/util/*.class' />
-	</target>
+  <target name='client-util-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-util.jar'
+        basedir='${classes.dir}' includes='com/google/api/client/util/*.class'
+        />
+  </target>
 
-	<target name='client-xml-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-xml.jar' basedir='${classes.dir}' includes='com/google/api/client/xml/*.class' />
-	</target>
+  <target name='client-xml-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-xml.jar'
+        basedir='${classes.dir}' includes='com/google/api/client/xml/*.class' />
+  </target>
 
-	<target name='client-xml-atom-jar'>
-		<jar destfile='${android.dir}/gdata-${version}-client-xml-atom.jar' basedir='${classes.dir}' includes='com/google/api/client/xml/atom/*.class' />
-	</target>
+  <target name='client-xml-atom-jar'>
+    <jar destfile='${android.dir}/gdata-${version}-client-xml-atom.jar'
+        basedir='${classes.dir}'
+        includes='com/google/api/client/xml/atom/*.class' />
+  </target>
 
-	<target name='clientjars' description='Compile all Client package jars' depends='client-android-xml-jar,client-apache-jar,client-auth-jar,client-auth-oauth-jar,client-auth-oauth2-jar,client-escape-jar,client-googleapis-jar,client-googleapis-auth-jar,client-googleapis-auth-clientlogin-jar,client-googleapis-auth-oauth-jar,client-googleapis-json-jar,client-googleapis-xml-atom-jar,client-http-jar,client-json-jar,client-util-jar,client-xml-jar,client-xml-atom-jar' />
+  <target name='clientjars' description='Compile all Client package jars'
+      depends='client-android-xml-jar,client-apache-jar,client-auth-jar,client-auth-oauth-jar,client-auth-oauth2-jar,client-escape-jar,client-googleapis-jar,client-googleapis-auth-jar,client-googleapis-auth-clientlogin-jar,client-googleapis-auth-oauth-jar,client-googleapis-json-jar,client-googleapis-xml-atom-jar,client-http-jar,client-json-jar,client-util-jar,client-xml-jar,client-xml-atom-jar'
+      />
 </project>

@@ -31,51 +31,28 @@ final class DocBuilder {
 
   DocBuilder container;
 
-  boolean isDeprecated;
-
   int removedMinor;
 
   void generate(PrintWriter out) {
     boolean showComment = comment != null;
     boolean showSince =
         sinceMinor > (container == null ? 0 : container.sinceMinor);
-    if (showComment || showSince || isDeprecated) {
-      if (showComment && !showSince && !isDeprecated
-          && indentNumSpaces + comment.length() <= 72) {
-        out.println(indent() + "/** " + comment + " */");
-      } else {
-        out.println(indent() + "/**");
-        if (comment != null) {
-          out.println(indent() + " * " + comment);
-          if (showSince || isDeprecated) {
-            out.println(indent() + " *");
-          }
-        }
-        if (showSince) {
-          out.println(indent() + " * @since 2." + sinceMinor);
-        }
-        if (isDeprecated) {
-          out.println(indent()
-              + " * @deprecated (scheduled to be removed in version 2."
-              + removedMinor + ")");
-        }
-        out.println(indent() + " */");
-      }
+    out.println(indent() + "/**");
+    if (comment != null) {
+      out.println(indent() + " * " + comment);
+      out.println(indent() + " *");
     }
-    if (isDeprecated) {
-      out.println(indent() + "@Deprecated");
+    if (showSince) {
+      out.println(indent() + " * @since 2." + sinceMinor);
     }
+    out
+        .println(indent()
+            + " * @deprecated (scheduled to be removed in version 2.4) Copy into your own application");
+    out.println(indent() + " */");
+    out.println(indent() + "@Deprecated");
   }
 
   private String indent() {
     return AbstractJavaFileGenerator.indent(indentNumSpaces);
-  }
-
-  static void generateComment(PrintWriter out, int indentNumSpaces,
-      String comment) {
-    DocBuilder docBuilder = new DocBuilder();
-    docBuilder.indentNumSpaces = indentNumSpaces;
-    docBuilder.comment = comment;
-    docBuilder.generate(out);
   }
 }
