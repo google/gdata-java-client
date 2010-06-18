@@ -21,7 +21,6 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 import com.google.api.client.xml.atom.AtomContent;
-import com.google.api.data.picasa.v2.atom.PicasaWebAlbumsAtom;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,7 +56,7 @@ public class Feed {
     HttpRequest request = transport.buildPostRequest();
     request.setUrl(getPostLink());
     AtomContent content = new AtomContent();
-    content.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
+    content.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
     content.entry = entry;
     request.content = content;
     return request.execute().parseAs(entry.getClass());

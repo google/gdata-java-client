@@ -18,12 +18,13 @@ package com.google.api.data.sample.picasa.model;
 
 import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.util.Key;
-import com.google.api.data.picasa.v2.PicasaWebAlbums;
 
 /**
  * @author Yaniv Inbar
  */
 public class PicasaUrl extends GoogleUrl {
+
+  public static final String ROOT_URL = "http://picasaweb.google.com/data/";
 
   @Key
   public String kinds;
@@ -32,9 +33,13 @@ public class PicasaUrl extends GoogleUrl {
     super(encodedUrl);
   }
 
-  public static PicasaUrl fromRelativePath(String relativePath) {
-    PicasaUrl result = new PicasaUrl(PicasaWebAlbums.ROOT_URL);
-    result.appendRawPath(relativePath);
-    return result;
+  /**
+   * Constructs a new URL based on the given relative path.
+   * 
+   * @param relativePath encoded path relative to the {@link #ROOT_URL}
+   * @return new URL
+   */
+  public static PicasaUrl relativeToRoot(String relativePath) {
+    return new PicasaUrl(ROOT_URL + relativePath);
   }
 }

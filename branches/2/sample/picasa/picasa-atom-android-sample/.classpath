@@ -4,8 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-xml.jar" sourcepath="gdata-2.3.0-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-data-picasa-v2-atom.jar" sourcepath="gdata-2.3.0-alpha-src.zip"/>
-	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-data-picasa-v2.jar" sourcepath="gdata-2.3.0-alpha-src.zip"/>
 	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-http.jar" sourcepath="gdata-2.3.0-alpha-src.zip"/>
 	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-util.jar" sourcepath="gdata-2.3.0-alpha-src.zip"/>
 	<classpathentry kind="lib" path="lib/gdata-2.3.0-alpha-client-xml-atom.jar" sourcepath="gdata-2.3.0-alpha-src.zip"/>

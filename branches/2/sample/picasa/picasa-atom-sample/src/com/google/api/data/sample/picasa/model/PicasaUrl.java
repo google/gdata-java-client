@@ -18,12 +18,13 @@ package com.google.api.data.sample.picasa.model;
 
 import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.util.Key;
-import com.google.api.data.picasa.v2.PicasaWebAlbums;
 
 /**
  * @author Yaniv Inbar
  */
 public class PicasaUrl extends GoogleUrl {
+  
+  public static final String ROOT_URL = "http://picasaweb.google.com/data/";
 
   @Key("max-results")
   public Integer maxResults;
@@ -33,7 +34,7 @@ public class PicasaUrl extends GoogleUrl {
 
   public PicasaUrl(String url) {
     super(url);
-    if (Debug.ENABLED) {
+    if (Util.DEBUG) {
       this.prettyprint = true;
     }
   }
@@ -41,14 +42,10 @@ public class PicasaUrl extends GoogleUrl {
   /**
    * Constructs a new Picasa Web Albums URL based on the given relative path.
    * 
-   * @param relativePath unencoded path relative to the
-   *        {@link PicasaWebAlbums#ROOT_URL} , but not containing any query
-   *        parameters
+   * @param relativePath encoded path relative to the {@link #ROOT_URL}
    * @return new Picasa URL
    */
-  public static PicasaUrl fromRelativePath(String relativePath) {
-    PicasaUrl result = new PicasaUrl(PicasaWebAlbums.ROOT_URL);
-    result.appendRawPath(relativePath);
-    return result;
+  public static PicasaUrl relativeToRoot(String relativePath) {
+    return new PicasaUrl(ROOT_URL + relativePath);
   }
 }

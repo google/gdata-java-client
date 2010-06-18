@@ -32,7 +32,6 @@ import com.google.api.data.sample.youtube.model.Debug;
 import com.google.api.data.sample.youtube.model.Video;
 import com.google.api.data.sample.youtube.model.VideoFeed;
 import com.google.api.data.sample.youtube.model.YouTubeUrl;
-import com.google.api.data.youtube.v2.YouTube;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -78,7 +77,7 @@ public class YouTubeJsoncSample {
     HttpTransport transport = GoogleTransport.create();
     GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
     headers.setApplicationName("google-youtubejsoncsample-1.0");
-    headers.gdataVersion = YouTube.VERSION;
+    headers.gdataVersion = "2";
     transport.addParser(new JsonCParser());
     if (AUTH_TYPE == AuthType.OAUTH) {
       authorizeUsingOAuth(transport);
@@ -131,7 +130,7 @@ public class YouTubeJsoncSample {
   private static void authorizeUsingClientLogin(HttpTransport transport)
       throws IOException {
     ClientLogin authenticator = new ClientLogin();
-    authenticator.authTokenType = YouTube.AUTH_TOKEN_TYPE;
+    authenticator.authTokenType = "youtube";
     Scanner s = new Scanner(System.in);
     System.out.println("Username: ");
     authenticator.username = s.nextLine();
@@ -143,7 +142,7 @@ public class YouTubeJsoncSample {
   private static VideoFeed showVideos(HttpTransport transport)
       throws IOException {
     // build URL for the video feed for "search stories"
-    YouTubeUrl url = YouTubeUrl.fromRelativePath("videos");
+    YouTubeUrl url = YouTubeUrl.relativeToRoot("videos");
     url.maxResults = MAX_VIDEOS_TO_SHOW;
     url.author = "searchstories";
     // execute GData request for the feed

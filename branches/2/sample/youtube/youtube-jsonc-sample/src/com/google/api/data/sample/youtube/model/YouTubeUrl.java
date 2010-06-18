@@ -18,12 +18,13 @@ package com.google.api.data.sample.youtube.model;
 
 import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.util.Key;
-import com.google.api.data.youtube.v2.YouTube;
 
 /**
  * @author Yaniv Inbar
  */
 public class YouTubeUrl extends GoogleUrl {
+
+  public static final String ROOT_URL = "http://gdata.youtube.com/feeds/api/";
 
   @Key
   public String author;
@@ -42,13 +43,10 @@ public class YouTubeUrl extends GoogleUrl {
   /**
    * Constructs a new YouTube URL based on the given relative path.
    * 
-   * @param relativePath unencoded path relative to the {@link YouTube#ROOT_URL}
-   *        , but not containing any query parameters
+   * @param relativePath encoded path relative to the {@link #ROOT_URL}
    * @return new YouTube URL
    */
-  public static YouTubeUrl fromRelativePath(String relativePath) {
-    YouTubeUrl result = new YouTubeUrl(YouTube.ROOT_URL);
-    result.appendRawPath(relativePath);
-    return result;
+  public static YouTubeUrl relativeToRoot(String relativePath) {
+    return new YouTubeUrl(ROOT_URL + relativePath);
   }
 }
