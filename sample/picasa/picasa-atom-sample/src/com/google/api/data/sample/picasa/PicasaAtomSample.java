@@ -28,14 +28,12 @@ import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.xml.atom.AtomParser;
-import com.google.api.data.picasa.v2.PicasaWebAlbums;
-import com.google.api.data.picasa.v2.atom.PicasaWebAlbumsAtom;
 import com.google.api.data.sample.picasa.model.AlbumEntry;
 import com.google.api.data.sample.picasa.model.AlbumFeed;
-import com.google.api.data.sample.picasa.model.Debug;
 import com.google.api.data.sample.picasa.model.PhotoEntry;
 import com.google.api.data.sample.picasa.model.PicasaUrl;
 import com.google.api.data.sample.picasa.model.UserFeed;
+import com.google.api.data.sample.picasa.model.Util;
 
 import java.io.IOException;
 import java.net.URL;
@@ -55,7 +53,7 @@ public class PicasaAtomSample {
   static OAuthCredentialsResponse credentials;
 
   public static void main(String[] args) throws IOException {
-    Debug.enableLogging();
+    Util.enableLogging();
     try {
       HttpTransport transport = setUpTransport();
       UserFeed feed = showAlbums(transport);
@@ -82,9 +80,9 @@ public class PicasaAtomSample {
     HttpTransport transport = GoogleTransport.create();
     GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
     headers.setApplicationName("google-picasaatomsample-1.0");
-    headers.gdataVersion = PicasaWebAlbums.VERSION;
+    headers.gdataVersion = "2";
     AtomParser parser = new AtomParser();
-    parser.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
+    parser.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
     transport.addParser(parser);
     if (AUTH_TYPE == AuthType.OAUTH) {
       authorizeUsingOAuth(transport);
@@ -137,7 +135,7 @@ public class PicasaAtomSample {
   private static void authorizeUsingClientLogin(HttpTransport transport)
       throws IOException {
     ClientLogin authenticator = new ClientLogin();
-    authenticator.authTokenType = PicasaWebAlbums.AUTH_TOKEN_TYPE;
+    authenticator.authTokenType = "lh2";
     Scanner s = new Scanner(System.in);
     System.out.println("Username: ");
     authenticator.username = s.nextLine();
@@ -149,7 +147,7 @@ public class PicasaAtomSample {
   private static UserFeed showAlbums(HttpTransport transport)
       throws IOException {
     // build URL for the default user feed of albums
-    PicasaUrl url = PicasaUrl.fromRelativePath("feed/api/user/default");
+    PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/default");
     // execute GData request for the feed
     UserFeed feed = UserFeed.executeGet(transport, url);
     System.out.println("User: " + feed.author.name);

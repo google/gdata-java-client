@@ -22,7 +22,6 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.DataUtil;
 import com.google.api.client.util.Key;
-import com.google.api.data.picasa.v2.atom.PicasaWebAlbumsAtom;
 
 import java.io.IOException;
 import java.util.List;
@@ -82,7 +81,7 @@ public class Entry implements Cloneable {
     request.headers.ifMatch = etag;
     AtomPatchRelativeToOriginalContent content =
         new AtomPatchRelativeToOriginalContent();
-    content.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
+    content.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
     content.originalEntry = original;
     content.patchedEntry = this;
     request.content = content;

@@ -58,11 +58,10 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.xml.atom.AtomParser;
-import com.google.api.data.picasa.v2.PicasaWebAlbums;
-import com.google.api.data.picasa.v2.atom.PicasaWebAlbumsAtom;
 import com.google.api.data.sample.picasa.model.AlbumEntry;
 import com.google.api.data.sample.picasa.model.PicasaUrl;
 import com.google.api.data.sample.picasa.model.UserFeed;
+import com.google.api.data.sample.picasa.model.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,11 +88,13 @@ import java.util.logging.Logger;
  */
 public final class PicasaAtomAndroidSample extends ListActivity {
 
+  private static final String AUTH_TOKEN_TYPE = "lh2";
+ 
   enum AuthType {
     OAUTH, ACCOUNT_MANAGER, CLIENT_LOGIN
   }
 
-  private static AuthType AUTH_TYPE = AuthType.ACCOUNT_MANAGER;
+  private static AuthType AUTH_TYPE = AuthType.OAUTH;
 
   private static final String TAG = "PicasaBasicAtomAndroidSample";
 
@@ -132,9 +133,9 @@ public final class PicasaAtomAndroidSample extends ListActivity {
     transport = GoogleTransport.create();
     GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
     headers.setApplicationName("google-picasaandroidsample-1.0");
-    headers.gdataVersion = PicasaWebAlbums.VERSION;
+    headers.gdataVersion = "2";
     AtomParser parser = new AtomParser();
-    parser.namespaceDictionary = PicasaWebAlbumsAtom.NAMESPACE_DICTIONARY;
+    parser.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
     transport.addParser(parser);
   }
 
@@ -166,8 +167,8 @@ public final class PicasaAtomAndroidSample extends ListActivity {
             final Account[] accounts = manager.getAccountsByType("com.google");
             final int size = accounts.length;
             String[] names = new String[size];
-//            String[] names = new String[size + 1];
-//          names[size] = "New Account";
+            // String[] names = new String[size + 1];
+            // names[size] = "New Account";
             for (int i = 0; i < size; i++) {
               names[i] = accounts[i].name;
             }
@@ -197,7 +198,7 @@ public final class PicasaAtomAndroidSample extends ListActivity {
               public void onClick(View v) {
                 clientLoginDialog.dismiss();
                 ClientLogin authenticator = new ClientLogin();
-                authenticator.authTokenType = PicasaWebAlbums.AUTH_TOKEN_TYPE;
+                authenticator.authTokenType = AUTH_TOKEN_TYPE;
                 EditText username =
                     (EditText) clientLoginDialog.findViewById(R.id.Email);
                 authenticator.username = username.getText().toString();
@@ -270,7 +271,7 @@ public final class PicasaAtomAndroidSample extends ListActivity {
                 new GoogleOAuthGetTemporaryToken();
             temporaryToken.signer = createOAuthSigner();
             temporaryToken.consumerKey = "anonymous";
-            temporaryToken.scope = PicasaWebAlbums.ROOT_URL;
+            temporaryToken.scope = PicasaUrl.ROOT_URL;
             temporaryToken.displayName =
                 "Picasa Atom XML Sample for the GData Java library";
             temporaryToken.callback = "picasa-sample:///";
@@ -312,8 +313,8 @@ public final class PicasaAtomAndroidSample extends ListActivity {
     // TODO: test!
     try {
       Bundle bundle =
-          manager.addAccount("google.com", PicasaWebAlbums.AUTH_TOKEN_TYPE,
-              null, null, this, null, null).getResult();
+          manager.addAccount("google.com", AUTH_TOKEN_TYPE, null, null, this,
+              null, null).getResult();
       if (bundle.containsKey(AccountManager.KEY_INTENT)) {
         Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
         int flags = intent.getFlags();
@@ -346,8 +347,8 @@ public final class PicasaAtomAndroidSample extends ListActivity {
     editor.commit();
     try {
       Bundle bundle =
-          manager.getAuthToken(account, PicasaWebAlbums.AUTH_TOKEN_TYPE, true,
-              null, null).getResult();
+          manager.getAuthToken(account, AUTH_TOKEN_TYPE, true, null, null)
+              .getResult();
       if (bundle.containsKey(AccountManager.KEY_INTENT)) {
         Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
         int flags = intent.getFlags();
@@ -427,7 +428,7 @@ public final class PicasaAtomAndroidSample extends ListActivity {
             HttpRequest request = transport.buildPostRequest();
             request.url =
                 PicasaUrl
-                    .fromRelativePath("feed/api/user/default/albumid/default");
+                    .relativeToRoot("feed/api/user/default/albumid/default");
             ((GoogleHeaders) request.headers)
                 .setSlugFromFileName(sendData.fileName);
             InputStreamContent content = new InputStreamContent();
@@ -536,7 +537,7 @@ public final class PicasaAtomAndroidSample extends ListActivity {
     List<AlbumEntry> albums = this.albums;
     albums.clear();
     try {
-      PicasaUrl url = PicasaUrl.fromRelativePath("feed/api/user/default");
+      PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/default");
       // page through results
       while (true) {
         UserFeed userFeed = UserFeed.executeGet(transport, url);
