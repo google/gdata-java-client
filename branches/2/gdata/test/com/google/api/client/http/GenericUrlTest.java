@@ -21,6 +21,8 @@ import com.google.api.client.util.Key;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -124,8 +126,8 @@ public class GenericUrlTest extends TestCase {
   private static String FULL =
       "https://www.google.com:223/m8/feeds/contacts/someone=%23%25&%20%3F%3Co%3E%7B%7D@gmail.com/"
           + "full?"
-          + "alt=json&"
           + "foo=bar&"
+          + "alt=json&"
           + "max-results=3&"
           + "prettyprint=true&" + "q=Go%3D%23/%25%26%20?%3Co%3Egle";
 
@@ -149,7 +151,8 @@ public class GenericUrlTest extends TestCase {
     assertEquals("https", url.scheme);
     assertEquals("www.google.com", url.host);
     assertEquals(223, url.port);
-    assertEquals("/m8/feeds/contacts/someone=#%& ?<o>{}@gmail.com/full", url.path);
+    assertEquals("/m8/feeds/contacts/someone=#%& ?<o>{}@gmail.com/full",
+        url.path);
     assertEquals("json", url.get("alt"));
     assertEquals("3", url.get("max-results"));
     assertEquals("true", url.get("prettyprint"));
@@ -192,7 +195,7 @@ public class GenericUrlTest extends TestCase {
   }
 
   private static String FIELD_TYPES =
-      "foo://bar?B=true&D=-3.14&I=-3&a=b&b=true&d=-3.14&i=-3&s=a";
+      "foo://bar?B=true&D=-3.14&I=-3&b=true&d=-3.14&i=-3&s=a&a=b";
 
   public void testFieldTypes_build() {
     FieldTypesUrl url = new FieldTypesUrl();
@@ -336,5 +339,34 @@ public class GenericUrlTest extends TestCase {
     url.appendRawPath("/");
     assertEquals(Arrays.asList(new String[] {"", "", "", "abc", "d", "e", ""}),
         url.pathParts);
+  }
+
+  private static final String PREFIX = "https://www.googleapis.com";
+
+  private static final String REPEATED_PARAM_PATH = "/latitude/v1/location";
+
+  private static final String REPEATED_PARAM =
+      PREFIX + REPEATED_PARAM_PATH + "?q=c&q=a&q=b";
+
+  public void testRepeatedParam_build() {
+    GenericUrl url = new GenericUrl();
+    url.scheme = "https";
+    url.host = "www.googleapis.com";
+    url.setRawPath(REPEATED_PARAM_PATH);
+    url.set("q", Arrays.asList(new String[] {"c", "a", "b"}));
+    assertEquals(REPEATED_PARAM, url.build());
+  }
+
+  public void testRepeatedParam_parse() {
+    GenericUrl url = new GenericUrl(REPEATED_PARAM);
+    assertEquals("https", url.scheme);
+    assertEquals("www.googleapis.com", url.host);
+    assertEquals(REPEATED_PARAM_PATH, url.getRawPath());
+    Collection<?> q = (Collection<?>) url.get("q");
+    Iterator<?> i = q.iterator();
+    assertEquals("c", i.next());
+    assertEquals("a", i.next());
+    assertEquals("b", i.next());
+    assertFalse(i.hasNext());
   }
 }

@@ -26,10 +26,9 @@ import com.google.api.client.util.Objects;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /**
  * URL builder in which the query parameters are specified as generic data
@@ -61,9 +60,6 @@ public class GenericUrl extends GenericData {
   private static final Escaper URI_FRAGMENT_ESCAPER =
       new PercentEscaper("=&-_.!~*'()@:$,;/?:", false);
 
-  // TODO: support for repeated query parameters, e.g. "q" parameter for Google
-  // Latitude API
-
   /** Scheme (lowercase), for example {@code "https"}. */
   public String scheme;
 
@@ -82,7 +78,6 @@ public class GenericUrl extends GenericData {
    * @deprecated (scheduled to be removed in version 2.4) Use
    *             {@link #getRawPath()}, {@link #setRawPath(String rawPath)}, or
    *             {@link #appendRawPath(String)}
-
    */
   @Deprecated
   public String path;
@@ -213,24 +208,22 @@ public class GenericUrl extends GenericData {
         }
       }
     }
-    // compute parameters in sorted order
-    SortedMap<String, String> params = new TreeMap<String, String>();
-    for (Map.Entry<String, Object> fieldEntry : entrySet()) {
-      Object value = fieldEntry.getValue();
+    // query parameters (similar to UrlEncodedContent)
+    boolean first = true;
+    for (Map.Entry<String, Object> nameValueEntry : entrySet()) {
+      Object value = nameValueEntry.getValue();
       if (value != null) {
-        params.put(escape(fieldEntry.getKey()), escape(value));
+        String name = CharEscapers.escapeUriQuery(nameValueEntry.getKey());
+        String[] values;
+        if (value instanceof Collection<?>) {
+          Collection<?> collectionValue = (Collection<?>) value;
+          for (Object repeatedValue : collectionValue) {
+            first = appendParam(first, buf, name, repeatedValue);
+          }
+        } else {
+          first = appendParam(first, buf, name, value);
+        }
       }
-    }
-    // now add parameters to URL
-    boolean startedQuery = false;
-    for (Map.Entry<String, String> entry : params.entrySet()) {
-      if (startedQuery) {
-        buf.append("&");
-      } else {
-        buf.append("?");
-        startedQuery = true;
-      }
-      buf.append(entry.getKey()).append('=').append(entry.getValue());
     }
     // URL fragment
     String fragment = this.fragment;
@@ -239,7 +232,6 @@ public class GenericUrl extends GenericData {
     }
     return buf.toString();
   }
-
 
   /**
    * Returns the raw encoded path computed from the {@link #pathParts}.
@@ -330,14 +322,6 @@ public class GenericUrl extends GenericData {
     return result;
   }
 
-  private static String escape(Object value) {
-    String string = value.toString();
-    if (value instanceof Number) {
-      return string;
-    }
-    return CharEscapers.escapeUriQuery(string);
-  }
-
   private void appendRawPathFromParts(StringBuilder buf) {
     List<String> pathParts = this.pathParts;
     int size = pathParts.size();
@@ -350,5 +334,18 @@ public class GenericUrl extends GenericData {
         buf.append(CharEscapers.escapeUriPath(pathPart));
       }
     }
+  }
+
+  private static boolean appendParam(boolean first, StringBuilder buf,
+      String name, Object value) {
+    if (first) {
+      first = false;
+      buf.append('?');
+    } else {
+      buf.append('&');
+    }
+    buf.append(name).append('=').append(
+        CharEscapers.escapeUriQuery(value.toString()));
+    return first;
   }
 }

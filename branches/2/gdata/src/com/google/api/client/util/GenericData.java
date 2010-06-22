@@ -28,6 +28,10 @@ import java.util.Set;
  * Subclasses can declare fields for known data keys using the {@link Key}
  * annotation. {@code null} unknown data key names are not allowed, but {@code
  * null} data values are allowed.
+ * <p>
+ * Iteration order of the data keys is based on the sorted (ascending) key names
+ * of the declared fields, followed by the iteration order of all of the unknown
+ * data key name/value pairs.
  * 
  * @since 2.2
  * @author Yaniv Inbar
@@ -36,7 +40,7 @@ public class GenericData extends AbstractMap<String, Object> implements
     Cloneable {
 
   // TODO: type parameter to specify value type?
-  
+
   private EntrySet entrySet;
 
   /** Map of unknown fields. */
@@ -148,30 +152,29 @@ public class GenericData extends AbstractMap<String, Object> implements
   final class EntryIterator implements Iterator<Map.Entry<String, Object>> {
 
     private boolean startedUnknown;
-    private final Iterator<String> fieldNamesIterator;
     private final Iterator<Map.Entry<String, Object>> unknownIterator;
+    private final ReflectionMap.EntryIterator fieldIterator;
 
     EntryIterator() {
-      this.fieldNamesIterator =
-          GenericData.this.classInfo.getKeyNames().iterator();
+      this.fieldIterator =
+          new ReflectionMap.EntryIterator(GenericData.this.classInfo,
+              GenericData.this);
       this.unknownIterator =
           GenericData.this.unknownFields.entrySet().iterator();
     }
 
     public boolean hasNext() {
-      return !this.startedUnknown && this.fieldNamesIterator.hasNext()
+      return !this.startedUnknown && this.fieldIterator.hasNext()
           || this.unknownIterator.hasNext();
     }
 
     public Map.Entry<String, Object> next() {
       if (!this.startedUnknown) {
-        Iterator<String> fieldNamesIterator = this.fieldNamesIterator;
-        if (this.fieldNamesIterator.hasNext()) {
-          return new ReflectionMap.Entry(GenericData.this, fieldNamesIterator
-              .next());
-        } else {
-          this.startedUnknown = true;
+        ReflectionMap.EntryIterator fieldIterator = this.fieldIterator;
+        if (fieldIterator.hasNext()) {
+          return fieldIterator.next();
         }
+        this.startedUnknown = true;
       }
       return this.unknownIterator.next();
     }

@@ -19,12 +19,13 @@ package com.google.api.client.googleapis.xml.atom;
 import com.google.api.client.util.ArrayMap;
 import com.google.api.client.util.ClassInfo;
 import com.google.api.client.util.DataUtil;
-import com.google.api.client.util.GenericData;
 import com.google.api.client.util.FieldInfo;
+import com.google.api.client.util.GenericData;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Utilities for working with the Atom XML of Google Data API's.
@@ -65,7 +66,7 @@ public class GData {
               + dataClass);
     }
     ClassInfo classInfo = ClassInfo.of(dataClass);
-    for (String name : classInfo.getKeyNames()) {
+    for (String name : new TreeSet<String>(classInfo.getKeyNames())) {
       FieldInfo fieldInfo = classInfo.getFieldInfo(name);
       if (fieldInfo.isFinal) {
         continue;
