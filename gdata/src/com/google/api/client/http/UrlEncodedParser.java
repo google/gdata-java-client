@@ -23,7 +23,7 @@ import com.google.api.client.util.FieldInfo;
 import com.google.api.client.util.GenericData;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -86,6 +86,7 @@ public final class UrlEncodedParser implements HttpParser {
   }
 
   /** Parses the given content into the given data object of key/value pairs. */
+  @SuppressWarnings("unchecked")
   public static void parse(String content, Object data) {
     Class<?> clazz = data.getClass();
     ClassInfo classInfo = ClassInfo.of(clazz);
@@ -107,16 +108,44 @@ public final class UrlEncodedParser implements HttpParser {
             + content.substring(cur, amp));
       }
       String name = CharEscapers.decodeUri(content.substring(cur, equals));
-      String value = CharEscapers.decodeUri(content.substring(equals + 1, amp));
+      String stringValue =
+          CharEscapers.decodeUri(content.substring(equals + 1, amp));
       // get the field from the type information
-      Field field = classInfo.getField(name);
-      if (field != null) {
-        Object fieldValue = parseValue(value, field.getType());
-        FieldInfo.setFieldValue(field, data, fieldValue);
-      } else if (genericData != null) {
-        genericData.set(name, value);
-      } else if (map != null) {
-        map.put(name, value);
+      FieldInfo fieldInfo = classInfo.getFieldInfo(name);
+      if (fieldInfo != null) {
+        Class<?> type = fieldInfo.type;
+        if (Collection.class.isAssignableFrom(type)) {
+          Collection<Object> collection =
+              (Collection<Object>) fieldInfo.getValue(data);
+          if (collection == null) {
+            collection = ClassInfo.newCollectionInstance(type);
+            fieldInfo.setValue(data, collection);
+          }
+          Class<?> subFieldClass =
+              ClassInfo.getCollectionParameter(fieldInfo.field);
+          collection.add(parseValue(stringValue, subFieldClass));
+        } else {
+          fieldInfo.setValue(data, parseValue(stringValue, type));
+        }
+      } else {
+        Object value = stringValue;
+        Object oldValue = map.get(name);
+        if (oldValue != null) {
+          Collection<Object> collectionValue;
+          if (oldValue instanceof Collection<?>) {
+            collectionValue = (Collection<Object>) oldValue;
+          } else {
+            collectionValue = ClassInfo.newCollectionInstance(null);
+            collectionValue.add(oldValue);
+          }
+          collectionValue.add(stringValue);
+          value = collectionValue;
+        }
+        if (genericData != null) {
+          genericData.set(name, value);
+        } else {
+          map.put(name, value);
+        }
       }
       cur = amp + 1;
     }

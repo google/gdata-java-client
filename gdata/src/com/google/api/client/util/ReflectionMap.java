@@ -18,12 +18,17 @@ package com.google.api.client.util;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
  * Map that uses {@link ClassInfo} to parse the key/value pairs into a map.
+ * <p>
+ * Iteration order of the keys is based on the sorted (ascending) key names.
  * 
  * @since 2.2
  * @author Yaniv Inbar
@@ -56,7 +61,8 @@ public final class ReflectionMap extends AbstractMap<String, Object> {
 
     @Override
     public Iterator<Map.Entry<String, Object>> iterator() {
-      return new EntryIterator();
+      return new EntryIterator(ReflectionMap.this.classInfo,
+          ReflectionMap.this.object);
     }
 
     @Override
@@ -65,22 +71,45 @@ public final class ReflectionMap extends AbstractMap<String, Object> {
     }
   }
 
-  final class EntryIterator implements Iterator<Map.Entry<String, Object>> {
+  static final class EntryIterator implements
+      Iterator<Map.Entry<String, Object>> {
 
-    private final Iterator<String> fieldNamesIterator;
+    private final String[] fieldNames;
+    private final int numFields;
+    private int fieldIndex = 0;
+    private final Object object;
+    final ClassInfo classInfo;
 
-    EntryIterator() {
-      this.fieldNamesIterator =
-          ReflectionMap.this.classInfo.getKeyNames().iterator();
+    EntryIterator(ClassInfo classInfo, Object object) {
+      this.classInfo = classInfo;
+      this.object = object;
+      // sort the keys
+      Collection<String> keyNames = this.classInfo.getKeyNames();
+      int size = this.numFields = keyNames.size();
+      if (size == 0) {
+        this.fieldNames = null;
+      } else {
+        String[] fieldNames = this.fieldNames = new String[size];
+        int i = 0;
+        for (String keyName : keyNames) {
+          fieldNames[i++] = keyName;
+        }
+        Arrays.sort(fieldNames);
+      }
     }
 
     public boolean hasNext() {
-      return this.fieldNamesIterator.hasNext();
+      return this.fieldIndex < this.numFields;
     }
 
     public Map.Entry<String, Object> next() {
-      String fieldName = this.fieldNamesIterator.next();
-      return new Entry(ReflectionMap.this.object, fieldName);
+      int fieldIndex = this.fieldIndex;
+      if (fieldIndex >= this.numFields) {
+        throw new NoSuchElementException();
+      }
+      String fieldName = this.fieldNames[fieldIndex];
+      this.fieldIndex++;
+      return new Entry(this.object, fieldName);
     }
 
     public void remove() {

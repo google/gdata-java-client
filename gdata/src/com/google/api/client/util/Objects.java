@@ -16,6 +16,8 @@
 
 package com.google.api.client.util;
 
+// this is copied from http://code.google.com/p/guava-libraries
+
 /**
  * Utilities for objects.
  * 

@@ -22,13 +22,14 @@ import com.google.api.client.util.DataUtil;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * Implements support for HTTP form content encoding serialization of type
  * {@code application/x-www-form-urlencoded} as specified in the <a href=
- * "http://www.w3.org/TR/1998/REC-html40-19980424/interact/forms.html#h-17.13.4.1"
- * >HTML 4.0 Specification</a>.
+ * "http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1">HTML 4.0
+ * Specification</a>.
  * <p>
  * Sample usage:
  * 
@@ -98,18 +99,32 @@ public final class UrlEncodedContent implements HttpContent {
           .entrySet()) {
         Object value = nameValueEntry.getValue();
         if (value != null) {
-          if (first) {
-            first = false;
+          String name = CharEscapers.escapeUri(nameValueEntry.getKey());
+          String[] values;
+          if (value instanceof Collection<?>) {
+            Collection<?> collectionValue = (Collection<?>) value;
+            for (Object repeatedValue : collectionValue) {
+              first = appendParam(first, buf, name, repeatedValue);
+            }
           } else {
-            buf.append('&');
+            first = appendParam(first, buf, name, value);
           }
-          String name = nameValueEntry.getKey();
-          buf.append(CharEscapers.escapeUri(name)).append('=').append(
-              CharEscapers.escapeUri(value.toString()));
         }
       }
       this.content = buf.toString().getBytes("UTF-8");
     }
     return this.content;
+  }
+
+  private static boolean appendParam(boolean first, StringBuilder buf,
+      String name, Object value) {
+    if (first) {
+      first = false;
+    } else {
+      buf.append('&');
+    }
+    buf.append(name).append('=').append(
+        CharEscapers.escapeUri(value.toString()));
+    return first;
   }
 }

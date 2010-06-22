@@ -49,8 +49,8 @@ public final class ClassInfo {
   /** Class. */
   public final Class<?> clazz;
 
-  /** Map from data key name to its field information. */
-  private final Map<String, FieldInfo> keyNameToFieldInfoMap;
+  /** Map from data key name to its field information or {@code null} for none. */
+  private final IdentityHashMap<String, FieldInfo> keyNameToFieldInfoMap;
 
   /**
    * Returns the class information for the given class.
@@ -72,15 +72,30 @@ public final class ClassInfo {
   }
 
   /**
-   * Returns the information for the given data key name or {@code null} for
-   * none.
+   * Returns the information for the given data key name.
+   * 
+   * @param keyName data key name or {@code null} for {@code null} result
+   * @return field information or {@code null} for none or for {@code null}
+   *         input
    */
   public FieldInfo getFieldInfo(String keyName) {
-    return keyName == null ? null : this.keyNameToFieldInfoMap.get(keyName
-        .intern());
+    if (keyName == null) {
+      return null;
+    }
+    IdentityHashMap<String, FieldInfo> keyNameToFieldInfoMap =
+        this.keyNameToFieldInfoMap;
+    if (keyNameToFieldInfoMap == null) {
+      return null;
+    }
+    return keyNameToFieldInfoMap.get(keyName.intern());
   }
 
-  /** Returns the field for the given data key name or {@code null} for none. */
+  /**
+   * Returns the field for the given data key name.
+   * 
+   * @param keyName data key name or {@code null} for {@code null} result
+   * @return field or {@code null} for none or for {@code null} input
+   */
   public Field getField(String keyName) {
     FieldInfo fieldInfo = getFieldInfo(keyName);
     return fieldInfo == null ? null : fieldInfo.field;
@@ -91,12 +106,22 @@ public final class ClassInfo {
    * class.
    */
   public int getKeyCount() {
-    return this.keyNameToFieldInfoMap.size();
+    IdentityHashMap<String, FieldInfo> keyNameToFieldInfoMap =
+        this.keyNameToFieldInfoMap;
+    if (keyNameToFieldInfoMap == null) {
+      return 0;
+    }
+    return keyNameToFieldInfoMap.size();
   }
 
   /** Returns the data key names associated with this data class. */
-  public Iterable<String> getKeyNames() {
-    return Collections.unmodifiableSet(this.keyNameToFieldInfoMap.keySet());
+  public Collection<String> getKeyNames() {
+    IdentityHashMap<String, FieldInfo> keyNameToFieldInfoMap =
+        this.keyNameToFieldInfoMap;
+    if (keyNameToFieldInfoMap == null) {
+      return Collections.emptySet();
+    }
+    return Collections.unmodifiableSet(keyNameToFieldInfoMap.keySet());
   }
 
   /** Creates a new instance of the given class using reflection. */
@@ -210,8 +235,8 @@ public final class ClassInfo {
   }
 
   /**
-   * Returns the type parameter for the given genericType assuming it is of
-   * type map.
+   * Returns the type parameter for the given genericType assuming it is of type
+   * map.
    */
   public static Class<?> getMapValueParameter(Type genericType) {
     if (genericType instanceof ParameterizedType) {
@@ -231,8 +256,11 @@ public final class ClassInfo {
     IdentityHashMap<String, FieldInfo> keyNameToFieldInfoMap =
         new IdentityHashMap<String, FieldInfo>();
     if (superClass != null) {
-      ClassInfo superClassInfo = ClassInfo.of(superClass);
-      keyNameToFieldInfoMap.putAll(superClassInfo.keyNameToFieldInfoMap);
+      IdentityHashMap<String, FieldInfo> superKeyNameToFieldInfoMap =
+          ClassInfo.of(superClass).keyNameToFieldInfoMap;
+      if (superKeyNameToFieldInfoMap != null) {
+        keyNameToFieldInfoMap.putAll(superKeyNameToFieldInfoMap);
+      }
     }
     Field[] fields = clazz.getDeclaredFields();
     int fieldsSize = fields.length;
@@ -252,7 +280,7 @@ public final class ClassInfo {
       keyNameToFieldInfoMap.put(fieldName, fieldInfo);
     }
     if (keyNameToFieldInfoMap.isEmpty()) {
-      this.keyNameToFieldInfoMap = Collections.emptyMap();
+      this.keyNameToFieldInfoMap = null;
     } else {
       this.keyNameToFieldInfoMap = keyNameToFieldInfoMap;
     }
