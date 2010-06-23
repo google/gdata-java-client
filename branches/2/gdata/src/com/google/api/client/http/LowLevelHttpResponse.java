@@ -54,7 +54,12 @@ public abstract class LowLevelHttpResponse {
   /** Returns the HTTP reason phrase or {@code null} for none. */
   public abstract String getReasonPhrase();
 
-  /** Returns the HTTP response header count. */
+  /**
+   * Returns the number of HTTP response headers.
+   * <p>
+   * Note that multiple headers of the same name need to be supported, in which
+   * case each header value is treated as a separate header.
+   */
   public abstract int getHeaderCount();
 
   /** Returns the HTTP response header name at the given zero-based index. */

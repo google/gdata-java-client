@@ -21,7 +21,6 @@ import com.google.api.client.escape.Escaper;
 import com.google.api.client.escape.PercentEscaper;
 import com.google.api.client.util.GenericData;
 import com.google.api.client.util.Key;
-import com.google.api.client.util.Objects;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -137,13 +136,8 @@ public class GenericUrl extends GenericData {
 
   @Override
   public int hashCode() {
-    int result = this.scheme.hashCode();
-    result = result * 31 + this.host.hashCode();
-    result = result * 31 + this.port;
-    result = result * 31 + (this.path == null ? 0 : path.hashCode());
-    result = result * 31 + (this.pathParts == null ? 0 : pathParts.hashCode());
-    result = result * 31 + (this.fragment == null ? 0 : fragment.hashCode());
-    return result;
+    // TODO: optimize?
+    return build().hashCode();
   }
 
   @Override
@@ -155,11 +149,8 @@ public class GenericUrl extends GenericData {
       return false;
     }
     GenericUrl other = (GenericUrl) obj;
-    return this.scheme.equals(other.scheme) && this.host.equals(other.host)
-        && this.port == other.port
-        && Objects.equal(this.fragment, other.fragment)
-        && Objects.equal(this.path, other.path)
-        && Objects.equal(this.pathParts, other.pathParts);
+    // TODO: optimize?
+    return build().equals(other.toString());
   }
 
   @Override

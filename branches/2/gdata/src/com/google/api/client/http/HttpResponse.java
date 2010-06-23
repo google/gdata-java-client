@@ -17,12 +17,14 @@
 package com.google.api.client.http;
 
 import com.google.api.client.util.ClassInfo;
+import com.google.api.client.util.FieldInfo;
 import com.google.api.client.util.Strings;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,6 +88,7 @@ public final class HttpResponse {
    */
   public boolean disableContentLogging;
 
+  @SuppressWarnings("unchecked")
   HttpResponse(HttpTransport transport, LowLevelHttpResponse response) {
     this.transport = transport;
     this.response = response;
@@ -120,20 +123,67 @@ public final class HttpResponse {
     int size = response.getHeaderCount();
     Class<? extends HttpHeaders> headersClass =
         transport.defaultHeaders.getClass();
+    ClassInfo classInfo = ClassInfo.of(headersClass);
     HttpHeaders headers = this.headers = ClassInfo.newInstance(headersClass);
     HashMap<String, String> fieldNameMap =
         HttpHeaders.getFieldNameMap(headersClass);
     for (int i = 0; i < size; i++) {
       String headerName = response.getHeaderName(i);
       String headerValue = response.getHeaderValue(i);
+      if (loggable) {
+        logbuf.append(headerName + ": " + headerValue).append(
+            Strings.LINE_SEPARATOR);
+      }
       String fieldName = fieldNameMap.get(headerName);
       if (fieldName == null) {
         fieldName = headerName;
       }
-      headers.set(fieldName, headerValue);
-      if (loggable) {
-        logbuf.append(headerName + ": " + headerValue).append(
-            Strings.LINE_SEPARATOR);
+      // use field information if available
+      FieldInfo fieldInfo = classInfo.getFieldInfo(fieldName);
+      if (fieldInfo != null) {
+        Class<?> type = fieldInfo.type;
+        // collection is used for repeating headers of the same name
+        if (Collection.class.isAssignableFrom(type)) {
+          Collection<Object> collection =
+              (Collection<Object>) fieldInfo.getValue(headers);
+          if (collection == null) {
+            collection = ClassInfo.newCollectionInstance(type);
+            fieldInfo.setValue(headers, collection);
+          }
+          // parse value based on collection type parameter
+          Class<?> subFieldClass =
+              ClassInfo.getCollectionParameter(fieldInfo.field);
+          collection.add(FieldInfo.parsePrimitiveValue(subFieldClass,
+              headerValue));
+        } else {
+          // parse value based on field type
+          if (fieldInfo.getValue(headers) != null) {
+            throw new IllegalArgumentException(fieldInfo.field.toString());
+          }
+          fieldInfo.setValue(headers, FieldInfo.parsePrimitiveValue(type,
+              headerValue));
+        }
+      } else {
+        // check if header already has a value
+        Object newValue = headerValue; 
+        Object oldValue = headers.get(fieldName);
+        if (oldValue != null) {
+          // use collection for repeating headers of the same name
+          Collection<Object> collectionValue;
+          if (oldValue instanceof Collection<?>) {
+            collectionValue = (Collection<Object>) oldValue;
+            newValue = null;
+          } else {
+            // convert singleton value to collection
+            collectionValue = ClassInfo.newCollectionInstance(null);
+            collectionValue.add(oldValue);
+            newValue = collectionValue;
+          }
+          collectionValue.add(headerValue);
+        }
+        if (newValue != null) {
+          headers.set(fieldName, newValue);
+        }
       }
     }
     if (loggable) {
