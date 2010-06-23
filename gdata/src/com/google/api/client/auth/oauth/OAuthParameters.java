@@ -23,6 +23,7 @@ import com.google.api.client.http.HttpTransport;
 
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -138,7 +139,14 @@ public final class OAuthParameters {
     for (Map.Entry<String, Object> fieldEntry : requestUrl.entrySet()) {
       Object value = fieldEntry.getValue();
       if (value != null) {
-        putParameter(parameters, fieldEntry.getKey(), value.toString());
+        String name = fieldEntry.getKey();
+        if (value instanceof Collection<?>) {
+          for (Object repeatedValue : (Collection<?>) value) {
+            putParameter(parameters, name, repeatedValue);
+          }
+        } else {
+          putParameter(parameters, name, value);
+        }
       }
     }
     // normalize parameters
@@ -213,8 +221,9 @@ public final class OAuthParameters {
   }
 
   private void putParameter(TreeMap<String, String> parameters, String key,
-      String value) {
-    parameters.put(escape(key), value == null ? null : escape(value));
+      Object value) {
+    parameters
+        .put(escape(key), value == null ? null : escape(value.toString()));
   }
 
   /** Returns the escaped form of the given value using OAuth escaping rules. */

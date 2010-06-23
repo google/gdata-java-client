@@ -19,6 +19,7 @@ package com.google.api.client.http;
 import com.google.api.client.util.Strings;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
@@ -145,7 +146,7 @@ public final class HttpRequest {
     } else {
       headers.userAgent += " " + USER_AGENT_SUFFIX;
     }
-    // log headers
+    // headers
     HashSet<String> headerNames = new HashSet<String>();
     for (Map.Entry<String, Object> headerEntry : this.headers.entrySet()) {
       String name = headerEntry.getKey();
@@ -155,18 +156,15 @@ public final class HttpRequest {
             "multiple headers of the same name (headers are case insensitive): "
                 + lowerCase);
       }
-      String value = (String) headerEntry.getValue();
+      Object value = headerEntry.getValue();
       if (value != null) {
-        if (logbuf != null) {
-          logbuf.append(name).append(": ");
-          if ("Authorization".equals(name) && !logger.isLoggable(Level.ALL)) {
-            logbuf.append("<Not Logged>");
-          } else {
-            logbuf.append(value);
+        if (value instanceof Collection<?>) {
+          for (Object repeatedValue : (Collection<?>) value) {
+            addHeader(logger, logbuf, lowLevelHttpRequest, name, repeatedValue);
           }
-          logbuf.append(Strings.LINE_SEPARATOR);
+        } else {
+          addHeader(logger, logbuf, lowLevelHttpRequest, name, value);
         }
-        lowLevelHttpRequest.addHeader(name, value);
       }
     }
     // content
@@ -219,5 +217,20 @@ public final class HttpRequest {
       throw new HttpResponseException(response);
     }
     return response;
+  }
+
+  private static void addHeader(Logger logger, StringBuilder logbuf,
+      LowLevelHttpRequest lowLevelHttpRequest, String name, Object value) {
+    String stringValue = value.toString();
+    if (logbuf != null) {
+      logbuf.append(name).append(": ");
+      if ("Authorization".equals(name) && !logger.isLoggable(Level.ALL)) {
+        logbuf.append("<Not Logged>");
+      } else {
+        logbuf.append(stringValue);
+      }
+      logbuf.append(Strings.LINE_SEPARATOR);
+    }
+    lowLevelHttpRequest.addHeader(name, stringValue);
   }
 }

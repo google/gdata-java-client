@@ -18,7 +18,6 @@ package com.google.api.client.http;
 
 import com.google.api.client.escape.CharEscapers;
 import com.google.api.client.util.ClassInfo;
-import com.google.api.client.util.DateTime;
 import com.google.api.client.util.FieldInfo;
 import com.google.api.client.util.GenericData;
 
@@ -123,69 +122,36 @@ public final class UrlEncodedParser implements HttpParser {
           }
           Class<?> subFieldClass =
               ClassInfo.getCollectionParameter(fieldInfo.field);
-          collection.add(parseValue(stringValue, subFieldClass));
+          collection.add(FieldInfo.parsePrimitiveValue(subFieldClass,
+              stringValue));
         } else {
-          fieldInfo.setValue(data, parseValue(stringValue, type));
+          fieldInfo.setValue(data, FieldInfo.parsePrimitiveValue(type,
+              stringValue));
         }
       } else {
-        Object value = stringValue;
+        Object newValue = stringValue;
         Object oldValue = map.get(name);
         if (oldValue != null) {
           Collection<Object> collectionValue;
           if (oldValue instanceof Collection<?>) {
             collectionValue = (Collection<Object>) oldValue;
+            newValue = null;
           } else {
             collectionValue = ClassInfo.newCollectionInstance(null);
             collectionValue.add(oldValue);
+            newValue = collectionValue;
           }
           collectionValue.add(stringValue);
-          value = collectionValue;
         }
-        if (genericData != null) {
-          genericData.set(name, value);
-        } else {
-          map.put(name, value);
+        if (newValue != null) {
+          if (genericData != null) {
+            genericData.set(name, newValue);
+          } else {
+            map.put(name, newValue);
+          }
         }
       }
       cur = amp + 1;
     }
-  }
-
-  private static Object parseValue(String stringValue, Class<?> fieldClass) {
-    if (fieldClass == null || fieldClass == String.class) {
-      return stringValue;
-    }
-    if (fieldClass == Integer.class || fieldClass == int.class) {
-      return new Integer(stringValue);
-    }
-    if (fieldClass == Short.class || fieldClass == short.class) {
-      return new Short(stringValue);
-    }
-    if (fieldClass == Byte.class || fieldClass == byte.class) {
-      return new Byte(stringValue);
-    }
-    if (fieldClass == Long.class || fieldClass == long.class) {
-      return new Long(stringValue);
-    }
-    if (fieldClass == Double.class || fieldClass == double.class) {
-      return new Double(stringValue);
-    }
-    if (fieldClass == Character.class || fieldClass == char.class) {
-      if (stringValue.length() != 1) {
-        throw new IllegalArgumentException(
-            "expected type Character/char but got " + fieldClass);
-      }
-      return stringValue.charAt(0);
-    }
-    if (fieldClass == DateTime.class) {
-      return DateTime.parseRfc3339(stringValue);
-    }
-    if (fieldClass == Boolean.class || fieldClass == boolean.class) {
-      return "true".equals(stringValue) ? Boolean.TRUE : Boolean.FALSE;
-    }
-    if (fieldClass == Float.class || fieldClass == float.class) {
-      return Float.valueOf(stringValue);
-    }
-    throw new IllegalArgumentException("unexpected type: " + fieldClass);
   }
 }

@@ -381,38 +381,13 @@ public class Json {
             + ": expected type Integer/int/Short/short/Byte/byte but got "
             + fieldClass + " for field " + field);
       case VALUE_STRING:
-        String stringValue = parser.getText();
-        if (fieldClass == null || fieldClass == String.class) {
-          return stringValue;
+        // TODO: "special" values like Double.POSITIVE_INFINITY?
+        try {
+          return FieldInfo.parsePrimitiveValue(fieldClass, parser.getText());
+        } catch (IllegalArgumentException e) {
+          throw new IllegalArgumentException(parser.getCurrentName()
+              + " for field " + field, e);
         }
-        if (fieldClass == Long.class || fieldClass == long.class) {
-          return Long.parseLong(stringValue);
-        }
-        if (fieldClass == Double.class || fieldClass == double.class) {
-          // TODO: "special" values like Double.POSITIVE_INFINITY?
-          return Double.parseDouble(stringValue);
-        }
-        if (fieldClass == Character.class || fieldClass == char.class) {
-          if (stringValue.length() != 1) {
-            throw new IllegalArgumentException(parser.getCurrentName()
-                + ": expected type Character/char but got " + fieldClass
-                + " for field " + field);
-          }
-          return stringValue.charAt(0);
-        }
-        if (fieldClass == BigInteger.class) {
-          return new BigInteger(stringValue);
-        }
-        if (fieldClass == BigDecimal.class) {
-          return new BigDecimal(stringValue);
-        }
-        if (fieldClass == DateTime.class) {
-          return DateTime.parseRfc3339(stringValue);
-        }
-        throw new IllegalArgumentException(
-            parser.getCurrentName()
-                + ": expected type String/Long/long/Double/double/Character/char/BigInteger/BigDecimal/DateTime but got "
-                + fieldClass + " for field " + field);
       case VALUE_NULL:
         return null;
       default:

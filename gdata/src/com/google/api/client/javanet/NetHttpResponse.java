@@ -31,8 +31,8 @@ final class NetHttpResponse extends LowLevelHttpResponse {
   private final HttpURLConnection connection;
   private final int responseCode;
   private final String responseMessage;
-  private final List<String> headerNames = new ArrayList<String>();
-  private final List<String> headerValues = new ArrayList<String>();
+  private final ArrayList<String> headerNames = new ArrayList<String>();
+  private final ArrayList<String> headerValues = new ArrayList<String>();
 
   NetHttpResponse(HttpURLConnection connection) throws IOException {
     this.connection = connection;
@@ -44,9 +44,12 @@ final class NetHttpResponse extends LowLevelHttpResponse {
         .entrySet()) {
       String key = entry.getKey();
       if (key != null) {
-        headerNames.add(key);
-        List<String> values = entry.getValue();
-        headerValues.add(values.get(values.size() - 1));
+        for (String value : entry.getValue()) {
+          if (value != null) {
+            headerNames.add(key);
+            headerValues.add(value);
+          }
+        }
       }
     }
   }

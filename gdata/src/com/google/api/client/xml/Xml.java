@@ -1,7 +1,6 @@
 package com.google.api.client.xml;
 
 import com.google.api.client.util.ClassInfo;
-import com.google.api.client.util.DateTime;
 import com.google.api.client.util.FieldInfo;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -11,8 +10,6 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -376,21 +373,6 @@ public class Xml {
   }
 
   private static Object parseValue(String stringValue, Class<?> fieldClass) {
-    if (fieldClass == null || fieldClass == String.class) {
-      return stringValue;
-    }
-    if (fieldClass == Integer.class || fieldClass == int.class) {
-      return new Integer(stringValue);
-    }
-    if (fieldClass == Short.class || fieldClass == short.class) {
-      return new Short(stringValue);
-    }
-    if (fieldClass == Byte.class || fieldClass == byte.class) {
-      return new Byte(stringValue);
-    }
-    if (fieldClass == Long.class || fieldClass == long.class) {
-      return new Long(stringValue);
-    }
     if (fieldClass == Double.class || fieldClass == double.class) {
       if (stringValue.equals("INF")) {
         return new Double(Double.POSITIVE_INFINITY);
@@ -398,26 +380,6 @@ public class Xml {
       if (stringValue.equals("-INF")) {
         return new Double(Double.NEGATIVE_INFINITY);
       }
-      return new Double(stringValue);
-    }
-    if (fieldClass == Character.class || fieldClass == char.class) {
-      if (stringValue.length() != 1) {
-        throw new IllegalArgumentException(
-            "expected type Character/char but got " + fieldClass);
-      }
-      return stringValue.charAt(0);
-    }
-    if (fieldClass == BigInteger.class) {
-      return new BigInteger(stringValue);
-    }
-    if (fieldClass == BigDecimal.class) {
-      return new BigDecimal(stringValue);
-    }
-    if (fieldClass == DateTime.class) {
-      return DateTime.parseRfc3339(stringValue);
-    }
-    if (fieldClass == Boolean.class || fieldClass == boolean.class) {
-      return "true".equals(stringValue) ? Boolean.TRUE : Boolean.FALSE;
     }
     if (fieldClass == Float.class || fieldClass == float.class) {
       if (stringValue.equals("INF")) {
@@ -426,9 +388,8 @@ public class Xml {
       if (stringValue.equals("-INF")) {
         return Float.NEGATIVE_INFINITY;
       }
-      return Float.valueOf(stringValue);
     }
-    throw new IllegalArgumentException("unexpected type: " + fieldClass);
+    return FieldInfo.parsePrimitiveValue(fieldClass, stringValue);
   }
 
   private Xml() {

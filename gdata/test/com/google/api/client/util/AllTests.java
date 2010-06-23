@@ -29,6 +29,7 @@ public class AllTests extends TestSuite {
     TestSuite result = new TestSuite(AllTests.class.getPackage().getName());
     result.addTestSuite(ArrayMapTest.class);
     result.addTestSuite(DateTimeTest.class);
+    result.addTestSuite(FieldInfoTest.class);
     result.addTestSuite(ObjectsTest.class);
     return result;
   }

@@ -133,7 +133,7 @@ public class FieldInfo {
         || fieldClass == BigDecimal.class || fieldClass == DateTime.class
         || fieldClass == Boolean.class;
   }
-  
+
   // TODO: support java.net.URI as primitive type?
 
   /**
@@ -179,5 +179,84 @@ public class FieldInfo {
       } catch (IllegalAccessException e) {
         throw new IllegalArgumentException(e);
       }
+  }
+
+  /**
+   * Parses the given string value based on the given primitive class.
+   * <p>
+   * Types are parsed as follows:
+   * <ul>
+   * <li>{@code null} or {@link String}: no parsing</li>
+   * <li>{@code char} or {@link Character}: {@link String#charAt(int)
+   * String.charAt}(0) (requires length to be exactly 1)</li>
+   * <li>{@code boolean} or {@link Boolean}: {@link Boolean#valueOf(String)}</li>
+   * <li>{@code byte} or {@link Byte}: {@link Byte#valueOf(String)}</li>
+   * <li>{@code short} or {@link Short}: {@link Short#valueOf(String)}</li>
+   * <li>{@code int} or {@link Integer}: {@link Integer#valueOf(String)}</li>
+   * <li>{@code long} or {@link Long}: {@link Long#valueOf(String)}</li>
+   * <li>{@code float} or {@link Float}: {@link Float#valueOf(String)}</li>
+   * <li>{@code double} or {@link Double}: {@link Double#valueOf(String)}</li>
+   * <li>{@link BigInteger}: {@link BigInteger#BigInteger(String)
+   * BigInteger(String)}</li>
+   * <li>{@link BigDecimal}: {@link BigDecimal#BigDecimal(String)
+   * BigDecimal(String)}</li>
+   * <li>{@link DateTime}: {@link DateTime#parseRfc3339(String)}</li>
+   * </ul>
+   * Note that this may not be the right behavior for some use cases.
+   * 
+   * @param primitiveClass primitive class (see {@link #isPrimitive(Class)} or
+   *        {@code null} to parse as a string
+   * @param stringValue string value to parse or {@code null} for {@code null}
+   *        result
+   * @return parsed object or {@code null} for {@code null} input
+   * @throws IllegalArgumentException if the given class is not a primitive
+   *         class as defined by {@link #isPrimitive(Class)}
+   * @since 2.3
+   */
+  public static Object parsePrimitiveValue(Class<?> primitiveClass,
+      String stringValue) {
+    if (stringValue == null || primitiveClass == null
+        || primitiveClass == String.class) {
+      return stringValue;
+    }
+    if (primitiveClass == Character.class || primitiveClass == char.class) {
+      if (stringValue.length() != 1) {
+        throw new IllegalArgumentException(
+            "expected type Character/char but got " + primitiveClass);
+      }
+      return stringValue.charAt(0);
+    }
+    if (primitiveClass == Boolean.class || primitiveClass == boolean.class) {
+      return Boolean.valueOf(stringValue);
+    }
+    if (primitiveClass == Byte.class || primitiveClass == byte.class) {
+      return Byte.valueOf(stringValue);
+    }
+    if (primitiveClass == Short.class || primitiveClass == short.class) {
+      return Short.valueOf(stringValue);
+    }
+    if (primitiveClass == Integer.class || primitiveClass == int.class) {
+      return Integer.valueOf(stringValue);
+    }
+    if (primitiveClass == Long.class || primitiveClass == long.class) {
+      return Long.valueOf(stringValue);
+    }
+    if (primitiveClass == Float.class || primitiveClass == float.class) {
+      return Float.valueOf(stringValue);
+    }
+    if (primitiveClass == Double.class || primitiveClass == double.class) {
+      return Double.valueOf(stringValue);
+    }
+    if (primitiveClass == DateTime.class) {
+      return DateTime.parseRfc3339(stringValue);
+    }
+    if (primitiveClass == BigInteger.class) {
+      return new BigInteger(stringValue);
+    }
+    if (primitiveClass == BigDecimal.class) {
+      return new BigDecimal(stringValue);
+    }
+    throw new IllegalArgumentException("expected primitive class, but got: "
+        + primitiveClass);
   }
 }
