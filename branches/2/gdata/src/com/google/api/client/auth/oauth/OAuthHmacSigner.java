@@ -16,14 +16,9 @@
 
 package com.google.api.client.auth.oauth;
 
-import com.google.api.client.util.Base64;
+import com.google.api.client.auth.HmacSha;
 
-import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
-
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * OAuth {@code "HMAC-SHA1"} signature method.
@@ -45,27 +40,16 @@ public final class OAuthHmacSigner implements OAuthSigner {
 
   public String computeSignature(String signatureBaseString)
       throws GeneralSecurityException {
+    StringBuilder keyBuf = new StringBuilder();
     String clientSharedSecret = this.clientSharedSecret;
-    String tokenSharedSecret = this.tokenSharedSecret;
-    clientSharedSecret =
-        clientSharedSecret == null ? "" : OAuthParameters
-            .escape(clientSharedSecret);
-    tokenSharedSecret =
-        tokenSharedSecret == null ? "" : OAuthParameters
-            .escape(tokenSharedSecret);
-    String keyString =
-        new StringBuilder().append(clientSharedSecret).append('&').append(
-            tokenSharedSecret).toString();
-    try {
-      SecretKey key =
-          new SecretKeySpec(keyString.getBytes("UTF-8"), "HmacSHA1");
-      Mac mac = Mac.getInstance("HmacSHA1");
-      mac.init(key);
-      byte[] encoded = Base64.encode(mac.doFinal(signatureBaseString
-          .getBytes("UTF-8")));
-      return new String(encoded, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      throw new AssertionError(e);
+    if (clientSharedSecret != null) {
+      keyBuf.append(OAuthParameters.escape(clientSharedSecret));
     }
+    keyBuf.append('&');
+    String tokenSharedSecret = this.tokenSharedSecret;
+    if (tokenSharedSecret != null) {
+      keyBuf.append(OAuthParameters.escape(tokenSharedSecret));
+    }
+    return HmacSha.sign(keyBuf.toString(), signatureBaseString);
   }
 }
