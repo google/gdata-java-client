@@ -14,24 +14,39 @@
  * the License.
  */
 
-package com.google.api.client;
+package com.google.api.client.http;
 
-import junit.framework.TestSuite;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
- * All tests.
+ * Mock for {@link HttpContent}.
  * 
  * @author Yaniv Inbar
  */
-public class AllTests extends TestSuite {
+public class MockHttpContent implements HttpContent {
 
-  public static TestSuite suite() {
-    TestSuite result = new TestSuite();
-    result.addTest(com.google.api.client.auth.oauth.AllTests.suite());
-    result.addTest(com.google.api.client.googleapis.auth.storage.AllTests
-        .suite());
-    result.addTest(com.google.api.client.http.AllTests.suite());
-    result.addTest(com.google.api.client.util.AllTests.suite());
-    return result;
+  public String encoding;
+  
+  public long length = -1;
+
+  public String type;
+  
+  public byte[] content = "".getBytes();
+  
+  public String getEncoding() {
+    return encoding;
+  }
+
+  public long getLength() {
+    return length;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void writeTo(OutputStream out) throws IOException {
+    out.write(content);
   }
 }

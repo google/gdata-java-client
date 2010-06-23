@@ -157,9 +157,6 @@ public final class HttpResponse {
               headerValue));
         } else {
           // parse value based on field type
-          if (fieldInfo.getValue(headers) != null) {
-            throw new IllegalArgumentException(fieldInfo.field.toString());
-          }
           fieldInfo.setValue(headers, FieldInfo.parsePrimitiveValue(type,
               headerValue));
         }

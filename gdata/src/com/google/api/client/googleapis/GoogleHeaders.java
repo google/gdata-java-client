@@ -73,6 +73,78 @@ public class GoogleHeaders extends HttpHeaders {
   public String gdataKey;
 
   /**
+   * {@code "x-goog-acl"} header that lets you apply predefined (canned) ACLs to
+   * a bucket or object when you upload it or create it.
+   * 
+   * @since 2.3
+   */
+  @Key("x-goog-acl")
+  public String googAcl;
+
+  /**
+   * {@code "x-goog-copy-source"} header that specifies the destination bucket
+   * and object for a copy operation.
+   * 
+   * @since 2.3
+   */
+  @Key("x-goog-copy-source")
+  public String googCopySource;
+
+  /**
+   * {@code "x-goog-copy-source-if-match"} header that specifies the conditions
+   * for a copy operation.
+   * 
+   * @since 2.3
+   */
+  @Key("x-goog-copy-source-if-match")
+  public String googCopySourceIfMatch;
+
+  /**
+   * {@code "x-goog-copy-source-if-none-match"} header that specifies the
+   * conditions for a copy operation.
+   * 
+   * @since 2.3
+   */
+  @Key("x-goog-copy-source-if-none-match")
+  public String googCopySourceIfNoneMatch;
+
+  /**
+   * {@code "x-goog-copy-source-if-modified-since"} header that specifies the
+   * conditions for a copy operation.
+   * 
+   * @since 2.3
+   */
+  @Key("x-goog-copy-source-if-modified-since")
+  public String googCopySourceIfModifiedSince;
+
+  /**
+   * {@code "x-goog-copy-source-if-unmodified-since"} header that specifies the
+   * conditions for a copy operation.
+   * 
+   * @since 2.3
+   */
+  @Key("x-goog-copy-source-if-unmodified-since")
+  public String googCopySourceIfUnmodifiedSince;
+
+  /**
+   * {@code "x-goog-date"} header that specifies a time stamp for authenticated
+   * requests.
+   * 
+   * @since 2.3
+   */
+  @Key("x-goog-date")
+  public String googDate;
+
+  /**
+   * {@code "x-goog-metadata-directive"} header that specifies metadata handling
+   * during a copy operation.
+   * 
+   * @since 2.3
+   */
+  @Key("x-goog-metadata-directive")
+  public String googMetadataDirective;
+
+  /**
    * {@code "X-HTTP-Method-Override"} header.
    * 
    * @since 2.3
@@ -126,7 +198,7 @@ public class GoogleHeaders extends HttpHeaders {
 
   /**
    * Sets the Google Login {@code "Authorization"} header for the given
-   * authentication token into the given HTTP headers.
+   * authentication token.
    * 
    * @since 2.3
    */
