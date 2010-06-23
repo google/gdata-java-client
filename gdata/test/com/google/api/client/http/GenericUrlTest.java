@@ -369,4 +369,13 @@ public class GenericUrlTest extends TestCase {
     assertEquals("b", i.next());
     assertFalse(i.hasNext());
   }
+
+  public void testBuild_noValue() {
+    GenericUrl url = new GenericUrl();
+    url.scheme = "https";
+    url.host = "www.googleapis.com";
+    url.setRawPath(REPEATED_PARAM_PATH);
+    url.set("noval", "");
+    assertEquals(PREFIX + REPEATED_PARAM_PATH + "?noval", url.build());
+  }
 }

@@ -123,8 +123,11 @@ public final class UrlEncodedContent implements HttpContent {
     } else {
       buf.append('&');
     }
-    buf.append(name).append('=').append(
-        CharEscapers.escapeUri(value.toString()));
+    buf.append(name);
+    String stringValue = CharEscapers.escapeUri(value.toString());
+    if (stringValue.length() != 0) {
+      buf.append('=').append(stringValue);
+    }
     return first;
   }
 }

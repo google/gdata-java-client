@@ -44,10 +44,13 @@ public class UrlEncodedParserTest extends TestCase {
   public static class Simple {
     @Key
     String a;
+
     @Key
     String b;
+
     @Key
     String c;
+
     @Key
     List<String> q;
 
@@ -71,10 +74,13 @@ public class UrlEncodedParserTest extends TestCase {
   public static class Generic extends GenericData {
     @Key
     String a;
+    
     @Key
     String b;
+    
     @Key
     String c;
+    
     @Key
     List<String> q;
   }
@@ -106,16 +112,19 @@ public class UrlEncodedParserTest extends TestCase {
 
   public void testParse_map() {
     ArrayMap<String, Object> actual = new ArrayMap<String, Object>();
-    UrlEncodedParser.parse("p=4&q=1&a=x&p=3&b=y&c=z&d=v&q=2&p=5", actual);
+    UrlEncodedParser.parse("p=4&q=1&a=x&p=3&b=y&c=z&d=v&q=2&p=5&noval1&noval2=",
+        actual);
     ArrayMap<String, Object> expected = ArrayMap.create();
     expected.add("p", new ArrayList<String>(Arrays.asList(new String[] {"4",
         "3", "5"})));
     expected.add("q", new ArrayList<String>(Arrays.asList(new String[] {"1",
-    "2"})));
+        "2"})));
     expected.add("a", "x");
     expected.add("b", "y");
     expected.add("c", "z");
     expected.add("d", "v");
+    expected.add("noval1", "");
+    expected.add("noval2", "");
     assertEquals(expected, actual);
   }
 }

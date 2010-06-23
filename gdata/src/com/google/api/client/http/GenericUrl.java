@@ -335,8 +335,11 @@ public class GenericUrl extends GenericData {
     } else {
       buf.append('&');
     }
-    buf.append(name).append('=').append(
-        CharEscapers.escapeUriQuery(value.toString()));
+    buf.append(name);
+    String stringValue = CharEscapers.escapeUriQuery(value.toString());
+    if (stringValue.length() != 0) {
+      buf.append('=').append(stringValue);
+    }
     return first;
   }
 }

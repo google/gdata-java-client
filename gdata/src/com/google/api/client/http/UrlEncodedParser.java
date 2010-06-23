@@ -96,19 +96,24 @@ public final class UrlEncodedParser implements HttpParser {
         Map.class.isAssignableFrom(clazz) ? (Map<Object, Object>) data : null;
     int cur = 0;
     int length = content.length();
+    int nextEquals = content.indexOf('=');
     while (cur < length) {
       int amp = content.indexOf('&', cur);
       if (amp == -1) {
         amp = length;
       }
-      int equals = content.indexOf('=', cur);
-      if (equals <= cur || equals >= amp) {
-        throw new IllegalArgumentException("malformed URL encoding: "
-            + content.substring(cur, amp));
+      String name;
+      String stringValue;
+      if (nextEquals != -1 && nextEquals < amp) {
+        name = content.substring(cur, nextEquals);
+        stringValue =
+            CharEscapers.decodeUri(content.substring(nextEquals + 1, amp));
+        nextEquals = content.indexOf('=', amp + 1);
+      } else {
+        name = content.substring(cur, amp);
+        stringValue = "";
       }
-      String name = CharEscapers.decodeUri(content.substring(cur, equals));
-      String stringValue =
-          CharEscapers.decodeUri(content.substring(equals + 1, amp));
+      name = CharEscapers.decodeUri(name);
       // get the field from the type information
       FieldInfo fieldInfo = classInfo.getFieldInfo(name);
       if (fieldInfo != null) {
