@@ -31,7 +31,6 @@ public class AllTests extends TestSuite {
     result.addTestSuite(ClassInfoTest.class);
     result.addTestSuite(DateTimeTest.class);
     result.addTestSuite(FieldInfoTest.class);
-    result.addTestSuite(ObjectsTest.class);
     return result;
   }
 }
