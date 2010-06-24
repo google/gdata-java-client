@@ -31,7 +31,7 @@
     <javadoc sourcepath="${src.dir}" source="1.5" destdir="${javadoc.dir}"
       use="true" windowtitle="GData Java Library ${version}"
       doctitle="Google Data API (GData) Java Library version ${version}"
-      packagenames="${client.packagenames},${data.packagenames},com.google.api.client.googleapis.auth.authsub,com.google.api.client.javanet">
+      packagenames="${client.packagenames},${data.packagenames},com.google.api.client.googleapis.auth.authsub,com.google.api.client.javanet,com.google.common.base">
       <classpath>
         <pathelement location="${lib.dir}/${android.jar}" />
         <pathelement location="${lib.dir}/${jackson.jar}" />
