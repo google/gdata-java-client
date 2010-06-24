@@ -57,8 +57,7 @@ public class GoogleStorageAuthenticationTest extends TestCase {
     content.type = "image/jpg";
     request.content = content;
     headers.googAcl = "public-read";
-    headers.set("x-goog-meta-reviewer", Arrays.asList(new String[] {"bob",
-        "jane"}));
+    headers.set("x-goog-meta-reviewer", Arrays.asList("bob", "jane"));
     intercepter.intercept(request);
     assertEquals("GOOG1 GOOGTS7C7FUP3AIRVJTE:ovyTUuOaD+E6l/Xu+eOAhZ/8LKk=",
         request.headers.authorization);

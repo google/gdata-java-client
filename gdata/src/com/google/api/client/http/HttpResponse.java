@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -161,26 +162,14 @@ public final class HttpResponse {
               headerValue));
         }
       } else {
-        // check if header already has a value
-        Object newValue = headerValue; 
-        Object oldValue = headers.get(fieldName);
-        if (oldValue != null) {
-          // use collection for repeating headers of the same name
-          Collection<Object> collectionValue;
-          if (oldValue instanceof Collection<?>) {
-            collectionValue = (Collection<Object>) oldValue;
-            newValue = null;
-          } else {
-            // convert singleton value to collection
-            collectionValue = ClassInfo.newCollectionInstance(null);
-            collectionValue.add(oldValue);
-            newValue = collectionValue;
-          }
-          collectionValue.add(headerValue);
+      // store header values in an array list
+        ArrayList<String> listValue =
+            (ArrayList<String>) headers.get(fieldName);
+        if (listValue == null) {
+          listValue = new ArrayList<String>();
+          headers.set(fieldName, listValue);
         }
-        if (newValue != null) {
-          headers.set(fieldName, newValue);
-        }
+        listValue.add(headerValue);
       }
     }
     if (loggable) {

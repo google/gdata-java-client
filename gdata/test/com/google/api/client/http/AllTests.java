@@ -28,6 +28,7 @@ public class AllTests extends TestSuite {
   public static TestSuite suite() {
     TestSuite result = new TestSuite(AllTests.class.getPackage().getName());
     result.addTestSuite(GenericUrlTest.class);
+    result.addTestSuite(HttpHeadersTest.class);
     result.addTestSuite(HttpResponseTest.class);
     result.addTestSuite(UrlEncodedContentTest.class);
     result.addTestSuite(UrlEncodedParserTest.class);

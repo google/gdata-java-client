@@ -42,7 +42,7 @@ public class UrlEncodedContentTest extends TestCase {
     assertEquals("a=x", compute(ArrayMap.of("a", "x")));
     assertEquals("noval", compute(ArrayMap.of("noval", "")));
     assertEquals("multi=a&multi=b&multi=c", compute(ArrayMap.of("multi", Arrays
-        .asList(new String[] {"a", "b", "c"}))));
+        .asList("a", "b", "c"))));
   }
 
   static String compute(Object data) throws IOException {

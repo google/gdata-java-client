@@ -121,7 +121,7 @@ public final class AccessProtectedResource {
   static final class UsingFormEncodedBody extends AccessTokenIntercepter {
 
     private static final List<String> ALLOWED_METHODS =
-        Arrays.asList(new String[] {"POST", "PUT", "DELETE"});
+        Arrays.asList("POST", "PUT", "DELETE");
 
     public void intercept(HttpRequest request) {
       if (!ALLOWED_METHODS.contains(request.method)) {
