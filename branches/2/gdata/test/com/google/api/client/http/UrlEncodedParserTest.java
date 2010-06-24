@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,13 +75,13 @@ public class UrlEncodedParserTest extends TestCase {
   public static class Generic extends GenericData {
     @Key
     String a;
-    
+
     @Key
     String b;
-    
+
     @Key
     String c;
-    
+
     @Key
     List<String> q;
   }
@@ -92,7 +93,7 @@ public class UrlEncodedParserTest extends TestCase {
     expected.a = "x";
     expected.b = "y";
     expected.c = "z";
-    expected.q = new ArrayList<String>(Arrays.asList(new String[] {"1", "2"}));
+    expected.q = new ArrayList<String>(Arrays.asList("1", "2"));
     assertEquals(expected, actual);
   }
 
@@ -103,28 +104,35 @@ public class UrlEncodedParserTest extends TestCase {
     expected.a = "x";
     expected.b = "y";
     expected.c = "z";
-    expected.q = new ArrayList<String>(Arrays.asList(new String[] {"1", "2"}));
-    expected.set("d", "v");
-    expected.set("p", new ArrayList<String>(Arrays.asList(new String[] {"4",
-        "3", "5"})));
+    expected.q = new ArrayList<String>(Arrays.asList("1", "2"));
+    expected.set("d", Collections.singletonList("v"));
+    expected.set("p", Arrays.asList("4", "3", "5"));
     assertEquals(expected, actual);
+    assertEquals(ArrayList.class, actual.get("d").getClass());
   }
 
   public void testParse_map() {
     ArrayMap<String, Object> actual = new ArrayMap<String, Object>();
-    UrlEncodedParser.parse("p=4&q=1&a=x&p=3&b=y&c=z&d=v&q=2&p=5&noval1&noval2=",
-        actual);
+    UrlEncodedParser.parse(
+        "p=4&q=1&a=x&p=3&b=y&c=z&d=v&q=2&p=5&noval1&noval2=", actual);
     ArrayMap<String, Object> expected = ArrayMap.create();
-    expected.add("p", new ArrayList<String>(Arrays.asList(new String[] {"4",
-        "3", "5"})));
-    expected.add("q", new ArrayList<String>(Arrays.asList(new String[] {"1",
-        "2"})));
-    expected.add("a", "x");
-    expected.add("b", "y");
-    expected.add("c", "z");
-    expected.add("d", "v");
-    expected.add("noval1", "");
-    expected.add("noval2", "");
+    expected.add("p", Arrays.asList("4", "3", "5"));
+    expected.add("q", Arrays.asList("1", "2"));
+    expected.add("a", Collections.singletonList("x"));
+    expected.add("b", Collections.singletonList("y"));
+    expected.add("c", Collections.singletonList("z"));
+    expected.add("d", Collections.singletonList("v"));
+    expected.add("noval1", Collections.singletonList(""));
+    expected.add("noval2", Collections.singletonList(""));
+    assertEquals(expected, actual);
+    assertEquals(ArrayList.class, actual.get("a").getClass());
+  }
+
+  public void testParse_encoding() {
+    ArrayMap<String, Object> actual = new ArrayMap<String, Object>();
+    UrlEncodedParser.parse("q=%20", actual);
+    ArrayMap<String, Object> expected = ArrayMap.create();
+    expected.add("q", Collections.singletonList(" "));
     assertEquals(expected, actual);
   }
 }

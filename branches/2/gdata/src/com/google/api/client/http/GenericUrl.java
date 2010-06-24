@@ -26,13 +26,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 /**
  * URL builder in which the query parameters are specified as generic data
- * key/value pairs.
- * 
+ * key/value pairs, based on the specification <a
+ * href="http://tools.ietf.org/html/rfc3986">RFC 3986: Uniform Resource
+ * Identifier (URI)</a>.
  * <p>
  * The query parameters are specified with the data key name as the parameter
  * name, and the data value as the parameter value. Subclasses can declare
@@ -40,16 +43,17 @@ import java.util.Map;
  * null} parameter names are not allowed, but {@code null} query values are
  * allowed.
  * </p>
- * 
  * <p>
- * The following features are not supported:
- * <ul>
- * <li>Repeated query parameters</li>
- * <li>User-information component.</li>
- * <li>Encoded slash character ('/') in the path</li>
- * </ul>
- * See <a href="http://tools.ietf.org/html/rfc3986">RFC 3986: Uniform Resource
- * Identifier (URI)</a>
+ * Query parameter values are parsed using
+ * {@link UrlEncodedParser#parse(String, Object)}.
+ * </p>
+ * <p>
+ * Warning of an incompatibility for upgrading from version 2.2: repeated query
+ * parameters were not supported in that version, and therefore unknown query
+ * parameters (not from declared fields) were parsed as a single String.
+ * However, in version 2.3 they are parsed as {@link ArrayList}&lt;String&gt;.
+ * Use {@link #getFirst(String)} to get the first value.
+ * </p>
  * 
  * @since 2.2
  * @author Yaniv Inbar
@@ -69,14 +73,15 @@ public class GenericUrl extends GenericData {
   public int port = -1;
 
   /**
-   * Path component or {@code null} for none, for example {@code
+   * Unencoded path component or {@code null} for none, for example {@code
    * "/m8/feeds/contacts/default/full"}.
    * <p>
    * This field is ignored if {@link #pathParts} is not {@code null}.
    * 
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 2.4) Use {@link #pathParts}
+   *             for encoded path support, or for unencoded paths use
    *             {@link #getRawPath()}, {@link #setRawPath(String rawPath)}, or
-   *             {@link #appendRawPath(String)}
+   *             {@link #appendRawPath(String)} which
    */
   @Deprecated
   public String path;
@@ -222,6 +227,44 @@ public class GenericUrl extends GenericData {
       buf.append('#').append(URI_FRAGMENT_ESCAPER.escape(fragment));
     }
     return buf.toString();
+  }
+
+  /**
+   * Returns the first query parameter value for the given query parameter name.
+   * 
+   * @param name query parameter name
+   * @return first query parameter value
+   * @since 2.3
+   */
+  public Object getFirst(String name) {
+    Object value = get(name);
+    if (value instanceof Collection<?>) {
+      @SuppressWarnings("unchecked")
+      Collection<Object> collectionValue = (Collection<Object>) value;
+      Iterator<Object> iterator = collectionValue.iterator();
+      return iterator.hasNext() ? iterator.next() : null;
+    }
+    return value;
+  }
+
+  /**
+   * Returns all query parameter values for the given query parameter name.
+   * 
+   * @param name query parameter name
+   * @return unmodifiable collection of query parameter values (possibly empty)
+   * @since 2.3
+   */
+  public Collection<Object> getAll(String name) {
+    Object value = get(name);
+    if (value == null) {
+      return Collections.emptySet();
+    }
+    if (value instanceof Collection<?>) {
+      @SuppressWarnings("unchecked")
+      Collection<Object> collectionValue = (Collection<Object>) value;
+      return Collections.unmodifiableCollection(collectionValue);
+    }
+    return Collections.singleton(value);
   }
 
   /**

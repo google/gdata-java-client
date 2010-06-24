@@ -162,19 +162,38 @@ public final class ClassInfo {
     throw new IllegalArgumentException(buf.toString(), e);
   }
 
-  /** Returns a new instance of the given collection class. */
+  /**
+   * Returns a new instance of the given collection class.
+   * <p>
+   * If a concrete collection class in the The class of the returned collection
+   * instance depends on the input collection class as follows (first that
+   * matches):
+   * <ul>
+   * <li>{@code null} or {@link ArrayList} is an instance of the collection
+   * class: returns an {@link ArrayList}</li>
+   * <li>Concrete subclass of {@link Collection}: returns an instance of that
+   * collection class</li>
+   * <li>{@link HashSet} is an instance of the collection class: returns a
+   * {@link HashSet}</li>
+   * <li>{@link TreeSet} is an instance of the collection class: returns a
+   * {@link TreeSet}</li>
+   * </ul>
+   * 
+   * @param collectionClass collection class or {@code null} for
+   *        {@link ArrayList}.
+   * @return new collection instance
+   */
   public static Collection<Object> newCollectionInstance(
       Class<?> collectionClass) {
-    if (collectionClass != null
-        && 0 == (collectionClass.getModifiers() & (Modifier.ABSTRACT | Modifier.INTERFACE))) {
+    if (collectionClass == null
+        || collectionClass.isAssignableFrom(ArrayList.class)) {
+      return new ArrayList<Object>();
+    }
+    if (0 == (collectionClass.getModifiers() & (Modifier.ABSTRACT | Modifier.INTERFACE))) {
       @SuppressWarnings("unchecked")
       Collection<Object> result =
           (Collection<Object>) ClassInfo.newInstance(collectionClass);
       return result;
-    }
-    if (collectionClass == null
-        || collectionClass.isAssignableFrom(ArrayList.class)) {
-      return new ArrayList<Object>();
     }
     if (collectionClass.isAssignableFrom(HashSet.class)) {
       return new HashSet<Object>();

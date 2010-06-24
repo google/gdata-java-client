@@ -16,9 +16,8 @@
 
 package com.google.api.client.http;
 
-import com.google.api.client.util.ArrayMap;
-
 import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * Mock for {@link LowLevelHttpResponse}.
@@ -27,8 +26,15 @@ import java.io.InputStream;
  */
 public class MockLowLevelHttpResponse extends LowLevelHttpResponse {
 
-  public ArrayMap<String, String> headers = ArrayMap.create();
-  
+  public ArrayList<String> headerNames = new ArrayList<String>();
+
+  public ArrayList<String> headerValues = new ArrayList<String>();
+
+  public void addHeader(String name, String value) {
+    headerNames.add(name);
+    headerValues.add(value);
+  }
+
   @Override
   public InputStream getContent() {
     return null;
@@ -51,17 +57,17 @@ public class MockLowLevelHttpResponse extends LowLevelHttpResponse {
 
   @Override
   public int getHeaderCount() {
-    return headers.size();
+    return headerNames.size();
   }
 
   @Override
   public String getHeaderName(int index) {
-    return headers.getKey(index);
+    return headerNames.get(index);
   }
 
   @Override
   public String getHeaderValue(int index) {
-    return headers.getValue(index);
+    return headerValues.get(index);
   }
 
   @Override

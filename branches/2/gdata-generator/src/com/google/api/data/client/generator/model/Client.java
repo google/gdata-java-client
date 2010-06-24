@@ -30,10 +30,10 @@ import java.util.SortedMap;
 public final class Client implements Comparable<Client> {
 
   private static final Set<String> OLD_GDATA_STYLE_IDS =
-      new HashSet<String>(Arrays.asList(new String[] {"analytics", "blogger",
-          "books", "calendar", "codesearch", "contacts", "docs", "finance",
-          "gbase", "health", "maps", "migration", "picasa", "sidewiki",
-          "sites", "spreadsheet", "webmastertools", "youtube"}));
+      new HashSet<String>(Arrays.asList("analytics", "blogger", "books",
+          "calendar", "codesearch", "contacts", "docs", "finance", "gbase",
+          "health", "maps", "migration", "picasa", "sidewiki", "sites",
+          "spreadsheet", "webmastertools", "youtube"));
 
   public boolean isOldGDataStyle;
 
@@ -96,15 +96,15 @@ public final class Client implements Comparable<Client> {
       entry.getValue().validate(entry.getKey(), this);
     }
   }
-  
+
   public String getXmlFormatId() {
     return "storage".equals(id) ? "xml" : "atom";
   }
-  
+
   public String getXmlFormatCapitalId() {
     return "storage".equals(id) ? "Xml" : "Atom";
   }
-  
+
   public String getXmlFormatName() {
     return "storage".equals(id) ? "XML" : "Atom XML";
   }

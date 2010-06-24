@@ -22,6 +22,7 @@ import com.google.api.client.util.FieldInfo;
 import com.google.api.client.util.GenericData;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
@@ -32,6 +33,9 @@ import java.util.logging.Level;
  * "http://www.w3.org/TR/1998/REC-html40-19980424/interact/forms.html#h-17.13.4.1"
  * >HTML 4.0 Specification</a>.
  * <p>
+ * The data is parsed using {@link #parse(String, Object)}.
+ * </p>
+ * <p>
  * Sample usage:
  * 
  * <pre>
@@ -41,6 +45,8 @@ import java.util.logging.Level;
  * }
  * </code>
  * </pre>
+ * 
+ * </p>
  * 
  * @since 2.2
  * @author Yaniv Inbar
@@ -84,7 +90,24 @@ public final class UrlEncodedParser implements HttpParser {
     return newInstance;
   }
 
-  /** Parses the given content into the given data object of key/value pairs. */
+  /**
+   * Parses the given URL-encoded content into the given data object of data key
+   * name/value pairs, including support for repeating data key names.
+   * <p>
+   * Declared fields of a "primitive" type (as defined by
+   * {@link FieldInfo#isPrimitive(Class)} are parsed using
+   * {@link FieldInfo#parsePrimitiveValue(Class, String)} where the
+   * {@link Class} parameter is the declared field class. Declared fields of
+   * type {@link Collection} are used to support repeating data key names, so
+   * each member of the collection is an additional data key value. They are
+   * parsed the same as "primitive" fields, except that the generic type
+   * parameter of the collection is used as the {@link Class} parameter. For
+   * keys not represented by a declared field, the field type is assumed to be
+   * {@link ArrayList}&lt;String&gt;.
+   * 
+   * @param content URL-encoded content
+   * @param data data key name/value pairs
+   */
   @SuppressWarnings("unchecked")
   public static void parse(String content, Object data) {
     Class<?> clazz = data.getClass();
@@ -134,27 +157,16 @@ public final class UrlEncodedParser implements HttpParser {
               stringValue));
         }
       } else {
-        Object newValue = stringValue;
-        Object oldValue = map.get(name);
-        if (oldValue != null) {
-          Collection<Object> collectionValue;
-          if (oldValue instanceof Collection<?>) {
-            collectionValue = (Collection<Object>) oldValue;
-            newValue = null;
-          } else {
-            collectionValue = ClassInfo.newCollectionInstance(null);
-            collectionValue.add(oldValue);
-            newValue = collectionValue;
-          }
-          collectionValue.add(stringValue);
-        }
-        if (newValue != null) {
+        ArrayList<String> listValue = (ArrayList<String>) map.get(name);
+        if (listValue == null) {
+          listValue = new ArrayList<String>();
           if (genericData != null) {
-            genericData.set(name, newValue);
+            genericData.set(name, listValue);
           } else {
-            map.put(name, newValue);
+            map.put(name, listValue);
           }
         }
+        listValue.add(stringValue);
       }
       cur = amp + 1;
     }
