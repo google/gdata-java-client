@@ -173,7 +173,6 @@ public final class PicasaAtomAndroidSample extends ListActivity {
               names[i] = accounts[i].name;
             }
             builder.setItems(names, new DialogInterface.OnClickListener() {
-              @Override
               public void onClick(DialogInterface dialog, int which) {
                 if (which == size) {
                   addAccount(manager);
@@ -194,7 +193,6 @@ public final class PicasaAtomAndroidSample extends ListActivity {
             password.setTransformationMethod(PasswordTransformationMethod
                 .getInstance());
             signInButton.setOnClickListener(new View.OnClickListener() {
-              @Override
               public void onClick(View v) {
                 clientLoginDialog.dismiss();
                 ClientLogin authenticator = new ClientLogin();
