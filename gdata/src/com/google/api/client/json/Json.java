@@ -20,6 +20,7 @@ import com.google.api.client.util.ClassInfo;
 import com.google.api.client.util.DataUtil;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.FieldInfo;
+import com.google.api.client.util.GenericData;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
@@ -225,9 +226,9 @@ public class Json {
       CustomizeJsonParser customizeParser) throws IOException {
     Class<?> destinationClass = destination.getClass();
     ClassInfo classInfo = ClassInfo.of(destinationClass);
-    boolean isGenericJson =
-        GenericJson.class.isAssignableFrom(destinationClass);
-    if (!isGenericJson && Map.class.isAssignableFrom(destinationClass)) {
+    boolean isGenericData =
+        GenericData.class.isAssignableFrom(destinationClass);
+    if (!isGenericData && Map.class.isAssignableFrom(destinationClass)) {
       @SuppressWarnings("unchecked")
       Map<String, Object> destinationMap = (Map<String, Object>) destination;
       Class<?> valueClass =
@@ -256,9 +257,9 @@ public class Json {
             parseValue(parser, curToken, field, fieldInfo.type, destination,
                 customizeParser);
         FieldInfo.setFieldValue(field, destination, fieldValue);
-      } else if (isGenericJson) {
+      } else if (isGenericData) {
         // store unknown field in generic JSON
-        GenericJson object = (GenericJson) destination;
+        GenericData object = (GenericData) destination;
         object.set(key, parseValue(parser, curToken, null, null, destination,
             customizeParser));
       } else {
@@ -268,6 +269,107 @@ public class Json {
         }
         parser.skipChildren();
       }
+    }
+  }
+
+  /**
+   * Parse a JSON Array from the given JSON parser (which is closed after
+   * parsing completes) into the given destination collection, optionally using
+   * the given parser customizer.
+   * 
+   * @param parser JSON parser
+   * @param destinationCollectionClass class of destination collection (must
+   *        have a public default constructor)
+   * @param destinationItemClass class of destination collection item (must have
+   *        a public default constructor)
+   * @param customizeParser optional parser customizer or {@code null} for none
+   * @throws IOException I/O exception
+   * @since 2.3
+   */
+  public static <T> Collection<T> parseArrayAndClose(JsonParser parser,
+      Class<?> destinationCollectionClass, Class<T> destinationItemClass,
+      CustomizeJsonParser customizeParser) throws IOException {
+    try {
+      return parseArray(parser, destinationCollectionClass,
+          destinationItemClass, customizeParser);
+    } finally {
+      parser.close();
+    }
+  }
+
+  /**
+   * Parse a JSON Array from the given JSON parser (which is closed after
+   * parsing completes) into the given destination collection, optionally using
+   * the given parser customizer.
+   * 
+   * @param parser JSON parser
+   * @param destinationCollection destination collection
+   * @param destinationItemClass class of destination collection item (must have
+   *        a public default constructor)
+   * @param customizeParser optional parser customizer or {@code null} for none
+   * @throws IOException I/O exception
+   * @since 2.3
+   */
+  public static <T> void parseArrayAndClose(JsonParser parser,
+      Collection<? super T> destinationCollection,
+      Class<T> destinationItemClass, CustomizeJsonParser customizeParser)
+      throws IOException {
+    try {
+      parseArray(parser, destinationCollection, destinationItemClass,
+          customizeParser);
+    } finally {
+      parser.close();
+    }
+  }
+
+  /**
+   * Parse a JSON Array from the given JSON parser into the given destination
+   * collection, optionally using the given parser customizer.
+   * 
+   * @param parser JSON parser
+   * @param destinationCollectionClass class of destination collection (must
+   *        have a public default constructor)
+   * @param destinationItemClass class of destination collection item (must have
+   *        a public default constructor)
+   * @param customizeParser optional parser customizer or {@code null} for none
+   * @throws IOException I/O exception
+   * @since 2.3
+   */
+  public static <T> Collection<T> parseArray(JsonParser parser,
+      Class<?> destinationCollectionClass, Class<T> destinationItemClass,
+      CustomizeJsonParser customizeParser) throws IOException {
+    @SuppressWarnings("unchecked")
+    Collection<T> destinationCollection =
+        (Collection<T>) ClassInfo
+            .newCollectionInstance(destinationCollectionClass);
+    parseArray(parser, destinationCollection, destinationItemClass,
+        customizeParser);
+    return destinationCollection;
+  }
+
+  /**
+   * Parse a JSON Array from the given JSON parser into the given destination
+   * collection, optionally using the given parser customizer.
+   * 
+   * @param parser JSON parser
+   * @param destinationCollection destination collection
+   * @param destinationItemClass class of destination collection item (must have
+   *        a public default constructor)
+   * @param customizeParser optional parser customizer or {@code null} for none
+   * @throws IOException I/O exception
+   * @since 2.3
+   */
+  public static <T> void parseArray(JsonParser parser,
+      Collection<? super T> destinationCollection,
+      Class<T> destinationItemClass, CustomizeJsonParser customizeParser)
+      throws IOException {
+    JsonToken listToken;
+    while ((listToken = parser.nextToken()) != JsonToken.END_ARRAY) {
+      @SuppressWarnings("unchecked")
+      T parsedValue =
+          (T) parseValue(parser, listToken, null, destinationItemClass,
+              destinationCollection, customizeParser);
+      destinationCollection.add(parsedValue);
     }
   }
 
@@ -305,11 +407,7 @@ public class Json {
             collectionValue = ClassInfo.newCollectionInstance(fieldClass);
           }
           Class<?> subFieldClass = ClassInfo.getCollectionParameter(field);
-          JsonToken listToken;
-          while ((listToken = parser.nextToken()) != JsonToken.END_ARRAY) {
-            collectionValue.add(parseValue(parser, listToken, null,
-                subFieldClass, destination, customizeParser));
-          }
+          parseArray(parser, collectionValue, subFieldClass, customizeParser);
           return collectionValue;
         }
         throw new IllegalArgumentException(
