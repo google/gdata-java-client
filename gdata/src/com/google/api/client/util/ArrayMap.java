@@ -342,6 +342,7 @@ public final class ArrayMap<K, V> extends AbstractMap<K, V> implements
     try {
       @SuppressWarnings("unchecked")
       ArrayMap<K, V> result = (ArrayMap<K, V>) super.clone();
+      result.entrySet = null;
       Object[] data = this.data;
       if (data != null) {
         int length = data.length;

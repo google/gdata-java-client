@@ -78,4 +78,12 @@ public class ArrayMapTest extends TestCase {
     map.remove("b");
     assertEquals(ArrayMap.of("a", 1, "c", 3), map);
   }
+
+  public void testClone_changingEntrySet() {
+    ArrayMap<String, String> map = ArrayMap.of();
+    assertEquals("{}", map.toString());
+    ArrayMap<String, String> clone = map.clone();
+    clone.add("foo", "bar");
+    assertEquals("{foo=bar}", clone.toString());
+  }
 }

@@ -16,22 +16,27 @@
 
 package com.google.api.client.util;
 
-import junit.framework.TestSuite;
+import junit.framework.TestCase;
 
 /**
- * All tests for {@link com.google.api.client.util}.
+ * Tests {@link GenericData}.
  * 
  * @author Yaniv Inbar
  */
-public class AllTests extends TestSuite {
+public class GenericDataTest extends TestCase {
 
-  public static TestSuite suite() {
-    TestSuite result = new TestSuite(AllTests.class.getPackage().getName());
-    result.addTestSuite(ArrayMapTest.class);
-    result.addTestSuite(ClassInfoTest.class);
-    result.addTestSuite(DateTimeTest.class);
-    result.addTestSuite(FieldInfoTest.class);
-    result.addTestSuite(GenericDataTest.class);
-    return result;
+  public GenericDataTest() {
+  }
+
+  public GenericDataTest(String testName) {
+    super(testName);
+  }
+
+  public void testClone_changingEntrySet() {
+    GenericData data = new GenericData();
+    assertEquals("{}", data.toString());
+    GenericData clone = data.clone();
+    clone.set("foo", "bar");
+    assertEquals("{foo=bar}", clone.toString());
   }
 }
