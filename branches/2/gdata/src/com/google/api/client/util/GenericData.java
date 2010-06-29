@@ -128,6 +128,7 @@ public class GenericData extends AbstractMap<String, Object> implements
     try {
       @SuppressWarnings("unchecked")
       GenericData result = (GenericData) super.clone();
+      result.entrySet = null;
       DataUtil.cloneInternal(this, result);
       result.unknownFields = DataUtil.clone(this.unknownFields);
       return result;
