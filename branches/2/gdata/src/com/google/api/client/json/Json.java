@@ -168,7 +168,7 @@ public class Json {
     while (parser.nextToken() != JsonToken.END_OBJECT) {
       String key = parser.getCurrentName();
       parser.nextToken();
-      if (key == keyToFind) {
+      if (keyToFind.equals(key)) {
         break;
       }
       parser.skipChildren();
