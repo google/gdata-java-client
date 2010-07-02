@@ -47,8 +47,23 @@ public final class JsonRpcHttpTransport {
   /** RPC server URL. */
   public GenericUrl rpcServerUrl;
 
-  /** HTTP transport to use for executing HTTP requests. */
-  public HttpTransport transport;
+  /**
+   * HTTP transport to use for executing HTTP requests. By default this is an
+   * unmodified new instance of {@link HttpTransport}.
+   */
+  public HttpTransport transport = new HttpTransport();
+
+  /**
+   * Content type header to use for requests. By default this is {@code
+   * "application/json-rpc"}.
+   */
+  public String contentType = "application/json-rpc";
+
+  /**
+   * Accept header to use for requests. By default this is {@code
+   * "application/json-rpc"}.
+   */
+  public String accept = contentType;
 
   /**
    * Executes over HTTP POST the JSON-RPC requests objects specified in the
@@ -129,6 +144,8 @@ public final class JsonRpcHttpTransport {
     HttpRequest httpRequest = transport.buildPostRequest();
     httpRequest.url = this.rpcServerUrl;
     JsonHttpContent content = new JsonHttpContent();
+    content.contentType = this.contentType;
+    httpRequest.headers.accept = this.accept;
     content.data = data;
     httpRequest.content = content;
     return httpRequest.execute();
