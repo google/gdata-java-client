@@ -70,7 +70,7 @@ public class XmlHttpParser implements HttpParser {
       T result = ClassInfo.newInstance(dataClass);
       XmlPullParser parser = Xml.createParser();
       parser.setInput(content, null);
-      Xml.parseElement(parser, result, namespaceDictionary, null);
+      Xml.parseElement(parser, result, this.namespaceDictionary, null);
       return result;
     } catch (XmlPullParserException e) {
       IOException exception = new IOException();

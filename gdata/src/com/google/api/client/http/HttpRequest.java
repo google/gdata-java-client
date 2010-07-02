@@ -57,8 +57,12 @@ public final class HttpRequest {
   /** HTTP request content or {@code null} for none. */
   public HttpContent content;
 
-  /** HTTP transport. */
-  private final HttpTransport transport;
+  /**
+   * HTTP transport.
+   * 
+   * @since 2.3
+   */
+  public final HttpTransport transport;
 
   /** HTTP request method. */
   public String method;

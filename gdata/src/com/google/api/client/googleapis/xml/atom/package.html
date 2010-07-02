@@ -5,8 +5,9 @@ Google's Atom XML implementation (see detailed package specification).
 
 <p>User-defined Partial XML data models allow you to defined Plain Old Java
 Objects (POJO's) to define how the library should parse/serialize XML. Each
-non-static field that should be included must have an @{@link
-com.google.api.client.util.Key} annotation.</p>
+field that should be included must have an @{@link
+com.google.api.client.util.Key} annotation. The field can be of any visibility
+(private, package private, protected, or public) and must not be static.</p>
 
 <p>The optional value parameter of this @{@link
 com.google.api.client.util.Key} annotation specifies the XPath name to use to
