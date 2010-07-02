@@ -129,8 +129,6 @@ public class HttpTransport {
   }
 
   public HttpTransport() {
-    // always accept gzip encoding
-    this.defaultHeaders.acceptEncoding = "gzip";
     useLowLevelHttpTransport();
   }
 

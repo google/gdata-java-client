@@ -23,8 +23,9 @@ import com.google.api.client.util.Key;
  * Generic JSON data that stores all unknown key name/value pairs.
  * <p>
  * Subclasses can declare fields for known data keys using the {@link Key}
- * annotation. {@code null} unknown data key names are not allowed, but {@code
- * null} data values are allowed.
+ * annotation. Each field can be of any visibility (private, package private,
+ * protected, or public) and must not be static. {@code null} unknown data key
+ * names are not allowed, but {@code null} data values are allowed.
  * 
  * @since 2.2
  * @author Yaniv Inbar

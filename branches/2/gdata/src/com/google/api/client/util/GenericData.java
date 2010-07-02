@@ -26,8 +26,9 @@ import java.util.Set;
  * Generic data that stores all unknown data key name/value pairs.
  * <p>
  * Subclasses can declare fields for known data keys using the {@link Key}
- * annotation. {@code null} unknown data key names are not allowed, but {@code
- * null} data values are allowed.
+ * annotation. Each field can be of any visibility (private, package private,
+ * protected, or public) and must not be static. {@code null} unknown data key
+ * names are not allowed, but {@code null} data values are allowed.
  * <p>
  * Iteration order of the data keys is based on the sorted (ascending) key names
  * of the declared fields, followed by the iteration order of all of the unknown

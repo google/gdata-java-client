@@ -40,7 +40,17 @@ public final class ApacheHttpTransport extends LowLevelHttpTransport {
   /** Apache HTTP client. */
   private final HttpClient httpClient;
 
-  /** Singleton instance of this transport. */
+  /**
+   * Singleton instance of this transport.
+   * <p>
+   * Sample usage:
+   * 
+   * <pre>
+   * <code>HttpTransport.setLowLevelHttpTransport(ApacheHttpTransport.INSTANCE);</code>
+   * </pre>
+   * 
+   * </p>
+   */
   public static final ApacheHttpTransport INSTANCE = new ApacheHttpTransport();
 
   ApacheHttpTransport() {

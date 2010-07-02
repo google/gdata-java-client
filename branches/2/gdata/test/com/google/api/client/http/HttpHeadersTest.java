@@ -38,6 +38,7 @@ public class HttpHeadersTest extends TestCase {
 
   public void testCanonicalMap() {
     HttpHeaders headers = new HttpHeaders();
+    headers.acceptEncoding = null;
     assertTrue(headers.canonicalMap().isEmpty());
     headers.userAgent = "foo";
     assertEquals(ArrayMap.of("user-agent", Collections.singleton("foo")),

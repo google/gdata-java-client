@@ -8,13 +8,14 @@ Developer's Guide: JSON-C / JavaScript</a>
 
 <p>User-defined Partial JSON data models allow you to defined Plain Old Java
 Objects (POJO's) to define how the library should parse/serialize JSON. Each
-non-static field that should be included must have an @{@link
-com.google.api.client.util.Key} annotation. By default, the field name is used
-as the JSON key. To override this behavior, simply specify the JSON key use the
-optional value parameter of the annotation, for example {@code @Key("name")}.
-Any unrecognized keys from the JSON are normally simply ignored and not stored.
-If the ability to store unknown keys is important, use {@link
-com.google.api.client.json.GenericJson}.</p>
+field that should be included must have an @{@link
+com.google.api.client.util.Key} annotation. The field can be of any visibility
+(private, package private, protected, or public) and must not be static. By
+default, the field name is used as the JSON key. To override this behavior,
+simply specify the JSON key use the optional value parameter of the annotation,
+for example {@code @Key("name")}. Any unrecognized keys from the JSON are
+normally simply ignored and not stored. If the ability to store unknown keys is
+important, use {@link com.google.api.client.json.GenericJson}.</p>
 
 <p>Let's take a look at a typical partial JSON-C video feed from the YouYube
 Data API:</p>
