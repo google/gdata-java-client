@@ -35,82 +35,106 @@ import java.util.Map;
  * Manages a Google API discovery document based on the JSON format.
  * 
  * @since 2.2
- * @author vbarathan@google.com (Prakash Barathan)
  * @author Yaniv Inbar
  */
 public final class DiscoveryDocument {
 
-  /** Container for the discovery document model. */
-  static final class Model {
+  /**
+   * Defines a specific version of an API.
+   * 
+   * @since 2.3
+   */
+  public static final class ServiceDefinition {
+    /** Base URL for service endpoint. */
+    @Key
+    String baseUrl;
+
+    /** Map from the resource name to the resource definition. */
+    @Key
+    public Map<String, ServiceResource> resources;
 
     /**
-     * Version specific Service Definition for a service
+     * Returns {@link ServiceMethod} definition for given method name. Method
+     * identifier is of format "resourceName.methodName".
      */
-    public static final class ServiceDefinition {
-      /** Base url for service endpoint */
-      @Key
-      String baseUrl;
-
-      /** List of supported resources */
-      @Key
-      Map<String, Resource> resources;
-
-      /**
-       * Returns {@link Method} definition for given method name. Method
-       * identifier is of format "resourceName.methodName"
-       */
-      Method getResourceMethod(String methodIdentifier) {
-        int dot = methodIdentifier.indexOf('.');
-        String resourceName = methodIdentifier.substring(0, dot);
-        String methodName = methodIdentifier.substring(dot + 1);
-        Resource resource = this.resources.get(resourceName);
-        return resource == null ? null : resource.methods.get(methodName);
-      }
-
-      /**
-       * Returns url for requested method. Method identifier is of format
-       * "resourceName.methodName"
-       */
-      public String getResourceUrl(String methodIdentifier) {
-        return baseUrl + getResourceMethod(methodIdentifier).pathUrl;
-      }
+    public ServiceMethod getResourceMethod(String methodIdentifier) {
+      int dot = methodIdentifier.indexOf('.');
+      String resourceName = methodIdentifier.substring(0, dot);
+      String methodName = methodIdentifier.substring(dot + 1);
+      ServiceResource resource = this.resources.get(resourceName);
+      return resource == null ? null : resource.methods.get(methodName);
     }
 
     /**
-     * Defines an available resource in a service.
+     * Returns url for requested method. Method identifier is of format
+     * "resourceName.methodName".
      */
-    public static final class Resource {
-      @Key
-      Map<String, Method> methods;
-    }
-
-    /**
-     * Defines an available method for a service.
-     */
-    public static final class Method {
-      /** Method path url relative to base url */
-      @Key
-      String pathUrl;
-
-      /** Method's Http verb name */
-      @Key
-      String httpMethod;
-
-      /** Method type. */
-      @Key
-      final String methodType = "rest";
+    String getResourceUrl(String methodIdentifier) {
+      return baseUrl + getResourceMethod(methodIdentifier).pathUrl;
     }
   }
 
-  /** API service definition parsed from discovery document */
-  private final Model.ServiceDefinition serviceDefinition;
+  /**
+   * Defines a resource in a service definition.
+   * 
+   * @since 2.3
+   */
+  public static final class ServiceResource {
+
+    /** Map from method name to method definition. */
+    @Key
+    public Map<String, ServiceMethod> methods;
+  }
+
+  /**
+   * Defines a method of a service resource.
+   * 
+   * @since 2.3
+   */
+  public static final class ServiceMethod {
+
+    /** Path URL relative to base URL. */
+    @Key
+    String pathUrl;
+
+    /** HTTP method name. */
+    @Key
+    public String httpMethod;
+
+    /** Map from parameter name to parameter definition. */
+    @Key
+    public Map<String, ServiceParameter> parameters;
+
+    /** Method type. */
+    @Key
+    final String methodType = "rest";
+  }
+
+  /**
+   * Defines a parameter to a service method.
+   * 
+   * @since 2.3
+   */
+  public static final class ServiceParameter {
+
+    /** Whether the parameter is required. */
+    @Key
+    public boolean required;
+  }
+
+  /**
+   * API service definition parsed from discovery document.
+   * 
+   * @since 2.3
+   */
+  public final ServiceDefinition serviceDefinition;
 
   /**
    * Google transport required by {@link #buildRequest}.
    */
   public HttpTransport transport;
 
-  DiscoveryDocument(Model.ServiceDefinition serviceDefinition) {
+  DiscoveryDocument(ServiceDefinition serviceDefinition) {
     this.serviceDefinition = serviceDefinition;
   }
 
@@ -131,7 +155,7 @@ public final class DiscoveryDocument {
     JsonParser parser = JsonCParser.parserForResponse(request.execute());
     Json.skipToKey(parser, api);
     Json.skipToKey(parser, "1.0");
-    Model.ServiceDefinition serviceDefinition = new Model.ServiceDefinition();
+    ServiceDefinition serviceDefinition = new ServiceDefinition();
     Json.parseAndClose(parser, serviceDefinition, null);
     return new DiscoveryDocument(serviceDefinition);
   }
@@ -152,8 +176,8 @@ public final class DiscoveryDocument {
       throw new IllegalArgumentException("missing transport");
     }
     // Create request for specified method
-    Model.ServiceDefinition serviceDefinition = this.serviceDefinition;
-    Model.Method method =
+    ServiceDefinition serviceDefinition = this.serviceDefinition;
+    ServiceMethod method =
         serviceDefinition.getResourceMethod(fullyQualifiedMethodName);
     if (method == null) {
       throw new IllegalArgumentException("unrecognized method: "
