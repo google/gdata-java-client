@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# Copyright 2010 Google Inc. All Rights Reserved.
+#
+# Usage: discover [name]
+#
+# Examples:
+#   discover buzz
+#   discover buzz.activities 
+#   discover buzz.activities.list 
+#
+
+# copied from:
+# http://code.google.com/p/oacurl/source/browse/oacurl
+
+function resolve_symlink {
+  SCRIPT=$1 NEWSCRIPT=''
+
+  until [ "$SCRIPT" = "$NEWSCRIPT" ]; do
+    if [ "${SCRIPT:0:1}" = '.' ]; then
+      SCRIPT=$PWD/$SCRIPT;
+    fi
+
+    cd $(dirname $SCRIPT)
+
+    if [ ! "${SCRIPT:0:1}" = '.' ]; then
+      SCRIPT=$(basename $SCRIPT);
+    fi
+
+    SCRIPT=${NEWSCRIPT:=$SCRIPT}
+    NEWSCRIPT=$(ls -l $SCRIPT | awk '{ print $NF }')
+  done
+
+  if [ ! "${SCRIPT:0:1}" = '/' ]; then
+    SCRIPT=$PWD/$SCRIPT;
+  fi
+
+  echo $(dirname $SCRIPT)
+}
+
+DISCOVERY_HOME=$(resolve_symlink $0)
+
+# set JAVACMD
+if [ -z "$JAVACMD" ] ; then
+  if [ -n "$JAVA_HOME"  ] ; then
+    JAVACMD=$JAVA_HOME/bin/java
+  else
+    JAVACMD=`which java`
+  fi
+fi
+
+if [ ! -x "$JAVACMD" ] ; then
+  echo "Error: JAVA_HOME is not defined correctly."
+  echo "  We cannot execute $JAVACMD"
+  exit
+fi
+
+# run command
+args=($@);
+
+$JAVACMD -jar target/discovery-sample-0.1-jar-with-dependencies.jar $@
