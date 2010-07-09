@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" output="test-classes" path="test"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-2.3.0-alpha.jar" sourcepath="gdata-2.3.0-alpha-src.zip"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-core-asl-1.5.2.jar" sourcepath="jackson-src-1.5.2.zip"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>
