@@ -39,6 +39,7 @@ final class ClientJarsAntBuildFileGenerator extends AbstractXmlFileGenerator {
     "com.google.api.client.googleapis.xml.atom",
     "com.google.api.client.http",
     "com.google.api.client.json",
+    "com.google.api.client.repackaged.com.google.common.base",
     "com.google.api.client.util",
     "com.google.api.client.xml",
     "com.google.api.client.xml.atom",
