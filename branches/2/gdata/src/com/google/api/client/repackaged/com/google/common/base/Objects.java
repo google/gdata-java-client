@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.common.base;
+package com.google.api.client.repackaged.com.google.common.base;
 
 /**
  * Helper functions that can operate on any {@code Object}.

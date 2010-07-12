@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.api.client</groupId>
-  <artifactId>client-library</artifactId>
-  <version>2.3.0-alpha</version>
+  <artifactId>gdata-generator</artifactId>
+  <version>0.1</version>
   <packaging>jar</packaging>
-  <name>client-library</name>
+  <name>gdata-generator</name>
   <description>
-    Google Data Java Client Library.
+    Internal tool to generate some code for gdata project.
   </description>
 
   <url>http://code.google.com/p/gdata-java-client/</url>
@@ -57,16 +57,22 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
     </plugins>
     <finalName>${project.artifactId}-${project.version}</finalName>
     <sourceDirectory>src</sourceDirectory>
-    <testSourceDirectory>test</testSourceDirectory>
+    <testSourceDirectory>tests_disabled</testSourceDirectory>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>com.google.api.client</groupId>
+      <artifactId>client-library</artifactId>
+      <version>2.3.0-alpha</version>
+      <type>jar</type>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId>
@@ -74,17 +80,20 @@
       <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+      <version>1.5.3</version>
+      <type>jar</type>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>com.google.android</groupId>
-      <artifactId>android</artifactId>
-      <version>1.5_r4</version>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.0.1</version>
       <type>jar</type>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <properties>
