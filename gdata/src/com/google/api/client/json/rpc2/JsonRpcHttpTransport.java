@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * JSON-RPC 2.0 HTTP transport for RPC requests, including both singleton and
  * batched requests.
- * 
+ *
  * @since 2.3
  * @author Yaniv Inbar
  */
@@ -66,59 +66,57 @@ public final class JsonRpcHttpTransport {
   public String accept = contentType;
 
   /**
-   * Executes over HTTP POST the JSON-RPC requests objects specified in the
-   * given JSON-RPC request object.
+   * Builds a POST HTTP request for the JSON-RPC requests objects specified in
+   * the given JSON-RPC request object.
    * <p>
    * You may use {@link JsonHttpParser#parserForResponse(HttpResponse)
-   * JsonHttpParser.parserForResponse}({@link #execute(JsonRpcRequest) execute}
-   * (request)) to get the {@link JsonParser}, and
+   * JsonHttpParser.parserForResponse}({@link #buildPostRequest(JsonRpcRequest)
+   * execute} (request)) to get the {@link JsonParser}, and
    * {@link Json#parseAndClose(JsonParser, Class, CustomizeJsonParser)} .
    * </p>
-   * 
+   *
    * @param request JSON-RPC request object
-   * @return HTTP response
-   * @throws IOException I/O exception
+   * @return HTTP request
    */
-  public HttpResponse execute(JsonRpcRequest request) throws IOException {
+  public HttpRequest buildPostRequest(JsonRpcRequest request) {
     return internalExecute(request);
   }
 
   /**
-   * Executes over HTTP POST the JSON-RPC requests objects specified in the
-   * given JSON-RPC request objects.
+   * Builds a POST HTTP request for the JSON-RPC requests objects specified in
+   * the given JSON-RPC request objects.
    * <p>
    * Note that the request will always use batching -- i.e. JSON array of
    * requests -- even if there is only one request. You may use
    * {@link JsonHttpParser#parserForResponse(HttpResponse)
-   * JsonHttpParser.parserForResponse}({@link #execute(List) execute}(requests))
-   * to get the {@link JsonParser}, and
-   * {@link Json#parseArrayAndClose(JsonParser, Collection, Class, CustomizeJsonParser)}
-   * .
+   * JsonHttpParser.parserForResponse}({@link #buildPostRequest(List) execute}
+   * (requests)) to get the {@link JsonParser}, and {@link
+   * Json#parseArrayAndClose(JsonParser, Collection, Class,
+   * CustomizeJsonParser)} .
    * </p>
-   * 
+   *
    * @param requests JSON-RPC request objects
-   * @return HTTP response
-   * @throws IOException I/O exception
+   * @return HTTP request
    */
-  public HttpResponse execute(List<JsonRpcRequest> requests) throws IOException {
+  public HttpRequest buildPostRequest(List<JsonRpcRequest> requests) {
     return internalExecute(requests);
   }
 
   /**
-   * Executes over HTTP GET the JSON-RPC requests objects specified in the given
-   * JSON-RPC request object.
+   * Builds a GET HTTP request for the JSON-RPC requests objects specified in
+   * the given JSON-RPC request object.
    * <p>
    * You may use {@link JsonHttpParser#parserForResponse(HttpResponse)
-   * JsonHttpParser.parserForResponse}( {@link #executeUsingGet(JsonRpcRequest)
+   * JsonHttpParser.parserForResponse}( {@link #buildGetRequest(JsonRpcRequest)
    * executeUsingGet} (request)) to get the {@link JsonParser}, and
    * {@link Json#parseAndClose(JsonParser, Class, CustomizeJsonParser)} .
    * </p>
-   * 
+   *
    * @param request JSON-RPC request object
    * @return HTTP response
    * @throws IOException I/O exception
    */
-  public HttpResponse executeUsingGet(JsonRpcRequest request)
+  public HttpRequest buildGetRequest(JsonRpcRequest request)
       throws IOException {
     HttpTransport transport = this.transport;
     HttpRequest httpRequest = transport.buildGetRequest();
@@ -134,12 +132,12 @@ public final class JsonRpcHttpTransport {
     } finally {
       generator.close();
     }
-    url.set("params", new String(Base64.encode(byteStream.toByteArray()),
-        "UTF-8"));
-    return httpRequest.execute();
+    url.set(
+        "params", new String(Base64.encode(byteStream.toByteArray()), "UTF-8"));
+    return httpRequest;
   }
 
-  private HttpResponse internalExecute(Object data) throws IOException {
+  private HttpRequest internalExecute(Object data) {
     HttpTransport transport = this.transport;
     HttpRequest httpRequest = transport.buildPostRequest();
     httpRequest.url = this.rpcServerUrl;
@@ -148,6 +146,6 @@ public final class JsonRpcHttpTransport {
     httpRequest.headers.accept = this.accept;
     content.data = data;
     httpRequest.content = content;
-    return httpRequest.execute();
+    return httpRequest;
   }
 }
