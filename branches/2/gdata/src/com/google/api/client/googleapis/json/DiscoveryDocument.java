@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,7 +33,7 @@ import java.util.Map;
 
 /**
  * Manages a Google API discovery document based on the JSON format.
- * 
+ *
  * @since 2.2
  * @author Yaniv Inbar
  */
@@ -41,7 +41,7 @@ public final class DiscoveryDocument {
 
   /**
    * Defines a specific version of an API.
-   * 
+   *
    * @since 2.3
    */
   public static final class ServiceDefinition {
@@ -76,7 +76,7 @@ public final class DiscoveryDocument {
 
   /**
    * Defines a resource in a service definition.
-   * 
+   *
    * @since 2.3
    */
   public static final class ServiceResource {
@@ -88,7 +88,7 @@ public final class DiscoveryDocument {
 
   /**
    * Defines a method of a service resource.
-   * 
+   *
    * @since 2.3
    */
   public static final class ServiceMethod {
@@ -112,7 +112,7 @@ public final class DiscoveryDocument {
 
   /**
    * Defines a parameter to a service method.
-   * 
+   *
    * @since 2.3
    */
   public static final class ServiceParameter {
@@ -124,7 +124,7 @@ public final class DiscoveryDocument {
 
   /**
    * API service definition parsed from discovery document.
-   * 
+   *
    * @since 2.3
    */
   public final ServiceDefinition serviceDefinition;
@@ -140,20 +140,35 @@ public final class DiscoveryDocument {
 
   /**
    * Executes a request for the JSON-formatted discovery document.
-   * 
+   *
    * @param api API name
    * @return discovery document
    * @throws IOException I/O exception executing request
+   * @deprecated (scheduled to be removed in version 2.4) Use
+   *             {@link #load(String)}
    */
+  @Deprecated
   public static DiscoveryDocument execute(String api) throws IOException {
+    return load(api);
+  }
+
+  /**
+   * Executes a request for the JSON-formatted discovery document.
+   *
+   * @param apiName API name
+   * @return discovery document
+   * @throws IOException I/O exception executing request
+   * @since 2.3
+   */
+  public static DiscoveryDocument load(String apiName) throws IOException {
     GenericUrl discoveryUrl =
         new GenericUrl("http://www.googleapis.com/discovery/0.1/describe");
-    discoveryUrl.put("api", api);
+    discoveryUrl.put("api", apiName);
     HttpTransport transport = GoogleTransport.create();
     HttpRequest request = transport.buildGetRequest();
     request.url = discoveryUrl;
     JsonParser parser = JsonCParser.parserForResponse(request.execute());
-    Json.skipToKey(parser, api);
+    Json.skipToKey(parser, apiName);
     Json.skipToKey(parser, "1.0");
     ServiceDefinition serviceDefinition = new ServiceDefinition();
     Json.parseAndClose(parser, serviceDefinition, null);
@@ -162,15 +177,15 @@ public final class DiscoveryDocument {
 
   /**
    * Creates an HTTP request based on the given method name and parameters.
-   * 
+   *
    * @param fullyQualifiedMethodName name of method as defined in Discovery
    *        document of format "resourceName.methodName"
    * @param parameters user defined key / value data mapping
    * @return HTTP request
    * @throws IOException I/O exception reading
    */
-  public HttpRequest buildRequest(String fullyQualifiedMethodName,
-      Object parameters) throws IOException {
+  public HttpRequest buildRequest(
+      String fullyQualifiedMethodName, Object parameters) throws IOException {
     HttpTransport transport = this.transport;
     if (transport == null) {
       throw new IllegalArgumentException("missing transport");
@@ -180,14 +195,14 @@ public final class DiscoveryDocument {
     ServiceMethod method =
         serviceDefinition.getResourceMethod(fullyQualifiedMethodName);
     if (method == null) {
-      throw new IllegalArgumentException("unrecognized method: "
-          + fullyQualifiedMethodName);
+      throw new IllegalArgumentException(
+          "unrecognized method: " + fullyQualifiedMethodName);
     }
     HttpRequest request = transport.buildRequest();
     request.method = method.httpMethod;
     HashMap<String, String> requestMap = new HashMap<String, String>();
-    for (Map.Entry<String, Object> entry : DataUtil.mapOf(parameters)
-        .entrySet()) {
+    for (Map.Entry<String, Object> entry :
+        DataUtil.mapOf(parameters).entrySet()) {
       Object value = entry.getValue();
       if (value != null) {
         requestMap.put(entry.getKey(), value.toString());
@@ -211,8 +226,8 @@ public final class DiscoveryDocument {
       cur = close + 1;
       String value = requestMap.remove(varName);
       if (value == null) {
-        throw new IllegalArgumentException("missing required path parameter: "
-            + varName);
+        throw new IllegalArgumentException(
+            "missing required path parameter: " + varName);
       }
       pathBuf.append(CharEscapers.escapeUriPath(value));
     }
