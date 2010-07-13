@@ -1,17 +1,15 @@
 <html>
-<title>Setup Instructions for the Google Language API for Diacritization
-Sample</title>
+<title>Setup Instructions for the Google Discovery API Sample</title>
 <body>
-<h2>Setup Instructions for the Google Language API for Diacritization
-Sample</h2>
+<h2>Setup Instructions for the Google Discovery API Sample</h2>
 
 <h3>Browse Online</h3>
 
 <ul>
   <li><a
-    href="http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/diacritization/diacritization-sample">Browse
+    href="http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/discovery/discovery-sample">Browse
   Source</a>, or main file <a
-    href="http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/diacritization/diacritization-sample/src/com/google/api/client/sample/diacritization/DiacritizationSample.java">DiacritizationSample.java</a></li>
+    href="http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/discovery/discovery-sample/src/com/google/api/client/sample/discovery/DiscoverySample.java">DiscoverySample.java</a></li>
 </ul>
 
 <h3>Installation Instructions</h3>
@@ -52,8 +50,8 @@ plugin</a>.</p>
     <ul>
       <li>URL:
       <ul>
-        <li>Read only: <code>http://gdata-java-client.googlecode.com/svn/branches/2/sample/diacritization/diacritization-sample</code></li>
-        <li>Commit access: <code>https://gdata-java-client.googlecode.com/svn/branches/2/sample/diacritization/diacritization-sample</code></li>
+        <li>Read only: <code>http://gdata-java-client.googlecode.com/svn/branches/2/sample/discovery/discovery-sample</code></li>
+        <li>Commit access: <code>https://gdata-java-client.googlecode.com/svn/branches/2/sample/discovery/discovery-sample</code></li>
       </ul>
       </li>
       <li>Click on "Head revision" and click on "Finish"</li>
@@ -68,8 +66,13 @@ plugin</a>.</p>
   </li>
   <li>Run
   <ul>
-    <li>Right-click on project diacritization-sample</li>
+    <li>Right-click on project discovery-sample</li>
     <li>Run As &gt; Java Application</li>
+    <li>Select "DiscoverySample" and click "OK"</li>
+    <li>Run &gt; Run Configurations...</li>
+    <li>select "Java Application" &gt; "Discovery Sample"</li>
+    <li>In Arguments tab, Program arguments: discover buzz</li>
+    <li>click "Run"</li>
   </ul>
   </li>
 </ul>
@@ -84,16 +87,16 @@ plugin</a>.</p>
   <li>SVN checkout
   <ul>
     <li>Read only: <code>svn checkout
-    http://gdata-java-client.googlecode.com/svn/branches/2/sample/diacritization/diacritization-sample
-    <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
+    http://gdata-java-client.googlecode.com/svn/branches/2/sample/discovery/discovery-sample
+    <i>&lt;some path&gt;</i>/discovery-sample</code></li>
     <li>Commit access: <code>svn checkout
-    https://gdata-java-client.googlecode.com/svn/branches/2/sample/diacritization/diacritization-sample
-    <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
+    https://gdata-java-client.googlecode.com/svn/branches/2/sample/discovery/discovery-sample
+    <i>&lt;some path&gt;</i>/discovery-sample</code></li>
   </ul>
   </li>
-  <li><code>cd <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
-  <li>Compile: <code>mvn compile</code></li>
-  <li>Run: <code>mvn -q exec:java</code></li>
+  <li><code>cd <i>&lt;some path&gt;</i>/discovery-sample</code></li>
+  <li>Assemble: <code>mvn assembly:assembly</code></li>
+  <li>Run: <code>google</code></li>
 </ul>
 
 </body>
