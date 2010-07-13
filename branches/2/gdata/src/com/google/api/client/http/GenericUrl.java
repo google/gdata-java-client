@@ -210,7 +210,6 @@ public class GenericUrl extends GenericData {
       Object value = nameValueEntry.getValue();
       if (value != null) {
         String name = CharEscapers.escapeUriQuery(nameValueEntry.getKey());
-        String[] values;
         if (value instanceof Collection<?>) {
           Collection<?> collectionValue = (Collection<?>) value;
           for (Object repeatedValue : collectionValue) {

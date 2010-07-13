@@ -101,8 +101,7 @@ public final class GoogleStorageAuthentication {
       // canonical extension headers
       TreeMap<String, String> extensions = new TreeMap<String, String>();
       for (Map.Entry<String, Object> headerEntry : headers.entrySet()) {
-        String name = headerEntry.getKey();
-        String lowerCase = name.toLowerCase();
+        String name = headerEntry.getKey().toLowerCase();
         Object value = headerEntry.getValue();
         if (value != null && name.startsWith("x-goog-")) {
           if (value instanceof Collection<?>) {

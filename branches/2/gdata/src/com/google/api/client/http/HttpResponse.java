@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,7 +33,7 @@ import java.util.zip.GZIPInputStream;
 
 /**
  * HTTP response.
- * 
+ *
  * @since 2.2
  * @author Yaniv Inbar
  */
@@ -94,9 +94,8 @@ public final class HttpResponse {
     this.transport = transport;
     this.response = response;
     this.contentLength = response.getContentLength();
-    String contentType = this.contentType = response.getContentType();
-    String contentEncoding =
-        this.contentEncoding = response.getContentEncoding();
+    this.contentType = response.getContentType();
+    this.contentEncoding = response.getContentEncoding();
     int code = response.getStatusCode();
     this.statusCode = code;
     this.isSuccessStatusCode = isSuccessStatusCode(code);
@@ -154,15 +153,15 @@ public final class HttpResponse {
           // parse value based on collection type parameter
           Class<?> subFieldClass =
               ClassInfo.getCollectionParameter(fieldInfo.field);
-          collection.add(FieldInfo.parsePrimitiveValue(subFieldClass,
-              headerValue));
+          collection.add(
+              FieldInfo.parsePrimitiveValue(subFieldClass, headerValue));
         } else {
           // parse value based on field type
-          fieldInfo.setValue(headers, FieldInfo.parsePrimitiveValue(type,
-              headerValue));
+          fieldInfo.setValue(
+              headers, FieldInfo.parsePrimitiveValue(type, headerValue));
         }
       } else {
-      // store header values in an array list
+        // store header values in an array list
         ArrayList<String> listValue =
             (ArrayList<String>) headers.get(fieldName);
         if (listValue == null) {
@@ -181,7 +180,7 @@ public final class HttpResponse {
    * Returns the content of the HTTP response.
    * <p>
    * The result is cached, so subsequent calls will be fast.
-   * 
+   *
    * @return input stream content of the HTTP response or {@code null} for none
    * @throws IOException I/O exception
    */
@@ -203,8 +202,8 @@ public final class HttpResponse {
         InputStreamContent.copy(content, debugStream);
         debugContentByteArray = debugStream.toByteArray();
         content = new ByteArrayInputStream(debugContentByteArray);
-        logger.config("Response size: " + debugContentByteArray.length
-            + " bytes");
+        logger.config(
+            "Response size: " + debugContentByteArray.length + " bytes");
       }
       // gzip encoding
       String contentEncoding = this.contentEncoding;
@@ -235,7 +234,7 @@ public final class HttpResponse {
   /**
    * Gets the content of the HTTP response from {@link #getContent()} and
    * ignores the content if there is any.
-   * 
+   *
    * @throws IOException I/O exception
    */
   public void ignore() throws IOException {
@@ -257,7 +256,7 @@ public final class HttpResponse {
    * Parses the content of the HTTP response from {@link #getContent()} and
    * reads it into a data class of key/value pairs using the parser returned by
    * {@link #getParser()} .
-   * 
+   *
    * @return parsed data class or {@code null} for no content
    * @throws IOException I/O exception
    * @throws IllegalArgumentException if no parser is defined for the given
@@ -275,8 +274,8 @@ public final class HttpResponse {
         }
         return null;
       }
-      throw new IllegalArgumentException("No parser defined for Content-Type: "
-          + contentType);
+      throw new IllegalArgumentException(
+          "No parser defined for Content-Type: " + contentType);
     }
     return parser.parse(this, dataClass);
   }
@@ -285,11 +284,10 @@ public final class HttpResponse {
    * Parses the content of the HTTP response from {@link #getContent()} and
    * reads it into a string.
    * <p>
-   * Upgrade warning: in version 2.2 of the library, this method returned
-   * {@code null} for no content, but as of version 2.3 it now returns {@code
-   * ""}. To check for no content, check if {@link #getContent()} is {@code
-   * null}.
-   * 
+   * Upgrade warning: in version 2.2 of the library, this method returned {@code
+   * null} for no content, but as of version 2.3 it now returns {@code ""}. To
+   * check for no content, check if {@link #getContent()} is {@code null}.
+   *
    * @return parsed string or {@code ""} for no content
    * @throws IOException I/O exception
    */

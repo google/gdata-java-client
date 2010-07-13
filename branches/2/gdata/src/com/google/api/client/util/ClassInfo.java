@@ -142,7 +142,6 @@ public final class ClassInfo {
     StringBuilder buf =
         new StringBuilder("unable to create new instance of class ")
             .append(clazz.getName());
-    boolean first = true;
     if (Modifier.isAbstract(clazz.getModifiers())) {
       buf.append(" (and) because it is abstract");
     }

@@ -198,7 +198,7 @@ public class PercentEscaper extends UnicodeEscaper {
    * Escapes the given Unicode code point in UTF-8.
    */
   @Override
-  protected char /* @Nullable */[] escape(int cp) {
+  protected char [] escape(int cp) {
     // We should never get negative values here but if we do it will throw an
     // IndexOutOfBoundsException, so at least it will get spotted.
     if (cp < safeOctets.length && safeOctets[cp]) {
