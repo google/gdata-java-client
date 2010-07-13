@@ -94,7 +94,7 @@ public class DiscoverySample {
                 "  google call buzz.activities.list --scope @self --userId @me --alt json --prettyprint true");
         System.out
             .println(
-                "  echo {\\\"data\\\":{\\\"object\\\":{\\\"content\\\":\\\"posting using google command-line tool\\\"}}} > buzzpost.json && google call buzz.activities.insert --userId @me buzzpost.json");
+                "  echo {\\\"data\\\":{\\\"object\\\":{\\\"content\\\":\\\"Posting using google command-line tool \\(http://bit.ly/9KFkzF\\)\\\"}}} > buzzpost.json && google call buzz.activities.insert --userId @me buzzpost.json");
       } else if (helpCommand.equals("discover")) {
         System.out.println("Usage: google discover apiName");
         System.out.println();
