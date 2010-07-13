@@ -49,7 +49,7 @@ public class DiscoveryWebSample implements EntryPoint {
   public void onModuleLoad() {
     VerticalPanel mainPanel = new VerticalPanel();
     mainPanel.setSpacing(5);
-    Label title = new Label("Discovery v0.1");
+    Label title = new Label("Google Discovery API Web Client");
     title.addStyleName("header");
     HorizontalPanel addPanel = new HorizontalPanel();
     Label label = new Label("Select a Google API:");
