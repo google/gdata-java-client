@@ -20,8 +20,32 @@ Sample</h2>
   href="http://gdata-java-client.googlecode.com/svn/branches/2/gdata/instructions.html">install
 the gdata library project</a>.</p>
 
+<p>Prerequisite: you must first install <a href="http://java.com">Java 6</a>.</p>
+
 <p>If you need commit access, you first need to be added as a <a
   href="http://code.google.com/p/gdata-java-client/people/list">Committer</a>.</p>
+
+<h4>Command-Line</h4>
+
+<p>You will need to first install <a
+  href="http://subversion.apache.org/packages.html">Subversion</a> and <a
+  href="http://maven.apache.org/download.html">Maven</a>.</p>
+
+<ul>
+  <li>SVN checkout
+  <ul>
+    <li>Read only: <code>svn checkout
+    http://gdata-java-client.googlecode.com/svn/branches/2/sample/diacritization/diacritization-sample
+    <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
+    <li>Commit access: <code>svn checkout
+    https://gdata-java-client.googlecode.com/svn/branches/2/sample/diacritization/diacritization-sample
+    <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
+  </ul>
+  </li>
+  <li><code>cd <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
+  <li>Compile: <code>mvn compile</code></li>
+  <li>Run: <code>mvn -q exec:java</code></li>
+</ul>
 
 <h4>Eclipse 3.5/3.6</h4>
 
@@ -72,28 +96,6 @@ plugin</a>.</p>
     <li>Run As &gt; Java Application</li>
   </ul>
   </li>
-</ul>
-
-<h4>Command-Line</h4>
-
-<p>You will need to first install <a
-  href="http://subversion.apache.org/packages.html">Subversion</a> and <a
-  href="http://maven.apache.org/download.html">Maven</a>.</p>
-
-<ul>
-  <li>SVN checkout
-  <ul>
-    <li>Read only: <code>svn checkout
-    http://gdata-java-client.googlecode.com/svn/branches/2/sample/diacritization/diacritization-sample
-    <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
-    <li>Commit access: <code>svn checkout
-    https://gdata-java-client.googlecode.com/svn/branches/2/sample/diacritization/diacritization-sample
-    <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
-  </ul>
-  </li>
-  <li><code>cd <i>&lt;some path&gt;</i>/diacritization-sample</code></li>
-  <li>Compile: <code>mvn compile</code></li>
-  <li>Run: <code>mvn -q exec:java</code></li>
 </ul>
 
 </body>

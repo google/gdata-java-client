@@ -13,8 +13,33 @@
 
 <h3>Installation Instructions</h3>
 
+<p>Prerequisite: you must first install <a
+  href="http://java.sun.com/products/archive/">Java 5</a>.</p>
+
 <p>If you need commit access, you first need to be added as a <a
   href="http://code.google.com/p/gdata-java-client/people/list">Committer</a>.</p>
+
+<h4>Command-Line</h4>
+
+<p>You will need to first install <a
+  href="http://subversion.apache.org/packages.html">Subversion</a> and <a
+  href="http://maven.apache.org/download.html">Maven</a>.</p>
+
+<ul>
+  <li>SVN checkout
+  <ul>
+    <li>Read only: <code>svn checkout
+    http://gdata-java-client.googlecode.com/svn/branches/2/gdata <i>&lt;some
+    path&gt;</i>/gdata</code></li>
+    <li>Commit access: <code>svn checkout
+    https://gdata-java-client.googlecode.com/svn/branches/2/gdata <i>&lt;some
+    path&gt;</i>/gdata</code></li>
+  </ul>
+  </li>
+  <li><code>cd <i>&lt;some path&gt;</i>/gdata</code></li>
+  <li>Maven install: <code>mvn install</code></li>
+  <li>(Commiters only) Distribute with Ant: <code>ant all</code></li>
+</ul>
 
 <h4>Eclipse 3.5</h4>
 
@@ -70,26 +95,5 @@ plugin</a>.</p>
   </li>
 </ul>
 
-<h4>Command-Line</h4>
-
-<p>You will need to first install <a
-  href="http://subversion.apache.org/packages.html">Subversion</a> and <a
-  href="http://maven.apache.org/download.html">Maven</a>.</p>
-
-<ul>
-  <li>SVN checkout
-  <ul>
-    <li>Read only: <code>svn checkout
-    http://gdata-java-client.googlecode.com/svn/branches/2/gdata <i>&lt;some
-    path&gt;</i>/gdata</code></li>
-    <li>Commit access: <code>svn checkout
-    https://gdata-java-client.googlecode.com/svn/branches/2/gdata <i>&lt;some
-    path&gt;</i>/gdata</code></li>
-  </ul>
-  </li>
-  <li><code>cd <i>&lt;some path&gt;</i>/gdata</code></li>
-  <li>Maven install: <code>mvn install</code></li>
-  <li>(Commiters only) Distribute with Ant: <code>ant all</code></li>
-</ul>
 </body>
 </html>
