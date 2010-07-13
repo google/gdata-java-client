@@ -1,7 +1,26 @@
 <html>
-<title>Setup Instructions for the Google Discovery API Sample</title>
+<title>Instructions for the Google Discovery API Sample</title>
 <body>
-<h2>Setup Instructions for the Google Discovery API Sample</h2>
+<h2>Instructions for the Google Discovery API Sample</h2>
+
+<h3>Usage</h3>
+
+<h4>google discover</h4>
+
+Examples:
+<ul>
+<li><code>google discover buzz</code></li>
+<li><code>google discover moderator</code></li>
+</ul>
+
+<h4>google call</h4>
+
+Examples:
+<ul>
+<li><code>google call discovery.apis.get --api buzz --prettyprint true</code></li>
+<li><code>google call buzz.activities.list --scope @self --userId @me --alt json --prettyprint true</code></li>
+<li><code>echo {\"data\":{\"object\":{\"content\":\"posting using google command-line tool\"}}} &gt; buzzpost.json &amp;&amp; google call buzz.activities.insert --userId @me buzzpost.json</code></li>
+</ul>
 
 <h3>Browse Online</h3>
 
@@ -18,8 +37,33 @@
   href="http://gdata-java-client.googlecode.com/svn/branches/2/gdata/instructions.html">install
 the gdata library project</a>.</p>
 
+<p>Prerequisite: you must first install <a href="http://java.com">Java 6</a>.</p>
+
 <p>If you need commit access, you first need to be added as a <a
   href="http://code.google.com/p/gdata-java-client/people/list">Committer</a>.</p>
+
+<h4>Command-Line</h4>
+
+<p>You will need to first install <a
+  href="http://subversion.apache.org/packages.html">Subversion</a> and <a
+  href="http://maven.apache.org/download.html">Maven</a>.</p>
+
+<ul>
+  <li>SVN checkout
+  <ul>
+    <li>Read only: <code>svn checkout
+    http://gdata-java-client.googlecode.com/svn/branches/2/sample/discovery/discovery-sample
+    <i>&lt;some path&gt;</i>/discovery-sample</code></li>
+    <li>Commit access: <code>svn checkout
+    https://gdata-java-client.googlecode.com/svn/branches/2/sample/discovery/discovery-sample
+    <i>&lt;some path&gt;</i>/discovery-sample</code></li>
+  </ul>
+  </li>
+  <li><code>cd <i>&lt;some path&gt;</i>/discovery-sample</code></li>
+  <li>Assemble: <code>mvn assembly:assembly</code></li>
+  <li>Alias: <code>alias google="<i>&lt;some path&gt;</i>/discovery-sample/google"</code></li>
+  <li>Run: <code>google</code> and <code>google discover buzz</code></li>
+</ul>
 
 <h4>Eclipse 3.5/3.6</h4>
 
@@ -75,28 +119,6 @@ plugin</a>.</p>
     <li>click "Run"</li>
   </ul>
   </li>
-</ul>
-
-<h4>Command-Line</h4>
-
-<p>You will need to first install <a
-  href="http://subversion.apache.org/packages.html">Subversion</a> and <a
-  href="http://maven.apache.org/download.html">Maven</a>.</p>
-
-<ul>
-  <li>SVN checkout
-  <ul>
-    <li>Read only: <code>svn checkout
-    http://gdata-java-client.googlecode.com/svn/branches/2/sample/discovery/discovery-sample
-    <i>&lt;some path&gt;</i>/discovery-sample</code></li>
-    <li>Commit access: <code>svn checkout
-    https://gdata-java-client.googlecode.com/svn/branches/2/sample/discovery/discovery-sample
-    <i>&lt;some path&gt;</i>/discovery-sample</code></li>
-  </ul>
-  </li>
-  <li><code>cd <i>&lt;some path&gt;</i>/discovery-sample</code></li>
-  <li>Assemble: <code>mvn assembly:assembly</code></li>
-  <li>Run: <code>google</code></li>
 </ul>
 
 </body>

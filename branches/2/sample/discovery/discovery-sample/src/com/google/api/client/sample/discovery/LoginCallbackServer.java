@@ -100,8 +100,6 @@ public class LoginCallbackServer {
    * @return The verifier token, or null if there was a timeout.
    */
   public String waitForVerifier(String requestToken) {
-    long startTime = System.currentTimeMillis();
-
     synchronized (verifierMap) {
       while (!verifierMap.containsKey(requestToken)) {
         try {

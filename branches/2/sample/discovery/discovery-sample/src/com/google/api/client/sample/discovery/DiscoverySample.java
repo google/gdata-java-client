@@ -28,7 +28,6 @@ import com.google.api.client.googleapis.json.DiscoveryDocument;
 import com.google.api.client.googleapis.json.DiscoveryDocument.ServiceMethod;
 import com.google.api.client.googleapis.json.DiscoveryDocument.ServiceParameter;
 import com.google.api.client.googleapis.json.DiscoveryDocument.ServiceResource;
-import com.google.api.client.googleapis.json.JsonCContent;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -95,7 +94,7 @@ public class DiscoverySample {
                 "  google call buzz.activities.list --scope @self --userId @me --alt json --prettyprint true");
         System.out
             .println(
-                "  google call buzz.activities.insert --userId @me /tmp/buzzpost.json");
+                "  echo {\\\"data\\\":{\\\"object\\\":{\\\"content\\\":\\\"posting using google command-line tool\\\"}}} > buzzpost.json && google call buzz.activities.insert --userId @me buzzpost.json");
       } else if (helpCommand.equals("discover")) {
         System.out.println("Usage: google discover apiName");
         System.out.println();
@@ -194,7 +193,6 @@ public class DiscoverySample {
         doc.buildRequest(resourceName + "." + methodName, parameters);
     request.url.putAll(queryParameters);
     if (requestBodyFile != null) {
-      JsonCContent content = new JsonCContent();
       InputStreamContent fileContent = new InputStreamContent();
       // TODO: support other content types?
       fileContent.type = "application/json";
