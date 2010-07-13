@@ -100,7 +100,6 @@ public final class UrlEncodedContent implements HttpContent {
         Object value = nameValueEntry.getValue();
         if (value != null) {
           String name = CharEscapers.escapeUri(nameValueEntry.getKey());
-          String[] values;
           if (value instanceof Collection<?>) {
             Collection<?> collectionValue = (Collection<?>) value;
             for (Object repeatedValue : collectionValue) {

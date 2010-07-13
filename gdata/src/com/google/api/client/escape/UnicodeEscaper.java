@@ -75,7 +75,7 @@ public abstract class UnicodeEscaper extends Escaper {
    * @return the replacement characters, or {@code null} if no escaping was
    *         needed
    */
-  protected abstract char /* @Nullable */[] escape(int cp);
+  protected abstract char [] escape(int cp);
 
   /**
    * Scans a sub-sequence of characters from a given {@link CharSequence},
