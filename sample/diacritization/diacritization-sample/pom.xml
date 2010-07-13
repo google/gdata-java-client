@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.api.client</groupId>
   <artifactId>diacritization-sample</artifactId>
-  <version>0.1</version>
+  <version>1.0</version>
   <packaging>jar</packaging>
   <name>diacritization-sample</name>
   <description>
@@ -55,26 +55,25 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-5</version>
-
-        <configuration>
-          <archive>
-          <manifest>
-          <mainClass>com.google.api.client.sample.diacritization.DiacritizationSample</mainClass>
-          </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>com.google.api.client.sample.diacritization.DiacritizationSample</mainClass>
         </configuration>
       </plugin>
     </plugins>
