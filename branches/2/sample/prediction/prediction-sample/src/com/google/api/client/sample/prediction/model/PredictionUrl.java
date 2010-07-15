@@ -17,6 +17,7 @@
 package com.google.api.client.sample.prediction.model;
 
 import com.google.api.client.googleapis.GoogleUrl;
+import com.google.api.client.util.Key;
 
 /**
  * Prediction URL builder.
@@ -24,6 +25,9 @@ import com.google.api.client.googleapis.GoogleUrl;
  * @author Yaniv Inbar
  */
 public final class PredictionUrl extends GoogleUrl {
+
+  @Key
+  public String data;
 
   /** Constructs a new Prediction URL from the given encoded URL. */
   public PredictionUrl(String encodedUrl) {
@@ -33,15 +37,38 @@ public final class PredictionUrl extends GoogleUrl {
     }
   }
 
+  private static PredictionUrl root() {
+    return new PredictionUrl(
+        "https://www.googleapis.com/prediction/v1/training");
+  }
+
   /**
-   * Constructs a new Prediction URL based on the given object path of the form
+   * Constructs a new training URL based on the given object path of the form
    * {@code "mybucket/myobject"}.
    */
-  public static PredictionUrl fromBucketAndObjectNames(String objectPath) {
-    PredictionUrl result =
-        new PredictionUrl("https://www.googleapis.com/prediction/v1/training");
+  public static PredictionUrl forTraining(String objectPath) {
+    PredictionUrl result = root();
+    result.data = objectPath;
+    return result;
+  }
+
+  /**
+   * Constructs a new check training URL based on the given object path of the
+   * form {@code "mybucket/myobject"}.
+   */
+  public static PredictionUrl forCheckingTraining(String objectPath) {
+    PredictionUrl result = root();
     // this will ensure that objectPath is encoded properly, e.g. "/" -> "%2F"
     result.pathParts.add(objectPath);
+    return result;
+  }
+
+  /**
+   * Constructs a new prediction URL based on the given object path of the form
+   * {@code "mybucket/myobject"}.
+   */
+  public static PredictionUrl forPrediction(String objectPath) {
+    PredictionUrl result = forCheckingTraining(objectPath);
     result.pathParts.add("predict");
     return result;
   }
