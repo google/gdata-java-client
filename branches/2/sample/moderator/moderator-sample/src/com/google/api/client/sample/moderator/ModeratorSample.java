@@ -110,6 +110,7 @@ public class ModeratorSample {
       throws IOException {
     vote.vote = "MINUS";
     VoteResource result = vote.executeUpdate(transport);
+    System.out.println(result);
     return result;
   }
 }
