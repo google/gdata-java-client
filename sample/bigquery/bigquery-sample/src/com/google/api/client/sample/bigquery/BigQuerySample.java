@@ -20,6 +20,7 @@ import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
 import com.google.api.client.googleapis.json.JsonCParser;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.sample.bigquery.model.BigQueryUrl;
 import com.google.api.client.sample.bigquery.model.Debug;
@@ -41,15 +42,20 @@ public class BigQuerySample {
     HttpTransport transport = GoogleTransport.create();
     transport.addParser(new JsonCParser());
     try {
-      authenticateWithClientLogin(transport);
-      executeSchema(transport, "bigquery/samples/shakespeare");
-      executeQuery(
-          transport, "select count(*) from [bigquery/samples/shakespeare];");
-      executeQuery(
-          transport,
-          "select corpus, word, word_count from [bigquery/samples/shakespeare] where word_count > 600 order by word_count desc;");
-    } catch (IOException e) {
-      e.printStackTrace();
+      try {
+        authenticateWithClientLogin(transport);
+        executeSchema(transport, "bigquery/samples/shakespeare");
+        executeQuery(
+            transport, "select count(*) from [bigquery/samples/shakespeare];");
+        executeQuery(
+            transport,
+            "select corpus, word, word_count from [bigquery/samples/shakespeare] where word_count > 600 order by word_count desc;");
+      } catch (HttpResponseException e) {
+        System.err.println(e.response.parseAsString());
+        throw e;
+      }
+    } catch (Throwable t) {
+      t.printStackTrace();
       System.exit(1);
     }
   }

@@ -19,6 +19,7 @@ package com.google.api.client.sample.diacritization;
 import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.googleapis.json.JsonCParser;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 
 import java.io.IOException;
@@ -29,12 +30,22 @@ import java.io.IOException;
  */
 public class DiacritizationSample {
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     // initialize HTTP transport
     Debug.enableLogging();
     HttpTransport transport = GoogleTransport.create();
     transport.addParser(new JsonCParser());
-    diacritize(transport, "مرحبا العالم");
+    try {
+      try {
+        diacritize(transport, "مرحبا العالم");
+      } catch (HttpResponseException e) {
+        System.err.println(e.response.parseAsString());
+        throw e;
+      }
+    } catch (Throwable t) {
+      t.printStackTrace();
+      System.exit(1);
+    }
   }
 
   private static void diacritize(HttpTransport transport, String message)
