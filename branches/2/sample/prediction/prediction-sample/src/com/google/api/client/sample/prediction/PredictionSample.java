@@ -52,8 +52,8 @@ public class PredictionSample {
         System.err.println(e.response.parseAsString());
         throw e;
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (Throwable t) {
+      t.printStackTrace();
       System.exit(1);
     }
   }

@@ -17,13 +17,6 @@
 package com.google.api.client.sample.discovery;
 
 import com.google.api.client.apache.ApacheHttpTransport;
-import com.google.api.client.auth.oauth.OAuthAuthorizeTemporaryTokenUrl;
-import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
-import com.google.api.client.auth.oauth.OAuthHmacSigner;
-import com.google.api.client.auth.oauth.OAuthParameters;
-import com.google.api.client.googleapis.auth.oauth.GoogleOAuthAuthorizeTemporaryTokenUrl;
-import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetAccessToken;
-import com.google.api.client.googleapis.auth.oauth.GoogleOAuthGetTemporaryToken;
 import com.google.api.client.googleapis.json.DiscoveryDocument;
 import com.google.api.client.googleapis.json.DiscoveryDocument.ServiceMethod;
 import com.google.api.client.googleapis.json.DiscoveryDocument.ServiceParameter;
@@ -33,11 +26,8 @@ import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
 
-import java.awt.Desktop;
-import java.awt.Desktop.Action;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,8 +39,6 @@ import java.util.regex.Pattern;
  * @author Yaniv Inbar
  */
 public class DiscoverySample {
-
-  private static final String APP_NAME = "Google Discovery API Client v0.1";
 
   private static final Pattern API_NAME_PATTERN = Pattern.compile("\\w+");
 
@@ -200,20 +188,23 @@ public class DiscoverySample {
       request.content = fileContent;
     }
     try {
-      authorizeUsingOAuth(doc, apiName, method);
+      if (apiName.equals("bigquery") || apiName.equals("prediction")) {
+        error("call", "OAuth not supported for this API: " + apiName);
+      }
+      if (!apiName.equals("discovery") && !apiName.equals("diacritize")) {
+        Auth.authorize(doc, apiName, method);
+      }
       String response = request.execute().parseAsString();
       System.out.println(response);
+      Auth.revoke();
     } catch (HttpResponseException e) {
       System.err.println(e.response.parseAsString());
+      Auth.revoke();
       System.exit(1);
-    } finally {
-      if (credentials != null) {
-        try {
-          GoogleOAuthGetAccessToken.revokeAccessToken(createOAuthParameters());
-        } catch (Exception e) {
-          e.printStackTrace(System.err);
-        }
-      }
+    } catch (Throwable t) {
+      t.printStackTrace();
+      Auth.revoke();
+      System.exit(1);
     }
   }
 
@@ -295,94 +286,5 @@ public class DiscoverySample {
       buf.append(params.get(i));
     }
     return buf.toString();
-  }
-
-  static OAuthHmacSigner signer;
-  static OAuthCredentialsResponse credentials;
-
-  private static OAuthParameters createOAuthParameters() {
-    OAuthParameters authorizer = new OAuthParameters();
-    authorizer.consumerKey = "anonymous";
-    authorizer.signer = signer;
-    authorizer.token = credentials.token;
-    return authorizer;
-  }
-
-  private static void authorizeUsingOAuth(
-      DiscoveryDocument doc, String apiName, ServiceMethod method)
-      throws Exception {
-    if (apiName.equals("discovery") || apiName.equals("diacritize")) {
-      return;
-    }
-    HttpTransport transport = doc.transport;
-    // callback server
-    LoginCallbackServer callbackServer = null;
-    String verifier = null;
-    String tempToken = null;
-    try {
-      callbackServer = new LoginCallbackServer();
-      callbackServer.start();
-      // temporary token
-      GoogleOAuthGetTemporaryToken temporaryToken =
-          new GoogleOAuthGetTemporaryToken();
-      signer = new OAuthHmacSigner();
-      signer.clientSharedSecret = "anonymous";
-      temporaryToken.signer = signer;
-      temporaryToken.consumerKey = "anonymous";
-      temporaryToken.scope = "https://www.googleapis.com/auth/" + apiName;
-      temporaryToken.displayName = APP_NAME;
-      temporaryToken.callback = callbackServer.getCallbackUrl();
-      OAuthCredentialsResponse tempCredentials = temporaryToken.execute();
-      signer.tokenSharedSecret = tempCredentials.tokenSecret;
-      // authorization URL
-      OAuthAuthorizeTemporaryTokenUrl authorizeUrl;
-      if (apiName.equals("buzz")) {
-        authorizeUrl = new OAuthAuthorizeTemporaryTokenUrl(
-            "https://www.google.com/buzz/api/auth/OAuthAuthorizeToken");
-        authorizeUrl.set("scope", temporaryToken.scope);
-        authorizeUrl.set("domain", "anonymous");
-        authorizeUrl.set("xoauth_displayname", APP_NAME);
-      } else if (apiName.equals("latitude")) {
-        // TODO: test!
-        authorizeUrl = new OAuthAuthorizeTemporaryTokenUrl(
-            "https://www.google.com/latitude/apps/OAuthAuthorizeToken");
-      } else {
-        authorizeUrl = new GoogleOAuthAuthorizeTemporaryTokenUrl();
-      }
-      authorizeUrl.temporaryToken = tempToken = tempCredentials.token;
-      String authorizationUrl = authorizeUrl.build();
-      launchBrowser(authorizationUrl);
-      verifier = callbackServer.waitForVerifier(tempToken);
-    } finally {
-      if (callbackServer != null) {
-        callbackServer.stop();
-      }
-    }
-    GoogleOAuthGetAccessToken accessToken = new GoogleOAuthGetAccessToken();
-    accessToken.temporaryToken = tempToken;
-    accessToken.signer = signer;
-    accessToken.consumerKey = "anonymous";
-    accessToken.verifier = verifier;
-    credentials = accessToken.execute();
-    signer.tokenSharedSecret = credentials.tokenSecret;
-    createOAuthParameters().signRequestsUsingAuthorizationHeader(transport);
-  }
-
-  private static void launchBrowser(String authorizationUrl)
-      throws IOException {
-
-    boolean browsed = false;
-    if (Desktop.isDesktopSupported()) {
-      Desktop desktop = Desktop.getDesktop();
-      if (desktop.isSupported(Action.BROWSE)) {
-        desktop.browse(URI.create(authorizationUrl));
-        browsed = true;
-      }
-    }
-
-    if (!browsed) {
-      String browser = "google-chrome";
-      Runtime.getRuntime().exec(new String[] {browser, authorizationUrl});
-    }
   }
 }
