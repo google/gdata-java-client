@@ -35,7 +35,7 @@ import java.net.URI;
  */
 public class Auth {
 
-  private static final String APP_NAME = "Google Prediction API Java Client";
+  private static final String APP_NAME = "Google Moderator API Java Client";
 
   private static OAuthHmacSigner signer;
 
