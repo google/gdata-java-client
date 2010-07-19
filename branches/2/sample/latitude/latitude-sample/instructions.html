@@ -1,0 +1,106 @@
+<html>
+<title>Instructions for the Google Latitude API Sample</title>
+<body>
+<h2>Instructions for the Google Latitude API Sample</h2>
+
+<h3>Browse Online</h3>
+
+<ul>
+  <li><a
+    href="http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/latitude/latitude-sample">Browse
+  Source</a>, or main file <a
+    href="http://code.google.com/p/gdata-java-client/source/browse/branches/2/sample/latitude/latitude-sample/src/com/google/api/client/sample/latitude/LatitudeSample.java">LatitudeSample.java</a></li>
+</ul>
+
+<h3>Installation Instructions</h3>
+
+<p>Prerequisite: you must first <a
+  href="http://gdata-java-client.googlecode.com/svn/branches/2/gdata/instructions.html">install
+the gdata library project</a>.</p>
+
+<p>Prerequisite: you must first install <a href="http://java.com">Java 6</a>.</p>
+
+<p><b>Important:</b> after checking out the project, and before compiling
+and running it, you need to edit <code>src/com/google/api/client/sample/latitude/ClientCredentials.java</code>
+to enter a domain and client shared secret for a registered domain that you own.
+Otherwise, you will get a <code>400 Bad Request</code> exception with the
+message <code>Consumer is not registered: enter_domain</code>.</p>
+
+<p>If you need commit access to this sample, you first need to be added as a
+<a href="http://code.google.com/p/gdata-java-client/people/list">Committer</a>.</p>
+
+<h4>Command-Line</h4>
+
+<p>You will need to first install <a
+  href="http://subversion.apache.org/packages.html">Subversion</a> and <a
+  href="http://maven.apache.org/download.html">Maven</a>.</p>
+
+<ul>
+  <li>SVN checkout
+  <ul>
+    <li>Read only: <code>svn checkout
+    http://gdata-java-client.googlecode.com/svn/branches/2/sample/latitude/latitude-sample
+    <i>&lt;some path&gt;</i>/latitude-sample</code></li>
+    <li>Commit access: <code>svn checkout
+    https://gdata-java-client.googlecode.com/svn/branches/2/sample/latitude/latitude-sample
+    <i>&lt;some path&gt;</i>/latitude-sample</code></li>
+  </ul>
+  </li>
+  <li><code>cd <i>&lt;some path&gt;</i>/latitude-sample</code></li>
+  <li>Compile: <code>mvn compile</code></li>
+  <li>Run: <code>mvn -q exec:java</code></li>
+</ul>
+
+<h4>Eclipse 3.5/3.6</h4>
+
+<p>You will need to first install <a
+  href="http://www.eclipse.org/downloads/">Eclipse</a>, the <a
+  href="http://www.eclipse.org/subversive/downloads.php">Subversion plugin</a>,
+and the <a href="http://m2eclipse.sonatype.org/installing-m2eclipse.html">Maven
+plugin</a>.</p>
+
+<ul>
+  <li>SVN checkout
+  <ul>
+    <li>File &gt; Import...</li>
+    <li>Select "SVN &gt; Project from SVN" and click "Next"</li>
+    <li>"Checkout Project from SVN repository" or "Enter Repository
+    Location Information"
+    <ul>
+      <li>URL:
+      <ul>
+        <li>Read only: <code>http://gdata-java-client.googlecode.com/svn</code></li>
+        <li>Commit access: <code>https://gdata-java-client.googlecode.com/svn</code></li>
+      </ul>
+      </li>
+      <li>Click on "Next"</li>
+    </ul>
+    </li>
+    <li>Select Resource
+    <ul>
+      <li>URL:
+      <ul>
+        <li>Read only: <code>http://gdata-java-client.googlecode.com/svn/branches/2/sample/latitude/latitude-sample</code></li>
+        <li>Commit access: <code>https://gdata-java-client.googlecode.com/svn/branches/2/sample/latitude/latitude-sample</code></li>
+      </ul>
+      </li>
+      <li>Click on "Head revision" and click on "Finish"</li>
+    </ul>
+    </li>
+    <li>Check Out As
+    <ul>
+      <li>Click on "Finish"</li>
+    </ul>
+    </li>
+  </ul>
+  </li>
+  <li>Run
+  <ul>
+    <li>Right-click on project latitude-sample</li>
+    <li>Run As &gt; Java Application</li>
+  </ul>
+  </li>
+</ul>
+
+</body>
+</html>
