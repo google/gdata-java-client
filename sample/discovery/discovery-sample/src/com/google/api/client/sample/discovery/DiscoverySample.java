@@ -188,8 +188,9 @@ public class DiscoverySample {
       request.content = fileContent;
     }
     try {
-      if (apiName.equals("bigquery") || apiName.equals("prediction")) {
-        error("call", "OAuth not supported for this API: " + apiName);
+      if (apiName.equals("bigquery") || apiName.equals("prediction")
+          || apiName.equals("latitude")) {
+        error("call", "API not supported: " + apiName);
       }
       if (!apiName.equals("discovery") && !apiName.equals("diacritize")) {
         Auth.authorize(doc, apiName, method);
