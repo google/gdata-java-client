@@ -106,6 +106,11 @@ public class YouTubeNamespace {
   public static final String KIND_VIDEO_MESSAGE = URI + "#videoMessage";
   
   /**
+   * Kind linked to {@link StationDetailsEntry}.
+   */  
+  public static final String KIND_STATION = URI + "#station";
+  
+  /**
    * Scheme used for atom:categories and media:categories.
    */
   public static final String CATEGORY_SCHEME = URI + "/categories.cat";
@@ -247,6 +252,11 @@ public class YouTubeNamespace {
    * Link Rel value for the channel content.
    */
   public static final String CHANNEL_CONTENT_REL = URI + "#channel.content";
+  
+  /**
+   * Link Rel value for the station content.
+   */
+  public static final String STATION_CONTENT_REL = URI + "#station.content";
 
   /**
    * Link Rel value for parent comment link on the comments feed.
