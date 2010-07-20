@@ -46,6 +46,10 @@ public enum AppsForYourDomainErrorCode {
   EntityDoesNotExist(1301),
   EntityNameIsReserved(1302),
   EntityNameNotValid(1303),
+  EntityCannotBeModified(1304),
+  EntityCannotContainCycle(1305),
+  EntityHasMembersCannotDelete(1306),
+  EntityQuotaLimitReached(1307),
 
   InvalidGivenName(1400),
   InvalidFamilyName(1401),
@@ -56,6 +60,7 @@ public enum AppsForYourDomainErrorCode {
   InvalidEmailAddress(1406),
   InvalidQueryParameterValue(1407),
   InvalidSsoSigningKey(1408),
+  InvalidEncryptionPublicKey(1409),
 
   TooManyRecipientsOnEmailList(1500),
   TooManyNicknamesForUser(1501),
@@ -68,7 +73,9 @@ public enum AppsForYourDomainErrorCode {
   InvalidGroupPermissions(1701),
 
   InvalidDomainEdition(1800),
-  InvalidValue(1801);
+  InvalidValue(1801),
+
+  DeletePartialFailure(1802);
 
   private int errorCode;
 

@@ -47,7 +47,7 @@ public class SubscriptionEntry extends FeedLinkEntry<SubscriptionEntry>{
    * Subscription types. More types will appear over time.
    */
   public static enum Type {
-    CHANNEL, FAVORITES, QUERY, PLAYLIST;
+    CHANNEL, FAVORITES, QUERY, PLAYLIST, USER;
 
     /**
      * Gets the category term corresponding to this subscription

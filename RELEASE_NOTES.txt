@@ -1,4 +1,9 @@
 Google Data API - Release Notes
+Notes for v1.41.4
+-----------------
+o Updates Apps For Your Domain API
+o Updates Youtube API
+
 Notes for v1.41.3
 -----------------
 o Updated Apps Audit API 

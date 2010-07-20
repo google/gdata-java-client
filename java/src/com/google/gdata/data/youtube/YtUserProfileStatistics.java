@@ -41,6 +41,7 @@ public class YtUserProfileStatistics extends AbstractExtension {
   private long viewCount; 
   private long videoWatchCount;
   private long subscriberCount;
+  private long totalUploadViews;
   private DateTime lastWebAccess;
      
   /**
@@ -79,12 +80,20 @@ public class YtUserProfileStatistics extends AbstractExtension {
     this.lastWebAccess = lastWebAccess;
   }
   
+  public long getTotalUploadViews() {
+    return totalUploadViews;
+  }
+
+  public void setTotalUploadViews(long totalUploadViews) {
+    this.totalUploadViews = totalUploadViews;
+  }
+  
   @Override
   protected void putAttributes(AttributeGenerator generator) {
     putAttributeIfGreaterZero(generator, "viewCount", viewCount);
     putAttributeIfGreaterZero(generator, "videoWatchCount", videoWatchCount);
-    putAttributeIfGreaterZero(generator, "subscriberCount", 
-        subscriberCount);
+    putAttributeIfGreaterZero(generator, "subscriberCount", subscriberCount);
+    putAttributeIfGreaterZero(generator, "totalUploadViews", totalUploadViews);
     if (lastWebAccess != null) {
       generator.put("lastWebAccess", lastWebAccess);
     }
@@ -107,6 +116,7 @@ public class YtUserProfileStatistics extends AbstractExtension {
     viewCount = helper.consumeLong("viewCount", false, 0L);
     videoWatchCount = helper.consumeLong("videoWatchCount", false, 0L);
     subscriberCount = helper.consumeLong("subscriberCount", false, 0L);
+    totalUploadViews = helper.consumeLong("totalUploadViews", false, 0L);
     lastWebAccess = helper.consumeDateTime("lastWebAccess", false);
   }
 }

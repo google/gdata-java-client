@@ -51,10 +51,25 @@ public class RatingEntry extends BaseEntry<RatingEntry> {
       setExtension(rating);
     }
   }
+  
+  /** Gets the yt:rating tag. */
+  public YtRating getYtRating() {
+    return getExtension(YtRating.class);
+  }
+  
+  /** Sets the yt:rating tag. */
+  public void setYtRating(YtRating rating) {
+    if (rating == null) {
+      removeExtension(YtRating.class);
+    } else {
+      setExtension(rating);
+    }
+  }
 
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(RatingEntry.class, Rating.getDefaultDescription(false));
+    extProfile.declare(RatingEntry.class, YtRating.class);
     extProfile.declareArbitraryXmlExtension(RatingEntry.class);
   }
   

@@ -232,6 +232,20 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
       setExtension(rating);
     }
   }
+  
+  /** Gets the yt:rating tag. */
+  public YtRating getYtRating() {
+    return getExtension(YtRating.class);
+  }
+  
+  /** Sets the yt:rating. */
+  public void setYtRating(YtRating rating) {
+    if (rating == null) {
+      removeExtension(YtRating.class);
+    } else {
+      setExtension(rating);
+    }
+  }
 
   /**
    * Sets the publication state of this entry, using the tag
@@ -283,6 +297,42 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     return group;
   }
 
+  /**
+   * Sets the completion state of this entry, using the tag
+   * app:control/yt:incomplete.
+   */
+  public void setYtIncomplete(boolean ytIncomplete) {
+    PubControl control = getPubControl();
+    if (!ytIncomplete) {
+      if (control != null) {
+        control.removeExtension(YtIncomplete.class);
+        // check if we can remove app. control
+        if (control.getExtensions().isEmpty()) {
+          setPubControl(null);
+        }
+      }
+    } else {
+      if (control == null) {
+        control = new PubControl();
+        setPubControl(control);
+      }
+      control.setExtension(new YtIncomplete());
+      control.setDraft(true);
+    }
+  }
+
+  /**
+   * Gets the completion state of this entry from the tag
+   * app:control/yt:incomplete.
+   *
+   * @return {@code true} if the entry is marked incomplete
+   *         {@code false} otherwise.
+   */
+  public boolean isYtIncomplete() {
+    PubControl control = getPubControl();
+    return control != null && control.getExtension(YtIncomplete.class) != null;
+  }
+
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(PubControl.class, YtPublicationState.class);
@@ -297,6 +347,7 @@ public class VideoEntry extends MediaEntry<VideoEntry> {
     extProfile.declare(VideoEntry.class, YtStatistics.class);
     extProfile.declare(VideoEntry.class, YtNoEmbed.class);
     extProfile.declare(VideoEntry.class, YtLocation.class);
+    extProfile.declare(VideoEntry.class, YtRating.class);
 
     extProfile.declare(VideoEntry.class, YouTubeMediaGroup.class);
     new YouTubeMediaGroup().declareExtensions(extProfile);

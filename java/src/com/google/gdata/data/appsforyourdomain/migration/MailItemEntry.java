@@ -19,6 +19,7 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
+import com.google.gdata.data.extensions.Email;
 import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.util.Namespaces;
 
@@ -75,6 +76,7 @@ public class MailItemEntry extends MediaEntry<MailItemEntry> {
   public void declareExtensions(ExtensionProfile extProfile) {
     
     super.declareExtensions(extProfile);
+    extProfile.declare(MailItemEntry.class, Email.getDefaultDescription());
     extProfile.declare(MailItemEntry.class, Label.getDefaultDescription());
     extProfile.declare(MailItemEntry.class,
         MailItemProperty.getDefaultDescription());
@@ -127,4 +129,22 @@ public class MailItemEntry extends MediaEntry<MailItemEntry> {
     addRepeatingExtension(label);
   }
 
+  /**
+   * This is relevant only for multi recipient feed. The single recipient
+   * case will not contain the email address of recipient. 
+   *
+   * @return a list of recipients' email addresses for this mail item
+   */
+  public List<Email> getRecipients() {
+    return getRepeatingExtension(Email.class);
+  }
+
+  /**
+   * Adds a recipient email to the Mail Item.
+   *
+   * @param recipient the recipient email to be attached with the message
+   */
+  public void addRecipient(Email recipient) {
+    addRepeatingExtension(recipient);
+  }
 }

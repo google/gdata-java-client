@@ -17,6 +17,7 @@
 package com.google.gdata.data.youtube;
 
 import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.Content;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
@@ -35,7 +36,7 @@ import java.io.IOException;
  * 
  */
 @Kind.Term(YouTubeNamespace.KIND_CAPTION_TRACK)
-public class CaptionTrackEntry extends BaseEntry<CaptionTrackEntry> {
+public class CaptionTrackEntry extends MediaEntry<CaptionTrackEntry> {
 
 
   public CaptionTrackEntry() {
@@ -76,6 +77,53 @@ public class CaptionTrackEntry extends BaseEntry<CaptionTrackEntry> {
     return getPubControl() == null ? null : 
       getPubControl().getExtension(YtPublicationState.class);
   }
+  
+  public void setDerived(YtDerived derived) {
+    if (derived != null) {
+      setExtension(derived);
+    } else {
+      removeExtension(YtDerived.class);
+    }
+  }
+  
+  public YtDerived getDerived() {
+    return getExtension(YtDerived.class);
+  }
+  
+  public void setFormatInfo(YtFormatInfo info) {
+    if (info != null) {
+      setExtension(info);
+    } else {
+      removeExtension(YtFormatInfo.class);
+    }
+  }
+  
+  public YtFormatInfo getFormatInfo() {
+    return getExtension(YtFormatInfo.class);
+  }
+  
+  public YtFormatInfo getOrCreateFormatInfo() {
+    YtFormatInfo info = getFormatInfo();
+    if (info == null) {
+      info = new YtFormatInfo();
+      setFormatInfo(info);
+    }
+    return getExtension(YtFormatInfo.class);
+  }
+  
+  public boolean hasAutomaticSpeechRecognition() {
+    YtDerived derived = getExtension(YtDerived.class);
+    return derived!= null &&
+      derived.getContent().equals(YtDerived.Value.SPEECH_RECOGNITION);
+  }
+  
+  public void setAutomaticSpeechRecognition(boolean asr) {
+    if (asr) {
+      setExtension(new YtDerived(YtDerived.Value.SPEECH_RECOGNITION));
+    } else {
+      removeExtension(YtDerived.class);
+    }    
+  }
 
   @Override
   protected ChildHandlerInfo getContentHandlerInfo(ExtensionProfile extProfile, Attributes attrs)
@@ -85,6 +133,12 @@ public class CaptionTrackEntry extends BaseEntry<CaptionTrackEntry> {
   
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
+    super.declareExtensions(extProfile);
+    
+    extProfile.declare(CaptionTrackEntry.class, YtDerived.class);
+    extProfile.declare(CaptionTrackEntry.class, YtFormatInfo.class);
+    
+    extProfile.declareAdditionalNamespace(YouTubeNamespace.NS);
     extProfile.declare(PubControl.class, YtPublicationState.class);
     extProfile.declareArbitraryXmlExtension(CaptionTrackEntry.class);
   }
