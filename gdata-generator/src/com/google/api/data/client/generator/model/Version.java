@@ -33,9 +33,6 @@ public final class Version {
   @Key
   public AtomInfo atom;
 
-  @Key
-  public int sinceMinor;
-
   public String getJarName() {
     return "data-" + client.id + "-" + id;
   }
@@ -53,9 +50,6 @@ public final class Version {
     this.client = client;
     if (atom != null) {
       atom.validate();
-    }
-    if (sinceMinor == 0) {
-      sinceMinor = 2;
     }
   }
 }

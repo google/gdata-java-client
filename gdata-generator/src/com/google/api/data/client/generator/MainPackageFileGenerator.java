@@ -49,9 +49,7 @@ final class MainPackageFileGenerator extends AbstractHtmlFileGenerator {
         + "may be changed in incompatible ways or possibly entirely removed "
         + "in a future version of the library</b></p>");
     out.println("");
-    out.println("@since 2."
-        + ("v1".equals(version.id) && "buzz".equals(version.client.id) ? 2
-            : version.sinceMinor));
+    out.println("@since 1.0");
     out.println("</body>");
     out.close();
   }

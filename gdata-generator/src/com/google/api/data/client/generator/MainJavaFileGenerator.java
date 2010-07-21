@@ -50,7 +50,6 @@ final class MainJavaFileGenerator extends AbstractJavaFileGenerator {
     generateHeader(out);
     DocBuilder classDocBuilder = new DocBuilder();
     classDocBuilder.comment = "Constants for the " + client.name + ".";
-    classDocBuilder.sinceMinor = version.sinceMinor;
     classDocBuilder.generate(out);
     out.println("public final class " + className + " {");
     out.println();
