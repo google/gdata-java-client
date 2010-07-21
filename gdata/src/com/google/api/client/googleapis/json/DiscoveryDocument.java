@@ -34,16 +34,12 @@ import java.util.Map;
 /**
  * Manages a Google API discovery document based on the JSON format.
  *
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class DiscoveryDocument {
 
-  /**
-   * Defines a specific version of an API.
-   *
-   * @since 2.3
-   */
+  /** Defines a specific version of an API. */
   public static final class ServiceDefinition {
     /** Base URL for service endpoint. */
     @Key
@@ -74,11 +70,7 @@ public final class DiscoveryDocument {
     }
   }
 
-  /**
-   * Defines a resource in a service definition.
-   *
-   * @since 2.3
-   */
+  /** Defines a resource in a service definition. */
   public static final class ServiceResource {
 
     /** Map from method name to method definition. */
@@ -86,11 +78,7 @@ public final class DiscoveryDocument {
     public Map<String, ServiceMethod> methods;
   }
 
-  /**
-   * Defines a method of a service resource.
-   *
-   * @since 2.3
-   */
+  /** Defines a method of a service resource. */
   public static final class ServiceMethod {
 
     /** Path URL relative to base URL. */
@@ -110,11 +98,7 @@ public final class DiscoveryDocument {
     final String methodType = "rest";
   }
 
-  /**
-   * Defines a parameter to a service method.
-   *
-   * @since 2.3
-   */
+  /** Defines a parameter to a service method. */
   public static final class ServiceParameter {
 
     /** Whether the parameter is required. */
@@ -122,11 +106,7 @@ public final class DiscoveryDocument {
     public boolean required;
   }
 
-  /**
-   * API service definition parsed from discovery document.
-   *
-   * @since 2.3
-   */
+  /** API service definition parsed from discovery document. */
   public final ServiceDefinition serviceDefinition;
 
   /**
@@ -144,7 +124,7 @@ public final class DiscoveryDocument {
    * @param api API name
    * @return discovery document
    * @throws IOException I/O exception executing request
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link #load(String)}
    */
   @Deprecated
@@ -158,7 +138,6 @@ public final class DiscoveryDocument {
    * @param apiName API name
    * @return discovery document
    * @throws IOException I/O exception executing request
-   * @since 2.3
    */
   public static DiscoveryDocument load(String apiName) throws IOException {
     GenericUrl discoveryUrl =

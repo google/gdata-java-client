@@ -27,7 +27,7 @@ import java.io.IOException;
  * since there are no guarantees regarding their independence. In particular,
  * the order in which the intercepters are invoked is important.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public interface HttpExecuteIntercepter {

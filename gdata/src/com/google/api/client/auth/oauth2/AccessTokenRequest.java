@@ -62,7 +62,7 @@ import java.io.IOException;
  * Other flows follow the same general approach, but instantiating a different
  * class customized for that flow with additional custom parameters.
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class AccessTokenRequest extends GenericData {

@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -26,6 +26,11 @@ import com.google.api.client.util.Key;
  * Google OAuth 1.0a URL builder for a Google Accounts web page to allow the end
  * user to authorize the temporary token.
  * <p>
+ * This only supports Google API's that use {@code
+ * "https://www.google.com/accounts/OAuthAuthorizeToken"} for authorizing
+ * temporary tokens.
+ * </p>
+ * <p>
  * The {@link #temporaryToken} should be set from the
  * {@link OAuthCredentialsResponse#token} returned by
  * {@link GoogleOAuthGetTemporaryToken#execute()}. Use {@link #build()} to build
@@ -33,12 +38,13 @@ import com.google.api.client.util.Key;
  * specified, after the end user grants the authorization, the Google
  * authorization server will redirect to that callback URL. To parse the
  * response, use {@link OAuthCallbackUrl}.
- * 
- * @since 2.2
+ * </p>
+ *
+ * @since 1.0
  * @author Yaniv Inbar
  */
-public final class GoogleOAuthAuthorizeTemporaryTokenUrl extends
-    OAuthAuthorizeTemporaryTokenUrl {
+public final class GoogleOAuthAuthorizeTemporaryTokenUrl
+    extends OAuthAuthorizeTemporaryTokenUrl {
 
   /**
    * Optionally use {@code "mobile"} to for a mobile version of the approval

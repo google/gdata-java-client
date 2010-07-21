@@ -23,7 +23,7 @@ import com.google.api.client.util.Key;
  * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-5.1.6" >Error
  * Response</a>.
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class AccessTokenErrorResponse {

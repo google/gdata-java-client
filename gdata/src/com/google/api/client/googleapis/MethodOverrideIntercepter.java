@@ -32,7 +32,7 @@ import java.util.HashSet;
  * underlying HTTP library ({@link LowLevelHttpTransport}) does not support the
  * HTTP method.
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class MethodOverrideIntercepter implements HttpExecuteIntercepter {

@@ -39,7 +39,7 @@ import java.util.List;
  * JSON-RPC 2.0 HTTP transport for RPC requests, including both singleton and
  * batched requests.
  *
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class JsonRpcHttpTransport {

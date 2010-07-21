@@ -34,7 +34,7 @@ import com.google.api.client.util.Key;
  * end user to a Google Accounts web page to allow the end user to authorize the
  * temporary token.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class GoogleOAuthGetTemporaryToken extends OAuthGetTemporaryToken {

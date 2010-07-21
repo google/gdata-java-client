@@ -19,8 +19,7 @@ package com.google.api.data.latitude.v1;
 /**
  * Constants for the Google Latitude API.
  *
- * @since 2.2
- * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * @deprecated (scheduled to be removed in version 1.1) Copy into your own
  * application
  */
 @Deprecated
@@ -29,7 +28,7 @@ public final class GoogleLatitude {
   /**
    * Root URL.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated

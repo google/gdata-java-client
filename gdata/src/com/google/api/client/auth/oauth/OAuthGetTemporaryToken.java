@@ -28,7 +28,7 @@ package com.google.api.client.auth.oauth;
  * to an authorization page to allow the end user to authorize the temporary
  * token.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class OAuthGetTemporaryToken extends AbstractOAuthGetToken {

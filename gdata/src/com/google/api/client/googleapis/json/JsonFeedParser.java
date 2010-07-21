@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * Google JSON-C feed parser when the item class is known in advance.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class JsonFeedParser<T, I> extends AbstractJsonFeedParser<T> {
@@ -50,9 +50,6 @@ public final class JsonFeedParser<T, I> extends AbstractJsonFeedParser<T> {
     return Json.parse(parser, itemClass, null);
   }
 
-  /**
-   * @since 2.3
-   */
   public static <T, I> JsonFeedParser<T, I> use(HttpResponse response,
       Class<T> feedClass, Class<I> itemClass) throws IOException {
     JsonParser parser = JsonCParser.parserForResponse(response);

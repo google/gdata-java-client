@@ -36,7 +36,7 @@ import java.security.PrivateKey;
  * <li>{@link #privateKey}: private key for secure AuthSub (recommended)</li>
  * </ul>
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class AuthSubHelper {

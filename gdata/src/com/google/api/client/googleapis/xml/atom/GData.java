@@ -30,7 +30,7 @@ import java.util.TreeSet;
 /**
  * Utilities for working with the Atom XML of Google Data API's.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class GData {

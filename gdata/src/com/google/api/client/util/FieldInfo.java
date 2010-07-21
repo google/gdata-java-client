@@ -26,7 +26,7 @@ import java.util.WeakHashMap;
  * Parses field information to determine data key name/value pair associated
  * with the field.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class FieldInfo {
@@ -211,7 +211,6 @@ public class FieldInfo {
    * @return parsed object or {@code null} for {@code null} input
    * @throws IllegalArgumentException if the given class is not a primitive
    *         class as defined by {@link #isPrimitive(Class)}
-   * @since 2.3
    */
   public static Object parsePrimitiveValue(Class<?> primitiveClass,
       String stringValue) {

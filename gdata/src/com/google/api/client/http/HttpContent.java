@@ -22,7 +22,7 @@ import java.io.OutputStream;
 /**
  * Serializes HTTP request content into an output stream.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public interface HttpContent {

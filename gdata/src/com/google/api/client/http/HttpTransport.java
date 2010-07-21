@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -27,9 +27,9 @@ import java.util.logging.Logger;
  * HTTP transport.
  * <p>
  * Warning: this class must not be sub-classed. It is scheduled to be made final
- * in version 2.4.
- * 
- * @since 2.2
+ * in version 1.1.
+ *
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class HttpTransport {
@@ -49,7 +49,7 @@ public class HttpTransport {
    * <p>
    * Must be set before the first HTTP transport is constructed or else the
    * default will be used as specified in {@link #useLowLevelHttpTransport()}.
-   * 
+   *
    * @param lowLevelHttpTransport low level HTTP transport or {@code null} to
    *        use the default of {@code java.net} transport
    */
@@ -112,7 +112,7 @@ public class HttpTransport {
   /**
    * Returns the HTTP response content parser to use for the given content type
    * or {@code null} if none is defined.
-   * 
+   *
    * @param contentType content type or {@code null} for {@code null} result
    */
   public HttpParser getParser(String contentType) {
@@ -132,11 +132,7 @@ public class HttpTransport {
     useLowLevelHttpTransport();
   }
 
-  /**
-   * Builds a request without specifying the HTTP method.
-   * 
-   * @since 2.3
-   */
+  /** Builds a request without specifying the HTTP method. */
   public HttpRequest buildRequest() {
     return new HttpRequest(this, null);
   }
@@ -166,20 +162,15 @@ public class HttpTransport {
     return new HttpRequest(this, "PATCH");
   }
 
-  /**
-   * Builds a {@code HEAD} request.
-   * 
-   * @since 2.3
-   */
+  /** Builds a {@code HEAD} request. */
   public HttpRequest buildHeadRequest() {
     return new HttpRequest(this, "HEAD");
   }
 
   /**
    * Removes HTTP request execute intercepters of the given class or subclasses.
-   * 
+   *
    * @param intercepterClass intercepter class
-   * @since 2.3
    */
   public void removeIntercepters(Class<?> intercepterClass) {
     Iterator<HttpExecuteIntercepter> iterable = this.intercepters.iterator();

@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -48,14 +48,15 @@ import java.util.Map;
  * {@link UrlEncodedParser#parse(String, Object)}.
  * </p>
  * <p>
- * Warning of an incompatibility for upgrading from version 2.2: repeated query
- * parameters were not supported in that version, and therefore unknown query
- * parameters (not from declared fields) were parsed as a single String.
- * However, in version 2.3 they are parsed as {@link ArrayList}&lt;String&gt;.
- * Use {@link #getFirst(String)} to get the first value.
+ * Warning of an incompatibility for upgrading from version 2.2 of
+ * gdata-java-client library: repeated query parameters were not supported in
+ * that version, and therefore unknown query parameters (not from declared
+ * fields) were parsed as a single String. However, in version 1.0 of this
+ * library they are parsed as {@link ArrayList}&lt;String&gt;. Use
+ * {@link #getFirst(String)} to get the first value.
  * </p>
- * 
- * @since 2.2
+ *
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class GenericUrl extends GenericData {
@@ -77,8 +78,8 @@ public class GenericUrl extends GenericData {
    * "/m8/feeds/contacts/default/full"}.
    * <p>
    * This field is ignored if {@link #pathParts} is not {@code null}.
-   * 
-   * @deprecated (scheduled to be removed in version 2.4) Use {@link #pathParts}
+   *
+   * @deprecated (scheduled to be removed in version 1.1) Use {@link #pathParts}
    *             for encoded path support, or for unencoded paths use
    *             {@link #getRawPath()}, {@link #setRawPath(String rawPath)}, or
    *             {@link #appendRawPath(String)} which
@@ -94,16 +95,10 @@ public class GenericUrl extends GenericData {
    * <p>
    * Use {@link #appendRawPath(String)} to append to the path, which ensures
    * that no extra slash is added.
-   * 
-   * @since 2.3
    */
   public List<String> pathParts;
 
-  /**
-   * Fragment component or {@code null} for none.
-   * 
-   * @since 2.3
-   */
+  /** Fragment component or {@code null} for none. */
   public String fragment;
 
   public GenericUrl() {
@@ -115,7 +110,7 @@ public class GenericUrl extends GenericData {
    * Any known query parameters with pre-defined fields as data keys will be
    * parsed based on their data type. Any unrecognized query parameter will
    * always be parsed as a string.
-   * 
+   *
    * @param encodedUrl encoded URL, including any existing query parameters that
    *        should be parsed
    * @throws IllegalArgumentException if URL has a syntax error
@@ -230,10 +225,9 @@ public class GenericUrl extends GenericData {
 
   /**
    * Returns the first query parameter value for the given query parameter name.
-   * 
+   *
    * @param name query parameter name
    * @return first query parameter value
-   * @since 2.3
    */
   public Object getFirst(String name) {
     Object value = get(name);
@@ -248,10 +242,9 @@ public class GenericUrl extends GenericData {
 
   /**
    * Returns all query parameter values for the given query parameter name.
-   * 
+   *
    * @param name query parameter name
    * @return unmodifiable collection of query parameter values (possibly empty)
-   * @since 2.3
    */
   public Collection<Object> getAll(String name) {
     Object value = get(name);
@@ -268,10 +261,9 @@ public class GenericUrl extends GenericData {
 
   /**
    * Returns the raw encoded path computed from the {@link #pathParts}.
-   * 
+   *
    * @return raw encoded path computed from the {@link #pathParts} or {@code
    *         null} if {@link #pathParts} is {@code null}
-   * @since 2.3
    */
   public String getRawPath() {
     List<String> pathParts = this.pathParts;
@@ -285,10 +277,9 @@ public class GenericUrl extends GenericData {
 
   /**
    * Sets the {@link #pathParts} from the given raw encoded path.
-   * 
+   *
    * @param encodedPath raw encoded path or {@code null} to set
    *        {@link #pathParts} to {@code null}
-   * @since 2.3
    */
   public void setRawPath(String encodedPath) {
     this.pathParts = toPathParts(encodedPath);
@@ -302,9 +293,8 @@ public class GenericUrl extends GenericData {
    * the path parts computed from the given encoded path. Thus, if the current
    * raw encoded path is {@code "a"}, and the given encoded path is {@code "b"},
    * then the resulting raw encoded path is {@code "ab"}.
-   * 
+   *
    * @param encodedPath raw encoded path or {@code null} to ignore
-   * @since 2.3
    */
   public void appendRawPath(String encodedPath) {
     if (encodedPath != null && encodedPath.length() != 0) {
@@ -314,24 +304,23 @@ public class GenericUrl extends GenericData {
         this.pathParts = appendedPathParts;
       } else {
         int size = pathParts.size();
-        pathParts.set(size - 1, pathParts.get(size - 1)
-            + appendedPathParts.get(0));
-        pathParts
-            .addAll(appendedPathParts.subList(1, appendedPathParts.size()));
+        pathParts.set(
+            size - 1, pathParts.get(size - 1) + appendedPathParts.get(0));
+        pathParts.addAll(
+            appendedPathParts.subList(1, appendedPathParts.size()));
       }
     }
   }
 
   /**
    * Returns the decoded path parts for the given encoded path.
-   * 
+   *
    * @param encodedPath slash-prefixed encoded path, for example {@code
    *        "/m8/feeds/contacts/default/full"}
    * @return decoded path parts, with each part assumed to be preceded by a
    *         {@code '/'}, for example {@code "", "m8", "feeds", "contacts",
    *         "default", "full"}, or {@code null} for {@code null} or {@code ""}
    *         input
-   * @since 2.3
    */
   public static List<String> toPathParts(String encodedPath) {
     if (encodedPath == null || encodedPath.length() == 0) {
@@ -369,8 +358,8 @@ public class GenericUrl extends GenericData {
     }
   }
 
-  private static boolean appendParam(boolean first, StringBuilder buf,
-      String name, Object value) {
+  private static boolean appendParam(
+      boolean first, StringBuilder buf, String name, Object value) {
     if (first) {
       first = false;
       buf.append('?');

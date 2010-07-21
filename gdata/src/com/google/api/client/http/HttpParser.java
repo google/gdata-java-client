@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * Parses HTTP response content into an data class of key/value pairs.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public interface HttpParser {

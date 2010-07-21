@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -32,25 +32,22 @@ import java.util.Map;
  * <p>
  * {@code null} is not allowed as a name or value of a header. Names are
  * case-insensitive.
- * 
- * @since 2.2
+ *
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class HttpHeaders extends GenericData {
 
-  /**
-   * {@code "Accept"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Accept"} header. */
   @Key("Accept")
   public String accept;
 
   /**
    * {@code "Accept-Encoding"} header. By default, this is {@code "gzip"}.
    * <p>
-   * <b>Warning for users upgrading from version 2.2</b>: the default used to be
-   * {@code null} but now it is {@code "gzip"}
+   * <b>Warning for users upgrading from version 2.2 of gdata-java-client
+   * library</b>: the default used to be {@code null} but now it is {@code
+   * "gzip"}
    * </p>
    */
   @Key("Accept-Encoding")
@@ -60,83 +57,43 @@ public class HttpHeaders extends GenericData {
   @Key("Authorization")
   public String authorization;
 
-  /**
-   * {@code "Cache-Control"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Cache-Control"} header. */
   @Key("Cache-Control")
   public String cacheControl;
 
-  /**
-   * {@code "Content-Encoding"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Content-Encoding"} header. */
   @Key("Content-Encoding")
   public String contentEncoding;
 
-  /**
-   * {@code "Content-Length"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Content-Length"} header. */
   @Key("Content-Length")
   public String contentLength;
 
-  /**
-   * {@code "Content-MD5"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Content-MD5"} header. */
   @Key("Content-MD5")
   public String contentMD5;
 
-  /**
-   * {@code "Content-Range"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Content-Range"} header. */
   @Key("Content-Range")
   public String contentRange;
 
-  /**
-   * {@code "Content-Type"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Content-Type"} header. */
   @Key("Content-Type")
   public String contentType;
 
-  /**
-   * {@code "Date"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Date"} header. */
   @Key("Date")
   public String date;
 
-  /**
-   * {@code "ETag"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "ETag"} header. */
   @Key("ETag")
   public String etag;
 
-  /**
-   * {@code "Expires"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Expires"} header. */
   @Key("Expires")
   public String expires;
 
-  /**
-   * {@code "If-Modified-Since"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "If-Modified-Since"} header. */
   @Key("If-Modified-Since")
   public String ifModifiedSince;
 
@@ -148,27 +105,15 @@ public class HttpHeaders extends GenericData {
   @Key("If-None-Match")
   public String ifNoneMatch;
 
-  /**
-   * {@code "If-Unmodified-Since"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "If-Unmodified-Since"} header. */
   @Key("If-Unmodified-Since")
   public String ifUnmodifiedSince;
 
-  /**
-   * {@code "Last-Modified"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Last-Modified"} header. */
   @Key("Last-Modified")
   public String lastModified;
 
-  /**
-   * {@code "Location"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Location"} header. */
   @Key("Location")
   public String location;
 
@@ -176,19 +121,11 @@ public class HttpHeaders extends GenericData {
   @Key("MIME-Version")
   public String mimeVersion;
 
-  /**
-   * {@code "Range"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Range"} header. */
   @Key("Range")
   public String range;
 
-  /**
-   * {@code "Retry-After"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "Retry-After"} header. */
   @Key("Retry-After")
   public String retryAfter;
 
@@ -196,11 +133,7 @@ public class HttpHeaders extends GenericData {
   @Key("User-Agent")
   public String userAgent;
 
-  /**
-   * {@code "WWW-Authenticate"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "WWW-Authenticate"} header. */
   @Key("WWW-Authenticate")
   public String authenticate;
 
@@ -211,9 +144,8 @@ public class HttpHeaders extends GenericData {
 
   /**
    * Computes a canonical map from lower-case header name to its values.
-   * 
+   *
    * @return canonical map from lower-case header name to its values
-   * @since 2.3
    */
   public Map<String, Collection<Object>> canonicalMap() {
     Map<String, Collection<Object>> result =
@@ -230,8 +162,8 @@ public class HttpHeaders extends GenericData {
         if (value instanceof Collection<?>) {
           @SuppressWarnings("unchecked")
           Collection<Object> collectionValue = (Collection<Object>) value;
-          result.put(canonicalName, Collections
-              .unmodifiableCollection(collectionValue));
+          result.put(canonicalName,
+              Collections.unmodifiableCollection(collectionValue));
         } else {
           result.put(canonicalName, Collections.singleton(value));
         }

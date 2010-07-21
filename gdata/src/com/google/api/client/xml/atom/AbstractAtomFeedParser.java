@@ -30,7 +30,7 @@ import java.io.InputStream;
  * Abstract base class for an Atom feed parser when the feed type is known in
  * advance.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class AbstractAtomFeedParser<T> {

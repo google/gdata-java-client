@@ -29,7 +29,7 @@ import java.net.URISyntaxException;
  * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-4.1.1.1"
  * >Authorization Server Response</a>
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class AbstractAuthorizationResponse extends GenericData {

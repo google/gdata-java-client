@@ -34,7 +34,7 @@ import java.util.TreeMap;
  * {@link #consumerKey}. Use {@link #token} to specify token or temporary
  * credentials.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class OAuthParameters {

@@ -42,7 +42,7 @@ import java.io.IOException;
  * </code>
  * </pre>
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class AtomContent extends AbstractXmlHttpContent {

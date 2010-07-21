@@ -49,7 +49,7 @@ import java.util.TreeSet;
  *   }</code>
  * </pre>
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class XmlNamespaceDictionary {

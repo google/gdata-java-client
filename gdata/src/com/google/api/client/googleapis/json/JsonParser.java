@@ -25,9 +25,9 @@ import java.io.IOException;
 /**
  * Parses HTTP JSON-C response content into an data class of key/value pairs.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4) Use {@link JsonCParser}
+ * @deprecated (scheduled to be removed in version 1.1) Use {@link JsonCParser}
  */
 @Deprecated
 public final class JsonParser implements HttpParser {

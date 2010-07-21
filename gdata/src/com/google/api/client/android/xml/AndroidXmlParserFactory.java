@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlSerializer;
 /**
  * XML parser factory for Android.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class AndroidXmlParserFactory implements XmlParserFactory {

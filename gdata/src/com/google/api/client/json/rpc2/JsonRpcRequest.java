@@ -22,7 +22,7 @@ import com.google.api.client.util.Key;
 /**
  * JSON-RPC 2.0 request object.
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class JsonRpcRequest extends GenericData {

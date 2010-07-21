@@ -19,7 +19,7 @@ package com.google.api.client.xml.atom;
 import com.google.api.client.xml.Xml;
 
 /**
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class Atom {

@@ -31,7 +31,7 @@ import com.google.api.client.util.Key;
  * server will redirect to that callback URL. To parse the response, use
  * {@link OAuthCallbackUrl}.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class OAuthAuthorizeTemporaryTokenUrl extends GenericUrl {

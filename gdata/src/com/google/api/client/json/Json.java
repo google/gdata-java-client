@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * JSON utilities.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class Json {
@@ -284,7 +284,6 @@ public class Json {
    *        a public default constructor)
    * @param customizeParser optional parser customizer or {@code null} for none
    * @throws IOException I/O exception
-   * @since 2.3
    */
   public static <T> Collection<T> parseArrayAndClose(JsonParser parser,
       Class<?> destinationCollectionClass, Class<T> destinationItemClass,
@@ -308,7 +307,6 @@ public class Json {
    *        a public default constructor)
    * @param customizeParser optional parser customizer or {@code null} for none
    * @throws IOException I/O exception
-   * @since 2.3
    */
   public static <T> void parseArrayAndClose(JsonParser parser,
       Collection<? super T> destinationCollection,
@@ -333,7 +331,6 @@ public class Json {
    *        a public default constructor)
    * @param customizeParser optional parser customizer or {@code null} for none
    * @throws IOException I/O exception
-   * @since 2.3
    */
   public static <T> Collection<T> parseArray(JsonParser parser,
       Class<?> destinationCollectionClass, Class<T> destinationItemClass,
@@ -357,7 +354,6 @@ public class Json {
    *        a public default constructor)
    * @param customizeParser optional parser customizer or {@code null} for none
    * @throws IOException I/O exception
-   * @since 2.3
    */
   public static <T> void parseArray(JsonParser parser,
       Collection<? super T> destinationCollection,

@@ -19,7 +19,7 @@ package com.google.api.client.util;
 /**
  * Utilities for strings.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class Strings {

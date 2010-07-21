@@ -23,7 +23,7 @@ import com.google.api.client.util.Key;
  * Generic Google URL providing for some common query parameters used in Google
  * API's such as the {@link #alt} and {@link #fields} parameters.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class GoogleUrl extends GenericUrl {

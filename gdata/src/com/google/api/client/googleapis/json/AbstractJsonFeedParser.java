@@ -28,7 +28,7 @@ import java.io.IOException;
  * Abstract base class for a Google JSON-C feed parser when the feed class is
  * known in advance.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class AbstractJsonFeedParser<T> {

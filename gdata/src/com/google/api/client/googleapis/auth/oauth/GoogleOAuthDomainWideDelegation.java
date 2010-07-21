@@ -28,7 +28,7 @@ import com.google.api.client.util.Key;
  * whose data you are trying to access via {@link #requestorId} on every HTTP
  * request.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class GoogleOAuthDomainWideDelegation implements

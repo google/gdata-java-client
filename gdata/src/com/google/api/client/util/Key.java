@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
  *   private String notADataKey; 
  * }</pre></code>
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 @Target(ElementType.FIELD)

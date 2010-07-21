@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * HTTP parser for Google response to an Authorization request.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class AuthKeyValueParser implements HttpParser {

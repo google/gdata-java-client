@@ -26,7 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Utility methods for {@code "HMAC-SHA1"} signing method.
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class HmacSha {

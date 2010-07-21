@@ -25,7 +25,7 @@ import java.io.InputStream;
  * This allows providing a different implementation of the HTTP response that is
  * more compatible with the Java environment used.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class LowLevelHttpResponse {

@@ -25,7 +25,7 @@ import com.google.api.client.util.Key;
  * <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-07#section-4.1.1"
  * >User-Agent Flow</a>.
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class AbstractAuthorizationRequestUrl extends GenericUrl {

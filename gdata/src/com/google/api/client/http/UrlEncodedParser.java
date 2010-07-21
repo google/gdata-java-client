@@ -48,16 +48,12 @@ import java.util.logging.Level;
  * 
  * </p>
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class UrlEncodedParser implements HttpParser {
 
-  /**
-   * {@code "application/x-www-form-urlencoded"} content type.
-   * 
-   * @since 2.3
-   */
+  /** {@code "application/x-www-form-urlencoded"} content type. */
   public static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
 
   /**
@@ -69,11 +65,7 @@ public final class UrlEncodedParser implements HttpParser {
    */
   public boolean disableContentLogging;
 
-  /**
-   * Content type. Default value is {@link #CONTENT_TYPE}.
-   * 
-   * @since 2.3
-   */
+  /** Content type. Default value is {@link #CONTENT_TYPE}. */
   public String contentType = CONTENT_TYPE;
 
   public String getContentType() {

@@ -43,23 +43,15 @@ import java.util.Map;
  * </code>
  * </pre>
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class UrlEncodedContent implements HttpContent {
 
-  /**
-   * Content type. Default value is {@link UrlEncodedParser#CONTENT_TYPE}.
-   * 
-   * @since 2.3
-   */
+  /** Content type. Default value is {@link UrlEncodedParser#CONTENT_TYPE}. */
   public String contentType = UrlEncodedParser.CONTENT_TYPE;
 
-  /**
-   * Key/value data or {@code null} for none.
-   * 
-   * @since 2.3
-   */
+  /** Key/value data or {@code null} for none. */
   public Object data;
 
   private byte[] content;
@@ -68,7 +60,7 @@ public final class UrlEncodedContent implements HttpContent {
    * Sets the content input from the given key/value data.
    * 
    * @param data key/value data (may be {@code null})
-   * @deprecated (scheduled to be removed in version 2.4) Use {@link #data}
+   * @deprecated (scheduled to be removed in version 1.1) Use {@link #data}
    */
   @Deprecated
   public void setData(Object data) {

@@ -19,8 +19,7 @@ package com.google.api.data.picasa.v2;
 /**
  * Constants for the Picasa Web Albums Data API.
  *
- * @since 2.2
- * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * @deprecated (scheduled to be removed in version 1.1) Copy into your own
  * application
  */
 @Deprecated
@@ -29,7 +28,7 @@ public final class PicasaWebAlbums {
   /**
    * Version name.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated
@@ -38,7 +37,7 @@ public final class PicasaWebAlbums {
   /**
    * Root URL.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated
@@ -47,7 +46,7 @@ public final class PicasaWebAlbums {
   /**
    * The authentication token type used for Client Login.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated

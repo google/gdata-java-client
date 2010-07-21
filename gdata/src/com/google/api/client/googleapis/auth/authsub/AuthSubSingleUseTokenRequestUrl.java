@@ -25,7 +25,7 @@ import com.google.api.client.util.Key;
  * "http://code.google.com/apis/accounts/docs/AuthSub.html#AuthSubRequest"
  * >documentation</a>.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class AuthSubSingleUseTokenRequestUrl extends GenericUrl {

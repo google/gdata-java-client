@@ -19,8 +19,7 @@ package com.google.api.data.analytics.v2;
 /**
  * Constants for the Google Analytics Data Export API.
  *
- * @since 2.2
- * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * @deprecated (scheduled to be removed in version 1.1) Copy into your own
  * application
  */
 @Deprecated
@@ -29,7 +28,7 @@ public final class GoogleAnalytics {
   /**
    * Version name.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated
@@ -38,7 +37,7 @@ public final class GoogleAnalytics {
   /**
    * Root URL.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated
@@ -48,7 +47,7 @@ public final class GoogleAnalytics {
   /**
    * The authentication token type used for Client Login.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated
