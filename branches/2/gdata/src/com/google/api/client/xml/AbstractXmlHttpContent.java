@@ -27,7 +27,7 @@ import java.io.OutputStream;
  * Abstract serializer for XML HTTP content based on the data key/value mapping
  * object for an item.
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class AbstractXmlHttpContent implements HttpContent {

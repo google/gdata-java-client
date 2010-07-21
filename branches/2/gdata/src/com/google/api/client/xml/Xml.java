@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * XML utilities.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class Xml {

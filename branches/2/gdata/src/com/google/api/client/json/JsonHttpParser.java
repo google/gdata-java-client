@@ -37,7 +37,7 @@ import java.io.InputStream;
  * </code>
  * </pre>
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class JsonHttpParser implements HttpParser {

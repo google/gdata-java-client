@@ -35,7 +35,7 @@ import com.google.api.client.xml.XmlHttpParser;
  * </code>
  * </pre>
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class AtomParser extends XmlHttpParser {

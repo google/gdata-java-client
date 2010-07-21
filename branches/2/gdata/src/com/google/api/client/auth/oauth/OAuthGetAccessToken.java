@@ -31,7 +31,7 @@ import com.google.api.client.http.HttpTransport;
  * invoking
  * {@link OAuthParameters#signRequestsUsingAuthorizationHeader(HttpTransport)}.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class OAuthGetAccessToken extends AbstractOAuthGetToken {

@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * Exception thrown when an error status code is detected in an HTTP response.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class HttpResponseException extends IOException {

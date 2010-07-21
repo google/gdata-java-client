@@ -35,7 +35,7 @@ import java.util.HashMap;
 /**
  * GData Atom feed parser when the entry class can be computed from the kind.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class MultiKindFeedParser<T> extends AbstractAtomFeedParser<T> {

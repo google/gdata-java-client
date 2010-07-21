@@ -41,7 +41,7 @@ package com.google.api.client.auth.oauth2;
  * </code>
  * </pre>
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class UserAgentAuthorizationRequestUrl extends

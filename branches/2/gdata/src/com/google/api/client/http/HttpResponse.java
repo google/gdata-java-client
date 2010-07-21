@@ -34,7 +34,7 @@ import java.util.zip.GZIPInputStream;
 /**
  * HTTP response.
  *
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class HttpResponse {
@@ -284,9 +284,10 @@ public final class HttpResponse {
    * Parses the content of the HTTP response from {@link #getContent()} and
    * reads it into a string.
    * <p>
-   * Upgrade warning: in version 2.2 of the library, this method returned {@code
-   * null} for no content, but as of version 2.3 it now returns {@code ""}. To
-   * check for no content, check if {@link #getContent()} is {@code null}.
+   * Upgrade warning: in version 2.2 of gdata-java-client library, this method
+   * returned {@code null} for no content. However, in version 1.0 of this
+   * library it now returns {@code ""}. To check for no content, check if
+   * {@link #getContent()} is {@code null}.
    *
    * @return parsed string or {@code ""} for no content
    * @throws IOException I/O exception

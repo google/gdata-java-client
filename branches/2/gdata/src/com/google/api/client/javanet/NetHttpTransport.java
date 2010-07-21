@@ -23,7 +23,7 @@ import java.io.IOException;
 /**
  * HTTP low-level transport based on the {@code java.net} package.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class NetHttpTransport extends LowLevelHttpTransport {

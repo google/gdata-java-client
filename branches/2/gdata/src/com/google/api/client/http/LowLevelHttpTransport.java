@@ -24,7 +24,7 @@ import java.io.IOException;
  * This allows providing a different implementation of the HTTP transport that
  * is more compatible with the Java environment used.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class LowLevelHttpTransport {
@@ -75,7 +75,6 @@ public abstract class LowLevelHttpTransport {
    * 
    * @param url URL
    * @throws IOException I/O exception
-   * @since 2.3
    */
   @SuppressWarnings("unused")
   public LowLevelHttpRequest buildHeadRequest(String url) throws IOException {

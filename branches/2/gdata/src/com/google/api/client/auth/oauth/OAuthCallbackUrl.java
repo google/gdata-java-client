@@ -27,7 +27,7 @@ import com.google.api.client.util.Key;
  * temporary token for a long-lived access token in
  * {@link OAuthGetAccessToken#verifier}.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class OAuthCallbackUrl extends GenericUrl {

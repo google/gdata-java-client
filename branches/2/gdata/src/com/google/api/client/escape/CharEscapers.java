@@ -23,7 +23,7 @@ import java.net.URLDecoder;
  * Utility functions for dealing with {@code CharEscaper}s, and some commonly
  * used {@code CharEscaper} instances.
  * 
- * @since 2.2
+ * @since 1.0
  */
 public final class CharEscapers {
 

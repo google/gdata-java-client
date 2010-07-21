@@ -9,7 +9,7 @@ import org.xmlpull.v1.XmlSerializer;
  * Default XML parser factory that uses the default specified in
  * {@link XmlPullParserFactory}.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class DefaultXmlParserFactory implements XmlParserFactory {

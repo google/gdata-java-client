@@ -180,7 +180,7 @@ package com.google.api.client.util;
  * </p>
  * 
  * @author Robert Harder (rob@iharder.net)
- * @since 2.2
+ * @since 1.0
  */
 public class Base64 {
     

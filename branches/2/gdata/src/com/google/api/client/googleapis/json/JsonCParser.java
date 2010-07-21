@@ -38,7 +38,7 @@ import java.io.IOException;
  * </code>
  * </pre>
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class JsonCParser extends JsonHttpParser {

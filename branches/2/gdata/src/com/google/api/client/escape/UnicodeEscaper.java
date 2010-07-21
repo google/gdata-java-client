@@ -43,7 +43,7 @@ package com.google.api.client.escape;
  * {@link CharEscapers}. To create your own escapers extend this class and
  * implement the {@link #escape(int)} method.
  * 
- * @since 2.2
+ * @since 1.0
  */
 public abstract class UnicodeEscaper extends Escaper {
   /** The amount of padding (chars) to use when growing the escape buffer. */

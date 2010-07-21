@@ -29,9 +29,9 @@ import java.io.OutputStream;
  * Serializes JSON content based on the data key/value mapping object for an
  * item.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4) Use {@link JsonCContent}
+ * @deprecated (scheduled to be removed in version 1.1) Use {@link JsonCContent}
  */
 @Deprecated
 public final class JsonContent implements HttpContent {

@@ -23,7 +23,7 @@ import java.security.PrivateKey;
 import java.security.SecureRandom;
 
 /**
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class AuthSub {

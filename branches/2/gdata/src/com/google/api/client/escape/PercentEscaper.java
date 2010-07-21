@@ -58,7 +58,7 @@ package com.google.api.client.escape;
  * <i>"URI producers and normalizers should use uppercase hexadecimal digits for
  * all percent-encodings."</i>
  * 
- * @since 2.2
+ * @since 1.0
  */
 public class PercentEscaper extends UnicodeEscaper {
   /**

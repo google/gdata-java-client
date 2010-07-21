@@ -25,7 +25,7 @@ import java.util.TimeZone;
  * Immutable representation of a date with an optional time and an optional time
  * zone based on RFC 3339.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class DateTime {

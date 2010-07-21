@@ -34,7 +34,7 @@ import java.util.WeakHashMap;
  * Parses class information to determine data key name/value pairs associated
  * with the class.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class ClassInfo {

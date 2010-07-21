@@ -35,7 +35,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 /**
  * Utility methods for {@code "RSA-SHA1"} signing method.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class RsaSha {

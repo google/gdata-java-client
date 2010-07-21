@@ -25,7 +25,7 @@ import java.util.Collection;
  * All methods have a default trivial implementation, so subclasses need only
  * implement the methods whose behavior needs customization.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class CustomizeJsonParser {

@@ -26,7 +26,7 @@ import java.security.PrivateKey;
  * <p>
  * The private key may be retrieved using the utilities in {@link RsaSha}.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class OAuthRsaSigner implements OAuthSigner {

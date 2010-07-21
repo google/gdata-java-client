@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * "https://code.google.com/apis/storage/docs/developer-guide.html#authentication"
  * >Authentication</a> .
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class GoogleStorageAuthentication {

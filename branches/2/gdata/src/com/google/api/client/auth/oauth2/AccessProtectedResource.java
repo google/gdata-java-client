@@ -31,7 +31,7 @@ import java.util.List;
  * Accessing a Protected Resource</a>.
  * 
  * @author Yaniv Inbar
- * @since 2.3
+ * @since 1.0
  */
 public final class AccessProtectedResource {
 

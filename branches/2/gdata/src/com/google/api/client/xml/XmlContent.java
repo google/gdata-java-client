@@ -21,9 +21,9 @@ import com.google.api.client.http.HttpContent;
 /**
  * Abstract XML HTTP serializer.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4) Use
+ * @deprecated (scheduled to be removed in version 1.1) Use
  *             {@link XmlHttpContent}
  */
 @Deprecated

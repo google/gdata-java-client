@@ -30,7 +30,7 @@ import java.io.InputStream;
 /**
  * Atom feed parser when the item class is known in advance.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class AtomFeedParser<T, I> extends AbstractAtomFeedParser<T> {

@@ -23,7 +23,7 @@ import java.security.GeneralSecurityException;
 /**
  * OAuth {@code "HMAC-SHA1"} signature method.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class OAuthHmacSigner implements OAuthSigner {

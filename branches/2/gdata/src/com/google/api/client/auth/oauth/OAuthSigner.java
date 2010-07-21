@@ -21,7 +21,7 @@ import java.security.GeneralSecurityException;
 /**
  * OAuth signature method.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public interface OAuthSigner {

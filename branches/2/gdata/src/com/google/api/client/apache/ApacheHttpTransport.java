@@ -32,7 +32,7 @@ import org.apache.http.params.HttpParams;
 /**
  * HTTP low-level transport based on the Apache HTTP Client library.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class ApacheHttpTransport extends LowLevelHttpTransport {

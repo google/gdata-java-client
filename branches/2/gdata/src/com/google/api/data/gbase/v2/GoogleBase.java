@@ -19,8 +19,7 @@ package com.google.api.data.gbase.v2;
 /**
  * Constants for the Google Base Data API.
  *
- * @since 2.2
- * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * @deprecated (scheduled to be removed in version 1.1) Copy into your own
  * application
  */
 @Deprecated
@@ -29,7 +28,7 @@ public final class GoogleBase {
   /**
    * Version name.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated
@@ -38,7 +37,7 @@ public final class GoogleBase {
   /**
    * Root URL.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated
@@ -47,7 +46,7 @@ public final class GoogleBase {
   /**
    * The authentication token type used for Client Login.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated

@@ -23,9 +23,9 @@ import com.google.api.client.http.HttpTransport;
  * HTTP transport for Google API's. It's only purpose is to allow for method
  * overriding when the firewall does not accept DELETE, PATCH or PUT methods.
  * <p>
- * Warning: scheduled in version 2.4 to no longer extend HttpTransport
+ * Warning: scheduled in version 1.1 to no longer extend HttpTransport
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class GoogleTransport extends HttpTransport {
@@ -56,7 +56,6 @@ public class GoogleTransport extends HttpTransport {
    * </pre>
    * 
    * @return HTTP transport
-   * @since 2.3
    */
   public static HttpTransport create() {
     HttpTransport transport = new HttpTransport();
@@ -66,7 +65,7 @@ public class GoogleTransport extends HttpTransport {
   }
 
   /**
-   * @deprecated (scheduled to be removed in version 2.4) Use {@link #create()}
+   * @deprecated (scheduled to be removed in version 1.1) Use {@link #create()}
    */
   @Deprecated
   public GoogleTransport() {
@@ -79,7 +78,7 @@ public class GoogleTransport extends HttpTransport {
    * proxies or gateways that do not handle PUT, PATCH, or DELETE HTTP methods
    * properly. If {@code false}, the regular verbs will be used.
    * 
-   * @deprecated (scheduled to be removed in version 2.4) Use {@link #create()}
+   * @deprecated (scheduled to be removed in version 1.1) Use {@link #create()}
    */
   @Deprecated
   public static boolean ENABLE_METHOD_OVERRIDE = false;
@@ -88,7 +87,7 @@ public class GoogleTransport extends HttpTransport {
    * Required application name of the format {@code
    * "[company-id]-[app-name]-[app-version]"}.
    * 
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link GoogleHeaders#setApplicationName(String)} on
    *             {@link #defaultHeaders}
    */
@@ -100,7 +99,7 @@ public class GoogleTransport extends HttpTransport {
    * 
    * @param version version of the Google Data API being access, for example
    *        {@code "2"}.
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link GoogleHeaders#gdataVersion} on {@link #defaultHeaders}
    */
   @Deprecated
@@ -114,7 +113,7 @@ public class GoogleTransport extends HttpTransport {
    * primarily intended for use in the Android environment after retrieving the
    * authentication token from the AccountManager.
    * 
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link GoogleHeaders#setGoogleLogin(String)}
    */
   @Deprecated
@@ -126,7 +125,7 @@ public class GoogleTransport extends HttpTransport {
    * Returns Client Login authentication header value based on the given
    * authentication token.
    * 
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link GoogleHeaders#getGoogleLoginValue(String)}
    */
   @Deprecated

@@ -6,7 +6,7 @@ import java.io.OutputStream;
 /**
  * Multi-part related content.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class MultipartContent implements HttpContent {

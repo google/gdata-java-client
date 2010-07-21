@@ -37,7 +37,7 @@ package com.google.api.client.escape;
  * Several popular escapers are defined as constants in the class
  * {@link CharEscapers}.
  * 
- * @since 2.2
+ * @since 1.0
  */
 public abstract class Escaper {
  

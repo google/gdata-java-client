@@ -23,7 +23,7 @@ import org.xmlpull.v1.XmlSerializer;
 /**
  * Factory for creating new XML pull parsers and XML serializers.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public interface XmlParserFactory {

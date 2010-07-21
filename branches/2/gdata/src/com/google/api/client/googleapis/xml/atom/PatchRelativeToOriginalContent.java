@@ -27,9 +27,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4) Use
+ * @deprecated (scheduled to be removed in version 1.1) Use
  *             {@link AtomPatchRelativeToOriginalContent}
  */
 @Deprecated

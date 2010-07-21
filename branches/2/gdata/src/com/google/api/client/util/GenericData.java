@@ -34,7 +34,7 @@ import java.util.Set;
  * of the declared fields, followed by the iteration order of all of the unknown
  * data key name/value pairs.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class GenericData extends AbstractMap<String, Object> implements

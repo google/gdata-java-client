@@ -30,7 +30,7 @@ import java.util.HashMap;
 /**
  * Google JSON-C feed parser when the item class can be computed from the kind.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class JsonMultiKindFeedParser<T> extends AbstractJsonFeedParser<T> {
@@ -77,9 +77,6 @@ public final class JsonMultiKindFeedParser<T> extends AbstractJsonFeedParser<T> 
     return Json.parse(parser, itemClass, null);
   }
 
-  /**
-   * @since 2.3
-   */
   public static <T, I> JsonMultiKindFeedParser<T> use(HttpResponse response,
       Class<T> feedClass, Class<?>... itemClasses) throws IOException {
     return new JsonMultiKindFeedParser<T>(JsonCParser

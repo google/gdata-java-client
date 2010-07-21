@@ -30,7 +30,7 @@ import java.util.Set;
  * <p>
  * Iteration order of the keys is based on the sorted (ascending) key names.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class ReflectionMap extends AbstractMap<String, Object> {

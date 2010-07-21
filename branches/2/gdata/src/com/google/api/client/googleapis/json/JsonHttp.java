@@ -26,15 +26,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4)
+ * @deprecated (scheduled to be removed in version 1.1)
  */
 @Deprecated
 public class JsonHttp {
 
   /**
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link JsonFeedParser#use(HttpResponse, Class, Class)}
    */
   @Deprecated
@@ -46,7 +46,7 @@ public class JsonHttp {
   }
 
   /**
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link JsonFeedParser#use(HttpResponse, Class, Class)}
    */
   @Deprecated
@@ -58,7 +58,7 @@ public class JsonHttp {
   }
 
   /**
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link JsonCParser#parserForResponse(HttpResponse)} and then
    *             {@link Json#parseAndClose(JsonParser, Class, CustomizeJsonParser)}
    */
@@ -70,7 +70,7 @@ public class JsonHttp {
   }
 
   /**
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link JsonCParser#parserForResponse(HttpResponse)}
    */
   @Deprecated

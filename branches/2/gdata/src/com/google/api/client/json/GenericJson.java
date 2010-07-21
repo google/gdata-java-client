@@ -27,7 +27,7 @@ import com.google.api.client.util.Key;
  * protected, or public) and must not be static. {@code null} unknown data key
  * names are not allowed, but {@code null} data values are allowed.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class GenericJson extends GenericData implements Cloneable {

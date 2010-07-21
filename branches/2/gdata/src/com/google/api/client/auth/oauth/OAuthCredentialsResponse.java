@@ -22,7 +22,7 @@ import com.google.api.client.util.Key;
  * Data to parse a success response to a request for temporary or token
  * credentials.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class OAuthCredentialsResponse {

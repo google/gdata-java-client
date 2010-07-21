@@ -47,7 +47,7 @@ import java.io.OutputStream;
  * </code>
  * </pre>
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class InputStreamContent implements HttpContent {
@@ -108,8 +108,6 @@ public final class InputStreamContent implements HttpContent {
    * }
    * </code>
    * </pre>
-   * 
-   * @since 2.3
    */
   public void setByteArrayInput(byte[] content) {
     this.inputStream = new ByteArrayInputStream(content);
@@ -163,7 +161,6 @@ public final class InputStreamContent implements HttpContent {
    * @param inputStream source input stream
    * @param outputStream destination output stream
    * @throws IOException I/O exception
-   * @since 2.3
    */
   public static void copy(InputStream inputStream, OutputStream outputStream)
       throws IOException {

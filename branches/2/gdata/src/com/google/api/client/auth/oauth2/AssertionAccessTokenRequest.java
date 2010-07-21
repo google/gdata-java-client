@@ -50,7 +50,7 @@ import com.google.api.client.util.Key;
  * }</code>
  * </pre>
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class AssertionAccessTokenRequest extends AccessTokenRequest {

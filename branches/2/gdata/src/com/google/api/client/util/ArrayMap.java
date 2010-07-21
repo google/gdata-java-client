@@ -33,7 +33,7 @@ import java.util.Set;
  * operations like {@link #get(Object)} and {@link #put(Object, Object)} are
  * slower because they need to look up all key/value pairs in the worst case.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class ArrayMap<K, V> extends AbstractMap<K, V> implements

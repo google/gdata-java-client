@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -27,14 +27,15 @@ import java.util.logging.Logger;
 
 /**
  * HTTP request.
- * 
- * @since 2.2
+ *
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class HttpRequest {
 
   /** User agent suffix for all requests. */
-  private static final String USER_AGENT_SUFFIX = "Google-API-Java/2.3.0-alpha";
+  private static final String USER_AGENT_SUFFIX =
+      "Google-API-Java-Client/1.0.0-alpha";
 
   /**
    * HTTP request headers.
@@ -57,11 +58,7 @@ public final class HttpRequest {
   /** HTTP request content or {@code null} for none. */
   public HttpContent content;
 
-  /**
-   * HTTP transport.
-   * 
-   * @since 2.3
-   */
+  /** HTTP transport. */
   public final HttpTransport transport;
 
   /** HTTP request method. */
@@ -97,7 +94,7 @@ public final class HttpRequest {
    * {@link Level#CONFIG} is loggable. The only exception is the value of the
    * {@code Authorization} header which is only logged if {@link Level#ALL} is
    * loggable.
-   * 
+   *
    * @return HTTP response for an HTTP success code
    * @throws HttpResponseException for an HTTP error code
    * @see HttpResponse#isSuccessStatusCode
@@ -184,9 +181,8 @@ public final class HttpRequest {
         // log content?
         if (loggable && !this.disableContentLogging
             || logger.isLoggable(Level.ALL)) {
-          content =
-              new LogContent(content, contentType, contentEncoding,
-                  contentLength);
+          content = new LogContent(
+              content, contentType, contentEncoding, contentLength);
         }
         // gzip?
         if (contentLength >= 256) {

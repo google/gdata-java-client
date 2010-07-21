@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Utilities for working with key/value data.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class DataUtil {

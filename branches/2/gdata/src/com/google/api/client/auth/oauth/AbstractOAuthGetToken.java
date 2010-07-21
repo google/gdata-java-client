@@ -29,7 +29,7 @@ import java.io.IOException;
  * Generic OAuth 1.0a URL to request a temporary or long-lived token from an
  * authorization server.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class AbstractOAuthGetToken extends GenericUrl {

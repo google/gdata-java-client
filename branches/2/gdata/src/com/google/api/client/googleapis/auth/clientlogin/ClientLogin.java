@@ -31,7 +31,7 @@ import java.io.IOException;
  * href="http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html"
  * >ClientLogin for Installed Applications</a>.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class ClientLogin {

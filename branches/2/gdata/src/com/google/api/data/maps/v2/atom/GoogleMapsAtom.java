@@ -23,8 +23,7 @@ import java.util.Map;
 /**
  * Utilities for the Atom XML format of the Google Maps Data API.
  *
- * @since 2.2
- * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+ * @deprecated (scheduled to be removed in version 1.1) Copy into your own
  * application
  */
 @Deprecated
@@ -33,7 +32,7 @@ public final class GoogleMapsAtom {
   /**
    * XML namespace dictionary.
    *
-   * @deprecated (scheduled to be removed in version 2.4) Copy into your own
+   * @deprecated (scheduled to be removed in version 1.1) Copy into your own
    * application
    */
   @Deprecated

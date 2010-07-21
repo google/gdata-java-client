@@ -38,7 +38,7 @@ import java.io.IOException;
  * <p>
  * To revoke the stored access token, use {@link #revokeAccessToken}.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public final class GoogleOAuthGetAccessToken extends OAuthGetAccessToken {

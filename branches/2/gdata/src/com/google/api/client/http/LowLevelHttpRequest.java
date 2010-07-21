@@ -24,7 +24,7 @@ import java.io.IOException;
  * This allows providing a different implementation of the HTTP request that is
  * more compatible with the Java environment used.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public abstract class LowLevelHttpRequest {

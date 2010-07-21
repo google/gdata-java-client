@@ -29,9 +29,9 @@ import java.io.InputStream;
 /**
  * Abstract XML HTTP parser into an data class of key/value pairs.
  * 
- * @since 2.2
+ * @since 1.0
  * @author Yaniv Inbar
- * @deprecated (scheduled to be removed in version 2.4) Use
+ * @deprecated (scheduled to be removed in version 1.1) Use
  *             {@link XmlHttpParser}
  */
 @Deprecated

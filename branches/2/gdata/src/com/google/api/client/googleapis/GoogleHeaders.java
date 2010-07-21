@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -22,52 +22,38 @@ import com.google.api.client.util.Key;
 
 /**
  * HTTP headers for Google API's.
- * 
- * @since 2.2
+ *
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class GoogleHeaders extends HttpHeaders {
 
-  /**
-   * Escaper for the {@link #slug} header.
-   * 
-   * @since 2.3
-   */
+  /** Escaper for the {@link #slug} header. */
   public static final PercentEscaper SLUG_ESCAPER =
       new PercentEscaper(" !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~", false);
 
-  /**
-   * {@code "GData-Version"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "GData-Version"} header. */
   @Key("GData-Version")
   public String gdataVersion;
 
   /**
    * Escaped {@code "Slug"} header value, which must be escaped using
    * {@link #SLUG_ESCAPER}.
-   * 
+   *
    * @see #setSlugFromFileName(String)
-   * @since 2.3
    */
   @Key("Slug")
   public String slug;
 
-  /**
-   * {@code "X-GData-Client"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "X-GData-Client"} header. */
   @Key("X-GData-Client")
   public String gdataClient;
 
   /**
    * {@code "X-GData-Key"} header, which must be of the form {@code
    * "key=[developerId]"}.
-   * 
+   *
    * @see #setDeveloperId(String)
-   * @since 2.3
    */
   @Key("X-GData-Key")
   public String gdataKey;
@@ -75,8 +61,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * {@code "x-goog-acl"} header that lets you apply predefined (canned) ACLs to
    * a bucket or object when you upload it or create it.
-   * 
-   * @since 2.3
    */
   @Key("x-goog-acl")
   public String googAcl;
@@ -84,8 +68,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * {@code "x-goog-copy-source"} header that specifies the destination bucket
    * and object for a copy operation.
-   * 
-   * @since 2.3
    */
   @Key("x-goog-copy-source")
   public String googCopySource;
@@ -93,8 +75,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * {@code "x-goog-copy-source-if-match"} header that specifies the conditions
    * for a copy operation.
-   * 
-   * @since 2.3
    */
   @Key("x-goog-copy-source-if-match")
   public String googCopySourceIfMatch;
@@ -102,8 +82,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * {@code "x-goog-copy-source-if-none-match"} header that specifies the
    * conditions for a copy operation.
-   * 
-   * @since 2.3
    */
   @Key("x-goog-copy-source-if-none-match")
   public String googCopySourceIfNoneMatch;
@@ -111,8 +89,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * {@code "x-goog-copy-source-if-modified-since"} header that specifies the
    * conditions for a copy operation.
-   * 
-   * @since 2.3
    */
   @Key("x-goog-copy-source-if-modified-since")
   public String googCopySourceIfModifiedSince;
@@ -120,8 +96,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * {@code "x-goog-copy-source-if-unmodified-since"} header that specifies the
    * conditions for a copy operation.
-   * 
-   * @since 2.3
    */
   @Key("x-goog-copy-source-if-unmodified-since")
   public String googCopySourceIfUnmodifiedSince;
@@ -129,8 +103,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * {@code "x-goog-date"} header that specifies a time stamp for authenticated
    * requests.
-   * 
-   * @since 2.3
    */
   @Key("x-goog-date")
   public String googDate;
@@ -138,17 +110,11 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * {@code "x-goog-metadata-directive"} header that specifies metadata handling
    * during a copy operation.
-   * 
-   * @since 2.3
    */
   @Key("x-goog-metadata-directive")
   public String googMetadataDirective;
 
-  /**
-   * {@code "X-HTTP-Method-Override"} header.
-   * 
-   * @since 2.3
-   */
+  /** {@code "X-HTTP-Method-Override"} header. */
   @Key("X-HTTP-Method-Override")
   public String methodOverride;
 
@@ -156,8 +122,8 @@ public class GoogleHeaders extends HttpHeaders {
    * Sets the {@code "Slug"} header for the given file name into the given HTTP
    * headers, properly escaping the header value. See <a
    * href="http://tools.ietf.org/html/rfc5023#section-9.7">The Slug Header</a>.
-   * 
-   * @deprecated (scheduled to be removed in version 2.4) Use
+   *
+   * @deprecated (scheduled to be removed in version 1.1) Use
    *             {@link #setSlugFromFileName(String)}
    */
   @Deprecated
@@ -169,8 +135,6 @@ public class GoogleHeaders extends HttpHeaders {
    * Sets the {@code "Slug"} header for the given file name, properly escaping
    * the header value. See <a
    * href="http://tools.ietf.org/html/rfc5023#section-9.7">The Slug Header</a>.
-   * 
-   * @since 2.3
    */
   public void setSlugFromFileName(String fileName) {
     this.slug = SLUG_ESCAPER.escape(fileName);
@@ -180,18 +144,12 @@ public class GoogleHeaders extends HttpHeaders {
    * Sets the {@code "User-Agent"} header for the given application name of the
    * form {@code "[company-id]-[app-name]-[app-version]"} into the given HTTP
    * headers.
-   * 
-   * @since 2.3
    */
   public void setApplicationName(String applicationName) {
     this.userAgent = applicationName;
   }
 
-  /**
-   * Sets the {@link #gdataKey} header using the given developer ID.
-   * 
-   * @since 2.3
-   */
+  /** Sets the {@link #gdataKey} header using the given developer ID. */
   public void setDeveloperId(String developerId) {
     this.gdataKey = "key=" + developerId;
   }
@@ -199,8 +157,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * Sets the Google Login {@code "Authorization"} header for the given
    * authentication token.
-   * 
-   * @since 2.3
    */
   public void setGoogleLogin(String authToken) {
     this.authorization = getGoogleLoginValue(authToken);
@@ -209,8 +165,6 @@ public class GoogleHeaders extends HttpHeaders {
   /**
    * Returns Google Login {@code "Authorization"} header value based on the
    * given authentication token.
-   * 
-   * @since 2.3
    */
   public static String getGoogleLoginValue(String authToken) {
     return "GoogleLogin auth=" + authToken;

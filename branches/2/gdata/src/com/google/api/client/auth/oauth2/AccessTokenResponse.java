@@ -29,7 +29,7 @@ import com.google.api.client.util.Key;
  * AccessProtectedResource.usingAuthorizationHeader(transport,
  * response.accessToken)}.
  * 
- * @since 2.3
+ * @since 1.0
  * @author Yaniv Inbar
  */
 public class AccessTokenResponse extends GenericData {
