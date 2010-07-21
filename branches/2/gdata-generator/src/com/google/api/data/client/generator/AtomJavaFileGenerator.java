@@ -50,7 +50,6 @@ final class AtomJavaFileGenerator extends AbstractJavaFileGenerator {
     docBuilder.comment =
         "Utilities for the " + version.client.getXmlFormatName()
             + " format of the " + version.client.name + ".";
-    docBuilder.sinceMinor = version.sinceMinor;
     docBuilder.generate(out);
     out.println("public final class " + className + " {");
     out.println();
