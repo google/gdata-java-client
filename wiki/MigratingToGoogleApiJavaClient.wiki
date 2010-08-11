@@ -73,7 +73,20 @@ But now it's more lines of code:
 
 By the way, if you are already doing a migration of the client library, and you are still using !ClientLogin, please strongly consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
 
-Third, there is no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters.   There is also no !VideoFeed for accessing video feeds.  So whereas previously you might have written code like this:
+Third, there is no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters.   Here is an example:
+
+{{{
+public static class YouTubeUrl extends GoogleUrl {
+  @Key public String orderby;
+  @Key public String q;
+  @Key public String safeSearch;
+  public YouTubeUrl(String encodedUrl) {
+    super(encodedUrl);
+  }
+}
+}}}
+
+To put it all together, whereas previously you might have written code like this:
 
 {{{
 public static void printPuppyVideos(YouTubeService service) {
@@ -95,15 +108,6 @@ public static void printPuppyVideos(YouTubeService service) {
 You might now write code like this:
 
 {{{
-public static class YouTubeUrl extends GoogleUrl {
-  @Key public String orderby;
-  @Key public String q;
-  @Key public String safeSearch;
-  public YouTubeUrl(String encodedUrl) {
-    super(encodedUrl);
-  }
-}
-
 public static void printPuppyVideos(HttpTransport transport) {
   YouTubeUrl url = new YouTubeUrl("http://gdata.youtube.com/feeds/api/videos");
   // order results by the number of views (most viewed first)
