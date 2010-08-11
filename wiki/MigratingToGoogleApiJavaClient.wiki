@@ -99,7 +99,7 @@ public static void printPuppyVideos(YouTubeService service) {
   query.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
 
   VideoFeed videoFeed = service.query(query, VideoFeed.class);
-  for(VideoEntry videoEntry : videoFeed.getEntries() ) {
+  for (VideoEntry videoEntry : videoFeed.getEntries()) {
     System.out.println("Title: " + videoEntry.getTitle().getPlainText());
   }
 }
@@ -120,7 +120,7 @@ public static void printPuppyVideos(HttpTransport transport) {
   HttpRequest request = transport.buildGetRequest();
   request.url = url;
   VideoFeed videoFeed = request.execute().parseAs(VideoFeed.class);
-  for(VideoEntry videoEntry : videoFeed.videos ) {
+  for (VideoEntry videoEntry : videoFeed.videos) {
     System.out.println("Title: " + videoEntry.title);
   }
 }
