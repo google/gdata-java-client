@@ -71,7 +71,7 @@ But now it's more lines of code:
     authenticator.authenticate().setAuthorizationHeader(transport);
 }}}
 
-By the way, if you are already doing a migration of the client library, and you are still using !ClientLogin, please strongly consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
+By the way, if you are already doing a migration of the client library, and you are still  using !ClientLogin and asking your end users to give your application their username and password, please strongly consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
 
 Third, there is no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters.   Here is an example:
 
