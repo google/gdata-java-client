@@ -43,7 +43,7 @@ You now have more lines of code with google-api-java-client:
     headers.gdataVersion = "2";
 }}}
 
-Second, authentication is different between gdata-java-client and google-api-java-client.  For example, if you are using ClientLogin, you are used to being able to do something like:
+Second, authentication is different between gdata-java-client and google-api-java-client.  For example, if you are using !ClientLogin, you are used to being able to do something like:
 
 {{{
   service.setUserCredentials(username, password);
@@ -59,7 +59,7 @@ But now it's more lines of code:
     authenticator.authenticate().setAuthorizationHeader(transport);
 }}}
 
-By the way, if you are already doing a migration of the client library, and you are still using ClientLogin, please strongly consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
+By the way, if you are already doing a migration of the client library, and you are still using !ClientLogin, please strongly consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
 
 Third, there is no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters.   There is also no !VideoFeed for accessing video feeds.  So whereas previously you might have written code like this:
 
