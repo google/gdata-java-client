@@ -76,7 +76,7 @@ By the way, if you are already doing a migration of the client library, and you 
 Third, there is no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters.   There is also no !VideoFeed for accessing video feeds.  So whereas previously you might have written code like this:
 
 {{{
-public static void printPuppies(YouTubeService service) {
+public static void printPuppyVideos(YouTubeService service) {
   YouTubeQuery query = new YouTubeQuery(new URL("http://gdata.youtube.com/feeds/api/videos"));
   // order results by the number of views (most viewed first)
   query.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT);
@@ -104,7 +104,7 @@ public static class YouTubeUrl extends GoogleUrl {
   }
 }
 
-public static void printPuppies(HttpTransport transport) {
+public static void printPuppyVideos(HttpTransport transport) {
   YouTubeUrl url = new YouTubeUrl("http://gdata.youtube.com/feeds/api/videos");
   // order results by the number of views (most viewed first)
   url.orderBy = "viewCount";
