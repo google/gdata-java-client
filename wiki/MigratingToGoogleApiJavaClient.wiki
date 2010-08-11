@@ -1,6 +1,6 @@
 #summary Migrating to Google API Client for Java
 
-This guide is written for existing users of the Google Data Java Client Library (a.k.a. "gdata-java-client") that wish to migrate to the [http://code.google.com/p/google-api-java-client/ Google API Client Library for Java] (a.k.a. "google-api-java-client").  It is currently an incomplete guide, and will be developed further with more details later.
+This guide is written for existing users of the Google Data Java Client Library (a.k.a. "gdata-java-client") that wish to migrate to the [http://code.google.com/p/google-api-java-client/ Google API Client Library for Java] (a.k.a. "google-api-java-client").
 
 === Why you don't have to migrate ===
 
@@ -28,7 +28,40 @@ The bad news is that since the two client libraries are so different, switching 
 
 First, you need to invest in writing a custom data model for the Google API.  Please read the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc for the new XML data model] in google-api-java-client.  Over time, we will work on samples to demonstrate how to do this for Google API's.  If there is already a sample for the API you are using, you are in luck.  You may be able to copy the data model classes it uses into your application as a starting point.  Of course those are just samples, and may only have the data classes and fields needed to meet the needs of that sample.  If you are interested in seeing a sample for a particular Google API or feature of a Google API, please let us know so we can prioritize samples for features that most developers need.
 
-Second, there is a significantly different calling style betwen gdata-java-client and google-api-java-client.  There is no !YouTubeService in google-api-java-client.  Instead, regardless of which API you are using, you start with the generic !HttpTransport class.  There is also no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters.   Also, there is no !VideoFeed for accessing video feeds.  So whereas previously you might have written code like this:
+Second, there is a significantly different calling style betwen gdata-java-client and google-api-java-client.  There is no !YouTubeService in google-api-java-client.  Instead, regardless of which API you are using, you start with the generic !HttpTransport class.   So whereas previously you might have written code like this:
+
+{{{
+  YouTubeService service = new YouTubeService(clientId);
+}}}
+
+You now have more lines of code with google-api-java-client:
+
+{{{
+    HttpTransport transport = GoogleTransport.create();
+    GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
+    headers.setApplicationName(clientId);
+    headers.gdataVersion = "2";
+}}}
+
+Second, authentication is different between gdata-java-client and google-api-java-client.  For example, if you are using ClientLogin, you are used to being able to do something like:
+
+{{{
+  service.setUserCredentials(username, password);
+}}}
+
+But now it's more lines of code:
+
+{{{
+    ClientLogin authenticator = new ClientLogin();
+    authenticator.authTokenType = "youtube";
+    authenticator.username = username;
+    authenticator.password = password;
+    authenticator.authenticate().setAuthorizationHeader(transport);
+}}}
+
+By the way, if you are already doing a migration of the client library, and you are still using ClientLogin, please strongly consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
+
+Third, there is no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters.   There is also no !VideoFeed for accessing video feeds.  So whereas previously you might have written code like this:
 
 {{{
 public static void printPuppies(YouTubeService service) {
@@ -50,7 +83,6 @@ public static void printPuppies(YouTubeService service) {
 You might now write code like this:
 
 {{{
-
 public static class VideoFeed {
   @Key("entry") public List<VideoEntry> videos;
 }
@@ -85,3 +117,5 @@ public static void printPuppies(HttpTransport transport) {
   }
 }
 }}}
+
+There are other differences as well.  Feel free to ask us questions to help you in your migration process, and we will update the document over time to help.  Good luck!
