@@ -28,4 +28,76 @@ The bad news is that since the two client libraries are so different, switching 
 
 First, you need to invest in writing a custom data model for the Google API.  Please read the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc for the new XML data model] in google-api-java-client.  Over time, we will work on samples to demonstrate how to do this for Google API's.  If there is already a sample for the API you are using, you are in luck.  You may be able to copy the data model classes it uses into your application as a starting point.  Of course those are just samples, and may only have the data classes and fields needed to meet the needs of that sample.  If you are interested in seeing a sample for a particular Google API or feature of a Google API, please let us know so we can prioritize samples for features that most developers need.
 
-Second, there is a significantly different calling style betwen gdata-java-client and google-api-java-client.  There is no !YouTubeService in google-api-java-client.  Instead, regardless of which API you are using, you start with the generic !HttpTransport class.  There is also no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters. 
+Second, there is a significantly different calling style betwen gdata-java-client and google-api-java-client.  There is no !YouTubeService in google-api-java-client.  Instead, regardless of which API you are using, you start with the generic !HttpTransport class.  There is also no !YouTubeQuery to help you construct a URL.  Instead, in google-api-java-client, you write your own !YouTubeUrl class that extends !GoogleUrl and adds custom !YouTube query parameters.   Also, there is no !VideoFeed for accessing video feeds.  So whereas previously you might have written code like this:
+
+{{{
+public static void printPuppies(YouTubeService service) {
+  YouTubeQuery query = new YouTubeQuery(new URL("http://gdata.youtube.com/feeds/api/videos"));
+  // order results by the number of views (most viewed first)
+  query.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT);
+
+  // search for puppies and include restricted content in the search results
+  query.setFullTextQuery("puppy");
+  query.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
+
+  VideoFeed videoFeed = service.query(query, VideoFeed.class);
+  printVideoFeed(videoFeed, true);
+}
+
+public static void printVideoFeed(VideoFeed videoFeed) {
+  for(VideoEntry videoEntry : videoFeed.getEntries() ) {
+    printVideoEntry(videoEntry);
+  }
+}
+
+public static void printVideoEntry(VideoEntry videoEntry) {
+  System.out.println("Title: " + videoEntry.getTitle().getPlainText());
+}
+}}}
+
+You might now write code like this:
+
+{{{
+
+public static class VideoFeed {
+  @Key("entry") public List<VideoEntry> videos;
+}
+
+public static class VideoEntry {
+  @Key public String title;
+}
+
+public static class YouTubeUrl extends GoogleUrl {
+  @Key public String orderby;
+  @Key public String q;
+  @Key public String safeSearch;
+  public YouTubeUrl(String encodedUrl) {
+    super(encodedUrl);
+  }
+}
+
+public static void printPuppies(HttpTransport youtubeService) {
+  YouTubeUrl url = new YouTubeUrl("http://gdata.youtube.com/feeds/api/videos");
+  // order results by the number of views (most viewed first)
+  url.orderBy = "viewCount";
+
+  // search for puppies and include restricted content in the search results
+  url.q = "puppy";
+  url.safeSearch = "none";
+
+  HttpRequest request = youtubeService.buildGetRequest();
+  request.url = url;
+  VideoFeed videoFeed = request.execute().parseAs(VideoFeed.class);
+  printVideoFeed(videoFeed, true);
+}
+
+public static void printVideoFeed(VideoFeed videoFeed) {
+  for(VideoEntry videoEntry : videoFeed.videos ) {
+    printVideoEntry(videoEntry);
+  }
+}
+
+public static void printVideoEntry(VideoEntry videoEntry) {
+  System.out.println("Title: " + videoEntry.title);
+}
+}}}
