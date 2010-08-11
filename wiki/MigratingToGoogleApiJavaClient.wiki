@@ -126,4 +126,4 @@ public static void printPuppyVideos(HttpTransport transport) {
 }
 }}}
 
-There are other differences as well.  Feel free to ask us questions to help you in your migration process, and we will update the document over time to help.  Good luck!
+There are other differences as well.  For example, XML namespaces have to be specified manually.  Also, inserting new items into a feed is done differently.  Feel free to ask us questions to help you in your migration process, and over time we will update the document with more examples to help you.  Good luck!
