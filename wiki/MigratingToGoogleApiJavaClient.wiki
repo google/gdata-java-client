@@ -68,7 +68,7 @@ public static class YouTubeUrl extends GoogleUrl {
   }
 }
 
-public static void printPuppies(HttpTransport youtubeService) {
+public static void printPuppies(HttpTransport transport) {
   YouTubeUrl url = new YouTubeUrl("http://gdata.youtube.com/feeds/api/videos");
   // order results by the number of views (most viewed first)
   url.orderBy = "viewCount";
@@ -77,7 +77,7 @@ public static void printPuppies(HttpTransport youtubeService) {
   url.q = "puppy";
   url.safeSearch = "none";
 
-  HttpRequest request = youtubeService.buildGetRequest();
+  HttpRequest request = transport.buildGetRequest();
   request.url = url;
   VideoFeed videoFeed = request.execute().parseAs(VideoFeed.class);
   for(VideoEntry videoEntry : videoFeed.videos ) {
