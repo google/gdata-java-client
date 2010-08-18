@@ -54,6 +54,8 @@ public class DataEntry extends BaseEntry<DataEntry> {
     super.declareExtensions(extProfile);
     extProfile.declare(DataEntry.class, Dimension.getDefaultDescription(false,
         true));
+    extProfile.declare(DataEntry.class,
+        AnalyticsLink.getDefaultDescription(false, true));
     extProfile.declare(DataEntry.class, Metric.getDefaultDescription(false,
         true));
   }

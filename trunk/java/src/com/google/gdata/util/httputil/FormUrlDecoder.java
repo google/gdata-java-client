@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* begin GOOGLE INTERNAL */
-/* NOTE:  Bracket any code or comments that should *not* be included in
- *   the source code released as part of the open-source GSE (including this
- *   comment!) in "begin GOOGLE INTERNAL" and "end GOOGLE INTERNAL" comments.
- */
-/* end GOOGLE INTERNAL */
 
 package com.google.gdata.util.httputil;
 
@@ -115,11 +109,6 @@ public class FormUrlDecoder {
 
   /**
    * Returns the canonical name for the specified charset.
-   *
-   * begin GOOGLE INTERNAL
-   * They are planning on moving it to i18n.servlet. Coordinate with them
-   * to do this and remove the code here.
-   * end GOOGLE INTERNAL
    *
    * @param charset Some known alias for a charset
    * @return The canonical name for the charset, or the original alias

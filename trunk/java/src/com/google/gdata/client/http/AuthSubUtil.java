@@ -26,8 +26,10 @@ import com.google.gdata.util.AuthenticationException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -207,11 +209,17 @@ public class AuthSubUtil {
   /**
    * Parses and returns the AuthSub token returned by Google on a successful
    * AuthSub login request.  The token will be appended as a query parameter
-   * to the next URL specified while making the AuthSub request.
+   * to the "next" URL specified while making the AuthSub request.
    *
    * @param queryString the query portion of the redirected-to URL containing
-   *                    the token
-   * @return the AuthSub token returned by Google
+   *                    the token (as the server received it; i.e. what
+   *                    {@code httpServletRequest.getQueryString()} returns)
+   * @return the AuthSub token returned by Google; {@code null} if there is no
+   *         token present in {@code queryString}. The token text will have
+   *         been run through {@link URLDecoder} already, and will not need any
+   *         additional decoding before use; however, the token string will
+   *         not contain percent ({@code %}) characters and therefore
+   *         additional url-decoding will do no harm.
    */
   public static String getTokenFromReply(String queryString) {
 
@@ -219,7 +227,12 @@ public class AuthSubUtil {
     Map<String, String> params =
       StringUtil.string2Map(queryString, "&", "=", true /*stripEntry*/);
     params = StringUtil.lowercaseKeys(params);
-    return params.get("token");
+    String encoded = params.get("token");
+    try {
+      return encoded == null ? null : URLDecoder.decode(encoded, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e); // Can't happen - UTF-8 in all jvms
+    }
   }
 
 

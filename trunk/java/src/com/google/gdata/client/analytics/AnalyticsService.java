@@ -24,6 +24,7 @@ import com.google.gdata.data.analytics.AccountFeed;
 import com.google.gdata.data.analytics.CombinationFeed;
 import com.google.gdata.data.analytics.DataFeed;
 import com.google.gdata.data.analytics.ExperimentFeed;
+import com.google.gdata.data.analytics.ManagementFeed;
 import com.google.gdata.data.analytics.SectionFeed;
 import com.google.gdata.data.analytics.VariationFeed;
 import com.google.gdata.util.Version;
@@ -68,8 +69,8 @@ public class AnalyticsService extends GoogleService {
     public static final Version V2_1 = new Version(AnalyticsService.class,
         "2.1", Service.Versions.V2_1);
 
-    /** Version {@code 2.2}.  This version adds generalized account feeds, and
-     * is based on GData version 2.1. */
+    /** Version {@code 2.2}.  This version adds Management API feeds, and is
+     * based on GData version 2.1. */
     public static final Version V2_2 = new Version(AnalyticsService.class,
         "2.2", Service.Versions.V2_1);
 
@@ -80,7 +81,7 @@ public class AnalyticsService extends GoogleService {
    * Default GData version used by the Google Analytics Data Export API.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(AnalyticsService.class, Versions.V2_1);
+      Service.initServiceVersion(AnalyticsService.class, Versions.V2_2);
 
   /**
    * Constructs an instance connecting to the Google Analytics Data Export API
@@ -160,6 +161,7 @@ public class AnalyticsService extends GoogleService {
     new CombinationFeed().declareExtensions(extProfile);
     new DataFeed().declareExtensions(extProfile);
     new ExperimentFeed().declareExtensions(extProfile);
+    new ManagementFeed().declareExtensions(extProfile);
     new SectionFeed().declareExtensions(extProfile);
     new VariationFeed().declareExtensions(extProfile);
   }

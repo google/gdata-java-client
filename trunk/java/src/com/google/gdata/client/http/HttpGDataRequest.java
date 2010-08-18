@@ -546,19 +546,23 @@ public class HttpGDataRequest implements GDataRequest {
    */
   protected void checkResponse() throws IOException, ServiceException {
 
-    if (httpConn.getResponseCode() >= 300) {
-      handleErrorResponse();
-    } else if (isOAuthProxyErrorResponse()) {
+    if (isOAuthProxyErrorResponse()) {
       handleOAuthProxyErrorResponse();
+    } else if (httpConn.getResponseCode() >= 300) {
+      handleErrorResponse();
     }
   }
 
   /** Whether or not the http response comes from the OAuth Proxy. */
-  private boolean isOAuthProxyErrorResponse() {
+  private boolean isOAuthProxyErrorResponse() throws IOException {
     Set<String> headers = httpConn.getHeaderFields().keySet();
-    return headers.contains(OAuthProxyProtocol.Header.X_OAUTH_APPROVAL_URL)
-        || headers.contains(OAuthProxyProtocol.Header.X_OAUTH_ERROR)
-        || headers.contains(OAuthProxyProtocol.Header.X_OAUTH_ERROR_TEXT);
+    boolean isOAuthRedirectToApproval =
+        headers.contains(OAuthProxyProtocol.Header.X_OAUTH_APPROVAL_URL);
+    boolean isOtherOAuthError =
+        httpConn.getResponseCode() == HttpURLConnection.HTTP_OK
+        && (headers.contains(OAuthProxyProtocol.Header.X_OAUTH_ERROR)
+        || headers.contains(OAuthProxyProtocol.Header.X_OAUTH_ERROR_TEXT));
+    return isOAuthRedirectToApproval || isOtherOAuthError;
   }
 
   /**

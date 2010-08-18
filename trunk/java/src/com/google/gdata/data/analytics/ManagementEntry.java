@@ -18,22 +18,23 @@ package com.google.gdata.data.analytics;
 
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Link;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entry element for account feed.
+ * Entry element for GA data source feed.
  *
  * 
  */
-public class AccountEntry extends BaseEntry<AccountEntry> {
+public class ManagementEntry extends BaseEntry<ManagementEntry> {
 
   /**
    * Default mutable constructor.
    */
-  public AccountEntry() {
+  public ManagementEntry() {
     super();
-    setKind("analytics#account");
   }
 
   /**
@@ -42,81 +43,55 @@ public class AccountEntry extends BaseEntry<AccountEntry> {
    *
    * @param sourceEntry source entry
    */
-  public AccountEntry(BaseEntry<?> sourceEntry) {
+  public ManagementEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
 
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
-    if (extProfile.isDeclared(AccountEntry.class)) {
+    if (extProfile.isDeclared(ManagementEntry.class)) {
       return;
     }
     super.declareExtensions(extProfile);
-    extProfile.declare(AccountEntry.class,
-        CustomVariable.getDefaultDescription(false, true));
-    extProfile.declare(AccountEntry.class, Goal.getDefaultDescription(false,
-        true));
+    extProfile.declare(ManagementEntry.class, Goal.class);
     new Goal().declareExtensions(extProfile);
-    extProfile.declare(AccountEntry.class,
+    extProfile.declare(ManagementEntry.class,
         AnalyticsLink.getDefaultDescription(false, true));
-    extProfile.declare(AccountEntry.class, Property.getDefaultDescription(false,
-        true));
-    extProfile.declare(AccountEntry.class, TableId.getDefaultDescription(true,
-        false));
+    extProfile.declare(ManagementEntry.class,
+        Property.getDefaultDescription(false, true));
+    extProfile.declare(ManagementEntry.class, Segment.class);
+    new Segment().declareExtensions(extProfile);
   }
 
   /**
-   * Returns the custom variables.
+   * Returns the goal.
    *
-   * @return custom variables
+   * @return goal
    */
-  public List<CustomVariable> getCustomVariables() {
-    return getRepeatingExtension(CustomVariable.class);
+  public Goal getGoal() {
+    return getExtension(Goal.class);
   }
 
   /**
-   * Adds a new custom variable.
+   * Sets the goal.
    *
-   * @param customVariable custom variable
+   * @param goal goal or <code>null</code> to reset
    */
-  public void addCustomVariable(CustomVariable customVariable) {
-    getCustomVariables().add(customVariable);
+  public void setGoal(Goal goal) {
+    if (goal == null) {
+      removeExtension(Goal.class);
+    } else {
+      setExtension(goal);
+    }
   }
 
   /**
-   * Returns whether it has the custom variables.
+   * Returns whether it has the goal.
    *
-   * @return whether it has the custom variables
+   * @return whether it has the goal
    */
-  public boolean hasCustomVariables() {
-    return hasRepeatingExtension(CustomVariable.class);
-  }
-
-  /**
-   * Returns the goals.
-   *
-   * @return goals
-   */
-  public List<Goal> getGoals() {
-    return getRepeatingExtension(Goal.class);
-  }
-
-  /**
-   * Adds a new goal.
-   *
-   * @param goal goal
-   */
-  public void addGoal(Goal goal) {
-    getGoals().add(goal);
-  }
-
-  /**
-   * Returns whether it has the goals.
-   *
-   * @return whether it has the goals
-   */
-  public boolean hasGoals() {
-    return hasRepeatingExtension(Goal.class);
+  public boolean hasGoal() {
+    return hasExtension(Goal.class);
   }
 
   /**
@@ -147,34 +122,34 @@ public class AccountEntry extends BaseEntry<AccountEntry> {
   }
 
   /**
-   * Returns the data source ID.
+   * Returns the segment.
    *
-   * @return data source ID
+   * @return segment
    */
-  public TableId getTableId() {
-    return getExtension(TableId.class);
+  public Segment getSegment() {
+    return getExtension(Segment.class);
   }
 
   /**
-   * Sets the data source ID.
+   * Sets the segment.
    *
-   * @param tableId data source ID or <code>null</code> to reset
+   * @param segment segment or <code>null</code> to reset
    */
-  public void setTableId(TableId tableId) {
-    if (tableId == null) {
-      removeExtension(TableId.class);
+  public void setSegment(Segment segment) {
+    if (segment == null) {
+      removeExtension(Segment.class);
     } else {
-      setExtension(tableId);
+      setExtension(segment);
     }
   }
 
   /**
-   * Returns whether it has the data source ID.
+   * Returns whether it has the segment.
    *
-   * @return whether it has the data source ID
+   * @return whether it has the segment
    */
-  public boolean hasTableId() {
-    return hasExtension(TableId.class);
+  public boolean hasSegment() {
+    return hasExtension(Segment.class);
   }
 
   @Override
@@ -183,7 +158,7 @@ public class AccountEntry extends BaseEntry<AccountEntry> {
 
   @Override
   public String toString() {
-    return "{AccountEntry " + super.toString() + "}";
+    return "{ManagementEntry " + super.toString() + "}";
   }
 
 
@@ -211,4 +186,49 @@ public class AccountEntry extends BaseEntry<AccountEntry> {
     }
     return null;
   }
+
+  /**
+   * Returns all the parent links contained in the entry.
+   */
+  public List<AnalyticsLink> getParentLinks() {
+    List<AnalyticsLink> links = new ArrayList<AnalyticsLink>();
+    for (Link link : getLinks()) {
+      if (link.getRel().equals(AnalyticsLink.Rel.PARENT)) {
+        links.add((AnalyticsLink) link);
+      }
+    }
+    return links;
+  }
+
+  /**
+   * Returns all the child links contained in the entry.
+   */
+  public List<AnalyticsLink> getChildLinks() {
+    List<AnalyticsLink> links = new ArrayList<AnalyticsLink>();
+    for (Link link : getLinks()) {
+      if (link.getRel().equals(AnalyticsLink.Rel.CHILD)) {
+        links.add((AnalyticsLink) link);
+      }
+    }
+    return links;
+  }
+
+  /**
+   * Returns the link with the given targetKind. It returns {@code null} if a
+   * link with the given targetKind value is not found.
+   */
+  public AnalyticsLink getChildLink(String targetKind) {
+    for (Link link : getLinks()) {
+      if (link.getRel().equals(AnalyticsLink.Rel.CHILD)) {
+
+        AnalyticsLink analyticsLink = (AnalyticsLink) link;
+        if (analyticsLink.getTargetKind().equals(targetKind)) {
+          return analyticsLink;
+        }
+      }
+    }
+    return null;
+  }
+
 }
+
