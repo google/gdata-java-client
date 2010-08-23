@@ -1,0 +1,131 @@
+#summary Migrating to Google API Client for Java
+
+This guide is written for existing users of the Google Data Java Client Library, or "gdata-java-client", who want to migrate to the new  [http://code.google.com/p/google-api-java-client/ Google API Client Library for Java], or "google-api-java-client".
+
+=== Why you don't have to migrate ===
+
+First, the good news: gdata-java-client is not deprecated.  We're keeping it in maintenance mode, fixing critical bugs, and adding a few minimal features.  We're doing this because we know how difficult the switching costs are. We know that many of you have made a significant investment in this library and that you might not want to make a change.
+
+Stability is another important reason to continue using gdata-java-client. It has been around much longer and you can have high confidence that this library won't change in backwards-incompatible ways. At Google, we still use this library in our production systems.    
+
+In contrast, the google-api-java-client is still in alpha, so it could change in ways that affect your code. In addition, although we are working toward feature parity, we have not yet implemented all features supported by gdata-java-client. For example, the new library is currently missing resumable upload. If you find a missing feature that's important to you, please make a feature request.
+
+=== Why you might want to migrate ===
+
+Technology moves fast, and google-api-java-client is where we're focusing our active development efforts. The new library already provides support for a wide range of features that aren't supported by gdata-java-client. For example, if you want to access APIs from Android, you can only do that with new the library.  If you want to access JSON APIs, again, you can only do that with the new library.  In fact, whereas gdata-java-client only supports Google Data APIs built on the Atom XML specification, google-api-java-client supports any XML or JSON format from _any_ API. It even supports plugging in alternative formats.  
+
+If you want to use partial XML response or update, google-api-java-client includes automated functionality that supports partial; it can compute the right partial request for you if you provide the modified and the original data model objects. In addition, we just added official Maven support to google-api-java-client, and we've started prototyping OAuth2 in the new library.  We don't plan to add these features to gdata-java-client.
+
+Even if your needs haven't grown in terms of technologies, our APIs continue to grow. The google-api-java-client library has a completely new design that will let us provide you with new APIs and functionality much more quickly and reliably. With gdata-java-client, we continually need to release updates as our APIs change, for example, as APIs add new XML elements or attributes.  Unfortunately, this is a very time consuming and error-prone process, and our releases are too infrequent to keep up.  
+
+With the new google-api-java-client, we don't need to update the library as the APIs change. Instead, you control the classes that represent the data format of our API responses. This frees you from a dependency on a slow and incomplete release process.  Although there is an initial, one-time burden on you, the developer, the benefit is that you don't need to wait for us to use the latest API features. 
+
+If you are running into any of these issues with gdata-java-client, consider migrating to google-api-java-client.
+
+=== What if I'm starting from scratch? ===
+
+If you are writing a new client, and you are trying to choose between gdata-java-client or google-api-java-client, read the above sections to help you decide.  If you are willing to put up with some instability and have checked that google-api-java-client has all of the features you need, you should consider starting with google-api-java-client.  It will keep you "plugged-in" to the latest technologies and improvements.
+
+Over time, we will add more samples and developer's guides to google-api-java-client to help you get started.
+
+== What if I have a large code base that uses gdata-java-client? === 
+
+The good news here is that gdata-java-client and google-api-java-client are two completely different libraries with different package names.  That means you can use both of them in your project without conflict.  New code can use google-api-java-client and old code can continue to use gdata-java-client.  This can provide a smooth migration path.
+
+The bad news is that since the two client libraries are so different, switching existing working code from gdata-java-client to google-api-java-client is a non-trivial process.
+
+First, you need to invest in writing a custom data model that lets your application access the Google API fields it needs.  Please read the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc for the new XML data model] in google-api-java-client. Over time, we will work on samples to demonstrate how to do this for many more Google APIs. 
+
+If there is already a sample for the API you are using, you have a great starting point.  You can copy the data model classes it uses directly into your application.  Of course, since it is just a sample, it shows only the data classes and fields that the sample needs.  Although you'll probably need to extend the sample code, you can do this easily by applying the same techniques it demonstrates. 
+
+Even if there is not yet a sample for the particular API you are using, you can still use google-api-java-client.  There are three key differences between using the new library and the old one: 
+
+First, there is a much different calling style with google-api-java-client.  Instead of calling the !YouTubeService, you start with the generic !HttpTransport class.  In fact, you do this regardless of which API you are using.  So, in the case of !YouTube, you previously you might have written code like this:
+
+{{{
+  YouTubeService service = new YouTubeService("google-youtubesample-1.0");
+}}}
+
+With google-api-client, you now have a few more lines of code:
+
+{{{
+    HttpTransport transport = GoogleTransport.create();
+    GoogleHeaders headers = (GoogleHeaders) transport.defaultHeaders;
+    headers.setApplicationName("google-youtubesample-1.0");
+    headers.gdataVersion = "2";
+}}}
+
+Second, authentication is different in gdata-java-client and google-api-java-client.  For example, if you are using !ClientLogin, you used to do something like:
+
+{{{
+  service.setUserCredentials(username, password);
+}}}
+
+But with the new library, it's more lines of code:
+
+{{{
+    ClientLogin authenticator = new ClientLogin();
+    authenticator.authTokenType = "youtube";
+    authenticator.username = username;
+    authenticator.password = password;
+    authenticator.authenticate().setAuthorizationHeader(transport);
+}}}
+
+By the way, if you are migrating to the new client library and are still using !ClientLogin, your application still needs to ask your end users for their username and password.  For a much better security technique, please seriously consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
+
+Third, you write your own API-specific class that extends !GoogleUrl and adds the query parameters you want to use; there is no !YouTubeQuery to help you construct a URL with google-api-java-client.  Here is an example for !YouTube:
+
+{{{
+public static class YouTubeUrl extends GoogleUrl {
+  @Key public String orderby;
+  @Key public String q;
+  @Key public String safeSearch;
+  public YouTubeUrl(String encodedUrl) {
+    super(encodedUrl);
+  }
+}
+}}}
+
+Let's put it all together. Previously, the code you wrote when you used gdata-java-client looked something like this:
+http://code.google.com/apis/gdata/docs/client-libraries.html
+{{{
+public static void printPuppyVideos(YouTubeService service) {
+  YouTubeQuery query = new YouTubeQuery(new URL("http://gdata.youtube.com/feeds/api/videos"));
+  // order results by the number of views (most viewed first)
+  query.setOrderBy(YouTubeQuery.OrderBy.VIEW_COUNT);
+
+  // search for puppies and include restricted content in the search results
+  query.setFullTextQuery("puppy");
+  query.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
+
+  VideoFeed videoFeed = service.query(query, VideoFeed.class);
+  for (VideoEntry videoEntry : videoFeed.getEntries()) {
+    System.out.println("Title: " + videoEntry.getTitle().getPlainText());
+  }
+}
+}}}
+
+Now, with the google-api-java-client, the code you write looks more like this:
+
+{{{
+public static void printPuppyVideos(HttpTransport transport) {
+  YouTubeUrl url = new YouTubeUrl("http://gdata.youtube.com/feeds/api/videos");
+  // order results by the number of views (most viewed first)
+  url.orderBy = "viewCount";
+
+  // search for puppies and include restricted content in the search results
+  url.q = "puppy";
+  url.safeSearch = "none";
+
+  HttpRequest request = transport.buildGetRequest();
+  request.url = url;
+  VideoFeed videoFeed = request.execute().parseAs(VideoFeed.class);
+  for (VideoEntry videoEntry : videoFeed.videos) {
+    System.out.println("Title: " + videoEntry.title);
+  }
+}
+}}}
+
+There are other differences as well.  For example, you have to specify XML namespaces manually, and the way you insert new items into a feed is different. We'll be adding more information about these kinds of issues soon.
+
+Feel free to ask us questions to help you in your migration process.  If you are interested in seeing a sample for a particular Google API or feature, please let us know so we can prioritize samples that most developers need.  In addition, we will be updating this document over time with more examples to help you.  Good luck!
