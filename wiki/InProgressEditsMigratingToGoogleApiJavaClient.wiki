@@ -4,7 +4,7 @@ This guide is written for existing users of the Google Data Java Client Library,
 
 === Benefits of the New Library ===
 
-As we have [http://www.youtube.com/watch?v=nyu5ZxGUfgs dramatically improved our internal API infrastructure], the gdata-java-client library has not kept up.  All new Google API's based on this new API infrastructure such as the Google Buzz API are not supported at all in the gdata-java-client library.  Moreover, all new Google API's support the more efficient and natural JSON wire format, but gdata-java-client only supports Atom XML.  New Google API technologies like partial response/update that improve efficiency by an order of magnitude are too difficult to use in the gdata-java-client library.
+As we have [http://www.youtube.com/watch?v=nyu5ZxGUfgs dramatically improved our internal API infrastructure], the gdata-java-client library has not kept up.  All new Google API's based on this new API infrastructure such as the Google Buzz API are not supported at all in the gdata-java-client library.  Moreover, although all new Google API's support the more efficient and natural JSON wire format, gdata-java-client only supports Atom XML.  New Google API technologies like partial response/update that improve efficiency by an order of magnitude are too difficult to use in the gdata-java-client library.
 
 The gdata-java-client library also hasn't kept up with other technologies.  Most noticeably, it doesn't support Google's own Android mobile operating system.  Maven users have been complaining for years about the lack of support to upload the library to the central Maven repository.
 
