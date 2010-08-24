@@ -14,7 +14,9 @@ In order to solve these problems we had to start from scratch a year ago with th
 
 Another reason we started with a new project because we wanted to get the internals of the project right.  We wanted to use Maven as the build and release system, and we wanted it to be completely open source from the start.  We wanted to use Mercurial as the source control system for it's more flexible distributed features, and to enable external contributions without requiring a Committer role.
 
-Long term, all new features will only be developed in google-api-java-client, and not in gdata-java-client.  For example, we are already have a prototype of OAuth 2 running in google-api-java-client.  We are not deprecating gdata-java-client at this point, and will continue to fix any critical bugs.  If you are unable to migrate to google-api-java-client, rest assured you are still using a stable and supported client library.
+Long term, all new features will only be developed in google-api-java-client, and not in gdata-java-client.  For example, we are already have a prototype of OAuth 2 running in google-api-java-client.
+
+Since we are not deprecating gdata-java-client at this point, we will continue to fix any critical bugs.  If you are unable to migrate to google-api-java-client yet, rest assured you are still using a stable and supported client library.
 
 === Overall Migration Process ===
 
