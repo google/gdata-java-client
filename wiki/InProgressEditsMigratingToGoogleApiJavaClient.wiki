@@ -1,38 +1,33 @@
 #summary Migrating to Google API Client for Java
 
-This guide is written for existing users of the Google Data Java Client Library, or "gdata-java-client", who want to migrate to the new  [http://code.google.com/p/google-api-java-client/ Google API Client Library for Java], or "google-api-java-client".
+This guide is written for existing users of the Google Data Java Client Library, or "gdata-java-client", who are migrating to the new  [http://code.google.com/p/google-api-java-client/ Google API Client Library for Java], or "google-api-java-client".
 
-=== Why you don't have to migrate ===
+=== Benefits of the New Library ===
 
-First, the good news: gdata-java-client is not deprecated.  We're keeping it in maintenance mode, fixing critical bugs, and adding a few minimal features.  We're doing this because we know how difficult the switching costs are. We know that many of you have made a significant investment in this library and that you might not want to make a change.
+As we have [http://www.youtube.com/watch?v=nyu5ZxGUfgs dramatically improved our internal API infrastructure], the gdata-java-client library has not kept up.  All new Google API's based on this new API infrastructure such as the Google Buzz API are not supported at all in the gdata-java-client library.  Moreover, all new Google API's support the more efficient and natural JSON wire format, but gdata-java-client only supports Atom XML.  New Google API technologies like partial response/update that improve efficiency by an order of magnitude are too difficult to use in the gdata-java-client library.
 
-Stability is another important reason to continue using gdata-java-client. It has been around much longer and you can have high confidence that this library won't change in backwards-incompatible ways. At Google, we still use this library in our production systems.    
+The gdata-java-client library also hasn't kept up with other technologies.  Most noticeably, it doesn't support Google's own Android mobile operating system.  Maven users have been complaining for years about the lack of support to upload the library to the central Maven repository.
 
-In contrast, the google-api-java-client is still in alpha, so it could change in ways that affect your code. In addition, although we are working toward feature parity, we have not yet implemented all features supported by gdata-java-client. For example, the new library is currently missing resumable upload. If you find a missing feature that's important to you, please make a feature request.
+We have been developing the gdata-java-client library over 5 years.  Rather than developing new features for the client library, we spent most of our engineering resources on carefully fine-tuning data model classes for each Google API supported.  Our closed-source release process was complex, cumbersome, and error prone.  Another point of internal frustration was the use of Subversion as the source control system which lacks the power and flexibility of a distributed source control system.
 
-=== Why you might want to migrate ===
+In order to solve these problems we had to start from scratch a year ago with the google-api-java-client (previously known as "version 2 of gdata-java-client").  Ideally a powerful API Java client library would work with all HTTP-based API's, and support all Java environments.  Thus, it was critical to design a fully pluggable architecture that hands the maximum power and flexibility to the developer using the library.  Simplicity is also a critical feature, and as you will see in this guide, working with Google API's is just as simple in google-api-java-client as it was with gdata-java-client.  The difference is that the same simplicity applies to working with all wire formats, especially with JSON.  Furthermore, the developer can customize their JSON or XML data model for their application's needs, rather than having to rely on Google to provide it to them. Partial response/update is also supported with ease because it relies on the developer's data model to automatically compute the most efficient representation of their data.
 
-Technology moves fast, and google-api-java-client is where we're focusing our active development efforts. The new library already provides support for a wide range of features that aren't supported by gdata-java-client. For example, if you want to access APIs from Android, you can only do that with new the library.  If you want to access JSON APIs, again, you can only do that with the new library.  In fact, whereas gdata-java-client only supports Google Data APIs built on the Atom XML specification, google-api-java-client supports any XML or JSON format from _any_ API. It even supports plugging in alternative formats.  
+Another reason we started with a new project because we wanted to get the internals of the project right.  We wanted to use Maven as the build and release system, and we wanted it to be completely open source from the start.  We wanted to use Mercurial as the source control system for it's more flexible distributed features, and to enable external contributions without requiring a Committer role.
 
-If you want to use partial XML response or update, google-api-java-client includes automated functionality that supports partial; it can compute the right partial request for you if you provide the modified and the original data model objects. In addition, we just added official Maven support to google-api-java-client, and we've started prototyping OAuth2 in the new library.  We don't plan to add these features to gdata-java-client.
+Long term, all new features will only be developed in google-api-java-client, and not in gdata-java-client.  For example, we are already have a prototype of OAuth 2 running in google-api-java-client.  We are not deprecating gdata-java-client at this point, and will continue to fix any critical bugs.  If you are unable to migrate to google-api-java-client, rest assured you are still using a stable and supported client library.
 
-Even if your needs haven't grown in terms of technologies, our APIs continue to grow. The google-api-java-client library has a completely new design that will let us provide you with new APIs and functionality much more quickly and reliably. With gdata-java-client, we continually need to release updates as our APIs change, for example, as APIs add new XML elements or attributes.  Unfortunately, this is a very time consuming and error-prone process, and our releases are too infrequent to keep up.  
+=== Overall Migration Process ===
 
-With the new google-api-java-client, we don't need to update the library as the APIs change. Instead, you control the classes that represent the data format of our API responses. This frees you from a dependency on a slow and incomplete release process.  Although there is an initial, one-time burden on you, the developer, the benefit is that you don't need to wait for us to use the latest API features. 
+Start by learning about google-api-java-client on the [http://code.google.com/p/google-api-java-client/ project's front page].  Keep up to date with the latest discussions and announcements, or ask questions or provide feedback on the [http://groups.google.com/group/google-api-java-client Help Forum].  [http://code.google.com/p/google-api-java-client/source/browse?repo=samples Samples] are usually the best way to learn how to write code using this library, and over time we hope to have a sample for every Google Data API.
+ 
+Since gdata-java-client and google-api-java-client are independent projects, it is completely safe to include both in your Java classpath.  The easiest way to get started is to write new code using google-api-java-client, and migrate existing code from gdata-java-client to google-api-java-client over time as you gain confidence using google-api-java-client.
 
-If you are running into any of these issues with gdata-java-client, consider migrating to google-api-java-client.
+The architecture of a typical application based on google-api-java-client is based on design to a Model-View-Controller style:
+   * Model: write a custom XML data model for the Google Data API based on the fields your application needs.  Take a look at the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc].
+   * Controller: write the request execution methods.  The [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc] above also explains how to do that.
+   * View: write the user interface, including authentication and authorization.  The recommend approach is to use [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth], or [http://developer.android.com/reference/android/accounts/AccountManager.html AccountManager] for Android.  [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/auth/clientlogin/package-summary.html ClientLogin] and [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/auth/authsub/package-summary.html AuthSub] are also supported.
 
-=== What if I'm starting from scratch? ===
-
-If you are writing a new client, and you are trying to choose between gdata-java-client or google-api-java-client, read the above sections to help you decide.  If you are willing to put up with some instability and have checked that google-api-java-client has all of the features you need, you should consider starting with google-api-java-client.  It will keep you "plugged-in" to the latest technologies and improvements.
-
-Over time, we will add more samples and developer's guides to google-api-java-client to help you get started.
-
-== What if I have a large code base that uses gdata-java-client? === 
-
-The good news here is that gdata-java-client and google-api-java-client are two completely different libraries with different package names.  That means you can use both of them in your project without conflict.  New code can use google-api-java-client and old code can continue to use gdata-java-client.  This can provide a smooth migration path.
-
-The bad news is that since the two client libraries are so different, switching existing working code from gdata-java-client to google-api-java-client is a non-trivial process.
+=== Implementation Details ===
 
 First, you need to invest in writing a custom data model that lets your application access the Google API fields it needs.  Please read the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc for the new XML data model] in google-api-java-client. Over time, we will work on samples to demonstrate how to do this for many more Google APIs. 
 
