@@ -36,21 +36,21 @@ The architecture of a typical application based on google-api-java-client is bas
    * Controller: Write the request execution methods.  The [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc] above also explains how to do that.
    * View: Write the user interface, including authentication and authorization.  The recommended approach is to use [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth], or [http://developer.android.com/reference/android/accounts/AccountManager.html AccountManager] for Android.  [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/auth/clientlogin/package-summary.html ClientLogin] and [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/auth/authsub/package-summary.html AuthSub] are also supported.
 
-=== Migrating You Code ===
+=== Migrating Your Code ===
 
 First, you need to invest in writing a custom data model that lets your application access the Google API fields it needs.  See the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc for the new XML data model] in google-api-java-client. 
 
 If there is already a sample for the API you are using, you have a great starting point.  You can copy the data model classes it uses directly into your application.  Of course, since it is just a sample, it shows only the data classes and fields that the sample needs, so you'll probably need to add more data classes and fields.  It's easy to do this, or even to use google-api-java-client with an API that doesn't yet have a sample, by applying the same techniques demonstrated in the existing samples.
 
-There are three key differences between using the new library and the old one:
+There are three other key differences between how you set up the API using the new library and the old one:
 
-First, there is a much different calling style with google-api-java-client.  Instead of calling the !YouTubeService, you start with the generic !HttpTransport class.  In fact, you do this regardless of which API you are using.  So, in the case of !YouTube, you previously you might have written code like this:
+First, there is a much different calling style with google-api-java-client.  Instead of calling a service by name, you start with the generic !HttpTransport class and set the application name in its headers.   So, in the case of !YouTube, you previously you might have written code like this:
 
 {{{
   YouTubeService service = new YouTubeService("google-youtubesample-1.0");
 }}}
 
-With google-api-client, you now have a few more lines of code:
+With google-api-client, it's a few more lines of code:
 
 {{{
     HttpTransport transport = GoogleTransport.create();
@@ -65,7 +65,7 @@ Second, authentication is different in gdata-java-client and google-api-java-cli
   service.setUserCredentials(username, password);
 }}}
 
-But with the new library, it's more lines of code:
+But with the new library, you write code like this:
 
 {{{
     ClientLogin authenticator = new ClientLogin();
@@ -77,7 +77,7 @@ But with the new library, it's more lines of code:
 
 By the way, if you are migrating to the new client library and are still using !ClientLogin, your application still needs to ask your end users for their username and password.  For a much better security technique, please seriously consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
 
- Third, you write your own API-specific class that extends !GoogleUrl and adds the query parameters you want to use; there is no !YouTubeQuery to help you construct a URL with google-api-java-client.  Here is an example for !YouTube:
+Third, you write your own API-specific class that extends !GoogleUrl and adds the query parameters you want to use; there is no !YouTubeQuery to help you construct a URL with google-api-java-client.  Here is an example for !YouTube:
 
 {{{
 public static class YouTubeUrl extends GoogleUrl {
@@ -90,7 +90,7 @@ public static class YouTubeUrl extends GoogleUrl {
 }
 }}}
 
-Let's put it all together. Previously, the code you wrote when you used gdata-java-client looked something like this:
+Once you've set up the basics of the API, you're ready to use it in your application.  Previously, the code you wrote when you used gdata-java-client looked something like this:
 http://code.google.com/apis/gdata/docs/client-libraries.html
 {{{
 public static void printPuppyVideos(YouTubeService service) {
