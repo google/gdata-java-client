@@ -40,7 +40,7 @@ The architecture of a typical application based on google-api-java-client is bas
 
 First, you need to invest in writing a custom data model that lets your application access the Google API fields it needs.  See the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc for the new XML data model] in google-api-java-client. 
 
-If there is already a sample for the API you are using, you have a great starting point.  You can copy the data model classes it uses directly into your application.  Of course, since it is just a sample, it shows only the data classes and fields that the sample needs, so you'll probably need to add more data classes and field.  It's easy to do this, or even to use google-api-java-client with an API that doesn't yet have a sample, by applying the same techniques demonstrated in the existing samples.  Over time, we will be adding samples for many more Google APIs. 
+If there is already a sample for the API you are using, you have a great starting point.  You can copy the data model classes it uses directly into your application.  Of course, since it is just a sample, it shows only the data classes and fields that the sample needs, so you'll probably need to add more data classes and fields.  It's easy to do this, or even to use google-api-java-client with an API that doesn't yet have a sample, by applying the same techniques demonstrated in the existing samples.
 
 There are three key differences between using the new library and the old one:
 
