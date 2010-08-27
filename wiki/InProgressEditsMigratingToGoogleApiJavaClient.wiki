@@ -4,7 +4,7 @@ This guide is written for existing users of the Google Data Java Client Library,
 
 === Benefits of the New Library ===
 
-The new google-api-java-client library was previously known as "version 2 of gdata-java-client." It is based on Google's new, [http://www.youtube.com/watch?v=nyu5ZxGUfgs dramatically improved API infrastructure]. Some benefits of the new library include:
+The new google-api-java-client library was previously known as "version 2 of gdata-java-client." It is based on Google's new, [http://www.youtube.com/watch?v=nyu5ZxGUfgs dramatically improved API infrastructure]. Some of its benefits include:
   * Support for the more efficient and natural JSON wire format (gdata-java-client only supports Atom XML).
   * A much improved release process that allows us to roll out new features and APIs to you quickly.
   * A much simpler model for using partial response and update (features that can improve efficiency by an order of magnitude).
@@ -17,7 +17,7 @@ Starting a new project also let us get the project internals right. We wanted to
 
 As you will see in this guide, working with Google APIs is just as simple with google-api-java-client as it was with gdata-java-client. Yet the simplicity of working with the new library extends even further. It provides equal support for the JSON wire format and even supports plugging in alternative formats. It lets you customize your JSON or XML data model for your application's needs, rather than having to rely on Google to provide it to you. It offers great support for partial response/update because it uses your data model to automatically compute the most efficient representation of your data.
 
-=== Why Such a Different Approach? ===
+=== Why the Different Approach? ===
 
 We have been developing the gdata-java-client library over 5 years. Over time, our closed-source release process for it has grown complex and cumbersome. We had to spend most of our engineering resources on carefully fine-tuning data model classes for each Google API supported, when we would rather have spent it developing new features for the client library. When developers reported problems with our data models, we were often unable to respond quickly. Developers had no flexibility in customizing the data models for their needs. They also didn't like the Subversion source control system, which lacks the power and flexibility of a distributed source control system.
 
@@ -28,7 +28,7 @@ We are not deprecating gdata-java-client at this point, and we will continue to 
 === Migration Process Overview ===
 
 If you are ready to migrate, start by getting an overview about google-api-java-client on the [http://code.google.com/p/google-api-java-client/ project's front page]. [http://code.google.com/p/google-api-java-client/source/browse?repo=samples Samples] are usually the best way to learn how to write code using this library, and over time we hope to have a sample for every Google Data API. Keep up to date with the latest discussions and announcements, or ask questions or provide feedback on the [http://groups.google.com/group/google-api-java-client Help Forum].
- 
+
 Since gdata-java-client and google-api-java-client are independent projects, it is completely safe to include both in your Java classpath.  The easiest way to get started is to write new code using google-api-java-client, and migrate existing code from gdata-java-client to google-api-java-client over time as you gain confidence using google-api-java-client.
 
 The architecture of a typical application based on google-api-java-client is based on design to a Model-View-Controller style:
@@ -36,13 +36,13 @@ The architecture of a typical application based on google-api-java-client is bas
    * Controller: Write the request execution methods.  The [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc] above also explains how to do that.
    * View: Write the user interface, including authentication and authorization.  The recommended approach is to use [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth], or [http://developer.android.com/reference/android/accounts/AccountManager.html AccountManager] for Android.  [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/auth/clientlogin/package-summary.html ClientLogin] and [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.10-alpha/com/google/api/client/googleapis/auth/authsub/package-summary.html AuthSub] are also supported.
 
-=== Implementation Details ===
+=== Migrating You Code ===
 
-First, you need to invest in writing a custom data model that lets your application access the Google API fields it needs.  Please read the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc for the new XML data model] in google-api-java-client. Over time, we will work on samples to demonstrate how to do this for many more Google APIs. 
+First, you need to invest in writing a custom data model that lets your application access the Google API fields it needs.  See the [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/googleapis/xml/atom/package-summary.html JavaDoc for the new XML data model] in google-api-java-client. 
 
-If there is already a sample for the API you are using, you have a great starting point.  You can copy the data model classes it uses directly into your application.  Of course, since it is just a sample, it shows only the data classes and fields that the sample needs.  Although you'll probably need to extend the sample code, you can do this easily by applying the same techniques it demonstrates. 
+If there is already a sample for the API you are using, you have a great starting point.  You can copy the data model classes it uses directly into your application.  Of course, since it is just a sample, it shows only the data classes and fields that the sample needs, so you'll probably need to add more data classes and field.  It's easy to do this, or even to use google-api-java-client with an API that doesn't yet have a sample, by applying the same techniques demonstrated in the existing samples.  Over time, we will be adding samples for many more Google APIs. 
 
-Even if there is not yet a sample for the particular API you are using, you can still use google-api-java-client.  There are three key differences between using the new library and the old one: 
+There are three key differences between using the new library and the old one:
 
 First, there is a much different calling style with google-api-java-client.  Instead of calling the !YouTubeService, you start with the generic !HttpTransport class.  In fact, you do this regardless of which API you are using.  So, in the case of !YouTube, you previously you might have written code like this:
 
@@ -77,7 +77,7 @@ But with the new library, it's more lines of code:
 
 By the way, if you are migrating to the new client library and are still using !ClientLogin, your application still needs to ask your end users for their username and password.  For a much better security technique, please seriously consider also migrating to [http://javadoc.google-api-java-client.googlecode.com/hg/1.0.9-alpha/com/google/api/client/auth/oauth/package-summary.html OAuth].
 
-Third, you write your own API-specific class that extends !GoogleUrl and adds the query parameters you want to use; there is no !YouTubeQuery to help you construct a URL with google-api-java-client.  Here is an example for !YouTube:
+ Third, you write your own API-specific class that extends !GoogleUrl and adds the query parameters you want to use; there is no !YouTubeQuery to help you construct a URL with google-api-java-client.  Here is an example for !YouTube:
 
 {{{
 public static class YouTubeUrl extends GoogleUrl {
@@ -130,7 +130,6 @@ public static void printPuppyVideos(HttpTransport transport) {
 }
 }}}
 
-There are other differences as well.  For example, you have to specify XML namespaces manually, and the way you insert new items into a feed is different. We'll be adding more information about these kinds of issues soon.
+There are other differences as well.  For example, how you handle XML namespaces and the way you insert new items into a feed is different. We'll be adding more information about these kinds of issues soon.
 
 Feel free to ask us questions to help you in your migration process.  If you are interested in seeing a sample for a particular Google API or feature, please let us know so we can prioritize samples that most developers need.  In addition, we will be updating this document over time with more examples to help you.  Good luck!
-Show details
