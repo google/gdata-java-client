@@ -10,7 +10,7 @@ The google-api-java-client is Google's new Java client library for Google APIs. 
   * The more efficient and natural JSON wire format (gdata-java-client only supports Atom XML).
   * More efficient partial response and update (less complicated to do than in gdata-java-client).
   * The Maven distribution system.
-  * New, upcoming features like OAuth 2 (library already includes a prototype) and the Discovery API.
+  * New, upcoming features like OAuth 2 (library already includes support for draft 10) and the experimental Discovery API.
 
 We started from scratch about a year ago so we could take what we've learned from gdata-java-client and make major improvements. We came up with a design that supports a much more streamlined release process. The new library works with all HTTP-based APIs, including existing GData APIs, and supports all Java 5 (or higher) environments. It is a fully pluggable architecture that hands the maximum power and flexibility to you, the developer. 
 
