@@ -54,6 +54,7 @@ public class DataFeed extends BaseFeed<DataFeed, DataEntry> {
     super.declareExtensions(extProfile);
     extProfile.declare(DataFeed.class, Aggregates.class);
     new Aggregates().declareExtensions(extProfile);
+    extProfile.declare(DataFeed.class, ContainsSampledData.class);
     extProfile.declare(DataFeed.class, DataSource.getDefaultDescription(false,
         true));
     new DataSource().declareExtensions(extProfile);
@@ -95,6 +96,40 @@ public class DataFeed extends BaseFeed<DataFeed, DataEntry> {
    */
   public boolean hasAggregates() {
     return hasExtension(Aggregates.class);
+  }
+
+  /**
+   * Returns the flag indicating whether response contains sampled data.
+   *
+   * @return flag indicating whether response contains sampled data
+   */
+  public ContainsSampledData getContainsSampledData() {
+    return getExtension(ContainsSampledData.class);
+  }
+
+  /**
+   * Sets the flag indicating whether response contains sampled data.
+   *
+   * @param containsSampledData flag indicating whether response contains
+   *     sampled data or <code>null</code> to reset
+   */
+  public void setContainsSampledData(ContainsSampledData containsSampledData) {
+    if (containsSampledData == null) {
+      removeExtension(ContainsSampledData.class);
+    } else {
+      setExtension(containsSampledData);
+    }
+  }
+
+  /**
+   * Returns whether it has the flag indicating whether response contains
+   * sampled data.
+   *
+   * @return whether it has the flag indicating whether response contains
+   *     sampled data
+   */
+  public boolean hasContainsSampledData() {
+    return hasExtension(ContainsSampledData.class);
   }
 
   /**
