@@ -1,4 +1,8 @@
 Google Data API - Release Notes
+Notes for v1.42.0
+-----------------
+o Update Analytics API * New fields
+
 Notes for v1.41.5
 -----------------
 o Update Analytics API

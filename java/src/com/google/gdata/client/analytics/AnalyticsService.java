@@ -74,6 +74,11 @@ public class AnalyticsService extends GoogleService {
     public static final Version V2_2 = new Version(AnalyticsService.class,
         "2.2", Service.Versions.V2_1);
 
+    /** Version {@code 2.3}.  This version adds containsSampledData, and is
+     * based on GData version 2.1. */
+    public static final Version V2_3 = new Version(AnalyticsService.class,
+        "2.3", Service.Versions.V2_1);
+
     private Versions() {}
   }
 
@@ -81,7 +86,7 @@ public class AnalyticsService extends GoogleService {
    * Default GData version used by the Google Analytics Data Export API.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(AnalyticsService.class, Versions.V2_2);
+      Service.initServiceVersion(AnalyticsService.class, Versions.V2_3);
 
   /**
    * Constructs an instance connecting to the Google Analytics Data Export API
