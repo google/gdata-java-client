@@ -60,10 +60,6 @@ public class DocumentList {
   public DocsService service;
   public GoogleService spreadsheetsService;
 
-  public static final String DEFAULT_AUTH_PROTOCOL = "https";
-  public static final String DEFAULT_AUTH_HOST = "docs.google.com";
-
-  public static final String DEFAULT_PROTOCOL = "http";
   public static final String DEFAULT_HOST = "docs.google.com";
 
   public static final String SPREADSHEETS_SERVICE_NAME = "wise";
@@ -89,14 +85,7 @@ public class DocumentList {
 
   private final String PARAMETER_SHOW_FOLDERS = "showfolders=true";
 
-  private String applicationName;
-  private String authProtocol;
-  private String authHost;
-  private String protocol;
   private String host;
-  private String username;
-  private String password;
-  private String authSubToken;
 
   private final Map<String, String> DOWNLOAD_DOCUMENT_FORMATS;
   {
@@ -140,23 +129,19 @@ public class DocumentList {
    * @throws DocumentListException
    */
   public DocumentList(String applicationName) throws DocumentListException {
-    this(applicationName, DEFAULT_AUTH_PROTOCOL, DEFAULT_AUTH_HOST, DEFAULT_PROTOCOL, DEFAULT_HOST);
+    this(applicationName, DEFAULT_HOST);
   }
 
   /**
    * Constructor
    *
    * @param applicationName name of the application
-   * @param authProtocol the protocol to use for authentication
-   * @param authHost the host to use for authentication
-   * @param protocol the protocol to use for the http calls.
    * @param host the host that contains the feeds
    *
    * @throws DocumentListException
    */
-  public DocumentList(String applicationName, String authProtocol, String authHost,
-      String protocol, String host) throws DocumentListException {
-    if (authProtocol == null || authHost == null || protocol == null || host == null) {
+  public DocumentList(String applicationName, String host) throws DocumentListException {
+    if (host == null) {
       throw new DocumentListException("null passed in required parameters");
     }
 
@@ -165,10 +150,6 @@ public class DocumentList {
     // Creating a spreadsheets service is necessary for downloading spreadsheets
     spreadsheetsService = new GoogleService(SPREADSHEETS_SERVICE_NAME, applicationName);
 
-    this.applicationName = applicationName;
-    this.authProtocol = authProtocol;
-    this.authHost = authHost;
-    this.protocol = protocol;
     this.host = host;
   }
 
@@ -187,9 +168,6 @@ public class DocumentList {
       throw new DocumentListException("null login credentials");
     }
 
-    this.username = user;
-    this.password = pass;
-    this.authSubToken = "";
     service.setUserCredentials(user, pass);
     spreadsheetsService.setUserCredentials(user, pass);
   }
@@ -207,10 +185,6 @@ public class DocumentList {
     if (token == null) {
       throw new DocumentListException("null login credentials");
     }
-
-    this.authSubToken = token;
-    this.username = "";
-    this.password = "";
 
     service.setAuthSubToken(token);
     spreadsheetsService.setAuthSubToken(token);
@@ -924,7 +898,7 @@ public class DocumentList {
     }
 
     StringBuffer url = new StringBuffer();
-    url.append(protocol + "://" + domain + URL_FEED + path);
+    url.append("https://" + domain + URL_FEED + path);
 
     if (parameters != null && parameters.length > 0) {
       url.append("?");
@@ -956,7 +930,7 @@ public class DocumentList {
     }
 
     StringBuffer url = new StringBuffer();
-    url.append(protocol + "://" + domain + URL_FEED + path);
+    url.append("https://" + domain + URL_FEED + path);
 
     if (parameters != null && parameters.size() > 0) {
       Set<Map.Entry<String, String>> params = parameters.entrySet();

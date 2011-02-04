@@ -50,7 +50,6 @@ public class SitesDemo {
       "Usage: java SitesDemo.jar  --siteName <webspace name of Site> --token <AuthSub token>",
       "    [--domain]  Google Apps domain (e.g. example.com)",
       "    [--log]  Enable request logging tot stderr",
-      "    [--ssl]  Enable all requests over HTTPS",
       ""
       };
 
@@ -100,12 +99,11 @@ public class SitesDemo {
    * @param username User's email address.
    * @param password User's password.
    * @param enableLogging Whether to enable HTTP/XML logging.
-   * @param useSsl Whether to enable all API requests over https
    * @throws AuthenticationException 
    */
   public SitesDemo(String appName, String domain, String siteName, String username,
-      String password, boolean enableLogging, boolean useSsl) throws AuthenticationException {
-    sitesHelper = new SitesHelper(appName, domain, siteName, enableLogging, useSsl);
+      String password, boolean enableLogging) throws AuthenticationException {
+    sitesHelper = new SitesHelper(appName, domain, siteName, enableLogging);
     sitesHelper.login(username, password);
   }
 
@@ -116,12 +114,11 @@ public class SitesDemo {
    * @param domain The Google Apps domain of the hosted Site or "site".
    * @param siteName The webspace name of the Site.
    * @param authSubToken User's AuthSub session token.
-   * @param useSsl Whether to enable all API requests over https
    * @param enableLogging Whether to enable HTTP/XML logging.
    */
   public SitesDemo(String appName, String domain, String siteName, String authSubToken,
-      boolean enableLogging, boolean useSsl) {
-    sitesHelper = new SitesHelper(appName, domain, siteName, enableLogging, useSsl);
+      boolean enableLogging) {
+    sitesHelper = new SitesHelper(appName, domain, siteName, enableLogging);
     sitesHelper.login(authSubToken);
   }
 
@@ -129,7 +126,6 @@ public class SitesDemo {
    * Prints out a given message.
    *
    * @param msg the message to be printed.
-   * @param addNewline Whether to put a carriage return after every value.
    */
   private static void printMessage(String[] msg) {
     printMessage(msg, true);
@@ -379,7 +375,6 @@ public class SitesDemo {
     String token = parser.getValue("token", "token", "t");
     String domain = parser.getValue("domain", "d");
     String siteName = parser.getValue("siteName", "site", "s");
-    boolean useSsl = parser.containsKey("ssl");
     boolean help = parser.containsKey("help", "h");
     boolean logItUp = parser.containsKey("log", "l");
 
@@ -396,9 +391,9 @@ public class SitesDemo {
     SitesDemo demo = null;
     try {
       if (username != null && password != null) {
-        demo = new SitesDemo(APP_NAME, domain, siteName, username, password, logItUp, useSsl);
+        demo = new SitesDemo(APP_NAME, domain, siteName, username, password, logItUp);
       } else if (token != null) {
-         demo = new SitesDemo(APP_NAME, domain, siteName, token, logItUp, useSsl);
+         demo = new SitesDemo(APP_NAME, domain, siteName, token, logItUp);
       } else {
         printMessage(USAGE_MESSAGE);
         System.exit(1);

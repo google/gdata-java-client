@@ -153,6 +153,6 @@ public class CalendarService extends GoogleService {
    * the AuthSub (authentication for web services) tokens.
    */
   public static final String CALENDAR_ROOT_URL =
-      "http://www.google.com/calendar/feeds/";
+      "https://www.google.com/calendar/feeds/";
 
 }

@@ -21,4 +21,3 @@ Alternately, you can compile and run it from the command line:
     java sample.spreadsheet.cell.CellDemo
         --username [user]
         --password [pass]
-        --spreadsheetUrl http://....spreadsheets.google.com/ccc?id=...

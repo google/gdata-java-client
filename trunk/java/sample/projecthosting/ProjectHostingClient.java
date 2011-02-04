@@ -54,7 +54,7 @@ public class ProjectHostingClient {
   private ProjectHostingService service;
 
   private static final String FEED_URI_BASE =
-      "http://code.google.com/feeds/issues";
+      "https://code.google.com/feeds/issues";
 
   private static final String PROJECTION = "/full";
 
@@ -99,10 +99,11 @@ public class ProjectHostingClient {
 
     issuesBaseUri = FEED_URI_BASE + "/p/" + project + "/issues";
     issuesFeedUrl = makeIssuesFeedUrl(project);
+    String issuesBaseUriHttp = issuesBaseUri.replaceFirst("https", "http");
     issueIdPattern = Pattern.compile(
-        issuesBaseUri + PROJECTION + "/(\\d+)$");
+        issuesBaseUriHttp + PROJECTION + "/(\\d+)$");
     commentIdPattern = Pattern.compile(
-        issuesBaseUri + "/\\d+/comments" + PROJECTION + "/(\\d+)$");
+        issuesBaseUriHttp + "/\\d+/comments" + PROJECTION + "/(\\d+)$");
   }
 
   /**

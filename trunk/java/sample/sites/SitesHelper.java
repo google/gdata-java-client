@@ -74,7 +74,6 @@ public class SitesHelper {
 
     private String domain;
     private String siteName;
-    private String scheme = "http://";
 
     public SitesService service;
     public MimetypesFileTypeMap mediaTypes;
@@ -92,7 +91,7 @@ public class SitesHelper {
      * @param siteName The webspace name of the Site.
      */
     public SitesHelper(String applicationName, String domain, String siteName) {
-      this(applicationName, domain, siteName, false, false);
+      this(applicationName, domain, siteName, false);
     }
 
     /**
@@ -102,10 +101,9 @@ public class SitesHelper {
      * @param domain The Site's Google Apps domain or "site".
      * @param siteName The webspace name of the Site.
      * @param logging Whether to enable HTTP requests to stdout
-     * @param useSsl Whether to enable all API requests over https
      */
     public SitesHelper(String applicationName, String domain, String siteName,
-        boolean logging, boolean useSsl) {
+        boolean logging) {
       if (logging) {
         turnOnLogging(false);
       }
@@ -113,11 +111,6 @@ public class SitesHelper {
       this.domain = domain;
       this.siteName = siteName;
       this.service = new SitesService(applicationName);
-
-      if (useSsl) {
-        this.service.useSsl();
-        this.scheme = "https://";
-      }
 
       registerMediaTypes();
     }
@@ -203,23 +196,23 @@ public class SitesHelper {
     }
 
     public String getContentFeedUrl() {
-      return this.scheme + "sites.google.com/feeds/content/" + domain + "/" + siteName + "/";
+      return "https://sites.google.com/feeds/content/" + domain + "/" + siteName + "/";
     }
 
     public String getRevisionFeedUrl() {
-      return this.scheme + "sites.google.com/feeds/revision/" + domain + "/" + siteName + "/";
+      return "https://sites.google.com/feeds/revision/" + domain + "/" + siteName + "/";
     }
 
     public String getActivityFeedUrl() {
-      return this.scheme + "sites.google.com/feeds/activity/" + domain + "/" + siteName + "/";
+      return "https://sites.google.com/feeds/activity/" + domain + "/" + siteName + "/";
     }
 
     public String getSiteFeedUrl() {
-      return this.scheme + "sites.google.com/feeds/site/" + domain + "/";
+      return "https://sites.google.com/feeds/site/" + domain + "/";
     }
     
     public String getAclFeedUrl(String siteName) {
-      return this.scheme + "sites.google.com/feeds/acl/site/" + domain + "/" + siteName + "/";
+      return "https://sites.google.com/feeds/acl/site/" + domain + "/" + siteName + "/";
     }
 
     /**

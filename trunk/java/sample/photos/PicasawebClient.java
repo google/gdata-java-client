@@ -44,7 +44,7 @@ import java.util.List;
 public class PicasawebClient {
 
   private static final String API_PREFIX
-      = "http://picasaweb.google.com/data/feed/api/user/";
+      = "https://picasaweb.google.com/data/feed/api/user/";
 
   private final PicasawebService service;
 

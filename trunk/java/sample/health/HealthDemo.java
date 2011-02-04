@@ -68,7 +68,7 @@ public class HealthDemo {
       ""};
 
   private static final String FEED_BASE_PATH =
-      "http://www.google.com/health/feeds/";
+      "https://www.google.com/health/feeds/";
 
   private static final String PROFILE_FEED_PATH = FEED_BASE_PATH + "profile/";
   private static final String REGISTER_FEED_PATH = FEED_BASE_PATH + "register/";
@@ -154,7 +154,7 @@ public class HealthDemo {
     int profileIndex = 1;
     out.println("Please select a profile from the following list: ");
     for (String e : getAllProfileIds()) {
-      out.println(profileIndex + ") " + e);
+      out.println(profileIndex++ + ") " + e);
     }
     int choice = -1;
     while (choice < 1 || choice > profileIds.size()) {
@@ -238,7 +238,6 @@ public class HealthDemo {
     HealthDemo demo = new HealthDemo(
         new HealthService("Sample Health Client"), System.out);
     demo.run(username, password);
-
   }
 
   private static void turnOnLogging() {

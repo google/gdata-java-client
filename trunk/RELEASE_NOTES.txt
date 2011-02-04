@@ -1,4 +1,12 @@
 Google Data API - Release Notes
+Notes for v1.43.0
+-----------------
+o Add HealthDemo to the Health API.
+o Fixes issue 249: setUserCredentials method hangs from sample code.
+o Sites API adds version 1.3 which includes TagCategory.
+o Updates appsforyourdomain API for Gmail Settings.
+o Updates GData client URL scheme to use Https. Also Updates several samples.
+
 Notes for v1.42.0
 -----------------
 o Update Analytics API * New fields

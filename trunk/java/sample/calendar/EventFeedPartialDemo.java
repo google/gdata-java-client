@@ -44,7 +44,7 @@ import java.net.URL;
 public class EventFeedPartialDemo {
 
   private static final String CALENDAR_FEEDS_PREFIX =
-      "http://www.google.com/calendar/feeds/";
+      "https://www.google.com/calendar/feeds/";
 
   /** Input stream for reading user input. */
   private static final BufferedReader IN

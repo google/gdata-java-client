@@ -74,7 +74,7 @@ public class CodeSearchService extends GoogleService {
    *     Google servers to monitor the source of authentication.
    */
   public CodeSearchService(String applicationName) {
-    super(CODESEARCH_SERVICE, applicationName, "http", "www.google.com");
+    super(CODESEARCH_SERVICE, applicationName, "https", "www.google.com");
     declareExtensions();
   }
 
@@ -137,5 +137,4 @@ public class CodeSearchService extends GoogleService {
   private void declareExtensions() {
     new CodeSearchFeed().declareExtensions(extProfile);
   }
-
 }

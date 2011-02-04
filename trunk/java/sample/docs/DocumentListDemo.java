@@ -63,9 +63,6 @@ public class DocumentListDemo {
   private static final String[] USAGE_MESSAGE = {
       "Usage: java DocumentListDemo.jar --username <user> --password <pass>",
       "Usage: java DocumentListDemo.jar --authSub <token>",
-      "    [--auth_protocol <protocol>]  The protocol to use with authentication.",
-      "    [--auth_host <host:port>]     The host of the auth server to use.",
-      "    [--protocol <protocol>]       The protocol to use with the HTTP requests.",
       "    [--host <host:port>]          Where is the feed (default = docs.google.com)",
       "    [--log]                       Enable logging of requests",
       ""};
@@ -187,10 +184,10 @@ public class DocumentListDemo {
    * @param outputStream Stream to print output to.
    * @throws DocumentListException
    */
-  public DocumentListDemo(PrintStream outputStream, String appName, String authProtocol,
-      String authHost, String protocol, String host) throws DocumentListException {
+  public DocumentListDemo(PrintStream outputStream, String appName, String host)
+      throws DocumentListException {
     out = outputStream;
-    documentList = new DocumentList(appName, authProtocol, authHost, protocol, host);
+    documentList = new DocumentList(appName, host);
   }
 
   /**
@@ -815,26 +812,11 @@ public class DocumentListDemo {
       throws DocumentListException, IOException, ServiceException,
       InterruptedException {
     SimpleCommandLineParser parser = new SimpleCommandLineParser(args);
-    String authProtocol = parser.getValue("auth_protocol");
-    String authHost = parser.getValue("auth_host");
     String authSub = parser.getValue("authSub", "auth", "a");
     String user = parser.getValue("username", "user", "u");
     String password = parser.getValue("password", "pass", "p");
-    String protocol = parser.getValue("protocol");
     String host = parser.getValue("host", "s");
     boolean help = parser.containsKey("help", "h");
-
-    if (authProtocol == null) {
-      authProtocol = DocumentList.DEFAULT_AUTH_PROTOCOL;
-    }
-
-    if (authHost == null) {
-      authHost = DocumentList.DEFAULT_AUTH_HOST;
-    }
-
-    if (protocol == null) {
-      protocol = DocumentList.DEFAULT_PROTOCOL;
-    }
 
     if (host == null) {
       host = DocumentList.DEFAULT_HOST;
@@ -850,7 +832,7 @@ public class DocumentListDemo {
     }
 
     DocumentListDemo demo = new DocumentListDemo(System.out, APPLICATION_NAME,
-        authProtocol, authHost, protocol, host);
+        host);
 
     if (password != null) {
       demo.login(user, password);

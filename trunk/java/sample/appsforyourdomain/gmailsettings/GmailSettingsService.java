@@ -25,7 +25,10 @@ import com.google.gdata.util.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +44,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
     Logger.getLogger(GmailSettingsService.class.getName());
 
   protected final String domain;
-
+  
   /**
    * Constructs a GmailSettingsService for the given domain using the given 
    * admin credentials.
@@ -63,6 +66,48 @@ public class GmailSettingsService extends AppsForYourDomainService {
     this.setUserCredentials(username + "@" + domain, password);
   }
 
+  /**
+   * Retrieve the specified Gmail settings as a GenericFeed 
+   *
+   * @param username the user name for which to get the settings.
+   * @param setting the setting field to get.
+   * @return a GenericEntry of requested settings
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
+  public GenericFeed retrieveSettingsFeed(String username, String setting)
+      throws IOException, ServiceException {
+    URL singleUrl =
+        new URL(
+            Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
+                + domain + "/" + username + "/" + setting);
+
+    return getFeed(singleUrl, GenericFeed.class);
+  }
+  
+  /**
+  * Retrieve the specified Gmail settings as a GenericEntry
+  *
+  * @param username the user name for which to get the settings.
+  * @param setting the setting field to get.
+  * @return a GenericEntry of requested settings
+  * @throws IOException if an error occurs while communicating with the GData
+  *         service.
+  * @throws ServiceException if the retrieve request failed due to system
+  *         error.
+  */
+  public GenericEntry retrieveSettingsEntry(String username, String setting)
+      throws IOException, ServiceException {
+    URL singleUrl =
+        new URL(
+            Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
+                + domain + "/" + username + "/" + setting);
+
+    return getEntry(singleUrl, GenericEntry.class);
+  }
+  
   /**
    * Inserts a new Gmail settings entity - eg a filter.
    *
@@ -142,15 +187,15 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
 
     GenericEntry entry = new GenericEntry();
-    entry.addProperty("from", from);
-    entry.addProperty("to", to);
-    entry.addProperty("subject", subject);
-    entry.addProperty("hasTheWord", hasTheWord);
-    entry.addProperty("doesNotHaveTheWord", doesNotHaveTheWord);
-    entry.addProperty("hasAttachment", String.valueOf(hasAttachment));
-    entry.addProperty("shouldMarkAsRead", String.valueOf(shouldMarkAsRead));
-    entry.addProperty("shouldArchive", String.valueOf(shouldArchive));
-    entry.addProperty("label", label);
+    entry.addProperty(Constants.FROM, from);
+    entry.addProperty(Constants.TO, to);
+    entry.addProperty(Constants.SUBJECT, subject);
+    entry.addProperty(Constants.HAS_THE_WORD, hasTheWord);
+    entry.addProperty(Constants.DOESNT_HAVE_THE_WORD, doesNotHaveTheWord);
+    entry.addProperty(Constants.HAS_ATTACHMENT, String.valueOf(hasAttachment));
+    entry.addProperty(Constants.SHOULD_MARK_AS_READ, String.valueOf(shouldMarkAsRead));
+    entry.addProperty(Constants.SHOULD_ARCHIVE, String.valueOf(shouldArchive));
+    entry.addProperty(Constants.LABEL, label);
 
     for (String user : users) {
       logger.log(Level.INFO, "Creating filter ( " +
@@ -169,6 +214,46 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
   }
 
+  /**
+   * Retrieves the send-as alias settings
+   *
+   * @param user
+   * @return a list of send-as aliases
+   * @throws IllegalArgumentException if the user hasn't been passed in.
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
+  public List<Map<String, String>> retrieveSendAs(String user)
+      throws IllegalArgumentException, IOException, ServiceException {
+    if (user == null || user.length() == 0) {
+      throw new IllegalArgumentException();
+    }
+    
+    logger.log(Level.INFO, "Getting send-as settings for user " + user + " ...");
+    
+    GenericFeed sendAsFeed = retrieveSettingsFeed(user, Constants.SEND_AS);
+    if (sendAsFeed != null) {
+      List<Map<String, String>> sendAs = new ArrayList<Map<String, String>>();
+      
+      List<GenericEntry> sendAsEntries = sendAsFeed.getEntries();
+      for (GenericEntry sendAsEntry : sendAsEntries) {
+        Map<String, String> sendAsMap = new HashMap<String, String>();
+        sendAsMap.put(Constants.ADDRESS, sendAsEntry.getProperty(Constants.ADDRESS));
+        sendAsMap.put(Constants.NAME, sendAsEntry.getProperty(Constants.NAME));
+        sendAsMap.put(Constants.REPLY_TO, sendAsEntry.getProperty(Constants.REPLY_TO));
+        sendAsMap.put(Constants.IS_DEFAULT, sendAsEntry.getProperty(Constants.IS_DEFAULT));
+        sendAsMap.put(Constants.VERIFIED, sendAsEntry.getProperty(Constants.VERIFIED));
+        
+        sendAs.add(sendAsMap);
+      }
+      return sendAs;
+    }
+
+    return null;
+  }
+  
   /**
    * Creates a send-as alias.
    *
@@ -194,10 +279,10 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
 
     GenericEntry entry = new GenericEntry();
-    entry.addProperty("name", name);
-    entry.addProperty("address", address);
-    entry.addProperty("replyTo", replyTo);
-    entry.addProperty("makeDefault", String.valueOf(makeDefault));
+    entry.addProperty(Constants.NAME, name);
+    entry.addProperty(Constants.ADDRESS, address);
+    entry.addProperty(Constants.REPLY_TO, replyTo);
+    entry.addProperty(Constants.MAKE_DEFAULT, String.valueOf(makeDefault));
 
     for (String user : users) {
       logger.log(Level.INFO, "Creating send-as alias ( " +
@@ -209,6 +294,43 @@ public class GmailSettingsService extends AppsForYourDomainService {
       insertSettings(user, entry, "sendas");
       logger.log(Level.INFO, "Successfully created send-as alias.");
     }
+  }
+  
+  /**
+   * Retrieves all mail labels
+   *
+   * @param user
+   * @return List of mail labels
+   * @throws IllegalArgumentException if the user hasn't been passed in.
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
+  public List<Map<String, String>> retrieveLabels(String user)
+      throws IllegalArgumentException, IOException, ServiceException {
+    if (user == null || user.length() == 0) {
+      throw new IllegalArgumentException();
+    }
+    
+    logger.log(Level.INFO, "Getting mail labels for user " + user + " ...");
+    
+    GenericFeed labelsFeed = retrieveSettingsFeed(user, Constants.LABEL);
+    if (labelsFeed != null) {
+      List<Map<String, String>> labels = new ArrayList<Map<String, String>>();
+      
+      List<GenericEntry> labelEntries = labelsFeed.getEntries();
+      for (GenericEntry labelEntry : labelEntries) {
+        Map<String, String> labelMap = new HashMap<String, String>();
+        labelMap.put(Constants.LABEL, labelEntry.getProperty(Constants.LABEL));
+        labelMap.put(Constants.UNREAD_COUNT, labelEntry.getProperty(Constants.UNREAD_COUNT));
+        labelMap.put(Constants.VISIBILITY, labelEntry.getProperty(Constants.VISIBILITY));
+        labels.add(labelMap);
+      }
+      return labels;
+    }
+
+    return null;
   }
 
   /**
@@ -230,14 +352,45 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
 
     GenericEntry entry = new GenericEntry();
-    entry.addProperty("label", label);
+    entry.addProperty(Constants.LABEL, label);
     
     for (String user : users) {
       logger.log(Level.INFO, "Creating label ( label: " + label + " ) for user "
           + user + " ...");
-      insertSettings(user, entry, "label");
+      insertSettings(user, entry, Constants.LABEL);
       logger.log(Level.INFO, "Successfully created label.");
     }
+  }
+  
+  /**
+   * Retrieves mail forwarding settings
+   *
+   * @param user
+   * @return The value of forwarding settings
+   * @throws IllegalArgumentException if the user hasn't been passed in.
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
+  public Map<String, String> retrieveForwarding(String user)
+      throws IllegalArgumentException, IOException, ServiceException {
+    if (user == null || user.length() == 0) {
+      throw new IllegalArgumentException();
+    }
+    
+    logger.log(Level.INFO, "Getting forwarding settings for user " + user + " ...");
+    
+    GenericEntry forwardingEntry = retrieveSettingsEntry(user, Constants.FORWARDING);
+    if (forwardingEntry != null) {
+      Map<String, String> forwarding = new HashMap<String, String>();
+      forwarding.put(Constants.ENABLE, forwardingEntry.getProperty(Constants.ENABLE));
+      forwarding.put(Constants.FORWARD_TO, forwardingEntry.getProperty(Constants.FORWARD_TO));
+      forwarding.put(Constants.ACTION, forwardingEntry.getProperty(Constants.ACTION));
+      return forwarding;
+    }
+
+    return null;
   }
 
   /**
@@ -263,11 +416,11 @@ public class GmailSettingsService extends AppsForYourDomainService {
 
     GenericEntry entry = new GenericEntry();
     if (enable) {
-      entry.addProperty("enable", "true");
-      entry.addProperty("forwardTo", forwardTo);
-      entry.addProperty("action", action);
+      entry.addProperty(Constants.ENABLE, Constants.TRUE);
+      entry.addProperty(Constants.FORWARD_TO, forwardTo);
+      entry.addProperty(Constants.ACTION, action);
     } else {
-      entry.addProperty("enable", "false");
+      entry.addProperty(Constants.ENABLE, Constants.FALSE);
     }
     
     for (String user : users) {
@@ -282,9 +435,39 @@ public class GmailSettingsService extends AppsForYourDomainService {
         logger.log(Level.INFO, "Updating forwarding settings ( enable: false ) " +
             "for user" + user + " ...");
       }
-      updateSettings(user, entry, "forwarding");
+      updateSettings(user, entry, Constants.FORWARDING);
       logger.log(Level.INFO, "Successfully updated forwarding settings.");
     }
+  }
+  
+  /**
+   * Retrieves POP3 settings
+   *
+   * @param user
+   * @return The POP settings
+   * @throws IllegalArgumentException if the user hasn't been passed in.
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
+  public Map<String, String> retrievePop(String user)
+      throws IllegalArgumentException, IOException, ServiceException {
+    if (user == null || user.length() == 0) {
+      throw new IllegalArgumentException();
+    }
+    
+    logger.log(Level.INFO, "Getting POP settings for user " + user + " ...");
+    
+    GenericEntry popEntry = retrieveSettingsEntry(user, Constants.POP);
+    if (popEntry != null) {
+      Map<String, String> pop = new HashMap<String, String>();
+      pop.put(Constants.ENABLE, popEntry.getProperty(Constants.ENABLE));
+      pop.put(Constants.ACTION, popEntry.getProperty(Constants.ACTION));
+      return pop;
+    }
+
+    return null;
   }
 
   /**
@@ -310,11 +493,11 @@ public class GmailSettingsService extends AppsForYourDomainService {
 
     GenericEntry entry = new GenericEntry();
     if (enable) {
-      entry.addProperty("enable", "true");
-      entry.addProperty("enableFor", enableFor);
-      entry.addProperty("action", action);
+      entry.addProperty(Constants.ENABLE, Constants.TRUE);
+      entry.addProperty(Constants.ENABLE_FOR, enableFor);
+      entry.addProperty(Constants.ACTION, action);
     } else {
-      entry.addProperty("enable", "false");
+      entry.addProperty(Constants.ENABLE, Constants.FALSE);
     }
 
     for (String user : users) {
@@ -328,9 +511,35 @@ public class GmailSettingsService extends AppsForYourDomainService {
         logger.log(Level.INFO, "Updating POP3 settings ( enable: false ) for " +
             "user " + user + " ...");
       }     
-      updateSettings(user, entry, "pop");
+      updateSettings(user, entry, Constants.POP);
       logger.log(Level.INFO, "Successfully updated POP3 settings.");
     }
+  }
+  
+  /**
+   * Retrieves IMAP settings
+   *
+   * @param user
+   * @return A boolean indicating whether IMAP settings are enabled
+   * @throws IllegalArgumentException if the user hasn't been passed in.
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
+  public boolean retrieveImap(String user)
+      throws IllegalArgumentException, IOException, ServiceException {
+    if (user == null || user.length() == 0) {
+      throw new IllegalArgumentException();
+    }
+    
+    logger.log(Level.INFO, "Getting IMAP settings for user " + user + " ...");
+    
+    GenericEntry imapEntry = retrieveSettingsEntry(user, Constants.IMAP);
+    if (imapEntry != null && imapEntry.getProperty(Constants.ENABLE).equals(Constants.TRUE))
+      return true;
+
+    return false;
   }
 
   /**
@@ -352,14 +561,46 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
 
     GenericEntry entry = new GenericEntry();
-    entry.addProperty("enable", String.valueOf(enable));
+    entry.addProperty(Constants.ENABLE, String.valueOf(enable));
 
     for (String user : users) {
       logger.log(Level.INFO, "Updating IMAP settings ( enable: " + enable + " ) " +
           "for user " + user + " ...");
-      updateSettings(user, entry, "imap");
+      updateSettings(user, entry, Constants.IMAP);
       logger.log(Level.INFO, "Successfully updated IMAP settings.");
     }
+  }
+  
+  /**
+   * Retrieves vacation settings
+   *
+   * @param user
+   * @return The vacation auto-responder settings
+   * @throws IllegalArgumentException if the user hasn't been passed in.
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
+  public Map<String, String> retrieveVacation(String user)
+      throws IllegalArgumentException, IOException, ServiceException {
+    if (user == null || user.length() == 0) {
+      throw new IllegalArgumentException();
+    }
+    
+    logger.log(Level.INFO, "Getting vacation settings for user " + user + " ...");
+    
+    GenericEntry vacationEntry = retrieveSettingsEntry(user, Constants.VACATION);
+    if (vacationEntry != null) {
+      Map<String, String> vacation = new HashMap<String, String>();
+      vacation.put(Constants.ENABLE, vacationEntry.getProperty(Constants.ENABLE));
+      vacation.put(Constants.SUBJECT, vacationEntry.getProperty(Constants.SUBJECT));
+      vacation.put(Constants.MESSAGE, vacationEntry.getProperty(Constants.MESSAGE));
+      vacation.put(Constants.CONTACTS_ONLY, vacationEntry.getProperty(Constants.CONTACTS_ONLY));
+      return vacation;
+    }
+
+    return null;
   }
 
   /**
@@ -385,12 +626,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
 
     GenericEntry entry = new GenericEntry();
     if (enable) {
-      entry.addProperty("enable", "true");
-      entry.addProperty("subject", subject);
-      entry.addProperty("message", message);
-      entry.addProperty("contactsOnly", String.valueOf(contactsOnly));
+      entry.addProperty(Constants.ENABLE, Constants.TRUE);
+      entry.addProperty(Constants.SUBJECT, subject);
+      entry.addProperty(Constants.MESSAGE, message);
+      entry.addProperty(Constants.CONTACTS_ONLY, String.valueOf(contactsOnly));
     } else {
-      entry.addProperty("enable", "false");
+      entry.addProperty(Constants.ENABLE, Constants.FALSE);
     }
     
 
@@ -407,9 +648,35 @@ public class GmailSettingsService extends AppsForYourDomainService {
         logger.log(Level.INFO, "Updating vacation-responder settings ( " + 
             "enable: false ) for user " + user + " ...");
       }
-      updateSettings(user, entry, "vacation");
+      updateSettings(user, entry, Constants.VACATION);
       logger.log(Level.INFO, "Successfully updated vacation-responder settings.");
     }
+  }
+  
+  /**
+   * Retrieves signature
+   *
+   * @param user
+   * @return The signature
+   * @throws IllegalArgumentException if the user hasn't been passed in.
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
+  public String retrieveSignature(String user)
+      throws IllegalArgumentException, IOException, ServiceException {
+    if (user == null || user.length() == 0) {
+      throw new IllegalArgumentException();
+    }
+    
+    logger.log(Level.INFO, "Getting signature settings for user " + user + " ...");
+    
+    GenericEntry signatureEntry = retrieveSettingsEntry(user, Constants.SIGNATURE);
+    if (signatureEntry != null)
+      return signatureEntry.getProperty(Constants.SIGNATURE);
+    
+    return null;
   }
 
   /**
@@ -432,12 +699,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
 
     GenericEntry entry = new GenericEntry();
-    entry.addProperty("signature", signature);
+    entry.addProperty(Constants.SIGNATURE, signature);
 
     for (String user : users) {
       logger.log(Level.INFO, "Updating signature ( signature: " + signature + 
           " ) for user " + user + " ...");
-      updateSettings(user, entry, "signature");
+      updateSettings(user, entry, Constants.SIGNATURE);
       logger.log(Level.INFO, "Successfully updated signature.");
     }
   }
@@ -469,11 +736,11 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
 
     GenericEntry entry = new GenericEntry();
-    entry.addProperty("pageSize", pageSize);
-    entry.addProperty("shortcuts", String.valueOf(enableShortcuts));
-    entry.addProperty("arrows", String.valueOf(enableArrows));
-    entry.addProperty("snippets", String.valueOf(enableSnippets));
-    entry.addProperty("unicode", String.valueOf(enableUnicode));
+    entry.addProperty(Constants.PAGE_SIZE, pageSize);
+    entry.addProperty(Constants.SHORTCUTS, String.valueOf(enableShortcuts));
+    entry.addProperty(Constants.ARROWS, String.valueOf(enableArrows));
+    entry.addProperty(Constants.SNIPPETS, String.valueOf(enableSnippets));
+    entry.addProperty(Constants.UNICODE, String.valueOf(enableUnicode));
     
     for (String user : users) {
       logger.log(Level.INFO, "Updating general settings ( " +
@@ -508,12 +775,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
 
     GenericEntry entry = new GenericEntry();
-    entry.addProperty("language", language);
+    entry.addProperty(Constants.LANGUAGE, language);
     
     for (String user : users) {
       logger.log(Level.INFO, "Updating language settings ( language: " + 
           language + " ) for user " + user + " ...");
-      updateSettings(user, entry, "language");
+      updateSettings(user, entry, Constants.LANGUAGE);
       logger.log(Level.INFO, "Successfully updated language settings.");
     }
   }
@@ -537,7 +804,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
     }
     
     GenericEntry entry = new GenericEntry();
-    entry.addProperty("enable", String.valueOf(enable));
+    entry.addProperty(Constants.ENABLE, String.valueOf(enable));
     
     for (String user : users) {
       logger.log(Level.INFO, "Updating web clip settings ( enable: " + enable + 
@@ -545,6 +812,5 @@ public class GmailSettingsService extends AppsForYourDomainService {
       updateSettings(user, entry, "webclip");
       logger.log(Level.INFO, "Successfully updated web clip settings.");
     }
-  }
-  
+  }  
 }
