@@ -41,7 +41,7 @@ import java.net.URL;
 
 public class CodeSearchClient {
   private static final String CODESEARCH_FEEDS_URL =
-    "http://www.google.com/codesearch/feeds/search?";
+    "https://www.google.com/codesearch/feeds/search?";
 
   private CodeSearchService codesearchService;
   private URL privateFeedUrl;

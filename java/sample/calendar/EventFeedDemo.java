@@ -68,7 +68,7 @@ public class EventFeedDemo {
 
   // The base URL for a user's calendar metafeed (needs a username appended).
   private static final String METAFEED_URL_BASE = 
-      "http://www.google.com/calendar/feeds/";
+      "https://www.google.com/calendar/feeds/";
 
   // The string to add to the user's metafeedUrl to access the event feed for
   // their primary calendar.

@@ -34,4 +34,3 @@ Alternately, you can compile and run it from the command line:
     java sample.list.ListDemo
         --username [user]
         --password [pass]
-        --spreadsheetUrl http://....spreadsheets.google.com/ccc?id=...

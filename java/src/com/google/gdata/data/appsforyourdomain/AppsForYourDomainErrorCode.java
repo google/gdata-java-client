@@ -61,6 +61,10 @@ public enum AppsForYourDomainErrorCode {
   InvalidQueryParameterValue(1407),
   InvalidSsoSigningKey(1408),
   InvalidEncryptionPublicKey(1409),
+  FeatureUnavailableForUser(1410),
+  EncryptionPublicKeyInvalidFormat(1411),
+  EncryptionPublicKeyInvalidType(1412),
+  EncryptionPublicKeyHasManyUserIds(1413),
 
   TooManyRecipientsOnEmailList(1500),
   TooManyNicknamesForUser(1501),

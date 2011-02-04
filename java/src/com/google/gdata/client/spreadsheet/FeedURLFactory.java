@@ -34,7 +34,7 @@ public class FeedURLFactory {
    * Currently {@value #DEFAULT_SPREADSHEETS_URL}.
    */
   public static final String DEFAULT_SPREADSHEETS_URL =
-      "http://spreadsheets.google.com";
+      "https://spreadsheets.google.com";
 
   private static final String SPREADSHEETS_PATH = 
       "feeds/spreadsheets/private/full";

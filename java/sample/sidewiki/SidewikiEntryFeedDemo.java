@@ -20,10 +20,12 @@ import com.google.gdata.util.common.base.CharEscapers;
 import com.google.gdata.client.sidewiki.SidewikiService;
 import com.google.gdata.data.Content;
 import com.google.gdata.data.IContent;
+import com.google.gdata.data.ILink;
 import com.google.gdata.data.TextContent;
 import com.google.gdata.data.sidewiki.SidewikiAuthor;
 import com.google.gdata.data.sidewiki.SidewikiEntry;
 import com.google.gdata.data.sidewiki.SidewikiEntryFeed;
+import com.google.gdata.data.sidewiki.SidewikiLink;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -41,7 +43,7 @@ public class SidewikiEntryFeedDemo {
 
   // The base URL for all Google Sidewiki feeds.
   private static final String SIDEWIKI_FEEDS_URL_BASE =
-      "http://www.google.com/sidewiki/feeds";
+      "https://www.google.com/sidewiki/feeds";
 
   // The base URL for all Google Sidewiki entries feeds.
   private static final String ENTRIES_FEEDS_URL_BASE =
@@ -49,11 +51,11 @@ public class SidewikiEntryFeedDemo {
 
   // The suffix for Sidewiki entries by author feed format.
   private static final String AUTHORS_FEED_URL_SUFFIX_FORMAT =
-      "/author/{author_id}/full";
+      "/author/{author_id}/full?max-results=2";
 
   // The suffix for Sidewiki entries for web page feed format.
   private static final String WEBPAGE_FEED_URL_SUFFIX_FORMAT =
-      "/webpage/{url}/full";
+      "/webpage/{url}/full?max-results=2";
 
   /**
    * Utility classes should not have a public or default constructor.
@@ -63,7 +65,7 @@ public class SidewikiEntryFeedDemo {
 
   /**
    * Returns URL of the feed of entries written by author {@code authorId}.
-   * 
+   *
    * @param authorId author Profile ID
    * @return URL of the feed of entries written by given author
    * @throws MalformedURLException if error happens during URL construction
@@ -140,7 +142,8 @@ public class SidewikiEntryFeedDemo {
    */
   private static void printEntry(SidewikiEntry entry) {
     SidewikiAuthor author = (SidewikiAuthor) entry.getAuthors().get(0);
-    System.out.println("Sidewiki entry by " + author.getName() + ": \""
+    System.out.println("Sidewiki entry by " + author.getName() + " about \""
+        + entry.getLink(SidewikiLink.Rel.ORIGINAL_URL, ILink.Type.HTML).getHref() + "\":\n"
         + entry.getTitle().getPlainText() + "\" - \""
         + contentToString(entry.getContent()) + "\"\n");
   }

@@ -73,7 +73,7 @@ public class WebmasterToolsClient {
   
   // URL of the base feed
   private static final String FEED_URI_BASE
-      = "http://www.google.com/webmasters/tools/feeds/";
+      = "https://www.google.com/webmasters/tools/feeds/";
 
   // Directory of the sites feed
   private static final String SITES_FEED_DIRECTORY = "sites/";

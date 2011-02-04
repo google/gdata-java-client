@@ -77,6 +77,10 @@ public class SitesService extends MediaService {
     public static final Version V1_2 = new Version(SitesService.class, "1.2",
         Service.Versions.V2);
 
+    /** Version {@code 1.3}. */
+    public static final Version V1_3 = new Version(SitesService.class, "1.3",
+        Service.Versions.V2);
+
     private Versions() {}
   }
 
@@ -84,7 +88,7 @@ public class SitesService extends MediaService {
    * Default GData version used by the Google Sites Data API.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(SitesService.class, Versions.V1_2);
+      Service.initServiceVersion(SitesService.class, Versions.V1_3);
 
   /**
    * Constructs an instance connecting to the Google Sites Data API for an

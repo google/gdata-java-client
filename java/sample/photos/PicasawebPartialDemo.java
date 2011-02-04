@@ -39,7 +39,7 @@ public class PicasawebPartialDemo {
 
   /** Picasaweb feed url prefix. */
   private static final String API_PREFIX
-      = "http://picasaweb.google.com/data/feed/api/user/";
+      = "https://picasaweb.google.com/data/feed/api/user/";
 
   /** Input stream for reading user input. */
   private static final BufferedReader IN

@@ -42,7 +42,7 @@ public class ContactsExampleParameters {
     UPDATE;
   }
 
-  private static final String DEFAULT_FEED = "http://www.google.com/m8/feeds/";
+  private static final String DEFAULT_FEED = "https://www.google.com/m8/feeds/";
   private static final String DEFAULT_PROJECTION = "thin";
 
   /**

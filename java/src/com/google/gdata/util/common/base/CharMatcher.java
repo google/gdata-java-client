@@ -322,30 +322,6 @@ public abstract class CharMatcher implements Predicate<Character> {
       .or(anyOf("\ufeff\ufff9\ufffa\ufffb"))
       .precomputed();
 
-  /**
-   * Determines whether a character is single-width (not double-width). Derived
-   * from revision 34 of {@code //depot/google3/i18n/utf8/encodingutils.cc}.
-   * When in doubt, this matcher errs on the side of returning {@code false}
-   * (that is, it tends to assume a character is double-width).
-   *
-   * <b>Note:</b> as the reference file evolves, we will modify this constant
-   * to keep it up to date.
-   */
-  public static final CharMatcher SINGLE_WIDTH = inRange('\u0000', '\u04f9')
-      .or(is('\u05be'))
-      .or(inRange('\u05d0', '\u05ea'))
-      .or(is('\u05f3'))
-      .or(is('\u05f4'))
-      .or(inRange('\u0600', '\u06ff'))
-      .or(inRange('\u0750', '\u077f'))
-      .or(inRange('\u0e00', '\u0e7f'))
-      .or(inRange('\u1e00', '\u20af'))
-      .or(inRange('\u2100', '\u213a'))
-      .or(inRange('\ufb50', '\ufdff'))
-      .or(inRange('\ufe70', '\ufeff'))
-      .or(inRange('\uff61', '\uffdc'))
-      .precomputed();
-
   // Static factories
 
   /**
