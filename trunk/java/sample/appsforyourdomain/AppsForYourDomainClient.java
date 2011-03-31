@@ -46,8 +46,8 @@ import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -130,7 +130,7 @@ public class AppsForYourDomainClient {
    */
   public void run() throws Exception {
     String randomFactor =
-        Integer.toString(1000 + (new Random()).nextInt(9000));
+        Integer.toString(1000 + (new SecureRandom()).nextInt(9000));
 
     // Create a new user.
     String username = "SusanJones-" + randomFactor;
@@ -303,6 +303,11 @@ public class AppsForYourDomainClient {
     boolean isOwner = groupService.isOwner(testGroupId, ownerUserName);
     LOGGER.log(Level.INFO, ownerUserName + " is owner of " + testGroupId
         + "?: " + isOwner);
+
+    groupService.removeOwnerFromGroup(ownerUserName + "@" + domain,
+        testGroupId);
+    LOGGER.log(Level.INFO, "Removing " + ownerUserName + " as owner from group "
+        + testGroupId);
 
     groupService.deleteGroup(testGroupId);
     deleteUser(memberUserName);

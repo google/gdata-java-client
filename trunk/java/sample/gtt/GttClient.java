@@ -132,7 +132,7 @@ public class GttClient {
             + "\n\t--username <username>\t; Required parameter"
             + "\n\t--password <password>\t; Required parameter"
             + "\n\t--baseuri <uri>\t; "
-            + "Optional, default is http://translate.google.com/toolkit/feeds";
+            + "Optional, default is https://translate.google.com/toolkit/feeds";
       }
     }),
 

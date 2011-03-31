@@ -353,6 +353,23 @@ public class AppsGroupsService extends AppsPropertyService {
   }
 
   /**
+   * Removes an owner from the group. 
+   *
+   * @param email Owner email address
+   * @param groupId Unique ID of the group
+   *
+   * @throws AppsForYourDomainException If a Provisioning API error occurs
+   * @throws MalformedURLException If a URL related error occurs
+   * @throws IOException If a network I/O related error occurs
+   * @throws ServiceException If the API service fails
+   */
+  public void removeOwnerFromGroup(String email, String groupId)
+      throws AppsForYourDomainException, MalformedURLException, IOException,
+      ServiceException {
+    delete(new URL(baseDomainUrl + groupId + "/owner/" + email));
+  }
+
+  /**
    * Retrieves all groups in a domain as a GenericFeed. The client should
    * follow the next feed link to retrieve subsequent pages.
    * 

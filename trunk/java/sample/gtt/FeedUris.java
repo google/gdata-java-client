@@ -26,7 +26,7 @@ import java.net.URL;
  */
 public class FeedUris {
 
-  private static String baseUrl = "http://translate.google.com/toolkit/feeds";
+  private static String baseUrl = "https://translate.google.com/toolkit/feeds";
 
   /**
    * Prevent instantiation of utility function

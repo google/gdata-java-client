@@ -17,6 +17,7 @@
 package sample.appsforyourdomain.gmailsettings;
 
 import com.google.gdata.client.appsforyourdomain.AppsForYourDomainService;
+import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
 import com.google.gdata.data.appsforyourdomain.generic.GenericEntry;
 import com.google.gdata.data.appsforyourdomain.generic.GenericFeed;
 import com.google.gdata.util.AuthenticationException;
@@ -33,31 +34,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This is the client library for the Google Apps Gmail Settings API. It
- * shows how to use the services for creating Gmail filters, send-as aliases, or
- * labels or changing Gmail forwarding, POP3, IMAP, vacation-responder,
- * signature, web clip or general settings.
+ * This is the client library for the Google Apps Gmail Settings API. It shows
+ * how to use the services for creating Gmail filters, send-as aliases, labels,
+ * adding and removing email delegates, or changing Gmail forwarding, POP3,
+ * IMAP, vacation-responder, signature, web clip or general settings.
  */
 public class GmailSettingsService extends AppsForYourDomainService {
 
-  protected static final Logger logger =
-    Logger.getLogger(GmailSettingsService.class.getName());
+  protected static final Logger logger = Logger.getLogger(GmailSettingsService.class.getName());
 
   protected final String domain;
-  
+
   /**
-   * Constructs a GmailSettingsService for the given domain using the given 
+   * Constructs a GmailSettingsService for the given domain using the given
    * admin credentials.
-   * 
-   * @param applicationName the name of the application making the modifications.
+   *
+   * @param applicationName the name of the application making the
+   *        modifications.
    * @param domain the domain in which settings will be modified.
    * @param username the user name (not email) of a domain administrator.
    * @param password the user's password on the domain.
-   * @throws AuthenticationException the Exception thrown when invalid 
-   *        credentials are supplied.
+   * @throws AuthenticationException the Exception thrown when invalid
+   *         credentials are supplied.
    */
-  public GmailSettingsService(String applicationName, String domain, 
-      String username, String password) throws AuthenticationException {
+  public GmailSettingsService(
+      String applicationName, String domain, String username, String password)
+      throws AuthenticationException {
     super(applicationName, Constants.PROTOCOL, Constants.APPS_APIS_DOMAIN);
     this.domain = domain;
 
@@ -67,7 +69,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
   }
 
   /**
-   * Retrieve the specified Gmail settings as a GenericFeed 
+   * Retrieve the specified Gmail settings as a GenericFeed
    *
    * @param username the user name for which to get the settings.
    * @param setting the setting field to get.
@@ -86,18 +88,18 @@ public class GmailSettingsService extends AppsForYourDomainService {
 
     return getFeed(singleUrl, GenericFeed.class);
   }
-  
+
   /**
-  * Retrieve the specified Gmail settings as a GenericEntry
-  *
-  * @param username the user name for which to get the settings.
-  * @param setting the setting field to get.
-  * @return a GenericEntry of requested settings
-  * @throws IOException if an error occurs while communicating with the GData
-  *         service.
-  * @throws ServiceException if the retrieve request failed due to system
-  *         error.
-  */
+   * Retrieve the specified Gmail settings as a GenericEntry
+   *
+   * @param username the user name for which to get the settings.
+   * @param setting the setting field to get.
+   * @return a GenericEntry of requested settings
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   * @throws ServiceException if the retrieve request failed due to system
+   *         error.
+   */
   public GenericEntry retrieveSettingsEntry(String username, String setting)
       throws IOException, ServiceException {
     URL singleUrl =
@@ -107,7 +109,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
 
     return getEntry(singleUrl, GenericEntry.class);
   }
-  
+
   /**
    * Inserts a new Gmail settings entity - eg a filter.
    *
@@ -115,17 +117,17 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param entry an {@link GenericEntry} object containing all the properties
    *        of the new entity.
    * @return an entry with the result of the operation.
-   * @throws IOException if an error occurs while communicating with the GData 
-   *        service.
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public GenericEntry insertSettings(String username, GenericEntry entry, 
-      String setting) throws IOException, MalformedURLException, 
-      ServiceException {  
-    URL singleUrl = new URL(Constants.PROTOCOL + "://" + 
-        Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/" + domain + 
-        "/" + username + "/" + setting);
+  public GenericEntry insertSettings(String username, GenericEntry entry, String setting)
+      throws IOException, MalformedURLException, ServiceException {
+    URL singleUrl =
+        new URL(
+            Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
+                + domain + "/" + username + "/" + setting);
     return insert(singleUrl, entry);
   }
 
@@ -137,15 +139,15 @@ public class GmailSettingsService extends AppsForYourDomainService {
    *        settings.
    * @return an entry with the result of the operation.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public GenericEntry updateSettings(String username, GenericEntry entry, 
-      String setting) throws IOException, MalformedURLException, 
-      ServiceException {
-    URL singleUrl = new URL(Constants.PROTOCOL + "://" + 
-        Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/" + domain + 
-        "/" + username + "/" + setting);
+  public GenericEntry updateSettings(String username, GenericEntry entry, String setting)
+      throws IOException, MalformedURLException, ServiceException {
+    URL singleUrl =
+        new URL(
+            Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
+                + domain + "/" + username + "/" + setting);
     return update(singleUrl, entry);
   }
 
@@ -155,33 +157,39 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param users a list of the users to create the filter for.
    * @param from the email must come from this address in order to be filtered.
    * @param to the email must be sent to this address in order to be filtered.
-   * @param subject a string the email must have in it's subject line to be 
+   * @param subject a string the email must have in it's subject line to be
    *        filtered.
-   * @param hasTheWord a string the email can have anywhere in it's subject or 
+   * @param hasTheWord a string the email can have anywhere in it's subject or
    *        body.
-   * @param doesNotHaveTheWord a string that the email cannot have anywhere in 
-   *        its subject or body. 
-   * @param hasAttachment a boolean representing whether or not the email 
+   * @param doesNotHaveTheWord a string that the email cannot have anywhere in
+   *        its subject or body.
+   * @param hasAttachment a boolean representing whether or not the email
    *        contains an attachment. Values are "true" or "false".
-   * @param shouldMarkAsRead a boolean field that represents automatically 
-   *        moving the message to. "Archived" state if it matches the specified 
+   * @param shouldMarkAsRead a boolean field that represents automatically
+   *        moving the message to. "Archived" state if it matches the specified
    *        filter criteria.
-   * @param shouldArchive a boolean field that represents automatically moving 
-   *        the message to. "Archived" state if it matches the specified filter 
+   * @param shouldArchive a boolean field that represents automatically moving
+   *        the message to. "Archived" state if it matches the specified filter
    *        criteria.
-   * @param label a string that represents the name of the label to apply if a 
+   * @param label a string that represents the name of the label to apply if a
    *        message matches the specified filter criteria.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void createFilter(List<String> users, String from, String to, 
-      String subject, String hasTheWord, String doesNotHaveTheWord, 
-      boolean hasAttachment, boolean shouldMarkAsRead, boolean shouldArchive, 
-      String label) throws IllegalArgumentException, ServiceException, 
-      MalformedURLException, IOException {
+  public void createFilter(List<String> users,
+      String from,
+      String to,
+      String subject,
+      String hasTheWord,
+      String doesNotHaveTheWord,
+      boolean hasAttachment,
+      boolean shouldMarkAsRead,
+      boolean shouldArchive,
+      String label)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -198,17 +206,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
     entry.addProperty(Constants.LABEL, label);
 
     for (String user : users) {
-      logger.log(Level.INFO, "Creating filter ( " +
-          "from: " + from + 
-          ", to: " + to + 
-          ", subject: " + subject + 
-          ", hasTheWord: " + hasTheWord + 
-          ", doesNotHaveTheWord: " + doesNotHaveTheWord + 
-          ", hasAttachment: " + hasAttachment + 
-          ", shouldMarkAsRead: " + shouldMarkAsRead + 
-          ", shouldArchive: " + shouldArchive + 
-          ", label: " + label + 
-          " ) for user " + user + " ...");
+      logger.log(Level.INFO,
+          "Creating filter ( " + "from: " + from + ", to: " + to + ", subject: " + subject
+              + ", hasTheWord: " + hasTheWord + ", doesNotHaveTheWord: " + doesNotHaveTheWord
+              + ", hasAttachment: " + hasAttachment + ", shouldMarkAsRead: " + shouldMarkAsRead
+              + ", shouldArchive: " + shouldArchive + ", label: " + label + " ) for user " + user
+              + " ...");
       insertSettings(user, entry, "filter");
       logger.log(Level.INFO, "Successfully created filter.");
     }
@@ -227,16 +230,16 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public List<Map<String, String>> retrieveSendAs(String user)
       throws IllegalArgumentException, IOException, ServiceException {
-    if (user == null || user.length() == 0) {
+    if (isBlankOrNullString(user)) {
       throw new IllegalArgumentException();
     }
-    
+
     logger.log(Level.INFO, "Getting send-as settings for user " + user + " ...");
-    
+
     GenericFeed sendAsFeed = retrieveSettingsFeed(user, Constants.SEND_AS);
     if (sendAsFeed != null) {
       List<Map<String, String>> sendAs = new ArrayList<Map<String, String>>();
-      
+
       List<GenericEntry> sendAsEntries = sendAsFeed.getEntries();
       for (GenericEntry sendAsEntry : sendAsEntries) {
         Map<String, String> sendAsMap = new HashMap<String, String>();
@@ -245,7 +248,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
         sendAsMap.put(Constants.REPLY_TO, sendAsEntry.getProperty(Constants.REPLY_TO));
         sendAsMap.put(Constants.IS_DEFAULT, sendAsEntry.getProperty(Constants.IS_DEFAULT));
         sendAsMap.put(Constants.VERIFIED, sendAsEntry.getProperty(Constants.VERIFIED));
-        
+
         sendAs.add(sendAsMap);
       }
       return sendAs;
@@ -253,27 +256,27 @@ public class GmailSettingsService extends AppsForYourDomainService {
 
     return null;
   }
-  
+
   /**
    * Creates a send-as alias.
    *
    * @param users a list of the users to create the send-as alias for.
    * @param name the name which e-mails sent using the alias are from.
-   * @param address the e-mail address which e-mails sent using the alias are 
+   * @param address the e-mail address which e-mails sent using the alias are
    *        from.
-   * @param replyTo (Optional) if set, this address will be included as the 
+   * @param replyTo (Optional) if set, this address will be included as the
    *        reply-to address in e-mails sent using the alias.
-   * @param makeDefault (Optional) if set to true, this user will have this 
+   * @param makeDefault (Optional) if set to true, this user will have this
    *        send-as alias selected by default from now on.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void createSendAs(List<String> users, String name, String address, 
-      String replyTo, boolean makeDefault) throws IllegalArgumentException, 
-      ServiceException, MalformedURLException, IOException {
+  public void createSendAs(
+      List<String> users, String name, String address, String replyTo, boolean makeDefault)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -285,17 +288,14 @@ public class GmailSettingsService extends AppsForYourDomainService {
     entry.addProperty(Constants.MAKE_DEFAULT, String.valueOf(makeDefault));
 
     for (String user : users) {
-      logger.log(Level.INFO, "Creating send-as alias ( " +
-          "name: " + name + 
-          ", address: " + address + 
-          ", replyTo: " + replyTo + 
-          ", makeDefault: " + makeDefault + 
-          " ) for user " + user + " ...");
+      logger.log(Level.INFO,
+          "Creating send-as alias ( " + "name: " + name + ", address: " + address + ", replyTo: "
+              + replyTo + ", makeDefault: " + makeDefault + " ) for user " + user + " ...");
       insertSettings(user, entry, "sendas");
       logger.log(Level.INFO, "Successfully created send-as alias.");
     }
   }
-  
+
   /**
    * Retrieves all mail labels
    *
@@ -309,16 +309,16 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public List<Map<String, String>> retrieveLabels(String user)
       throws IllegalArgumentException, IOException, ServiceException {
-    if (user == null || user.length() == 0) {
+    if (isBlankOrNullString(user)) {
       throw new IllegalArgumentException();
     }
-    
+
     logger.log(Level.INFO, "Getting mail labels for user " + user + " ...");
-    
+
     GenericFeed labelsFeed = retrieveSettingsFeed(user, Constants.LABEL);
     if (labelsFeed != null) {
       List<Map<String, String>> labels = new ArrayList<Map<String, String>>();
-      
+
       List<GenericEntry> labelEntries = labelsFeed.getEntries();
       for (GenericEntry labelEntry : labelEntries) {
         Map<String, String> labelMap = new HashMap<String, String>();
@@ -340,28 +340,26 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param label a string that represents the name of the label.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void createLabel(List<String> users, String label) 
-      throws IllegalArgumentException, ServiceException, MalformedURLException, 
-      IOException {
+  public void createLabel(List<String> users, String label)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
 
     GenericEntry entry = new GenericEntry();
     entry.addProperty(Constants.LABEL, label);
-    
+
     for (String user : users) {
-      logger.log(Level.INFO, "Creating label ( label: " + label + " ) for user "
-          + user + " ...");
+      logger.log(Level.INFO, "Creating label ( label: " + label + " ) for user " + user + " ...");
       insertSettings(user, entry, Constants.LABEL);
       logger.log(Level.INFO, "Successfully created label.");
     }
   }
-  
+
   /**
    * Retrieves mail forwarding settings
    *
@@ -375,12 +373,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public Map<String, String> retrieveForwarding(String user)
       throws IllegalArgumentException, IOException, ServiceException {
-    if (user == null || user.length() == 0) {
+    if (isBlankOrNullString(user)) {
       throw new IllegalArgumentException();
     }
-    
+
     logger.log(Level.INFO, "Getting forwarding settings for user " + user + " ...");
-    
+
     GenericEntry forwardingEntry = retrieveSettingsEntry(user, Constants.FORWARDING);
     if (forwardingEntry != null) {
       Map<String, String> forwarding = new HashMap<String, String>();
@@ -399,17 +397,16 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param users a list of the users to change the forwarding for.
    * @param enable whether to enable forwarding of incoming mail.
    * @param forwardTo the email will be forwarded to this address.
-   * @param action what Gmail should do with its copy of the e-mail after 
+   * @param action what Gmail should do with its copy of the e-mail after
    *        forwarding it on.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void changeForwarding(List<String> users, boolean enable, 
-      String forwardTo, String action) throws IllegalArgumentException, 
-      ServiceException, MalformedURLException, IOException {
+  public void changeForwarding(List<String> users, boolean enable, String forwardTo, String action)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -422,24 +419,21 @@ public class GmailSettingsService extends AppsForYourDomainService {
     } else {
       entry.addProperty(Constants.ENABLE, Constants.FALSE);
     }
-    
+
     for (String user : users) {
       if (enable) {
-        logger.log(Level.INFO, "Updating forwarding settings ( " +
-            "enable: true" + 
-            ", forwardTo: " + forwardTo + 
-            ", action: " + action + 
-            " ) for user" + 
-            user + " ...");
+        logger.log(Level.INFO,
+            "Updating forwarding settings ( " + "enable: true" + ", forwardTo: " + forwardTo
+                + ", action: " + action + " ) for user" + user + " ...");
       } else {
-        logger.log(Level.INFO, "Updating forwarding settings ( enable: false ) " +
-            "for user" + user + " ...");
+        logger.log(Level.INFO,
+            "Updating forwarding settings ( enable: false ) " + "for user" + user + " ...");
       }
       updateSettings(user, entry, Constants.FORWARDING);
       logger.log(Level.INFO, "Successfully updated forwarding settings.");
     }
   }
-  
+
   /**
    * Retrieves POP3 settings
    *
@@ -453,12 +447,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public Map<String, String> retrievePop(String user)
       throws IllegalArgumentException, IOException, ServiceException {
-    if (user == null || user.length() == 0) {
+    if (isBlankOrNullString(user)) {
       throw new IllegalArgumentException();
     }
-    
+
     logger.log(Level.INFO, "Getting POP settings for user " + user + " ...");
-    
+
     GenericEntry popEntry = retrieveSettingsEntry(user, Constants.POP);
     if (popEntry != null) {
       Map<String, String> pop = new HashMap<String, String>();
@@ -476,17 +470,16 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param users a list of the users to change the POP3 settings for.
    * @param enable whether to enable POP3 access.
    * @param enableFor whether to enable POP3 for all mail, or mail from now on.
-   * @param action what Gmail should do with its copy of the e-mail after it is 
+   * @param action what Gmail should do with its copy of the e-mail after it is
    *        retrieved using POP.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void changePop(List<String> users, boolean enable, String enableFor, 
-      String action) throws IllegalArgumentException, ServiceException, 
-      MalformedURLException, IOException {
+  public void changePop(List<String> users, boolean enable, String enableFor, String action)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -502,20 +495,18 @@ public class GmailSettingsService extends AppsForYourDomainService {
 
     for (String user : users) {
       if (enable) {
-        logger.log(Level.INFO, "Updating POP3 settings ( " +
-            "enable: true" +
-            ", enableFor: " + enableFor + 
-            ", action: " + action + 
-            " ) for user " + user + " ...");
+        logger.log(Level.INFO,
+            "Updating POP3 settings ( " + "enable: true" + ", enableFor: " + enableFor
+                + ", action: " + action + " ) for user " + user + " ...");
       } else {
-        logger.log(Level.INFO, "Updating POP3 settings ( enable: false ) for " +
-            "user " + user + " ...");
-      }     
+        logger.log(
+            Level.INFO, "Updating POP3 settings ( enable: false ) for " + "user " + user + " ...");
+      }
       updateSettings(user, entry, Constants.POP);
       logger.log(Level.INFO, "Successfully updated POP3 settings.");
     }
   }
-  
+
   /**
    * Retrieves IMAP settings
    *
@@ -529,12 +520,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public boolean retrieveImap(String user)
       throws IllegalArgumentException, IOException, ServiceException {
-    if (user == null || user.length() == 0) {
+    if (isBlankOrNullString(user)) {
       throw new IllegalArgumentException();
     }
-    
+
     logger.log(Level.INFO, "Getting IMAP settings for user " + user + " ...");
-    
+
     GenericEntry imapEntry = retrieveSettingsEntry(user, Constants.IMAP);
     if (imapEntry != null && imapEntry.getProperty(Constants.ENABLE).equals(Constants.TRUE))
       return true;
@@ -549,13 +540,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param enable whether to enable IMAP access.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void changeImap(List<String> users, boolean enable) 
-      throws IllegalArgumentException, ServiceException, MalformedURLException, 
-      IOException {
+  public void changeImap(List<String> users, boolean enable)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -564,13 +554,13 @@ public class GmailSettingsService extends AppsForYourDomainService {
     entry.addProperty(Constants.ENABLE, String.valueOf(enable));
 
     for (String user : users) {
-      logger.log(Level.INFO, "Updating IMAP settings ( enable: " + enable + " ) " +
-          "for user " + user + " ...");
+      logger.log(Level.INFO,
+          "Updating IMAP settings ( enable: " + enable + " ) " + "for user " + user + " ...");
       updateSettings(user, entry, Constants.IMAP);
       logger.log(Level.INFO, "Successfully updated IMAP settings.");
     }
   }
-  
+
   /**
    * Retrieves vacation settings
    *
@@ -584,12 +574,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public Map<String, String> retrieveVacation(String user)
       throws IllegalArgumentException, IOException, ServiceException {
-    if (user == null || user.length() == 0) {
+    if (isBlankOrNullString(user)) {
       throw new IllegalArgumentException();
     }
-    
+
     logger.log(Level.INFO, "Getting vacation settings for user " + user + " ...");
-    
+
     GenericEntry vacationEntry = retrieveSettingsEntry(user, Constants.VACATION);
     if (vacationEntry != null) {
       Map<String, String> vacation = new HashMap<String, String>();
@@ -610,16 +600,17 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param enable whether to enable the vacation responder.
    * @param subject the subject line of the vacation responder autoresponse.
    * @param message the message body of the vacation responder autoresponse.
-   * @param contactsOnly whether to only send the autoresponse to known contacts.
+   * @param contactsOnly whether to only send the autoresponse to known
+   *        contacts.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void changeVacation(List<String> users, boolean enable, String subject, 
-      String message, boolean contactsOnly) throws IllegalArgumentException, 
-      ServiceException, MalformedURLException, IOException {
+  public void changeVacation(
+      List<String> users, boolean enable, String subject, String message, boolean contactsOnly)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -633,26 +624,24 @@ public class GmailSettingsService extends AppsForYourDomainService {
     } else {
       entry.addProperty(Constants.ENABLE, Constants.FALSE);
     }
-    
+
 
     for (String user : users) {
       if (enable) {
-        logger.log(Level.INFO, "Updating vacation-responder settings ( " + 
-            "enable: " + enable +
-            ", subject: " + subject + 
-            ", message: " + message + 
-            ", contactsOnly: " + contactsOnly +
-            " ) for user " + 
-            user + " ...");
+        logger.log(Level.INFO,
+            "Updating vacation-responder settings ( " + "enable: " + enable + ", subject: "
+                + subject + ", message: " + message + ", contactsOnly: " + contactsOnly
+                + " ) for user " + user + " ...");
       } else {
-        logger.log(Level.INFO, "Updating vacation-responder settings ( " + 
-            "enable: false ) for user " + user + " ...");
+        logger.log(Level.INFO,
+            "Updating vacation-responder settings ( " + "enable: false ) for user " + user
+                + " ...");
       }
       updateSettings(user, entry, Constants.VACATION);
       logger.log(Level.INFO, "Successfully updated vacation-responder settings.");
     }
   }
-  
+
   /**
    * Retrieves signature
    *
@@ -666,16 +655,15 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public String retrieveSignature(String user)
       throws IllegalArgumentException, IOException, ServiceException {
-    if (user == null || user.length() == 0) {
+    if (isBlankOrNullString(user)) {
       throw new IllegalArgumentException();
     }
-    
+
     logger.log(Level.INFO, "Getting signature settings for user " + user + " ...");
-    
+
     GenericEntry signatureEntry = retrieveSettingsEntry(user, Constants.SIGNATURE);
-    if (signatureEntry != null)
-      return signatureEntry.getProperty(Constants.SIGNATURE);
-    
+    if (signatureEntry != null) return signatureEntry.getProperty(Constants.SIGNATURE);
+
     return null;
   }
 
@@ -683,17 +671,16 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * Changes signature.
    *
    * @param users a list of the users to change the signature for.
-   * @param signature the signature to be appended to outgoing messages. Don't 
+   * @param signature the signature to be appended to outgoing messages. Don't
    *        want a signature? Set the signature to "" (empty string).
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void changeSignature(List<String> users, String signature) 
-      throws IllegalArgumentException, ServiceException, MalformedURLException, 
-      IOException {
+  public void changeSignature(List<String> users, String signature)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -702,8 +689,8 @@ public class GmailSettingsService extends AppsForYourDomainService {
     entry.addProperty(Constants.SIGNATURE, signature);
 
     for (String user : users) {
-      logger.log(Level.INFO, "Updating signature ( signature: " + signature + 
-          " ) for user " + user + " ...");
+      logger.log(Level.INFO,
+          "Updating signature ( signature: " + signature + " ) for user " + user + " ...");
       updateSettings(user, entry, Constants.SIGNATURE);
       logger.log(Level.INFO, "Successfully updated signature.");
     }
@@ -715,22 +702,25 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param users a list of the users to change the general settings for.
    * @param pageSize the number of conversations to be shown per page.
    * @param enableShortcuts whether to enable keyboard shortcuts
-   * @param enableArrows whether to display arrow-shaped personal indicators 
-   *        next to emails that were sent specifically to the user. (> and >>). 
-   * @param enableSnippets whether to display snippets of messages in the inbox 
+   * @param enableArrows whether to display arrow-shaped personal indicators
+   *        next to emails that were sent specifically to the user. (> and >>).
+   * @param enableSnippets whether to display snippets of messages in the inbox
    *        and when searching.
-   * @param enableUnicode whether to use UTF-8 (unicode) encoding for all 
+   * @param enableUnicode whether to use UTF-8 (unicode) encoding for all
    *        outgoing messages, instead of the default text encoding.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void changeGeneral(List<String> users, String pageSize, 
-      boolean enableShortcuts, boolean enableArrows, boolean enableSnippets, 
-      boolean enableUnicode) throws IllegalArgumentException, ServiceException, 
-      MalformedURLException, IOException {
+  public void changeGeneral(List<String> users,
+      String pageSize,
+      boolean enableShortcuts,
+      boolean enableArrows,
+      boolean enableSnippets,
+      boolean enableUnicode)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -741,16 +731,12 @@ public class GmailSettingsService extends AppsForYourDomainService {
     entry.addProperty(Constants.ARROWS, String.valueOf(enableArrows));
     entry.addProperty(Constants.SNIPPETS, String.valueOf(enableSnippets));
     entry.addProperty(Constants.UNICODE, String.valueOf(enableUnicode));
-    
+
     for (String user : users) {
-      logger.log(Level.INFO, "Updating general settings ( " +
-          "pageSize: " + pageSize + 
-          ", shortcuts: " + enableShortcuts + 
-          ", arrows: " + enableArrows + 
-          ", snippets: " + enableSnippets + 
-          ", unicode: " + enableUnicode + 
-          " ) for user " + user + 
-          " ...");
+      logger.log(Level.INFO,
+          "Updating general settings ( " + "pageSize: " + pageSize + ", shortcuts: "
+              + enableShortcuts + ", arrows: " + enableArrows + ", snippets: " + enableSnippets
+              + ", unicode: " + enableUnicode + " ) for user " + user + " ...");
       updateSettings(user, entry, "general");
       logger.log(Level.INFO, "Successfully updated general settings.");
     }
@@ -763,54 +749,154 @@ public class GmailSettingsService extends AppsForYourDomainService {
    * @param language Gmail's display language.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
-   *        service.
+   *         service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws ServiceException if the insert request failed due to system error.
    */
-  public void changeLanguage(List<String> users, String language) 
-      throws IllegalArgumentException, ServiceException, MalformedURLException, 
-      IOException {
+  public void changeLanguage(List<String> users, String language)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
 
     GenericEntry entry = new GenericEntry();
     entry.addProperty(Constants.LANGUAGE, language);
-    
+
     for (String user : users) {
-      logger.log(Level.INFO, "Updating language settings ( language: " + 
-          language + " ) for user " + user + " ...");
+      logger.log(Level.INFO,
+          "Updating language settings ( language: " + language + " ) for user " + user + " ...");
       updateSettings(user, entry, Constants.LANGUAGE);
       logger.log(Level.INFO, "Successfully updated language settings.");
     }
   }
-  
+
   /**
    * Change web clip settings.
-   * 
+   *
    * @param users a list of the users to change the web clip settings for.
    * @param enable whether to enable web clip.
    * @throws IllegalArgumentException if no users are passed in.
-   * @throws ServiceException if an error occurs while communicating with the 
-   *        GData service.
+   * @throws ServiceException if an error occurs while communicating with the
+   *         GData service.
    * @throws MalformedURLException if the batch feed URL cannot be constructed.
    * @throws IOException if the insert request failed due to system error.
    */
-  public void changeWebClip(List<String> users, boolean enable) 
-      throws IllegalArgumentException, ServiceException, MalformedURLException, 
-      IOException {
+  public void changeWebClip(List<String> users, boolean enable)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
     }
-    
+
     GenericEntry entry = new GenericEntry();
     entry.addProperty(Constants.ENABLE, String.valueOf(enable));
-    
+
     for (String user : users) {
-      logger.log(Level.INFO, "Updating web clip settings ( enable: " + enable + 
-          " ) for user " + user + " ...");
+      logger.log(Level.INFO,
+          "Updating web clip settings ( enable: " + enable + " ) for user " + user + " ...");
       updateSettings(user, entry, "webclip");
       logger.log(Level.INFO, "Successfully updated web clip settings.");
     }
-  }  
+  }
+
+  /**
+   * Adds an email delegate.
+   *
+   * @param user The account for which an email delegate is to be added.
+   * @param delegationEmail The emailId of the account to which delegate access
+   *        is granted.
+   * @throws IllegalArgumentException If no users are passed in.
+   * @throws ServiceException If an error occurs while communicating with the
+   *         GData service.
+   * @throws MalformedURLException If the batch feed URL cannot be constructed.
+   * @throws IOException If the insert request failed due to system error.
+   */
+  public void addEmailDelegate(String user, String delegationEmail)
+      throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
+    if (isBlankOrNullString(user) || isBlankOrNullString(delegationEmail)) {
+      throw new IllegalArgumentException();
+    }
+
+    GenericEntry entry = new GenericEntry();
+    entry.addProperty(Constants.ADDRESS, delegationEmail);
+
+    logger.log(Level.INFO,
+        "Adding " + delegationEmail + " as an email delegate for user " + user + " ...");
+    insertSettings(user, entry, Constants.DELEGATION);
+    logger.log(Level.INFO, "Successfully added an email delegate.");
+  }
+
+  /**
+   * Retrieves the list of all email delegates of a user.
+   *
+   * @param user The account for which to get email delegates.
+   * @return A list of all email delegates.
+   * @throws IllegalArgumentException If no users are passed in.
+   * @throws IOException If the insert request failed due to system error.
+   * @throws ServiceException If an error occurs while communicating with the
+   *         GData service.
+   */
+  public List<Map<String, String>> retrieveEmailDelegates(String user)
+      throws IllegalArgumentException, IOException, ServiceException {
+    if (isBlankOrNullString(user)) {
+      throw new IllegalArgumentException();
+    }
+
+    logger.log(Level.INFO, "Getting email delegation settings for user " + user + " ...");
+    GenericFeed delegatesFeed = retrieveSettingsFeed(user, Constants.DELEGATION);
+    if (delegatesFeed != null) {
+      List<Map<String, String>> delegates = new ArrayList<Map<String, String>>();
+
+      List<GenericEntry> delegateEntries = delegatesFeed.getEntries();
+      for (GenericEntry delegateEntry : delegateEntries) {
+        Map<String, String> delegateMap = new HashMap<String, String>();
+        delegateMap.put(
+            Constants.DELEGATION_ID, delegateEntry.getProperty(Constants.DELEGATION_ID));
+        delegateMap.put(Constants.DELEGATE, delegateEntry.getProperty(Constants.DELEGATE));
+        delegateMap.put(Constants.ADDRESS, delegateEntry.getProperty(Constants.ADDRESS));
+        delegateMap.put(Constants.STATUS, delegateEntry.getProperty(Constants.STATUS));
+        delegates.add(delegateMap);
+      }
+      return delegates;
+    }
+
+    return null;
+  }
+
+  /**
+   * Removes the specified email delegate of a given user.
+   *
+   * @param user The user for which the delegate is to be removed.
+   * @param delegationEmail The delegated emailId to be removed.
+   * @throws IllegalArgumentException If no users are passed in.
+   * @throws AppsForYourDomainException If an Apps for Your Domain API error
+   *         occurred.
+   * @throws ServiceException If an error occurs while communicating with the
+   *         GData service.
+   * @throws IOException If the insert request failed due to system error.
+   */
+  public void deleteEmailDelegate(String user, String delegationEmail)
+      throws IllegalArgumentException, AppsForYourDomainException, ServiceException, IOException {
+    if (isBlankOrNullString(user) || isBlankOrNullString(delegationEmail)) {
+      throw new IllegalArgumentException();
+    }
+
+    logger.log(Level.INFO,
+        "Deleting the email delegate " + delegationEmail + " for user " + user + " ...");
+    URL deleteUrl =
+        new URL(
+            Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
+                + domain + "/" + user + "/" + Constants.DELEGATION + "/" + delegationEmail);
+    delete(deleteUrl);
+    logger.log(Level.INFO, "Successfully deleted an email delegate.");
+  }
+
+  /**
+   * Checks if a given string is null or empty
+   *
+   * @param str
+   * @return A boolean indicating whether the string is null or empty
+   */
+  private boolean isBlankOrNullString(String str) {
+    return str == null || str.length() == 0 ? true : false;
+  }
 }
