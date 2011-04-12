@@ -43,6 +43,9 @@ public class AclScope extends AbstractExtension {
   /** XML "value" attribute name */
   private static final String VALUE = "value";
 
+  /** XML "name" attribute name */
+  private static final String NAME = "name";
+
   /** helper to produce lower case name from Type value */
   private static final AttributeHelper.LowerCaseEnumToAttributeValue<Type>
       TYPE_ENUM_TO_ATTRIBUTE_VALUE =
@@ -67,6 +70,14 @@ public class AclScope extends AbstractExtension {
     setImmutable(true);
   }
 
+  public AclScope(AclScope.Type type, String value, String name) {
+    super();
+    setType(type);
+    setValue(value);
+    setName(name);
+    setImmutable(true);
+  }
+
   /** type */
   private AclScope.Type type = null;
   public Type getType() { return type; }
@@ -81,6 +92,14 @@ public class AclScope extends AbstractExtension {
   public void setValue(String value) {
     throwExceptionIfImmutable();
     this.value = value;
+  }
+
+  /** name */
+  private String name = null;
+  public String getName() { return name; }
+  public void setName(String name) {
+    throwExceptionIfImmutable();
+    this.name = name;
   }
 
   /**
@@ -136,6 +155,7 @@ public class AclScope extends AbstractExtension {
   public void putAttributes(AttributeGenerator generator) {
     generator.put(TYPE, type, TYPE_ENUM_TO_ATTRIBUTE_VALUE);
     generator.put(VALUE, value);
+    generator.put(NAME, name);
   }
 
   @Override
@@ -144,6 +164,7 @@ public class AclScope extends AbstractExtension {
     type = helper.consumeEnum(TYPE, true, AclScope.Type.class, null,
         TYPE_ENUM_TO_ATTRIBUTE_VALUE);
     value = helper.consume(VALUE, false);
+    name = helper.consume(NAME, false);
   }
 
   private static String getTypeIdentifier(Type type) {
@@ -169,7 +190,7 @@ public class AclScope extends AbstractExtension {
       return false;
     }
     AclScope vc = (AclScope)o;
-    return eq(value, vc.value) && eq(type, vc.type);
+    return eq(value, vc.value) && eq(type, vc.type) && eq(name, vc.name);
   }
 
   @Override
@@ -181,11 +202,14 @@ public class AclScope extends AbstractExtension {
     if (type != null) {
       result = 37 * result + type.hashCode();
     }
+    if (name != null) {
+      result = 37 * result + name.hashCode();
+    }
     return result;
   }
 
   @Override
   public String toString() {
-    return "[AclScope type=" + type + " value=" + value + "]";
+    return "[AclScope type=" + type + " value=" + value + " name=" + name + "]";
   }
 }

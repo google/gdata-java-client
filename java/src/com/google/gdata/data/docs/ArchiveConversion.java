@@ -23,18 +23,18 @@ import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.ParseException;
 
 /**
- * A map of possible export formats.
+ * A map of desired export formats.
  *
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = DocsNamespace.DOCS_ALIAS,
     nsUri = DocsNamespace.DOCS,
-    localName = ExportFormat.XML_NAME)
-public class ExportFormat extends ExtensionPoint {
+    localName = ArchiveConversion.XML_NAME)
+public class ArchiveConversion extends ExtensionPoint {
 
   /** XML element name */
-  static final String XML_NAME = "exportFormat";
+  static final String XML_NAME = "archiveConversion";
 
   /** XML "source" attribute name */
   private static final String SOURCE = "source";
@@ -42,47 +42,26 @@ public class ExportFormat extends ExtensionPoint {
   /** XML "target" attribute name */
   private static final String TARGET = "target";
 
-  private static final AttributeHelper.EnumToAttributeValue<Source>
-      SOURCE_ENUM_TO_ATTRIBUTE_VALUE = new
-      AttributeHelper.LowerCaseEnumToAttributeValue<Source>();
+  /** Conversion source mime type */
+  private String source = null;
 
-  /** Export source document type */
-  private Source source = null;
-
-  /** Export target mime type */
+  /** Conversion target mime type */
   private String target = null;
-
-  /** Export source document type. */
-  public enum Source {
-
-    /** Document export format. */
-    DOCUMENT,
-
-    /** Drawing export format. */
-    DRAWING,
-
-    /** Presentation export format. */
-    PRESENTATION,
-
-    /** Spreadsheet export format. */
-    SPREADSHEET
-
-  }
 
   /**
    * Default mutable constructor.
    */
-  public ExportFormat() {
+  public ArchiveConversion() {
     super();
   }
 
   /**
    * Immutable constructor.
    *
-   * @param source export source document type.
-   * @param target export target mime type.
+   * @param source conversion source mime type.
+   * @param target conversion target mime type.
    */
-  public ExportFormat(Source source, String target) {
+  public ArchiveConversion(String source, String target) {
     super();
     setSource(source);
     setTarget(target);
@@ -90,46 +69,46 @@ public class ExportFormat extends ExtensionPoint {
   }
 
   /**
-   * Returns the export source document type.
+   * Returns the conversion source mime type.
    *
-   * @return export source document type
+   * @return conversion source mime type
    */
-  public Source getSource() {
+  public String getSource() {
     return source;
   }
 
   /**
-   * Sets the export source document type.
+   * Sets the conversion source mime type.
    *
-   * @param source export source document type or <code>null</code> to reset
+   * @param source conversion source mime type or <code>null</code> to reset
    */
-  public void setSource(Source source) {
+  public void setSource(String source) {
     throwExceptionIfImmutable();
     this.source = source;
   }
 
   /**
-   * Returns whether it has the export source document type.
+   * Returns whether it has the conversion source mime type.
    *
-   * @return whether it has the export source document type
+   * @return whether it has the conversion source mime type
    */
   public boolean hasSource() {
     return getSource() != null;
   }
 
   /**
-   * Returns the export target mime type.
+   * Returns the conversion target mime type.
    *
-   * @return export target mime type
+   * @return conversion target mime type
    */
   public String getTarget() {
     return target;
   }
 
   /**
-   * Sets the export target mime type.
+   * Sets the conversion target mime type.
    *
-   * @param target export target mime type or <code>null</code> to reset
+   * @param target conversion target mime type or <code>null</code> to reset
    */
   public void setTarget(String target) {
     throwExceptionIfImmutable();
@@ -137,9 +116,9 @@ public class ExportFormat extends ExtensionPoint {
   }
 
   /**
-   * Returns whether it has the export target mime type.
+   * Returns whether it has the conversion target mime type.
    *
-   * @return whether it has the export target mime type
+   * @return whether it has the conversion target mime type
    */
   public boolean hasTarget() {
     return getTarget() != null;
@@ -166,7 +145,7 @@ public class ExportFormat extends ExtensionPoint {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(ExportFormat.class);
+        ExtensionDescription.getDefaultDescription(ArchiveConversion.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -174,15 +153,14 @@ public class ExportFormat extends ExtensionPoint {
 
   @Override
   protected void putAttributes(AttributeGenerator generator) {
-    generator.put(SOURCE, source, SOURCE_ENUM_TO_ATTRIBUTE_VALUE);
+    generator.put(SOURCE, source);
     generator.put(TARGET, target);
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException
       {
-    source = helper.consumeEnum(SOURCE, true, Source.class, null,
-        SOURCE_ENUM_TO_ATTRIBUTE_VALUE);
+    source = helper.consume(SOURCE, true);
     target = helper.consume(TARGET, true);
   }
 
@@ -194,7 +172,7 @@ public class ExportFormat extends ExtensionPoint {
     if (!sameClassAs(obj)) {
       return false;
     }
-    ExportFormat other = (ExportFormat) obj;
+    ArchiveConversion other = (ArchiveConversion) obj;
     return eq(source, other.source)
         && eq(target, other.target);
   }
@@ -213,7 +191,7 @@ public class ExportFormat extends ExtensionPoint {
 
   @Override
   public String toString() {
-    return "{ExportFormat source=" + source + " target=" + target + "}";
+    return "{ArchiveConversion source=" + source + " target=" + target + "}";
   }
 
 }

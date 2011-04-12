@@ -84,7 +84,8 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     TAB("text/tab-separated-value"),
     TSV("text/tab-separated-value"),
     SWF("application/x-shockwave-flash"),
-    ZIP("application/zip")
+    ZIP("application/zip"),
+    WMF("application/x-msmetafile")
     ;
 
     private String mimeType;
@@ -121,7 +122,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
   /**
    * Label for category.
-   * 
+   *
    * @deprecated Use LABEL instead.
    */
   @Deprecated
@@ -130,7 +131,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   /**
    * Kind category term used to label the entries which are
    * of document type.
-   * 
+   *
    * @deprecated Use KIND instead.
    */
   @Deprecated
@@ -139,7 +140,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
   /**
    * Category used to label entries which are of document type.
-   * 
+   *
    * @deprecated Use CATEGORY instead.
    */
   @Deprecated
@@ -173,6 +174,9 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   public static final String REVISIONS_NAMESPACE =
       DocsNamespace.DOCS + "/revisions";
 
+  public static final String THUMBNAIL_NAMESPACE =
+    DocsNamespace.DOCS + "/thumbnail";
+
   /**
    * Constructs a new uninitialized entry, to be populated by the
    * GData parsers.
@@ -192,9 +196,11 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
+    extProfile.declare(DocumentListEntry.class, Description.class);
     extProfile.declare(DocumentListEntry.class, DocumentListAclFeedLink.class);
     extProfile.declare(DocumentListEntry.class, LastModifiedBy.class);
     extProfile.declare(DocumentListEntry.class, LastViewed.class);
+    extProfile.declare(DocumentListEntry.class, Md5Checksum.class);
     extProfile.declare(DocumentListEntry.class, QuotaBytesUsed.class);
     extProfile.declare(DocumentListEntry.class, ResourceId.class);
     extProfile.declare(DocumentListEntry.class, WritersCanInvite.class);
@@ -220,7 +226,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
    * <code>http://spreadsheets.google.com/ccc?key={id}</code>
    *
    * @return the Google Docs &amp; Spreadsheets id
-   * 
+   *
    * @deprecated use getResourceId() instead.
    */
   @Deprecated
@@ -236,7 +242,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
     return result;
   }
-  
+
   /**
    * Gets the docId or spreadsheet key from the resource id. This is the id that
    * can be used to construct the export url or link to google docs.
@@ -258,7 +264,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
 
     return result;
   }
-  
+
   /**
    * Returns the type document entry from the resource id. If the resource id
    * id "document:12345", then "document" is returned.
@@ -448,6 +454,33 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   }
 
   /**
+   * Returns the description of this document.
+   *
+   * @return the description ({@code null} means no description was set, whereas the empty-string
+   *    means the description is empty)
+   */
+  public String getDescription() {
+    Description description = getExtension(Description.class);
+    if (description == null) {
+      return null;
+    }
+    return description.getValue() == null ? "" : description.getValue();
+  }
+
+  /**
+   * Sets the description of this document.
+   *
+   * @param description the description
+   */
+  public void setDescription(String description) {
+    if (description == null) {
+      removeExtension(Description.class);
+    } else {
+      setExtension(new Description(description));
+    }
+  }
+
+  /**
    * Returns the time when the document was last viewed by the user.
    *
    * @return the last viewed time
@@ -467,6 +500,29 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
       removeExtension(LastViewed.class);
     } else {
       setExtension(new LastViewed(lastViewed));
+    }
+  }
+
+  /**
+   * Returns the MD5 checksum calculated for the document.
+   *
+   * @return the MD5 checksum
+   */
+  public String getMd5Checksum() {
+    Md5Checksum md5Checksum = getExtension(Md5Checksum.class);
+    return md5Checksum == null ? null : md5Checksum.getValue();
+  }
+
+  /**
+   * Set the MD5 checksum calculated for the document.
+   *
+   * @param md5Checksum the MD5 checksum
+   */
+  public void setMd5Checksum(String md5Checksum) {
+    if (md5Checksum == null) {
+      removeExtension(Md5Checksum.class);
+    } else {
+      setExtension(new Md5Checksum(md5Checksum));
     }
   }
 
