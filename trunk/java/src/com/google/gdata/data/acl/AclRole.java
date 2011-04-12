@@ -27,8 +27,7 @@ import com.google.gdata.data.ValueConstruct;
 @ExtensionDescription.Default(
     nsAlias = AclNamespace.gAclAlias,
     nsUri = AclNamespace.gAcl,
-    localName = AclRole.ROLE,
-    isRequired = true)
+    localName = AclRole.ROLE)
 public class AclRole extends ValueConstruct {
 
   /**
@@ -59,6 +58,12 @@ public class AclRole extends ValueConstruct {
    * modify and delete the controlled object
    */
   public static final AclRole OWNER = new AclRole("owner");
+
+  /**
+   * Predefined value 'commenter' to indicate that a user has the right to
+   * comment on the controlled object.
+   */
+  public static final AclRole COMMENTER = new AclRole("commenter");
 
   /** XML "role" element name */
   static final String ROLE = "role";

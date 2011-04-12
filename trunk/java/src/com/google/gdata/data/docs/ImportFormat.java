@@ -58,6 +58,9 @@ public class ImportFormat extends ExtensionPoint {
     /** Document import format. */
     DOCUMENT,
 
+    /** Drawing import format. */
+    DRAWING,
+
     /** Presentation import format. */
     PRESENTATION,
 

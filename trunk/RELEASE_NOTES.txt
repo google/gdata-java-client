@@ -1,4 +1,8 @@
 Google Data API - Release Notes
+Notes for v1.45.0
+-----------------
+o Updated Document List Data API
+
 Notes for v1.44.0
 -----------------
 o Adds missing removeOwnerFromGroup() method in appsforyourdomain API

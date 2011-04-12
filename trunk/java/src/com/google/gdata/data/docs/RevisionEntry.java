@@ -36,7 +36,7 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
    * Label for category.
    */
   public static final String LABEL = "revision";
-  
+
   /**
    * Kind category term used to label revision entries.
    */
@@ -56,13 +56,37 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
   public RevisionEntry(BaseEntry<?> sourceEntry) {
     super(sourceEntry);
   }
-  
+
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     super.declareExtensions(extProfile);
+    extProfile.declare(RevisionEntry.class, Md5Checksum.class);
     extProfile.declare(RevisionEntry.class, Publish.class);
     extProfile.declare(RevisionEntry.class, PublishAuto.class);
     extProfile.declare(RevisionEntry.class, PublishOutsideDomain.class);
+  }
+
+  /**
+   * Returns the MD5 checksum calculated for the document.
+   *
+   * @return the MD5 checksum
+   */
+  public String getMd5Checksum() {
+    Md5Checksum md5Checksum = getExtension(Md5Checksum.class);
+    return md5Checksum == null ? null : md5Checksum.getValue();
+  }
+
+  /**
+   * Set the MD5 checksum calculated for the document.
+   *
+   * @param md5Checksum the MD5 checksum
+   */
+  public void setMd5Checksum(String md5Checksum) {
+    if (md5Checksum == null) {
+      removeExtension(Md5Checksum.class);
+    } else {
+      setExtension(new Md5Checksum(md5Checksum));
+    }
   }
 
   /**
@@ -108,7 +132,7 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
 
   /**
    * Sets whether the revision is published.
-   * 
+   *
    * @param publish true if revision is published
    */
   public void setPublish(Boolean publish) {
@@ -121,7 +145,7 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
 
   /**
    * Returns whether changes to the document are automatically re-published.
-   * 
+   *
    * @return whether auto re-published
    */
   public Boolean isPublishAuto() {
@@ -131,7 +155,7 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
 
   /**
    * Sets whether changes to the document are automatically re-published.
-   * 
+   *
    * @param publishAuto true if auto re-published
    */
   public void setPublishAuto(Boolean publishAuto) {
@@ -144,7 +168,7 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
 
   /**
    * Sets whether the document is published outside of its domain.
-   * 
+   *
    * @return whether outside domain
    */
   public Boolean isPublishOutsideDomain() {
@@ -154,7 +178,7 @@ public class RevisionEntry extends BaseEntry<RevisionEntry> {
 
   /**
    * Sets whether the document is published outside of its domain.
-   * 
+   *
    * @param publishOutsideDomain true if outside domain
    */
   public void setPublishOutsideDomain(Boolean publishOutsideDomain) {

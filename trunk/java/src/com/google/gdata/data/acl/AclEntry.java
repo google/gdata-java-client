@@ -55,6 +55,8 @@ public class AclEntry extends BaseEntry<AclEntry> {
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(AclEntry.class, AclScope.class);
     extProfile.declare(AclEntry.class, AclRole.class);
+    extProfile.declare(AclEntry.class, AclWithKey.class);
+    new AclWithKey().declareExtensions(extProfile);
   }
 
   public AclScope getScope() {
@@ -71,5 +73,13 @@ public class AclEntry extends BaseEntry<AclEntry> {
 
   public void setRole(AclRole role) {
     setExtension(role);
+  }
+
+  public AclWithKey getWithKey() {
+    return getExtension(AclWithKey.class);
+  }
+
+  public void setWithKey(AclWithKey withKey) {
+    setExtension(withKey);
   }
 }
