@@ -75,6 +75,7 @@ public class ContactEntry extends BasePersonEntry<ContactEntry> {
         "http://schemas.google.com/g/2005"), "deleted", false, false, false));
     extProfile.declare(ContactEntry.class,
         GroupMembershipInfo.getDefaultDescription(false, true));
+    extProfile.declare(ContactEntry.class, YomiName.class);
   }
 
   /**
@@ -135,6 +136,37 @@ public class ContactEntry extends BasePersonEntry<ContactEntry> {
     return hasRepeatingExtension(GroupMembershipInfo.class);
   }
 
+  /**
+   * Returns the yomi name.
+   *
+   * @return yomi name
+   */
+  public YomiName getYomiName() {
+    return getExtension(YomiName.class);
+  }
+
+  /**
+   * Sets the yomi name.
+   *
+   * @param yomiName yomi name or <code>null</code> to reset
+   */
+  public void setYomiName(YomiName yomiName) {
+    if (yomiName == null) {
+      removeExtension(YomiName.class);
+    } else {
+      setExtension(yomiName);
+    }
+  }
+
+  /**
+   * Returns whether it has the yomi name.
+   *
+   * @return whether it has the yomi name
+   */
+  public boolean hasYomiName() {
+    return hasExtension(YomiName.class);
+  }
+
   @Override
   protected void validate() {
   }
@@ -145,3 +177,4 @@ public class ContactEntry extends BasePersonEntry<ContactEntry> {
   }
 
 }
+

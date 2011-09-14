@@ -61,4 +61,6 @@ public final class Labels {
   /** Common category for a viewed item */
   public static final Category VIEWED = newLabel("viewed");
   
+  /** Common category for an item with restricted downloading */
+  public static final Category RESTRICTED_DOWNLOAD = newLabel("restricted-download");
 }

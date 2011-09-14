@@ -19,7 +19,7 @@ package com.google.gdata.data.contacts;
 import com.google.gdata.util.common.xml.XmlNamespace;
 
 /**
- * GData namespace definitions related to Google Contacts.
+ * Namespace definitions related to Google Contacts Data API.
  *
  * 
  */
@@ -42,3 +42,4 @@ public class ContactsNamespace {
       XmlNamespace(GCONTACT_ALIAS, GCONTACT);
 
 }
+

@@ -315,3 +315,4 @@ public class CalendarLink extends ExtensionPoint {
   }
 
 }
+

@@ -47,7 +47,6 @@ public class Hobby extends ValueConstruct {
    */
   public Hobby(String value) {
     super(ContactsNamespace.GCONTACT_NS, XML_NAME, null, value);
-    setRequired(false);
   }
 
   /**
@@ -73,3 +72,4 @@ public class Hobby extends ValueConstruct {
   }
 
 }
+

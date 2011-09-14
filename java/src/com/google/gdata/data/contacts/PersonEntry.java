@@ -16,39 +16,35 @@
 
 package com.google.gdata.data.contacts;
 
-import com.google.gdata.data.BaseFeed;
-import com.google.gdata.data.Kind;
+import com.google.gdata.data.BaseEntry;
 
 /**
- * Describes a contact group feed.
+ * Describes a person entry.
  *
  * 
  */
-@Kind.Term(ContactGroupEntry.KIND)
-public class ContactGroupFeed extends BaseFeed<ContactGroupFeed,
-    ContactGroupEntry> {
+public class PersonEntry extends BasePersonEntry<PersonEntry> {
 
   /**
    * Default mutable constructor.
    */
-  public ContactGroupFeed() {
-    super(ContactGroupEntry.class);
-    getCategories().add(ContactGroupEntry.CATEGORY);
+  public PersonEntry() {
+    super();
   }
 
   /**
    * Constructs a new instance by doing a shallow copy of data from an existing
-   * {@link BaseFeed} instance.
+   * {@link BaseEntry} instance.
    *
-   * @param sourceFeed source feed
+   * @param sourceEntry source entry
    */
-  public ContactGroupFeed(BaseFeed<?, ?> sourceFeed) {
-    super(ContactGroupEntry.class, sourceFeed);
+  public PersonEntry(BaseEntry<?> sourceEntry) {
+    super(sourceEntry);
   }
 
   @Override
   public String toString() {
-    return "{ContactGroupFeed " + super.toString() + "}";
+    return "{PersonEntry " + super.toString() + "}";
   }
 
 }

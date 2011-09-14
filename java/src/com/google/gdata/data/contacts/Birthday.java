@@ -51,7 +51,6 @@ public class Birthday extends ValueConstruct {
    */
   public Birthday(String when) {
     super(ContactsNamespace.GCONTACT_NS, XML_NAME, WHEN, when);
-    setRequired(false);
   }
 
   /**
@@ -104,3 +103,4 @@ public class Birthday extends ValueConstruct {
   }
 
 }
+

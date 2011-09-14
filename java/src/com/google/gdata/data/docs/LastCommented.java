@@ -14,103 +14,80 @@
  */
 
 
-package com.google.gdata.data.contacts;
+package com.google.gdata.data.docs;
 
+import com.google.gdata.data.AbstractExtension;
 import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
+import com.google.gdata.data.DateTime;
 import com.google.gdata.data.ExtensionDescription;
-import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.ParseException;
 
 /**
- * Contact's priority.
+ * The time the doclist item was last commented on.
  *
  * 
  */
 @ExtensionDescription.Default(
-    nsAlias = ContactsNamespace.GCONTACT_ALIAS,
-    nsUri = ContactsNamespace.GCONTACT,
-    localName = Priority.XML_NAME)
-public class Priority extends ExtensionPoint {
+    nsAlias = DocsNamespace.DOCS_ALIAS,
+    nsUri = DocsNamespace.DOCS,
+    localName = LastCommented.XML_NAME)
+public class LastCommented extends AbstractExtension {
 
   /** XML element name */
-  static final String XML_NAME = "priority";
+  static final String XML_NAME = "lastCommented";
 
-  /** XML "rel" attribute name */
-  private static final String REL = "rel";
-
-  private static final AttributeHelper.EnumToAttributeValue<Rel>
-      REL_ENUM_TO_ATTRIBUTE_VALUE = new
-      AttributeHelper.LowerCaseEnumToAttributeValue<Rel>();
-
-  /** Priority category */
-  private Rel rel = null;
-
-  /** Priority category. */
-  public enum Rel {
-
-    /** High priority. */
-    HIGH,
-
-    /** Low priority. */
-    LOW,
-
-    /** Normal priority. */
-    NORMAL
-
-  }
+  /** Value */
+  private DateTime value = null;
 
   /**
    * Default mutable constructor.
    */
-  public Priority() {
+  public LastCommented() {
     super();
   }
 
   /**
    * Immutable constructor.
    *
-   * @param rel priority category.
+   * @param value value.
    */
-  public Priority(Rel rel) {
+  public LastCommented(DateTime value) {
     super();
-    setRel(rel);
+    setValue(value);
     setImmutable(true);
   }
 
   /**
-   * Returns the priority category.
+   * Returns the value.
    *
-   * @return priority category
+   * @return value
    */
-  public Rel getRel() {
-    return rel;
+  public DateTime getValue() {
+    return value;
   }
 
   /**
-   * Sets the priority category.
+   * Sets the value.
    *
-   * @param rel priority category or <code>null</code> to reset
+   * @param value value or <code>null</code> to reset
    */
-  public void setRel(Rel rel) {
+  public void setValue(DateTime value) {
     throwExceptionIfImmutable();
-    this.rel = rel;
+    this.value = value;
   }
 
   /**
-   * Returns whether it has the priority category.
+   * Returns whether it has the value.
    *
-   * @return whether it has the priority category
+   * @return whether it has the value
    */
-  public boolean hasRel() {
-    return getRel() != null;
+  public boolean hasValue() {
+    return getValue() != null;
   }
 
   @Override
   protected void validate() {
-    if (rel == null) {
-      throwExceptionForMissingAttribute(REL);
-    }
   }
 
   /**
@@ -124,7 +101,7 @@ public class Priority extends ExtensionPoint {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(Priority.class);
+        ExtensionDescription.getDefaultDescription(LastCommented.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -132,14 +109,13 @@ public class Priority extends ExtensionPoint {
 
   @Override
   protected void putAttributes(AttributeGenerator generator) {
-    generator.put(REL, rel, REL_ENUM_TO_ATTRIBUTE_VALUE);
+    generator.setContent(value.toString());
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException
       {
-    rel = helper.consumeEnum(REL, true, Rel.class, null,
-        REL_ENUM_TO_ATTRIBUTE_VALUE);
+    value = helper.consumeDateTime(null, false);
   }
 
   @Override
@@ -150,22 +126,22 @@ public class Priority extends ExtensionPoint {
     if (!sameClassAs(obj)) {
       return false;
     }
-    Priority other = (Priority) obj;
-    return eq(rel, other.rel);
+    LastCommented other = (LastCommented) obj;
+    return eq(value, other.value);
   }
 
   @Override
   public int hashCode() {
     int result = getClass().hashCode();
-    if (rel != null) {
-      result = 37 * result + rel.hashCode();
+    if (value != null) {
+      result = 37 * result + value.hashCode();
     }
     return result;
   }
 
   @Override
   public String toString() {
-    return "{Priority rel=" + rel + "}";
+    return "{LastCommented value=" + value + "}";
   }
 
 }

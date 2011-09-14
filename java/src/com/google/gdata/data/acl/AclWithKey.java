@@ -23,9 +23,11 @@ import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.util.ParseException;
 
+import java.util.List;
+
 /**
  * Describes the key granting a role in an access control list.
- * 
+ *
  * 
  */
 @ExtensionDescription.Default(
@@ -39,7 +41,7 @@ public class AclWithKey extends ExtensionPoint {
 
   /** XML "key" attribute name */
   private static final String KEY = "key";
-  
+
   /** A key granting a role */
   private String key = null;
 
@@ -49,10 +51,10 @@ public class AclWithKey extends ExtensionPoint {
   public AclWithKey() {
     super();
   }
-  
+
   /**
    * Immutable constructor.
-   * 
+   *
    * @param key a key granting a role.
    * @param role a role.
    */
@@ -66,11 +68,12 @@ public class AclWithKey extends ExtensionPoint {
   @Override
   public void declareExtensions(ExtensionProfile extProfile) {
     extProfile.declare(AclWithKey.class, AclRole.class);
+    extProfile.declare(AclWithKey.class, AdditionalRole.getDefaultDescription(false, true));
   }
 
   /**
    * Returns the key granting a role.
-   * 
+   *
    * @return a key
    */
   public String getKey() {
@@ -79,7 +82,7 @@ public class AclWithKey extends ExtensionPoint {
 
   /**
    * Sets the key granting a role.
-   * 
+   *
    * @param key a key or <code>null</code> to reset
    */
   public void setKey(String key) {
@@ -89,25 +92,25 @@ public class AclWithKey extends ExtensionPoint {
 
   /**
    * Returns whether it has a key.
-   * 
+   *
    * @return whether it has a key
    */
   public boolean hasKey() {
     return getKey() != null;
   }
-  
+
   /**
    * Returns the role.
-   * 
+   *
    * @return a role
    */
   public AclRole getRole() {
     return getExtension(AclRole.class);
   }
-  
+
   /**
    * Sets the role.
-   * 
+   *
    * @param role the role or <code>null</code> to reset
    */
   public void setRole(AclRole role) {
@@ -118,21 +121,42 @@ public class AclWithKey extends ExtensionPoint {
       setExtension(role);
     }
   }
-  
+
   /**
    * Returns whether it has the role.
-   * 
+   *
    * @return whether it has the role
    */
   public boolean hasRole() {
     return hasExtension(AclRole.class);
   }
 
+  /**
+   * Returns the additional roles.
+   */
+  public List<AdditionalRole> getAdditionalRoles() {
+    return getRepeatingExtension(AdditionalRole.class);
+  }
+
+  /**
+   * Adds an additional role.
+   */
+  public void addAdditionalRole(AdditionalRole role) {
+    addRepeatingExtension(role);
+  }
+
+  /**
+   * Clears the additional roles.
+   */
+  public void clearAdditionalRoles() {
+    getAdditionalRoles().clear();
+  }
+
   @Override
   protected void putAttributes(AttributeGenerator generator) {
     generator.put(KEY, key);
   }
-  
+
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException {
     key = helper.consume(KEY, false);

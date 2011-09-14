@@ -51,3 +51,4 @@ public class ProfileFeed extends BaseFeed<ProfileFeed, ProfileEntry> {
   }
 
 }
+

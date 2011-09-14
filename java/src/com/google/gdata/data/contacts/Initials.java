@@ -72,3 +72,4 @@ public class Initials extends ValueConstruct {
   }
 
 }
+

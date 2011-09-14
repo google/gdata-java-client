@@ -63,6 +63,9 @@ public class SitesLink extends Link {
     public static final String CURRENT = SitesNamespace.SITES_PREFIX +
         "current";
 
+    /** Invite sites link. */
+    public static final String INVITE = SitesNamespace.SITES_PREFIX + "invite";
+
     /** Parent sites link. */
     public static final String PARENT = SitesNamespace.SITES_PREFIX + "parent";
 

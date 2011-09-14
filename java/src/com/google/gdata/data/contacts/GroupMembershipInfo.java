@@ -193,3 +193,4 @@ public class GroupMembershipInfo extends ExtensionPoint {
   }
 
 }
+

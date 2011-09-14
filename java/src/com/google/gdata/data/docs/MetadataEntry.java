@@ -70,6 +70,9 @@ public class MetadataEntry extends BaseEntry<MetadataEntry> {
     }
     super.declareExtensions(extProfile);
     extProfile.declare(MetadataEntry.class,
+        AdditionalRoleInfo.getDefaultDescription(false, true));
+    new AdditionalRoleInfo().declareExtensions(extProfile);
+    extProfile.declare(MetadataEntry.class,
         ExportFormat.getDefaultDescription(false, true));
     extProfile.declare(MetadataEntry.class, Feature.getDefaultDescription(false,
         true));
@@ -77,10 +80,40 @@ public class MetadataEntry extends BaseEntry<MetadataEntry> {
     extProfile.declare(MetadataEntry.class,
         ImportFormat.getDefaultDescription(false, true));
     extProfile.declare(MetadataEntry.class,
+        LargestChangestamp.getDefaultDescription(true, false));
+    extProfile.declare(MetadataEntry.class,
         MaxUploadSize.getDefaultDescription(false, true));
     extProfile.declare(MetadataEntry.class, QuotaBytesTotal.class);
     extProfile.declare(MetadataEntry.class, QuotaBytesUsed.class);
     extProfile.declare(MetadataEntry.class, QuotaBytesUsedInTrash.class);
+    extProfile.declare(MetadataEntry.class, RemainingChangestamps.class);
+  }
+
+  /**
+   * Returns the additional role infos.
+   *
+   * @return additional role infos
+   */
+  public List<AdditionalRoleInfo> getAdditionalRoleInfos() {
+    return getRepeatingExtension(AdditionalRoleInfo.class);
+  }
+
+  /**
+   * Adds a new additional role info.
+   *
+   * @param additionalRoleInfo additional role info
+   */
+  public void addAdditionalRoleInfo(AdditionalRoleInfo additionalRoleInfo) {
+    getAdditionalRoleInfos().add(additionalRoleInfo);
+  }
+
+  /**
+   * Returns whether it has the additional role infos.
+   *
+   * @return whether it has the additional role infos
+   */
+  public boolean hasAdditionalRoleInfos() {
+    return hasRepeatingExtension(AdditionalRoleInfo.class);
   }
 
   /**
@@ -162,6 +195,37 @@ public class MetadataEntry extends BaseEntry<MetadataEntry> {
    */
   public boolean hasImportFormats() {
     return hasRepeatingExtension(ImportFormat.class);
+  }
+
+  /**
+   * Returns the largest changestamp.
+   *
+   * @return largest changestamp
+   */
+  public LargestChangestamp getLargestChangestamp() {
+    return getExtension(LargestChangestamp.class);
+  }
+
+  /**
+   * Sets the largest changestamp.
+   *
+   * @param largestChangestamp largest changestamp or <code>null</code> to reset
+   */
+  public void setLargestChangestamp(LargestChangestamp largestChangestamp) {
+    if (largestChangestamp == null) {
+      removeExtension(LargestChangestamp.class);
+    } else {
+      setExtension(largestChangestamp);
+    }
+  }
+
+  /**
+   * Returns whether it has the largest changestamp.
+   *
+   * @return whether it has the largest changestamp
+   */
+  public boolean hasLargestChangestamp() {
+    return hasExtension(LargestChangestamp.class);
   }
 
   /**
@@ -284,6 +348,39 @@ public class MetadataEntry extends BaseEntry<MetadataEntry> {
    */
   public boolean hasQuotaBytesUsedInTrash() {
     return hasExtension(QuotaBytesUsedInTrash.class);
+  }
+
+  /**
+   * Returns the remaining changestamps.
+   *
+   * @return remaining changestamps
+   */
+  public RemainingChangestamps getRemainingChangestamps() {
+    return getExtension(RemainingChangestamps.class);
+  }
+
+  /**
+   * Sets the remaining changestamps.
+   *
+   * @param remainingChangestamps remaining changestamps or <code>null</code> to
+   *     reset
+   */
+  public void setRemainingChangestamps(RemainingChangestamps
+      remainingChangestamps) {
+    if (remainingChangestamps == null) {
+      removeExtension(RemainingChangestamps.class);
+    } else {
+      setExtension(remainingChangestamps);
+    }
+  }
+
+  /**
+   * Returns whether it has the remaining changestamps.
+   *
+   * @return whether it has the remaining changestamps
+   */
+  public boolean hasRemainingChangestamps() {
+    return hasExtension(RemainingChangestamps.class);
   }
 
   @Override

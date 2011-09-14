@@ -20,23 +20,23 @@ import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ValueConstruct;
 
 /**
- * Contact's billing information.
+ * Contact's file as.
  *
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = ContactsNamespace.GCONTACT_ALIAS,
     nsUri = ContactsNamespace.GCONTACT,
-    localName = BillingInformation.XML_NAME)
-public class BillingInformation extends ValueConstruct {
+    localName = FileAs.XML_NAME)
+public class FileAs extends ValueConstruct {
 
   /** XML element name */
-  static final String XML_NAME = "billingInformation";
+  static final String XML_NAME = "fileAs";
 
   /**
    * Default mutable constructor.
    */
-  public BillingInformation() {
+  public FileAs() {
     this(null);
   }
 
@@ -45,7 +45,7 @@ public class BillingInformation extends ValueConstruct {
    *
    * @param value immutable value or <code>null</code> for a mutable value
    */
-  public BillingInformation(String value) {
+  public FileAs(String value) {
     super(ContactsNamespace.GCONTACT_NS, XML_NAME, null, value);
     setRequired(false);
   }
@@ -61,7 +61,7 @@ public class BillingInformation extends ValueConstruct {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(BillingInformation.class);
+        ExtensionDescription.getDefaultDescription(FileAs.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -69,7 +69,7 @@ public class BillingInformation extends ValueConstruct {
 
   @Override
   public String toString() {
-    return "{BillingInformation value=" + getValue() + "}";
+    return "{FileAs value=" + getValue() + "}";
   }
 
 }

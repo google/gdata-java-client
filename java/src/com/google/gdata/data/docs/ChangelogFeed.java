@@ -17,6 +17,7 @@
 package com.google.gdata.data.docs;
 
 import com.google.gdata.data.BaseFeed;
+import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Kind;
 
 /**
@@ -43,6 +44,51 @@ public class ChangelogFeed extends BaseFeed<ChangelogFeed, ChangelogEntry> {
    */
   public ChangelogFeed(BaseFeed<?, ?> sourceFeed) {
     super(ChangelogEntry.class, sourceFeed);
+  }
+
+  @Override
+  public void declareExtensions(ExtensionProfile extProfile) {
+    if (extProfile.isDeclared(ChangelogFeed.class)) {
+      return;
+    }
+    super.declareExtensions(extProfile);
+    extProfile.declare(ChangelogFeed.class,
+        LargestChangestamp.getDefaultDescription(true, false));
+  }
+
+  /**
+   * Returns the largest changestamp.
+   *
+   * @return largest changestamp
+   */
+  public LargestChangestamp getLargestChangestamp() {
+    return getExtension(LargestChangestamp.class);
+  }
+
+  /**
+   * Sets the largest changestamp.
+   *
+   * @param largestChangestamp largest changestamp or <code>null</code> to reset
+   */
+  public void setLargestChangestamp(LargestChangestamp largestChangestamp) {
+    if (largestChangestamp == null) {
+      removeExtension(LargestChangestamp.class);
+    } else {
+      setExtension(largestChangestamp);
+    }
+  }
+
+  /**
+   * Returns whether it has the largest changestamp.
+   *
+   * @return whether it has the largest changestamp
+   */
+  public boolean hasLargestChangestamp() {
+    return hasExtension(LargestChangestamp.class);
+  }
+
+  @Override
+  protected void validate() {
   }
 
   @Override
