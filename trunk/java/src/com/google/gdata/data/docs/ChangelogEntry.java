@@ -31,15 +31,15 @@ import com.google.gdata.util.Namespaces;
 public class ChangelogEntry extends BaseDocumentListEntry<ChangelogEntry> {
 
   /**
-   * Changelog kind term value.
+   * Change kind term value.
    */
-  public static final String KIND = DocsNamespace.DOCS_PREFIX + "changelog";
+  public static final String KIND = DocsNamespace.DOCS_PREFIX + "change";
 
   /**
-   * Changelog kind category.
+   * Change kind category.
    */
   public static final Category CATEGORY = new Category(Namespaces.gKind, KIND,
-      "changelog");
+      "change");
 
   /**
    * Default mutable constructor.

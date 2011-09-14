@@ -20,23 +20,23 @@ import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ValueConstruct;
 
 /**
- * Contact's billing information.
+ * A quick and dirty way to represent yomi name for Android.
  *
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = ContactsNamespace.GCONTACT_ALIAS,
     nsUri = ContactsNamespace.GCONTACT,
-    localName = BillingInformation.XML_NAME)
-public class BillingInformation extends ValueConstruct {
+    localName = YomiName.XML_NAME)
+public class YomiName extends ValueConstruct {
 
   /** XML element name */
-  static final String XML_NAME = "billingInformation";
+  static final String XML_NAME = "yomiName";
 
   /**
    * Default mutable constructor.
    */
-  public BillingInformation() {
+  public YomiName() {
     this(null);
   }
 
@@ -45,7 +45,7 @@ public class BillingInformation extends ValueConstruct {
    *
    * @param value immutable value or <code>null</code> for a mutable value
    */
-  public BillingInformation(String value) {
+  public YomiName(String value) {
     super(ContactsNamespace.GCONTACT_NS, XML_NAME, null, value);
     setRequired(false);
   }
@@ -61,7 +61,7 @@ public class BillingInformation extends ValueConstruct {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(BillingInformation.class);
+        ExtensionDescription.getDefaultDescription(YomiName.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -69,7 +69,7 @@ public class BillingInformation extends ValueConstruct {
 
   @Override
   public String toString() {
-    return "{BillingInformation value=" + getValue() + "}";
+    return "{YomiName value=" + getValue() + "}";
   }
 
 }

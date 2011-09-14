@@ -23,94 +23,76 @@ import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.ParseException;
 
 /**
- * Contact's priority.
+ * Person status element.
  *
  * 
  */
 @ExtensionDescription.Default(
     nsAlias = ContactsNamespace.GCONTACT_ALIAS,
     nsUri = ContactsNamespace.GCONTACT,
-    localName = Priority.XML_NAME)
-public class Priority extends ExtensionPoint {
+    localName = Status.XML_NAME)
+public class Status extends ExtensionPoint {
 
   /** XML element name */
-  static final String XML_NAME = "priority";
+  static final String XML_NAME = "status";
 
-  /** XML "rel" attribute name */
-  private static final String REL = "rel";
+  /** XML "indexed" attribute name */
+  private static final String INDEXED = "indexed";
 
-  private static final AttributeHelper.EnumToAttributeValue<Rel>
-      REL_ENUM_TO_ATTRIBUTE_VALUE = new
-      AttributeHelper.LowerCaseEnumToAttributeValue<Rel>();
-
-  /** Priority category */
-  private Rel rel = null;
-
-  /** Priority category. */
-  public enum Rel {
-
-    /** High priority. */
-    HIGH,
-
-    /** Low priority. */
-    LOW,
-
-    /** Normal priority. */
-    NORMAL
-
-  }
+  /** Whether this person is in the global address list */
+  private Boolean indexed = null;
 
   /**
    * Default mutable constructor.
    */
-  public Priority() {
+  public Status() {
     super();
   }
 
   /**
    * Immutable constructor.
    *
-   * @param rel priority category.
+   * @param indexed whether this person is in the global address list.
    */
-  public Priority(Rel rel) {
+  public Status(Boolean indexed) {
     super();
-    setRel(rel);
+    setIndexed(indexed);
     setImmutable(true);
   }
 
   /**
-   * Returns the priority category.
+   * Returns the whether this person is in the global address list.
    *
-   * @return priority category
+   * @return whether this person is in the global address list
    */
-  public Rel getRel() {
-    return rel;
+  public Boolean getIndexed() {
+    return indexed;
   }
 
   /**
-   * Sets the priority category.
+   * Sets the whether this person is in the global address list.
    *
-   * @param rel priority category or <code>null</code> to reset
+   * @param indexed whether this person is in the global address list or
+   *     <code>null</code> to reset
    */
-  public void setRel(Rel rel) {
+  public void setIndexed(Boolean indexed) {
     throwExceptionIfImmutable();
-    this.rel = rel;
+    this.indexed = indexed;
   }
 
   /**
-   * Returns whether it has the priority category.
+   * Returns whether it has the whether this person is in the global address
+   * list.
    *
-   * @return whether it has the priority category
+   * @return whether it has the whether this person is in the global address
+   *     list
    */
-  public boolean hasRel() {
-    return getRel() != null;
+  public boolean hasIndexed() {
+    return getIndexed() != null;
   }
 
   @Override
   protected void validate() {
-    if (rel == null) {
-      throwExceptionForMissingAttribute(REL);
-    }
   }
 
   /**
@@ -124,7 +106,7 @@ public class Priority extends ExtensionPoint {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(Priority.class);
+        ExtensionDescription.getDefaultDescription(Status.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -132,14 +114,13 @@ public class Priority extends ExtensionPoint {
 
   @Override
   protected void putAttributes(AttributeGenerator generator) {
-    generator.put(REL, rel, REL_ENUM_TO_ATTRIBUTE_VALUE);
+    generator.put(INDEXED, indexed);
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException
       {
-    rel = helper.consumeEnum(REL, true, Rel.class, null,
-        REL_ENUM_TO_ATTRIBUTE_VALUE);
+    indexed = helper.consumeBoolean(INDEXED, false);
   }
 
   @Override
@@ -150,22 +131,22 @@ public class Priority extends ExtensionPoint {
     if (!sameClassAs(obj)) {
       return false;
     }
-    Priority other = (Priority) obj;
-    return eq(rel, other.rel);
+    Status other = (Status) obj;
+    return eq(indexed, other.indexed);
   }
 
   @Override
   public int hashCode() {
     int result = getClass().hashCode();
-    if (rel != null) {
-      result = 37 * result + rel.hashCode();
+    if (indexed != null) {
+      result = 37 * result + indexed.hashCode();
     }
     return result;
   }
 
   @Override
   public String toString() {
-    return "{Priority rel=" + rel + "}";
+    return "{Status indexed=" + indexed + "}";
   }
 
 }

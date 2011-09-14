@@ -152,6 +152,12 @@ public class PhoneNumber extends Element {
       "rel"), String.class);
 
   /**
+   * An optional "tel URI" useful for programmatic access.
+   */
+  public static final AttributeKey<String> URI = AttributeKey.of(new QName(null,
+      "uri"), String.class);
+
+  /**
    * Registers the metadata for this element.
    */
   public static void registerMetadata(MetadataRegistry registry) {
@@ -166,6 +172,7 @@ public class PhoneNumber extends Element {
     builder.addAttribute(LABEL);
     builder.addAttribute(PRIMARY);
     builder.addAttribute(REL);
+    builder.addAttribute(URI);
   }
 
   /**
@@ -307,6 +314,38 @@ public class PhoneNumber extends Element {
   }
 
   /**
+   * Returns the An optional "tel URI" useful for programmatic access.
+   *
+   * @return An optional "tel URI" useful for programmatic access
+   */
+  public String getUri() {
+    return super.getAttributeValue(URI);
+  }
+
+  /**
+   * Sets the An optional "tel URI" useful for programmatic access.
+   *
+   * @param uri An optional "tel URI" useful for programmatic access or {@code
+   *     null} to reset
+   * @return this to enable chaining setters
+   */
+  public PhoneNumber setUri(String uri) {
+    super.setAttributeValue(URI, uri);
+    return this;
+  }
+
+  /**
+   * Returns whether it has the An optional "tel URI" useful for programmatic
+   * access.
+   *
+   * @return whether it has the An optional "tel URI" useful for programmatic
+   *     access
+   */
+  public boolean hasUri() {
+    return super.hasAttribute(URI);
+  }
+
+  /**
    * Returns the human-readable phone number.
    *
    * @return human-readable phone number
@@ -347,6 +386,7 @@ public class PhoneNumber extends Element {
     return eq(getLabel(), other.getLabel())
         && eq(getPrimary(), other.getPrimary())
         && eq(getRel(), other.getRel())
+        && eq(getUri(), other.getUri())
         && eq(getValue(), other.getValue());
   }
 
@@ -361,6 +401,9 @@ public class PhoneNumber extends Element {
     }
     if (getRel() != null) {
       result = 37 * result + getRel().hashCode();
+    }
+    if (getUri() != null) {
+      result = 37 * result + getUri().hashCode();
     }
     if (getValue() != null) {
       result = 37 * result + getValue().hashCode();

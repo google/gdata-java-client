@@ -14,29 +14,29 @@
  */
 
 
-package com.google.gdata.data.contacts;
+package com.google.gdata.data.docs;
 
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ValueConstruct;
 
 /**
- * Contact's billing information.
+ * Describes a suggested filename.
  *
  * 
  */
 @ExtensionDescription.Default(
-    nsAlias = ContactsNamespace.GCONTACT_ALIAS,
-    nsUri = ContactsNamespace.GCONTACT,
-    localName = BillingInformation.XML_NAME)
-public class BillingInformation extends ValueConstruct {
+    nsAlias = DocsNamespace.DOCS_ALIAS,
+    nsUri = DocsNamespace.DOCS,
+    localName = SuggestedFilename.XML_NAME)
+public class SuggestedFilename extends ValueConstruct {
 
   /** XML element name */
-  static final String XML_NAME = "billingInformation";
+  static final String XML_NAME = "suggestedFilename";
 
   /**
    * Default mutable constructor.
    */
-  public BillingInformation() {
+  public SuggestedFilename() {
     this(null);
   }
 
@@ -45,8 +45,8 @@ public class BillingInformation extends ValueConstruct {
    *
    * @param value immutable value or <code>null</code> for a mutable value
    */
-  public BillingInformation(String value) {
-    super(ContactsNamespace.GCONTACT_NS, XML_NAME, null, value);
+  public SuggestedFilename(String value) {
+    super(DocsNamespace.DOCS_NS, XML_NAME, null, value);
     setRequired(false);
   }
 
@@ -61,7 +61,7 @@ public class BillingInformation extends ValueConstruct {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(BillingInformation.class);
+        ExtensionDescription.getDefaultDescription(SuggestedFilename.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -69,7 +69,7 @@ public class BillingInformation extends ValueConstruct {
 
   @Override
   public String toString() {
-    return "{BillingInformation value=" + getValue() + "}";
+    return "{SuggestedFilename value=" + getValue() + "}";
   }
 
 }

@@ -51,3 +51,4 @@ public class ContactFeed extends BaseFeed<ContactFeed, ContactEntry> {
   }
 
 }
+

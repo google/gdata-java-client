@@ -21,6 +21,10 @@ import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ExtensionProfile;
 import com.google.gdata.data.Link;
+import com.google.gdata.data.batch.BatchId;
+import com.google.gdata.data.batch.BatchInterrupted;
+import com.google.gdata.data.batch.BatchOperation;
+import com.google.gdata.data.batch.BatchStatus;
 import com.google.gdata.data.extensions.Email;
 import com.google.gdata.data.extensions.ExtendedProperty;
 import com.google.gdata.data.extensions.Im;
@@ -39,7 +43,7 @@ import java.util.List;
  * @param <E> concrete entry type
  * 
  */
-public abstract class BasePersonEntry<E extends BasePersonEntry> extends
+public abstract class BasePersonEntry<E extends BasePersonEntry<E>> extends
     BaseEntry<E> {
 
   /**
@@ -65,6 +69,21 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
       return;
     }
     super.declareExtensions(extProfile);
+    extProfile.declare(BasePersonEntry.class,
+        new ExtensionDescription(BatchId.class, new XmlNamespace("batch",
+        "http://schemas.google.com/gdata/batch"), "id", false, false, false));
+    extProfile.declare(BasePersonEntry.class,
+        new ExtensionDescription(BatchInterrupted.class,
+        new XmlNamespace("batch", "http://schemas.google.com/gdata/batch"),
+        "interrupted", false, false, false));
+    extProfile.declare(BasePersonEntry.class,
+        new ExtensionDescription(BatchOperation.class, new XmlNamespace("batch",
+        "http://schemas.google.com/gdata/batch"), "operation", false, false,
+        false));
+    extProfile.declare(BasePersonEntry.class,
+        new ExtensionDescription(BatchStatus.class, new XmlNamespace("batch",
+        "http://schemas.google.com/gdata/batch"), "status", false, false,
+        false));
     extProfile.declare(BasePersonEntry.class, BillingInformation.class);
     extProfile.declare(BasePersonEntry.class, Birthday.class);
     extProfile.declare(BasePersonEntry.class,
@@ -82,6 +101,7 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
         false));
     extProfile.declare(BasePersonEntry.class,
         ExternalId.getDefaultDescription(false, true));
+    extProfile.declare(BasePersonEntry.class, FileAs.class);
     extProfile.declare(BasePersonEntry.class, Gender.class);
     extProfile.declare(BasePersonEntry.class, Hobby.getDefaultDescription(false,
         true));
@@ -114,6 +134,7 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
         Relation.getDefaultDescription(false, true));
     extProfile.declare(BasePersonEntry.class, Sensitivity.class);
     extProfile.declare(BasePersonEntry.class, ShortName.class);
+    extProfile.declare(BasePersonEntry.class, Status.class);
     extProfile.declare(BasePersonEntry.class,
         StructuredPostalAddress.getDefaultDescription(false, true));
     new StructuredPostalAddress().declareExtensions(extProfile);
@@ -126,6 +147,132 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
         new ExtensionDescription(Where.class, new XmlNamespace("gd",
         "http://schemas.google.com/g/2005"), "where", false, false, false));
     new Where().declareExtensions(extProfile);
+  }
+
+  /**
+   * Returns the batch identifier.
+   *
+   * @return batch identifier
+   */
+  public BatchId getBatchId() {
+    return getExtension(BatchId.class);
+  }
+
+  /**
+   * Sets the batch identifier.
+   *
+   * @param batchId batch identifier or <code>null</code> to reset
+   */
+  public void setBatchId(BatchId batchId) {
+    if (batchId == null) {
+      removeExtension(BatchId.class);
+    } else {
+      setExtension(batchId);
+    }
+  }
+
+  /**
+   * Returns whether it has the batch identifier.
+   *
+   * @return whether it has the batch identifier
+   */
+  public boolean hasBatchId() {
+    return hasExtension(BatchId.class);
+  }
+
+  /**
+   * Returns the batch interruption information.
+   *
+   * @return batch interruption information
+   */
+  public BatchInterrupted getBatchInterrupted() {
+    return getExtension(BatchInterrupted.class);
+  }
+
+  /**
+   * Sets the batch interruption information.
+   *
+   * @param batchInterrupted batch interruption information or <code>null</code>
+   *     to reset
+   */
+  public void setBatchInterrupted(BatchInterrupted batchInterrupted) {
+    if (batchInterrupted == null) {
+      removeExtension(BatchInterrupted.class);
+    } else {
+      setExtension(batchInterrupted);
+    }
+  }
+
+  /**
+   * Returns whether it has the batch interruption information.
+   *
+   * @return whether it has the batch interruption information
+   */
+  public boolean hasBatchInterrupted() {
+    return hasExtension(BatchInterrupted.class);
+  }
+
+  /**
+   * Returns the batch operation.
+   *
+   * @return batch operation
+   */
+  public BatchOperation getBatchOperation() {
+    return getExtension(BatchOperation.class);
+  }
+
+  /**
+   * Sets the batch operation.
+   *
+   * @param batchOperation batch operation or <code>null</code> to reset
+   */
+  public void setBatchOperation(BatchOperation batchOperation) {
+    if (batchOperation == null) {
+      removeExtension(BatchOperation.class);
+    } else {
+      setExtension(batchOperation);
+    }
+  }
+
+  /**
+   * Returns whether it has the batch operation.
+   *
+   * @return whether it has the batch operation
+   */
+  public boolean hasBatchOperation() {
+    return hasExtension(BatchOperation.class);
+  }
+
+  /**
+   * Returns the batch response status information.
+   *
+   * @return batch response status information
+   */
+  public BatchStatus getBatchStatus() {
+    return getExtension(BatchStatus.class);
+  }
+
+  /**
+   * Sets the batch response status information.
+   *
+   * @param batchStatus batch response status information or <code>null</code>
+   *     to reset
+   */
+  public void setBatchStatus(BatchStatus batchStatus) {
+    if (batchStatus == null) {
+      removeExtension(BatchStatus.class);
+    } else {
+      setExtension(batchStatus);
+    }
+  }
+
+  /**
+   * Returns whether it has the batch response status information.
+   *
+   * @return whether it has the batch response status information
+   */
+  public boolean hasBatchStatus() {
+    return hasExtension(BatchStatus.class);
   }
 
   /**
@@ -249,27 +396,27 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
   /**
-   * Returns the email addresses.
+   * Returns the contact emails.
    *
-   * @return email addresses
+   * @return contact emails
    */
   public List<Email> getEmailAddresses() {
     return getRepeatingExtension(Email.class);
   }
 
   /**
-   * Adds a new email address.
+   * Adds a new contact email.
    *
-   * @param emailAddress email address
+   * @param emailAddress contact email
    */
   public void addEmailAddress(Email emailAddress) {
     getEmailAddresses().add(emailAddress);
   }
 
   /**
-   * Returns whether it has the email addresses.
+   * Returns whether it has the contact emails.
    *
-   * @return whether it has the email addresses
+   * @return whether it has the contact emails
    */
   public boolean hasEmailAddresses() {
     return hasRepeatingExtension(Email.class);
@@ -303,27 +450,27 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
   /**
-   * Returns the extended properties.
+   * Returns the contact extended properties.
    *
-   * @return extended properties
+   * @return contact extended properties
    */
   public List<ExtendedProperty> getExtendedProperties() {
     return getRepeatingExtension(ExtendedProperty.class);
   }
 
   /**
-   * Adds a new extended property.
+   * Adds a new contact extended property.
    *
-   * @param extendedProperty extended property
+   * @param extendedProperty contact extended property
    */
   public void addExtendedProperty(ExtendedProperty extendedProperty) {
     getExtendedProperties().add(extendedProperty);
   }
 
   /**
-   * Returns whether it has the extended properties.
+   * Returns whether it has the contact extended properties.
    *
-   * @return whether it has the extended properties
+   * @return whether it has the contact extended properties
    */
   public boolean hasExtendedProperties() {
     return hasRepeatingExtension(ExtendedProperty.class);
@@ -354,6 +501,37 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
    */
   public boolean hasExternalIds() {
     return hasRepeatingExtension(ExternalId.class);
+  }
+
+  /**
+   * Returns the person file as.
+   *
+   * @return person file as
+   */
+  public FileAs getFileAs() {
+    return getExtension(FileAs.class);
+  }
+
+  /**
+   * Sets the person file as.
+   *
+   * @param fileAs person file as or <code>null</code> to reset
+   */
+  public void setFileAs(FileAs fileAs) {
+    if (fileAs == null) {
+      removeExtension(FileAs.class);
+    } else {
+      setExtension(fileAs);
+    }
+  }
+
+  /**
+   * Returns whether it has the person file as.
+   *
+   * @return whether it has the person file as
+   */
+  public boolean hasFileAs() {
+    return hasExtension(FileAs.class);
   }
 
   /**
@@ -415,27 +593,27 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
   /**
-   * Returns the instant messaging addresses.
+   * Returns the contact ims.
    *
-   * @return instant messaging addresses
+   * @return contact ims
    */
   public List<Im> getImAddresses() {
     return getRepeatingExtension(Im.class);
   }
 
   /**
-   * Adds a new instant messaging address.
+   * Adds a new contact im.
    *
-   * @param imAddress instant messaging address
+   * @param imAddress contact im
    */
   public void addImAddress(Im imAddress) {
     getImAddresses().add(imAddress);
   }
 
   /**
-   * Returns whether it has the instant messaging addresses.
+   * Returns whether it has the contact ims.
    *
-   * @return whether it has the instant messaging addresses
+   * @return whether it has the contact ims
    */
   public boolean hasImAddresses() {
     return hasRepeatingExtension(Im.class);
@@ -589,18 +767,18 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
   /**
-   * Returns the name.
+   * Returns the contact name.
    *
-   * @return name
+   * @return contact name
    */
   public Name getName() {
     return getExtension(Name.class);
   }
 
   /**
-   * Sets the name.
+   * Sets the contact name.
    *
-   * @param name name or <code>null</code> to reset
+   * @param name contact name or <code>null</code> to reset
    */
   public void setName(Name name) {
     if (name == null) {
@@ -611,9 +789,9 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
   /**
-   * Returns whether it has the name.
+   * Returns whether it has the contact name.
    *
-   * @return whether it has the name
+   * @return whether it has the contact name
    */
   public boolean hasName() {
     return hasExtension(Name.class);
@@ -682,81 +860,81 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
   /**
-   * Returns the organizations.
+   * Returns the contact organizations.
    *
-   * @return organizations
+   * @return contact organizations
    */
   public List<Organization> getOrganizations() {
     return getRepeatingExtension(Organization.class);
   }
 
   /**
-   * Adds a new organization.
+   * Adds a new contact organization.
    *
-   * @param organization organization
+   * @param organization contact organization
    */
   public void addOrganization(Organization organization) {
     getOrganizations().add(organization);
   }
 
   /**
-   * Returns whether it has the organizations.
+   * Returns whether it has the contact organizations.
    *
-   * @return whether it has the organizations
+   * @return whether it has the contact organizations
    */
   public boolean hasOrganizations() {
     return hasRepeatingExtension(Organization.class);
   }
 
   /**
-   * Returns the phone numbers.
+   * Returns the contact phone numbers.
    *
-   * @return phone numbers
+   * @return contact phone numbers
    */
   public List<PhoneNumber> getPhoneNumbers() {
     return getRepeatingExtension(PhoneNumber.class);
   }
 
   /**
-   * Adds a new phone number.
+   * Adds a new contact phone number.
    *
-   * @param phoneNumber phone number
+   * @param phoneNumber contact phone number
    */
   public void addPhoneNumber(PhoneNumber phoneNumber) {
     getPhoneNumbers().add(phoneNumber);
   }
 
   /**
-   * Returns whether it has the phone numbers.
+   * Returns whether it has the contact phone numbers.
    *
-   * @return whether it has the phone numbers
+   * @return whether it has the contact phone numbers
    */
   public boolean hasPhoneNumbers() {
     return hasRepeatingExtension(PhoneNumber.class);
   }
 
   /**
-   * Returns the postal addresses.
+   * Returns the contact postal addresses.
    *
-   * @return postal addresses
+   * @return contact postal addresses
    */
   public List<PostalAddress> getPostalAddresses() {
     return getRepeatingExtension(PostalAddress.class);
   }
 
   /**
-   * Adds a new postal address.
+   * Adds a new contact postal address.
    *
-   * @param postalAddress postal address
+   * @param postalAddress contact postal address
    */
   public void addPostalAddress(PostalAddress postalAddress) {
     getPostalAddresses().add(postalAddress);
   }
 
   /**
-   * Returns whether it has the postal addresses.
+   * Returns whether it has the contact postal addresses.
    *
-   * @return whether it has the postal addresses
+   * @return whether it has the contact postal addresses
    */
   public boolean hasPostalAddresses() {
     return hasRepeatingExtension(PostalAddress.class);
@@ -883,18 +1061,49 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
   /**
-   * Returns the structured postal addresses.
+   * Returns the status.
    *
-   * @return structured postal addresses
+   * @return status
+   */
+  public Status getStatus() {
+    return getExtension(Status.class);
+  }
+
+  /**
+   * Sets the status.
+   *
+   * @param status status or <code>null</code> to reset
+   */
+  public void setStatus(Status status) {
+    if (status == null) {
+      removeExtension(Status.class);
+    } else {
+      setExtension(status);
+    }
+  }
+
+  /**
+   * Returns whether it has the status.
+   *
+   * @return whether it has the status
+   */
+  public boolean hasStatus() {
+    return hasExtension(Status.class);
+  }
+
+  /**
+   * Returns the contact structured addresses.
+   *
+   * @return contact structured addresses
    */
   public List<StructuredPostalAddress> getStructuredPostalAddresses() {
     return getRepeatingExtension(StructuredPostalAddress.class);
   }
 
   /**
-   * Adds a new structured postal address.
+   * Adds a new contact structured address.
    *
-   * @param structuredPostalAddress structured postal address
+   * @param structuredPostalAddress contact structured address
    */
   public void addStructuredPostalAddress(StructuredPostalAddress
       structuredPostalAddress) {
@@ -902,9 +1111,9 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
   /**
-   * Returns whether it has the structured postal addresses.
+   * Returns whether it has the contact structured addresses.
    *
-   * @return whether it has the structured postal addresses
+   * @return whether it has the contact structured addresses
    */
   public boolean hasStructuredPostalAddresses() {
     return hasRepeatingExtension(StructuredPostalAddress.class);
@@ -1054,3 +1263,4 @@ public abstract class BasePersonEntry<E extends BasePersonEntry> extends
   }
 
 }
+

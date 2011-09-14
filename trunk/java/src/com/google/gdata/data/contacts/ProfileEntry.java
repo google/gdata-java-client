@@ -64,3 +64,4 @@ public class ProfileEntry extends BasePersonEntry<ProfileEntry> {
   }
 
 }
+

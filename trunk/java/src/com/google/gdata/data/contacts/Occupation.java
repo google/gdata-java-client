@@ -47,7 +47,6 @@ public class Occupation extends ValueConstruct {
    */
   public Occupation(String value) {
     super(ContactsNamespace.GCONTACT_NS, XML_NAME, null, value);
-    setRequired(false);
   }
 
   /**
@@ -73,3 +72,4 @@ public class Occupation extends ValueConstruct {
   }
 
 }
+

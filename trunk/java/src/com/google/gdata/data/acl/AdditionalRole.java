@@ -14,29 +14,50 @@
  */
 
 
-package com.google.gdata.data.contacts;
+package com.google.gdata.data.acl;
 
 import com.google.gdata.data.ExtensionDescription;
 import com.google.gdata.data.ValueConstruct;
 
 /**
- * Contact's billing information.
+ * Describes an additional role for an entry in an access control list.
  *
  * 
  */
 @ExtensionDescription.Default(
-    nsAlias = ContactsNamespace.GCONTACT_ALIAS,
-    nsUri = ContactsNamespace.GCONTACT,
-    localName = BillingInformation.XML_NAME)
-public class BillingInformation extends ValueConstruct {
+    nsAlias = AclNamespace.gAclAlias,
+    nsUri = AclNamespace.gAcl,
+    localName = AdditionalRole.XML_NAME)
+public class AdditionalRole extends ValueConstruct {
+
+  /**
+   * Predefined value 'appender' to indicate that a user has the right to add
+   * to the controlled object.
+   */
+  public static final AdditionalRole APPENDER = new AdditionalRole("appender");
+
+  /**
+   * Predefined value 'commenter' to indicate that a user has the right to
+   * comment on the controlled object.
+   */
+  public static final AdditionalRole COMMENTER = new AdditionalRole("commenter");
+
+  /**
+   * Predefined value 'executer' to indicate that a user has the right to
+   * execute the controlled object.
+   */
+  public static final AdditionalRole EXECUTER = new AdditionalRole("executer");
 
   /** XML element name */
-  static final String XML_NAME = "billingInformation";
+  static final String XML_NAME = "additionalRole";
+
+  /** XML "value" attribute name */
+  private static final String VALUE = "value";
 
   /**
    * Default mutable constructor.
    */
-  public BillingInformation() {
+  public AdditionalRole() {
     this(null);
   }
 
@@ -45,9 +66,8 @@ public class BillingInformation extends ValueConstruct {
    *
    * @param value immutable value or <code>null</code> for a mutable value
    */
-  public BillingInformation(String value) {
-    super(ContactsNamespace.GCONTACT_NS, XML_NAME, null, value);
-    setRequired(false);
+  public AdditionalRole(String value) {
+    super(AclNamespace.gAclNs, XML_NAME, VALUE, value);
   }
 
   /**
@@ -61,16 +81,10 @@ public class BillingInformation extends ValueConstruct {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(BillingInformation.class);
+        ExtensionDescription.getDefaultDescription(AdditionalRole.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
   }
-
-  @Override
-  public String toString() {
-    return "{BillingInformation value=" + getValue() + "}";
-  }
-
 }
 

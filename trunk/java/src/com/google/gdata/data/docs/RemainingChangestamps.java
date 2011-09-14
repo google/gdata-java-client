@@ -14,7 +14,7 @@
  */
 
 
-package com.google.gdata.data.contacts;
+package com.google.gdata.data.docs;
 
 import com.google.gdata.data.AttributeGenerator;
 import com.google.gdata.data.AttributeHelper;
@@ -23,93 +23,76 @@ import com.google.gdata.data.ExtensionPoint;
 import com.google.gdata.util.ParseException;
 
 /**
- * Contact's priority.
+ * Number of remaining changestamps.
  *
  * 
  */
 @ExtensionDescription.Default(
-    nsAlias = ContactsNamespace.GCONTACT_ALIAS,
-    nsUri = ContactsNamespace.GCONTACT,
-    localName = Priority.XML_NAME)
-public class Priority extends ExtensionPoint {
+    nsAlias = DocsNamespace.DOCS_ALIAS,
+    nsUri = DocsNamespace.DOCS,
+    localName = RemainingChangestamps.XML_NAME)
+public class RemainingChangestamps extends ExtensionPoint {
 
   /** XML element name */
-  static final String XML_NAME = "priority";
+  static final String XML_NAME = "remainingChangestamps";
 
-  /** XML "rel" attribute name */
-  private static final String REL = "rel";
+  /** XML "value" attribute name */
+  private static final String VALUE = "value";
 
-  private static final AttributeHelper.EnumToAttributeValue<Rel>
-      REL_ENUM_TO_ATTRIBUTE_VALUE = new
-      AttributeHelper.LowerCaseEnumToAttributeValue<Rel>();
-
-  /** Priority category */
-  private Rel rel = null;
-
-  /** Priority category. */
-  public enum Rel {
-
-    /** High priority. */
-    HIGH,
-
-    /** Low priority. */
-    LOW,
-
-    /** Normal priority. */
-    NORMAL
-
-  }
+  /** Value */
+  private Long value = null;
 
   /**
    * Default mutable constructor.
    */
-  public Priority() {
+  public RemainingChangestamps() {
     super();
   }
 
   /**
    * Immutable constructor.
    *
-   * @param rel priority category.
+   * @param value value.
    */
-  public Priority(Rel rel) {
+  public RemainingChangestamps(Long value) {
     super();
-    setRel(rel);
+    setValue(value);
     setImmutable(true);
   }
 
   /**
-   * Returns the priority category.
+   * Returns the value.
    *
-   * @return priority category
+   * @return value
    */
-  public Rel getRel() {
-    return rel;
+  public Long getValue() {
+    return value;
   }
 
   /**
-   * Sets the priority category.
+   * Sets the value.
    *
-   * @param rel priority category or <code>null</code> to reset
+   * @param value value or <code>null</code> to reset
    */
-  public void setRel(Rel rel) {
+  public void setValue(Long value) {
     throwExceptionIfImmutable();
-    this.rel = rel;
+    this.value = value;
   }
 
   /**
-   * Returns whether it has the priority category.
+   * Returns whether it has the value.
    *
-   * @return whether it has the priority category
+   * @return whether it has the value
    */
-  public boolean hasRel() {
-    return getRel() != null;
+  public boolean hasValue() {
+    return getValue() != null;
   }
 
   @Override
   protected void validate() {
-    if (rel == null) {
-      throwExceptionForMissingAttribute(REL);
+    if (value != null && value < 0) {
+      throw new IllegalStateException("value attribute must be non-negative: " +
+          value);
     }
   }
 
@@ -124,7 +107,7 @@ public class Priority extends ExtensionPoint {
   public static ExtensionDescription getDefaultDescription(boolean required,
       boolean repeatable) {
     ExtensionDescription desc =
-        ExtensionDescription.getDefaultDescription(Priority.class);
+        ExtensionDescription.getDefaultDescription(RemainingChangestamps.class);
     desc.setRequired(required);
     desc.setRepeatable(repeatable);
     return desc;
@@ -132,14 +115,13 @@ public class Priority extends ExtensionPoint {
 
   @Override
   protected void putAttributes(AttributeGenerator generator) {
-    generator.put(REL, rel, REL_ENUM_TO_ATTRIBUTE_VALUE);
+    generator.put(VALUE, value);
   }
 
   @Override
   protected void consumeAttributes(AttributeHelper helper) throws ParseException
       {
-    rel = helper.consumeEnum(REL, true, Rel.class, null,
-        REL_ENUM_TO_ATTRIBUTE_VALUE);
+    value = helper.consumeLong(VALUE, false);
   }
 
   @Override
@@ -150,22 +132,22 @@ public class Priority extends ExtensionPoint {
     if (!sameClassAs(obj)) {
       return false;
     }
-    Priority other = (Priority) obj;
-    return eq(rel, other.rel);
+    RemainingChangestamps other = (RemainingChangestamps) obj;
+    return eq(value, other.value);
   }
 
   @Override
   public int hashCode() {
     int result = getClass().hashCode();
-    if (rel != null) {
-      result = 37 * result + rel.hashCode();
+    if (value != null) {
+      result = 37 * result + value.hashCode();
     }
     return result;
   }
 
   @Override
   public String toString() {
-    return "{Priority rel=" + rel + "}";
+    return "{RemainingChangestamps value=" + value + "}";
   }
 
 }

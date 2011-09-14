@@ -72,3 +72,4 @@ public class Nickname extends ValueConstruct {
   }
 
 }
+

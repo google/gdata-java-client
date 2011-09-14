@@ -16,7 +16,6 @@
 
 package com.google.gdata.data.docs;
 
-import com.google.gdata.util.common.base.StringUtil;
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
 import com.google.gdata.data.DateTime;
@@ -198,11 +197,14 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
     super.declareExtensions(extProfile);
     extProfile.declare(DocumentListEntry.class, Description.class);
     extProfile.declare(DocumentListEntry.class, DocumentListAclFeedLink.class);
+    extProfile.declare(DocumentListEntry.class, Filename.class);
+    extProfile.declare(DocumentListEntry.class, LastCommented.class);
     extProfile.declare(DocumentListEntry.class, LastModifiedBy.class);
     extProfile.declare(DocumentListEntry.class, LastViewed.class);
     extProfile.declare(DocumentListEntry.class, Md5Checksum.class);
     extProfile.declare(DocumentListEntry.class, QuotaBytesUsed.class);
     extProfile.declare(DocumentListEntry.class, ResourceId.class);
+    extProfile.declare(DocumentListEntry.class, SuggestedFilename.class);
     extProfile.declare(DocumentListEntry.class, WritersCanInvite.class);
   }
 
@@ -397,6 +399,26 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
   }
 
   /**
+   * Sets the restricted download status for this document.
+   *
+   * @param restrictedDownload {@code true} if the document has restricted downloading
+   */
+  public void setRestrictedDownload(boolean restrictedDownload) {
+    if (restrictedDownload) {
+      this.getCategories().add(Labels.RESTRICTED_DOWNLOAD);
+    } else {
+      this.getCategories().remove(Labels.RESTRICTED_DOWNLOAD);
+    }
+  }
+
+  /**
+   * @return {@code true} if the document has restricted downloading
+   */
+  public boolean isRestrictedDownload() {
+    return this.getCategories().contains(Labels.RESTRICTED_DOWNLOAD);
+  }
+
+  /**
    * Adds a user-specific folder that parents this document
    *
    * @param owner the owner of the folder
@@ -424,7 +446,7 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
       Matcher matcher = FOLDER_PATTERN.matcher(category.getScheme());
       if (matcher.matches()) {
         String folderName = category.getLabel();
-        if (StringUtil.isEmpty(folderName)) {
+        if ((folderName == null) || (folderName.length() == 0)) {
           folderName = category.getTerm();
         }
         folders.add(folderName);
@@ -477,6 +499,75 @@ public class DocumentListEntry extends MediaEntry<DocumentListEntry> {
       removeExtension(Description.class);
     } else {
       setExtension(new Description(description));
+    }
+  }
+
+  /**
+   * Returns the original filename for this document.
+   *
+   * @return the filename
+   */
+  public String getFilename() {
+    Filename filename = getExtension(Filename.class);
+    return filename == null ? null : filename.getValue();
+  }
+
+  /**
+   * Sets the filename of this document.
+   *
+   * @param filename the filename
+   */
+  public void setFilename(String filename) {
+    if (filename == null) {
+      removeExtension(Filename.class);
+    } else {
+      setExtension(new Filename(filename));
+    }
+  }
+
+  /**
+   * Returns the suggested filename for this document.
+   *
+   * @return the filename
+   */
+  public String getSuggestedFilename() {
+    SuggestedFilename filename = getExtension(SuggestedFilename.class);
+    return filename == null ? null : filename.getValue();
+  }
+
+  /**
+   * Sets the suggested filename for this document.
+   *
+   * @param filename the filename
+   */
+  public void setSuggestedFilename(String filename) {
+    if (filename == null) {
+      removeExtension(SuggestedFilename.class);
+    } else {
+      setExtension(new SuggestedFilename(filename));
+    }
+  }
+
+  /**
+   * Returns the time when the document was last commented by the user.
+   *
+   * @return the last commented time
+   */
+  public DateTime getLastCommented() {
+    LastCommented lastCommented = getExtension(LastCommented.class);
+    return lastCommented == null ? null : lastCommented.getValue();
+  }
+
+  /**
+   * Sets the time when the document was last commented by the user.
+   *
+   * @param lastCommented the last commented time
+   */
+  public void setLastCommented(DateTime lastCommented) {
+    if (lastCommented == null) {
+      removeExtension(LastCommented.class);
+    } else {
+      setExtension(new LastCommented(lastCommented));
     }
   }
 

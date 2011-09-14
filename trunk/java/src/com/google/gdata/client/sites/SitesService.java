@@ -60,7 +60,8 @@ public class SitesService extends MediaService {
    * The version ID of the service.
    */
   public static final String SITES_SERVICE_VERSION = "GSites-Java/" +
-      SitesService.class.getPackage().getImplementationVersion();
+      (SitesService.class.getPackage() == null ? "unknown" :
+      SitesService.class.getPackage().getImplementationVersion());
 
   /** GData versions supported by the Google Sites Data API. */
   public static final class Versions {
@@ -81,6 +82,10 @@ public class SitesService extends MediaService {
     public static final Version V1_3 = new Version(SitesService.class, "1.3",
         Service.Versions.V2);
 
+    /** Version {@code 1.4}. */
+    public static final Version V1_4 = new Version(SitesService.class, "1.4",
+        Service.Versions.V2);
+
     private Versions() {}
   }
 
@@ -88,7 +93,7 @@ public class SitesService extends MediaService {
    * Default GData version used by the Google Sites Data API.
    */
   public static final Version DEFAULT_VERSION =
-      Service.initServiceVersion(SitesService.class, Versions.V1_3);
+      Service.initServiceVersion(SitesService.class, Versions.V1_4);
 
   /**
    * Constructs an instance connecting to the Google Sites Data API for an

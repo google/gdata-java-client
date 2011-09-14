@@ -53,6 +53,7 @@ public class AclScope extends AbstractExtension {
 
   /** predefined values for the "type" attribute */
   public enum Type {
+    INVITE,
     USER,
     DOMAIN,
     GROUP,

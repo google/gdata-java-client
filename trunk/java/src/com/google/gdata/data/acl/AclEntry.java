@@ -18,9 +18,11 @@ package com.google.gdata.data.acl;
 
 import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.Category;
-import com.google.gdata.data.Kind;
 import com.google.gdata.data.ExtensionProfile;
+import com.google.gdata.data.Kind;
 import com.google.gdata.util.Namespaces;
+
+import java.util.List;
 
 /**
  * Defines an entry in a feed of an access control list (ACL).
@@ -57,6 +59,7 @@ public class AclEntry extends BaseEntry<AclEntry> {
     extProfile.declare(AclEntry.class, AclRole.class);
     extProfile.declare(AclEntry.class, AclWithKey.class);
     new AclWithKey().declareExtensions(extProfile);
+    extProfile.declare(AclEntry.class, AdditionalRole.getDefaultDescription(false, true));
   }
 
   public AclScope getScope() {
@@ -81,5 +84,17 @@ public class AclEntry extends BaseEntry<AclEntry> {
 
   public void setWithKey(AclWithKey withKey) {
     setExtension(withKey);
+  }
+
+  public List<AdditionalRole> getAdditionalRoles() {
+    return getRepeatingExtension(AdditionalRole.class);
+  }
+
+  public void addAdditionalRole(AdditionalRole role) {
+    addRepeatingExtension(role);
+  }
+
+  public void clearAdditionalRoles() {
+    getAdditionalRoles().clear();
   }
 }
