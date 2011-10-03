@@ -28,7 +28,7 @@ The wiki page shows the release notes for the current binary download, the subve
    * Updates GData client URL scheme to use Https. Also Updates several samples.
 
 == v1.42.0 ==
-   * Update Analytics API * New fields
+   * Update Analytics API with new fields
 
 == v1.41.5 ==
    * Update Analytics API.
