@@ -7,6 +7,43 @@ The release notes show bugfixes and feature additions over the course of the pro
 The wiki page shows the release notes for the current binary download, the subversion project contains a text version with the most recent changes.
 
 = Details =
+== v1.46.0 ==
+   * Change in behaviour for adding new users to site permissions.
+   * Add additional roles to AclEntry.
+   * Add support for the new gContact:status element for the User Profiles API.
+
+== v1.45.0 ==
+   * Updated Document List Data API
+
+== v1.44.0 ==
+   * Adds missing removeOwnerFromGroup() method in appsforyourdomain API
+   * Updates Translator Toolkit sample to use https instead of http.
+   * Adds support for adding, fetching and deleting email delegates in the Email Settings API.
+
+== v1.43.0 ==
+   * Add HealthDemo to the Health API.
+   * Fixes issue 249: setUserCredentials method hangs from sample code.
+   * Sites API adds version 1.3 which includes TagCategory.
+   * Updates appsforyourdomain API for Gmail Settings.
+   * Updates GData client URL scheme to use Https. Also Updates several samples.
+
+== v1.42.0 ==
+   * Update Analytics API * New fields
+
+== v1.41.5 ==
+   * Update Analytics API.
+   * Fix AuthSub encoding/decoding issue.
+
+== v1.41.4 ==
+   * Updates Apps For Your Domain API.
+   * Updates Youtube API.
+
+== v1.41.3 ==
+   * Updated Apps Audit API.
+
+== v1.41.2 ==
+   * Updated YouTube API.
+   * Fixed bug cuased by a new attribute in responses.
 
 == 1.41.1 ==
    * Updated Document List Data API.
