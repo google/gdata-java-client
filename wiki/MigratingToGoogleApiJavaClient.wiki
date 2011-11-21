@@ -22,7 +22,7 @@ Over time, we will add more samples and developer's guides to google-api-java-cl
 
 == What if I have a large code base that uses gdata-java-client? === 
 
-The good news here is that gdata-java-cleint and google-api-java-client are two completely different libraries with different package names.  That means you can use both of them in your project without conflict.  New code can use google-api-java-client and old code can continue to use gdata-java-client.  This can provide a smooth migration path.
+The good news here is that gdata-java-client and google-api-java-client are two completely different libraries with different package names.  That means you can use both of them in your project without conflict.  New code can use google-api-java-client and old code can continue to use gdata-java-client.  This can provide a smooth migration path.
 
 The bad news is that since the two client libraries are so different, switching existing working code from gdata-java-client to google-api-java-client is a non-trivial process.
 
