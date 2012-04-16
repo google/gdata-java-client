@@ -16,6 +16,14 @@
 
 package sample.appsforyourdomain.labs.provisioning;
 
+import com.google.gdata.client.appsforyourdomain.AppsPropertyService;
+import com.google.gdata.data.Link;
+import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
+import com.google.gdata.data.appsforyourdomain.generic.GenericEntry;
+import com.google.gdata.data.appsforyourdomain.generic.GenericFeed;
+import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ServiceException;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,14 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.gdata.client.appsforyourdomain.AppsPropertyService;
-import com.google.gdata.data.Link;
-import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
-import com.google.gdata.data.appsforyourdomain.generic.GenericEntry;
-import com.google.gdata.data.appsforyourdomain.generic.GenericFeed;
-import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.ServiceException;
 
 /**
  * Sample client that uses multi-domain feeds to create users, aliases in one of
@@ -192,8 +192,8 @@ public class ProvisioningApiMultiDomainSampleClient {
   public List<GenericEntry> retrieveAllUserAliases(String userEmail)
       throws AppsForYourDomainException, MalformedURLException, IOException, ServiceException {
 
-    return retrieveAllPages(new URL("https://apps-apis.google.com/a/feeds/alias/2.0/" + domain
-        + "/" + userEmail));
+    return retrieveAllPages(new URL(
+        "https://apps-apis.google.com/a/feeds/alias/2.0/" + domain + "?userEmail=" + userEmail));
   }
 
   /**

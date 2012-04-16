@@ -170,7 +170,11 @@ public class GmailSettingsClient {
               Defaults.FILTER_HAS_ATTACHMENT,
               Defaults.FILTER_SHOULD_MARK_AS_READ,
               Defaults.FILTER_SHOULD_ARCHIVE,
-              Defaults.FILTER_LABEL);
+              Defaults.FILTER_LABEL,
+              Defaults.FILTER_FORWARD_TO,
+              Defaults.FILTER_NEVER_SPAM,
+              Defaults.FILTER_SHOULD_STAR,
+              Defaults.FILTER_SHOULD_TRASH);
         }
 
       } else if (setting.startsWith("sendas")) {

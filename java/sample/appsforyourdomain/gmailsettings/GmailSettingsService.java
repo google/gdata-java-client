@@ -71,7 +71,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
   /**
    * Retrieve the specified Gmail settings as a GenericFeed
    *
-   * @param username the user name for which to get the settings.
+   * @param username the user name or email for which to get the settings.
    * @param setting the setting field to get.
    * @return a GenericEntry of requested settings
    * @throws IOException if an error occurs while communicating with the GData
@@ -81,10 +81,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public GenericFeed retrieveSettingsFeed(String username, String setting)
       throws IOException, ServiceException {
-    URL singleUrl =
-        new URL(
-            Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
-                + domain + "/" + username + "/" + setting);
+    URL singleUrl = buildSettingsUrl(username, setting);
 
     return getFeed(singleUrl, GenericFeed.class);
   }
@@ -92,7 +89,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
   /**
    * Retrieve the specified Gmail settings as a GenericEntry
    *
-   * @param username the user name for which to get the settings.
+   * @param username the user name or email for which to get the settings.
    * @param setting the setting field to get.
    * @return a GenericEntry of requested settings
    * @throws IOException if an error occurs while communicating with the GData
@@ -102,10 +99,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public GenericEntry retrieveSettingsEntry(String username, String setting)
       throws IOException, ServiceException {
-    URL singleUrl =
-        new URL(
-            Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
-                + domain + "/" + username + "/" + setting);
+    URL singleUrl = buildSettingsUrl(username, setting);
 
     return getEntry(singleUrl, GenericEntry.class);
   }
@@ -113,7 +107,7 @@ public class GmailSettingsService extends AppsForYourDomainService {
   /**
    * Inserts a new Gmail settings entity - eg a filter.
    *
-   * @param username the user name of a domain administrator.
+   * @param username the user name or email for the affected user.
    * @param entry an {@link GenericEntry} object containing all the properties
    *        of the new entity.
    * @return an entry with the result of the operation.
@@ -124,17 +118,14 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public GenericEntry insertSettings(String username, GenericEntry entry, String setting)
       throws IOException, MalformedURLException, ServiceException {
-    URL singleUrl =
-        new URL(
-            Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
-                + domain + "/" + username + "/" + setting);
+    URL singleUrl = buildSettingsUrl(username, setting);
     return insert(singleUrl, entry);
   }
 
   /**
    * Update Gmail settings.
    *
-   * @param username the user name of a domain administrator.
+   * @param username the user name or email for the affected user.
    * @param entry a {@link GenericEntry} object containing the new Gmail
    *        settings.
    * @return an entry with the result of the operation.
@@ -144,11 +135,33 @@ public class GmailSettingsService extends AppsForYourDomainService {
    */
   public GenericEntry updateSettings(String username, GenericEntry entry, String setting)
       throws IOException, MalformedURLException, ServiceException {
-    URL singleUrl =
+    URL singleUrl = buildSettingsUrl(username, setting);
+    return update(singleUrl, entry);
+  }
+
+  /**
+   * Builds the url to access the settings
+   *
+   * @param username the user name or email for which to access the settings.
+   * @param setting the setting field to operate on.
+   * @return a GenericEntry of requested settings
+   * @throws IOException if an error occurs while communicating with the GData
+   *         service.
+   */
+  private URL buildSettingsUrl(String username, String setting)
+      throws IOException {
+    String userDomain = domain;
+    if (username.contains("@")) {
+      String[] matches = username.split("@");
+      username = matches[0];
+      userDomain = matches[1];
+    }
+    URL url =
         new URL(
             Constants.PROTOCOL + "://" + Constants.APPS_APIS_DOMAIN + Constants.APPS_APIS_URL + "/"
-                + domain + "/" + username + "/" + setting);
-    return update(singleUrl, entry);
+                + userDomain + "/" + username + "/" + setting);
+    
+    return url;
   }
 
   /**
@@ -173,6 +186,15 @@ public class GmailSettingsService extends AppsForYourDomainService {
    *        criteria.
    * @param label a string that represents the name of the label to apply if a
    *        message matches the specified filter criteria.
+   * @param forwardTo a boolean representing whether to automatically forward
+   *        the message to the given verified email address if it matches the
+   *        filter criteria.
+   * @param neverSpam a boolean representing whether the message satisfying the
+   *        filter criteria should never be marked as spam.
+   * @param shouldStar a boolean representing whether to automatically star the
+   *        message if it matches the specified filter criteria.
+   * @param shouldTrash a boolean representing whether to automatically move the
+   *        message to "Trash" state if it matches the specified filter criteria.
    * @throws IllegalArgumentException if no users are passed in.
    * @throws IOException if an error occurs while communicating with the GData
    *         service.
@@ -188,7 +210,11 @@ public class GmailSettingsService extends AppsForYourDomainService {
       boolean hasAttachment,
       boolean shouldMarkAsRead,
       boolean shouldArchive,
-      String label)
+      String label,
+      String forwardTo,
+      boolean neverSpam,
+      boolean shouldStar,
+      boolean shouldTrash)
       throws IllegalArgumentException, ServiceException, MalformedURLException, IOException {
     if (users.size() == 0) {
       throw new IllegalArgumentException();
@@ -204,13 +230,20 @@ public class GmailSettingsService extends AppsForYourDomainService {
     entry.addProperty(Constants.SHOULD_MARK_AS_READ, String.valueOf(shouldMarkAsRead));
     entry.addProperty(Constants.SHOULD_ARCHIVE, String.valueOf(shouldArchive));
     entry.addProperty(Constants.LABEL, label);
+    entry.addProperty(Constants.FORWARD_TO, forwardTo);
+    entry.addProperty(Constants.NEVER_SPAM, String.valueOf(neverSpam));
+    entry.addProperty(Constants.SHOULD_STAR, String.valueOf(shouldStar));
+    entry.addProperty(Constants.SHOULD_TRASH, String.valueOf(shouldTrash));
 
     for (String user : users) {
       logger.log(Level.INFO,
           "Creating filter ( " + "from: " + from + ", to: " + to + ", subject: " + subject
               + ", hasTheWord: " + hasTheWord + ", doesNotHaveTheWord: " + doesNotHaveTheWord
               + ", hasAttachment: " + hasAttachment + ", shouldMarkAsRead: " + shouldMarkAsRead
-              + ", shouldArchive: " + shouldArchive + ", label: " + label + " ) for user " + user
+              + ", shouldArchive: " + shouldArchive + ", label: " + label
+              + ", forwardTo: " + forwardTo + ", neverSpam: " + neverSpam
+              + ", shouldStar: " + shouldStar + ", shouldTrash: " + shouldTrash
+              + " ) for user " + user
               + " ...");
       insertSettings(user, entry, "filter");
       logger.log(Level.INFO, "Successfully created filter.");

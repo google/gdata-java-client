@@ -16,6 +16,8 @@
 
 package com.google.gdata.client;
 
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.common.annotations.Beta;
 import com.google.gdata.client.AuthTokenFactory.AuthToken;
 import com.google.gdata.client.AuthTokenFactory.TokenListener;
 import com.google.gdata.client.authn.oauth.OAuthException;
@@ -388,13 +390,25 @@ public class GoogleService extends Service implements TokenListener {
    * <li>oauth_token
    * </ul>
    *
-   * @param parameters the OAuth parameters to use to generated the header
+   * @param parameters the OAuth parameters to use to generate the header
    * @param signer the signing method to use for signing the header
    */
   public void setOAuthCredentials(OAuthParameters parameters,
       OAuthSigner signer) throws OAuthException {
     GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
     googleAuthTokenFactory.setOAuthCredentials(parameters, signer);
+    requestFactory.setAuthToken(authTokenFactory.getAuthToken());
+  }
+
+   /**
+   * Sets the OAuth 2.0 credentials used to generate the authorization header.
+   *
+   * @param credential the OAuth 2.0 credentials to use to generate the header
+   */
+  @Beta
+  public void setOAuth2Credentials(Credential credential) {
+    GoogleAuthTokenFactory googleAuthTokenFactory = getGoogleAuthTokenFactory();
+    googleAuthTokenFactory.setOAuth2Credentials(credential);
     requestFactory.setAuthToken(authTokenFactory.getAuthToken());
   }
 
@@ -656,7 +670,7 @@ public class GoogleService extends Service implements TokenListener {
   }
 
   @Override
-  public <F extends IFeed> F getFeed(Query query, Class<F> feedClass, 
+  public <F extends IFeed> F getFeed(Query query, Class<F> feedClass,
       String etag) throws IOException, ServiceException {
     try {
       return super.getFeed(query, feedClass, etag);

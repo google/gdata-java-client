@@ -21,25 +21,31 @@ REQUIREMENTS:
 GData Java Client depends on following external utilities/libraries on top of
 standard Java installation.
 1. Java Development Kit version 5.0 or greater.  Latest version of JDK
-   available for download from http://java.sun.com.
+   available for download from http://java.oracle.com.
 2. Apache ANT version 1.7 or greater.  Apache's ANT binary is available for
    download from http://ant.apache.org.
-3. mail.jar in Sun's JavaMail API (version 1.4 or greater).
-   Sun's JavaMail package available for download from
-   "http://java.sun.com/products/javamail/downloads/index.html". This is only
+3. mail.jar in Oracle's JavaMail API (version 1.4 or greater).
+   Oracle's JavaMail package available for download from
+   "http://www.oracle.com/technetwork/java/javamail/index.html". This is only
    required for media specific APIs including Google Base data API,
    Document List data API, Picasa Web Album API and YouTube data API.
-4. activation.jar in Sun's JavaBeans Activation Framewrok.
+4. activation.jar in Oracle's JavaBeans Activation Framewrok.
    This is required only if using JDK version 1.5.
-   Sun's JavaBeansActivationFramework is available for download from
-   "http://java.sun.com/javase/technologies/desktop/javabeans/jaf/downloads/index.html".
+   Oracle's JavaBeansActivationFramework is available for download from
+   "http://www.oracle.com/technetwork/java/javase/downloads/index-135046.html".
    This is only required for media specific APIs including
    Google Base data API, Document List data API, Picasa Web Album API and
    YouTube data API.
-5. servlet.jar in Sun's Servlet API (version 2.3 or greater).
+5. servlet.jar in Oracle's Servlet API (version 2.3 or greater).
    This is required only if executing code samples in 'sample.authsub' or
-   'sample.gbase.recipe' packages.  Sun's Servlet API package can be
-   downloaded from "http://java.sun.com/products/servlet/download.html".
+   'sample.gbase.recipe' packages. Oracle's Servlet API package can be
+   downloaded from
+   "http://www.oracle.com/technetwork/java/index-jsp-135475.html".
+6. google-oauth-client.jar in Google's OAuth Client Library for Java (version
+   1.8 or greater).
+   This is required only if using OAuth 2.0 as the authorization mechanism.
+   Google's OAuth Client Library fo Java can be downloaded from
+   "http://code.google.com/p/google-oauth-java-client/downloads/list".
 
 INSTALLATION:
 -------------
@@ -50,5 +56,6 @@ Update ant build configuration to point to right path for dependency jars.
     activation.jar=<path to activation.jar file>
     mail.jar=<path to mail.jar file>
     servlet.jar=<path to servlet.jar file>
+    google-oauth-client.jar=<path to google-oauth-client.jar file>
 3. To recompile source files, execute the ant build target
    "ant -f build-src.xml" from folder "gdata/java".

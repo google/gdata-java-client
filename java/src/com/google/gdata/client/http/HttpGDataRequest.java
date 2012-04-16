@@ -245,6 +245,11 @@ public class HttpGDataRequest implements GDataRequest {
   protected int readTimeout = -1;
 
   /**
+   * The auth token used for this request, may be {@code null}.
+   */
+  protected final HttpAuthToken authToken;
+
+  /**
    * The input stream from which HTTP response data may be read or {@code null}
    * if no response stream or not opened yet via {@link #getResponseStream()}.
    */
@@ -257,6 +262,7 @@ public class HttpGDataRequest implements GDataRequest {
    * @param type type of GDataRequest.
    * @param requestUrl request target URL.
    * @param inputType the content type of request data (or {@code null}).
+   * @param authToken the auth token used for this request (or {@code null}).
    * @param headerMap a set of headers to be included in each request
    * @param privateHeaderMap a set of headers to be included in each request
    * @param connectionSource source of {@link HttpURLConnection}s
@@ -273,6 +279,7 @@ public class HttpGDataRequest implements GDataRequest {
     this.inputType = inputType;
     this.requestUrl = requestUrl;
     this.httpConn = getRequestConnection(requestUrl);
+    this.authToken = authToken;
 
     switch (type) {
 
@@ -357,6 +364,7 @@ public class HttpGDataRequest implements GDataRequest {
    */
   protected HttpGDataRequest() {
     connectionSource = JdkHttpUrlConnectionSource.INSTANCE;
+    this.authToken = null;
   }
 
   public URL getRequestUrl() {
