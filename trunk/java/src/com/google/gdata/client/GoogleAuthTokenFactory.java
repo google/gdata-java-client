@@ -16,6 +16,8 @@
 
 package com.google.gdata.client;
 
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.gdata.util.common.base.Charsets;
 import com.google.gdata.util.common.base.CharEscapers;
 import com.google.gdata.util.common.base.StringUtil;
 import com.google.gdata.client.GoogleService.AccountDeletedException;
@@ -216,6 +218,55 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
 
 
   /**
+   * Encapsulates the OAuth 2.0 information used by applications to login on
+   * behalf of a user.
+   */
+  public static class OAuth2Token implements HttpAuthToken {
+
+    static final String HEADER_PREFIX = "Bearer ";
+    final Credential credential;
+
+    /**
+     * Create a new {@link OAuth2Token} object.  Store the {@link Credential} to
+     * use when generating the header.
+     *
+     * @param credential the required OAuth 2.0 credentials
+     */
+    public OAuth2Token(Credential credential) {
+      this.credential = credential;
+    }
+
+    /**
+     * Returns the authorization header using the user's OAuth 2.0 credentials.
+     *
+     * @param requestUrl the URL being requested
+     * @param requestMethod the HTTP method of the request
+     * @return the authorization header to be used for the request
+     */
+    public String getAuthorizationHeader(URL requestUrl, String requestMethod) {
+      return HEADER_PREFIX + this.credential.getAccessToken();
+    }
+
+    /**
+     * Use the {@link Credential} to request a new access token from the
+     * authorization endpoint.
+     *
+     * @return whether a new access token was successfully retrieved
+     */
+    public boolean refreshToken() throws AuthenticationException {
+      try {
+        return this.credential.refreshToken();
+      } catch (IOException e) {
+        AuthenticationException ae =
+            new AuthenticationException("Failed to refresh access token: " + e.getMessage());
+        ae.initCause(e);
+        throw ae;
+      }
+    }
+  }
+
+
+  /**
    * Constructs a factory for creating authentication tokens for connecting
    * to a Google service with name {@code serviceName} for an application
    * with the name {@code applicationName}. The default domain
@@ -394,7 +445,7 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
    * <li>oauth_token
    * </ul>
    *
-   * @param parameters the OAuth parameters to use to generated the header
+   * @param parameters the OAuth parameters to use to generate the header
    * @param signer the signing method to use for signing the header
    * @throws OAuthException
    */
@@ -403,6 +454,15 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
     // validate input parameters
     parameters.assertOAuthConsumerKeyExists();
     setAuthToken(new OAuthToken(parameters, signer));
+  }
+
+  /**
+   * Sets the OAuth 2.0 credentials used to generate the authorization header.
+   *
+   * @param credential the OAuth 2.0 credentials to use to generate the header
+   */
+  public void setOAuth2Credentials(Credential credential) {
+    setAuthToken(new OAuth2Token(credential));
   }
 
   /**
@@ -639,7 +699,10 @@ public class GoogleAuthTokenFactory implements AuthTokenFactory {
       String token = getAuthToken(username, password, null, null, serviceName,
                                   applicationName);
       setUserToken(token);
-    } else {
+    } else if (!(this.authToken instanceof OAuth2Token) ||
+               !((OAuth2Token) this.authToken).refreshToken()) {
+      // The auth token was not an OAuth 2.0 token or request to refresh the
+      // access token failed.
       throw sessionExpired;
     }
   }

@@ -102,7 +102,7 @@
         <include name="**/sample/gbase/recipe/**"/>
       </classes>
       <lib dir="${build.jars}" >
-        <include name="${google-collect.jar}"/>
+        <include name="${guava.jar}"/>
         <include name="${gdata-client.jar}"/>
         <include name="${gdata-base.jar}"/>
       </lib>
@@ -145,7 +145,7 @@
       </classpath>
     </java>
   </target>
- 
+
   <target name="sample.gbase.run" description="Runs the Google Base commandline samples">
     <antcall target="sample.gbase.cmdline.customertool.query"/>
     <antcall target="sample.gbase.cmdline.queryexample"/>

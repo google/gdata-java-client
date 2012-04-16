@@ -95,7 +95,7 @@
            dest="${sample.authsub.build.home}/WEB-INF/classes"/>
     <unjar src="${gdata-client.jar}"
            dest="${sample.authsub.build.home}/WEB-INF/classes"/>
-    <unjar src="${google-collect.jar}"
+    <unjar src="${guava.jar}"
            dest="${sample.authsub.build.home}/WEB-INF/classes"/>
     <unjar src="${google-jsr305.jar}"
            dest="${sample.authsub.build.home}/WEB-INF/classes"/>

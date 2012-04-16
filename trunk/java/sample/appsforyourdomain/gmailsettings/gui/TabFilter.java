@@ -51,6 +51,11 @@ public class TabFilter extends Tab {
   protected JCheckBox shouldArchive;
   protected JLabel labelLabel;
   protected JTextField label;
+  protected JLabel forwardToLabel;
+  protected JTextField forwardTo;
+  protected JCheckBox neverSpam;
+  protected JCheckBox shouldStar;
+  protected JCheckBox shouldTrash;
   protected JButton submit;
 
   /**
@@ -85,6 +90,15 @@ public class TabFilter extends Tab {
     labelLabel = new JLabel("Label: ");
     label = new JTextField(Defaults.FILTER_LABEL, 25);
 
+    forwardToLabel = new JLabel("Forward to: ");
+    forwardTo = new JTextField(Defaults.FILTER_FORWARD_TO, 25);
+
+    neverSpam = new JCheckBox("Never Spam:", Defaults.FILTER_NEVER_SPAM);
+
+    shouldStar = new JCheckBox("Should Star:", Defaults.FILTER_SHOULD_STAR);
+
+    shouldTrash = new JCheckBox("Should Trash:", Defaults.FILTER_SHOULD_TRASH);
+
     submit = new JButton("Submit");
     submit.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
@@ -98,7 +112,9 @@ public class TabFilter extends Tab {
             GmailSettingsClient.settings.createFilter(GmailSettingsClient.users.
                 getSelectedUsers(), from.getText(), to.getText(), subject.getText(),
                 hasTheWord.getText(), doesNotHaveTheWord.getText(), hasAttachment.isSelected(),
-                shouldMarkAsRead.isSelected(), shouldArchive.isSelected(), label.getText());
+                shouldMarkAsRead.isSelected(), shouldArchive.isSelected(), label.getText(),
+                forwardTo.getText(), neverSpam.isSelected(), shouldStar.isSelected(),
+                shouldTrash.isSelected());
           } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(null, e, GmailSettingsClient.APP_TITLE,
                 JOptionPane.ERROR_MESSAGE);
@@ -159,8 +175,25 @@ public class TabFilter extends Tab {
     layout.putConstraint(SpringLayout.WEST, label, 5, SpringLayout.EAST, labelLabel);
     layout.putConstraint(SpringLayout.NORTH, label, 5, SpringLayout.SOUTH, shouldArchive);
 
+    layout.putConstraint(SpringLayout.WEST, forwardToLabel, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, forwardToLabel, 5, SpringLayout.SOUTH, label);
+    layout.putConstraint(SpringLayout.WEST, forwardTo, 5, SpringLayout.EAST, forwardToLabel);
+    layout.putConstraint(SpringLayout.NORTH, forwardTo, 5, SpringLayout.SOUTH, label);
+
+    layout.putConstraint(SpringLayout.WEST, neverSpam, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, neverSpam, 5, SpringLayout.SOUTH,
+        forwardTo);
+
+    layout.putConstraint(SpringLayout.WEST, shouldStar, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, shouldStar, 5, SpringLayout.SOUTH,
+        neverSpam);
+
+    layout.putConstraint(SpringLayout.WEST, shouldTrash, 5, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.NORTH, shouldTrash, 5, SpringLayout.SOUTH,
+        shouldStar);
+
     layout.putConstraint(SpringLayout.WEST, submit, 5, SpringLayout.WEST, this);
-    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, label);
+    layout.putConstraint(SpringLayout.NORTH, submit, 15, SpringLayout.SOUTH, shouldTrash);
 
     add(fromLabel);
     add(from);
@@ -177,6 +210,11 @@ public class TabFilter extends Tab {
     add(shouldArchive);
     add(labelLabel);
     add(label);
+    add(forwardToLabel);
+    add(forwardTo);
+    add(neverSpam);
+    add(shouldStar);
+    add(shouldTrash);
     add(submit);
   }
 }

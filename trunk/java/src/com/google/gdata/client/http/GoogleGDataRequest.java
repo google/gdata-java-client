@@ -17,6 +17,7 @@
 package com.google.gdata.client.http;
 
 import com.google.gdata.client.GDataProtocol;
+import com.google.gdata.client.GoogleAuthTokenFactory.OAuth2Token;
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.GoogleService.SessionExpiredException;
 import com.google.gdata.client.Service.GDataRequest;
@@ -90,7 +91,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     protected GDataRequest createRequest(RequestType type,
         URL requestUrl, ContentType contentType)
         throws IOException, ServiceException {
-      return new GoogleGDataRequest(type, requestUrl, contentType, authToken, 
+      return new GoogleGDataRequest(type, requestUrl, contentType, authToken,
           headerMap, privateHeaderMap, connectionSource);
     }
   }
@@ -456,16 +457,16 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     super(type, requestUrl, contentType, authToken,
         headerMap, privateHeaderMap, connectionSource);
   }
-    
+
   /**
    * The GoogleService instance that constructed the request.
    */
   private GoogleService service;
-  
+
   /**
    * Returns the {@link Version} that will be used to execute the request on the
    * target service or {@code null} if the service is not versioned.
-   * 
+   *
    * @return version sent with the request or {@code null}.
    */
   public Version getRequestVersion() {
@@ -474,7 +475,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     // outside the scope of Service.begin/endVersionScope.
     return service.getProtocolVersion();
   }
-  
+
   /**
    * The version associated with the response.
    */
@@ -483,7 +484,7 @@ public class GoogleGDataRequest extends HttpGDataRequest {
   /**
    * Returns the {@link Version} that was used by the target service to execute
    * the request or {@code null} if the service is not versioned.
-   * 
+   *
    * @return version returned with the response or {@code null}.
    */
   public Version getResponseVersion() {
@@ -492,35 +493,35 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     }
     return responseVersion;
   }
-  
+
   /**
    * Sets the GoogleService associated with the request.
    */
   public void setService(GoogleService service) {
     this.service = service;
-    
+
     // This undocumented system property can be used to disable version headers.
     // It exists only to support some unit test scenarios for query-parameter
-    // version configuration and back-compat defaulting when no version 
+    // version configuration and back-compat defaulting when no version
     // information is sent by the client library.
     if (Boolean.getBoolean("GoogleGDataRequest.disableVersionHeader")) {
       return;
     }
-    
+
     // Look up the active version for the type of service initiating the
     // request, and set the version header if found.
     try {
       Version requestVersion = service.getProtocolVersion();
       if (requestVersion != null) {
-        setHeader(GDataProtocol.Header.VERSION, 
+        setHeader(GDataProtocol.Header.VERSION,
             requestVersion.getVersionString());
       }
     } catch (IllegalStateException iae) {
       // Service may not be versioned.
     }
   }
-  
- 
+
+
 
 
   @Override
@@ -533,16 +534,16 @@ public class GoogleGDataRequest extends HttpGDataRequest {
       // request (like URL dependant authentication headers)
       httpConn.setInstanceFollowRedirects(false);
       super.execute();
-      
+
       // Capture the version used to process the request
-      String versionHeader = 
+      String versionHeader =
         httpConn.getHeaderField(GDataProtocol.Header.VERSION);
       if (versionHeader != null) {
         GoogleService service = activeService.get();
         if (service != null) {
           responseVersion = new Version(service.getClass(), versionHeader);
         }
-        
+
       }
     } finally {
       activeService.set(null);
@@ -564,7 +565,8 @@ public class GoogleGDataRequest extends HttpGDataRequest {
     } catch (AuthenticationException e) {
       // Throw a more specific exception for session expiration.
       String msg = e.getMessage();
-      if (msg != null && msg.contains("Token expired")) {
+      if ((msg != null && msg.contains("Token expired")) ||
+          (this.authToken != null && this.authToken instanceof OAuth2Token)) {
         SessionExpiredException se =
           new SessionExpiredException(e.getMessage());
         se.setResponse(e.getResponseContentType(), e.getResponseBody());

@@ -85,14 +85,23 @@ public class XmlParser extends DefaultHandler {
   // Always return secure SAX parser, which is secured against XXE attacks
   private static SAXParserFactory getSAXParserFactory()
       throws ParserConfigurationException, SAXException {
-    SAXParserFactory factory = SAXParserFactory.newInstance();
+    SAXParserFactory factory;
     try {
-      SAXParserFactory secureFactory =
-          SecureGenericXMLFactory.getSAXParserFactory(factory);
-      secureFactory.newSAXParser();
-      factory = secureFactory;
+      factory = SecureGenericXMLFactory.getSAXParserFactory(
+          SAXParserFactory.newInstance());
+      // "http://xml.org/sax/features/external-parameter-entities" is a feature
+      // that is set by the SecureGenericXMLFactory and not supported on some
+      // platform such as Android.
+      // Unfortunately, the Android implementation doesn't throw an exception
+      // when setting the feature. The exception is thrown when a new SAXParser
+      // is instantiated in the newSAXParser method.
+      // The following line check for such behavior.
+      factory.newSAXParser();
     } catch (ParserConfigurationException e) {
       // OK. Cannot create secure xml parser. Use insecure one.
+      // The factory instantiated in the try block can't be reused due to
+      // side-effect in SecureGenericXMLFactory.getSAXParserFactory.
+      factory = SAXParserFactory.newInstance();
     }
     factory.setNamespaceAware(true);
     return factory;
@@ -202,7 +211,7 @@ public class XmlParser extends DefaultHandler {
      *
      * The default implementation doesn't recognize anything. The result is a
      * schema error <i>unless</i> the parent handler accepts unrecognized XML.
-     * 
+     *
      * {@link com.google.gdata.wireformats.XmlParser}.
      * localname/namespace.
      *
@@ -240,7 +249,7 @@ public class XmlParser extends DefaultHandler {
       return getChildHandler(namespace, localName, attrs);
     }
 
-    
+
     /**
      * Determines a handler for a child element.
      * <p>
@@ -250,7 +259,7 @@ public class XmlParser extends DefaultHandler {
      *
      * {@link com.google.gdata.wireformats.XmlParser}.
      * localname/namespace.
-     * 
+     *
      * @param   namespace
      *            Child element namespace URI.
      *
@@ -377,7 +386,7 @@ public class XmlParser extends DefaultHandler {
       this.innerXmlStringWriter = new StringWriter();
       try {
         this.innerXml = new XmlWriter(innerXmlStringWriter);
-        
+
         // The XmlWriter constructor doesn't actually throw an IOException, so
         // once that constructor is fixed we can remove this catch block.
       } catch (IOException impossible) {
@@ -1092,7 +1101,7 @@ public class XmlParser extends DefaultHandler {
 
 
   /** Ensures that the namespace from the QName is stored with the blob. */
-  private void ensureBlobNamespace(ElementHandler handler, String qName) 
+  private void ensureBlobNamespace(ElementHandler handler, String qName)
       throws SAXException {
 
     // Get the namespace.

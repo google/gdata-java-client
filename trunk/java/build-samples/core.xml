@@ -30,7 +30,7 @@
   <!-- path for third_party google dependencies -->
   <path id="build.google-deps.classpath">
     <pathelement location="${google-jsr305.jar}"/>
-    <pathelement location="${google-collect.jar}"/>
+    <pathelement location="${guava.jar}"/>
   </path>
 
   <!-- Dependency path for all services -->
@@ -185,21 +185,21 @@
     <available file="${mail.jar}" property="has.sunmail"/>
     <available file="${activation.jar}" property="has.sunactivation"/>
     <fail unless="has.sunmail">missing jar file: ${mail.jar}
-The GData client requires Sun's javamail API (version 1.4), which
+The GData client requires Oracle's javamail API (version 1.4), which
 is not included in this distribution.
 
 You can download it from:
-  http://java.sun.com/products/javamail/downloads/index.html
+  http://www.oracle.com/technetwork/java/javamail/index.html
 
 Then save it under:
   ${mail.jar}
     </fail>
     <fail unless="has.sunactivation">missing jar file: ${activation.jar}
-The GData client requires Sun's Activation Framework 1.1, which
+The GData client requires Oracle's Activation Framework 1.1, which
 is not included in this distribution.
 
 You can download it from:
- http://java.sun.com/products/javabeans/jaf/downloads/index.html
+ http://www.oracle.com/technetwork/java/javase/downloads/index-135046.html
 
 Then save it under:
   ${activation.jar}
@@ -214,8 +214,7 @@ The recipe example requires Sun's Servlet API (version 2.3 or 2.4), which
 is not included in this distribution.
 
 You can download it from:
- http://java.sun.com/products/servlet/download.html
- Under SPECIFICATIONS/Java Servlet, download 'class files 2.3' from "2.3 - Final Release"
+ http://www.oracle.com/technetwork/java/index-jsp-135475.html
 
 Then save it under:
   ${servlet.jar}

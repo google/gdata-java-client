@@ -10,7 +10,7 @@ Table of Contents
 PACKAGE CONTENTS:
 -----------------
 Google Data APIs ("GData" for short) Java client provides source code and
-libraries for interacting with GData-enabled services.  This package includes
+libraries for interacting with GData-enabled services. This package includes
   1. Precompile java libraries under "gdata/java/lib".
   2. Third party dependencies under "gdata/java/third_party".
   3. GData-enabled service specific samples under "gdata/java/sample".
@@ -21,28 +21,29 @@ REQUIREMENTS:
 -------------
 GData Java Client depends on following tools/platforms.
 1. Java Development Kit version 5.0 or greater.  Latest version of JDK
-   available for download from http://java.sun.com.
+   available for download from http://java.oracle.com.
 2. Apache ANT version 1.7 or greater.  Apache's ANT binary is available for
    download from http://ant.apache.org.
 
 Following third_party dependency libraries are required to compile/run the
 samples.
-1. mail.jar in Sun's JavaMail API (version 1.4 or greater).
-   Sun's JavaMail package available for download from
-   "http://java.sun.com/products/javamail/downloads/index.html". This is only
+1. mail.jar in Oracle's JavaMail API (version 1.4 or greater).
+   Oracle's JavaMail package available for download from
+   "http://www.oracle.com/technetwork/java/javamail/index.html". This is only
    required for media specific APIs including Google Base data API,
    Document List data API, Picasa Web Album API and YouTube data API.
-2. activation.jar in Sun's JavaBeans Activation Framewrok.
+2. activation.jar in Oracle's JavaBeans Activation Framewrok.
    This is required only if using JDK version 1.5.
-   Sun's JavaBeansActivationFramework is available for download from
-   "http://java.sun.com/javase/technologies/desktop/javabeans/jaf/downloads/index.html".
+   Oracle's JavaBeansActivationFramework is available for download from
+   "http://www.oracle.com/technetwork/java/javase/downloads/index-135046.html".
    This is only required for media specific APIs including
    Google Base data API, Document List data API, Picasa Web Album API and
    YouTube data API.
-3. servlet.jar in Sun's Servlet API (version 2.3 or greater).
+3. servlet.jar in Oracle's Servlet API (version 2.3 or greater).
    This is required only if executing code samples in 'sample.authsub' or
-   'sample.gbase.recipe' packages.  Sun's Servlet API package can be
-   downloaded from "http://java.sun.com/products/servlet/download.html".
+   'sample.gbase.recipe' packages. Oracle's Servlet API package can be
+   downloaded from
+   "http://www.oracle.com/technetwork/java/index-jsp-135475.html".
 Download above mentioned third_party jar files and save under
 "gdata/java/third_party".
 

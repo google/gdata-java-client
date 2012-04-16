@@ -45,7 +45,7 @@ public class AccountInfo {
   private static DateFormat DATE_FORMAT = null;
 
   static {
-    DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+    DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     DATE_FORMAT.setLenient(false);
   }
@@ -79,7 +79,7 @@ public class AccountInfo {
       }
     }
   }
-  
+
   private Date checkDateAndParse(String date) {
     return (date != null) ? DATE_FORMAT.parse(date, new ParsePosition(0)) : null;
   }

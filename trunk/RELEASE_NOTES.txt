@@ -1,4 +1,18 @@
 Google Data API - Release Notes
+Notes for v1.47.0
+-----------------
+o Use Google Guava library (version 11) instead of google-collections.
+o Add OAuth 2.0 support leveraging Google OAuth Client for Java http://code.google.com/p/google-oauth-java-client/).
+o Fix date-time format in Audit API's AccountInfo class.
+o Update Email Settings API samples to use new filter actions and multple domains.
+o Update Provisioning API sample to add support for multi-domain aliases.
+
+Notes for v1.46.0
+-----------------
+o Change in behaviour for adding new users to site permissions
+o Add additional roles to AclEntry.
+o Add support for the new gContact:status element for the User Profiles API.
+
 Notes for v1.45.0
 -----------------
 o Updated Document List Data API
@@ -33,7 +47,7 @@ o Updates Youtube API
 
 Notes for v1.41.3
 -----------------
-o Updated Apps Audit API 
+o Updated Apps Audit API
 
 Notes for v1.41.2
 -----------------

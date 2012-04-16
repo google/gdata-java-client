@@ -125,6 +125,9 @@ public final class Constants {
   public static final String SHOULD_MARK_AS_READ = "shouldMarkAsRead";
   public static final String SHOULD_ARCHIVE = "shouldArchive";
   public static final String LABEL = "label";
+  public static final String NEVER_SPAM = "neverSpam";
+  public static final String SHOULD_STAR = "shouldStar";
+  public static final String SHOULD_TRASH = "shouldTrash";
   public static final String ADDRESS = "address";
   public static final String NAME = "name";
   public static final String REPLY_TO = "replyTo";

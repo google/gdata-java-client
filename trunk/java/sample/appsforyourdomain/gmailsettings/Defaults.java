@@ -35,6 +35,10 @@ public final class Defaults {
   public static final boolean FILTER_SHOULD_MARK_AS_READ = true;
   public static final boolean FILTER_SHOULD_ARCHIVE = true;
   public static final String FILTER_LABEL = "label";
+  public static final String FILTER_FORWARD_TO = "someone@google.com";
+  public static final boolean FILTER_NEVER_SPAM = true;
+  public static final boolean FILTER_SHOULD_STAR = true;
+  public static final boolean FILTER_SHOULD_TRASH = false;
 
   public static final String SEND_AS_NAME = "test-alias";
   public static final String SEND_AS_ADDRESS = "johndoe@example.com";

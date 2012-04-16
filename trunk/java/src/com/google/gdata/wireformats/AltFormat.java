@@ -396,7 +396,7 @@ public class AltFormat {
       if (types == null) {
         acceptableTypes = ImmutableSet.of();
       } else {
-        acceptableTypes = ImmutableSet.of(types);
+        acceptableTypes = ImmutableSet.copyOf(types);
       }
       return this;
     }

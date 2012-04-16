@@ -18,8 +18,8 @@ package com.google.gdata.util.common.net;
 
 import static com.google.gdata.util.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ForwardingMultimap;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
@@ -76,7 +76,7 @@ public final class UriParameterMap extends ForwardingMultimap<String, String>
 
   static {
     EMPTY_MAP = new UriParameterMap(
-        ImmutableMultimap.<String, String>of());
+        ImmutableListMultimap.<String, String>of());
   }
 
   private final ListMultimap<String, String> delegate;
