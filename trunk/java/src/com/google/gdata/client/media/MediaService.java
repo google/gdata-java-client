@@ -680,13 +680,6 @@ public class MediaService extends GoogleService {
       URL editMediaUrl, IEntry entry, MediaFileSource file, boolean isMediaOnly)
       throws IOException, ServiceException {
 
-    /**
-     * All resumable update requests need to be POST with x-http-method-override
-     * set to PUT.  Set the system property to enable httpoverride.
-     */
-    String methodOverrideProperty = System.getProperty(
-        HttpGDataRequest.METHOD_OVERRIDE_PROPERTY);
-    System.setProperty(HttpGDataRequest.METHOD_OVERRIDE_PROPERTY, "true");
     GDataRequest request;
     if (isMediaOnly) {
       request = createRequest(GDataRequest.RequestType.UPDATE, editMediaUrl,
@@ -694,13 +687,6 @@ public class MediaService extends GoogleService {
     } else {
       request = createUpdateRequest(editMediaUrl);
     }
-    if (methodOverrideProperty != null) {
-      System.setProperty(
-          HttpGDataRequest.METHOD_OVERRIDE_PROPERTY, methodOverrideProperty);
-    } else {
-      System.clearProperty(HttpGDataRequest.METHOD_OVERRIDE_PROPERTY);
-    }
-
     initResumableMediaRequest(request, file, null);
     if (entry.getEtag() != null) {
       request.setEtag(entry.getEtag());
