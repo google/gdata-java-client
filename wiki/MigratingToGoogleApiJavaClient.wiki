@@ -1,5 +1,15 @@
 #summary Migrating to Google API Client for Java
 
+*WARNING: the information in this guide is obsolete.*
+
+= Updated information =
+
+We have changed our strategy significantly with respect to migration from [http://code.google.com/p/gdata-java-client/ gdata-java-client] to [https://code.google.com/p/google-api-java-client/ google-api-java-client].  Older GData APIs use XML as their underlying format.  Most Google APIs have released newer versions of their APIs instead based on JSON.  So in general you should wait until the API you are using switches to the new API infrastructure based on JSON, where we can provide a much better experience.  Of course we cannot make any promises about when or if any specific API will do so.
+
+For Picasa Web Albums Data API and Documents List API we've written [https://code.google.com/p/google-api-java-client/wiki/APIs#Google_Data_APIs samples based on google-api-java-client], and we encourage you to take a look at those samples.  If you have a need for a sample for a different API, please go ahead and ask on the [https://groups.google.com/forum/?fromgroups#!forum/google-api-java-client google-api-java-client Google group] if any one has sample code they are willing to share.
+
+=Obsolete information=
+
 This guide is written for existing users of the Google Data Java Client Library (a.k.a. "gdata-java-client") that wish to migrate to the [http://code.google.com/p/google-api-java-client/ Google API Client Library for Java] (a.k.a. "google-api-java-client").
 
 === Why you don't have to migrate ===
