@@ -16,11 +16,11 @@ Likewise, if you have an existing application that uses the GData Java client li
 
 == Not all code has to migrate == 
 
-You do not need to migrate away from the GData Java Client Library if you are using the [https://developers.google.com/google-apps/sites/ Google Sites API], the [https://developers.google.com/google-apps/spreadsheets/ Google Spreadsheets API], or the [https://developers.google.com/picasa-web/ Picasa Web Albums Data API]. For these Google APIs, keep using the GData Java Client Library for now.
+You do not need to migrate away from the GData Java client library if you are using the [https://developers.google.com/google-apps/sites/ Google Sites API], the [https://developers.google.com/google-apps/spreadsheets/ Google Spreadsheets API], or the [https://developers.google.com/picasa-web/ Picasa Web Albums Data API]. For these Google APIs, keep using the GData Java client library for now.
 
 == Some benefits of migrating ==
 
-Unlike the GData Java Client Library, the [https://code.google.com/p/google-api-java-client/ Google APIs Client Library for Java] supports Android, JSON, Maven, OAuth 2.0, and efficient partial-response.
+Unlike the GData Java client library, the [https://code.google.com/p/google-api-java-client/ Google APIs Client Library for Java] supports Android, JSON, Maven, OAuth 2.0, and efficient partial-response.
 
 The GData library needed updates whenever our APIs added XML elements and attributes, and our releases were too infrequent to keep up. The Google APIs Client Library for Java has a completely different model, in which classes represent the data format of our API responses. You control these classes, and you don't depend on our release process to provide you with them.
 
