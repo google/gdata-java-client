@@ -8,7 +8,7 @@ Contents:
 
 Older Google Data (GData) APIs use XML as their underlying format, but most Google APIs have released newer versions of their APIs based on JSON. You should migrate your code to use the new API infrastructure that is based on JSON, where we can provide a much better experience.
 
-To do this, visit the documentation for the API that you are using to find out what is available for that API. If the GData version of the API still exists but there is an alternative built on the new Google API infrastructure, we recommend that you switch to the new version of the API.
+To do this, visit the documentation for the API that you are using to find out what is available for that API, or check the [https://code.google.com/p/gdata-java-client/ current GData status] table. If the GData version of the API still exists but there is an alternative built on the new Google API infrastructure, we recommend that you switch to the new version of the API.
 
 Samples based on the Google APIs Client Library for Java are available for [https://developers.google.com/api-client-library/java/apis/ various Google APIs].  If you need a sample for a different API, ask on the [https://groups.google.com/forum/?fromgroups#!forum/google-api-java-client google-api-java-client Google group] whether anyone has sample code they are willing to share.
 
