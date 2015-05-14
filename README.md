@@ -1,4 +1,4 @@
-this project is moved from
+This project is moved from
 [googlecode](https://code.google.com/p/gdata-java-client/). wikis are now kept in branch 'wiki'.
 Issues are all migrated, too.
 
@@ -16,4 +16,5 @@ If you are developing for Android and the Google API you want to use is included
 
 # Download
 [Source](http://storage.googleapis.com/gdata-java-client-binaries/gdata-src.java-1.47.1.zip)
+
 [Samples](http://storage.googleapis.com/gdata-java-client-binaries/gdata-samples.java-1.47.1.zip)
