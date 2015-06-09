@@ -29,7 +29,6 @@
   <import file="build-src/sidewiki.xml"/>
   <import file="build-src/sites.xml"/>
   <import file="build-src/spreadsheet.xml"/>
-  <import file="build-src/youtube.xml"/>
   <import file="build-src/webmastertools.xml"/>
 
 
@@ -57,7 +56,6 @@
                                 build.sidewiki,
                                 build.sites,
                                 build.spreadsheet,
-                                build.youtube,
                                 build.webmastertools"/>
 
   <target name="clean" depends="clean.appsforyourdomain,
@@ -78,7 +76,6 @@
                                 clean.sidewiki,
                                 clean.sites,
                                 clean.spreadsheet,
-                                clean.youtube,
                                 clean.webmastertools"/>
 
 

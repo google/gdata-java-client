@@ -31,7 +31,6 @@
   <import file="build-samples/sidewiki.xml"/>
   <import file="build-samples/sites.xml"/>
   <import file="build-samples/spreadsheet.xml"/>
-  <import file="build-samples/youtube.xml"/>
   <import file="build-samples/webmastertools.xml"/>
 
 
@@ -60,7 +59,6 @@
               sample.sidewiki.build,
               sample.sites.build,
               sample.spreadsheet.build,
-              sample.youtube.build,
               sample.webmastertools.build"/>
 
   <target name="clean"
@@ -85,7 +83,6 @@
               sample.sidewiki.clean,
               sample.sites.clean,
               sample.spreadsheet.clean,
-              sample.youtube.clean,
               sample.webmastertools.clean"/>
 
 
