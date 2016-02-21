@@ -140,7 +140,7 @@ class CommandFactory {
   }
 
   /**
-   * Creates and initializes a {@link GetCommand).
+   * Creates and initializes a {@link GetCommand}.
    */
   private static Command createGetCommand(String[] args) {
     GetCommand command = new GetCommand();
