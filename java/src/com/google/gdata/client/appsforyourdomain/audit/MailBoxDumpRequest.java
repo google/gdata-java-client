@@ -56,7 +56,7 @@ public class MailBoxDumpRequest {
   private static DateFormat DATE_FORMAT = null;
 
   static {
-    DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+    DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     DATE_FORMAT.setLenient(false);
   }
