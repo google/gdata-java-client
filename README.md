@@ -15,6 +15,6 @@ Directory](https://developers.google.com/gdata/docs/directory)
 If you are developing for Android and the Google API you want to use is included in the [Google Play Services library](https://developer.android.com/google/play-services/index.html), you should use that library for the best performance and experience. If the Google API you want to use with Android is not part of the Google Play Services library, you can use the [Google APIs Client Library for Java](https://github.com/google/google-api-java-client), which supports Android 1.5 (or higher) and provides other features such as OAuth 2.0 and Maven.
 
 # Download
-[Source](http://storage.googleapis.com/gdata-java-client-binaries/gdata-src.java-1.47.1.zip)
+[Source](https://github.com/google/gdata-java-client/releases/download/v1.47.1/gdata-src.java-1.47.1.zip)
 
-[Samples](http://storage.googleapis.com/gdata-java-client-binaries/gdata-samples.java-1.47.1.zip)
+[Samples](https://github.com/google/gdata-java-client/releases/download/v1.47.1/gdata-samples.java-1.47.1.zip)
