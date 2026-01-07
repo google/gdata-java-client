@@ -16,6 +16,7 @@
 
 package sample.appsforyourdomain.gmailsettings;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.gdata.client.appsforyourdomain.AppsForYourDomainService;
 import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
 import com.google.gdata.data.appsforyourdomain.generic.GenericEntry;
@@ -66,6 +67,17 @@ public class GmailSettingsService extends AppsForYourDomainService {
     new GenericFeed().declareExtensions(getExtensionProfile());
 
     this.setUserCredentials(username + "@" + domain, password);
+  }
+
+  public GmailSettingsService(
+      String applicationName, String domain, Credential credential)
+      throws AuthenticationException {
+    super(applicationName, Constants.PROTOCOL, Constants.APPS_APIS_DOMAIN);
+    this.domain = domain;
+
+    new GenericFeed().declareExtensions(getExtensionProfile());
+
+    this.setOAuth2Credentials(credential);
   }
 
   /**
