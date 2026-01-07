@@ -196,6 +196,10 @@ public class GoogleGDataRequest extends HttpGDataRequest {
      */
     private boolean matchDomain(String testDomain, String tailDomain) {
 
+      if (tailDomain.startsWith(".")) {
+    	  tailDomain= tailDomain.substring(1);
+      }
+    	
       // Simple check
       if (!testDomain.endsWith(tailDomain)) {
         return false;
